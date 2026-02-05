@@ -85,7 +85,7 @@ function ListCard({
   return (
     <div
       onClick={onClick}
-      className="flex items-center p-5 bg-white border border-slate-200 rounded-[14px] cursor-pointer transition-all duration-200 hover:border-blue-500 hover:shadow-[0_4px_20px_rgba(37,99,235,0.12)] hover:-translate-y-0.5"
+      className="flex items-center p-5 bg-white border border-slate-200 rounded-[14px] cursor-pointer transition-all duration-200 hover:border-blue-500 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-0.5"
     >
       {/* LEFT SIDE */}
       <div className="flex-1 min-w-0">
@@ -126,11 +126,15 @@ function ListCard({
         {hasActiveWeek ? (
           <div className="text-right">
             {/* Progress Bar */}
-            <div className="w-[140px] h-2 bg-slate-200 rounded-full mb-2 overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-full transition-all duration-300"
-                style={{ width: `${getProgressPercent()}%` }}
-              />
+            <div className="w-[140px] h-1.5 rounded-full mb-2 overflow-hidden" style={{ background: '#e2e8f0' }}>
+              {list.total_count === 0 ? (
+                <span className="text-[11px] text-slate-400 block -mt-0.5">No items yet</span>
+              ) : (
+                <div
+                  className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-full transition-all duration-300"
+                  style={{ width: `${getProgressPercent()}%` }}
+                />
+              )}
             </div>
             {/* Progress Text */}
             <div className="text-[13px] font-medium text-slate-500">
@@ -203,7 +207,7 @@ function CompletedWeekCard({ week }: { week: T10CompletedWeekView }) {
   const rate = getCompletionRate();
 
   return (
-    <div className="flex items-center p-5 bg-white border border-slate-200 rounded-[14px] cursor-pointer transition-all duration-200 hover:border-blue-500 hover:shadow-[0_4px_20px_rgba(37,99,235,0.12)]">
+    <div className="flex items-center p-5 bg-white border border-slate-200 rounded-[14px] cursor-pointer transition-all duration-200 hover:border-blue-500 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-0.5">
       {/* Check icon */}
       <div className="w-12 h-12 flex items-center justify-center bg-emerald-50 text-emerald-500 rounded-full mr-4 flex-shrink-0">
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -458,7 +462,7 @@ export function T10LandingPageV3() {
     archivedLoading;
 
   return (
-    <div className="min-h-screen bg-slate-100">
+    <div className="min-h-screen" style={{ background: '#fafafa' }}>
       {/* ═══════════════════════════════════════════════════════════════════════
           HEADER
           ═══════════════════════════════════════════════════════════════════════ */}
@@ -491,7 +495,16 @@ export function T10LandingPageV3() {
       {/* ═══════════════════════════════════════════════════════════════════════
           MAIN CONTENT
           ═══════════════════════════════════════════════════════════════════════ */}
-      <main className="max-w-6xl mx-auto px-8 py-8">
+      <main 
+        className="mx-auto bg-white"
+        style={{ 
+          maxWidth: '1100px',
+          minHeight: 'calc(100vh - 64px)',
+          borderRadius: '20px 20px 0 0',
+          boxShadow: '0 -2px 20px rgba(0,0,0,0.04)',
+          padding: '32px 40px',
+        }}
+      >
         {/* SEARCH */}
         <div className="flex items-center gap-3 px-5 py-3.5 bg-white border border-slate-200 rounded-xl mb-5 focus-within:border-blue-500 focus-within:ring-[3px] focus-within:ring-blue-500/10 transition-all">
           <Search size={18} className="text-slate-400 flex-shrink-0" />
