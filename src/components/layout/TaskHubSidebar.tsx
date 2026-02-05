@@ -30,12 +30,12 @@ const taskHubSidebarConfig: SidebarConfig = {
     {
       title: '',
       items: [
-        { id: 'dashboard', title: 'Dashboard', path: '/taskhub/dashboard', icon: LayoutDashboard, exact: true },
+        { id: 'dashboard', title: 'Task Overview', path: '/taskhub/dashboard', icon: LayoutDashboard, exact: true },
         { id: 'workstreams', title: 'Workstreams', path: '/taskhub/workstreams', icon: Layers, exact: true },
         { id: 'my-tasks', title: 'My Tasks', path: '/taskhub/my-tasks', icon: CheckSquare, exact: true },
-        { id: 'boards', title: 'Boards', path: '/taskhub/boards', icon: LayoutGrid, exact: true },
+        { id: 'boards', title: 'Task Board', path: '/taskhub/boards', icon: LayoutGrid, exact: true },
         { id: 'task-list', title: 'Task List', path: '/taskhub/task-list', icon: List, exact: true },
-        { id: 'timeline', title: 'Timeline', path: '/taskhub/timeline', icon: GanttChartSquare, exact: true },
+        { id: 'timeline', title: 'Task Timeline', path: '/taskhub/timeline', icon: GanttChartSquare, exact: true },
         {
           id: 'task10',
           title: 'Priorities',
