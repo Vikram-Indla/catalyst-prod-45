@@ -301,17 +301,18 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
 
   const handleDelete = async () => {
     try {
+      const deletedKey = task?.task_key || 'Task';
       const { error } = await supabase
         .from('planner_tasks')
         .delete()
         .eq('id', effectiveTaskId);
       
       if (error) throw error;
-      toast.success('Task deleted');
+      catalystToast.success('Task Deleted', `${deletedKey} has been removed`);
       queryClient.invalidateQueries({ queryKey: ['planner-tasks'] });
       handleClose();
     } catch (err) {
-      toast.error('Failed to delete task');
+      catalystToast.error('Delete Failed', 'Could not delete task');
     }
   };
 
