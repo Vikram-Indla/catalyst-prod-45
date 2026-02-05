@@ -477,11 +477,9 @@ export function T10LandingPageV3() {
           ═══════════════════════════════════════════════════════════════════════ */}
       <header className="flex items-center justify-between px-8 py-4 bg-white border-b border-slate-200 shadow-sm">
         {/* Logo */}
-        <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-blue-600 to-blue-700 text-white text-lg font-extrabold rounded-[14px] shadow-lg shadow-blue-600/30">
-            10
-          </div>
-          <div className="flex flex-col">
+        <div className="flex items-center gap-1">
+          <span className="text-[32px] font-extrabold text-blue-600 leading-none">10</span>
+          <div className="flex flex-col ml-2">
             <span className="text-xl font-bold text-slate-900 tracking-tight">
               Priorities
             </span>
