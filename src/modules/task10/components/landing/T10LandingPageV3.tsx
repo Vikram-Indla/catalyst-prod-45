@@ -470,7 +470,7 @@ export function T10LandingPageV3() {
           </div>
           <div className="flex flex-col">
             <span className="text-xl font-bold text-slate-900 tracking-tight">
-              Task<sup className="text-xs text-blue-600 font-bold">10</sup>
+              Task
             </span>
             <span className="text-xs font-medium text-slate-500">
               Priority Management

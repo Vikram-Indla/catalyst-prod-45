@@ -163,7 +163,7 @@ export function T10SidePanel({ item, isOpen, onClose, onUpdate, onDelete, isRead
             <div className="t10-panel-rank" style={getRankStyles()}>
               {item.rank}
             </div>
-            <span className="t10-panel-title-text">Task<sup>10</sup> Priority</span>
+            <span className="t10-panel-title-text">Task Priority</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {hasChanges && (

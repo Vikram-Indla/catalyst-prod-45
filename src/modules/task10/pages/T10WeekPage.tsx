@@ -286,7 +286,7 @@ export function T10WeekPage() {
         <Link to="/taskhub/task10" className="t10-detail-logo-link">
           <div className="t10-detail-logo-badge">10</div>
           <div className="t10-detail-logo-text">
-            <span className="t10-detail-logo-title">Task<sup>10</sup></span>
+            <span className="t10-detail-logo-title">Task</span>
             <span className="t10-detail-logo-subtitle">Priority Management</span>
           </div>
         </Link>
