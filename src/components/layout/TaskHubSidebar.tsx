@@ -5,6 +5,7 @@
  * Matches the PlannerSidebar navigation structure.
  */
 
+import React from 'react';
 import { 
   LayoutDashboard,
   LayoutGrid, 
@@ -13,7 +14,7 @@ import {
   CheckSquare,
   List,
   Layers,
-  Disc,
+  LucideProps,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
@@ -22,6 +23,41 @@ interface TaskHubSidebarProps {
   onToggle: () => void;
   className?: string;
 }
+
+// Custom "10" icon component that matches Lucide icon interface
+const Priorities10Icon = React.forwardRef<SVGSVGElement, LucideProps>(
+  ({ size = 24, strokeWidth = 2, color = 'currentColor', ...props }, ref) => (
+    <svg
+      ref={ref}
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <circle cx="12" cy="12" r="10" />
+      <text
+        x="12"
+        y="12"
+        textAnchor="middle"
+        dominantBaseline="central"
+        fill={color}
+        stroke="none"
+        fontSize="9"
+        fontWeight="700"
+        fontFamily="system-ui, sans-serif"
+      >
+        10
+      </text>
+    </svg>
+  )
+);
+Priorities10Icon.displayName = 'Priorities10Icon';
 
 const taskHubSidebarConfig: SidebarConfig = {
   badge: 'TH',
@@ -40,7 +76,7 @@ const taskHubSidebarConfig: SidebarConfig = {
           id: 'task10',
           title: 'Priorities',
           path: '/taskhub/task10',
-          icon: Disc,
+          icon: Priorities10Icon,
           exact: false,
         },
       ],
