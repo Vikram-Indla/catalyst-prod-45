@@ -1,4 +1,4 @@
-// Task10 Components
+// Priorities10 Components
 export * from './landing/T10Header';
 export * from './landing/T10SearchBar';
 export * from './landing/T10ListCard';

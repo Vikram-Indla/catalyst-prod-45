@@ -38,7 +38,7 @@ const allNavItems: NavItem[] = [
     id: 'task10', 
     label: (
       <span className="flex items-center gap-2">
-        Task
+        Priorities
         <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold">
           10
         </span>

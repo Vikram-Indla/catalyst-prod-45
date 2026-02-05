@@ -27,7 +27,7 @@ export function T10Header({
       {/* Left: Logo + Title */}
       <div className="t10-header-logo">
         <div className="t10-logo-text">
-          <span className="t10-logo-name">Task</span>
+          <span className="t10-logo-name">Priorities</span>
           <span className="t10-logo-tagline">Priority Management</span>
         </div>
       </div>

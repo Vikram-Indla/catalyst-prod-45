@@ -15,7 +15,7 @@ export function T10HeaderNew({ onNewList }: T10HeaderNewProps) {
     <header className="t10-header-minimal">
       {/* Logo: Text only */}
       <div className="t10-logo-minimal">
-        <span className="t10-logo-text-minimal">Task</span>
+        <span className="t10-logo-text-minimal">Priorities</span>
       </div>
 
       {/* Action: Short label "+ New" */}
