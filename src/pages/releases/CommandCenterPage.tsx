@@ -56,6 +56,7 @@ import { exportToExcel, exportToCsv, exportToPdf } from '@/utils/exports';
 import type { ExportColumn } from '@/utils/exports/types';
 import { downloadDocumentation } from '@/utils/releaseModuleDocumentation';
 import { downloadFeatureTree } from '@/utils/releaseModuleFeatureTree';
+import { downloadCompleteSpec } from '@/utils/releaseModuleCompleteSpec';
 
 // Import real data hooks
 import {
@@ -705,6 +706,13 @@ export default function CommandCenterPage() {
               }} className="gap-2">
                 <FileText className="h-4 w-4" />
                 Module Documentation (.md)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                downloadCompleteSpec();
+                catalystToast.success('Complete specification downloaded');
+              }} className="gap-2">
+                <FileText className="h-4 w-4" />
+                Complete Technical Spec (.md)
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
