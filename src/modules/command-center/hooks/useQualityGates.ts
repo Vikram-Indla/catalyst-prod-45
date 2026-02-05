@@ -88,10 +88,10 @@ export function useQualityGates(releaseId?: string) {
           id: 'code_coverage',
           name: 'Code Coverage',
           threshold: '≥ 80%',
-          currentValue: '78%', // Would need integration with coverage tool
-          numericValue: 78,
+          currentValue: 'N/A', // Requires external CI/CD integration
+          numericValue: 0,
           numericThreshold: 80,
-          status: 'warning' as GateStatus,
+          status: 'warning' as GateStatus, // Shows as warning until integrated
         },
         {
           id: 'blocked_tests',

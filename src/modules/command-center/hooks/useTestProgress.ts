@@ -43,18 +43,7 @@ export function useTestProgress(sprintCount: number = 6, projectId?: string) {
         });
       }
 
-      // If no real data, provide sample data structure
-      if (sprints.every(s => s.total === 0)) {
-        return [
-          { sprint: 'S23.8', sprintName: 'Sprint 23.8', passed: 85, failed: 8, blocked: 3, notRun: 4, total: 100 },
-          { sprint: 'S23.9', sprintName: 'Sprint 23.9', passed: 78, failed: 12, blocked: 5, notRun: 5, total: 100 },
-          { sprint: 'S23.10', sprintName: 'Sprint 23.10', passed: 82, failed: 10, blocked: 4, notRun: 4, total: 100 },
-          { sprint: 'S23.11', sprintName: 'Sprint 23.11', passed: 88, failed: 6, blocked: 2, notRun: 4, total: 100 },
-          { sprint: 'S24.1', sprintName: 'Sprint 24.1', passed: 72, failed: 14, blocked: 6, notRun: 8, total: 100 },
-          { sprint: 'S24.2', sprintName: 'Sprint 24.2', passed: 65, failed: 10, blocked: 5, notRun: 20, total: 100 },
-        ];
-      }
-
+      // No-mock-data policy: return empty array when no data exists
       return sprints;
     },
     refetchInterval: 120000, // Refresh every 2 minutes

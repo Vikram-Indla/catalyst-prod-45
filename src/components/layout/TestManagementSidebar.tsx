@@ -29,25 +29,25 @@ const testManagementSidebarConfig: SidebarConfig = {
   badge: 'TES',
   label: 'Tests',
   items: [
-    { id: 'command-center', title: 'Command Center', path: '/tests/command-center', icon: LayoutDashboard, exact: true },
-    { id: 'my-work', title: 'My Work', path: '/tests/my-work', icon: Home, exact: true },
+    { id: 'command-center', title: 'Command Center', path: '/releases/command-center', icon: LayoutDashboard, exact: true },
+    { id: 'my-work', title: 'My Work', path: '/releases/my-scope', icon: Home, exact: true },
     // Test Assets
-    { id: 'cases', title: 'Test Cases', path: '/tests/cases', icon: FileText, exact: false },
-    { id: 'sets', title: 'Test Sets', path: '/tests/sets', icon: Layers, exact: false },
+    { id: 'cases', title: 'Test Cases', path: '/releases/test-cases', icon: FileText, exact: false },
+    { id: 'sets', title: 'Test Sets', path: '/releases/test-plans', icon: Layers, exact: false },
     // Execution
-    { id: 'cycles', title: 'Test Cycles', path: '/tests/cycles', icon: RefreshCw, exact: false },
-    { id: 'execution', title: 'Test Execution', path: '/tests/execution', icon: Play, exact: false },
+    { id: 'cycles', title: 'Test Cycles', path: '/releases/test-cycles', icon: RefreshCw, exact: false },
+    { id: 'execution', title: 'Test Execution', path: '/releases/execution', icon: Play, exact: false },
     // Quality
-    { id: 'defects', title: 'Defects', path: '/tests/defects', icon: Bug, exact: false },
-    { id: 'requirements', title: 'Requirements', path: '/tests/requirements', icon: Target, exact: false },
-    { id: 'traceability', title: 'Traceability', path: '/tests/traceability', icon: GitBranch, exact: false },
+    { id: 'defects', title: 'Defects', path: '/releases/defects', icon: Bug, exact: false },
+    { id: 'requirements', title: 'Requirements', path: '/releases/rtm', icon: Target, exact: false },
+    { id: 'traceability', title: 'Traceability', path: '/releases/coverage', icon: GitBranch, exact: false },
     // Analytics
-    { id: 'reports', title: 'Reports', path: '/tests/reports', icon: BarChart3, exact: false },
+    { id: 'reports', title: 'Reports', path: '/releases/quality-gates', icon: BarChart3, exact: false },
   ],
   footerItem: {
     id: 'settings',
     title: 'Settings',
-    path: '/tests/settings',
+    path: '/releases/dashboard',
     icon: Settings,
     exact: true,
   },
