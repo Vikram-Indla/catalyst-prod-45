@@ -15,8 +15,7 @@ export function T10HeaderNew({ onNewList }: T10HeaderNewProps) {
     <header className="t10-header-minimal">
       {/* Logo: Text only with superscript - no chunky badge */}
       <div className="t10-logo-minimal">
-        <span className="t10-logo-text-minimal">Task</span>
-        <sup className="t10-logo-super-minimal">10</sup>
+        <span className="t10-logo-text-minimal">Task10</span>
       </div>
 
       {/* Action: Short label "+ New" */}
