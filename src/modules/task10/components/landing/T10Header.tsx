@@ -28,9 +28,7 @@ export function T10Header({
       <div className="t10-header-logo">
         <div className="t10-logo-box">10</div>
         <div className="t10-logo-text">
-          <span className="t10-logo-name">
-            Task<sup className="t10-logo-super">10</sup>
-          </span>
+          <span className="t10-logo-name">Task10</span>
           <span className="t10-logo-tagline">Priority Management</span>
         </div>
       </div>
