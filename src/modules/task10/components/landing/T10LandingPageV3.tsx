@@ -17,6 +17,7 @@ import {
   Pencil,
   Archive
 } from 'lucide-react';
+import { Priorities10Icon } from '../icons/Priorities10Icon';
 import { createPortal } from 'react-dom';
 import { format, parseISO } from 'date-fns';
 import { T10NewListModal } from './T10NewListModal';
@@ -476,16 +477,12 @@ export function T10LandingPageV3() {
           HEADER
           ═══════════════════════════════════════════════════════════════════════ */}
       <header className="flex items-center justify-between px-8 py-4 bg-white border-b border-slate-200 shadow-sm">
-        {/* Logo */}
-        <div className="flex items-center gap-1">
-          <span className="text-[32px] font-extrabold text-blue-600 leading-none">10</span>
-          <div className="flex flex-col ml-2">
-            <span className="text-xl font-bold text-slate-900 tracking-tight">
-              Priorities
-            </span>
-            <span className="text-xs font-medium text-slate-500">
-              Priority Management
-            </span>
+        {/* Logo - Lucide-style 10 icon + Priorities text + badge */}
+        <div className="flex items-center gap-3">
+          <Priorities10Icon size={28} color="#2563eb" strokeWidth={2.5} />
+          <span className="text-xl font-semibold text-slate-600">Priorities</span>
+          <div className="w-8 h-8 flex items-center justify-center bg-blue-600 text-white text-sm font-bold rounded-full">
+            10
           </div>
         </div>
 

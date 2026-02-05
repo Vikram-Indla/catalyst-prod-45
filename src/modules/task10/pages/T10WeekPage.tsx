@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { CheckCircle, Plus, Check, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import { Priorities10Icon } from '../components/icons/Priorities10Icon';
 import { T10UnifiedSortableList } from '../components/week/T10UnifiedSortableList';
 import { T10WeekNavigation } from '../components/week/T10WeekNavigation';
 import { T10EnterpriseSidePanel } from '../components/panel/T10EnterpriseSidePanel';
@@ -284,11 +285,9 @@ export function T10WeekPage() {
       <header className="t10-detail-header">
         {/* Logo - links back to lists */}
         <Link to="/taskhub/task10" className="t10-detail-logo-link">
+          <Priorities10Icon size={24} color="#2563eb" strokeWidth={2.5} />
+          <span style={{ fontSize: '16px', fontWeight: 600, color: '#64748b', marginLeft: '8px' }}>Priorities</span>
           <div className="t10-detail-logo-badge">10</div>
-          <div className="t10-detail-logo-text">
-            <span className="t10-detail-logo-title">Priorities</span>
-            <span className="t10-detail-logo-subtitle">Priority Management</span>
-          </div>
         </Link>
 
         {/* List Key + Name */}
