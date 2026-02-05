@@ -51,22 +51,13 @@ import { MobileMenuDrawer } from '@/components/layout/MobileMenuDrawer';
 // LIST CARD COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// Get workstream accent color based on list index or name
-const WORKSTREAM_COLORS = ['#14b8a6', '#3b82f6', '#f97316', '#8b5cf6', '#ec4899', '#22c55e'];
-
-function getWorkstreamColor(index: number): string {
-  return WORKSTREAM_COLORS[index % WORKSTREAM_COLORS.length];
-}
-
 function ListCard({ 
   list, 
-  index,
   onClick,
   onStartWeek,
   onMore
 }: { 
   list: T10ListCardView; 
-  index: number;
   onClick: () => void;
   onStartWeek: () => void;
   onMore: (e: React.MouseEvent) => void;
@@ -92,121 +83,111 @@ function ListCard({
   };
 
   const hasActiveWeek = !!list.current_week_id;
-  const accentColor = getWorkstreamColor(index);
 
   return (
     <div
       onClick={onClick}
-      className="flex items-center bg-white border border-slate-200 rounded-[14px] cursor-pointer transition-all duration-200 hover:border-blue-500 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 overflow-hidden"
+      className="flex items-center p-5 bg-white border border-slate-200 rounded-[14px] cursor-pointer transition-all duration-200 hover:border-blue-500 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-0.5"
     >
-      {/* Left accent bar */}
-      <div 
-        className="w-1 self-stretch flex-shrink-0" 
-        style={{ backgroundColor: accentColor }}
-      />
-      
-      {/* Content wrapper */}
-      <div className="flex items-center flex-1 p-5">
-        {/* LEFT SIDE */}
-        <div className="flex-1 min-w-0">
-          {/* Header: Key + Title */}
-          <div className="flex items-center gap-3.5 mb-2.5">
-            <span className="px-3 py-1.5 font-mono text-xs font-bold text-blue-600 bg-blue-50 border border-blue-200 rounded-md tracking-wide flex-shrink-0">
-              {list.key || 'T10'}
-            </span>
-            <span className="text-[17px] font-semibold text-slate-900 tracking-tight truncate">
-              {list.name}
-            </span>
-          </div>
-
-          {/* Meta: Week + Created */}
-          <div className="flex items-center gap-5 text-[13px] text-slate-500">
-            <span className="flex items-center gap-1.5">
-              <Calendar size={14} />
-              {hasActiveWeek ? (
-                <>
-                  Week of{' '}
-                  <strong className="text-slate-900 font-semibold">
-                    {formatWeekRange(list.week_start, list.week_end)}
-                  </strong>
-                </>
-              ) : (
-                <span className="text-slate-400">No active week</span>
-              )}
-            </span>
-            <span className="text-slate-400">
-              Created {format(parseISO(list.created_at), 'MMM d, yyyy')}
-            </span>
-          </div>
+      {/* LEFT SIDE */}
+      <div className="flex-1 min-w-0">
+        {/* Header: Key + Title */}
+        <div className="flex items-center gap-3.5 mb-2.5">
+          <span className="px-3 py-1.5 font-mono text-xs font-bold text-blue-600 bg-blue-50 border border-blue-200 rounded-md tracking-wide flex-shrink-0">
+            {list.key || 'T10'}
+          </span>
+          <span className="text-[17px] font-semibold text-slate-900 tracking-tight truncate">
+            {list.name}
+          </span>
         </div>
 
-        {/* RIGHT SIDE */}
-        <div className="flex items-center gap-6 ml-6 flex-shrink-0">
-          {/* Progress or Start Week */}
-          {hasActiveWeek ? (
-            <div className="text-right">
-              {/* Progress Bar */}
-              {list.total_count === 0 ? (
-                <div className="w-[140px] h-1.5 rounded-full mb-2" style={{ background: '#e2e8f0' }} />
-              ) : (
-                <div className="w-[140px] h-1.5 rounded-full mb-2 overflow-hidden" style={{ background: '#e2e8f0' }}>
-                  <div
-                    className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-full transition-all duration-300"
-                    style={{ width: `${getProgressPercent()}%` }}
-                  />
-                </div>
-              )}
-              {/* Progress Text */}
-              <div className="text-[13px] font-medium text-slate-500">
-                {list.total_count === 0 ? (
-                  <span className="text-slate-400">No items yet</span>
-                ) : (
-                  <>
-                    <strong className="text-blue-600 font-bold">
-                      {list.completed_count}
-                    </strong>
-                    {' '}of {list.total_count} completed
-                  </>
-                )}
-                {getSlotsAvailable() > 0 && (
-                  <span className="text-emerald-600 font-semibold">
-                    {' '}· {getSlotsAvailable()} slots
-                  </span>
-                )}
+        {/* Meta: Week + Created */}
+        <div className="flex items-center gap-5 text-[13px] text-slate-500">
+          <span className="flex items-center gap-1.5">
+            <Calendar size={14} />
+            {hasActiveWeek ? (
+              <>
+                Week of{' '}
+                <strong className="text-slate-900 font-semibold">
+                  {formatWeekRange(list.week_start, list.week_end)}
+                </strong>
+              </>
+            ) : (
+              <span className="text-slate-400">No active week</span>
+            )}
+          </span>
+          <span className="text-slate-400">
+            Created {format(parseISO(list.created_at), 'MMM d, yyyy')}
+          </span>
+        </div>
+      </div>
+
+      {/* RIGHT SIDE */}
+      <div className="flex items-center gap-6 ml-6 flex-shrink-0">
+        {/* Progress or Start Week */}
+        {hasActiveWeek ? (
+          <div className="text-right">
+            {/* Progress Bar */}
+            {list.total_count === 0 ? (
+              <div className="w-[140px] h-1.5 rounded-full mb-2" style={{ background: '#e2e8f0' }} />
+            ) : (
+              <div className="w-[140px] h-1.5 rounded-full mb-2 overflow-hidden" style={{ background: '#e2e8f0' }}>
+                <div
+                  className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-full transition-all duration-300"
+                  style={{ width: `${getProgressPercent()}%` }}
+                />
               </div>
+            )}
+            {/* Progress Text */}
+            <div className="text-[13px] font-medium text-slate-500">
+              {list.total_count === 0 ? (
+                <span className="text-slate-400">No items yet</span>
+              ) : (
+                <>
+                  <strong className="text-blue-600 font-bold">
+                    {list.completed_count}
+                  </strong>
+                  {' '}of {list.total_count} completed
+                </>
+              )}
+              {getSlotsAvailable() > 0 && (
+                <span className="text-emerald-600 font-semibold">
+                  {' '}· {getSlotsAvailable()} slots
+                </span>
+              )}
             </div>
-          ) : (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onStartWeek();
-              }}
-              className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
-            >
-              Start Week
-            </button>
-          )}
-
-          {/* Status Badge */}
-          <div
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide rounded-md ${
-              list.status === 'active'
-                ? 'text-emerald-600 bg-emerald-50'
-                : 'text-slate-500 bg-slate-100'
-            }`}
-          >
-            <span className="w-1.5 h-1.5 bg-current rounded-full" />
-            {list.status === 'active' ? 'Active' : 'Archived'}
           </div>
-
-          {/* More Button */}
+        ) : (
           <button
-            onClick={onMore}
-            className="w-9 h-9 flex items-center justify-center text-slate-400 rounded-lg hover:bg-slate-100 hover:text-slate-600 transition-all"
+            onClick={(e) => {
+              e.stopPropagation();
+              onStartWeek();
+            }}
+            className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
           >
-            <MoreVertical size={18} />
+            Start Week
           </button>
+        )}
+
+        {/* Status Badge */}
+        <div
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wide rounded-md ${
+            list.status === 'active'
+              ? 'text-emerald-600 bg-emerald-50'
+              : 'text-slate-500 bg-slate-100'
+          }`}
+        >
+          <span className="w-1.5 h-1.5 bg-current rounded-full" />
+          {list.status === 'active' ? 'Active' : 'Archived'}
         </div>
+
+        {/* More Button */}
+        <button
+          onClick={onMore}
+          className="w-9 h-9 flex items-center justify-center text-slate-400 rounded-lg hover:bg-slate-100 hover:text-slate-600 transition-all"
+        >
+          <MoreVertical size={18} />
+        </button>
       </div>
     </div>
   );
@@ -669,11 +650,10 @@ export function T10LandingPageV3() {
               </div>
             ) : (
               <div className="flex flex-col gap-3">
-                {filteredActiveLists.map((list, index) => (
+                {filteredActiveLists.map((list) => (
                   <ListCard
                     key={list.id}
                     list={list}
-                    index={index}
                     onClick={() => handleListClick(list)}
                     onStartWeek={() => handleStartWeek(list.id)}
                     onMore={(e) => {
@@ -759,51 +739,6 @@ export function T10LandingPageV3() {
             )}
           </>
         )}
-
-        {/* Recent Activity Section */}
-        <div className="mt-10 pt-8 border-t border-slate-200">
-          <div className="flex items-center gap-2 mb-5">
-            <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
-              Recent Activity
-            </span>
-          </div>
-          
-          <div className="space-y-4">
-            {/* Activity items - these would come from real data */}
-            <div className="flex items-start gap-3">
-              <div className="w-2 h-2 mt-2 rounded-full bg-emerald-500 flex-shrink-0" />
-              <div>
-                <p className="text-[14px] text-slate-700">
-                  <strong className="font-semibold text-slate-900">User</strong> completed "Finalize budget proposal" in Senaie Week
-                </p>
-                <span className="text-[12px] text-slate-400">2 hours ago</span>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-3">
-              <div className="w-2 h-2 mt-2 rounded-full bg-blue-500 flex-shrink-0" />
-              <div>
-                <p className="text-[14px] text-slate-700">
-                  <strong className="font-semibold text-slate-900">User</strong> created Catalyst Week list with 7 priorities
-                </p>
-                <span className="text-[12px] text-slate-400">Yesterday</span>
-              </div>
-            </div>
-            
-            <div className="flex items-start gap-3">
-              <div className="w-2 h-2 mt-2 rounded-full bg-amber-500 flex-shrink-0" />
-              <div>
-                <p className="text-[14px] text-slate-700">
-                  <strong className="font-semibold text-slate-900">System</strong> carried over 2 items from last week to Senaie Week
-                </p>
-                <span className="text-[12px] text-slate-400">Feb 2</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </main>
 
       {/* Modals */}
