@@ -126,22 +126,28 @@ function ListCard({
         {hasActiveWeek ? (
           <div className="text-right">
             {/* Progress Bar */}
-            <div className="w-[140px] h-1.5 rounded-full mb-2 overflow-hidden" style={{ background: '#e2e8f0' }}>
-              {list.total_count === 0 ? (
-                <span className="text-[11px] text-slate-400 block -mt-0.5">No items yet</span>
-              ) : (
+            {list.total_count === 0 ? (
+              <div className="w-[140px] h-1.5 rounded-full mb-2" style={{ background: '#e2e8f0' }} />
+            ) : (
+              <div className="w-[140px] h-1.5 rounded-full mb-2 overflow-hidden" style={{ background: '#e2e8f0' }}>
                 <div
                   className="h-full bg-gradient-to-r from-blue-600 to-blue-500 rounded-full transition-all duration-300"
                   style={{ width: `${getProgressPercent()}%` }}
                 />
-              )}
-            </div>
+              </div>
+            )}
             {/* Progress Text */}
             <div className="text-[13px] font-medium text-slate-500">
-              <strong className="text-blue-600 font-bold">
-                {list.completed_count}
-              </strong>
-              {' '}of {list.total_count} completed
+              {list.total_count === 0 ? (
+                <span className="text-slate-400">No items yet</span>
+              ) : (
+                <>
+                  <strong className="text-blue-600 font-bold">
+                    {list.completed_count}
+                  </strong>
+                  {' '}of {list.total_count} completed
+                </>
+              )}
               {getSlotsAvailable() > 0 && (
                 <span className="text-emerald-600 font-semibold">
                   {' '}· {getSlotsAvailable()} slots
