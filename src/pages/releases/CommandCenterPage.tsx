@@ -64,7 +64,6 @@ import {
   useReleaseHealth,
   useDefectTrends,
   useQualityGates,
-  useTestProgress,
   useTeamPerformance,
   useActivities,
   useMilestones,
@@ -85,7 +84,7 @@ import type {
 
 // MOCK DATA REMOVED - Using live hooks from @/modules/command-center/hooks
 // All data now comes from: useCommandCenterKPIs, useReleaseHealth, useDefectTrends,
-// useQualityGates, useTestProgress, useTeamPerformance, useActivities, useMilestones
+// useQualityGates, useTeamPerformance, useActivities, useMilestones
 
 // ============================================
 // HELPER COMPONENTS
@@ -438,7 +437,6 @@ export default function CommandCenterPage() {
   const { data: releases, isLoading: releasesLoading, refetch: refetchReleases } = useReleaseHealth(5);
   const { data: defectTrends, isLoading: defectsLoading, refetch: refetchDefects } = useDefectTrends('30d');
   const { data: qualityGates, isLoading: gatesLoading, refetch: refetchGates } = useQualityGates();
-  const { data: testProgress, isLoading: progressLoading, refetch: refetchProgress } = useTestProgress(6);
   const { data: teamPerformance, isLoading: teamLoading, refetch: refetchTeam } = useTeamPerformance(5);
   const { data: activities, isLoading: activitiesLoading, refetch: refetchActivities } = useActivities(10);
   const { data: milestones, isLoading: milestonesLoading, refetch: refetchMilestones } = useMilestones(4);
@@ -461,7 +459,6 @@ export default function CommandCenterPage() {
         refetchReleases(),
         refetchDefects(),
         refetchGates(),
-        refetchProgress(),
         refetchTeam(),
         refetchActivities(),
         refetchMilestones(),
@@ -473,7 +470,7 @@ export default function CommandCenterPage() {
     } finally {
       setIsRefreshing(false);
     }
-  }, [refetchKpis, refetchReleases, refetchDefects, refetchGates, refetchProgress, refetchTeam, refetchActivities, refetchMilestones]);
+  }, [refetchKpis, refetchReleases, refetchDefects, refetchGates, refetchTeam, refetchActivities, refetchMilestones]);
   
   // Export handlers with real functionality
   const handleExportPdf = useCallback(async () => {
@@ -779,60 +776,6 @@ export default function CommandCenterPage() {
                     onClick={() => navigate(`/releases/${release.id}/dashboard`)}
                   />
                 ))}
-              </CardContent>
-            </Card>
-            
-            {/* Test Progress */}
-            <Card>
-              <CardHeader className="pb-4">
-                <CardTitle className="text-sm font-semibold">Test Progress by Sprint</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[200px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={testProgress || []} barCategoryGap="20%">
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
-                      <XAxis 
-                        dataKey="sprint" 
-                        axisLine={false} 
-                        tickLine={false} 
-                        tick={{ fontSize: 11, fill: '#94a3b8' }}
-                      />
-                      <YAxis 
-                        axisLine={false} 
-                        tickLine={false} 
-                        tick={{ fontSize: 11, fill: '#94a3b8' }}
-                        tickFormatter={(v) => `${v}%`}
-                      />
-                      <Tooltip 
-                        contentStyle={{ fontSize: 12, borderRadius: 8 }}
-                        formatter={(value: number, name: string) => [`${value}%`, name.charAt(0).toUpperCase() + name.slice(1)]}
-                      />
-                      <Bar dataKey="passed" stackId="a" fill={CATALYST_V5.teal} radius={[0, 0, 0, 0]} />
-                      <Bar dataKey="failed" stackId="a" fill={CATALYST_V5.danger} radius={[0, 0, 0, 0]} />
-                      <Bar dataKey="blocked" stackId="a" fill={CATALYST_V5.warning} radius={[0, 0, 0, 0]} />
-                      <Bar dataKey="notRun" stackId="a" fill="#e2e8f0" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="flex items-center justify-center gap-6 mt-4 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: CATALYST_V5.teal }} />
-                    Passed
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: CATALYST_V5.danger }} />
-                    Failed
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: CATALYST_V5.warning }} />
-                    Blocked
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-sm bg-[#e2e8f0]" />
-                    Not Run
-                  </span>
-                </div>
               </CardContent>
             </Card>
             
