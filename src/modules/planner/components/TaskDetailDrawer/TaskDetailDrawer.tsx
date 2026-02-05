@@ -87,7 +87,7 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
   const saveStatusTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   // Tab state for V2 tabbed interface
-  const [activeTab, setActiveTab] = useState<'description' | 'lead-notes' | 'checklist' | 'links' | 'files' | 'activity'>('description');
+  const [activeTab, setActiveTab] = useState<'description' | 'lead-notes' | 'checklist' | 'files' | 'activity'>('description');
   
   const handleClose = useCallback(() => {
     // Flush any pending debounced updates before closing
@@ -221,7 +221,6 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
     { id: 'description' as const, label: 'Description', badge: null },
     { id: 'lead-notes' as const, label: 'Notes', badge: leadNotesCount || null },
     { id: 'checklist' as const, label: 'Checklist', badge: checklistCount || null },
-    { id: 'links' as const, label: 'Links', badge: linksCount || null },
     { id: 'files' as const, label: 'Files', badge: filesCount || null },
     { id: 'activity' as const, label: 'Activity', badge: activityCount || null },
   ];
@@ -349,14 +348,6 @@ export function TaskDetailDrawer({ taskId: propTaskId, task: propTask, open, onC
                   <ChecklistSection
                     taskId={effectiveTaskId!}
                     items={checklist || []}
-                  />
-                )}
-
-                {/* Links Tab */}
-                {activeTab === 'links' && (
-                  <DependenciesSection
-                    taskId={effectiveTaskId!}
-                    dependencies={dependencies || []}
                   />
                 )}
 
