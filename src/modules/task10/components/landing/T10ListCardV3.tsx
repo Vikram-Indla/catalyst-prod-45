@@ -66,7 +66,7 @@ export function T10ListCardV3({
   };
 
   const handleWeekClick = (weekId: string) => {
-    navigate(`/taskhub/task10/list/${list.id}/week/${weekId}`);
+    navigate(`/priorities/list/${list.id}/week/${weekId}`);
   };
 
   // Close menu when clicking outside

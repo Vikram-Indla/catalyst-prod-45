@@ -29,7 +29,7 @@ export function T10WeekHeader({
   onWeekChange,
   onCheckout,
   onAddItem,
-  backPath = '/taskhub/task10',
+  backPath = '/priorities',
 }: T10WeekHeaderProps) {
   const navigate = useNavigate();
 
@@ -40,7 +40,7 @@ export function T10WeekHeader({
   const hasCompletedItems = completedCount > 0;
 
   const handleWeekChange = (weekId: string) => {
-    navigate(`/taskhub/task10/list/${list.id}/week/${weekId}`, { replace: true });
+    navigate(`/priorities/list/${list.id}/week/${weekId}`, { replace: true });
     onWeekChange(weekId);
   };
 

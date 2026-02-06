@@ -56,7 +56,7 @@ export function T10WeekViewNew() {
 
   // Handlers
   const handleWeekChange = (newWeekId: string) => {
-    navigate(`/taskhub/task10/list/${listId}/week/${newWeekId}`, { replace: true });
+    navigate(`/priorities/list/${listId}/week/${newWeekId}`, { replace: true });
     console.log('[T10] Week changed to:', newWeekId);
   };
 
@@ -99,7 +99,7 @@ export function T10WeekViewNew() {
             <button
               type="button"
               className="t10-btn-new"
-              onClick={() => navigate('/taskhub/task10')}
+              onClick={() => navigate('/priorities')}
             >
               Back to Lists
             </button>

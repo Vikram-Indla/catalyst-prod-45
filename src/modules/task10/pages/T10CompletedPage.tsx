@@ -19,7 +19,7 @@ export function T10CompletedPage() {
   });
 
   const handleListClick = (listId: string) => {
-    navigate(`/taskhub/task10/list/${listId}`);
+    navigate(`/priorities/list/${listId}`);
   };
 
   return (
@@ -30,7 +30,7 @@ export function T10CompletedPage() {
           <button
             type="button"
             className="t10-back-btn"
-            onClick={() => navigate('/taskhub/task10')}
+            onClick={() => navigate('/priorities')}
           >
             <ArrowLeft size={16} />
             Back to Lists

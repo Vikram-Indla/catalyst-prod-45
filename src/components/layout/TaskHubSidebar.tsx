@@ -73,9 +73,9 @@ const taskHubSidebarConfig: SidebarConfig = {
         { id: 'task-list', title: 'Task List', path: '/taskhub/task-list', icon: List, exact: true },
         { id: 'timeline', title: 'Task Timeline', path: '/taskhub/timeline', icon: GanttChartSquare, exact: true },
         {
-          id: 'task10',
+          id: 'priorities',
           title: 'Priorities',
-          path: '/taskhub/task10',
+          path: '/priorities',
           icon: Priorities10Icon,
           exact: false,
         },

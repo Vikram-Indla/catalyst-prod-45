@@ -44,7 +44,7 @@ const allNavItems: NavItem[] = [
         </span>
       </span>
     ), 
-    path: '/taskhub/task10', 
+    path: '/priorities', 
     icon: Target 
   },
   { id: 'settings', label: 'Settings', path: '/taskhub/settings', icon: Settings },
