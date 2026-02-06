@@ -122,7 +122,7 @@ export function SidebarBase({
           backfaceVisibility: 'hidden',
         }}
       >
-        {/* Header with collapse toggle — Dark mode compatible */}
+        {/* V10 Header with collapse toggle */}
         <div 
           className={cn(
             "border-b flex-shrink-0",
@@ -131,62 +131,103 @@ export function SidebarBase({
               : "flex flex-col items-center justify-center"
           )}
           style={{ 
-            // Collapsed header needs to fit BOTH the badge + toggle without clipping.
-            height: expanded ? '64px' : '72px',
+            minHeight: '54px',
             borderColor: 'var(--divider)',
-            padding: expanded ? '0 16px' : '6px 0',
+            padding: expanded ? '14px 14px 14px 16px' : '14px 0',
             gap: expanded ? undefined : '4px',
             background: 'transparent',
           }}
         >
-          <div
-            className={cn(
-              "flex items-center gap-2.5",
-              expanded ? "overflow-hidden min-w-0" : "w-full justify-center overflow-visible"
-            )}
-          >
-            {/* Module Badge — 32×32 (smaller than header logo for visual hierarchy) */}
-            <div 
-              className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0"
-              style={{
-                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-                color: '#ffffff',
-                fontSize: '11px',
-                fontWeight: 600,
-                letterSpacing: '0.02em',
-                boxShadow: '0 1px 3px rgba(37, 99, 235, 0.15)',
-              }}
-            >
-              {config.badge}
-            </div>
-            {expanded && (
-              <span 
-                className="text-[14px] font-semibold truncate tracking-tight"
-                style={{ color: 'var(--text-1)' }}
+          {!expanded ? (
+            /* Collapsed: Badge centered + toggle below */
+            <>
+              <div 
+                className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                  color: '#ffffff',
+                  fontSize: '0.62rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.02em',
+                }}
               >
-                {config.label}
-              </span>
-            )}
-          </div>
-          {/* Collapse button — dark mode compatible */}
-          <button
-            onClick={onToggle}
-            className={cn(
-              "flex items-center justify-center rounded-md transition-all flex-shrink-0 border bg-transparent hover:bg-white/5 dark:hover:bg-white/10",
-              expanded ? "w-7 h-7 ml-3" : "w-6 h-6"
-            )}
-            style={{
-              borderColor: 'var(--divider)',
-              color: 'var(--text-3)',
-            }}
-            aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
-          >
-            {expanded ? (
-              <ChevronsLeft size={14} />
-            ) : (
-              <ChevronsRight size={14} />
-            )}
-          </button>
+                {config.badge}
+              </div>
+              <button
+                onClick={onToggle}
+                className="flex items-center justify-center w-[26px] h-[26px] rounded-md transition-all flex-shrink-0"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--text-4, #94a3b8)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--surface-2, #f8fafc)';
+                  e.currentTarget.style.color = 'var(--text-2, #475569)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = 'var(--text-4, #94a3b8)';
+                }}
+                aria-label="Expand sidebar"
+              >
+                <ChevronsRight size={15} />
+              </button>
+            </>
+          ) : (
+            /* Expanded: Badge + Label + Toggle */
+            <>
+              <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
+                {/* V10: Circular badge (borderRadius 50%) — 28×28 */}
+                <div 
+                  className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{
+                    background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                    color: '#ffffff',
+                    fontSize: '0.62rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.02em',
+                  }}
+                >
+                  {config.badge}
+                </div>
+                <span 
+                  className="truncate"
+                  style={{ 
+                    fontFamily: "'Sora', sans-serif",
+                    fontSize: '0.92rem',
+                    fontWeight: 700,
+                    color: 'var(--text-1, #0f172a)',
+                    letterSpacing: '-0.02em',
+                  }}
+                >
+                  {config.label}
+                </span>
+              </div>
+              <button
+                onClick={onToggle}
+                className="flex items-center justify-center w-[26px] h-[26px] rounded-md transition-all flex-shrink-0"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--text-4, #94a3b8)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'var(--surface-2, #f8fafc)';
+                  e.currentTarget.style.color = 'var(--text-2, #475569)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = 'var(--text-4, #94a3b8)';
+                }}
+                aria-label="Collapse sidebar"
+              >
+                <ChevronsLeft size={15} />
+              </button>
+            </>
+          )}
         </div>
 
         {/* Navigation Menu */}
@@ -314,55 +355,69 @@ function renderMenuItem(
   const CustomIcon = iconResolver?.(item.id) || item.icon;
   const starred = isFavorite(item.path);
 
+  // V10: Calculate hover/active states
+  const getBgColor = (isActive: boolean, isHovered: boolean) => {
+    if (isActive) return 'rgba(37, 99, 235, 0.12)'; // ~12% opacity
+    if (isHovered) return 'rgba(37, 99, 235, 0.06)'; // ~6% opacity
+    return 'transparent';
+  };
+
   const menuButton = (
     <button
       onClick={() => handleNavigation(item.path)}
-      className={cn(
-        "group w-full flex items-center rounded-lg border-none cursor-pointer transition-all relative",
-        expanded ? "px-3 justify-start" : "justify-center",
-        active 
-          ? "bg-blue-500/10 dark:bg-blue-500/15 text-blue-600 font-semibold" 
-          : "bg-transparent text-foreground hover:bg-black/5 dark:hover:bg-white/5 font-medium"
-      )}
+      className="group w-full flex items-center rounded-lg border-none cursor-pointer transition-all relative"
       style={{
-        height: '44px',
-        gap: '10px',
+        // V10: 10px vertical padding → ~36px item height
+        height: '36px',
+        padding: expanded ? '0 12px' : '0',
+        gap: '12px', // V10: 12px icon-to-label gap
         marginBottom: '2px',
-        fontSize: '13px',
-        fontFamily: 'inherit',
+        fontSize: '0.84rem',
+        fontWeight: active ? 600 : 500,
+        color: active ? '#2563eb' : 'var(--text-2, #475569)',
+        fontFamily: "'Inter', sans-serif",
         outline: 'none',
+        justifyContent: expanded ? 'flex-start' : 'center',
+        background: active ? 'rgba(37, 99, 235, 0.12)' : 'transparent',
+        lineHeight: 1,
+      }}
+      onMouseEnter={(e) => {
+        if (!active) e.currentTarget.style.background = 'rgba(37, 99, 235, 0.06)';
+        if (!active) e.currentTarget.style.color = 'var(--text-1, #1e293b)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = active ? 'rgba(37, 99, 235, 0.12)' : 'transparent';
+        e.currentTarget.style.color = active ? '#2563eb' : 'var(--text-2, #475569)';
       }}
     >
-      {/* Left Accent Bar — Linear/Notion pattern (3px bar, not full background) */}
-      {active && (
+      {/* V10: Left Accent Bar — 3px, only when expanded and active */}
+      {active && expanded && (
         <span 
           style={{
             position: 'absolute',
             left: 0,
-            top: expanded ? '6px' : '10px',
-            bottom: expanded ? '6px' : '10px',
+            top: '7px',
+            bottom: '7px',
             width: '3px',
-            background: 'var(--nav-accent-bar, #2563eb)',
+            background: '#2563eb',
             borderRadius: '0 2px 2px 0',
-            boxShadow: '1px 0 3px rgba(37, 99, 235, 0.2)',
           }}
         />
       )}
-      {/* Icon container - 18×18 icons */}
+      {/* V10: Icon container - 17×17 icons */}
       <span 
         className="flex items-center justify-center flex-shrink-0"
         style={{ 
-          width: '18px',
-          height: '18px',
+          width: '17px',
+          height: '17px',
         }}
       >
         {CustomIcon && (
           <CustomIcon 
-            className="h-[18px] w-[18px]" 
+            className="h-[17px] w-[17px]" 
             style={{ 
-              /* V9.5: AAA contrast icons — use explicit hex for active */
-              color: active ? '#2563EB' : 'var(--nav-text-secondary, #3F3F46)',
-              strokeWidth: 1.75,
+              color: active ? '#2563eb' : 'var(--text-3, #64748b)',
+              strokeWidth: 1.4,
             }}
           />
         )}
