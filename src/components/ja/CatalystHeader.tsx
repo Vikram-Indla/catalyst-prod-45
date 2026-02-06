@@ -169,67 +169,63 @@ export function CatalystHeader() {
 
   return (
     <>
-      {/* TopNav: 56px fixed height, theme-aware bg, elevation + bottom border for enterprise frame */}
+      {/* TopNav: 52px fixed height per V10 spec, theme-aware bg, elevation + bottom border */}
       <header
         ref={headerRef}
         className="sticky top-0 z-[100] flex items-center"
         style={{
-          // Safe-area aware header height contract
-          height: 'calc(56px + var(--app-safe-top))',
+          // V10: 52px height + safe area
+          height: 'calc(52px + var(--app-safe-top))',
           paddingTop: 'var(--app-safe-top)',
-          paddingLeft: '16px',
-          paddingRight: '16px',
+          paddingLeft: '20px',
+          paddingRight: '20px',
           borderBottom: '1px solid var(--divider)',
-          fontFamily: "var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif)",
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           backgroundColor: 'var(--nav-bg)',
-          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
           // GPU layer promotion to prevent flicker when portals mount
           transform: 'translateZ(0)',
           backfaceVisibility: 'hidden',
         }}
       >
-        {/* ===== LOGO ZONE — Convergence Hub Mark + Bold Wordmark (Commercial SaaS) ===== */}
+        {/* ===== LOGO ZONE — V10: 28px Convergence Hub + Sora 800 "Cata[lyst]" blue split ===== */}
         <a 
           className="flex items-center gap-3 flex-shrink-0 cursor-pointer no-underline rounded-lg transition-colors p-2 -m-2 hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
           style={{ marginRight: '32px' }}
           onClick={() => navigate('/home')}
         >
-          {/* Convergence Hub Logo — 32×32 per commercial spec, theme-aware */}
+          {/* V10: Convergence Hub Logo — 28×28, theme-aware gradient */}
           <svg 
-            className="w-8 h-8 flex-shrink-0" 
+            className="w-7 h-7 flex-shrink-0" 
             viewBox="0 0 100 100" 
             xmlns="http://www.w3.org/2000/svg"
           >
-            <defs>
-              <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#3b82f6"/>
-                <stop offset="100%" stopColor="#1d4ed8"/>
-              </linearGradient>
-            </defs>
             {/* Connection lines */}
-            <line x1="50" y1="50" x2="22" y2="22" stroke="#93c5fd" strokeWidth="5" strokeLinecap="round"/>
-            <line x1="50" y1="50" x2="78" y2="22" stroke="#93c5fd" strokeWidth="5" strokeLinecap="round"/>
-            <line x1="50" y1="50" x2="22" y2="78" stroke="#93c5fd" strokeWidth="5" strokeLinecap="round"/>
-            <line x1="50" y1="50" x2="78" y2="78" stroke="#93c5fd" strokeWidth="5" strokeLinecap="round"/>
+            <line x1="50" y1="50" x2="22" y2="22" stroke="rgba(37,99,235,0.3)" strokeWidth="4" strokeLinecap="round"/>
+            <line x1="50" y1="50" x2="78" y2="22" stroke="rgba(37,99,235,0.3)" strokeWidth="4" strokeLinecap="round"/>
+            <line x1="50" y1="50" x2="22" y2="78" stroke="rgba(37,99,235,0.3)" strokeWidth="4" strokeLinecap="round"/>
+            <line x1="50" y1="50" x2="78" y2="78" stroke="rgba(37,99,235,0.3)" strokeWidth="4" strokeLinecap="round"/>
             {/* Outer nodes */}
-            <circle cx="22" cy="22" r="12" fill="url(#logoGrad)"/>
-            <circle cx="78" cy="22" r="12" fill="url(#logoGrad)"/>
-            <circle cx="22" cy="78" r="12" fill="url(#logoGrad)"/>
-            <circle cx="78" cy="78" r="12" fill="url(#logoGrad)"/>
+            <circle cx="22" cy="22" r="12" fill="#2563eb"/>
+            <circle cx="78" cy="22" r="12" fill="#2563eb"/>
+            <circle cx="22" cy="78" r="12" fill="#2563eb"/>
+            <circle cx="78" cy="78" r="12" fill="#2563eb"/>
             {/* Center hub */}
-            <circle cx="50" cy="50" r="18" fill="url(#logoGrad)"/>
+            <circle cx="50" cy="50" r="18" fill="#2563eb"/>
             <circle cx="50" cy="50" r="9" fill="white"/>
           </svg>
-          {/* Wordmark — BOLD 18px (commercial SaaS spec) */}
+          {/* V10 Wordmark — Sora 800, "Cata[lyst]" blue split */}
           <span 
-            className="text-zinc-950 dark:text-white"
             style={{ 
-              fontSize: '18px', 
-              fontWeight: 700, 
-              letterSpacing: '-0.025em',
+              fontFamily: "'Sora', sans-serif",
+              fontSize: '1.15rem', 
+              fontWeight: 800, 
+              letterSpacing: '-0.03em',
+              lineHeight: 1,
+              color: 'var(--text-1, #0f172a)',
             }}
           >
-            Catalyst
+            Cata<span style={{ color: '#2563eb' }}>lyst</span>
           </span>
         </a>
         
@@ -274,41 +270,30 @@ export function CatalystHeader() {
               // Check if this nav item is active
               const isActive = item.label === activeNavItem;
               
-              // TopNav item styles — COMMERCIAL SAAS (bold contrast, larger targets)
-              // Theme-aware colors using CSS variables
+              // V10 TopNav item styles — Inter 500, 0.84rem, 2px underline for active
               const navButtonStyle: React.CSSProperties = {
-                height: '36px',
+                height: '100%',
                 padding: '0 14px',
-                fontSize: '14px',
+                fontSize: '0.84rem',
                 fontWeight: isActive ? 600 : 500,
-                color: isActive ? '#2563EB' : 'var(--nav-text)',
-                borderRadius: '6px',
+                color: isActive ? '#2563eb' : 'var(--nav-text, #475569)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '4px',
+                gap: '1px',
                 cursor: 'pointer',
-                transition: 'all 0.15s ease',
+                transition: 'color 0.15s ease',
                 border: 'none',
-                background: isActive ? 'var(--nav-active-bg)' : 'transparent',
+                background: 'transparent',
                 position: 'relative' as const,
-                fontFamily: 'inherit',
+                fontFamily: "'Inter', sans-serif",
                 outline: 'none',
+                letterSpacing: '0.005em',
+                borderBottom: isActive ? '2px solid #2563eb' : '2px solid transparent',
+                marginBottom: '-1px',
               };
               
-              // Active underline indicator - 2px blue underline
-              const activeUnderline = isActive ? (
-                <span 
-                  style={{
-                    position: 'absolute',
-                    bottom: '-10px',
-                    left: '14px',
-                    right: '14px',
-                    height: '2px',
-                    background: '#2563EB',
-                    borderRadius: '1px',
-                  }}
-                />
-              ) : null;
+              // V10: No background on active, just 2px underline
+              const activeUnderline = null;
               
               return (
                 <div key={item.label} className="inline-flex items-center relative">

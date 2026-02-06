@@ -171,31 +171,46 @@ export function UnifiedSidebar({
           borderRight: '1px solid var(--divider)',
         }}
       >
-        {/* Header with collapse toggle */}
+        {/* V10 Header with collapse toggle */}
         <div 
-          className="h-[52px] flex items-center justify-between border-b flex-shrink-0"
+          className={cn(
+            "border-b flex-shrink-0",
+            expanded
+              ? "flex items-center justify-between"
+              : "flex flex-col items-center justify-center"
+          )}
           style={{ 
+            minHeight: '54px',
             borderColor: 'var(--divider)',
-            padding: expanded ? '0 12px' : '0',
-            justifyContent: expanded ? 'space-between' : 'center',
+            padding: expanded ? '14px 14px 14px 16px' : '14px 0',
+            gap: expanded ? undefined : '4px',
+            background: 'transparent',
           }}
         >
           <div className="flex items-center gap-2.5 overflow-hidden">
+            {/* V10: Circular badge — 28×28 */}
             <div 
-              className="w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0"
+              className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
               style={{
-                background: 'var(--brand-active)',
-                color: 'var(--text-inverse, #ffffff)',
-                fontSize: '11px',
+                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                color: '#ffffff',
+                fontSize: '0.62rem',
                 fontWeight: 700,
+                letterSpacing: '0.02em',
               }}
             >
               {entity?.name?.substring(0, 2).toUpperCase() || entityLabel.substring(0, 2).toUpperCase()}
             </div>
             {expanded && (
               <span 
-                className="text-sm font-semibold truncate"
-                style={{ color: 'var(--text-1)' }}
+                className="truncate"
+                style={{ 
+                  fontFamily: "'Sora', sans-serif",
+                  fontSize: '0.92rem',
+                  fontWeight: 700,
+                  color: 'var(--text-1, #0f172a)',
+                  letterSpacing: '-0.02em',
+                }}
               >
                 {entity?.name || entityLabel}
               </span>
@@ -204,22 +219,27 @@ export function UnifiedSidebar({
           <button
             type="button"
             onClick={onToggle}
-            className="w-7 h-7 flex items-center justify-center rounded-md transition-colors flex-shrink-0"
-            style={{ color: 'var(--text-tertiary)' }}
+            className="flex items-center justify-center w-[26px] h-[26px] rounded-md transition-all flex-shrink-0"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--text-4, #94a3b8)',
+            }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--nav-hover-bg)';
-              e.currentTarget.style.color = 'var(--text-1)';
+              e.currentTarget.style.background = 'var(--surface-2, #f8fafc)';
+              e.currentTarget.style.color = 'var(--text-2, #475569)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = 'var(--text-tertiary)';
+              e.currentTarget.style.color = 'var(--text-4, #94a3b8)';
             }}
             aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
           >
             {expanded ? (
-              <ChevronsLeft size={16} />
+              <ChevronsLeft size={15} />
             ) : (
-              <ChevronsRight size={16} />
+              <ChevronsRight size={15} />
             )}
           </button>
         </div>
@@ -252,54 +272,60 @@ export function UnifiedSidebar({
                 className="group"
                 style={{
                   width: '100%',
-                  height: '44px', // 44px = h-11
+                  // V10: 36px item height (10px vertical padding)
+                  height: '36px',
                   padding: expanded ? '0 12px' : '0',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '10px',
+                  gap: '12px', // V10: 12px icon-to-label gap
                   borderRadius: '8px',
                   border: 'none',
                   cursor: 'pointer',
-                  transition: 'background 0.15s ease, color 0.15s ease',
+                  transition: 'background 0.12s ease, color 0.12s ease',
                   marginBottom: '2px',
                   position: 'relative',
                   justifyContent: expanded ? 'flex-start' : 'center',
-                  background: active ? 'rgba(37, 99, 235, 0.08)' : 'transparent',
-                  color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground))',
-                  fontWeight: active ? 500 : 400,
-                  fontSize: '13px',
-                  fontFamily: 'inherit',
+                  background: active ? 'rgba(37, 99, 235, 0.12)' : 'transparent',
+                  color: active ? '#2563eb' : 'var(--text-2, #334155)',
+                  fontWeight: active ? 600 : 500,
+                  fontSize: '0.84rem',
+                  fontFamily: "'Inter', sans-serif",
                   outline: 'none',
+                  lineHeight: 1,
                 }}
                 onMouseEnter={(e) => { 
-                  if (!active) e.currentTarget.style.background = 'var(--nav-hover-bg)'; 
+                  if (!active) {
+                    e.currentTarget.style.background = 'rgba(37, 99, 235, 0.06)';
+                    e.currentTarget.style.color = 'var(--text-1, #1e293b)';
+                  }
                 }}
                 onMouseLeave={(e) => { 
-                  e.currentTarget.style.background = active ? 'rgba(37, 99, 235, 0.08)' : 'transparent'; 
+                  e.currentTarget.style.background = active ? 'rgba(37, 99, 235, 0.12)' : 'transparent';
+                  e.currentTarget.style.color = active ? '#2563eb' : 'var(--text-2, #334155)';
                 }}
               >
-                {/* Left indicator bar for active state - 3px */}
-                {active && (
+                {/* V10: Left indicator bar for active state - 3px */}
+                {active && expanded && (
                   <span 
                     style={{
                       position: 'absolute',
                       left: 0,
-                      top: expanded ? '8px' : '12px',
-                      bottom: expanded ? '8px' : '12px',
+                      top: '7px',
+                      bottom: '7px',
                       width: '3px',
-                      background: 'hsl(var(--brand-primary))',
+                      background: '#2563eb',
                       borderRadius: '0 2px 2px 0',
                     }}
                   />
                 )}
-                {/* Icon - 18×18 */}
+                {/* V10: Icon - 17×17 */}
                 <Icon 
                   style={{ 
-                    width: '18px', 
-                    height: '18px', 
+                    width: '17px', 
+                    height: '17px', 
                     flexShrink: 0, 
-                    color: active ? 'hsl(var(--brand-primary))' : 'hsl(var(--foreground) / 0.7)',
-                    strokeWidth: 1.75,
+                    color: active ? '#2563eb' : 'var(--text-3, #64748b)',
+                    strokeWidth: 1.4,
                   }} 
                 />
                 {expanded && (
