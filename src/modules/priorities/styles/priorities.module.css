@@ -158,6 +158,15 @@
   flex-shrink: 0;
 }
 
+.pri-header-10 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--pri-primary);
+  letter-spacing: -1px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
 .pri-header-title {
   font-size: 20px;
   font-weight: 700;
