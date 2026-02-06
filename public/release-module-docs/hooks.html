@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Release Module - Hooks Reference</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #eff6ff;
+      --teal: #0d9488;
+      --teal-light: #f0fdfa;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+      --card: #ffffff;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+      color: white;
+      padding: 2rem;
+    }
+    
+    header a { color: white; opacity: 0.8; text-decoration: none; }
+    header h1 { margin-top: 1rem; font-size: 1.75rem; }
+    
+    nav {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    nav a { color: var(--primary); text-decoration: none; margin-right: 2rem; font-size: 0.875rem; }
+    
+    h2 {
+      font-size: 1.5rem;
+      margin: 2rem 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--primary);
+    }
+    
+    h3 { font-size: 1.125rem; margin: 1.5rem 0 0.75rem; color: var(--primary); }
+    
+    .hook-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    
+    .hook-card header {
+      background: var(--primary-light);
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .hook-card header h4 {
+      color: var(--primary);
+      font-family: monospace;
+      font-size: 1rem;
+    }
+    
+    .hook-card .content { padding: 1.5rem; }
+    
+    .hook-card p { color: var(--text-muted); margin-bottom: 1rem; }
+    
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1.25rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      line-height: 1.7;
+      margin: 1rem 0;
+    }
+    
+    code {
+      font-family: 'Menlo', 'Monaco', monospace;
+    }
+    
+    .inline-code {
+      background: var(--bg);
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      font-size: 0.875em;
+      color: var(--primary);
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .badge-primary { background: var(--primary-light); color: var(--primary); }
+    .badge-teal { background: var(--teal-light); color: var(--teal); }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.875rem;
+    }
+    
+    th, td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    th { background: var(--bg); font-weight: 600; }
+    
+    .file-path {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html">← Back to Overview</a>
+    <h1>Hooks Reference</h1>
+  </header>
+  
+  <nav>
+    <a href="#release-hooks">Release Hooks</a>
+    <a href="#command-center">Command Center</a>
+    <a href="#core-hooks">Core Hooks</a>
+  </nav>
+  
+  <main class="container">
+    <section id="release-hooks">
+      <h2>Release Hooks</h2>
+      <p class="file-path">src/hooks/releases/</p>
+      
+      <div class="hook-card">
+        <header>
+          <h4>useAllReleases</h4>
+          <span class="badge badge-primary">Query</span>
+        </header>
+        <div class="content">
+          <p>Fetches paginated releases with filtering and sorting support.</p>
+          <pre><code>import { useAllReleases } from '@/hooks/releases/useAllReleases';
+
+const { data, isLoading, refetch } = useAllReleases({
+  filter: { 
+    status: ['active', 'uat'], 
+    search: 'mobile' 
+  },
+  sort: { column: 'target_date', direction: 'asc' },
+  page: 0,
+  pageSize: 12,
+});
+
+// Returns
+interface AllReleasesResult {
+  releases: Release[];
+  total: number;
+}</code></pre>
+          <table>
+            <thead>
+              <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>filter</td><td><code class="inline-code">ReleasesFilter</code></td><td>Status array and search text</td></tr>
+              <tr><td>sort</td><td><code class="inline-code">ReleasesSort</code></td><td>Column name and direction</td></tr>
+              <tr><td>page</td><td><code class="inline-code">number</code></td><td>Page index (0-based)</td></tr>
+              <tr><td>pageSize</td><td><code class="inline-code">number</code></td><td>Items per page</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <div class="hook-card">
+        <header>
+          <h4>useReleaseQualityGates</h4>
+          <span class="badge badge-teal">Query</span>
+        </header>
+        <div class="content">
+          <p>Fetches quality gate status and metrics for a specific release.</p>
+          <pre><code>import { useReleaseQualityGates } from '@/hooks/releases/useReleaseQualityGates';
+
+const { data: gates, isLoading } = useReleaseQualityGates(releaseId);
+
+// Returns array of quality gates with current values
+interface QualityGate {
+  id: string;
+  name: string;
+  metric_type: string;
+  threshold_value: number;
+  current_value: number;
+  status: 'passed' | 'warning' | 'failed';
+  is_blocking: boolean;
+}</code></pre>
+        </div>
+      </div>
+      
+      <div class="hook-card">
+        <header>
+          <h4>useReleasesFilter</h4>
+          <span class="badge badge-primary">State</span>
+        </header>
+        <div class="content">
+          <p>Manages filter state with URL synchronization.</p>
+          <pre><code>import { useReleasesFilter } from '@/hooks/releases/useReleasesFilter';
+
+const { filter, setFilter, clearFilters } = useReleasesFilter();
+
+// Update status filter
+setFilter({ status: ['active'] });
+
+// Clear all filters
+clearFilters();</code></pre>
+        </div>
+      </div>
+      
+      <div class="hook-card">
+        <header>
+          <h4>useReleasesSelection</h4>
+          <span class="badge badge-primary">State</span>
+        </header>
+        <div class="content">
+          <p>Manages multi-select state for bulk actions.</p>
+          <pre><code>import { useReleasesSelection } from '@/hooks/releases/useReleasesSelection';
+
+const ids = releases.map(r => r.id);
+const { 
+  selected, 
+  toggle, 
+  toggleAll, 
+  clear, 
+  selectAllState 
+} = useReleasesSelection(ids);
+
+// Toggle single item
+toggle('release-uuid');
+
+// Toggle all items
+toggleAll();
+
+// Clear selection
+clear();
+
+// Check selection state
+console.log(selected.size); // Set<string>
+console.log(selectAllState); // 'none' | 'some' | 'all'</code></pre>
+        </div>
+      </div>
+      
+      <div class="hook-card">
+        <header>
+          <h4>useReleaseReadiness</h4>
+          <span class="badge badge-teal">Query</span>
+        </header>
+        <div class="content">
+          <p>Calculates overall release readiness based on multiple metrics.</p>
+          <pre><code>import { useReleaseReadiness } from '@/hooks/releases/useReleaseReadiness';
+
+const { data: readiness } = useReleaseReadiness(releaseId);
+
+// Returns
+interface ReleaseReadiness {
+  overall: number;        // 0-100
+  testProgress: number;
+  defectStatus: number;
+  qualityGates: number;
+  documentation: number;
+}</code></pre>
+        </div>
+      </div>
+    </section>
+    
+    <section id="command-center">
+      <h2>Command Center Hooks</h2>
+      <p class="file-path">src/modules/command-center/hooks/</p>
+      
+      <div class="hook-card">
+        <header>
+          <h4>useCommandCenterKPIs</h4>
+          <span class="badge badge-teal">Query</span>
+        </header>
+        <div class="content">
+          <p>Fetches real-time KPI metrics with trend data.</p>
+          <pre><code>import { useCommandCenterKPIs } from '@/modules/command-center/hooks';
+
+const { data: kpis, isLoading } = useCommandCenterKPIs();
+
+// Returns array of KPI metrics
+interface KPIMetric {
+  label: string;
+  value: number;
+  formattedValue: string;
+  color: 'primary' | 'teal' | 'warning' | 'danger';
+  trend: {
+    direction: 'up' | 'down' | 'neutral';
+    percentage: number;
+    isPositive: boolean;
+  };
+}</code></pre>
+        </div>
+      </div>
+      
+      <div class="hook-card">
+        <header>
+          <h4>useReleaseHealth</h4>
+          <span class="badge badge-teal">Query</span>
+        </header>
+        <div class="content">
+          <p>Fetches release health metrics sorted by risk.</p>
+          <pre><code>import { useReleaseHealth } from '@/modules/command-center/hooks';
+
+const { data: releases } = useReleaseHealth(5); // top 5
+
+// Returns
+interface ReleaseHealthData {
+  id: string;
+  name: string;
+  version: string;
+  product: string;
+  sprint: string;
+  passed: number;
+  failed: number;
+  blocked: number;
+  passRate: number;
+  healthStatus: 'healthy' | 'at-risk' | 'critical';
+}</code></pre>
+        </div>
+      </div>
+      
+      <div class="hook-card">
+        <header>
+          <h4>useDefectTrends</h4>
+          <span class="badge badge-teal">Query</span>
+        </header>
+        <div class="content">
+          <p>Fetches defect trend data for charts.</p>
+          <pre><code>import { useDefectTrends } from '@/modules/command-center/hooks';
+
+const { data: trends } = useDefectTrends('30d'); // 7d | 30d | 90d
+
+// Returns array for chart rendering
+interface DefectTrendPoint {
+  date: string;
+  opened: number;
+  resolved: number;
+  cumulative: number;
+}</code></pre>
+        </div>
+      </div>
+      
+      <div class="hook-card">
+        <header>
+          <h4>useQualityGates</h4>
+          <span class="badge badge-teal">Query</span>
+        </header>
+        <div class="content">
+          <p>Fetches quality gate status across all active releases.</p>
+          <pre><code>import { useQualityGates } from '@/modules/command-center/hooks';
+
+const { data: gates } = useQualityGates();
+
+// Returns
+interface QualityGate {
+  id: string;
+  name: string;
+  threshold: string;      // e.g., "≥95%"
+  currentValue: string;   // e.g., "97%"
+  status: 'passed' | 'warning' | 'failed';
+}</code></pre>
+        </div>
+      </div>
+      
+      <div class="hook-card">
+        <header>
+          <h4>useTestProgress</h4>
+          <span class="badge badge-teal">Query</span>
+        </header>
+        <div class="content">
+          <p>Fetches test execution progress over time.</p>
+          <pre><code>import { useTestProgress } from '@/modules/command-center/hooks';
+
+const { data: progress } = useTestProgress(6); // weeks
+
+// Returns for stacked bar chart
+interface TestProgressPoint {
+  week: string;
+  passed: number;
+  failed: number;
+  blocked: number;
+  notRun: number;
+}</code></pre>
+        </div>
+      </div>
+      
+      <div class="hook-card">
+        <header>
+          <h4>useTeamPerformance</h4>
+          <span class="badge badge-teal">Query</span>
+        </header>
+        <div class="content">
+          <p>Fetches team member test execution metrics.</p>
+          <pre><code>import { useTeamPerformance } from '@/modules/command-center/hooks';
+
+const { data: team } = useTeamPerformance(5);
+
+// Returns
+interface TeamMemberPerformance {
+  id: string;
+  name: string;
+  initials: string;
+  role: string;
+  testsToday: number;
+  passRate: number;
+  color: 'blue' | 'teal' | 'purple' | 'orange';
+}</code></pre>
+        </div>
+      </div>
+      
+      <div class="hook-card">
+        <header>
+          <h4>useActivities</h4>
+          <span class="badge badge-teal">Query</span>
+        </header>
+        <div class="content">
+          <p>Fetches recent activity feed.</p>
+          <pre><code>import { useActivities } from '@/modules/command-center/hooks';
+
+const { data: activities } = useActivities(10);
+
+// Returns
+interface ActivityItem {
+  id: string;
+  user: string;
+  action: string;
+  subject: string;
+  title: string;
+  time: string;
+  type: 'passed' | 'failed' | 'defect' | 'comment';
+}</code></pre>
+        </div>
+      </div>
+      
+      <div class="hook-card">
+        <header>
+          <h4>useMilestones</h4>
+          <span class="badge badge-teal">Query</span>
+        </header>
+        <div class="content">
+          <p>Fetches upcoming release milestones.</p>
+          <pre><code>import { useMilestones } from '@/modules/command-center/hooks';
+
+const { data: milestones } = useMilestones(4);
+
+// Returns
+interface Milestone {
+  id: string;
+  title: string;
+  related: string;        // e.g., "Release 2.0"
+  dueDate: string;
+  daysRemaining: number;
+  urgency: 'normal' | 'warning' | 'danger';
+}</code></pre>
+        </div>
+      </div>
+    </section>
+    
+    <section id="core-hooks">
+      <h2>Core Release Hook</h2>
+      <p class="file-path">src/hooks/useReleases.ts</p>
+      
+      <div class="hook-card">
+        <header>
+          <h4>useReleases</h4>
+          <span class="badge badge-teal">Query</span>
+        </header>
+        <div class="content">
+          <p>Fetches releases for a specific release vehicle.</p>
+          <pre><code>import { useReleases, Release } from '@/hooks/useReleases';
+
+const { data: releases, isLoading } = useReleases(vehicleId);
+
+// Enabled when vehicleId is truthy
+// Returns Release[]</code></pre>
+        </div>
+      </div>
+      
+      <div class="hook-card">
+        <header>
+          <h4>useCreateRelease</h4>
+          <span class="badge badge-primary">Mutation</span>
+        </header>
+        <div class="content">
+          <p>Creates a new release with automatic cache invalidation.</p>
+          <pre><code>import { useCreateRelease } from '@/hooks/useReleases';
+
+const createRelease = useCreateRelease();
+
+// Create release
+createRelease.mutate({
+  release_vehicle_id: 'vehicle-uuid',
+  name: 'Release 2.0',
+  target_date: '2026-03-01',
+  notes: 'Major feature release',
+});
+
+// With callbacks
+createRelease.mutate(data, {
+  onSuccess: (release) => {
+    console.log('Created:', release.id);
+  },
+  onError: (error) => {
+    console.error(error.message);
+  },
+});</code></pre>
+          <table>
+            <thead>
+              <tr><th>Input Field</th><th>Type</th><th>Required</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>release_vehicle_id</td><td><code class="inline-code">string</code></td><td>Yes</td></tr>
+              <tr><td>name</td><td><code class="inline-code">string</code></td><td>Yes</td></tr>
+              <tr><td>target_date</td><td><code class="inline-code">string</code></td><td>No</td></tr>
+              <tr><td>notes</td><td><code class="inline-code">string</code></td><td>No</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    
+    <section>
+      <h2>Query Key Structure</h2>
+      <pre><code>// Release query keys
+const releaseKeys = {
+  all: ['releases'] as const,
+  forVehicle: (vehicleId: string) => [...releaseKeys.all, 'vehicle', vehicleId],
+};
+
+// Command center query keys
+const commandCenterKeys = {
+  kpis: ['command-center', 'kpis'],
+  health: (limit: number) => ['command-center', 'health', limit],
+  defects: (period: string) => ['command-center', 'defects', period],
+  gates: ['command-center', 'gates'],
+  progress: (weeks: number) => ['command-center', 'progress', weeks],
+  team: (limit: number) => ['command-center', 'team', limit],
+  activities: (limit: number) => ['command-center', 'activities', limit],
+  milestones: (limit: number) => ['command-center', 'milestones', limit],
+};</code></pre>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Release Module - Database Schema</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #eff6ff;
+      --teal: #0d9488;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+      --card: #ffffff;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+      color: white;
+      padding: 2rem;
+    }
+    
+    header a { color: white; opacity: 0.8; text-decoration: none; }
+    header h1 { margin-top: 1rem; font-size: 1.75rem; }
+    
+    nav {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    nav a { color: var(--primary); text-decoration: none; margin-right: 2rem; font-size: 0.875rem; }
+    
+    h2 {
+      font-size: 1.5rem;
+      margin: 2rem 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--primary);
+    }
+    
+    .table-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+    
+    .table-card header {
+      background: var(--primary-light);
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .table-card header h3 {
+      color: var(--primary);
+      font-size: 1.125rem;
+      margin: 0;
+    }
+    
+    .table-card header p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+    
+    table { width: 100%; border-collapse: collapse; }
+    
+    th, td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.875rem;
+    }
+    
+    th { background: var(--bg); font-weight: 600; }
+    
+    .type { font-family: monospace; color: var(--teal); font-size: 0.8rem; }
+    .pk { background: #fef3c7; color: #92400e; padding: 0.125rem 0.5rem; border-radius: 4px; font-size: 0.75rem; }
+    .fk { background: var(--primary-light); color: var(--primary); padding: 0.125rem 0.5rem; border-radius: 4px; font-size: 0.75rem; }
+    .nullable { color: var(--text-muted); font-size: 0.75rem; }
+    
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1.5rem;
+      border-radius: 0 0 12px 12px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      line-height: 1.7;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html">← Back to Overview</a>
+    <h1>Database Schema</h1>
+  </header>
+  
+  <nav>
+    <a href="#releases">releases</a>
+    <a href="#test_cases">test_cases</a>
+    <a href="#tm_test_cycles">tm_test_cycles</a>
+    <a href="#tm_test_executions">tm_test_executions</a>
+    <a href="#defects">defects</a>
+    <a href="#quality_gates">quality_gates</a>
+    <a href="#supporting">Supporting Tables</a>
+  </nav>
+  
+  <main class="container">
+    <section id="releases">
+      <h2>releases</h2>
+      <div class="table-card">
+        <header>
+          <h3>releases</h3>
+          <p>Core release entity tracking software releases</p>
+        </header>
+        <table>
+          <thead>
+            <tr>
+              <th>Column</th>
+              <th>Type</th>
+              <th>Constraints</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>id</td><td class="type">UUID</td><td><span class="pk">PK</span></td><td>Primary key</td></tr>
+            <tr><td>name</td><td class="type">TEXT</td><td>NOT NULL</td><td>Release name</td></tr>
+            <tr><td>version</td><td class="type">TEXT</td><td>DEFAULT 'v1.0'</td><td>Version identifier</td></tr>
+            <tr><td>description</td><td class="type">TEXT</td><td class="nullable">nullable</td><td>Release description</td></tr>
+            <tr><td>status</td><td class="type">TEXT</td><td>DEFAULT 'planned'</td><td>planned|active|uat|shipped|cancelled</td></tr>
+            <tr><td>target_date</td><td class="type">TIMESTAMPTZ</td><td class="nullable">nullable</td><td>Target release date</td></tr>
+            <tr><td>release_date</td><td class="type">TIMESTAMPTZ</td><td class="nullable">nullable</td><td>Actual release date</td></tr>
+            <tr><td>release_vehicle_id</td><td class="type">UUID</td><td><span class="fk">FK</span></td><td>→ release_vehicles</td></tr>
+            <tr><td>owner_id</td><td class="type">UUID</td><td><span class="fk">FK</span></td><td>→ profiles</td></tr>
+            <tr><td>readiness_pct</td><td class="type">NUMERIC(5,2)</td><td class="nullable">nullable</td><td>Readiness percentage</td></tr>
+            <tr><td>notes</td><td class="type">TEXT</td><td class="nullable">nullable</td><td>Additional notes</td></tr>
+            <tr><td>created_at</td><td class="type">TIMESTAMPTZ</td><td>DEFAULT now()</td><td>Created timestamp</td></tr>
+            <tr><td>updated_at</td><td class="type">TIMESTAMPTZ</td><td>DEFAULT now()</td><td>Updated timestamp</td></tr>
+          </tbody>
+        </table>
+        <pre>CREATE TABLE releases (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  version TEXT DEFAULT 'v1.0',
+  description TEXT,
+  status TEXT DEFAULT 'planned',
+  target_date TIMESTAMP WITH TIME ZONE,
+  release_date TIMESTAMP WITH TIME ZONE,
+  release_vehicle_id UUID REFERENCES release_vehicles(id),
+  owner_id UUID REFERENCES profiles(id),
+  readiness_pct NUMERIC(5,2),
+  notes TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);</pre>
+      </div>
+    </section>
+    
+    <section id="test_cases">
+      <h2>test_cases</h2>
+      <div class="table-card">
+        <header>
+          <h3>test_cases</h3>
+          <p>Test case definitions with steps and metadata</p>
+        </header>
+        <table>
+          <thead>
+            <tr>
+              <th>Column</th>
+              <th>Type</th>
+              <th>Constraints</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>id</td><td class="type">UUID</td><td><span class="pk">PK</span></td><td>Primary key</td></tr>
+            <tr><td>title</td><td class="type">TEXT</td><td>NOT NULL</td><td>Test case title</td></tr>
+            <tr><td>description</td><td class="type">TEXT</td><td class="nullable">nullable</td><td>Test description</td></tr>
+            <tr><td>preconditions</td><td class="type">TEXT</td><td class="nullable">nullable</td><td>Pre-test conditions</td></tr>
+            <tr><td>priority</td><td class="type">TEXT</td><td>DEFAULT 'medium'</td><td>low|medium|high|critical</td></tr>
+            <tr><td>status</td><td class="type">TEXT</td><td>DEFAULT 'draft'</td><td>draft|approved|deprecated</td></tr>
+            <tr><td>type</td><td class="type">TEXT</td><td>DEFAULT 'manual'</td><td>manual|automated|hybrid</td></tr>
+            <tr><td>folder_id</td><td class="type">UUID</td><td><span class="fk">FK</span></td><td>→ test_folders</td></tr>
+            <tr><td>project_id</td><td class="type">UUID</td><td><span class="fk">FK</span></td><td>→ projects</td></tr>
+            <tr><td>created_by</td><td class="type">UUID</td><td><span class="fk">FK</span></td><td>→ profiles</td></tr>
+            <tr><td>assignee_id</td><td class="type">UUID</td><td><span class="fk">FK</span></td><td>→ profiles</td></tr>
+            <tr><td>estimated_time</td><td class="type">INTEGER</td><td class="nullable">nullable</td><td>Est. minutes</td></tr>
+            <tr><td>tags</td><td class="type">TEXT[]</td><td class="nullable">nullable</td><td>Tag array</td></tr>
+            <tr><td>created_at</td><td class="type">TIMESTAMPTZ</td><td>DEFAULT now()</td><td>Created timestamp</td></tr>
+            <tr><td>updated_at</td><td class="type">TIMESTAMPTZ</td><td>DEFAULT now()</td><td>Updated timestamp</td></tr>
+          </tbody>
+        </table>
+        <pre>CREATE TABLE test_cases (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  description TEXT,
+  preconditions TEXT,
+  priority TEXT DEFAULT 'medium',
+  status TEXT DEFAULT 'draft',
+  type TEXT DEFAULT 'manual',
+  folder_id UUID REFERENCES test_folders(id),
+  project_id UUID REFERENCES projects(id),
+  created_by UUID REFERENCES profiles(id),
+  assignee_id UUID REFERENCES profiles(id),
+  estimated_time INTEGER,
+  tags TEXT[],
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);</pre>
+      </div>
+    </section>
+    
+    <section id="tm_test_cycles">
+      <h2>tm_test_cycles</h2>
+      <div class="table-card">
+        <header>
+          <h3>tm_test_cycles</h3>
+          <p>Test execution cycles grouping test runs</p>
+        </header>
+        <table>
+          <thead>
+            <tr>
+              <th>Column</th>
+              <th>Type</th>
+              <th>Constraints</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>id</td><td class="type">UUID</td><td><span class="pk">PK</span></td><td>Primary key</td></tr>
+            <tr><td>name</td><td class="type">TEXT</td><td>NOT NULL</td><td>Cycle name</td></tr>
+            <tr><td>description</td><td class="type">TEXT</td><td class="nullable">nullable</td><td>Cycle description</td></tr>
+            <tr><td>status</td><td class="type">TEXT</td><td>DEFAULT 'not_started'</td><td>not_started|in_progress|completed</td></tr>
+            <tr><td>release_id</td><td class="type">UUID</td><td><span class="fk">FK</span></td><td>→ releases</td></tr>
+            <tr><td>project_id</td><td class="type">UUID</td><td><span class="fk">FK</span></td><td>→ projects</td></tr>
+            <tr><td>start_date</td><td class="type">TIMESTAMPTZ</td><td class="nullable">nullable</td><td>Start date</td></tr>
+            <tr><td>end_date</td><td class="type">TIMESTAMPTZ</td><td class="nullable">nullable</td><td>End date</td></tr>
+            <tr><td>environment</td><td class="type">TEXT</td><td class="nullable">nullable</td><td>Test environment</td></tr>
+            <tr><td>build_version</td><td class="type">TEXT</td><td class="nullable">nullable</td><td>Build version</td></tr>
+            <tr><td>owner_id</td><td class="type">UUID</td><td><span class="fk">FK</span></td><td>→ profiles</td></tr>
+          </tbody>
+        </table>
+        <pre>CREATE TABLE tm_test_cycles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  description TEXT,
+  status TEXT DEFAULT 'not_started',
+  release_id UUID REFERENCES releases(id),
+  project_id UUID REFERENCES projects(id),
+  start_date TIMESTAMP WITH TIME ZONE,
+  end_date TIMESTAMP WITH TIME ZONE,
+  planned_execution_date TIMESTAMP WITH TIME ZONE,
+  environment TEXT,
+  build_version TEXT,
+  owner_id UUID REFERENCES profiles(id),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);</pre>
+      </div>
+    </section>
+    
+    <section id="tm_test_executions">
+      <h2>tm_test_executions</h2>
+      <div class="table-card">
+        <header>
+          <h3>tm_test_executions</h3>
+          <p>Individual test execution records</p>
+        </header>
+        <table>
+          <thead>
+            <tr>
+              <th>Column</th>
+              <th>Type</th>
+              <th>Constraints</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>id</td><td class="type">UUID</td><td><span class="pk">PK</span></td><td>Primary key</td></tr>
+            <tr><td>test_case_id</td><td class="type">UUID</td><td><span class="fk">FK</span> NOT NULL</td><td>→ test_cases</td></tr>
+            <tr><td>cycle_id</td><td class="type">UUID</td><td><span class="fk">FK</span> NOT NULL</td><td>→ tm_test_cycles</td></tr>
+            <tr><td>status</td><td class="type">TEXT</td><td>DEFAULT 'not_run'</td><td>not_run|passed|failed|blocked|skipped</td></tr>
+            <tr><td>executed_by</td><td class="type">UUID</td><td><span class="fk">FK</span></td><td>→ profiles</td></tr>
+            <tr><td>executed_at</td><td class="type">TIMESTAMPTZ</td><td class="nullable">nullable</td><td>Execution timestamp</td></tr>
+            <tr><td>duration_seconds</td><td class="type">INTEGER</td><td class="nullable">nullable</td><td>Execution duration</td></tr>
+            <tr><td>notes</td><td class="type">TEXT</td><td class="nullable">nullable</td><td>Execution notes</td></tr>
+            <tr><td>actual_result</td><td class="type">TEXT</td><td class="nullable">nullable</td><td>Actual result observed</td></tr>
+            <tr><td>defects_found</td><td class="type">TEXT[]</td><td class="nullable">nullable</td><td>Linked defect IDs</td></tr>
+          </tbody>
+        </table>
+        <pre>CREATE TABLE tm_test_executions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  test_case_id UUID REFERENCES test_cases(id) NOT NULL,
+  cycle_id UUID REFERENCES tm_test_cycles(id) NOT NULL,
+  status TEXT DEFAULT 'not_run',
+  executed_by UUID REFERENCES profiles(id),
+  executed_at TIMESTAMP WITH TIME ZONE,
+  duration_seconds INTEGER,
+  notes TEXT,
+  actual_result TEXT,
+  defects_found TEXT[],
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);</pre>
+      </div>
+    </section>
+    
+    <section id="defects">
+      <h2>defects</h2>
+      <div class="table-card">
+        <header>
+          <h3>defects</h3>
+          <p>Defect/bug tracking with full workflow</p>
+        </header>
+        <table>
+          <thead>
+            <tr>
+              <th>Column</th>
+              <th>Type</th>
+              <th>Constraints</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>id</td><td class="type">UUID</td><td><span class="pk">PK</span></td><td>Primary key</td></tr>
+            <tr><td>defect_id</td><td class="type">TEXT</td><td>UNIQUE NOT NULL</td><td>Display ID (DEF-001)</td></tr>
+            <tr><td>defect_key</td><td class="type">TEXT</td><td class="nullable">nullable</td><td>External key</td></tr>
+            <tr><td>title</td><td class="type">TEXT</td><td>NOT NULL</td><td>Defect title</td></tr>
+            <tr><td>description</td><td class="type">TEXT</td><td class="nullable">nullable</td><td>Detailed description</td></tr>
+            <tr><td>severity</td><td class="type">TEXT</td><td>NOT NULL</td><td>blocker|critical|major|minor|trivial</td></tr>
+            <tr><td>priority</td><td class="type">TEXT</td><td>NOT NULL</td><td>highest|high|medium|low|lowest</td></tr>
+            <tr><td>status</td><td class="type">TEXT</td><td>DEFAULT 'open'</td><td>open|in_progress|resolved|closed</td></tr>
+            <tr><td>workflow_status</td><td class="type">TEXT</td><td>DEFAULT 'new'</td><td>Workflow state</td></tr>
+            <tr><td>environment</td><td class="type">TEXT</td><td class="nullable">nullable</td><td>Environment found</td></tr>
+            <tr><td>steps_to_reproduce</td><td class="type">JSONB</td><td class="nullable">nullable</td><td>Reproduction steps</td></tr>
+            <tr><td>expected_result</td><td class="type">TEXT</td><td>NOT NULL</td><td>Expected behavior</td></tr>
+            <tr><td>actual_result</td><td class="type">TEXT</td><td>NOT NULL</td><td>Actual behavior</td></tr>
+            <tr><td>assignee_id</td><td class="type">UUID</td><td><span class="fk">FK</span></td><td>→ profiles</td></tr>
+            <tr><td>reporter_id</td><td class="type">UUID</td><td><span class="fk">FK</span></td><td>→ profiles</td></tr>
+            <tr><td>target_release_id</td><td class="type">UUID</td><td><span class="fk">FK</span></td><td>→ releases</td></tr>
+            <tr><td>test_case_id</td><td class="type">UUID</td><td><span class="fk">FK</span></td><td>→ test_cases</td></tr>
+            <tr><td>resolution</td><td class="type">TEXT</td><td class="nullable">nullable</td><td>Resolution description</td></tr>
+            <tr><td>root_cause</td><td class="type">TEXT</td><td class="nullable">nullable</td><td>Root cause analysis</td></tr>
+            <tr><td>tags</td><td class="type">TEXT[]</td><td class="nullable">nullable</td><td>Tag array</td></tr>
+          </tbody>
+        </table>
+        <pre>CREATE TABLE defects (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  defect_id TEXT NOT NULL UNIQUE,
+  defect_key TEXT,
+  title TEXT NOT NULL,
+  description TEXT,
+  severity TEXT NOT NULL,
+  priority TEXT NOT NULL,
+  status TEXT DEFAULT 'open',
+  workflow_status TEXT DEFAULT 'new',
+  environment TEXT,
+  steps_to_reproduce JSONB,
+  expected_result TEXT NOT NULL,
+  actual_result TEXT NOT NULL,
+  assignee_id UUID REFERENCES profiles(id),
+  reporter_id UUID REFERENCES profiles(id),
+  project_id UUID REFERENCES projects(id),
+  target_release_id UUID REFERENCES releases(id),
+  test_case_id UUID REFERENCES test_cases(id),
+  resolved_at TIMESTAMP WITH TIME ZONE,
+  resolved_by UUID REFERENCES profiles(id),
+  resolution TEXT,
+  root_cause TEXT,
+  tags TEXT[],
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);</pre>
+      </div>
+    </section>
+    
+    <section id="quality_gates">
+      <h2>quality_gates</h2>
+      <div class="table-card">
+        <header>
+          <h3>quality_gates</h3>
+          <p>Quality threshold definitions for release approval</p>
+        </header>
+        <table>
+          <thead>
+            <tr>
+              <th>Column</th>
+              <th>Type</th>
+              <th>Constraints</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>id</td><td class="type">UUID</td><td><span class="pk">PK</span></td><td>Primary key</td></tr>
+            <tr><td>name</td><td class="type">TEXT</td><td>NOT NULL</td><td>Gate name</td></tr>
+            <tr><td>description</td><td class="type">TEXT</td><td class="nullable">nullable</td><td>Gate description</td></tr>
+            <tr><td>metric_type</td><td class="type">TEXT</td><td>NOT NULL</td><td>pass_rate|coverage|defects|performance</td></tr>
+            <tr><td>threshold_value</td><td class="type">NUMERIC</td><td>NOT NULL</td><td>Threshold number</td></tr>
+            <tr><td>threshold_operator</td><td class="type">TEXT</td><td>DEFAULT '>='</td><td>Comparison operator</td></tr>
+            <tr><td>is_blocking</td><td class="type">BOOLEAN</td><td>DEFAULT false</td><td>Blocks release if failed</td></tr>
+            <tr><td>release_id</td><td class="type">UUID</td><td><span class="fk">FK</span></td><td>→ releases</td></tr>
+            <tr><td>project_id</td><td class="type">UUID</td><td><span class="fk">FK</span></td><td>→ projects</td></tr>
+          </tbody>
+        </table>
+        <pre>CREATE TABLE quality_gates (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  description TEXT,
+  metric_type TEXT NOT NULL,
+  threshold_value NUMERIC NOT NULL,
+  threshold_operator TEXT DEFAULT '>=',
+  is_blocking BOOLEAN DEFAULT false,
+  release_id UUID REFERENCES releases(id),
+  project_id UUID REFERENCES projects(id),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);</pre>
+      </div>
+    </section>
+    
+    <section id="supporting">
+      <h2>Supporting Tables</h2>
+      <table style="background: white; border: 1px solid var(--border); border-radius: 8px;">
+        <thead>
+          <tr>
+            <th>Table</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>test_steps</code></td><td>Test case steps with expected results</td></tr>
+          <tr><td><code>test_folders</code></td><td>Hierarchical test organization</td></tr>
+          <tr><td><code>tm_test_plans</code></td><td>Test plan definitions</td></tr>
+          <tr><td><code>tm_test_plan_cases</code></td><td>Test plan to test case mapping</td></tr>
+          <tr><td><code>tm_cycle_templates</code></td><td>Reusable cycle templates</td></tr>
+          <tr><td><code>defect_attachments</code></td><td>Defect file attachments</td></tr>
+          <tr><td><code>defect_comments</code></td><td>Defect comments/discussion</td></tr>
+          <tr><td><code>defect_history</code></td><td>Defect change audit log</td></tr>
+          <tr><td><code>daily_execution_stats</code></td><td>Aggregated daily statistics</td></tr>
+          <tr><td><code>incident_committees</code></td><td>CAP committee definitions</td></tr>
+          <tr><td><code>committee_members</code></td><td>Committee member assignments</td></tr>
+          <tr><td><code>committee_votes</code></td><td>Committee voting records</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</body>
+</html>

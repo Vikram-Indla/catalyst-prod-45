@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Release Module - Route Details</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #eff6ff;
+      --teal: #0d9488;
+      --teal-light: #f0fdfa;
+      --warning: #d97706;
+      --warning-light: #fef3c7;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+      --card: #ffffff;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+      color: white;
+      padding: 2rem;
+    }
+    
+    header h1 { font-size: 1.75rem; font-weight: 700; }
+    header a { color: white; opacity: 0.8; text-decoration: none; }
+    header a:hover { opacity: 1; }
+    
+    nav {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    nav a {
+      color: var(--primary);
+      text-decoration: none;
+      margin-right: 2rem;
+    }
+    
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 2rem 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--primary);
+    }
+    
+    .route-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .route-card h3 {
+      font-size: 1.125rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .route-card code {
+      background: var(--bg);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.875rem;
+    }
+    
+    .route-card p { color: var(--text-muted); margin-top: 0.5rem; }
+    
+    .route-card .meta {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .badge-primary { background: var(--primary-light); color: var(--primary); }
+    .badge-teal { background: var(--teal-light); color: var(--teal); }
+    .badge-warning { background: var(--warning-light); color: var(--warning); }
+    
+    .file-path {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: var(--bg);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html">← Back to Overview</a>
+    <h1 style="margin-top: 1rem;">Route Details</h1>
+  </header>
+  
+  <nav>
+    <a href="#releases">Releases Routes</a>
+    <a href="#incidents">Incident Routes</a>
+    <a href="#legacy">Legacy Redirects</a>
+  </nav>
+  
+  <main class="container">
+    <section id="releases">
+      <h2>Releases Routes <code>/releases/*</code></h2>
+      
+      <div class="route-card">
+        <h3>📊 Command Center</h3>
+        <code>/releases/command-center</code>
+        <p>Executive dashboard with real-time KPIs, release health metrics, defect trends, quality gates, and team performance.</p>
+        <div class="meta">
+          <span class="badge badge-teal">Auto-refresh 2min</span>
+          <span class="badge badge-primary">Export PDF/CSV</span>
+          <span class="file-path">src/pages/releases/CommandCenterPage.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>📋 All Releases</h3>
+        <code>/releases/all</code>
+        <p>Portfolio-wide release management with cards, table, and timeline view modes. Supports bulk actions.</p>
+        <div class="meta">
+          <span class="badge badge-primary">Cards View</span>
+          <span class="badge badge-primary">Table View</span>
+          <span class="badge badge-primary">Timeline View</span>
+          <span class="file-path">src/pages/releases/AllReleasesPage.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>📅 Calendar</h3>
+        <code>/releases/calendar</code>
+        <p>Visual calendar timeline showing release schedules with drag-and-drop support.</p>
+        <div class="meta">
+          <span class="badge badge-teal">AI Insights</span>
+          <span class="file-path">src/pages/releases/CalendarPage.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>🔄 Compare</h3>
+        <code>/releases/compare</code>
+        <p>Side-by-side release comparison tool for metrics and status analysis.</p>
+        <div class="meta">
+          <span class="file-path">src/pages/releases/ComparePage.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>👤 My Test Scope</h3>
+        <code>/releases/my-scope</code>
+        <p>Personal dashboard showing assigned test cases and execution status.</p>
+        <div class="meta">
+          <span class="badge badge-primary">Personal View</span>
+          <span class="file-path">src/pages/releases/MyTestScopePage.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>📝 Test Plans</h3>
+        <code>/releases/test-plans</code><br>
+        <code>/releases/test-plans/:planId</code>
+        <p>Test plan management with hierarchical case organization and execution tracking.</p>
+        <div class="meta">
+          <span class="badge badge-teal">Lazy Loaded</span>
+          <span class="file-path">src/pages/releases/TestPlansPage.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>🧪 Test Cases</h3>
+        <code>/releases/test-cases</code><br>
+        <code>/releases/test-cases/:id</code>
+        <p>Test case library with folder organization, versioning, and step management.</p>
+        <div class="meta">
+          <span class="badge badge-primary">Library View</span>
+          <span class="file-path">src/pages/releases/TestCasesPage.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>🔄 Test Cycles</h3>
+        <code>/releases/test-cycles</code><br>
+        <code>/releases/test-cycles/:cycleId</code>
+        <p>Test cycle management with progress tracking and execution assignment.</p>
+        <div class="meta">
+          <span class="badge badge-teal">Cycle Command Center</span>
+          <span class="file-path">src/pages/releases/TestCyclesPage.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>📋 Templates</h3>
+        <code>/releases/templates</code>
+        <p>Reusable cycle templates for standardized test execution.</p>
+        <div class="meta">
+          <span class="file-path">src/pages/releases/CycleTemplatesPage.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>👥 Workload Dashboard</h3>
+        <code>/releases/workload</code>
+        <p>Team workload visualization and assignment balancing.</p>
+        <div class="meta">
+          <span class="badge badge-teal">Lazy Loaded</span>
+          <span class="file-path">src/pages/WorkloadDashboard.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>▶️ Test Execution</h3>
+        <code>/releases/execution</code><br>
+        <code>/releases/execution/:cycleId/:testCaseId</code><br>
+        <code>/releases/execute/:cycleId/:testCaseId</code>
+        <p>Test execution interface with step-by-step recording and defect logging.</p>
+        <div class="meta">
+          <span class="badge badge-warning">Focus Mode</span>
+          <span class="badge badge-primary">Protected Route</span>
+          <span class="file-path">src/features/test-execution/</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>🤖 Ask AI</h3>
+        <code>/releases/ask-ai</code>
+        <p>AI-powered test assistance for case generation and analysis.</p>
+        <div class="meta">
+          <span class="badge badge-teal">AI Powered</span>
+          <span class="file-path">src/features/ask-ai/AskAIPage.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>📊 Coverage Reports</h3>
+        <code>/releases/coverage</code>
+        <p>Test coverage analysis with requirement mapping.</p>
+        <div class="meta">
+          <span class="file-path">src/pages/releases/CoverageReportsPage.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>✅ Quality Gates</h3>
+        <code>/releases/quality-gates</code>
+        <p>Configurable quality thresholds with pass/fail tracking.</p>
+        <div class="meta">
+          <span class="badge badge-warning">Blocking Gates</span>
+          <span class="file-path">src/pages/releases/QualityGatesPage.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>🔗 RTM</h3>
+        <code>/releases/rtm</code>
+        <p>Requirements Traceability Matrix linking requirements to test cases.</p>
+        <div class="meta">
+          <span class="badge badge-teal">Lazy Loaded</span>
+          <span class="file-path">src/features/rtm/RTMPage.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>🐛 Defects</h3>
+        <code>/releases/defects</code><br>
+        <code>/releases/defects/:id</code>
+        <p>Defect management with Kanban and table views, workflow automation.</p>
+        <div class="meta">
+          <span class="badge badge-danger">SLA Tracking</span>
+          <span class="badge badge-primary">Kanban View</span>
+          <span class="file-path">src/pages/releases/DefectsPage.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>📈 Release Dashboard</h3>
+        <code>/releases/:releaseId</code>
+        <p>Individual release dashboard with metrics, signoffs, and status tracking.</p>
+        <div class="meta">
+          <span class="badge badge-teal">V5 Dashboard</span>
+          <span class="file-path">src/pages/releases/ReleaseDashboardV5Page.tsx</span>
+        </div>
+      </div>
+    </section>
+    
+    <section id="incidents">
+      <h2>Incident Routes <code>/release/*</code></h2>
+      
+      <div class="route-card">
+        <h3>🚨 Incidents List</h3>
+        <code>/release/incidents</code>
+        <p>Incident room list showing all active and resolved incidents.</p>
+        <div class="meta">
+          <span class="file-path">src/pages/release/IncidentRoomList.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>📊 Incidents Dashboard</h3>
+        <code>/release/incidents/dashboard</code>
+        <p>Incident metrics and status overview dashboard.</p>
+        <div class="meta">
+          <span class="file-path">src/pages/release/IncidentDashboardPage.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>📈 Analytics</h3>
+        <code>/release/incidents/analytics</code>
+        <p>Incident analytics with trend analysis and MTTR metrics.</p>
+        <div class="meta">
+          <span class="badge badge-teal">Lazy Loaded</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>🎯 Kanban</h3>
+        <code>/release/incidents/kanban</code>
+        <p>Kanban board view for incident workflow management.</p>
+        <div class="meta">
+          <span class="badge badge-teal">Lazy Loaded</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>➕ Create Incident</h3>
+        <code>/release/incidents/create</code>
+        <p>New incident creation form with severity classification.</p>
+        <div class="meta">
+          <span class="file-path">src/pages/release/CreateIncidentPage.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>📄 Incident Detail</h3>
+        <code>/release/incidents/:incidentId</code>
+        <p>Incident room detail with timeline, notes, and resolution tracking.</p>
+        <div class="meta">
+          <span class="file-path">src/pages/release/IncidentRoomDetail.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>⚡ Command Center</h3>
+        <code>/release/incident-command-center</code>
+        <p>Real-time incident command center for major incidents.</p>
+        <div class="meta">
+          <span class="badge badge-danger">Major Incidents</span>
+          <span class="file-path">src/pages/release/IncidentCommandCenter.tsx</span>
+        </div>
+      </div>
+      
+      <div class="route-card">
+        <h3>👥 Committee Queue</h3>
+        <code>/release/committee-queue</code>
+        <p>CAP committee approval queue for major incident reviews.</p>
+        <div class="meta">
+          <span class="badge badge-warning">SEV1 Incidents</span>
+          <span class="file-path">src/pages/release/CAPCommitteeQueuePage.tsx</span>
+        </div>
+      </div>
+    </section>
+    
+    <section id="legacy">
+      <h2>Legacy Redirects</h2>
+      
+      <div class="route-card">
+        <h3>↪️ Incident Room Redirect</h3>
+        <code>/release/incident-room</code> → <code>/release/incidents</code>
+        <p>Legacy path redirect for backwards compatibility.</p>
+      </div>
+      
+      <div class="route-card">
+        <h3>↪️ Incident Reports Redirect</h3>
+        <code>/release/incident-reports</code> → <code>/release/incidents/reports</code>
+        <p>Legacy path redirect for backwards compatibility.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

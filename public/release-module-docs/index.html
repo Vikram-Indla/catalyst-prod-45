@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Release Module - Complete Documentation</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #eff6ff;
+      --teal: #0d9488;
+      --teal-light: #f0fdfa;
+      --warning: #d97706;
+      --warning-light: #fef3c7;
+      --danger: #ef4444;
+      --danger-light: #fef2f2;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+      --card: #ffffff;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%);
+      color: white;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    
+    header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; }
+    header p { opacity: 0.9; font-size: 1.1rem; }
+    
+    nav {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+    
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+    
+    nav a:hover { color: var(--primary); }
+    
+    section { padding: 3rem 0; }
+    
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 0.5rem;
+    }
+    
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 1.5rem 0 1rem;
+      color: var(--text);
+    }
+    
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.875rem;
+    }
+    
+    th, td {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    th {
+      background: var(--bg);
+      font-weight: 600;
+      color: var(--text);
+    }
+    
+    tr:hover { background: var(--bg); }
+    
+    code {
+      background: var(--bg);
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      font-family: 'Menlo', 'Monaco', monospace;
+      font-size: 0.875em;
+      color: var(--primary);
+    }
+    
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1.5rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1rem 0;
+      font-size: 0.875rem;
+      line-height: 1.7;
+    }
+    
+    pre code { background: none; color: inherit; padding: 0; }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .badge-primary { background: var(--primary-light); color: var(--primary); }
+    .badge-teal { background: var(--teal-light); color: var(--teal); }
+    .badge-warning { background: var(--warning-light); color: var(--warning); }
+    .badge-danger { background: var(--danger-light); color: var(--danger); }
+    
+    .route-list { list-style: none; }
+    .route-list li {
+      padding: 0.75rem 1rem;
+      border-left: 3px solid var(--border);
+      margin-bottom: 0.5rem;
+      background: var(--card);
+      transition: border-color 0.2s;
+    }
+    .route-list li:hover { border-left-color: var(--primary); }
+    .route-list code { font-weight: 600; }
+    .route-list span { color: var(--text-muted); margin-left: 0.5rem; }
+    
+    .toc { columns: 2; column-gap: 2rem; }
+    .toc a { display: block; padding: 0.5rem 0; color: var(--primary); text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+    
+    footer {
+      background: var(--text);
+      color: white;
+      text-align: center;
+      padding: 2rem;
+      margin-top: 3rem;
+    }
+    
+    @media (max-width: 768px) {
+      .toc { columns: 1; }
+      nav ul { gap: 1rem; }
+      header h1 { font-size: 1.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Release & Test Management Module</h1>
+    <p>Complete Technical Documentation • Version 5.0</p>
+  </header>
+  
+  <nav>
+    <ul>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#routes">Routes</a></li>
+      <li><a href="#database">Database</a></li>
+      <li><a href="#hooks">Hooks</a></li>
+      <li><a href="#components">Components</a></li>
+      <li><a href="#design">Design System</a></li>
+      <li><a href="routes.html">Route Details →</a></li>
+      <li><a href="database.html">Database Schema →</a></li>
+      <li><a href="hooks.html">Hooks Reference →</a></li>
+    </ul>
+  </nav>
+  
+  <main class="container">
+    <section id="overview">
+      <h2>Overview</h2>
+      <div class="card-grid">
+        <div class="card">
+          <h3>🎯 Command Center</h3>
+          <p>Executive dashboard with KPIs, health metrics, and real-time data visualization.</p>
+          <p style="margin-top: 0.5rem;"><span class="badge badge-primary">Auto-refresh 2min</span></p>
+        </div>
+        <div class="card">
+          <h3>📦 All Releases</h3>
+          <p>Portfolio-wide release management with cards, table, and timeline views.</p>
+          <p style="margin-top: 0.5rem;"><span class="badge badge-teal">Bulk actions</span></p>
+        </div>
+        <div class="card">
+          <h3>🧪 Test Management</h3>
+          <p>Test cases, test plans, test cycles, and execution workflows.</p>
+          <p style="margin-top: 0.5rem;"><span class="badge badge-primary">Focus mode</span></p>
+        </div>
+        <div class="card">
+          <h3>🐛 Defect Tracking</h3>
+          <p>Full defect lifecycle with Kanban and table views.</p>
+          <p style="margin-top: 0.5rem;"><span class="badge badge-warning">SLA tracking</span></p>
+        </div>
+        <div class="card">
+          <h3>✅ Quality Gates</h3>
+          <p>Configurable quality thresholds with pass/fail tracking.</p>
+          <p style="margin-top: 0.5rem;"><span class="badge badge-teal">Blocking gates</span></p>
+        </div>
+        <div class="card">
+          <h3>📊 Coverage Reports</h3>
+          <p>Test coverage analysis and Requirements Traceability Matrix.</p>
+          <p style="margin-top: 0.5rem;"><span class="badge badge-primary">RTM</span></p>
+        </div>
+      </div>
+    </section>
+    
+    <section id="routes">
+      <h2>Route Architecture</h2>
+      
+      <h3>Primary Routes <code>/releases/*</code></h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Route</th>
+            <th>Component</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>/releases</code></td><td>Navigate</td><td>Redirect to command-center</td></tr>
+          <tr><td><code>/releases/command-center</code></td><td>CommandCenterPage</td><td>Executive KPI dashboard</td></tr>
+          <tr><td><code>/releases/dashboard</code></td><td>ReleaseDashboardOverviewPage</td><td>Release overview</td></tr>
+          <tr><td><code>/releases/all</code></td><td>AllReleasesPage</td><td>Portfolio view</td></tr>
+          <tr><td><code>/releases/calendar</code></td><td>CalendarPage</td><td>Timeline visualization</td></tr>
+          <tr><td><code>/releases/compare</code></td><td>ComparePage</td><td>Release comparison</td></tr>
+          <tr><td><code>/releases/my-scope</code></td><td>MyTestScopePage</td><td>Personal test scope</td></tr>
+          <tr><td><code>/releases/test-plans</code></td><td>ReleasesTestPlansPage</td><td>Test plan management</td></tr>
+          <tr><td><code>/releases/test-plans/:planId</code></td><td>ReleasesTestPlanDetailPage</td><td>Plan details</td></tr>
+          <tr><td><code>/releases/test-cases</code></td><td>ReleasesTestCasesPage</td><td>Test case library</td></tr>
+          <tr><td><code>/releases/test-cases/:id</code></td><td>ReleasesTestCaseDetailPage</td><td>Case details</td></tr>
+          <tr><td><code>/releases/test-cycles</code></td><td>ReleasesTestCyclesPage</td><td>Cycle management</td></tr>
+          <tr><td><code>/releases/test-cycles/:cycleId</code></td><td>ReleasesCycleCommandCenter</td><td>Cycle command center</td></tr>
+          <tr><td><code>/releases/templates</code></td><td>ReleasesCycleTemplatesPage</td><td>Cycle templates</td></tr>
+          <tr><td><code>/releases/workload</code></td><td>WorkloadDashboard</td><td>Team workload</td></tr>
+          <tr><td><code>/releases/execution</code></td><td>ExecutionPage</td><td>Execution hub</td></tr>
+          <tr><td><code>/releases/execute/:cycleId/:testCaseId</code></td><td>TestExecutionFocusPage</td><td>Focus mode</td></tr>
+          <tr><td><code>/releases/ask-ai</code></td><td>AskAIPage</td><td>AI assistance</td></tr>
+          <tr><td><code>/releases/coverage</code></td><td>CoverageReportsPage</td><td>Coverage analysis</td></tr>
+          <tr><td><code>/releases/quality-gates</code></td><td>QualityGatesPage</td><td>Quality gates</td></tr>
+          <tr><td><code>/releases/rtm</code></td><td>RTMPage</td><td>Traceability Matrix</td></tr>
+          <tr><td><code>/releases/defects</code></td><td>ReleasesDefectsPage</td><td>Defect management</td></tr>
+          <tr><td><code>/releases/defects/:id</code></td><td>ReleasesDefectDetailPage</td><td>Defect details</td></tr>
+          <tr><td><code>/releases/:releaseId</code></td><td>ReleaseDashboardV5Page</td><td>Release dashboard</td></tr>
+        </tbody>
+      </table>
+      
+      <h3>Incident Routes <code>/release/*</code></h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Route</th>
+            <th>Component</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>/release/incidents</code></td><td>IncidentRoomList</td><td>Incident list</td></tr>
+          <tr><td><code>/release/incidents/dashboard</code></td><td>IncidentsDashboard</td><td>Incident dashboard</td></tr>
+          <tr><td><code>/release/incidents/analytics</code></td><td>IncidentAnalyticsPage</td><td>Analytics</td></tr>
+          <tr><td><code>/release/incidents/kanban</code></td><td>IncidentKanbanPage</td><td>Kanban board</td></tr>
+          <tr><td><code>/release/incidents/create</code></td><td>CreateIncident</td><td>Create incident</td></tr>
+          <tr><td><code>/release/incidents/:incidentId</code></td><td>IncidentRoomDetail</td><td>Incident details</td></tr>
+          <tr><td><code>/release/committee-queue</code></td><td>CommitteeQueue</td><td>CAP committee</td></tr>
+        </tbody>
+      </table>
+    </section>
+    
+    <section id="database">
+      <h2>Database Schema</h2>
+      
+      <h3>Core Tables</h3>
+      <div class="card">
+        <h4 style="color: var(--primary); margin-bottom: 1rem;">releases</h4>
+        <pre><code>CREATE TABLE releases (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  version TEXT DEFAULT 'v1.0',
+  description TEXT,
+  status TEXT DEFAULT 'planned',
+  target_date TIMESTAMP WITH TIME ZONE,
+  release_date TIMESTAMP WITH TIME ZONE,
+  release_vehicle_id UUID REFERENCES release_vehicles(id),
+  owner_id UUID REFERENCES profiles(id),
+  readiness_pct NUMERIC(5,2),
+  notes TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);</code></pre>
+      </div>
+      
+      <div class="card">
+        <h4 style="color: var(--primary); margin-bottom: 1rem;">test_cases</h4>
+        <pre><code>CREATE TABLE test_cases (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title TEXT NOT NULL,
+  description TEXT,
+  preconditions TEXT,
+  priority TEXT DEFAULT 'medium',
+  status TEXT DEFAULT 'draft',
+  type TEXT DEFAULT 'manual',
+  folder_id UUID REFERENCES test_folders(id),
+  project_id UUID REFERENCES projects(id),
+  created_by UUID REFERENCES profiles(id),
+  assignee_id UUID REFERENCES profiles(id),
+  estimated_time INTEGER,
+  tags TEXT[],
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);</code></pre>
+      </div>
+      
+      <div class="card">
+        <h4 style="color: var(--primary); margin-bottom: 1rem;">defects</h4>
+        <pre><code>CREATE TABLE defects (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  defect_id TEXT NOT NULL UNIQUE,
+  title TEXT NOT NULL,
+  description TEXT,
+  severity TEXT NOT NULL,
+  priority TEXT NOT NULL,
+  status TEXT DEFAULT 'open',
+  workflow_status TEXT DEFAULT 'new',
+  assignee_id UUID REFERENCES profiles(id),
+  reporter_id UUID REFERENCES profiles(id),
+  target_release_id UUID REFERENCES releases(id),
+  test_case_id UUID REFERENCES test_cases(id),
+  expected_result TEXT NOT NULL,
+  actual_result TEXT NOT NULL,
+  steps_to_reproduce JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);</code></pre>
+      </div>
+    </section>
+    
+    <section id="hooks">
+      <h2>Hooks & Data Layer</h2>
+      
+      <div class="card">
+        <h3>Release Hooks</h3>
+        <pre><code>import { useAllReleases } from '@/hooks/releases/useAllReleases';
+import { useReleaseQualityGates } from '@/hooks/releases/useReleaseQualityGates';
+import { useReleasesFilter } from '@/hooks/releases/useReleasesFilter';
+import { useReleasesSelection } from '@/hooks/releases/useReleasesSelection';
+
+// Usage
+const { data, isLoading, refetch } = useAllReleases({
+  filter: { status: ['active'], search: '' },
+  sort: { column: 'name', direction: 'asc' },
+  page: 0,
+  pageSize: 12,
+});</code></pre>
+      </div>
+      
+      <div class="card">
+        <h3>Command Center Hooks</h3>
+        <pre><code>import {
+  useCommandCenterKPIs,
+  useReleaseHealth,
+  useDefectTrends,
+  useQualityGates,
+  useTestProgress,
+  useTeamPerformance,
+  useActivities,
+  useMilestones,
+} from '@/modules/command-center/hooks';
+
+// Real-time KPIs
+const { data: kpis } = useCommandCenterKPIs();
+
+// Release health (top N by risk)
+const { data: releases } = useReleaseHealth(5);
+
+// Defect trends chart data
+const { data: trends } = useDefectTrends('30d');</code></pre>
+      </div>
+    </section>
+    
+    <section id="components">
+      <h2>Component Library</h2>
+      
+      <h3>All Releases Feature</h3>
+      <pre><code>export { SummaryCards } from './components/SummaryCards';
+export { AIInsightsBar } from './components/AIInsightsBar';
+export { ReleaseCard } from './components/ReleaseCard';
+export { CardGridView } from './components/CardGridView';
+export { ViewToggle } from './components/ViewToggle';
+export { FilterBar } from './components/FilterBar';
+
+export { 
+  calculateHealthScore, 
+  getHealthLevel, 
+  HEALTH_THRESHOLDS 
+} from './utils/healthScore';</code></pre>
+      
+      <h3>Health Score Thresholds</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Score Range</th>
+            <th>Color</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="badge badge-teal">Healthy</span></td><td>≥ 80%</td><td>#0d9488</td></tr>
+          <tr><td><span class="badge badge-warning">Attention</span></td><td>60-79%</td><td>#d97706</td></tr>
+          <tr><td><span class="badge badge-danger">At Risk</span></td><td>40-59%</td><td>#ef4444</td></tr>
+          <tr><td><span class="badge badge-danger">Critical</span></td><td>&lt; 40%</td><td>#dc2626</td></tr>
+        </tbody>
+      </table>
+    </section>
+    
+    <section id="design">
+      <h2>Design System</h2>
+      
+      <h3>Color Tokens (Catalyst V5)</h3>
+      <div class="card-grid">
+        <div class="card" style="border-left: 4px solid var(--primary);">
+          <strong>Primary</strong>
+          <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+            <span style="background: #2563eb; color: white; padding: 0.25rem 0.75rem; border-radius: 4px;">#2563eb</span>
+            <span style="background: #eff6ff; padding: 0.25rem 0.75rem; border-radius: 4px;">#eff6ff</span>
+          </div>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--teal);">
+          <strong>Teal (Success)</strong>
+          <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+            <span style="background: #0d9488; color: white; padding: 0.25rem 0.75rem; border-radius: 4px;">#0d9488</span>
+            <span style="background: #f0fdfa; padding: 0.25rem 0.75rem; border-radius: 4px;">#f0fdfa</span>
+          </div>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--warning);">
+          <strong>Warning</strong>
+          <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+            <span style="background: #d97706; color: white; padding: 0.25rem 0.75rem; border-radius: 4px;">#d97706</span>
+            <span style="background: #fef3c7; padding: 0.25rem 0.75rem; border-radius: 4px;">#fef3c7</span>
+          </div>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--danger);">
+          <strong>Danger</strong>
+          <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+            <span style="background: #ef4444; color: white; padding: 0.25rem 0.75rem; border-radius: 4px;">#ef4444</span>
+            <span style="background: #fef2f2; padding: 0.25rem 0.75rem; border-radius: 4px;">#fef2f2</span>
+          </div>
+        </div>
+      </div>
+      
+      <h3>Component Patterns</h3>
+      <pre><code>/* KPI Card with accent border */
+.kpi-card {
+  position: relative;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  overflow: hidden;
+}
+
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--primary);
+}
+
+/* Progress Ring */
+.progress-ring {
+  width: 48px;
+  height: 48px;
+}
+
+.progress-ring circle {
+  stroke-width: 5;
+  stroke-linecap: round;
+  fill: none;
+}</code></pre>
+    </section>
+  </main>
+  
+  <footer>
+    <p>Release & Test Management Module • Catalyst Enterprise Platform</p>
+    <p style="opacity: 0.7; margin-top: 0.5rem;">Generated: 2026-02-06</p>
+  </footer>
+</body>
+</html>
