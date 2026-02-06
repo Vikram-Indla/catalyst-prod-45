@@ -100,7 +100,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
           backfaceVisibility: 'hidden',
         }}
       >
-        {/* Header — matching SidebarBase exactly */}
+        {/* Header — V10 styling with circular badge */}
         <div 
           className={cn(
             "border-b flex-shrink-0",
@@ -109,27 +109,26 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
               : "flex flex-col items-center justify-center"
           )}
           style={{ 
-            // Collapsed header needs to fit BOTH the badge + toggle without clipping.
-            height: expanded ? '64px' : '72px',
+            height: expanded ? '56px' : '64px',
             borderColor: 'var(--divider)',
-            padding: expanded ? '0 16px' : '6px 0',
-            gap: expanded ? undefined : '4px',
+            padding: expanded ? '0 12px' : '8px 0',
+            gap: expanded ? undefined : '6px',
             background: 'transparent',
           }}
         >
           <div
             className={cn(
-              "flex items-center gap-2.5",
+              "flex items-center gap-3",
               expanded ? "overflow-hidden min-w-0" : "w-full justify-center overflow-visible"
             )}
           >
-            {/* Module Badge — 32×32 blue gradient (matching Enterprise/Strategy Room) */}
+            {/* Module Badge — 28×28 circular (V10) */}
             <div 
-              className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0"
+              className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
               style={{
                 background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
                 color: '#ffffff',
-                fontSize: '11px',
+                fontSize: '10px',
                 fontWeight: 600,
                 letterSpacing: '0.02em',
                 boxShadow: '0 1px 3px rgba(37, 99, 235, 0.15)',
@@ -139,19 +138,19 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
             </div>
             {expanded && (
               <span 
-                className="text-[14px] font-semibold truncate tracking-tight"
+                className="text-[13px] font-semibold truncate tracking-tight"
                 style={{ color: 'var(--text-1)' }}
               >
                 Product
               </span>
             )}
           </div>
-          {/* Collapse button — matching SidebarBase exactly */}
+          {/* Collapse button — V10 sizing */}
           <button
             onClick={onToggle}
             className={cn(
               "flex items-center justify-center rounded-md transition-all flex-shrink-0 border bg-transparent hover:bg-white/5 dark:hover:bg-white/10",
-              expanded ? "w-7 h-7 ml-3" : "w-6 h-6"
+              expanded ? "w-6 h-6 ml-2" : "w-5 h-5"
             )}
             style={{
               borderColor: 'var(--divider)',
@@ -160,9 +159,9 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
             aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
           >
             {expanded ? (
-              <ChevronsLeft size={14} />
+              <ChevronsLeft size={13} />
             ) : (
-              <ChevronsRight size={14} />
+              <ChevronsRight size={13} />
             )}
           </button>
         </div>
@@ -183,23 +182,23 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
             />
           ))}
 
-          {/* IDEAS COLLAPSIBLE GROUP */}
+          {/* IDEAS COLLAPSIBLE GROUP — V10 styling */}
           <Collapsible defaultOpen={isIdeasRouteActive}>
             {/* Group Header */}
             <CollapsibleTrigger asChild>
               <button
                 className={cn(
-                  "group w-full flex items-center rounded-lg border-none cursor-pointer transition-all relative",
+                  "group w-full flex items-center rounded-md border-none cursor-pointer transition-all relative",
                   expanded ? "px-3 justify-start" : "justify-center",
                   isIdeasRouteActive 
-                    ? "bg-blue-500/10 dark:bg-blue-500/15 text-blue-600 font-semibold" 
-                    : "bg-transparent text-foreground hover:bg-black/5 dark:hover:bg-white/5 font-medium"
+                    ? "bg-blue-500/12 text-blue-600 font-medium" 
+                    : "bg-transparent text-foreground hover:bg-blue-500/6 font-normal"
                 )}
                 style={{
-                  height: '44px',
-                  gap: '10px',
-                  marginBottom: '2px',
-                  marginTop: '8px',
+                  height: '36px',
+                  gap: '12px',
+                  marginBottom: '1px',
+                  marginTop: '6px',
                   fontSize: '13px',
                   fontFamily: 'inherit',
                   outline: 'none',
@@ -210,34 +209,33 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                     style={{
                       position: 'absolute',
                       left: 0,
-                      top: expanded ? '6px' : '10px',
-                      bottom: expanded ? '6px' : '10px',
+                      top: expanded ? '4px' : '6px',
+                      bottom: expanded ? '4px' : '6px',
                       width: '3px',
                       background: 'var(--nav-accent-bar, #2563eb)',
                       borderRadius: '0 2px 2px 0',
-                      boxShadow: '1px 0 3px rgba(37, 99, 235, 0.2)',
                     }}
                   />
                 )}
                 <span 
                   className="flex items-center justify-center flex-shrink-0"
-                  style={{ width: '18px', height: '18px' }}
+                  style={{ width: '17px', height: '17px' }}
                 >
                   <Lightbulb 
-                    className="h-[18px] w-[18px]" 
+                    className="h-[17px] w-[17px]" 
                     style={{ 
                       color: isIdeasRouteActive ? '#2563EB' : 'var(--nav-text-secondary, #3F3F46)',
-                      strokeWidth: 1.75,
+                      strokeWidth: 1.4,
                     }}
                   />
                 </span>
                 {expanded && (
                   <>
-                    <span className="flex-1 text-left" style={{ lineHeight: '44px' }}>
+                    <span className="flex-1 text-left" style={{ lineHeight: '36px' }}>
                       Ideas
                     </span>
                     <ChevronDown 
-                      className="h-4 w-4 transition-transform group-data-[state=open]:rotate-180" 
+                      className="h-3.5 w-3.5 transition-transform group-data-[state=open]:rotate-180" 
                       style={{ color: 'var(--text-4)' }}
                     />
                   </>
@@ -343,50 +341,49 @@ function MenuItemButton({
     <button
       onClick={onClick}
       className={cn(
-        "group w-full flex items-center rounded-lg border-none cursor-pointer transition-all relative",
+        "group w-full flex items-center rounded-md border-none cursor-pointer transition-all relative",
         expanded ? "px-3 justify-start" : "justify-center",
         isActive 
-          ? "bg-blue-500/10 dark:bg-blue-500/15 text-blue-600 font-semibold" 
-          : "bg-transparent text-foreground hover:bg-black/5 dark:hover:bg-white/5 font-medium"
+          ? "bg-blue-500/12 text-blue-600 font-medium" 
+          : "bg-transparent text-foreground hover:bg-blue-500/6 font-normal"
       )}
       style={{
-        height: isChild ? '40px' : '44px',
-        gap: '10px',
-        marginBottom: '2px',
+        height: isChild ? '32px' : '36px',
+        gap: '12px',
+        marginBottom: '1px',
         fontSize: isChild ? '12px' : '13px',
         fontFamily: 'inherit',
         outline: 'none',
       }}
     >
-      {/* Left Accent Bar */}
+      {/* Left Accent Bar — V10: 3px */}
       {isActive && (
         <span 
           style={{
             position: 'absolute',
             left: 0,
-            top: expanded ? '6px' : '10px',
-            bottom: expanded ? '6px' : '10px',
+            top: expanded ? '4px' : '6px',
+            bottom: expanded ? '4px' : '6px',
             width: '3px',
             background: 'var(--nav-accent-bar, #2563eb)',
             borderRadius: '0 2px 2px 0',
-            boxShadow: '1px 0 3px rgba(37, 99, 235, 0.2)',
           }}
         />
       )}
-      {/* Icon container - 18×18 icons */}
+      {/* Icon container - V10: 17×17 icons */}
       <span 
         className="flex items-center justify-center flex-shrink-0"
         style={{ 
-          width: isChild ? '16px' : '18px',
-          height: isChild ? '16px' : '18px',
+          width: isChild ? '15px' : '17px',
+          height: isChild ? '15px' : '17px',
         }}
       >
         {CustomIcon && (
           <CustomIcon 
-            className={cn("h-[18px] w-[18px]", isChild && "h-[16px] w-[16px]")}
+            className={cn("h-[17px] w-[17px]", isChild && "h-[15px] w-[15px]")}
             style={{ 
               color: isActive ? '#2563EB' : 'var(--nav-text-secondary, #3F3F46)',
-              strokeWidth: 1.75,
+              strokeWidth: 1.4,
             }}
           />
         )}
@@ -395,7 +392,7 @@ function MenuItemButton({
         <>
           <span 
             className="flex-1 text-left truncate"
-            style={{ lineHeight: isChild ? '40px' : '44px' }}
+            style={{ lineHeight: isChild ? '32px' : '36px' }}
           >
             {item.title}
           </span>
