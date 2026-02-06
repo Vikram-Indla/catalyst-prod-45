@@ -421,14 +421,14 @@ export function T10WeekViewV3() {
   const handlePrevWeek = () => {
     if (hasPrevWeek && weeks) {
       const prevWeek = weeks[currentWeekIndex - 1];
-      navigate(`/taskhub/task10/list/${listId}/week/${prevWeek.id}`);
+      navigate(`/priorities/list/${listId}/week/${prevWeek.id}`);
     }
   };
 
   const handleNextWeek = () => {
     if (hasNextWeek && weeks) {
       const nextWeek = weeks[currentWeekIndex + 1];
-      navigate(`/taskhub/task10/list/${listId}/week/${nextWeek.id}`);
+      navigate(`/priorities/list/${listId}/week/${nextWeek.id}`);
     }
   };
 
@@ -596,7 +596,7 @@ export function T10WeekViewV3() {
             <button
               type="button"
               className="t10-detail-btn-back"
-              onClick={() => navigate('/taskhub/task10')}
+              onClick={() => navigate('/priorities')}
             >
               Back to Lists
             </button>
@@ -943,7 +943,7 @@ export function T10WeekViewV3() {
       {/* HEADER */}
       <header style={headerStyle}>
         {/* Logo */}
-<Link to="/taskhub/task10" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
+<Link to="/priorities" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
             <span style={logoBadgeStyle}>10</span>
             <div style={logoTextContainerStyle}>
               <span style={logoTitleStyle}>Priorities</span>

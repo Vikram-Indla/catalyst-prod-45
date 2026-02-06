@@ -403,7 +403,7 @@ export function T10LandingPageV3() {
   }, []);
 
   const handleListCreated = (listId: string) => {
-    navigate(`/taskhub/task10/list/${listId}`);
+    navigate(`/priorities/list/${listId}`);
   };
 
   const handleStartWeek = async (listId: string) => {
@@ -416,7 +416,7 @@ export function T10LandingPageV3() {
         is_current: true,
       });
       toast({ title: 'Week started', description: 'New week has been created.' });
-      navigate(`/taskhub/task10/list/${listId}/week/${newWeek.id}`);
+      navigate(`/priorities/list/${listId}/week/${newWeek.id}`);
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to start week.', variant: 'destructive' });
     }
@@ -424,9 +424,9 @@ export function T10LandingPageV3() {
 
   const handleListClick = (list: T10ListCardView) => {
     if (list.current_week_id) {
-      navigate(`/taskhub/task10/list/${list.id}/week/${list.current_week_id}`);
+      navigate(`/priorities/list/${list.id}/week/${list.current_week_id}`);
     } else {
-      navigate(`/taskhub/task10/list/${list.id}`);
+      navigate(`/priorities/list/${list.id}`);
     }
   };
 

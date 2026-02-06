@@ -26,7 +26,7 @@ export function T10Routes() {
       <Route path="list/:listId/week/:weekId" element={<T10WeekViewNew />} />
 
       {/* Fallback */}
-      <Route path="*" element={<Navigate to="/taskhub/task10" replace />} />
+      <Route path="*" element={<Navigate to="/priorities" replace />} />
     </Routes>
   );
 }

@@ -283,7 +283,7 @@ export function T10WeekPage() {
       {/* HEADER - Matches reference design */}
       <header className="t10-detail-header">
         {/* Logo - links back to lists */}
-        <Link to="/taskhub/task10" className="t10-detail-logo-link">
+        <Link to="/priorities" className="t10-detail-logo-link">
           <div className="t10-detail-logo-badge">10</div>
           <div className="t10-detail-logo-text">
             <span className="t10-detail-logo-title">Priorities</span>

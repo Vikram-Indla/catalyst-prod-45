@@ -489,15 +489,15 @@ const App = () => (
               <Route path="/taskhub-kanban" element={<KanbanPage />} />
               <Route path="/taskhub/my-tasks" element={<MyTasksPage />} />
               
-              {/* Task10 Module */}
-              <Route path="/taskhub/task10" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10LandingPage /></Suspense>} />
-              <Route path="/taskhub/task10/completed" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10CompletedPage /></Suspense>} />
-              <Route path="/taskhub/task10/list/:listId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10WeekPage /></Suspense>} />
-              <Route path="/taskhub/task10/list/:listId/week/:weekId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10WeekPageV3 /></Suspense>} />
+              {/* Priorities Module (formerly Task10) */}
+              <Route path="/priorities" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10LandingPage /></Suspense>} />
+              <Route path="/priorities/completed" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10CompletedPage /></Suspense>} />
+              <Route path="/priorities/list/:listId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10WeekPage /></Suspense>} />
+              <Route path="/priorities/list/:listId/week/:weekId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10WeekPageV3 /></Suspense>} />
               
-              {/* Priorities Module */}
-              <Route path="/priorities" element={<Suspense fallback={<div className="p-8">Loading...</div>}><PriListsPage /></Suspense>} />
-              <Route path="/priorities/:listId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><PriWeekPage /></Suspense>} />
+              {/* Legacy task10 routes - redirect to priorities */}
+              <Route path="/taskhub/task10" element={<Navigate to="/priorities" replace />} />
+              <Route path="/taskhub/task10/*" element={<Navigate to="/priorities" replace />} />
               
               {/* Legacy planner routes - redirect to taskhub */}
               <Route path="/planner" element={<Navigate to="/taskhub/boards" replace />} />

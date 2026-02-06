@@ -70,7 +70,7 @@ export function T10WeekView() {
             <button
               type="button"
               className="t10-btn t10-btn-primary"
-              onClick={() => navigate('/taskhub/task10')}
+              onClick={() => navigate('/priorities')}
             >
               Back to Lists
             </button>

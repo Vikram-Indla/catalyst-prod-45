@@ -40,7 +40,7 @@ export function T10WeekHistory({ listId }: T10WeekHistoryProps) {
   const handleWeekClick = (e: React.MouseEvent, weekId: string) => {
     e.stopPropagation(); // Prevent card click
     console.log('[T10] Past week clicked:', weekId);
-    navigate(`/taskhub/task10/list/${listId}/week/${weekId}`);
+    navigate(`/priorities/list/${listId}/week/${weekId}`);
   };
 
   return (

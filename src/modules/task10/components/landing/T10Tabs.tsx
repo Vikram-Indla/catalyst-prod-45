@@ -30,7 +30,7 @@ export function T10Tabs({ activeTab, onTabChange, counts }: T10TabsProps) {
   const handleTabClick = (tab: typeof tabs[0]) => {
     if (tab.isLink && tab.value === 'completed') {
       // Navigate to dedicated completed page
-      navigate('/taskhub/task10/completed');
+      navigate('/priorities/completed');
       console.log('[T10] Navigating to completed view');
     } else {
       onTabChange(tab.value);

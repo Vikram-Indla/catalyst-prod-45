@@ -40,10 +40,10 @@ export function T10ListCardNew({ list, onRename, onDelete }: T10ListCardNewProps
 
   const handleCardClick = () => {
     if (hasCurrentWeek && currentWeek) {
-      navigate(`/taskhub/task10/list/${list.id}/week/${currentWeek.id}`);
+      navigate(`/priorities/list/${list.id}/week/${currentWeek.id}`);
     } else {
       // Navigate to list view
-      navigate(`/taskhub/task10/list/${list.id}`);
+      navigate(`/priorities/list/${list.id}`);
     }
     console.log('[T10] List card clicked:', list.key);
   };
@@ -60,7 +60,7 @@ export function T10ListCardNew({ list, onRename, onDelete }: T10ListCardNewProps
       });
       console.log('[T10] New week started for list:', list.key, newWeek.id);
       // Navigate to the newly created week
-      navigate(`/taskhub/task10/list/${list.id}/week/${newWeek.id}`);
+      navigate(`/priorities/list/${list.id}/week/${newWeek.id}`);
     } catch (error) {
       console.error('[T10] Failed to start week:', error);
     }
