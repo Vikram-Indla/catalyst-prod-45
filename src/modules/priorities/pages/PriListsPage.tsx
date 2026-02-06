@@ -57,11 +57,11 @@ export function PriListsPage() {
         {/* Header */}
         <header className={styles['pri-header']}>
           <div className={styles['pri-header-left']}>
-            <div className={styles['pri-header-icon']}>10</div>
+            <span className={styles['pri-header-10']}>10</span>
             <div>
               <h1 className={styles['pri-header-title']}>Priorities</h1>
               <p className={styles['pri-header-subtitle']}>
-                Weekly top-10 priority management
+                Priority Management
               </p>
             </div>
           </div>
