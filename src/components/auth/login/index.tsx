@@ -1,6 +1,7 @@
 /**
- * Catalyst Enterprise Login Page
- * A pixel-perfect, enterprise-grade login with split-screen layout
+ * Catalyst Enterprise Login Page V10
+ * Pixel-perfect, enterprise-grade login with split-screen layout
+ * Blue hero with Islamic geometric pattern | Light form panel
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -122,8 +123,6 @@ export function CatalystLoginPage() {
       return { error: result.error };
     }
     
-    // Note: Remember Me localStorage handling is done in LoginFormPanel
-    
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     
     if (currentUser) {
@@ -197,33 +196,42 @@ export function CatalystLoginPage() {
     navigate('/submit-request');
   };
 
-  // Show loading while transitioning
+  // Loading state
   if (isTransitioning || (user && loading)) {
     return (
       <div className="login-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-          <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin" />
-          <span className="text-primary text-sm font-medium">Signing you in...</span>
+          <div className="spinner-v10" style={{ width: '40px', height: '40px', borderWidth: '3px' }} />
+          <span style={{ color: 'var(--login-primary)', fontSize: '0.875rem', fontWeight: 500 }}>Signing you in...</span>
         </div>
       </div>
     );
   }
 
-  // Show pending message
+  // Pending message
   if (showPendingMessage) {
     return (
-      <div className="login-container flex items-center justify-center">
-        <div className="text-center max-w-[400px] p-8">
-          <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-primary/10 flex items-center justify-center">
-            <FileText className="w-8 h-8 text-primary" />
+      <div className="login-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center', maxWidth: '400px', padding: '2rem' }}>
+          <div style={{ 
+            width: '64px', 
+            height: '64px', 
+            margin: '0 auto 1.5rem', 
+            borderRadius: '50%', 
+            background: 'rgba(37, 99, 235, 0.1)', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}>
+            <FileText style={{ width: '32px', height: '32px', color: 'var(--login-primary)' }} />
           </div>
-          <h2 className="text-2xl font-semibold text-foreground mb-3">
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--login-text-dark)', marginBottom: '0.75rem' }}>
             Registration Submitted
           </h2>
-          <p className="text-muted-foreground mb-6">
+          <p style={{ color: 'var(--login-text-secondary)', marginBottom: '1.5rem' }}>
             Thanks for registering. Your account is pending approval.
           </p>
-          <p className="text-sm text-muted-foreground mb-8">
+          <p style={{ fontSize: '0.875rem', color: 'var(--login-text-muted)', marginBottom: '2rem' }}>
             You can sign in once an administrator approves your request.
           </p>
           <button
@@ -232,7 +240,7 @@ export function CatalystLoginPage() {
               setShowPendingMessage(false);
               handleAuthTypeChange('signin');
             }}
-            className="login-button"
+            className="submit-btn-v10"
           >
             Back to Sign In
           </button>
@@ -241,7 +249,7 @@ export function CatalystLoginPage() {
     );
   }
 
-  // Show force password reset
+  // Force password reset
   if (mustChangePassword && currentUserId) {
     return (
       <div className="login-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -261,7 +269,7 @@ export function CatalystLoginPage() {
       <a href="#main-form" className="login-skip-link">Skip to login form</a>
 
       <div className="login-container">
-        {/* Left Panel - Hero (hidden on mobile via CSS) */}
+        {/* Left Panel - Hero */}
         <LoginHeroPanel />
 
         {/* Right Panel - Form */}
