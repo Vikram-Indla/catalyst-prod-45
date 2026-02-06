@@ -216,44 +216,72 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          'h-full border-r bg-card transition-all duration-200 flex-shrink-0 relative flex flex-col',
-          expanded ? 'w-60' : 'w-14',
+          'h-full border-r transition-all duration-200 flex-shrink-0 relative flex flex-col',
+          expanded ? 'w-60' : 'w-16',
           className
         )}
+        style={{
+          background: 'var(--surface-elevated, var(--surface-1))',
+          borderColor: 'var(--divider)',
+        }}
       >
-        {/* Toggle Handle - Atlassian style */}
-        <button
-          onClick={onToggle}
+        {/* V10 Header with circular badge */}
+        <div 
           className={cn(
-            'absolute -right-3 top-5 z-50 h-6 w-6 rounded-full bg-card border shadow-sm',
-            'flex items-center justify-center hover:bg-accent transition-colors',
-            'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'
+            'border-b shrink-0',
+            expanded 
+              ? 'flex items-center justify-between px-3' 
+              : 'flex flex-col items-center justify-center'
           )}
-          aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
+          style={{
+            height: expanded ? '56px' : '64px',
+            borderColor: 'var(--divider)',
+            padding: expanded ? '0 12px' : '8px 0',
+            gap: expanded ? undefined : '6px',
+          }}
         >
-          {expanded ? <ChevronLeft className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
-        </button>
-
-        {/* Header - Compact Atlassian style */}
-        <div className={cn(
-          'h-14 border-b border-border flex items-center shrink-0',
-          expanded ? 'px-4' : 'px-2 justify-center'
-        )}>
-          {expanded ? (
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-md bg-brand-primary/15 flex items-center justify-center">
-                <span className="text-brand-primary font-semibold text-xs">AD</span>
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="font-semibold text-foreground text-sm leading-tight">Admin</span>
-                <span className="text-[11px] text-muted-foreground leading-tight">Configuration</span>
-              </div>
+          <div className={cn(
+            "flex items-center gap-3",
+            expanded ? "overflow-hidden min-w-0" : "w-full justify-center"
+          )}>
+            {/* V10 circular badge */}
+            <div 
+              className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{
+                background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                color: '#ffffff',
+                fontSize: '10px',
+                fontWeight: 600,
+                letterSpacing: '0.02em',
+                boxShadow: '0 1px 3px rgba(37, 99, 235, 0.15)',
+              }}
+            >
+              AD
             </div>
-          ) : (
-            <div className="w-8 h-8 rounded-md bg-brand-primary/15 flex items-center justify-center">
-              <span className="text-brand-primary font-semibold text-xs">AD</span>
-            </div>
-          )}
+            {expanded && (
+              <span 
+                className="text-[13px] font-semibold truncate tracking-tight"
+                style={{ color: 'var(--text-1)' }}
+              >
+                Admin
+              </span>
+            )}
+          </div>
+          {/* V10 collapse button */}
+          <button
+            onClick={onToggle}
+            className={cn(
+              "flex items-center justify-center rounded-md transition-all flex-shrink-0 border bg-transparent hover:bg-blue-500/6",
+              expanded ? "w-6 h-6 ml-2" : "w-5 h-5"
+            )}
+            style={{
+              borderColor: 'var(--divider)',
+              color: 'var(--text-3)',
+            }}
+            aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
+          >
+            {expanded ? <ChevronLeft className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+          </button>
         </div>
 
         {/* Search - Only when expanded */}
@@ -326,7 +354,7 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
 
         {/* Navigation - Collapsible sections */}
         <ScrollArea className="flex-1">
-          <nav className="p-2 space-y-0.5">
+          <nav style={{ padding: '4px 8px' }}>
             {adminPockets.map((pocket) => {
               const Icon = pocket.icon;
               const active = isActive(pocket.path) || isChildActive(pocket.children);
@@ -340,16 +368,27 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                       <Link
                         to={pocket.children?.[0]?.path || pocket.path}
                         className={cn(
-                          'flex items-center justify-center h-9 w-9 mx-auto rounded-md transition-colors relative',
+                          'flex items-center justify-center rounded-md transition-colors relative mx-auto',
                           active 
-                            ? 'bg-brand-primary/10 text-brand-primary' 
-                            : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                            ? 'bg-blue-500/12 text-blue-600' 
+                            : 'text-muted-foreground hover:bg-blue-500/6 hover:text-foreground'
                         )}
+                        style={{ width: '36px', height: '36px', marginBottom: '1px' }}
                       >
                         {active && (
-                          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-brand-primary rounded-r" />
+                          <span 
+                            style={{
+                              position: 'absolute',
+                              left: 0,
+                              top: '6px',
+                              bottom: '6px',
+                              width: '3px',
+                              background: 'var(--nav-accent-bar, #2563eb)',
+                              borderRadius: '0 2px 2px 0',
+                            }}
+                          />
                         )}
-                        <Icon className="h-4 w-4" />
+                        <Icon style={{ width: '17px', height: '17px', strokeWidth: 1.4 }} />
                       </Link>
                     </TooltipTrigger>
                     <TooltipContent side="right" sideOffset={8}>
@@ -366,25 +405,41 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                     key={pocket.id}
                     to={pocket.path}
                     className={cn(
-                      'flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm transition-colors relative group',
+                      'flex items-center gap-3 px-3 rounded-md text-[13px] transition-colors relative group',
                       active 
-                        ? 'bg-brand-primary/10 text-brand-primary font-medium' 
-                        : 'text-foreground hover:bg-accent'
+                        ? 'bg-blue-500/12 text-blue-600 font-medium' 
+                        : 'text-foreground hover:bg-blue-500/6 font-normal'
                     )}
+                    style={{ height: '36px', marginBottom: '1px' }}
                   >
                     {active && (
-                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-brand-primary rounded-r" />
+                      <span 
+                        style={{
+                          position: 'absolute',
+                          left: 0,
+                          top: '4px',
+                          bottom: '4px',
+                          width: '3px',
+                          background: 'var(--nav-accent-bar, #2563eb)',
+                          borderRadius: '0 2px 2px 0',
+                        }}
+                      />
                     )}
-                    <Icon className={cn(
-                      'h-4 w-4 flex-shrink-0',
-                      active ? 'text-brand-primary' : 'text-muted-foreground group-hover:text-foreground'
-                    )} />
+                    <Icon 
+                      className="flex-shrink-0"
+                      style={{ 
+                        width: '17px', 
+                        height: '17px', 
+                        strokeWidth: 1.4,
+                        color: active ? '#2563EB' : 'var(--nav-text-secondary, #3F3F46)',
+                      }} 
+                    />
                     <span className="truncate">{pocket.label}</span>
                   </Link>
                 );
               }
 
-              // Has children - collapsible section
+              // Has children - collapsible section (V10 styling)
               return (
                 <Collapsible 
                   key={pocket.id} 
@@ -394,27 +449,46 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                   <CollapsibleTrigger asChild>
                     <button
                       className={cn(
-                        'w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm transition-colors relative group',
+                        'w-full flex items-center gap-3 px-3 rounded-md text-[13px] transition-colors relative group',
                         active 
-                          ? 'bg-brand-primary/10 text-brand-primary font-medium' 
-                          : 'text-foreground hover:bg-accent'
+                          ? 'bg-blue-500/12 text-blue-600 font-medium' 
+                          : 'text-foreground hover:bg-blue-500/6 font-normal'
                       )}
+                      style={{ height: '36px', marginBottom: '1px' }}
                     >
                       {active && (
-                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-brand-primary rounded-r" />
+                        <span 
+                          style={{
+                            position: 'absolute',
+                            left: 0,
+                            top: '4px',
+                            bottom: '4px',
+                            width: '3px',
+                            background: 'var(--nav-accent-bar, #2563eb)',
+                            borderRadius: '0 2px 2px 0',
+                          }}
+                        />
                       )}
-                      <Icon className={cn(
-                        'h-4 w-4 flex-shrink-0',
-                        active ? 'text-brand-primary' : 'text-muted-foreground group-hover:text-foreground'
-                      )} />
+                      <Icon 
+                        className="flex-shrink-0"
+                        style={{ 
+                          width: '17px', 
+                          height: '17px', 
+                          strokeWidth: 1.4,
+                          color: active ? '#2563EB' : 'var(--nav-text-secondary, #3F3F46)',
+                        }} 
+                      />
                       <span className="truncate flex-1 text-left">{pocket.label}</span>
-                      <ChevronDown className={cn(
-                        'h-3.5 w-3.5 text-muted-foreground transition-transform',
-                        isOpen && 'rotate-180'
-                      )} />
+                      <ChevronDown 
+                        className={cn(
+                          'h-3.5 w-3.5 transition-transform',
+                          isOpen && 'rotate-180'
+                        )}
+                        style={{ color: 'var(--text-4)' }} 
+                      />
                     </button>
                   </CollapsibleTrigger>
-                  <CollapsibleContent className="pl-6 mt-0.5 space-y-0.5">
+                  <CollapsibleContent className="ml-5 mt-0.5">
                     {pocket.children?.map(child => {
                       const childActive = isActive(child.path);
                       return (
@@ -422,14 +496,25 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
                           key={child.path}
                           to={child.path}
                           className={cn(
-                            'flex items-center px-2.5 py-1.5 rounded-md text-sm transition-colors relative',
+                            'flex items-center px-3 rounded-md text-[12px] transition-colors relative',
                             childActive 
-                              ? 'bg-brand-primary/10 text-brand-primary font-medium' 
-                              : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                              ? 'bg-blue-500/12 text-blue-600 font-medium' 
+                              : 'text-muted-foreground hover:bg-blue-500/6 hover:text-foreground'
                           )}
+                          style={{ height: '32px', marginBottom: '1px' }}
                         >
                           {childActive && (
-                            <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-brand-primary rounded-r" />
+                            <span 
+                              style={{
+                                position: 'absolute',
+                                left: 0,
+                                top: '4px',
+                                bottom: '4px',
+                                width: '3px',
+                                background: 'var(--nav-accent-bar, #2563eb)',
+                                borderRadius: '0 2px 2px 0',
+                              }}
+                            />
                           )}
                           <span className="truncate">{child.label}</span>
                         </Link>
