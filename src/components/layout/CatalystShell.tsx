@@ -12,6 +12,7 @@ import { TestManagementSidebar } from './TestManagementSidebar';
 import { ReleasesManagementSidebar } from './ReleasesManagementSidebar';
 import { PlanHubSidebar } from './PlanHubSidebar';
 import { TaskHubSidebar } from './TaskHubSidebar';
+import { TestHubSidebar } from './TestHubSidebar';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
 import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
@@ -82,6 +83,9 @@ function CatalystShellContent() {
   
   // Check if on TaskHub route
   const isTaskHubRoute = location.pathname.startsWith('/taskhub');
+  
+  // Check if on TestHub route
+  const isTestHubRoute = location.pathname.startsWith('/testhub');
 
   // Prevent full document reloads caused by accidental <a href="/..."> navigation.
   // IMPORTANT: In Preview, the URL contains special query params (e.g. __lovable_token).
@@ -182,6 +186,16 @@ function CatalystShellContent() {
     if (isTaskHubRoute) {
       return (
         <TaskHubSidebar
+          expanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+      );
+    }
+
+    // TestHub sidebar
+    if (isTestHubRoute) {
+      return (
+        <TestHubSidebar
           expanded={sidebarExpanded}
           onToggle={() => setSidebarExpanded(!sidebarExpanded)}
         />
