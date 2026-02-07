@@ -4,3 +4,4 @@
 
 export { TestHubFolderTree } from './TestHubFolderTree';
 export { TestHubCasesTable } from './TestHubCasesTable';
+export { CreateTestCaseModal } from './CreateTestCaseModal';

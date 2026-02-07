@@ -7,7 +7,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { FolderTree, Plus, Search, Filter, LayoutGrid, List, RefreshCw } from 'lucide-react';
+import { FolderTree, Plus, Search, Filter, LayoutGrid, List, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -20,7 +20,10 @@ import {
 import { TestHubFolderTree } from '@/components/testhub/TestHubFolderTree';
 import { TestHubCasesTable } from '@/components/testhub/TestHubCasesTable';
 import { CreateFolderDialog } from '@/components/releases/test-cases/CreateFolderDialog';
+import { CreateTestCaseModal } from '@/components/testhub/CreateTestCaseModal';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
 // Default project for demo - uses project with existing test data
 const DEFAULT_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
@@ -31,6 +34,8 @@ export default function TestRepositoryPage() {
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
   const [createFolderOpen, setCreateFolderOpen] = useState(false);
   const [createFolderParentId, setCreateFolderParentId] = useState<string | null>(null);
+  const [createTestCaseOpen, setCreateTestCaseOpen] = useState(false);
+  const [folderPanelCollapsed, setFolderPanelCollapsed] = useState(false);
   
   const projectId = DEFAULT_PROJECT_ID;
   
@@ -120,44 +125,103 @@ export default function TestRepositoryPage() {
 
   return (
     <div className="flex h-full overflow-hidden bg-surface-1">
-      {/* Left Panel - Folder Tree */}
-      <aside className="w-72 flex-shrink-0 border-r border-border bg-surface-2 flex flex-col">
-        <div className="p-4 border-b border-border">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <FolderTree className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Folders</span>
-            </div>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-7 w-7"
-              onClick={() => handleOpenCreateFolder()}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
+      {/* Left Panel - Folder Tree (Collapsible) */}
+      <aside 
+        className={cn(
+          "flex-shrink-0 border-r border-border bg-surface-2 flex flex-col transition-all duration-200",
+          folderPanelCollapsed ? "w-12" : "w-72"
+        )}
+      >
+        {folderPanelCollapsed ? (
+          // Collapsed state - just show expand button
+          <div className="flex flex-col items-center py-3 gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-9 w-9"
+                  onClick={() => setFolderPanelCollapsed(false)}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">Expand folders</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-9 w-9 text-warning"
+                >
+                  <FolderTree className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">{folders.length} folders</TooltipContent>
+            </Tooltip>
           </div>
-        </div>
-        
-        <div className="flex-1 overflow-auto p-2">
-          {foldersLoading ? (
-            <div className="space-y-2">
-              {[1, 2, 3, 4].map(i => (
-                <Skeleton key={i} className="h-8 w-full" />
-              ))}
+        ) : (
+          // Expanded state
+          <>
+            <div className="p-4 border-b border-border">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FolderTree className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium">Folders</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-7 w-7"
+                        onClick={() => handleOpenCreateFolder()}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Create folder</TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-7 w-7"
+                        onClick={() => setFolderPanelCollapsed(true)}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Collapse panel</TooltipContent>
+                  </Tooltip>
+                </div>
+              </div>
             </div>
-          ) : (
-            <TestHubFolderTree
-              folders={folders}
-              selectedFolderId={selectedFolderId}
-              folderCounts={folderCounts}
-              onSelect={handleFolderSelect}
-              onCreateFolder={handleOpenCreateFolder}
-              onDeleteFolder={handleDeleteFolder}
-              onRenameFolder={handleRenameFolder}
-            />
-          )}
-        </div>
+            
+            <div className="flex-1 overflow-auto p-2">
+              {foldersLoading ? (
+                <div className="space-y-2">
+                  {[1, 2, 3, 4].map(i => (
+                    <Skeleton key={i} className="h-8 w-full" />
+                  ))}
+                </div>
+              ) : (
+                <TestHubFolderTree
+                  folders={folders}
+                  selectedFolderId={selectedFolderId}
+                  folderCounts={folderCounts}
+                  onSelect={handleFolderSelect}
+                  onCreateFolder={handleOpenCreateFolder}
+                  onDeleteFolder={handleDeleteFolder}
+                  onRenameFolder={handleRenameFolder}
+                />
+              )}
+            </div>
+          </>
+        )}
       </aside>
 
       {/* Main Content - Test Cases */}
@@ -177,7 +241,7 @@ export default function TestRepositoryPage() {
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh
               </Button>
-              <Button size="sm">
+              <Button size="sm" onClick={() => setCreateTestCaseOpen(true)}>
                 <Plus className="h-4 w-4 mr-2" />
                 New Test Case
               </Button>
@@ -237,7 +301,7 @@ export default function TestRepositoryPage() {
                   ? 'This folder is empty. Create a test case to get started.'
                   : 'Create your first test case to start building your test repository.'}
               </p>
-              <Button>
+              <Button onClick={() => setCreateTestCaseOpen(true)}>
                 <Plus className="h-4 w-4 mr-2" />
                 Create Test Case
               </Button>
@@ -258,6 +322,14 @@ export default function TestRepositoryPage() {
         onOpenChange={setCreateFolderOpen}
         projectId={projectId}
         parentFolderId={createFolderParentId}
+      />
+
+      {/* Create Test Case Modal */}
+      <CreateTestCaseModal
+        open={createTestCaseOpen}
+        onOpenChange={setCreateTestCaseOpen}
+        projectId={projectId}
+        folderId={selectedFolderId}
       />
     </div>
   );
