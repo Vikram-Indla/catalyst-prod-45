@@ -109,11 +109,15 @@ export function TestHubCasesTable({ cases, projectId, onRefresh }: TestHubCasesT
         </TableHeader>
         <TableBody>
           {cases.map(testCase => {
-            const status = statusConfig[testCase.status || 'DRAFT'] || statusConfig.DRAFT;
+            // Handle status - DB uses lowercase but statusConfig uses uppercase keys
+            const statusKey = (testCase.status || 'draft').toUpperCase();
+            const status = statusConfig[statusKey] || statusConfig.DRAFT;
             const StatusIcon = status.icon;
             const priorityName = testCase.priority?.name?.toLowerCase() || 'medium';
             const priorityColor = priorityColors[priorityName] || priorityColors.medium;
             const isSelected = selectedIds.has(testCase.id);
+            // Use case_key from database (network shows case_key, not key)
+            const caseKey = (testCase as any).case_key || testCase.key || '';
 
             return (
               <TableRow
@@ -127,11 +131,11 @@ export function TestHubCasesTable({ cases, projectId, onRefresh }: TestHubCasesT
                   <Checkbox
                     checked={isSelected}
                     onCheckedChange={(checked) => handleSelectOne(testCase.id, checked as boolean)}
-                    aria-label={`Select ${testCase.key}`}
+                    aria-label={`Select ${caseKey}`}
                   />
                 </TableCell>
                 <TableCell className="font-mono text-sm text-primary">
-                  {testCase.key}
+                  {caseKey}
                 </TableCell>
                 <TableCell className="max-w-md">
                   <div className="flex flex-col">
