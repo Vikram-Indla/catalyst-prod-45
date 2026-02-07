@@ -91,7 +91,7 @@ export function LoginHeroPanel() {
       <div className="hero-content-v10">
         {/* Logo */}
         <div className="hero-logo">
-          <CatalystLogo size={80} />
+          <CatalystLogo size={100} />
         </div>
 
         {/* Wordmark */}
@@ -100,7 +100,7 @@ export function LoginHeroPanel() {
         {/* Sub-brand */}
         <p className="hero-subbrand">Enterprise Portfolio Management</p>
 
-        {/* Gold horizontal rule */}
+        {/* Horizontal rule */}
         <div className="hero-rule" />
 
         {/* Tagline */}

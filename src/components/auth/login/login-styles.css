@@ -122,56 +122,62 @@
 }
 
 .hero-logo {
-  margin-bottom: 1.75rem;
+  margin-bottom: 2rem;
 }
 
 .hero-wordmark {
-  font-size: 2.25rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 3rem;
   font-weight: 800;
   color: #fff;
   letter-spacing: -0.03em;
   line-height: 1;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .hero-subbrand {
-  font-size: 0.62rem;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.72rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.7);
   text-transform: uppercase;
-  letter-spacing: 0.18em;
-  margin-bottom: 2rem;
+  letter-spacing: 0.2em;
+  margin-bottom: 2.5rem;
 }
 
 .hero-rule {
-  width: 40px;
-  height: 1px;
+  width: 48px;
+  height: 2px;
   margin: 0 auto;
-  background: linear-gradient(90deg, transparent, rgba(212, 168, 67, 0.5), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
   margin-bottom: 2rem;
 }
 
 .hero-tagline {
-  font-size: 0.95rem;
-  font-weight: 300;
-  color: rgba(255, 255, 255, 0.55);
-  line-height: 1.6;
+  font-family: 'Sora', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.7;
+  letter-spacing: 0.01em;
 }
 
 .hero-footer {
-  margin-top: 3.5rem;
+  margin-top: 4rem;
 }
 
 .hero-footer-line {
-  width: 24px;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.15);
-  margin: 0 auto 10px;
+  width: 40px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 auto 12px;
+  border-radius: 1px;
 }
 
 .hero-copyright {
-  font-size: 0.52rem;
-  color: rgba(255, 255, 255, 0.25);
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.02em;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
