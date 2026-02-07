@@ -1,31 +1,12 @@
 /**
  * TestHub Folder Tree Component
- * Displays hierarchical folder structure with counts and context menu actions
+ * Ring-fenced CATALYST V10 design with th-* classes
  */
 
 import { useState, useMemo } from 'react';
 import { ChevronRight, Folder, FolderOpen, Plus, Trash2, Edit2, MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TMFolder } from '@/types/test-management';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Input } from '@/components/ui/input';
 
 interface TestHubFolderTreeProps {
   folders: TMFolder[];
@@ -45,12 +26,10 @@ function buildTree(folders: TMFolder[]): FolderNode[] {
   const map = new Map<string, FolderNode>();
   const roots: FolderNode[] = [];
 
-  // Create nodes
   folders.forEach(folder => {
     map.set(folder.id, { ...folder, children: [] });
   });
 
-  // Build tree structure
   folders.forEach(folder => {
     const node = map.get(folder.id)!;
     if (folder.parent_id && map.has(folder.parent_id)) {
@@ -88,6 +67,7 @@ function FolderItem({
   onDeleteFolder,
   onRenameFolder,
 }: FolderItemProps) {
+  const [showMenu, setShowMenu] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameName, setRenameName] = useState(folder.name);
@@ -116,94 +96,85 @@ function FolderItem({
   return (
     <>
       <div
-        className={cn(
-          'group flex items-center gap-1 px-2 py-1.5 rounded-md cursor-pointer text-sm transition-colors',
-          isSelected
-            ? 'bg-primary/10 text-primary border-l-2 border-primary'
-            : 'hover:bg-muted/50 text-text-secondary hover:text-text-primary'
-        )}
-        style={{ paddingLeft: `${level * 16 + 8}px` }}
+        className={cn('th-folder-item', isSelected && 'selected', isExpanded && 'expanded')}
+        style={{ paddingLeft: `${level * 16 + 12}px` }}
         onClick={() => onSelect(folder.id)}
+        onMouseEnter={() => setShowMenu(true)}
+        onMouseLeave={() => setShowMenu(false)}
       >
         {/* Expand/collapse chevron */}
-        <button
-          className={cn(
-            'h-4 w-4 flex-shrink-0 transition-transform',
-            !hasChildren && 'invisible'
-          )}
+        <div 
+          className="th-folder-chevron"
+          style={{ visibility: hasChildren ? 'visible' : 'hidden' }}
           onClick={(e) => {
             e.stopPropagation();
             onToggleExpand(folder.id);
           }}
         >
-          <ChevronRight
-            className={cn('h-3.5 w-3.5', isExpanded && 'rotate-90')}
-          />
-        </button>
+          <ChevronRight className="h-3.5 w-3.5" />
+        </div>
 
         {/* Folder icon */}
         {isExpanded && hasChildren ? (
-          <FolderOpen className="h-4 w-4 flex-shrink-0 text-warning" />
+          <FolderOpen className="th-folder-icon" style={{ color: 'var(--th-warning)' }} />
         ) : (
-          <Folder className="h-4 w-4 flex-shrink-0 text-warning" />
+          <Folder className="th-folder-icon" style={{ color: 'var(--th-warning)' }} />
         )}
 
         {/* Folder name or rename input */}
         {isRenaming ? (
-          <Input
+          <input
+            type="text"
+            className="th-input"
+            style={{ height: '24px', fontSize: 'var(--th-text-sm)' }}
             value={renameName}
             onChange={(e) => setRenameName(e.target.value)}
             onBlur={handleRenameSubmit}
             onKeyDown={handleKeyDown}
-            className="h-6 text-sm flex-1"
             autoFocus
             onClick={(e) => e.stopPropagation()}
           />
         ) : (
-          <span className="flex-1 truncate">{folder.name}</span>
+          <span className="th-folder-name">{folder.name}</span>
         )}
 
         {/* Count badge */}
         {count > 0 && !isRenaming && (
-          <span className="text-xs text-muted-foreground px-1.5 py-0.5 bg-muted rounded">
-            {count}
-          </span>
+          <span className="th-folder-count">{count}</span>
         )}
 
-        {/* Context menu */}
-        {!isRenaming && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 opacity-0 group-hover:opacity-100"
-              >
-                <MoreHorizontal className="h-3.5 w-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => onCreateFolder(folder.id)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Subfolder
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
+        {/* Action menu */}
+        {showMenu && !isRenaming && (
+          <div 
+            style={{ display: 'flex', gap: '2px' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="th-btn-icon th-btn-icon-sm"
+              onClick={() => onCreateFolder(folder.id)}
+              title="Add subfolder"
+            >
+              <Plus className="h-3 w-3" />
+            </button>
+            <button
+              className="th-btn-icon th-btn-icon-sm"
+              onClick={() => {
                 setRenameName(folder.name);
                 setIsRenaming(true);
-              }}>
-                <Edit2 className="h-4 w-4 mr-2" />
-                Rename
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                className="text-destructive focus:text-destructive"
-                onClick={() => setShowDeleteConfirm(true)}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              }}
+              title="Rename"
+            >
+              <Edit2 className="h-3 w-3" />
+            </button>
+            <button
+              className="th-btn-icon th-btn-icon-sm"
+              onClick={() => setShowDeleteConfirm(true)}
+              title="Delete"
+              style={{ color: 'var(--th-danger)' }}
+            >
+              <Trash2 className="h-3 w-3" />
+            </button>
+          </div>
         )}
       </div>
 
@@ -228,27 +199,40 @@ function FolderItem({
         </div>
       )}
 
-      {/* Delete confirmation dialog */}
-      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Folder</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete "{folder.name}"? 
-              Test cases in this folder will be moved to the parent folder.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={() => onDeleteFolder(folder.id)}
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Delete confirmation */}
+      {showDeleteConfirm && (
+        <div className="th-modal-overlay open" onClick={() => setShowDeleteConfirm(false)}>
+          <div className="th-modal th-modal-sm" onClick={e => e.stopPropagation()}>
+            <div className="th-modal-header">
+              <div>
+                <h2 className="th-modal-title">Delete Folder</h2>
+                <p className="th-modal-subtitle">
+                  Are you sure you want to delete "{folder.name}"?
+                </p>
+              </div>
+            </div>
+            <div className="th-modal-body">
+              <p style={{ color: 'var(--th-text-sec)', fontSize: 'var(--th-text-md)' }}>
+                Test cases in this folder will be moved to the parent folder.
+              </p>
+            </div>
+            <div className="th-modal-footer">
+              <button className="th-btn-secondary" onClick={() => setShowDeleteConfirm(false)}>
+                Cancel
+              </button>
+              <button 
+                className="th-btn-danger"
+                onClick={() => {
+                  onDeleteFolder(folder.id);
+                  setShowDeleteConfirm(false);
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -264,15 +248,7 @@ export function TestHubFolderTree({
 }: TestHubFolderTreeProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
-  // Build tree structure from flat folders list
   const tree = useMemo(() => buildTree(folders), [folders]);
-
-  // Calculate total unfiled count
-  const unfiledCount = useMemo(() => {
-    const folderedCount = Object.values(folderCounts).reduce((a, b) => a + b, 0);
-    // This could be improved by passing total count from parent
-    return 0;
-  }, [folderCounts]);
 
   const handleToggleExpand = (id: string) => {
     setExpandedIds(prev => {
@@ -287,19 +263,14 @@ export function TestHubFolderTree({
   };
 
   return (
-    <div className="space-y-0.5">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
       {/* All Test Cases */}
       <div
-        className={cn(
-          'flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer text-sm transition-colors',
-          selectedFolderId === null
-            ? 'bg-primary/10 text-primary border-l-2 border-primary'
-            : 'hover:bg-muted/50 text-text-secondary hover:text-text-primary'
-        )}
+        className={cn('th-folder-item', selectedFolderId === null && 'selected')}
         onClick={() => onSelect(null)}
       >
-        <Folder className="h-4 w-4 text-muted-foreground" />
-        <span className="flex-1">All Test Cases</span>
+        <Folder className="th-folder-icon" />
+        <span className="th-folder-name">All Test Cases</span>
       </div>
 
       {/* Folder tree */}
@@ -321,17 +292,16 @@ export function TestHubFolderTree({
 
       {/* Empty state */}
       {tree.length === 0 && (
-        <div className="text-center py-8 text-muted-foreground text-sm">
-          <Folder className="h-8 w-8 mx-auto mb-2 opacity-50" />
-          <p>No folders yet</p>
-          <Button
-            variant="link"
-            size="sm"
-            className="mt-1"
+        <div style={{ textAlign: 'center', padding: '32px 16px', color: 'var(--th-text-faint)' }}>
+          <Folder style={{ width: '32px', height: '32px', margin: '0 auto 8px', opacity: 0.5 }} />
+          <p style={{ fontSize: 'var(--th-text-sm)' }}>No folders yet</p>
+          <button
+            className="th-btn-ghost"
+            style={{ marginTop: '8px' }}
             onClick={() => onCreateFolder()}
           >
             Create first folder
-          </Button>
+          </button>
         </div>
       )}
     </div>

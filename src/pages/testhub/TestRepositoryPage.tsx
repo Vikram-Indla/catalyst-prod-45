@@ -2,14 +2,15 @@
  * Test Repository Page — TestHub Module
  * Route: /testhub/repository
  * 
- * Full database-wired page for managing test cases and folders.
+ * Full database-wired page using CATALYST V10 ring-fenced design system.
  * Uses tm_folders and tm_test_cases tables via existing hooks.
  */
 
+import '@/styles/testhub-tokens.css';
+import '@/styles/testhub-components.css';
+
 import { useState, useMemo } from 'react';
-import { FolderTree, Plus, Search, Filter, LayoutGrid, List, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { FolderTree, Plus, Search, Filter, LayoutGrid, List, RefreshCw, ChevronLeft, ChevronRight, Folder } from 'lucide-react';
 import { 
   useFoldersWithCounts, 
   useTestCases, 
@@ -21,8 +22,6 @@ import { TestHubFolderTree } from '@/components/testhub/TestHubFolderTree';
 import { TestHubCasesTable } from '@/components/testhub/TestHubCasesTable';
 import { CreateFolderDialog } from '@/components/releases/test-cases/CreateFolderDialog';
 import { CreateTestCaseModal } from '@/components/testhub/CreateTestCaseModal';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 // Default project for demo - uses project with existing test data
@@ -124,197 +123,170 @@ export default function TestRepositoryPage() {
   };
 
   return (
-    <div className="flex h-full overflow-hidden bg-surface-1">
-      {/* Left Panel - Folder Tree (Collapsible) */}
-      <aside 
-        className={cn(
-          "flex-shrink-0 border-r border-border bg-surface-2 flex flex-col transition-all duration-200",
-          folderPanelCollapsed ? "w-12" : "w-72"
-        )}
-      >
-        {folderPanelCollapsed ? (
-          // Collapsed state - just show expand button
-          <div className="flex flex-col items-center py-3 gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-9 w-9"
-                  onClick={() => setFolderPanelCollapsed(false)}
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right">Expand folders</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-9 w-9 text-warning"
-                >
-                  <FolderTree className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right">{folders.length} folders</TooltipContent>
-            </Tooltip>
-          </div>
-        ) : (
-          // Expanded state
-          <>
-            <div className="p-4 border-b border-border">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FolderTree className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium">Folders</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-7 w-7"
-                        onClick={() => handleOpenCreateFolder()}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Create folder</TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-7 w-7"
-                        onClick={() => setFolderPanelCollapsed(true)}
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Collapse panel</TooltipContent>
-                  </Tooltip>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex-1 overflow-auto p-2">
-              {foldersLoading ? (
-                <div className="space-y-2">
-                  {[1, 2, 3, 4].map(i => (
-                    <Skeleton key={i} className="h-8 w-full" />
-                  ))}
-                </div>
-              ) : (
-                <TestHubFolderTree
-                  folders={folders}
-                  selectedFolderId={selectedFolderId}
-                  folderCounts={folderCounts}
-                  onSelect={handleFolderSelect}
-                  onCreateFolder={handleOpenCreateFolder}
-                  onDeleteFolder={handleDeleteFolder}
-                  onRenameFolder={handleRenameFolder}
-                />
-              )}
-            </div>
-          </>
-        )}
-      </aside>
+    <div className="testhub-module th-page">
+      {/* Page Header */}
+      <header className="th-page-header">
+        <div>
+          <h1 className="th-page-title">Test Repository</h1>
+          <p className="text-sm" style={{ color: 'var(--th-text-muted)', marginTop: '4px' }}>
+            {totalCases} test case{totalCases !== 1 ? 's' : ''} 
+            {selectedFolderId ? ' in selected folder' : ' total'}
+          </p>
+        </div>
+        <div className="th-page-actions">
+          <button className="th-btn-secondary" onClick={handleRefresh}>
+            <RefreshCw className="h-4 w-4" />
+            Refresh
+          </button>
+          <button className="th-btn-primary" onClick={() => setCreateTestCaseOpen(true)}>
+            <Plus className="h-4 w-4" />
+            New Test Case
+          </button>
+        </div>
+      </header>
 
-      {/* Main Content - Test Cases */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="px-6 py-4 border-b border-border bg-surface-1">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-xl font-semibold text-text-primary">Test Repository</h1>
-              <p className="text-sm text-text-secondary mt-1">
-                {totalCases} test case{totalCases !== 1 ? 's' : ''} 
-                {selectedFolderId ? ' in selected folder' : ' total'}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={handleRefresh}>
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh
-              </Button>
-              <Button size="sm" onClick={() => setCreateTestCaseOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                New Test Case
-              </Button>
+      {/* Main Content */}
+      <div className="th-page-content">
+        {/* Collapsed Folder Strip */}
+        <div className={cn('th-folder-strip', folderPanelCollapsed && 'visible')}>
+          <button 
+            className="th-folder-expand-btn"
+            onClick={() => setFolderPanelCollapsed(false)}
+            title="Expand folders"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+          <button 
+            className="th-folder-expand-btn"
+            style={{ marginTop: '8px', color: 'var(--th-warning)' }}
+            title={`${folders.length} folders`}
+          >
+            <Folder className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Folder Panel */}
+        <aside className={cn('th-folder-panel', folderPanelCollapsed && 'collapsed')}>
+          <div className="th-folder-header">
+            <h3>
+              <FolderTree className="h-4 w-4 inline mr-2" style={{ color: 'var(--th-primary)' }} />
+              Folders
+            </h3>
+            <div className="th-folder-actions">
+              <button 
+                className="th-btn-icon th-btn-icon-sm"
+                onClick={() => handleOpenCreateFolder()}
+                title="Create folder"
+              >
+                <Plus className="h-4 w-4" />
+              </button>
+              <button 
+                className="th-btn-icon th-btn-icon-sm"
+                onClick={() => setFolderPanelCollapsed(true)}
+                title="Collapse panel"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
             </div>
           </div>
           
-          {/* Search and Filters */}
-          <div className="flex items-center gap-3">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
+          <div style={{ flex: 1, overflowY: 'auto', padding: '8px' }}>
+            {foldersLoading ? (
+              <div style={{ padding: '16px', textAlign: 'center', color: 'var(--th-text-muted)' }}>
+                Loading folders...
+              </div>
+            ) : (
+              <TestHubFolderTree
+                folders={folders}
+                selectedFolderId={selectedFolderId}
+                folderCounts={folderCounts}
+                onSelect={handleFolderSelect}
+                onCreateFolder={handleOpenCreateFolder}
+                onDeleteFolder={handleDeleteFolder}
+                onRenameFolder={handleRenameFolder}
+              />
+            )}
+          </div>
+        </aside>
+
+        {/* Main Content Area */}
+        <div className="th-main-area">
+          {/* Toolbar */}
+          <div className="th-toolbar">
+            <div className="th-input-wrapper" style={{ position: 'relative', flex: 1, maxWidth: '400px' }}>
+              <Search className="th-input-icon" />
+              <input
+                type="text"
+                className="th-input th-input-with-icon"
                 placeholder="Search test cases..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
               />
             </div>
-            <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" />
+            <button className="th-btn-secondary">
+              <Filter className="h-4 w-4" />
               Filters
-            </Button>
-            <div className="flex items-center border rounded-md">
-              <Button
-                variant={viewMode === 'table' ? 'secondary' : 'ghost'}
-                size="sm"
-                className="rounded-r-none"
+            </button>
+            <div style={{ display: 'flex', border: '1px solid var(--th-border)', borderRadius: 'var(--th-radius)' }}>
+              <button
+                className={cn('th-btn-icon', viewMode === 'table' && 'selected')}
+                style={{ 
+                  borderRadius: 'var(--th-radius) 0 0 var(--th-radius)',
+                  background: viewMode === 'table' ? 'var(--th-primary-active-bg)' : undefined,
+                  color: viewMode === 'table' ? 'var(--th-primary)' : undefined,
+                }}
                 onClick={() => setViewMode('table')}
               >
                 <List className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
-                size="sm"
-                className="rounded-l-none"
+              </button>
+              <button
+                className={cn('th-btn-icon', viewMode === 'grid' && 'selected')}
+                style={{ 
+                  borderRadius: '0 var(--th-radius) var(--th-radius) 0',
+                  background: viewMode === 'grid' ? 'var(--th-primary-active-bg)' : undefined,
+                  color: viewMode === 'grid' ? 'var(--th-primary)' : undefined,
+                }}
                 onClick={() => setViewMode('grid')}
               >
                 <LayoutGrid className="h-4 w-4" />
-              </Button>
+              </button>
             </div>
           </div>
-        </header>
 
-        {/* Cases Table */}
-        <div className="flex-1 overflow-auto p-6">
-          {casesLoading ? (
-            <div className="space-y-3">
-              {[1, 2, 3, 4, 5].map(i => (
-                <Skeleton key={i} className="h-12 w-full" />
-              ))}
-            </div>
-          ) : cases.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-64 text-center">
-              <FolderTree className="h-12 w-12 text-muted-foreground/50 mb-4" />
-              <h3 className="text-lg font-medium text-text-primary mb-2">No test cases found</h3>
-              <p className="text-sm text-text-secondary mb-4">
-                {selectedFolderId 
-                  ? 'This folder is empty. Create a test case to get started.'
-                  : 'Create your first test case to start building your test repository.'}
-              </p>
-              <Button onClick={() => setCreateTestCaseOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Create Test Case
-              </Button>
-            </div>
-          ) : (
-            <TestHubCasesTable 
-              cases={cases} 
-              projectId={projectId}
-              onRefresh={refetchCases}
-            />
-          )}
+          {/* Table Container */}
+          <div className="th-table-container">
+            {casesLoading ? (
+              <div style={{ padding: '48px', textAlign: 'center', color: 'var(--th-text-muted)' }}>
+                Loading test cases...
+              </div>
+            ) : cases.length === 0 ? (
+              <div className="th-empty-state">
+                <FolderTree className="th-empty-icon" />
+                <h3 className="th-empty-title">No test cases found</h3>
+                <p className="th-empty-desc">
+                  {selectedFolderId 
+                    ? 'This folder is empty. Create a test case to get started.'
+                    : 'Create your first test case to start building your test repository.'}
+                </p>
+                <button 
+                  className="th-btn-primary" 
+                  style={{ marginTop: '16px' }}
+                  onClick={() => setCreateTestCaseOpen(true)}
+                >
+                  <Plus className="h-4 w-4" />
+                  Create Test Case
+                </button>
+              </div>
+            ) : (
+              <TestHubCasesTable 
+                cases={cases} 
+                projectId={projectId}
+                onRefresh={refetchCases}
+              />
+            )}
+          </div>
         </div>
-      </main>
+      </div>
 
       {/* Create Folder Dialog */}
       <CreateFolderDialog
