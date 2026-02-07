@@ -200,7 +200,7 @@ export function CreateTestCaseModal({
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {/* Title */}
                 <div>
-                  <label className="th-label th-label-required">Title</label>
+                  <label className="th-label required">Title</label>
                   <input
                     type="text"
                     className="th-input"
@@ -238,7 +238,7 @@ export function CreateTestCaseModal({
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                     <label className="th-label" style={{ marginBottom: 0 }}>Test Steps</label>
-                    <span style={{ fontSize: 'var(--th-text-sm)', color: 'var(--th-text-faint)' }}>
+                    <span style={{ fontSize: '12px', color: '#94A3B8' }}>
                       {steps.length} step(s)
                     </span>
                   </div>
