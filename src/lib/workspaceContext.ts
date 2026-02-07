@@ -3,7 +3,7 @@
  * Single source of truth for context-aware navigation
  */
 
-export type WorkspaceType = 'home' | 'enterprise' | 'product' | 'program' | 'project' | 'tests' | 'releases' | 'operations' | 'taskhub';
+export type WorkspaceType = 'home' | 'enterprise' | 'product' | 'program' | 'project' | 'tests' | 'releases' | 'operations' | 'taskhub' | 'testhub';
 
 export interface WorkspaceContext {
   type: WorkspaceType;
@@ -20,6 +20,11 @@ export interface WorkspaceContext {
  * This is the SINGLE SOURCE OF TRUTH for workspace type
  */
 export function deriveWorkspaceType(pathname: string): WorkspaceType {
+  
+  // TestHub module - Test Case Repository & Execution
+  if (pathname.startsWith('/testhub')) {
+    return 'testhub';
+  }
   
   // Taskhub module - includes /taskhub/* and /aqd/* (AQD is part of Taskhub)
   if (pathname.startsWith('/taskhub') || pathname.startsWith('/aqd')) {
@@ -110,6 +115,8 @@ export function getActiveNavItem(workspaceType: WorkspaceType): string {
       return 'Operations';
     case 'taskhub':
       return 'Taskhub';
+    case 'testhub':
+      return 'TestHub';
     default:
       return '';
   }

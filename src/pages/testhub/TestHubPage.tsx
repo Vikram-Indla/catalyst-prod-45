@@ -3,15 +3,12 @@
  * Route: /testhub/*
  * 
  * This is the main layout wrapper for TestHub module.
- * Uses TestHubSidebar for navigation with collapsible state.
+ * Sidebar is handled by CatalystShell to avoid duplicate sidebars.
  */
 
-import { useState } from 'react';
 import { Outlet, Navigate, useLocation } from 'react-router-dom';
-import { TestHubSidebar } from '@/components/layout/TestHubSidebar';
 
 export default function TestHubPage() {
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const location = useLocation();
 
   // Redirect /testhub to /testhub/dashboard
@@ -20,14 +17,8 @@ export default function TestHubPage() {
   }
 
   return (
-    <div className="flex h-full overflow-hidden">
-      <TestHubSidebar 
-        expanded={sidebarExpanded} 
-        onToggle={() => setSidebarExpanded(!sidebarExpanded)} 
-      />
-      <main className="flex-1 flex flex-col overflow-hidden">
-        <Outlet />
-      </main>
+    <div className="flex-1 flex flex-col overflow-hidden">
+      <Outlet />
     </div>
   );
 }
