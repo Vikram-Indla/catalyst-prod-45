@@ -431,10 +431,18 @@ html:has(body[data-scroll-locked]) {
     --text-secondary-hex: #a3a3a3;
     --text-muted-hex: #6b7280;
     
-    /* Navigation tokens (HEX) */
+    /* ═══════════════════════════════════════════════════════════════
+       V10 NAVIGATION TOKENS — QA Checklist Compliant
+       Per QA-CATALYST-SHELL-V10.md specification
+       ═══════════════════════════════════════════════════════════════ */
     --nav-bg: #ffffff;
-    --nav-hover-bg: rgba(0, 0, 0, 0.03);
-    --nav-active-bg: rgba(37, 99, 235, 0.1);
+    --nav-text: #475569;                    /* V10: Inactive nav items */
+    --nav-text-hover: #1e293b;              /* V10: Nav hover state */
+    --nav-active: #2563eb;                  /* V10: Active nav text + underline */
+    --nav-hover-bg: transparent;            /* V10: NO background on hover */
+    --nav-active-bg: transparent;           /* V10: NO background on active */
+    --nav-underline: #2563eb;               /* V10: 2px active underline */
+    
     /* Legacy HEX aliases (DO NOT override canonical HSL tokens above) */
     --brand-active-hex: #2563eb;
     --brand-primary-hex: #2563eb;
@@ -889,9 +897,16 @@ html:has(body[data-scroll-locked]) {
     --border-subtle-hex: var(--border-subtle);
     --border-default-hex: var(--divider);
     
+    /* ═══════════════════════════════════════════════════════════════
+       V10 NAVIGATION TOKENS (Dark Mode) — QA Checklist Compliant
+       ═══════════════════════════════════════════════════════════════ */
     --nav-bg: var(--bg-2);
-    --nav-hover-bg: var(--hover);
-    --nav-active-bg: rgba(59, 130, 246, 0.12);
+    --nav-text: #94a3b8;                    /* V10: Inactive nav items (dark) */
+    --nav-text-hover: #e2e8f0;              /* V10: Nav hover state (dark) */
+    --nav-active: #60a5fa;                  /* V10: Active nav text (lighter blue in dark) */
+    --nav-hover-bg: transparent;            /* V10: NO background on hover */
+    --nav-active-bg: transparent;           /* V10: NO background on active */
+    --nav-underline: #60a5fa;               /* V10: 2px active underline (dark) */
     
     --brand-active-hex: #3b82f6;
     --brand-primary-hex: #3b82f6;
