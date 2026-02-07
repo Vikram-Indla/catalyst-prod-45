@@ -212,7 +212,9 @@
 }
 
 .toggle-group-sm {
+  width: auto;
   margin-bottom: 20px;
+  padding: 2px;
 }
 
 .toggle-btn-v10 {
@@ -237,9 +239,9 @@
 }
 
 .toggle-btn-sm {
-  padding: 7px 18px;
+  padding: 6px 16px;
   font-size: 0.79rem;
-  border-radius: 7px;
+  border-radius: 6px;
 }
 
 .toggle-group-sm .toggle-btn-v10 {
