@@ -51,7 +51,7 @@ export function TestRepositoryPage() {
   // Fetch folders
   const fetchFolders = async () => {
     const { data, error } = await supabase
-      .from('tm_folders')
+      .from('th_folders')
       .select('*')
       .order('sort_order');
 
@@ -62,7 +62,7 @@ export function TestRepositoryPage() {
 
     // Get counts
     const { data: counts } = await supabase
-      .from('tm_test_cases')
+      .from('th_test_cases')
       .select('folder_id');
 
     const countMap: Record<string, number> = {};
@@ -87,17 +87,8 @@ export function TestRepositoryPage() {
   const fetchTestCases = async () => {
     setIsLoading(true);
 
-    // First fetch priority and type lookup tables
-    const [prioritiesRes, typesRes] = await Promise.all([
-      supabase.from('tm_case_priorities').select('id, name'),
-      supabase.from('tm_case_types').select('id, name'),
-    ]);
-
-    const priorityMap = new Map(prioritiesRes.data?.map(p => [p.id, p.name.toLowerCase()]) || []);
-    const typeMap = new Map(typesRes.data?.map(t => [t.id, t.name.toLowerCase()]) || []);
-
     let query = supabase
-      .from('tm_test_cases')
+      .from('th_test_cases')
       .select('*');
 
     if (selectedFolderId) {
@@ -112,7 +103,7 @@ export function TestRepositoryPage() {
       const columnMap: Record<string, string> = {
         caseKey: 'case_key',
         title: 'title',
-        priority: 'priority_id',
+        priority: 'priority',
         status: 'status',
         updatedAt: 'updated_at',
       };
@@ -131,10 +122,10 @@ export function TestRepositoryPage() {
       id: tc.id,
       caseKey: tc.case_key,
       title: tc.title,
-      priority: (priorityMap.get(tc.priority_id) || 'medium') as TestCase['priority'],
-      type: (typeMap.get(tc.case_type_id) || 'functional') as TestCase['type'],
+      priority: tc.priority as TestCase['priority'],
+      type: tc.type as TestCase['type'],
       status: tc.status as TestCase['status'],
-      automation: (tc.automation_status || 'manual') as TestCase['automation'],
+      automation: tc.automation as TestCase['automation'],
       ownerInitials: 'AK',
       ownerColor: 'blue',
       updatedAt: tc.updated_at,
@@ -192,7 +183,7 @@ export function TestRepositoryPage() {
   const handleCreateTestCase = async (data: any) => {
     // Generate case key
     const { data: lastCase } = await supabase
-      .from('tm_test_cases')
+      .from('th_test_cases')
       .select('case_key')
       .order('created_at', { ascending: false })
       .limit(1);
@@ -206,29 +197,19 @@ export function TestRepositoryPage() {
     }
     const caseKey = `TC-${String(nextNum).padStart(3, '0')}`;
 
-    // Get priority and type IDs from lookup tables
-    const [prioritiesRes, typesRes] = await Promise.all([
-      supabase.from('tm_case_priorities').select('id, name'),
-      supabase.from('tm_case_types').select('id, name'),
-    ]);
-
-    const priorityId = prioritiesRes.data?.find(p => p.name.toLowerCase() === data.priority)?.id;
-    const typeId = typesRes.data?.find(t => t.name.toLowerCase() === data.type)?.id;
-
-    // Insert test case
+    // Insert test case - uses simplified schema with direct priority/type/automation columns
     const { data: newCase, error } = await supabase
-      .from('tm_test_cases')
+      .from('th_test_cases')
       .insert({
         case_key: caseKey,
         title: data.title,
-        description: data.objective,
+        objective: data.objective,
         preconditions: data.preconditions,
         folder_id: data.folderId || null,
-        priority_id: priorityId,
-        case_type_id: typeId,
+        priority: data.priority,
+        type: data.type,
         status: data.status,
-        automation_status: data.automation,
-        project_id: '00000000-0000-0000-0000-000000000001',
+        automation: data.automation,
       })
       .select()
       .single();
@@ -247,7 +228,7 @@ export function TestRepositoryPage() {
         expected_result: step.expectedResult,
       }));
 
-      await supabase.from('tm_test_steps').insert(stepsToInsert);
+      await supabase.from('th_test_steps').insert(stepsToInsert);
     }
 
     // Refresh
@@ -260,7 +241,7 @@ export function TestRepositoryPage() {
     if (!confirm(`Delete ${selectedIds.size} test case(s)?`)) return;
 
     const { error } = await supabase
-      .from('tm_test_cases')
+      .from('th_test_cases')
       .delete()
       .in('id', Array.from(selectedIds));
 

@@ -23997,6 +23997,333 @@ export type Database = {
           },
         ]
       }
+      th_folders: {
+        Row: {
+          created_at: string | null
+          icon: string | null
+          id: string
+          name: string
+          parent_id: string | null
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          parent_id?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          parent_id?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_folders_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "th_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_shared_steps: {
+        Row: {
+          action: string
+          created_at: string | null
+          expected_result: string
+          id: string
+          name: string
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          expected_result: string
+          id?: string
+          name: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          expected_result?: string
+          id?: string
+          name?: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: []
+      }
+      th_test_case_attachments: {
+        Row: {
+          file_name: string
+          file_size: number | null
+          file_type: string | null
+          file_url: string
+          id: string
+          step_id: string | null
+          test_case_id: string
+          uploaded_at: string | null
+        }
+        Insert: {
+          file_name: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
+          id?: string
+          step_id?: string | null
+          test_case_id: string
+          uploaded_at?: string | null
+        }
+        Update: {
+          file_name?: string
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          step_id?: string | null
+          test_case_id?: string
+          uploaded_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_test_case_attachments_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_steps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_test_case_attachments_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_test_case_links: {
+        Row: {
+          created_at: string | null
+          id: string
+          link_type: string
+          linked_item_key: string
+          linked_item_title: string | null
+          test_case_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          link_type: string
+          linked_item_key: string
+          linked_item_title?: string | null
+          test_case_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          link_type?: string
+          linked_item_key?: string
+          linked_item_title?: string | null
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_test_case_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_test_case_versions: {
+        Row: {
+          changed_at: string | null
+          changed_by: string | null
+          changes: Json
+          id: string
+          test_case_id: string
+          version: number
+        }
+        Insert: {
+          changed_at?: string | null
+          changed_by?: string | null
+          changes: Json
+          id?: string
+          test_case_id: string
+          version: number
+        }
+        Update: {
+          changed_at?: string | null
+          changed_by?: string | null
+          changes?: Json
+          id?: string
+          test_case_id?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_test_case_versions_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_test_cases: {
+        Row: {
+          automation: string | null
+          case_key: string
+          created_at: string | null
+          folder_id: string | null
+          id: string
+          objective: string | null
+          owner_id: string | null
+          preconditions: string | null
+          priority: string | null
+          status: string | null
+          title: string
+          type: string | null
+          updated_at: string | null
+          version: number | null
+        }
+        Insert: {
+          automation?: string | null
+          case_key: string
+          created_at?: string | null
+          folder_id?: string | null
+          id?: string
+          objective?: string | null
+          owner_id?: string | null
+          preconditions?: string | null
+          priority?: string | null
+          status?: string | null
+          title: string
+          type?: string | null
+          updated_at?: string | null
+          version?: number | null
+        }
+        Update: {
+          automation?: string | null
+          case_key?: string
+          created_at?: string | null
+          folder_id?: string | null
+          id?: string
+          objective?: string | null
+          owner_id?: string | null
+          preconditions?: string | null
+          priority?: string | null
+          status?: string | null
+          title?: string
+          type?: string | null
+          updated_at?: string | null
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_test_cases_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "th_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_test_executions: {
+        Row: {
+          cycle_name: string | null
+          executed_at: string | null
+          executed_by: string | null
+          id: string
+          notes: string | null
+          result: string | null
+          test_case_id: string
+          test_cycle_id: string | null
+        }
+        Insert: {
+          cycle_name?: string | null
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          notes?: string | null
+          result?: string | null
+          test_case_id: string
+          test_cycle_id?: string | null
+        }
+        Update: {
+          cycle_name?: string | null
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          notes?: string | null
+          result?: string | null
+          test_case_id?: string
+          test_cycle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_test_executions_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_test_steps: {
+        Row: {
+          action: string
+          attachment_url: string | null
+          created_at: string | null
+          expected_result: string
+          id: string
+          shared_step_id: string | null
+          step_number: number
+          test_case_id: string
+        }
+        Insert: {
+          action: string
+          attachment_url?: string | null
+          created_at?: string | null
+          expected_result: string
+          id?: string
+          shared_step_id?: string | null
+          step_number: number
+          test_case_id: string
+        }
+        Update: {
+          action?: string
+          attachment_url?: string | null
+          created_at?: string | null
+          expected_result?: string
+          id?: string
+          shared_step_id?: string | null
+          step_number?: number
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_test_steps_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       theme_epic_links: {
         Row: {
           created_at: string
