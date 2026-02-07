@@ -297,10 +297,15 @@ export default function TestRepositoryPage() {
 
       {/* Create Test Case Modal */}
       <CreateTestCaseModal
-        open={createTestCaseOpen}
-        onOpenChange={setCreateTestCaseOpen}
-        projectId={projectId}
-        folderId={selectedFolderId}
+        isOpen={createTestCaseOpen}
+        onClose={() => setCreateTestCaseOpen(false)}
+        onSave={async (data) => {
+          // TODO: Integrate with useCreateTestCase mutation
+          console.log('Creating test case:', data);
+          refetchCases();
+        }}
+        folders={folders.map(f => ({ id: f.id, name: f.name }))}
+        selectedFolderId={selectedFolderId || undefined}
       />
     </div>
   );
