@@ -6,8 +6,7 @@
  * Uses tm_folders and tm_test_cases tables via existing hooks.
  */
 
-import '@/styles/testhub-tokens.css';
-import '@/styles/testhub-components.css';
+import '@/styles/testhub.css';
 
 import { useState, useMemo } from 'react';
 import { FolderTree, Plus, Search, Filter, LayoutGrid, List, RefreshCw, ChevronLeft, ChevronRight, Folder } from 'lucide-react';
@@ -123,7 +122,7 @@ export default function TestRepositoryPage() {
   };
 
   return (
-    <div className="testhub-module th-page">
+    <div className="testhub th-page">
       {/* Page Header */}
       <header className="th-page-header">
         <div>
