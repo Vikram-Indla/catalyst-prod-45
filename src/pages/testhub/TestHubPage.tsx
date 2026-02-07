@@ -14,9 +14,9 @@ export default function TestHubPage() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const location = useLocation();
 
-  // Redirect /testhub to /testhub/repository
+  // Redirect /testhub to /testhub/dashboard
   if (location.pathname === '/testhub') {
-    return <Navigate to="/testhub/repository" replace />;
+    return <Navigate to="/testhub/dashboard" replace />;
   }
 
   return (
