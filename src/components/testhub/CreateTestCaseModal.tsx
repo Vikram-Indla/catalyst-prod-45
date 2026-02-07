@@ -1,32 +1,14 @@
 /**
  * Create Test Case Modal for TestHub
- * Full-featured modal with form fields and test steps
+ * Ring-fenced CATALYST V10 design with th-* classes
  */
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Plus, Trash2, X, GripVertical } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 interface CreateTestCaseModalProps {
   open: boolean;
@@ -62,7 +44,6 @@ export function CreateTestCaseModal({
     { action: '', expected_result: '' }
   ]);
 
-  // Generate next case_key
   const generateCaseKey = async (): Promise<string> => {
     const { data } = await supabase
       .from('tm_test_cases')
@@ -83,14 +64,11 @@ export function CreateTestCaseModal({
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      // Get current user
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Generate case key
       const case_key = await generateCaseKey();
       
-      // Get priority and type IDs
       const { data: priorities } = await supabase
         .from('tm_case_priorities')
         .select('id')
@@ -105,7 +83,6 @@ export function CreateTestCaseModal({
         .ilike('name', formData.type)
         .limit(1);
 
-      // Insert test case - use object format for insert
       const insertData = {
         project_id: projectId,
         case_key,
@@ -129,7 +106,6 @@ export function CreateTestCaseModal({
       
       if (tcError) throw tcError;
       
-      // Insert steps if any have content
       const stepsToInsert = steps
         .filter(s => s.action.trim())
         .map((step, index) => ({
@@ -200,221 +176,203 @@ export function CreateTestCaseModal({
     createMutation.mutate();
   };
 
+  if (!open) return null;
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Create Test Case</DialogTitle>
-          <DialogDescription>
-            Add a new test case to the repository
-          </DialogDescription>
-        </DialogHeader>
+    <div className={cn('th-modal-overlay', open && 'open')} onClick={() => onOpenChange(false)}>
+      <div className="th-modal th-modal-lg" onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div className="th-modal-header">
+          <div>
+            <h2 className="th-modal-title">Create Test Case</h2>
+            <p className="th-modal-subtitle">Add a new test case to the repository</p>
+          </div>
+          <button className="th-modal-close" onClick={() => onOpenChange(false)}>
+            <X className="h-4 w-4" />
+          </button>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-3 gap-6">
-            {/* Left Column - Main Form */}
-            <div className="col-span-2 space-y-4">
-              {/* Title */}
-              <div className="space-y-2">
-                <Label htmlFor="title">
-                  Title <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="Enter a descriptive title..."
-                />
-              </div>
-
-              {/* Description */}
-              <div className="space-y-2">
-                <Label htmlFor="description">Description / Objective</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="What does this test verify?"
-                  rows={3}
-                />
-              </div>
-
-              {/* Preconditions */}
-              <div className="space-y-2">
-                <Label htmlFor="preconditions">Preconditions</Label>
-                <Textarea
-                  id="preconditions"
-                  value={formData.preconditions}
-                  onChange={(e) => setFormData({ ...formData, preconditions: e.target.value })}
-                  placeholder="List conditions that must be met..."
-                  rows={2}
-                />
-              </div>
-
-              {/* Test Steps */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label>Test Steps</Label>
-                  <span className="text-xs text-muted-foreground">{steps.length} step(s)</span>
+        {/* Body */}
+        <form onSubmit={handleSubmit}>
+          <div className="th-modal-body">
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+              {/* Left Column - Main Form */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {/* Title */}
+                <div>
+                  <label className="th-label th-label-required">Title</label>
+                  <input
+                    type="text"
+                    className="th-input"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    placeholder="Enter a descriptive title..."
+                  />
                 </div>
-                <div className="border rounded-lg overflow-hidden">
-                  <div className="max-h-64 overflow-y-auto divide-y">
-                    {steps.map((step, index) => (
-                      <div key={index} className="flex gap-3 p-3 bg-surface-1">
-                        {/* Step Number */}
-                        <div className="flex-shrink-0 pt-2">
-                          <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-semibold flex items-center justify-center">
-                            {index + 1}
-                          </div>
-                        </div>
-                        
-                        {/* Step Content */}
-                        <div className="flex-1 space-y-2">
-                          <div>
-                            <Label className="text-xs text-muted-foreground">Action</Label>
-                            <Textarea
-                              value={step.action}
-                              onChange={(e) => updateStep(index, 'action', e.target.value)}
-                              placeholder="Describe the action to perform..."
-                              rows={2}
-                              className="text-sm"
-                            />
-                          </div>
-                          <div>
-                            <Label className="text-xs text-muted-foreground">Expected Result</Label>
-                            <Textarea
-                              value={step.expected_result}
-                              onChange={(e) => updateStep(index, 'expected_result', e.target.value)}
-                              placeholder="Describe the expected outcome..."
-                              rows={2}
-                              className="text-sm"
-                            />
-                          </div>
-                        </div>
-                        
-                        {/* Delete Button */}
-                        <div className="flex-shrink-0">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                            onClick={() => removeStep(index)}
-                            disabled={steps.length === 1}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
+
+                {/* Description */}
+                <div>
+                  <label className="th-label">Description / Objective</label>
+                  <textarea
+                    className="th-textarea"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="What does this test verify?"
+                    rows={3}
+                  />
+                </div>
+
+                {/* Preconditions */}
+                <div>
+                  <label className="th-label">Preconditions</label>
+                  <textarea
+                    className="th-textarea"
+                    value={formData.preconditions}
+                    onChange={(e) => setFormData({ ...formData, preconditions: e.target.value })}
+                    placeholder="List conditions that must be met..."
+                    rows={2}
+                  />
+                </div>
+
+                {/* Test Steps */}
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <label className="th-label" style={{ marginBottom: 0 }}>Test Steps</label>
+                    <span style={{ fontSize: 'var(--th-text-sm)', color: 'var(--th-text-faint)' }}>
+                      {steps.length} step(s)
+                    </span>
                   </div>
-                  
-                  {/* Add Step Button */}
-                  <div className="p-2 border-t">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full border-dashed"
-                      onClick={addStep}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Step
-                    </Button>
+                  <div className="th-steps-editor">
+                    <div className="th-steps-list">
+                      {steps.map((step, index) => (
+                        <div key={index} className="th-step-row">
+                          <div className="th-step-drag">
+                            <GripVertical className="h-4 w-4" />
+                          </div>
+                          <div className="th-step-num">
+                            <div className="th-step-num-badge">{index + 1}</div>
+                          </div>
+                          <div className="th-step-content">
+                            <div className="th-step-field">
+                              <div className="th-step-field-label">Action</div>
+                              <textarea
+                                className="th-textarea"
+                                value={step.action}
+                                onChange={(e) => updateStep(index, 'action', e.target.value)}
+                                placeholder="Describe the action to perform..."
+                                style={{ minHeight: '60px' }}
+                              />
+                            </div>
+                            <div className="th-step-field">
+                              <div className="th-step-field-label">Expected Result</div>
+                              <textarea
+                                className="th-textarea"
+                                value={step.expected_result}
+                                onChange={(e) => updateStep(index, 'expected_result', e.target.value)}
+                                placeholder="Describe the expected outcome..."
+                                style={{ minHeight: '60px' }}
+                              />
+                            </div>
+                          </div>
+                          <div className="th-step-actions">
+                            <button
+                              type="button"
+                              className={cn('th-step-action-btn', 'danger')}
+                              onClick={() => removeStep(index)}
+                              disabled={steps.length === 1}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="th-add-step">
+                      <button type="button" className="th-add-step-btn" onClick={addStep}>
+                        <Plus className="h-4 w-4" />
+                        Add Step
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Right Column - Metadata */}
-            <div className="space-y-4">
-              {/* Priority */}
-              <div className="space-y-2">
-                <Label htmlFor="priority">Priority</Label>
-                <Select
-                  value={formData.priority}
-                  onValueChange={(value) => setFormData({ ...formData, priority: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="critical">Critical</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="low">Low</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Right Column - Metadata */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {/* Priority */}
+                <div>
+                  <label className="th-label">Priority</label>
+                  <select
+                    className="th-select"
+                    value={formData.priority}
+                    onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                  >
+                    <option value="critical">Critical</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                  </select>
+                </div>
 
-              {/* Type */}
-              <div className="space-y-2">
-                <Label htmlFor="type">Type</Label>
-                <Select
-                  value={formData.type}
-                  onValueChange={(value) => setFormData({ ...formData, type: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="functional">Functional</SelectItem>
-                    <SelectItem value="regression">Regression</SelectItem>
-                    <SelectItem value="security">Security</SelectItem>
-                    <SelectItem value="integration">Integration</SelectItem>
-                    <SelectItem value="performance">Performance</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                {/* Type */}
+                <div>
+                  <label className="th-label">Type</label>
+                  <select
+                    className="th-select"
+                    value={formData.type}
+                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                  >
+                    <option value="functional">Functional</option>
+                    <option value="regression">Regression</option>
+                    <option value="security">Security</option>
+                    <option value="integration">Integration</option>
+                    <option value="performance">Performance</option>
+                  </select>
+                </div>
 
-              {/* Status */}
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) => setFormData({ ...formData, status: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="ready">Ready</SelectItem>
-                    <SelectItem value="approved">Approved</SelectItem>
-                    <SelectItem value="deprecated">Deprecated</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                {/* Status */}
+                <div>
+                  <label className="th-label">Status</label>
+                  <select
+                    className="th-select"
+                    value={formData.status}
+                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="ready">Ready</option>
+                    <option value="approved">Approved</option>
+                    <option value="deprecated">Deprecated</option>
+                  </select>
+                </div>
 
-              {/* Automation */}
-              <div className="space-y-2">
-                <Label htmlFor="automation">Automation</Label>
-                <Select
-                  value={formData.automation_status}
-                  onValueChange={(value) => setFormData({ ...formData, automation_status: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="manual">Manual</SelectItem>
-                    <SelectItem value="automated">Automated</SelectItem>
-                    <SelectItem value="planned">Planned</SelectItem>
-                  </SelectContent>
-                </Select>
+                {/* Automation */}
+                <div>
+                  <label className="th-label">Automation</label>
+                  <select
+                    className="th-select"
+                    value={formData.automation_status}
+                    onChange={(e) => setFormData({ ...formData, automation_status: e.target.value })}
+                  >
+                    <option value="manual">Manual</option>
+                    <option value="automated">Automated</option>
+                    <option value="planned">Planned</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          {/* Footer */}
+          <div className="th-modal-footer">
+            <button type="button" className="th-btn-secondary" onClick={() => onOpenChange(false)}>
               Cancel
-            </Button>
-            <Button type="submit" disabled={createMutation.isPending}>
+            </button>
+            <button type="submit" className="th-btn-primary" disabled={createMutation.isPending}>
               {createMutation.isPending ? 'Creating...' : 'Create Test Case'}
-            </Button>
-          </DialogFooter>
+            </button>
+          </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 }

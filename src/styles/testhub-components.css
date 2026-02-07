@@ -1,0 +1,1138 @@
+/* ═══════════════════════════════════════════════════════════════════
+   TESTHUB COMPONENT STYLES
+   Ring-fenced to .testhub-module container
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────
+   BUTTONS
+   ───────────────────────────────────────────────────────────────── */
+
+/* Primary Button - GRADIENT, not flat */
+.testhub-module .th-btn-primary {
+  height: var(--th-button-height);
+  padding: 10px 20px;
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-md);
+  font-weight: 600;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #2563EB, #1D4ED8);
+  border: none;
+  border-radius: var(--th-radius);
+  box-shadow: var(--th-shadow-primary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--th-space-2);
+  transition: all var(--th-transition);
+}
+
+.testhub-module .th-btn-primary:hover {
+  background: linear-gradient(135deg, #1D4ED8, #1E40AF);
+  box-shadow: var(--th-shadow-primary-hover);
+  transform: translateY(-1px);
+}
+
+.testhub-module .th-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Secondary Button */
+.testhub-module .th-btn-secondary {
+  height: var(--th-button-height);
+  padding: 10px 20px;
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-md);
+  font-weight: 500;
+  color: var(--th-text-sec);
+  background: var(--th-bg);
+  border: 1.5px solid var(--th-border);
+  border-radius: var(--th-radius);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--th-space-2);
+  transition: all var(--th-transition-fast);
+}
+
+.testhub-module .th-btn-secondary:hover {
+  background: var(--th-surface);
+  border-color: #CBD5E1;
+}
+
+/* Ghost Button */
+.testhub-module .th-btn-ghost {
+  height: var(--th-button-sm-height);
+  padding: 6px 12px;
+  font-family: var(--th-font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--th-primary);
+  background: transparent;
+  border: none;
+  border-radius: var(--th-radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--th-space-2);
+  transition: all var(--th-transition-fast);
+}
+
+.testhub-module .th-btn-ghost:hover {
+  background: var(--th-primary-hover-bg);
+}
+
+/* Destructive Button */
+.testhub-module .th-btn-danger {
+  height: var(--th-button-height);
+  padding: 10px 20px;
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-md);
+  font-weight: 600;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+  border: none;
+  border-radius: var(--th-radius);
+  box-shadow: var(--th-shadow-danger);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--th-space-2);
+  transition: all var(--th-transition);
+}
+
+.testhub-module .th-btn-danger:hover {
+  background: linear-gradient(135deg, #DC2626, #B91C1C);
+}
+
+/* Icon Button */
+.testhub-module .th-btn-icon {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--th-radius);
+  color: var(--th-text-nav);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--th-transition-fast);
+}
+
+.testhub-module .th-btn-icon:hover {
+  background: var(--th-surface);
+  color: var(--th-text-dark);
+}
+
+.testhub-module .th-btn-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Small Icon Button (toolbar) */
+.testhub-module .th-btn-icon-sm {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--th-radius-sm);
+}
+
+.testhub-module .th-btn-icon-sm svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   INPUTS
+   ───────────────────────────────────────────────────────────────── */
+
+/* Text Input - ALWAYS 40px height */
+.testhub-module .th-input {
+  width: 100%;
+  height: var(--th-input-height); /* 40px - EXACT */
+  padding: 10px 12px;
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-md); /* 14px */
+  font-weight: 400;
+  color: var(--th-text-dark);
+  background: var(--th-bg);
+  border: 1.5px solid var(--th-border);
+  border-radius: var(--th-radius); /* 8px - EXACT */
+  transition: border-color var(--th-transition-fast), box-shadow var(--th-transition-fast);
+}
+
+.testhub-module .th-input::placeholder {
+  color: var(--th-text-faint); /* #94A3B8 - EXACT */
+  font-weight: 400;
+}
+
+.testhub-module .th-input:focus {
+  outline: none;
+  border-color: var(--th-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* Input with Icon */
+.testhub-module .th-input-with-icon {
+  padding-left: 38px;
+}
+
+.testhub-module .th-input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 17px;
+  height: 17px;
+  color: var(--th-text-faint);
+  pointer-events: none;
+}
+
+.testhub-module .th-input:focus + .th-input-icon,
+.testhub-module .th-input-wrapper:focus-within .th-input-icon {
+  color: var(--th-primary);
+}
+
+/* Textarea - min 80px height */
+.testhub-module .th-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 10px 12px;
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-md);
+  font-weight: 400;
+  color: var(--th-text-dark);
+  background: var(--th-bg);
+  border: 1.5px solid var(--th-border);
+  border-radius: var(--th-radius);
+  resize: vertical;
+  line-height: 1.5;
+  transition: border-color var(--th-transition-fast), box-shadow var(--th-transition-fast);
+}
+
+.testhub-module .th-textarea::placeholder {
+  color: var(--th-text-faint);
+}
+
+.testhub-module .th-textarea:focus {
+  outline: none;
+  border-color: var(--th-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* Select Dropdown */
+.testhub-module .th-select {
+  width: 100%;
+  height: var(--th-input-height);
+  padding: 10px 36px 10px 12px;
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-md);
+  font-weight: 400;
+  color: var(--th-text-dark);
+  background: var(--th-bg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  border: 1.5px solid var(--th-border);
+  border-radius: var(--th-radius);
+  cursor: pointer;
+  appearance: none;
+  transition: border-color var(--th-transition-fast), box-shadow var(--th-transition-fast);
+}
+
+.testhub-module .th-select:focus {
+  outline: none;
+  border-color: var(--th-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* Form Label */
+.testhub-module .th-label {
+  display: block;
+  font-family: var(--th-font-ui);
+  font-size: 0.8rem; /* 12.8px */
+  font-weight: 600;
+  color: var(--th-text-dark);
+  margin-bottom: 6px;
+}
+
+.testhub-module .th-label-required::after {
+  content: ' *';
+  color: var(--th-danger);
+}
+
+/* Helper Text */
+.testhub-module .th-helper {
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-sm);
+  color: var(--th-text-muted);
+  margin-top: 4px;
+}
+
+/* Error State */
+.testhub-module .th-input-error {
+  border-color: var(--th-danger);
+}
+
+.testhub-module .th-input-error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.testhub-module .th-error-text {
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-sm);
+  color: var(--th-danger);
+  margin-top: 4px;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   MODALS
+   ───────────────────────────────────────────────────────────────── */
+
+/* Overlay */
+.testhub-module .th-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--th-transition);
+}
+
+.testhub-module .th-modal-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Modal Container */
+.testhub-module .th-modal {
+  background: var(--th-bg);
+  border-radius: var(--th-radius-lg); /* 12px - EXACT */
+  box-shadow: var(--th-shadow-5);
+  width: 100%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  transform: scale(0.95);
+  transition: transform var(--th-transition);
+}
+
+.testhub-module .th-modal-overlay.open .th-modal {
+  transform: scale(1);
+}
+
+/* Modal Sizes */
+.testhub-module .th-modal-sm { max-width: 440px; }
+.testhub-module .th-modal-md { max-width: 640px; }
+.testhub-module .th-modal-lg { max-width: 800px; }
+.testhub-module .th-modal-xl { max-width: 1000px; }
+.testhub-module .th-modal-full { 
+  max-width: calc(100vw - 80px);
+  height: calc(100vh - 80px);
+}
+
+/* Modal Header */
+.testhub-module .th-modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--th-border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.testhub-module .th-modal-title {
+  font-family: var(--th-font-ui); /* Inter, NOT Sora */
+  font-size: var(--th-text-xl); /* 1.1rem / 17.6px */
+  font-weight: 700;
+  color: var(--th-text-dark);
+  line-height: 1.3;
+}
+
+.testhub-module .th-modal-subtitle {
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-base);
+  font-weight: 400;
+  color: var(--th-text-muted);
+  margin-top: 4px;
+}
+
+.testhub-module .th-modal-close {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--th-text-faint);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--th-radius-sm);
+  transition: all var(--th-transition-fast);
+  margin-left: var(--th-space-4);
+}
+
+.testhub-module .th-modal-close:hover {
+  color: var(--th-text-dark);
+  background: var(--th-surface);
+}
+
+/* Modal Body */
+.testhub-module .th-modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Modal Footer */
+.testhub-module .th-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--th-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* Modal Tabs */
+.testhub-module .th-modal-tabs {
+  border-bottom: 1px solid var(--th-border);
+  padding: 0 24px;
+  display: flex;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.testhub-module .th-modal-tab {
+  padding: 14px 20px;
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-md);
+  font-weight: 500;
+  color: var(--th-text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  transition: all var(--th-transition-fast);
+}
+
+.testhub-module .th-modal-tab:hover {
+  color: var(--th-text-dark);
+}
+
+.testhub-module .th-modal-tab.active {
+  color: var(--th-primary);
+  border-bottom-color: var(--th-primary);
+  font-weight: 600;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   TABLES - 36px rows for RTM/TestHub
+   ───────────────────────────────────────────────────────────────── */
+
+.testhub-module .th-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--th-bg);
+  border: 1px solid var(--th-border);
+  border-radius: var(--th-radius);
+  overflow: hidden;
+}
+
+.testhub-module .th-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.testhub-module .th-table th {
+  height: 40px;
+  padding: 10px 12px;
+  font-family: var(--th-font-ui);
+  font-size: 0.75rem; /* 12px */
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--th-text-muted);
+  background: var(--th-surface);
+  border-bottom: 1px solid var(--th-border);
+  text-align: left;
+}
+
+.testhub-module .th-table th.sortable {
+  cursor: pointer;
+}
+
+.testhub-module .th-table th.sortable:hover {
+  color: var(--th-text-dark);
+  background: #F1F5F9;
+}
+
+.testhub-module .th-table td {
+  height: var(--th-row-height); /* 36px for RTM */
+  padding: 8px 12px;
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-base); /* 0.84rem */
+  color: var(--th-text-sec);
+  border-bottom: 1px solid var(--th-border);
+  vertical-align: middle;
+}
+
+.testhub-module .th-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.testhub-module .th-table tbody tr {
+  cursor: pointer;
+  transition: background var(--th-transition-fast);
+}
+
+.testhub-module .th-table tbody tr:hover td {
+  background: #F1F5F9;
+}
+
+.testhub-module .th-table tbody tr.selected td {
+  background: var(--th-primary-hover-bg);
+}
+
+/* Table Cell Variants */
+.testhub-module .th-cell-id {
+  font-family: var(--th-font-mono);
+  font-size: var(--th-text-sm);
+  color: var(--th-text-muted);
+}
+
+.testhub-module .th-cell-title {
+  font-weight: 500;
+  color: var(--th-text-dark);
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.testhub-module .th-cell-time {
+  font-size: var(--th-text-sm);
+  color: var(--th-text-faint);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   BADGES - 22px height, 4px radius
+   ───────────────────────────────────────────────────────────────── */
+
+.testhub-module .th-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 2px 8px;
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-xs); /* 0.7rem */
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-radius: var(--th-radius-xs); /* 4px */
+  white-space: nowrap;
+}
+
+/* Status Badges */
+.testhub-module .th-badge-draft {
+  background: #F1F5F9;
+  color: var(--th-text-muted);
+}
+
+.testhub-module .th-badge-ready,
+.testhub-module .th-badge-active {
+  background: var(--th-primary-active-bg);
+  color: var(--th-primary);
+}
+
+.testhub-module .th-badge-approved,
+.testhub-module .th-badge-passed {
+  background: var(--th-success-bg);
+  color: #059669;
+}
+
+.testhub-module .th-badge-failed {
+  background: var(--th-danger-bg);
+  color: #DC2626;
+}
+
+.testhub-module .th-badge-blocked {
+  background: var(--th-warning-bg);
+  color: #B45309;
+}
+
+/* Priority Text */
+.testhub-module .th-priority-critical {
+  color: #991B1B;
+  font-weight: 600;
+}
+
+.testhub-module .th-priority-high {
+  color: #C2410C;
+  font-weight: 600;
+}
+
+.testhub-module .th-priority-medium {
+  color: #A16207;
+  font-weight: 600;
+}
+
+.testhub-module .th-priority-low {
+  color: var(--th-text-muted);
+  font-weight: 500;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   AVATAR
+   ───────────────────────────────────────────────────────────────── */
+
+.testhub-module .th-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--th-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--th-font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  color: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.testhub-module .th-avatar-blue { background: #3B82F6; }
+.testhub-module .th-avatar-green { background: #10B981; }
+.testhub-module .th-avatar-purple { background: #8B5CF6; }
+.testhub-module .th-avatar-orange { background: #F97316; }
+
+/* ─────────────────────────────────────────────────────────────────
+   FOLDER PANEL
+   ───────────────────────────────────────────────────────────────── */
+
+.testhub-module .th-folder-panel {
+  width: var(--th-folder-panel-width); /* 240px */
+  background: var(--th-bg);
+  border-right: 1px solid var(--th-border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  transition: width var(--th-transition);
+}
+
+.testhub-module .th-folder-panel.collapsed {
+  width: 0;
+  overflow: hidden;
+  opacity: 0;
+}
+
+/* Collapsed Strip */
+.testhub-module .th-folder-strip {
+  width: var(--th-folder-panel-collapsed); /* 48px */
+  background: var(--th-bg);
+  border-right: 1px solid var(--th-border);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  flex-shrink: 0;
+}
+
+.testhub-module .th-folder-strip.visible {
+  display: flex;
+}
+
+.testhub-module .th-folder-expand-btn {
+  width: 36px;
+  height: 36px;
+  background: var(--th-surface);
+  border: none;
+  border-radius: var(--th-radius);
+  color: var(--th-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--th-transition-fast);
+}
+
+.testhub-module .th-folder-expand-btn:hover {
+  background: var(--th-primary-hover-bg);
+  color: var(--th-primary);
+}
+
+/* Folder Header */
+.testhub-module .th-folder-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--th-border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.testhub-module .th-folder-header h3 {
+  font-family: var(--th-font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--th-text-muted);
+}
+
+.testhub-module .th-folder-actions {
+  display: flex;
+  gap: 2px;
+}
+
+/* Folder Item */
+.testhub-module .th-folder-item {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 10px 12px;
+  margin: 2px 8px;
+  border-radius: var(--th-radius);
+  cursor: pointer;
+  position: relative;
+  transition: background var(--th-transition-fast);
+}
+
+.testhub-module .th-folder-item:hover {
+  background: var(--th-primary-hover-bg);
+}
+
+.testhub-module .th-folder-item.selected {
+  background: var(--th-primary-active-bg);
+}
+
+.testhub-module .th-folder-item.selected::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  background: var(--th-primary);
+  border-radius: 0 2px 2px 0;
+}
+
+.testhub-module .th-folder-chevron {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--th-text-muted);
+  transition: transform var(--th-transition-fast);
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+
+.testhub-module .th-folder-item.expanded .th-folder-chevron {
+  transform: rotate(90deg);
+}
+
+.testhub-module .th-folder-icon {
+  width: 17px;
+  height: 17px;
+  margin-right: 12px; /* EXACT 12px gap */
+  color: var(--th-text-muted);
+}
+
+.testhub-module .th-folder-item.selected .th-folder-icon {
+  color: var(--th-primary);
+}
+
+.testhub-module .th-folder-name {
+  flex: 1;
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-base);
+  font-weight: 500;
+  color: var(--th-text-nav);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.testhub-module .th-folder-item.selected .th-folder-name {
+  font-weight: 600;
+  color: var(--th-primary);
+}
+
+.testhub-module .th-folder-count {
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-sm);
+  color: var(--th-text-faint);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   STEPS EDITOR
+   ───────────────────────────────────────────────────────────────── */
+
+.testhub-module .th-steps-editor {
+  border: 1px solid var(--th-border);
+  border-radius: var(--th-radius);
+  overflow: hidden;
+}
+
+.testhub-module .th-steps-header {
+  padding: 12px 16px;
+  background: var(--th-surface);
+  border-bottom: 1px solid var(--th-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.testhub-module .th-steps-title {
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-md);
+  font-weight: 600;
+  color: var(--th-text-dark);
+}
+
+.testhub-module .th-steps-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.testhub-module .th-step-row {
+  display: flex;
+  border-bottom: 1px solid var(--th-border);
+  background: var(--th-bg);
+  transition: background var(--th-transition-fast);
+}
+
+.testhub-module .th-step-row:last-child {
+  border-bottom: none;
+}
+
+.testhub-module .th-step-row:hover {
+  background: var(--th-surface);
+}
+
+.testhub-module .th-step-drag {
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  color: var(--th-text-faint);
+  border-right: 1px solid var(--th-border);
+  flex-shrink: 0;
+  transition: all var(--th-transition-fast);
+}
+
+.testhub-module .th-step-drag:hover {
+  color: var(--th-text-nav);
+  background: var(--th-surface);
+}
+
+.testhub-module .th-step-num {
+  width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.testhub-module .th-step-num-badge {
+  width: 28px;
+  height: 28px;
+  background: var(--th-primary);
+  color: #FFFFFF;
+  border-radius: var(--th-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-sm);
+  font-weight: 600;
+}
+
+.testhub-module .th-step-content {
+  flex: 1;
+  padding: 16px;
+  min-width: 0;
+}
+
+.testhub-module .th-step-field {
+  margin-bottom: 12px;
+}
+
+.testhub-module .th-step-field:last-child {
+  margin-bottom: 0;
+}
+
+.testhub-module .th-step-field-label {
+  font-family: var(--th-font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--th-text-muted);
+  margin-bottom: 6px;
+}
+
+.testhub-module .th-step-actions {
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-left: 1px solid var(--th-border);
+  padding: 8px;
+  flex-shrink: 0;
+}
+
+.testhub-module .th-step-action-btn {
+  width: 32px;
+  height: 32px;
+  background: var(--th-bg);
+  border: 1px solid var(--th-border);
+  border-radius: var(--th-radius-sm);
+  color: var(--th-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--th-transition-fast);
+}
+
+.testhub-module .th-step-action-btn:hover {
+  background: var(--th-surface);
+  border-color: #CBD5E1;
+  color: var(--th-text-dark);
+}
+
+.testhub-module .th-step-action-btn.danger:hover {
+  background: var(--th-danger-bg);
+  border-color: var(--th-danger);
+  color: var(--th-danger);
+}
+
+.testhub-module .th-add-step {
+  padding: 16px;
+  border-top: 1px solid var(--th-border);
+}
+
+.testhub-module .th-add-step-btn {
+  width: 100%;
+  height: 44px;
+  background: transparent;
+  border: 2px dashed var(--th-border);
+  border-radius: var(--th-radius);
+  color: var(--th-text-muted);
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-md);
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all var(--th-transition-fast);
+}
+
+.testhub-module .th-add-step-btn:hover {
+  border-color: var(--th-primary);
+  color: var(--th-primary);
+  background: var(--th-primary-hover-bg);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   TOAST NOTIFICATIONS
+   ───────────────────────────────────────────────────────────────── */
+
+.testhub-module .th-toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.testhub-module .th-toast {
+  background: var(--th-bg);
+  border: 1px solid var(--th-border);
+  border-radius: var(--th-radius);
+  padding: 14px 18px;
+  box-shadow: var(--th-shadow-4);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 400px;
+  transform: translateX(120%);
+  transition: transform 0.3s ease;
+}
+
+.testhub-module .th-toast.visible {
+  transform: translateX(0);
+}
+
+.testhub-module .th-toast.success { border-left: 4px solid var(--th-success); }
+.testhub-module .th-toast.error { border-left: 4px solid var(--th-danger); }
+.testhub-module .th-toast.info { border-left: 4px solid var(--th-primary); }
+.testhub-module .th-toast.warning { border-left: 4px solid var(--th-warning); }
+
+.testhub-module .th-toast-title {
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-md);
+  font-weight: 600;
+  color: var(--th-text-dark);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   CHECKBOX
+   ───────────────────────────────────────────────────────────────── */
+
+.testhub-module .th-checkbox {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--th-border);
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  transition: all var(--th-transition-fast);
+  flex-shrink: 0;
+}
+
+.testhub-module .th-checkbox:hover {
+  border-color: var(--th-primary);
+}
+
+.testhub-module .th-checkbox:checked {
+  background: var(--th-primary);
+  border-color: var(--th-primary);
+}
+
+.testhub-module .th-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  left: 2px;
+  top: -1px;
+  font-size: 11px;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+.testhub-module .th-checkbox:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   PAGE LAYOUT
+   ───────────────────────────────────────────────────────────────── */
+
+.testhub-module .th-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--th-surface);
+}
+
+.testhub-module .th-page-header {
+  padding: 16px 24px;
+  background: var(--th-bg);
+  border-bottom: 1px solid var(--th-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.testhub-module .th-page-title {
+  font-family: var(--th-font-brand);
+  font-size: var(--th-text-lg);
+  font-weight: 700;
+  color: var(--th-text-dark);
+}
+
+.testhub-module .th-page-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.testhub-module .th-page-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.testhub-module .th-main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.testhub-module .th-toolbar {
+  padding: 12px 16px;
+  background: var(--th-bg);
+  border-bottom: 1px solid var(--th-border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.testhub-module .th-table-container {
+  flex: 1;
+  overflow: auto;
+  background: var(--th-bg);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   EMPTY STATE
+   ───────────────────────────────────────────────────────────────── */
+
+.testhub-module .th-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.testhub-module .th-empty-icon {
+  width: 64px;
+  height: 64px;
+  color: var(--th-text-faint);
+  margin-bottom: 16px;
+}
+
+.testhub-module .th-empty-title {
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-md);
+  font-weight: 600;
+  color: var(--th-text-dark);
+  margin-bottom: 8px;
+}
+
+.testhub-module .th-empty-desc {
+  font-family: var(--th-font-ui);
+  font-size: var(--th-text-base);
+  color: var(--th-text-muted);
+  max-width: 320px;
+}

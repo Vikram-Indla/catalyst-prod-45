@@ -1,6 +1,6 @@
 /**
  * TestHub Cases Table Component
- * Displays test cases in a sortable, filterable table with actions
+ * Ring-fenced CATALYST V10 design with 36px rows
  */
 
 import { useState } from 'react';
@@ -18,24 +18,6 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { TMTestCase } from '@/types/test-management';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 
 interface TestHubCasesTableProps {
@@ -44,22 +26,24 @@ interface TestHubCasesTableProps {
   onRefresh: () => void;
 }
 
-const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline'; icon: any }> = {
-  DRAFT: { label: 'Draft', variant: 'secondary', icon: Clock },
-  REVIEW: { label: 'Review', variant: 'outline', icon: AlertCircle },
-  APPROVED: { label: 'Approved', variant: 'default', icon: CheckCircle2 },
-  DEPRECATED: { label: 'Deprecated', variant: 'destructive', icon: XCircle },
+const statusConfig: Record<string, { label: string; badgeClass: string; icon: any }> = {
+  DRAFT: { label: 'Draft', badgeClass: 'th-badge-draft', icon: Clock },
+  REVIEW: { label: 'Review', badgeClass: 'th-badge-active', icon: AlertCircle },
+  READY: { label: 'Ready', badgeClass: 'th-badge-ready', icon: CheckCircle2 },
+  APPROVED: { label: 'Approved', badgeClass: 'th-badge-approved', icon: CheckCircle2 },
+  DEPRECATED: { label: 'Deprecated', badgeClass: 'th-badge-failed', icon: XCircle },
 };
 
-const priorityColors: Record<string, string> = {
-  critical: 'bg-red-500',
-  high: 'bg-orange-500',
-  medium: 'bg-yellow-500',
-  low: 'bg-blue-500',
+const priorityConfig: Record<string, { label: string; className: string }> = {
+  critical: { label: 'Critical', className: 'th-priority-critical' },
+  high: { label: 'High', className: 'th-priority-high' },
+  medium: { label: 'Medium', className: 'th-priority-medium' },
+  low: { label: 'Low', className: 'th-priority-low' },
 };
 
 export function TestHubCasesTable({ cases, projectId, onRefresh }: TestHubCasesTableProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -82,163 +66,211 @@ export function TestHubCasesTable({ cases, projectId, onRefresh }: TestHubCasesT
   };
 
   const allSelected = cases.length > 0 && selectedIds.size === cases.length;
-  const someSelected = selectedIds.size > 0 && selectedIds.size < cases.length;
 
   return (
-    <div className="rounded-lg border border-border bg-surface-2 overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow className="bg-muted/30">
-            <TableHead className="w-10">
-              <Checkbox
+    <div style={{ padding: '16px' }}>
+      <table className="th-table">
+        <thead>
+          <tr>
+            <th style={{ width: '40px' }}>
+              <input
+                type="checkbox"
+                className="th-checkbox"
                 checked={allSelected}
-                onCheckedChange={handleSelectAll}
-                aria-label="Select all"
-                className={someSelected ? 'data-[state=checked]:bg-primary/50' : ''}
+                onChange={(e) => handleSelectAll(e.target.checked)}
               />
-            </TableHead>
-            <TableHead className="w-28">Key</TableHead>
-            <TableHead>Title</TableHead>
-            <TableHead className="w-24">Status</TableHead>
-            <TableHead className="w-24">Priority</TableHead>
-            <TableHead className="w-24">Type</TableHead>
-            <TableHead className="w-16 text-center">Steps</TableHead>
-            <TableHead className="w-36">Last Updated</TableHead>
-            <TableHead className="w-16"></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+            </th>
+            <th style={{ width: '100px' }} className="sortable">Key</th>
+            <th className="sortable">Title</th>
+            <th style={{ width: '100px' }}>Status</th>
+            <th style={{ width: '100px' }}>Priority</th>
+            <th style={{ width: '100px' }}>Type</th>
+            <th style={{ width: '70px', textAlign: 'center' }}>Steps</th>
+            <th style={{ width: '120px' }}>Updated</th>
+            <th style={{ width: '50px' }}></th>
+          </tr>
+        </thead>
+        <tbody>
           {cases.map(testCase => {
-            // Handle status - DB uses lowercase but statusConfig uses uppercase keys
             const statusKey = (testCase.status || 'draft').toUpperCase();
             const status = statusConfig[statusKey] || statusConfig.DRAFT;
             const StatusIcon = status.icon;
             const priorityName = testCase.priority?.name?.toLowerCase() || 'medium';
-            const priorityColor = priorityColors[priorityName] || priorityColors.medium;
+            const priority = priorityConfig[priorityName] || priorityConfig.medium;
             const isSelected = selectedIds.has(testCase.id);
-            // Use case_key from database (network shows case_key, not key)
             const caseKey = (testCase as any).case_key || testCase.key || '';
+            const stepCount = (testCase as any).steps?.length || 0;
 
             return (
-              <TableRow
+              <tr
                 key={testCase.id}
-                className={cn(
-                  'hover:bg-muted/30 cursor-pointer transition-colors',
-                  isSelected && 'bg-primary/5'
-                )}
+                className={cn(isSelected && 'selected')}
               >
-                <TableCell onClick={(e) => e.stopPropagation()}>
-                  <Checkbox
+                <td onClick={(e) => e.stopPropagation()}>
+                  <input
+                    type="checkbox"
+                    className="th-checkbox"
                     checked={isSelected}
-                    onCheckedChange={(checked) => handleSelectOne(testCase.id, checked as boolean)}
-                    aria-label={`Select ${caseKey}`}
+                    onChange={(e) => handleSelectOne(testCase.id, e.target.checked)}
                   />
-                </TableCell>
-                <TableCell className="font-mono text-sm text-primary">
-                  {caseKey}
-                </TableCell>
-                <TableCell className="max-w-md">
-                  <div className="flex flex-col">
-                    <span className="font-medium text-text-primary truncate">
-                      {testCase.title}
-                    </span>
-                    {testCase.folder && (
-                      <span className="text-xs text-muted-foreground truncate">
-                        {testCase.folder.name}
-                      </span>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={status.variant} className="gap-1">
-                    <StatusIcon className="h-3 w-3" />
+                </td>
+                <td className="th-cell-id">{caseKey}</td>
+                <td>
+                  <div className="th-cell-title">{testCase.title}</div>
+                  {testCase.folder && (
+                    <div style={{ fontSize: 'var(--th-text-sm)', color: 'var(--th-text-faint)' }}>
+                      {testCase.folder.name}
+                    </div>
+                  )}
+                </td>
+                <td>
+                  <span className={cn('th-badge', status.badgeClass)}>
+                    <StatusIcon style={{ width: '12px', height: '12px', marginRight: '4px' }} />
                     {status.label}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <div className={cn('h-2.5 w-2.5 rounded-full', priorityColor)} />
-                    <span className="text-sm capitalize">
-                      {testCase.priority?.name || 'Medium'}
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-sm text-text-secondary">
+                  </span>
+                </td>
+                <td>
+                  <span className={priority.className}>
+                    {testCase.priority?.name || 'Medium'}
+                  </span>
+                </td>
+                <td style={{ color: 'var(--th-text-sec)' }}>
                   {testCase.type?.name || 'Functional'}
-                </TableCell>
-                <TableCell className="text-center text-sm text-muted-foreground">
-                  {testCase.steps?.length || 0}
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
+                </td>
+                <td style={{ textAlign: 'center', color: 'var(--th-text-faint)' }}>
+                  {stepCount}
+                </td>
+                <td className="th-cell-time">
                   {testCase.updated_at 
                     ? format(new Date(testCase.updated_at), 'MMM d, yyyy')
                     : '-'}
-                </TableCell>
-                <TableCell onClick={(e) => e.stopPropagation()}>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Eye className="h-4 w-4 mr-2" />
-                        View Details
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Edit2 className="h-4 w-4 mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Play className="h-4 w-4 mr-2" />
-                        Execute
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Copy className="h-4 w-4 mr-2" />
-                        Clone
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-destructive focus:text-destructive">
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
+                </td>
+                <td onClick={(e) => e.stopPropagation()} style={{ position: 'relative' }}>
+                  <button
+                    className="th-btn-icon th-btn-icon-sm"
+                    onClick={() => setOpenMenuId(openMenuId === testCase.id ? null : testCase.id)}
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </button>
+                  
+                  {/* Dropdown Menu */}
+                  {openMenuId === testCase.id && (
+                    <>
+                      <div 
+                        style={{ position: 'fixed', inset: 0, zIndex: 50 }}
+                        onClick={() => setOpenMenuId(null)}
+                      />
+                      <div
+                        style={{
+                          position: 'absolute',
+                          right: 0,
+                          top: '100%',
+                          background: 'var(--th-bg)',
+                          border: '1px solid var(--th-border)',
+                          borderRadius: 'var(--th-radius)',
+                          boxShadow: 'var(--th-shadow-3)',
+                          minWidth: '160px',
+                          zIndex: 100,
+                          padding: '4px',
+                        }}
+                      >
+                        <button className="th-dropdown-item" onClick={() => setOpenMenuId(null)}>
+                          <Eye className="h-4 w-4" />
+                          View Details
+                        </button>
+                        <button className="th-dropdown-item" onClick={() => setOpenMenuId(null)}>
+                          <Edit2 className="h-4 w-4" />
+                          Edit
+                        </button>
+                        <button className="th-dropdown-item" onClick={() => setOpenMenuId(null)}>
+                          <Play className="h-4 w-4" />
+                          Execute
+                        </button>
+                        <button className="th-dropdown-item" onClick={() => setOpenMenuId(null)}>
+                          <Copy className="h-4 w-4" />
+                          Clone
+                        </button>
+                        <div style={{ borderTop: '1px solid var(--th-border)', margin: '4px 0' }} />
+                        <button 
+                          className="th-dropdown-item" 
+                          style={{ color: 'var(--th-danger)' }}
+                          onClick={() => setOpenMenuId(null)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Delete
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </td>
+              </tr>
             );
           })}
-        </TableBody>
-      </Table>
+        </tbody>
+      </table>
 
       {/* Bulk actions bar */}
       {selectedIds.size > 0 && (
-        <div className="sticky bottom-0 bg-surface-1 border-t border-border px-4 py-3 flex items-center gap-4">
-          <span className="text-sm font-medium">
+        <div 
+          style={{
+            position: 'sticky',
+            bottom: 0,
+            background: 'var(--th-bg)',
+            borderTop: '1px solid var(--th-border)',
+            padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '16px',
+            marginTop: '16px',
+          }}
+        >
+          <span style={{ fontSize: 'var(--th-text-md)', fontWeight: 500 }}>
             {selectedIds.size} selected
           </span>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button className="th-btn-secondary" style={{ height: '32px', padding: '0 12px' }}>
               Move to Folder
-            </Button>
-            <Button variant="outline" size="sm">
+            </button>
+            <button className="th-btn-secondary" style={{ height: '32px', padding: '0 12px' }}>
               Change Status
-            </Button>
-            <Button variant="outline" size="sm" className="text-destructive hover:text-destructive">
+            </button>
+            <button 
+              className="th-btn-secondary" 
+              style={{ height: '32px', padding: '0 12px', color: 'var(--th-danger)' }}
+            >
               Delete
-            </Button>
+            </button>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="ml-auto"
+          <button
+            className="th-btn-ghost"
+            style={{ marginLeft: 'auto' }}
             onClick={() => setSelectedIds(new Set())}
           >
             Clear Selection
-          </Button>
+          </button>
         </div>
       )}
+
+      <style>{`
+        .th-dropdown-item {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 12px;
+          background: none;
+          border: none;
+          font-family: var(--th-font-ui);
+          font-size: var(--th-text-md);
+          color: var(--th-text-sec);
+          cursor: pointer;
+          border-radius: var(--th-radius-sm);
+          transition: background var(--th-transition-fast);
+        }
+        .th-dropdown-item:hover {
+          background: var(--th-surface);
+        }
+      `}</style>
     </div>
   );
 }
