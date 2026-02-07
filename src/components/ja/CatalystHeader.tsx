@@ -148,6 +148,7 @@ export function CatalystHeader() {
     { label: "Product", hasDropdown: true, moduleKey: "product", visibleToProductOwner: true },
     { label: "Project", isLabel: true, moduleKey: "project", visibleToProductOwner: true },
     { label: "Releases", path: "/releases/command-center", moduleKey: "releases", visibleToProductOwner: false },
+    { label: "TestHub", path: "/testhub/repository", moduleKey: "testhub", visibleToProductOwner: false },
     { label: "Operations", hasDropdown: true, path: "/release", moduleKey: "operations", visibleToProductOwner: false },
     { label: "TaskHub", path: "/taskhub/boards", moduleKey: "planner", visibleToProductOwner: true },
     { label: "PlanHub", path: "/planhub", moduleKey: "planhub", visibleToProductOwner: true },

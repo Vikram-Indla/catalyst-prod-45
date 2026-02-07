@@ -55,6 +55,20 @@ const TimelineView = lazy(() => import("./pages/project/TimelineView"));
 import { EpicBalancingPage } from "./modules/epic-balancing";
 const UserNotificationSettingsPage = lazy(() => import("./pages/UserNotificationSettingsPage"));
 import { PlannerPage, KanbanPage, MyTasksPage } from "./modules/planner";
+// TestHub pages
+const TestHubPage = lazy(() => import("./pages/testhub/TestHubPage"));
+const TestRepositoryPage = lazy(() => import("./pages/testhub/TestRepositoryPage"));
+const TestHubDashboardPage = lazy(() => import("./pages/testhub/TestHubDashboardPage"));
+const SharedStepsPage = lazy(() => import("./pages/testhub/SharedStepsPage"));
+const TestSetsPage = lazy(() => import("./pages/testhub/TestSetsPage"));
+const TestCyclesPage = lazy(() => import("./pages/testhub/TestCyclesPage"));
+const ExecutionHubPage = lazy(() => import("./pages/testhub/ExecutionHubPage"));
+const TestRunsPage = lazy(() => import("./pages/testhub/TestRunsPage"));
+const TestHubDefectsPage = lazy(() => import("./pages/testhub/DefectsPage"));
+const TestHubRequirementsPage = lazy(() => import("./pages/testhub/RequirementsPage"));
+const TestHubTraceabilityPage = lazy(() => import("./pages/testhub/TraceabilityPage"));
+const TestHubReportsPage = lazy(() => import("./pages/testhub/ReportsPage"));
+const TestHubSettingsPage = lazy(() => import("./pages/testhub/SettingsPage"));
 // Task10 pages
 const T10LandingPage = lazy(() => import("./modules/task10/pages/T10LandingPage").then(m => ({ default: m.T10LandingPage })));
 const T10WeekPage = lazy(() => import("./modules/task10/pages/T10WeekPage").then(m => ({ default: m.T10WeekPage })));
@@ -488,6 +502,23 @@ const App = () => (
               <Route path="/taskhub/:view" element={<PlannerPage />} />
               <Route path="/taskhub-kanban" element={<KanbanPage />} />
               <Route path="/taskhub/my-tasks" element={<MyTasksPage />} />
+              
+              {/* TestHub Module */}
+              <Route path="/testhub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubPage /></Suspense>}>
+                <Route index element={<Navigate to="/testhub/repository" replace />} />
+                <Route path="repository" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestRepositoryPage /></Suspense>} />
+                <Route path="dashboard" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubDashboardPage /></Suspense>} />
+                <Route path="shared-steps" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SharedStepsPage /></Suspense>} />
+                <Route path="test-sets" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestSetsPage /></Suspense>} />
+                <Route path="cycles" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestCyclesPage /></Suspense>} />
+                <Route path="execution" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ExecutionHubPage /></Suspense>} />
+                <Route path="runs" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestRunsPage /></Suspense>} />
+                <Route path="defects" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubDefectsPage /></Suspense>} />
+                <Route path="requirements" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubRequirementsPage /></Suspense>} />
+                <Route path="traceability" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubTraceabilityPage /></Suspense>} />
+                <Route path="reports" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubReportsPage /></Suspense>} />
+                <Route path="settings" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubSettingsPage /></Suspense>} />
+              </Route>
               
               {/* Priorities Module (formerly Task10) */}
               <Route path="/priorities" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10LandingPage /></Suspense>} />
