@@ -1,10 +1,5 @@
-// ═══════════════════════════════════════════════════════════════════════════
-// CREATE TEST CASE MODAL COMPONENT
-// Copy this ENTIRE file to: src/components/testhub/CreateTestCaseModal.tsx
-// ═══════════════════════════════════════════════════════════════════════════
-
 import { useState } from 'react';
-import { X, Plus, GripVertical, Paperclip, Copy, ArrowUp, Trash2 } from 'lucide-react';
+import { X, Plus, GripVertical, Paperclip, Copy, ArrowUp, Trash2, ChevronDown } from 'lucide-react';
 
 interface TestStep {
   id: string;
@@ -120,115 +115,362 @@ export function CreateTestCaseModal({
 
   if (!isOpen) return null;
 
+  const inputStyle: React.CSSProperties = {
+    height: 40,
+    width: '100%',
+    padding: '0 12px',
+    border: '1.5px solid #E2E8F0',
+    borderRadius: 8,
+    fontFamily: 'Inter, sans-serif',
+    fontSize: 14,
+    color: '#0F172A',
+    outline: 'none',
+    transition: 'border-color 0.15s, box-shadow 0.15s',
+  };
+
+  const textareaStyle: React.CSSProperties = {
+    ...inputStyle,
+    height: 'auto',
+    minHeight: 80,
+    padding: '10px 12px',
+    resize: 'vertical' as const,
+  };
+
+  const selectStyle: React.CSSProperties = {
+    ...inputStyle,
+    appearance: 'none' as const,
+    backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2394A3B8\' stroke-width=\'2\'%3E%3Cpath d=\'M6 9l6 6 6-6\'/%3E%3C/svg%3E")',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'right 12px center',
+    paddingRight: 40,
+    cursor: 'pointer',
+  };
+
+  const labelStyle: React.CSSProperties = {
+    display: 'block',
+    fontFamily: 'Inter, sans-serif',
+    fontSize: 13,
+    fontWeight: 600,
+    color: '#0F172A',
+    marginBottom: 6,
+  };
+
   return (
-    <div className={`th-modal-overlay ${isOpen ? 'open' : ''}`} onClick={onClose}>
-      <div className="th-modal th-modal-lg" onClick={(e) => e.stopPropagation()}>
-        <div className="th-modal-header">
-          <div className="th-modal-header-content">
-            <h2 className="th-modal-title">Create Test Case</h2>
-            <p className="th-modal-subtitle">Add a new test case to the repository</p>
+    <div 
+      onClick={onClose}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        backdropFilter: 'blur(4px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+      }}
+    >
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: 800,
+          maxWidth: '95vw',
+          maxHeight: '85vh',
+          backgroundColor: '#FFFFFF',
+          borderRadius: 12,
+          boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Header */}
+        <div style={{
+          padding: '20px 24px',
+          borderBottom: '1px solid #E2E8F0',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+        }}>
+          <div>
+            <h2 style={{
+              fontFamily: 'Inter, sans-serif',
+              fontSize: 18,
+              fontWeight: 700,
+              color: '#0F172A',
+              margin: 0,
+            }}>Create Test Case</h2>
+            <p style={{
+              fontFamily: 'Inter, sans-serif',
+              fontSize: 14,
+              color: '#64748B',
+              margin: '4px 0 0 0',
+            }}>Add a new test case to the repository</p>
           </div>
-          <button className="th-modal-close" onClick={onClose}>
-            <X />
+          <button 
+            onClick={onClose}
+            style={{
+              width: 32,
+              height: 32,
+              padding: 0,
+              border: 'none',
+              borderRadius: 8,
+              backgroundColor: 'transparent',
+              color: '#94A3B8',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#F1F5F9';
+              e.currentTarget.style.color = '#0F172A';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = '#94A3B8';
+            }}
+          >
+            <X style={{ width: 20, height: 20 }} />
           </button>
         </div>
 
-        <div className="th-modal-body">
-          <div className="th-modal-two-col">
-            <div className="th-modal-main-col">
-              <div className="th-form-row">
-                <label className="th-label required">Title</label>
+        {/* Body */}
+        <div style={{
+          padding: 24,
+          overflowY: 'auto',
+          flex: 1,
+        }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 280px',
+            gap: 24,
+          }}>
+            {/* Left column */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <div>
+                <label style={labelStyle}>
+                  Title <span style={{ color: '#EF4444' }}>*</span>
+                </label>
                 <input
                   type="text"
-                  className="th-input"
                   placeholder="Enter a descriptive title..."
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  style={inputStyle}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#2563EB';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#E2E8F0';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
 
-              <div className="th-form-row">
-                <label className="th-label">Description / Objective</label>
+              <div>
+                <label style={labelStyle}>Description / Objective</label>
                 <textarea
-                  className="th-textarea"
                   placeholder="What does this test verify?"
                   value={objective}
                   onChange={(e) => setObjective(e.target.value)}
-                  style={{ minHeight: '100px' }}
+                  style={{ ...textareaStyle, minHeight: 100 }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#2563EB';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#E2E8F0';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
 
-              <div className="th-form-row">
-                <label className="th-label">Preconditions</label>
+              <div>
+                <label style={labelStyle}>Preconditions</label>
                 <textarea
-                  className="th-textarea"
                   placeholder="List conditions that must be met..."
                   value={preconditions}
                   onChange={(e) => setPreconditions(e.target.value)}
-                  style={{ minHeight: '80px' }}
+                  style={textareaStyle}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#2563EB';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#E2E8F0';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 />
               </div>
 
-              <div className="th-form-row">
-                <label className="th-label required">Test Steps</label>
-                <div className="th-steps-editor">
-                  <div className="th-steps-header">
-                    <div className="th-steps-header-left">
-                      <span className="th-steps-title">Steps</span>
-                      <span className="th-steps-count">{steps.length} step(s)</span>
-                    </div>
+              <div>
+                <label style={labelStyle}>
+                  Test Steps <span style={{ color: '#EF4444' }}>*</span>
+                </label>
+                <div style={{
+                  border: '1px solid #E2E8F0',
+                  borderRadius: 8,
+                  overflow: 'hidden',
+                }}>
+                  {/* Steps Header */}
+                  <div style={{
+                    padding: '12px 16px',
+                    backgroundColor: '#F8FAFC',
+                    borderBottom: '1px solid #E2E8F0',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>
+                      Steps ({steps.length})
+                    </span>
                   </div>
 
-                  <div className="th-steps-list">
+                  {/* Steps List */}
+                  <div style={{ padding: 12 }}>
                     {steps.map((step, index) => (
-                      <div key={step.id} className="th-step-row">
-                        <div className="th-step-drag">
-                          <GripVertical />
+                      <div 
+                        key={step.id}
+                        style={{
+                          display: 'flex',
+                          gap: 12,
+                          padding: 12,
+                          backgroundColor: '#FAFAFA',
+                          borderRadius: 8,
+                          marginBottom: index < steps.length - 1 ? 12 : 0,
+                        }}
+                      >
+                        <div style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          gap: 8,
+                          paddingTop: 4,
+                        }}>
+                          <GripVertical style={{ width: 16, height: 16, color: '#CBD5E1', cursor: 'grab' }} />
+                          <div style={{
+                            width: 24,
+                            height: 24,
+                            borderRadius: '50%',
+                            backgroundColor: '#E2E8F0',
+                            color: '#64748B',
+                            fontSize: 12,
+                            fontWeight: 600,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}>{index + 1}</div>
                         </div>
-                        <div className="th-step-num">
-                          <div className="th-step-num-badge">{index + 1}</div>
-                        </div>
-                        <div className="th-step-content">
-                          <div className="th-step-field">
-                            <label className="th-step-field-label">Action</label>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                          <div>
+                            <label style={{ fontSize: 11, fontWeight: 500, color: '#64748B', marginBottom: 4, display: 'block' }}>Action</label>
                             <textarea
-                              className="th-step-textarea"
                               placeholder="Describe the action to perform..."
                               value={step.action}
                               onChange={(e) => updateStep(step.id, 'action', e.target.value)}
+                              style={{
+                                width: '100%',
+                                minHeight: 60,
+                                padding: '8px 12px',
+                                border: '1px solid #E2E8F0',
+                                borderRadius: 6,
+                                fontSize: 13,
+                                resize: 'vertical',
+                                outline: 'none',
+                              }}
+                              onFocus={(e) => e.target.style.borderColor = '#2563EB'}
+                              onBlur={(e) => e.target.style.borderColor = '#E2E8F0'}
                             />
                           </div>
-                          <div className="th-step-field">
-                            <label className="th-step-field-label">Expected Result</label>
+                          <div>
+                            <label style={{ fontSize: 11, fontWeight: 500, color: '#64748B', marginBottom: 4, display: 'block' }}>Expected Result</label>
                             <textarea
-                              className="th-step-textarea"
                               placeholder="Describe the expected outcome..."
                               value={step.expectedResult}
                               onChange={(e) => updateStep(step.id, 'expectedResult', e.target.value)}
+                              style={{
+                                width: '100%',
+                                minHeight: 60,
+                                padding: '8px 12px',
+                                border: '1px solid #E2E8F0',
+                                borderRadius: 6,
+                                fontSize: 13,
+                                resize: 'vertical',
+                                outline: 'none',
+                              }}
+                              onFocus={(e) => e.target.style.borderColor = '#2563EB'}
+                              onBlur={(e) => e.target.style.borderColor = '#E2E8F0'}
                             />
                           </div>
                         </div>
-                        <div className="th-step-actions">
-                          <button className="th-step-action-btn" title="Attach file">
-                            <Paperclip />
-                          </button>
-                          <button className="th-step-action-btn" title="Clone" onClick={() => cloneStep(step.id)}>
-                            <Copy />
-                          </button>
-                          <button className="th-step-action-btn" title="Insert above" onClick={() => insertStepAbove(step.id)}>
-                            <ArrowUp />
-                          </button>
-                          <button className="th-step-action-btn danger" title="Delete" onClick={() => removeStep(step.id)} disabled={steps.length === 1}>
-                            <Trash2 />
-                          </button>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          {[
+                            { icon: Copy, title: 'Clone', action: () => cloneStep(step.id) },
+                            { icon: ArrowUp, title: 'Insert above', action: () => insertStepAbove(step.id) },
+                            { icon: Trash2, title: 'Delete', action: () => removeStep(step.id), danger: true, disabled: steps.length === 1 },
+                          ].map(({ icon: Icon, title, action, danger, disabled }) => (
+                            <button
+                              key={title}
+                              onClick={action}
+                              disabled={disabled}
+                              title={title}
+                              style={{
+                                width: 28,
+                                height: 28,
+                                padding: 0,
+                                border: 'none',
+                                borderRadius: 6,
+                                backgroundColor: 'transparent',
+                                color: disabled ? '#CBD5E1' : danger ? '#EF4444' : '#94A3B8',
+                                cursor: disabled ? 'not-allowed' : 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                            >
+                              <Icon style={{ width: 14, height: 14 }} />
+                            </button>
+                          ))}
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  <div className="th-add-step">
-                    <button className="th-add-step-btn" onClick={addStep}>
-                      <Plus />
+                  {/* Add Step */}
+                  <div style={{ padding: '0 12px 12px' }}>
+                    <button
+                      onClick={addStep}
+                      style={{
+                        width: '100%',
+                        height: 36,
+                        padding: 0,
+                        border: '1.5px dashed #CBD5E1',
+                        borderRadius: 8,
+                        backgroundColor: 'transparent',
+                        color: '#64748B',
+                        fontSize: 13,
+                        fontWeight: 500,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 6,
+                        transition: 'all 0.15s',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#2563EB';
+                        e.currentTarget.style.color = '#2563EB';
+                        e.currentTarget.style.backgroundColor = 'rgba(37,99,235,0.04)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = '#CBD5E1';
+                        e.currentTarget.style.color = '#64748B';
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                      }}
+                    >
+                      <Plus style={{ width: 16, height: 16 }} />
                       Add Step
                     </button>
                   </div>
@@ -236,63 +478,82 @@ export function CreateTestCaseModal({
               </div>
             </div>
 
-            <div className="th-modal-side-col">
-              <div className="th-form-row">
-                <label className="th-label">Folder</label>
-                <select className="th-select" value={folderId} onChange={(e) => setFolderId(e.target.value)}>
-                  <option value="">No folder</option>
-                  {folders.map(f => (
-                    <option key={f.id} value={f.id}>{f.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="th-form-row">
-                <label className="th-label">Priority</label>
-                <select className="th-select" value={priority} onChange={(e) => setPriority(e.target.value)}>
-                  <option value="critical">Critical</option>
-                  <option value="high">High</option>
-                  <option value="medium">Medium</option>
-                  <option value="low">Low</option>
-                </select>
-              </div>
-
-              <div className="th-form-row">
-                <label className="th-label">Type</label>
-                <select className="th-select" value={type} onChange={(e) => setType(e.target.value)}>
-                  <option value="functional">Functional</option>
-                  <option value="regression">Regression</option>
-                  <option value="security">Security</option>
-                  <option value="integration">Integration</option>
-                  <option value="performance">Performance</option>
-                </select>
-              </div>
-
-              <div className="th-form-row">
-                <label className="th-label">Status</label>
-                <select className="th-select" value={status} onChange={(e) => setStatus(e.target.value)}>
-                  <option value="draft">Draft</option>
-                  <option value="ready">Ready</option>
-                  <option value="approved">Approved</option>
-                  <option value="deprecated">Deprecated</option>
-                </select>
-              </div>
-
-              <div className="th-form-row">
-                <label className="th-label">Automation</label>
-                <select className="th-select" value={automation} onChange={(e) => setAutomation(e.target.value)}>
-                  <option value="manual">Manual</option>
-                  <option value="automated">Automated</option>
-                  <option value="planned">Planned</option>
-                </select>
-              </div>
+            {/* Right column */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {[
+                { label: 'Folder', value: folderId, onChange: setFolderId, options: [{ value: '', label: 'No folder' }, ...folders.map(f => ({ value: f.id, label: f.name }))] },
+                { label: 'Priority', value: priority, onChange: setPriority, options: [{ value: 'critical', label: 'Critical' }, { value: 'high', label: 'High' }, { value: 'medium', label: 'Medium' }, { value: 'low', label: 'Low' }] },
+                { label: 'Type', value: type, onChange: setType, options: [{ value: 'functional', label: 'Functional' }, { value: 'regression', label: 'Regression' }, { value: 'security', label: 'Security' }, { value: 'integration', label: 'Integration' }, { value: 'performance', label: 'Performance' }] },
+                { label: 'Status', value: status, onChange: setStatus, options: [{ value: 'draft', label: 'Draft' }, { value: 'ready', label: 'Ready' }, { value: 'approved', label: 'Approved' }, { value: 'deprecated', label: 'Deprecated' }] },
+                { label: 'Automation', value: automation, onChange: setAutomation, options: [{ value: 'manual', label: 'Manual' }, { value: 'automated', label: 'Automated' }, { value: 'planned', label: 'Planned' }] },
+              ].map(({ label, value, onChange, options }) => (
+                <div key={label}>
+                  <label style={labelStyle}>{label}</label>
+                  <select
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    style={selectStyle}
+                  >
+                    {options.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
-        <div className="th-modal-footer">
-          <button className="th-btn-secondary" onClick={onClose}>Cancel</button>
-          <button className="th-btn-primary" onClick={handleSave} disabled={!title.trim() || isSaving}>
+        {/* Footer */}
+        <div style={{
+          padding: '16px 24px',
+          borderTop: '1px solid #E2E8F0',
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: 12,
+        }}>
+          <button
+            onClick={onClose}
+            style={{
+              height: 40,
+              padding: '0 20px',
+              backgroundColor: '#FFFFFF',
+              border: '1.5px solid #E2E8F0',
+              borderRadius: 8,
+              fontFamily: 'Inter, sans-serif',
+              fontSize: 14,
+              fontWeight: 500,
+              color: '#334155',
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#F8FAFC';
+              e.currentTarget.style.borderColor = '#CBD5E1';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#FFFFFF';
+              e.currentTarget.style.borderColor = '#E2E8F0';
+            }}
+          >Cancel</button>
+          <button
+            onClick={handleSave}
+            disabled={!title.trim() || isSaving}
+            style={{
+              height: 40,
+              padding: '0 20px',
+              background: !title.trim() || isSaving ? '#94A3B8' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              border: 'none',
+              borderRadius: 8,
+              fontFamily: 'Inter, sans-serif',
+              fontSize: 14,
+              fontWeight: 600,
+              color: '#FFFFFF',
+              cursor: !title.trim() || isSaving ? 'not-allowed' : 'pointer',
+              boxShadow: !title.trim() || isSaving ? 'none' : '0 2px 8px rgba(37,99,235,0.18)',
+              transition: 'all 0.15s',
+            }}
+          >
             {isSaving ? 'Creating...' : 'Create Test Case'}
           </button>
         </div>
