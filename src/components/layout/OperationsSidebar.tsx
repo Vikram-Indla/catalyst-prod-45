@@ -12,8 +12,8 @@ export function ReleaseRoomSidebar({ expanded, onToggle, className }: Operations
   const { data: openIncidentCount = 0 } = useOpenIncidentCount();
 
   const operationsSidebarConfig: SidebarConfig = {
-    badge: 'OP',
-    label: 'Operations',
+    badge: 'IH',
+    label: 'IncidentHub',
     items: [
       // Incidents section
       { 
