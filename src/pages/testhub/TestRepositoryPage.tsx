@@ -4,9 +4,10 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react';
-import { Search, Filter, List, LayoutGrid, RefreshCw, Plus, FolderPlus, Trash2, MoveRight, CheckSquare } from 'lucide-react';
+import { RefreshCw, Plus, Trash2, MoveRight, CheckSquare } from 'lucide-react';
 import { FolderPanel } from '@/components/testhub/FolderPanel';
 import { TestCasesTable } from '@/components/testhub/TestCasesTable';
+import { TestCasesToolbar } from '@/components/testhub/TestCasesToolbar';
 import { CreateTestCaseModal } from '@/components/testhub/CreateTestCaseModal';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -291,43 +292,15 @@ export function TestRepositoryPage() {
           {/* List Panel */}
           <div className="th-list-panel">
             {/* Toolbar */}
-            <div className="th-toolbar">
-              <div className="th-toolbar-left">
-                <div className="th-search">
-                  <input
-                    type="text"
-                    className="th-search-input"
-                    placeholder="Search test cases..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  <Search className="th-search-icon" />
-                </div>
-                <button className="th-filter-btn">
-                  <Filter />
-                  Filters
-                </button>
-              </div>
-              <div className="th-toolbar-right">
-                <span className="th-test-count">
-                  <strong>{testCases.length}</strong> test cases
-                </span>
-                <div className="th-view-toggle">
-                  <button
-                    className={`th-view-toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
-                    onClick={() => setViewMode('list')}
-                  >
-                    <List />
-                  </button>
-                  <button
-                    className={`th-view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
-                    onClick={() => setViewMode('grid')}
-                  >
-                    <LayoutGrid />
-                  </button>
-                </div>
-              </div>
-            </div>
+            <TestCasesToolbar
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              testCaseCount={testCases.length}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              hasActiveFilters={false}
+              onFilterClick={() => console.log('Open filters')}
+            />
 
             {/* Bulk Actions Bar */}
             {selectedIds.size > 0 && (
