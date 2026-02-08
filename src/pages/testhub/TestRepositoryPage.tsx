@@ -264,15 +264,83 @@ export function TestRepositoryPage() {
     <div className="testhub">
       <div className="th-page">
         {/* Page Header */}
-        <div className="th-page-header">
-          <h1 className="th-page-title">Test Repository</h1>
-          <div className="th-page-actions">
-            <button className="th-btn-secondary" onClick={() => { fetchTestCases(); fetchFolders(); }}>
-              <RefreshCw />
+        <div style={{
+          height: 64,
+          padding: '0 24px',
+          backgroundColor: '#FFFFFF',
+          borderBottom: '1px solid #E2E8F0',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+          <h1 style={{
+            fontFamily: 'Sora, sans-serif',
+            fontSize: 18,
+            fontWeight: 700,
+            color: '#0F172A',
+            letterSpacing: '-0.01em',
+            margin: 0,
+          }}>Test Repository</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <button 
+              onClick={() => { fetchTestCases(); fetchFolders(); }}
+              style={{
+                height: 40,
+                padding: '0 20px',
+                backgroundColor: '#FFFFFF',
+                border: '1.5px solid #E2E8F0',
+                borderRadius: 8,
+                fontFamily: 'Inter, sans-serif',
+                fontSize: 14,
+                fontWeight: 500,
+                color: '#334155',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#F8FAFC';
+                e.currentTarget.style.borderColor = '#CBD5E1';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#FFFFFF';
+                e.currentTarget.style.borderColor = '#E2E8F0';
+              }}
+            >
+              <RefreshCw style={{ width: 16, height: 16, color: '#64748B' }} />
               Refresh
             </button>
-            <button className="th-btn-primary" onClick={() => setIsCreateModalOpen(true)}>
-              <Plus />
+            <button 
+              onClick={() => setIsCreateModalOpen(true)}
+              style={{
+                height: 40,
+                padding: '0 20px',
+                background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                border: 'none',
+                borderRadius: 8,
+                fontFamily: 'Inter, sans-serif',
+                fontSize: 14,
+                fontWeight: 600,
+                color: '#FFFFFF',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                boxShadow: '0 2px 8px rgba(37,99,235,0.18)',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.25)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.18)';
+              }}
+            >
+              <Plus style={{ width: 16, height: 16, color: '#FFFFFF' }} />
               New Test Case
             </button>
           </div>
