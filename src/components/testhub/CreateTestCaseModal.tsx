@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { X, Plus, GripVertical, Paperclip, Copy, ArrowUp, Trash2, ChevronDown } from 'lucide-react';
+import { X } from 'lucide-react';
+import { StepsEditor } from './StepsEditor';
 
 interface TestStep {
   id: string;
@@ -47,40 +48,7 @@ export function CreateTestCaseModal({
   ]);
   const [isSaving, setIsSaving] = useState(false);
 
-  const addStep = () => {
-    setSteps([...steps, { id: Date.now().toString(), action: '', expectedResult: '' }]);
-  };
-
-  const updateStep = (id: string, field: 'action' | 'expectedResult', value: string) => {
-    setSteps(steps.map(s => s.id === id ? { ...s, [field]: value } : s));
-  };
-
-  const removeStep = (id: string) => {
-    if (steps.length > 1) {
-      setSteps(steps.filter(s => s.id !== id));
-    }
-  };
-
-  const cloneStep = (id: string) => {
-    const stepIndex = steps.findIndex(s => s.id === id);
-    if (stepIndex !== -1) {
-      const step = steps[stepIndex];
-      const newStep = { id: Date.now().toString(), action: step.action, expectedResult: step.expectedResult };
-      const newSteps = [...steps];
-      newSteps.splice(stepIndex + 1, 0, newStep);
-      setSteps(newSteps);
-    }
-  };
-
-  const insertStepAbove = (id: string) => {
-    const stepIndex = steps.findIndex(s => s.id === id);
-    if (stepIndex !== -1) {
-      const newStep = { id: Date.now().toString(), action: '', expectedResult: '' };
-      const newSteps = [...steps];
-      newSteps.splice(stepIndex, 0, newStep);
-      setSteps(newSteps);
-    }
-  };
+  // Step management is handled by StepsEditor
 
   const handleSave = async () => {
     if (!title.trim()) return;
@@ -309,172 +277,7 @@ export function CreateTestCaseModal({
                 <label style={labelStyle}>
                   Test Steps <span style={{ color: '#EF4444' }}>*</span>
                 </label>
-                <div style={{
-                  border: '1px solid #E2E8F0',
-                  borderRadius: 8,
-                  overflow: 'hidden',
-                }}>
-                  {/* Steps Header */}
-                  <div style={{
-                    padding: '12px 16px',
-                    backgroundColor: '#F8FAFC',
-                    borderBottom: '1px solid #E2E8F0',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>
-                      Steps ({steps.length})
-                    </span>
-                  </div>
-
-                  {/* Steps List */}
-                  <div style={{ padding: 12 }}>
-                    {steps.map((step, index) => (
-                      <div 
-                        key={step.id}
-                        style={{
-                          display: 'flex',
-                          gap: 12,
-                          padding: 12,
-                          backgroundColor: '#FAFAFA',
-                          borderRadius: 8,
-                          marginBottom: index < steps.length - 1 ? 12 : 0,
-                        }}
-                      >
-                        <div style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          gap: 8,
-                          paddingTop: 4,
-                        }}>
-                          <GripVertical style={{ width: 16, height: 16, color: '#CBD5E1', cursor: 'grab' }} />
-                          <div style={{
-                            width: 24,
-                            height: 24,
-                            borderRadius: '50%',
-                            backgroundColor: '#E2E8F0',
-                            color: '#64748B',
-                            fontSize: 12,
-                            fontWeight: 600,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}>{index + 1}</div>
-                        </div>
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                          <div>
-                            <label style={{ fontSize: 11, fontWeight: 500, color: '#64748B', marginBottom: 4, display: 'block' }}>Action</label>
-                            <textarea
-                              placeholder="Describe the action to perform..."
-                              value={step.action}
-                              onChange={(e) => updateStep(step.id, 'action', e.target.value)}
-                              style={{
-                                width: '100%',
-                                minHeight: 60,
-                                padding: '8px 12px',
-                                border: '1px solid #E2E8F0',
-                                borderRadius: 6,
-                                fontSize: 13,
-                                resize: 'vertical',
-                                outline: 'none',
-                              }}
-                              onFocus={(e) => e.target.style.borderColor = '#2563EB'}
-                              onBlur={(e) => e.target.style.borderColor = '#E2E8F0'}
-                            />
-                          </div>
-                          <div>
-                            <label style={{ fontSize: 11, fontWeight: 500, color: '#64748B', marginBottom: 4, display: 'block' }}>Expected Result</label>
-                            <textarea
-                              placeholder="Describe the expected outcome..."
-                              value={step.expectedResult}
-                              onChange={(e) => updateStep(step.id, 'expectedResult', e.target.value)}
-                              style={{
-                                width: '100%',
-                                minHeight: 60,
-                                padding: '8px 12px',
-                                border: '1px solid #E2E8F0',
-                                borderRadius: 6,
-                                fontSize: 13,
-                                resize: 'vertical',
-                                outline: 'none',
-                              }}
-                              onFocus={(e) => e.target.style.borderColor = '#2563EB'}
-                              onBlur={(e) => e.target.style.borderColor = '#E2E8F0'}
-                            />
-                          </div>
-                        </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                          {[
-                            { icon: Copy, title: 'Clone', action: () => cloneStep(step.id) },
-                            { icon: ArrowUp, title: 'Insert above', action: () => insertStepAbove(step.id) },
-                            { icon: Trash2, title: 'Delete', action: () => removeStep(step.id), danger: true, disabled: steps.length === 1 },
-                          ].map(({ icon: Icon, title, action, danger, disabled }) => (
-                            <button
-                              key={title}
-                              onClick={action}
-                              disabled={disabled}
-                              title={title}
-                              style={{
-                                width: 28,
-                                height: 28,
-                                padding: 0,
-                                border: 'none',
-                                borderRadius: 6,
-                                backgroundColor: 'transparent',
-                                color: disabled ? '#CBD5E1' : danger ? '#EF4444' : '#94A3B8',
-                                cursor: disabled ? 'not-allowed' : 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                              }}
-                            >
-                              <Icon style={{ width: 14, height: 14 }} />
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Add Step */}
-                  <div style={{ padding: '0 12px 12px' }}>
-                    <button
-                      onClick={addStep}
-                      style={{
-                        width: '100%',
-                        height: 36,
-                        padding: 0,
-                        border: '1.5px dashed #CBD5E1',
-                        borderRadius: 8,
-                        backgroundColor: 'transparent',
-                        color: '#64748B',
-                        fontSize: 13,
-                        fontWeight: 500,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 6,
-                        transition: 'all 0.15s',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = '#2563EB';
-                        e.currentTarget.style.color = '#2563EB';
-                        e.currentTarget.style.backgroundColor = 'rgba(37,99,235,0.04)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = '#CBD5E1';
-                        e.currentTarget.style.color = '#64748B';
-                        e.currentTarget.style.backgroundColor = 'transparent';
-                      }}
-                    >
-                      <Plus style={{ width: 16, height: 16 }} />
-                      Add Step
-                    </button>
-                  </div>
-                </div>
+                <StepsEditor steps={steps} onChange={setSteps} />
               </div>
             </div>
 
