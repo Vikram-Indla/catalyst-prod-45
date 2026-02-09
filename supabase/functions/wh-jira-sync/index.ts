@@ -53,113 +53,61 @@ serve(async (req) => {
     const authHeader = 'Basic ' + btoa(`${conn.auth_email}:${conn.auth_token_encrypted}`)
     const headers = { 'Authorization': authHeader, 'Accept': 'application/json' }
 
-    // 3. Discover actual project keys if config has stale defaults
-    // Fetch all accessible projects from Jira to validate included_projects
+    // 3. Discover actual project keys from Jira
+    let allProjectKeys: string[] = []
     try {
       const projRes = await fetch(`${base}/rest/api/3/project`, { headers })
       if (projRes.ok) {
         const projects = await projRes.json()
-        const actualKeys: string[] = projects.map((p: any) => p.key)
-        if (includedProjects.length > 0) {
-          // Filter to only projects that actually exist
-          const validKeys = includedProjects.filter(k => actualKeys.includes(k))
-          if (validKeys.length === 0) {
-            // None of the configured projects exist — use all accessible projects
-            includedProjects = actualKeys
-            console.log(`Config projects not found in Jira. Using all ${actualKeys.length} accessible projects.`)
-          } else {
-            includedProjects = validKeys
-          }
-        } else {
-          includedProjects = actualKeys
-        }
+        allProjectKeys = projects.map((p: any) => p.key)
+        console.log(`[sync] Jira has ${allProjectKeys.length} accessible projects: ${allProjectKeys.join(', ')}`)
       }
     } catch (e) {
-      console.warn('Could not fetch Jira projects for validation:', e)
+      console.warn('Could not fetch Jira projects:', e)
     }
 
-    // 4. Build JQL
-    const projectFilter = includedProjects.length > 0
-      ? `project in (${includedProjects.join(',')}) AND `
-      : ''
+    // Don't filter issues by project — sync everything accessible with date bound
     const dateFilter = `updated >= -${lookbackMonths * 30}d`
-    const jql = `${projectFilter}${dateFilter} ORDER BY updated DESC`
+    const jql = `${dateFilter} ORDER BY updated DESC`
+    // For version fetching, use all accessible projects
+    includedProjects = allProjectKeys.length > 0 ? allProjectKeys : includedProjects
 
-    // 4. Fetch issues with pagination
+
+    // 4. Fetch issues with pagination using /search/jql (new Jira Cloud endpoint)
     let allIssues: any[] = []
-    let startAt = 0
     const maxResults = 100
-    let total = 0
     const fields = ['summary','status','assignee','issuetype','parent','fixVersions','duedate','labels','components','priority','created','updated','resolution','customfield_10016']
 
-    // Use POST-based search to avoid 410 Gone on deprecated GET endpoints
-    async function searchJira(jql: string, startAt: number, maxResults: number): Promise<{ issues: any[]; total: number }> {
-      const postHeaders = { ...headers, 'Content-Type': 'application/json' }
+    console.log(`[sync] JQL: ${jql}`)
+    console.log(`[sync] Projects: ${includedProjects.join(', ')}`)
 
-      // Strategy 1: POST /search (traditional format) — works on most Jira instances
-      const traditionalBody = JSON.stringify({ jql, startAt, maxResults, fields })
-      const traditionalEndpoints = [
-        `${base}/rest/api/3/search`,
-        `${base}/rest/api/2/search`,
-      ]
-
-      for (const url of traditionalEndpoints) {
-        try {
-          const res = await fetch(url, { method: 'POST', headers: postHeaders, body: traditionalBody })
-          if (res.ok) {
-            const data = await res.json()
-            return { issues: data.issues || [], total: data.total || 0 }
-          }
-          // 400/404/405/410 → try next endpoint
-          if ([400, 404, 405, 410].includes(res.status)) continue
-          throw new Error(`Jira API error: ${res.status} ${res.statusText}`)
-        } catch (e: any) {
-          if (e.message?.startsWith('Jira API error')) throw e
-          continue
-        }
-      }
-
-      // Strategy 2: POST /search/jql (newer Jira Cloud format)
-      const jqlBody = JSON.stringify({ jql, fields, maxResults })
-      const jqlEndpoints = [
-        `${base}/rest/api/3/search/jql`,
-        `${base}/rest/api/2/search/jql`,
-      ]
-
-      for (const url of jqlEndpoints) {
-        try {
-          const res = await fetch(url, { method: 'POST', headers: postHeaders, body: jqlBody })
-          if (res.ok) {
-            const data = await res.json()
-            return { issues: data.issues || [], total: data.total || 0 }
-          }
-          if ([400, 404, 405, 410].includes(res.status)) continue
-          throw new Error(`Jira API error: ${res.status} ${res.statusText}`)
-        } catch (e: any) {
-          if (e.message?.startsWith('Jira API error')) throw e
-          continue
-        }
-      }
-
-      // Strategy 3: GET /search (legacy, last resort)
-      const getUrl = `${base}/rest/api/2/search?jql=${encodeURIComponent(jql)}&startAt=${startAt}&maxResults=${maxResults}&fields=${fields.join(',')}`
-      try {
-        const res = await fetch(getUrl, { headers })
-        if (res.ok) {
-          const data = await res.json()
-          return { issues: data.issues || [], total: data.total || 0 }
-        }
-      } catch { /* fall through */ }
-
-      throw new Error('All Jira search endpoints failed. Check Jira instance compatibility.')
-    }
+    // Use POST /search/jql with cursor-based pagination (new Jira Cloud API)
+    const searchUrl = `${base}/rest/api/3/search/jql`
+    const postHeaders = { ...headers, 'Content-Type': 'application/json' }
+    let nextPageToken: string | undefined = undefined
+    let pageCount = 0
 
     do {
-      const result = await searchJira(jql, startAt, maxResults)
-      total = result.total
-      allIssues = allIssues.concat(result.issues)
-      startAt += maxResults
-    } while (startAt < total && startAt < 5000)
+      const body: Record<string, any> = { jql, fields, maxResults }
+      if (nextPageToken) body.nextPageToken = nextPageToken
+
+      console.log(`[search] Page ${pageCount} token=${nextPageToken || 'start'}`)
+      const res = await fetch(searchUrl, { method: 'POST', headers: postHeaders, body: JSON.stringify(body) })
+
+      if (!res.ok) {
+        const errText = await res.text().catch(() => '')
+        console.error(`[search] Error ${res.status}: ${errText.slice(0, 300)}`)
+        throw new Error(`Jira search API error: ${res.status} ${res.statusText}`)
+      }
+
+      const data = await res.json()
+      const issues = data.issues || []
+      allIssues = allIssues.concat(issues)
+      nextPageToken = data.nextPageToken || undefined
+      pageCount++
+
+      console.log(`[search] Page ${pageCount}: ${issues.length} issues (total: ${allIssues.length})`)
+    } while (nextPageToken && allIssues.length < 5000)
 
     // 5. Map Jira status to Catalyst category
     function mapStatusCategory(jiraStatus: string): string {
