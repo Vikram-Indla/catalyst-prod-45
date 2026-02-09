@@ -224,38 +224,69 @@ export function useCatalystProfilesWithDept() {
   return useQuery({
     queryKey: ['wh', 'catalyst-profiles-dept'],
     queryFn: async () => {
-      // Get profiles with their resource_inventory department
-      const { data: resources, error: riErr } = await (supabase as any)
-        .from('resource_inventory')
-        .select('profile_id, department_id')
-        .eq('is_active', true)
-      if (riErr) throw riErr
+      // Use resource_inventory as primary source of truth
+      const [riRes, profilesRes, deptsRes] = await Promise.all([
+        (supabase as any)
+          .from('resource_inventory')
+          .select('id, profile_id, name, email, department_id, role_name')
+          .eq('is_active', true),
+        supabase
+          .from('profiles')
+          .select('id, full_name, email, role, avatar_url'),
+        (supabase as any)
+          .from('capacity_departments')
+          .select('id, name')
+          .eq('is_active', true),
+      ])
 
-      const { data: profiles, error: pErr } = await supabase
-        .from('profiles')
-        .select('id, full_name, email, role, avatar_url')
-        .order('full_name')
-      if (pErr) throw pErr
-
-      const { data: depts, error: dErr } = await (supabase as any)
-        .from('capacity_departments')
-        .select('id, name')
-        .eq('is_active', true)
-      if (dErr) throw dErr
+      if (riRes.error) throw riRes.error
+      if (profilesRes.error) throw profilesRes.error
+      if (deptsRes.error) throw deptsRes.error
 
       const deptMap: Record<string, string> = {}
-      depts?.forEach((d: any) => { deptMap[d.id] = d.name })
+      deptsRes.data?.forEach((d: any) => { deptMap[d.id] = d.name })
 
-      const riMap: Record<string, string> = {}
-      resources?.forEach((r: any) => {
-        if (r.profile_id && r.department_id) riMap[r.profile_id] = r.department_id
-      })
+      const profileMap: Record<string, any> = {}
+      profilesRes.data?.forEach((p: any) => { profileMap[p.id] = p })
 
-      return (profiles || []).map((p: any): CatalystProfileWithDept => ({
-        ...p,
-        department_id: riMap[p.id] || null,
-        department_name: riMap[p.id] ? (deptMap[riMap[p.id]] || null) : null,
-      }))
+      const seen = new Set<string>()
+      const result: CatalystProfileWithDept[] = []
+
+      // Walk resource_inventory first – every active resource appears
+      for (const ri of (riRes.data || [])) {
+        const profile = ri.profile_id ? profileMap[ri.profile_id] : null
+        const id = profile?.id || ri.id
+        if (seen.has(id)) continue
+        seen.add(id)
+
+        result.push({
+          id,
+          full_name: profile?.full_name || ri.name || 'Unnamed',
+          email: profile?.email || ri.email || null,
+          role: profile?.role || ri.role_name || null,
+          avatar_url: profile?.avatar_url || null,
+          department_id: ri.department_id || null,
+          department_name: ri.department_id ? (deptMap[ri.department_id] || null) : null,
+        })
+      }
+
+      // Also include any profile not in resource_inventory
+      for (const p of (profilesRes.data || [])) {
+        if (seen.has(p.id)) continue
+        seen.add(p.id)
+        result.push({
+          id: p.id,
+          full_name: p.full_name,
+          email: p.email,
+          role: p.role,
+          avatar_url: p.avatar_url,
+          department_id: null,
+          department_name: null,
+        })
+      }
+
+      result.sort((a, b) => (a.full_name || '').localeCompare(b.full_name || ''))
+      return result
     },
     staleTime: 60_000,
   })
