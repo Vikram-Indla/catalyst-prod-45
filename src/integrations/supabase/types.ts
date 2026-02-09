@@ -30596,6 +30596,7 @@ export type Database = {
           issues_upserted: number | null
           jql_query: string | null
           lookback_months: number | null
+          projects_synced: string[] | null
           started_at: string | null
           status: string
           sync_type: string
@@ -30612,6 +30613,7 @@ export type Database = {
           issues_upserted?: number | null
           jql_query?: string | null
           lookback_months?: number | null
+          projects_synced?: string[] | null
           started_at?: string | null
           status?: string
           sync_type: string
@@ -30628,6 +30630,7 @@ export type Database = {
           issues_upserted?: number | null
           jql_query?: string | null
           lookback_months?: number | null
+          projects_synced?: string[] | null
           started_at?: string | null
           status?: string
           sync_type?: string
