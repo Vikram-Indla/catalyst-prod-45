@@ -30408,6 +30408,72 @@ export type Database = {
           },
         ]
       }
+      wh_jira_connection: {
+        Row: {
+          accessible_projects: Json | null
+          auth_email: string
+          auth_method: string
+          auth_token_encrypted: string
+          configured_by: string | null
+          created_at: string | null
+          id: string
+          jira_server_version: string | null
+          last_test_result: Json | null
+          last_tested_at: string | null
+          oauth_client_id: string | null
+          oauth_client_secret_encrypted: string | null
+          oauth_refresh_token_encrypted: string | null
+          permissions_level: string | null
+          project_count: number | null
+          server_title: string | null
+          site_url: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          accessible_projects?: Json | null
+          auth_email?: string
+          auth_method?: string
+          auth_token_encrypted?: string
+          configured_by?: string | null
+          created_at?: string | null
+          id?: string
+          jira_server_version?: string | null
+          last_test_result?: Json | null
+          last_tested_at?: string | null
+          oauth_client_id?: string | null
+          oauth_client_secret_encrypted?: string | null
+          oauth_refresh_token_encrypted?: string | null
+          permissions_level?: string | null
+          project_count?: number | null
+          server_title?: string | null
+          site_url?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          accessible_projects?: Json | null
+          auth_email?: string
+          auth_method?: string
+          auth_token_encrypted?: string
+          configured_by?: string | null
+          created_at?: string | null
+          id?: string
+          jira_server_version?: string | null
+          last_test_result?: Json | null
+          last_tested_at?: string | null
+          oauth_client_id?: string | null
+          oauth_client_secret_encrypted?: string | null
+          oauth_refresh_token_encrypted?: string | null
+          permissions_level?: string | null
+          project_count?: number | null
+          server_title?: string | null
+          site_url?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       work_item_activity: {
         Row: {
           activity_type: string

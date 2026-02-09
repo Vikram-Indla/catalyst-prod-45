@@ -231,6 +231,7 @@ import CreateMenuConfig from "./pages/admin/CreateMenuConfig";
 import DeliveryPlatforms from "./pages/admin/DeliveryPlatforms";
 import RiskSeverityLevels from "./pages/admin/RiskSeverityLevels";
 import { PlanHubGeneralSettings, PlanHubTemplates, PlanHubAIConfig, PlanHubActivityLog } from "./pages/admin/planhub";
+const WorkHubAdminPage = lazy(() => import("./modules/workhub/admin/pages/WorkHubAdmin"));
 
 const SoftwareLicensesPage = lazy(() => import("./modules/budget/components/SoftwareLicensesPage").then(m => ({ default: m.SoftwareLicensesPage })));
 import RoutesComponentsRegistry from "./pages/admin/RoutesComponentsRegistry";
@@ -939,6 +940,7 @@ const App = () => (
               <Route path="/admin/user-roles" element={<AdminGuard><UserRoles /></AdminGuard>} />
               <Route path="/admin/permissions" element={<AdminGuard><Permissions /></AdminGuard>} />
               <Route path="/admin/integrations" element={<AdminGuard><Integrations /></AdminGuard>} />
+              <Route path="/admin/workhub-connection" element={<AdminGuard><WorkHubAdminPage /></AdminGuard>} />
               <Route path="/admin/activity-log" element={<AdminGuard><ActivityLog /></AdminGuard>} />
               
               <Route path="/admin" element={<AdminLayout />}>
