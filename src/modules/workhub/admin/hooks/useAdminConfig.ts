@@ -122,6 +122,7 @@ export function useBatchSaveUserMappings() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (mappings: Array<{ id: string; catalyst_profile_id: string | null }>) => {
+      // 1. Save the mappings
       const promises = mappings.map(m =>
         (supabase as any).from('wh_user_mapping')
           .update({
@@ -131,8 +132,34 @@ export function useBatchSaveUserMappings() {
           .eq('id', m.id)
       )
       await Promise.all(promises)
+
+      // 2. Propagate Jira avatars to profiles.avatar_url for mapped users
+      const mappedIds = mappings
+        .filter(m => m.catalyst_profile_id)
+        .map(m => m.id)
+      if (mappedIds.length > 0) {
+        const { data: jiraRecords } = await (supabase as any)
+          .from('wh_user_mapping')
+          .select('catalyst_profile_id, jira_avatar_url')
+          .in('id', mappedIds)
+          .not('jira_avatar_url', 'eq', '')
+          .not('catalyst_profile_id', 'is', null)
+
+        if (jiraRecords && jiraRecords.length > 0) {
+          const avatarUpdates = jiraRecords.map((r: any) =>
+            supabase.from('profiles')
+              .update({ avatar_url: r.jira_avatar_url })
+              .eq('id', r.catalyst_profile_id)
+          )
+          await Promise.all(avatarUpdates)
+        }
+      }
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: [...USER_MAP_KEY] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [...USER_MAP_KEY] })
+      qc.invalidateQueries({ queryKey: ['profiles'] })
+      qc.invalidateQueries({ queryKey: ['wh', 'catalyst-profiles-dept'] })
+    },
   })
 }
 
@@ -142,7 +169,7 @@ export function useAutoMatchUsers() {
     mutationFn: async () => {
       const { data: unmapped } = await (supabase as any)
         .from('wh_user_mapping')
-        .select('id, jira_email')
+        .select('id, jira_email, jira_avatar_url')
         .eq('is_mapped', false)
         .neq('jira_email', '')
 
@@ -167,12 +194,23 @@ export function useAutoMatchUsers() {
               auto_matched: true,
             })
             .eq('id', u.id)
+
+          // Propagate Jira avatar to profile
+          if (u.jira_avatar_url) {
+            await supabase.from('profiles')
+              .update({ avatar_url: u.jira_avatar_url })
+              .eq('id', match.id)
+          }
           matched++
         }
       }
       return { matched }
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: [...USER_MAP_KEY] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [...USER_MAP_KEY] })
+      qc.invalidateQueries({ queryKey: ['profiles'] })
+      qc.invalidateQueries({ queryKey: ['wh', 'catalyst-profiles-dept'] })
+    },
   })
 }
 

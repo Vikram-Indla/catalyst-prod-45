@@ -201,6 +201,22 @@ serve(async (req) => {
       await supabase
         .from('wh_user_mapping')
         .upsert(Array.from(uniqueUsers.values()), { onConflict: 'jira_account_id', ignoreDuplicates: false })
+
+      // Propagate Jira avatars to profiles for already-mapped users
+      const { data: mappedUsers } = await supabase
+        .from('wh_user_mapping')
+        .select('catalyst_profile_id, jira_avatar_url')
+        .eq('is_mapped', true)
+        .not('jira_avatar_url', 'eq', '')
+        .not('catalyst_profile_id', 'is', null)
+
+      if (mappedUsers && mappedUsers.length > 0) {
+        for (const mu of mappedUsers) {
+          await supabase.from('profiles')
+            .update({ avatar_url: mu.jira_avatar_url })
+            .eq('id', mu.catalyst_profile_id)
+        }
+      }
     }
 
     // 9. Fetch and upsert versions
