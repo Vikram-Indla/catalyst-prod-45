@@ -1036,16 +1036,15 @@ const App = () => (
                 {/* Enhanced Task List */}
                 <Route path="task-list" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TaskListPage /></Suspense>} />
                 <Route path="workhub-connection" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
-                <Route path="workhub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubSettingsLayout /></Suspense>}>
-                  <Route index element={<Navigate to="jira-connection" replace />} />
-                  <Route path="jira-connection" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubAdminPage /></Suspense>} />
-                  <Route path="hierarchy-mapping" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
-                  <Route path="scheduling-rules" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
-                  <Route path="status-mapping" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
-                  <Route path="user-mapping" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
-                  <Route path="data-scope" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
-                  <Route path="sync-logs" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
-                </Route>
+                <Route path="workhub" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
+                <Route path="workhub/jira-connection" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubAdminPage /></Suspense>} />
+                <Route path="workhub/hierarchy-mapping" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
+                <Route path="workhub/scheduling-rules" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
+                <Route path="workhub/status-mapping" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
+                <Route path="workhub/user-mapping" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
+                <Route path="workhub/data-scope" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
+                <Route path="workhub/sync-logs" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
+                <Route path="workhub/*" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
               </Route>
 
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
