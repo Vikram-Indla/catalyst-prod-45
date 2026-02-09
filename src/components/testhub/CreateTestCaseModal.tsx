@@ -28,6 +28,7 @@ interface TestCaseForEdit {
   type: string;
   status: string;
   version: number;
+  owner_id?: string | null;
 }
 
 interface CreateTestCaseModalProps {
@@ -98,6 +99,7 @@ export function CreateTestCaseModal({
         setType(testCase.type);
         setStatus(testCase.status);
         setAutomation('manual'); // Default value
+        setAssignedTo(testCase.owner_id || '');
         if (existingSteps && existingSteps.length > 0) {
           setSteps(existingSteps.map(s => ({ ...s, attachments: [] })));
         } else {
