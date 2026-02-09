@@ -127,7 +127,7 @@ export function SyncLogs() {
   )
 
   const projectOptions: MultiSelectOption[] = useMemo(() =>
-    (availableProjects || []).map(p => ({ value: p, label: p })),
+    (availableProjects || []).map(p => ({ value: p.key, label: `${p.key} – ${p.name}` })),
     [availableProjects]
   )
 
