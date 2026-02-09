@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 interface CapacityAvatarProps {
   initials: string;
+  avatarUrl?: string | null;
   flagUrl?: string | null;
   countryName?: string | null;
   size?: 'sm' | 'md' | 'lg';
@@ -37,6 +38,7 @@ const sizeStyles = {
 
 export function CapacityAvatar({
   initials,
+  avatarUrl,
   flagUrl,
   countryName,
   size = 'md',
@@ -58,18 +60,22 @@ export function CapacityAvatar({
       {/* Rounded square avatar with blue border */}
       <div
         className={cn(
-          "flex items-center justify-center font-bold transition-transform duration-150",
+          "flex items-center justify-center font-bold transition-transform duration-150 overflow-hidden",
           onClick && "hover:scale-105",
           styles.avatar
         )}
         style={{
-          backgroundColor: '#eff6ff',
+          backgroundColor: avatarUrl ? 'transparent' : '#eff6ff',
           color: '#3b82f6',
           border: '2px solid #93c5fd',
           boxShadow: '0 1px 3px rgba(59, 130, 246, 0.1)',
         }}
       >
-        {initials}
+        {avatarUrl ? (
+          <img src={avatarUrl} alt={initials} className="w-full h-full object-cover" />
+        ) : (
+          initials
+        )}
       </div>
       
       {/* Flag overlay - positioned at bottom-right */}

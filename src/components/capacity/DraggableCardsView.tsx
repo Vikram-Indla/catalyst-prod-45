@@ -164,6 +164,7 @@ function DraggableResourceCard({
         {/* Avatar - V10 Unified Style */}
         <CapacityAvatar
           initials={initials}
+          avatarUrl={resource.avatar_url}
           flagUrl={countryFlagSvg}
           size="md"
           onClick={(e) => { e?.stopPropagation(); on360Click(); }}
