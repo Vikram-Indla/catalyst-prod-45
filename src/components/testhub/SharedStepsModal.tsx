@@ -47,7 +47,7 @@ function CreateSharedStepModal({
       action: action.trim(),
       expected_result: expectedResult.trim() || null,
       usage_count: 0,
-      project_id: '00000000-0000-0000-0000-000000000001',
+      project_id: null,
     }).select().single();
 
     setSaving(false);
