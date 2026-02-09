@@ -17,21 +17,18 @@ interface FolderPanelProps {
   totalTestCases: number;
 }
 
-// Default emoji icons for folders based on name patterns
-const getFolderIcon = (name: string): string => {
+// Emoji icons only for main/root folders, children get simple folder icon
+const getFolderIcon = (name: string, hasParent: boolean): string => {
+  // Child folders always get simple folder icon
+  if (hasParent) return '📁';
+  
   const lower = name.toLowerCase();
-  if (lower.includes('auth') || lower.includes('login') || lower.includes('password')) return '🔐';
-  if (lower.includes('dashboard') || lower.includes('analytics')) return '📊';
-  if (lower.includes('user') || lower.includes('account') || lower.includes('profile')) return '👥';
-  if (lower.includes('report') || lower.includes('chart')) return '📈';
-  if (lower.includes('api') || lower.includes('endpoint') || lower.includes('integration')) return '🔌';
-  if (lower.includes('setting') || lower.includes('config') || lower.includes('admin')) return '⚙️';
-  if (lower.includes('payment') || lower.includes('billing') || lower.includes('invoice')) return '💳';
-  if (lower.includes('notification') || lower.includes('alert')) return '🔔';
-  if (lower.includes('search') || lower.includes('filter')) return '🔍';
-  if (lower.includes('security') || lower.includes('permission')) return '🛡️';
-  if (lower.includes('file') || lower.includes('upload') || lower.includes('document')) return '📄';
-  if (lower.includes('email') || lower.includes('message')) return '✉️';
+  if (lower.includes('auth')) return '🔐';
+  if (lower.includes('dashboard')) return '📊';
+  if (lower.includes('user')) return '👥';
+  if (lower.includes('report')) return '📈';
+  if (lower.includes('api') || lower.includes('endpoint')) return '🔌';
+  if (lower.includes('setting')) return '⚙️';
   return '📁';
 };
 
@@ -353,7 +350,8 @@ function FolderTreeItem({
   const hasChildren = children.length > 0;
   const isExpanded = expandedFolders.has(folder.id);
   const isSelected = selectedFolderId === folder.id;
-  const icon = folder.icon || getFolderIcon(folder.name);
+  const hasParent = folder.parentId !== null;
+  const icon = folder.icon || getFolderIcon(folder.name, hasParent);
 
   return (
     <>
