@@ -11,7 +11,11 @@ import {
   Users, 
   BarChart3, 
   Plug, 
-  Settings 
+  Settings,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  FolderPlus
 } from 'lucide-react';
 
 interface FolderItem {
@@ -22,11 +26,20 @@ interface FolderItem {
   icon?: string;
 }
 
+interface FolderContextMenuState {
+  x: number;
+  y: number;
+  folderId: string;
+  folderName: string;
+}
+
 interface FolderPanelProps {
   folders: FolderItem[];
   selectedFolderId: string | null;
   onSelectFolder: (folderId: string | null) => void;
   onCreateFolder: () => void;
+  onDeleteFolder?: (folderId: string, folderName: string) => void;
+  onRenameFolder?: (folderId: string, currentName: string) => void;
   totalTestCases: number;
 }
 
@@ -56,9 +69,12 @@ export function FolderPanel({
   selectedFolderId,
   onSelectFolder,
   onCreateFolder,
+  onDeleteFolder,
+  onRenameFolder,
   totalTestCases,
 }: FolderPanelProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [folderContextMenu, setFolderContextMenu] = useState<FolderContextMenuState | null>(null);
   
   // Auto-expand parent folders that have children
   const getInitialExpandedFolders = () => {
@@ -75,6 +91,18 @@ export function FolderPanel({
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(getInitialExpandedFolders());
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Close context menu on click outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('[data-folder-menu]')) {
+        setFolderContextMenu(null);
+      }
+    };
+    document.addEventListener('click', handleClickOutside, true);
+    return () => document.removeEventListener('click', handleClickOutside, true);
+  }, []);
+
   // Update expanded folders when folders prop changes
   useEffect(() => {
     setExpandedFolders(getInitialExpandedFolders());
@@ -89,6 +117,17 @@ export function FolderPanel({
       newExpanded.add(folderId);
     }
     setExpandedFolders(newExpanded);
+  };
+
+  const handleFolderRightClick = (e: React.MouseEvent, folder: FolderItem) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setFolderContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      folderId: folder.id,
+      folderName: folder.name,
+    });
   };
 
   const rootFolders = folders.filter(f => f.parentId === null);
@@ -337,11 +376,86 @@ export function FolderPanel({
             expandedFolders={expandedFolders}
             onSelect={onSelectFolder}
             onToggleExpand={toggleExpand}
+            onContextMenu={handleFolderRightClick}
             depth={0}
             showNested={!searchQuery}
           />
         ))}
       </div>
+
+      {/* Folder Context Menu */}
+      {folderContextMenu && (
+        <div
+          data-folder-menu
+          style={{
+            position: 'fixed',
+            top: folderContextMenu.y,
+            left: folderContextMenu.x,
+            backgroundColor: '#FFFFFF',
+            border: '1px solid #E2E8F0',
+            borderRadius: 8,
+            boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+            zIndex: 99999,
+            minWidth: 160,
+            padding: '4px 0',
+          }}
+        >
+          {onRenameFolder && (
+            <button
+              onClick={() => {
+                onRenameFolder(folderContextMenu.folderId, folderContextMenu.folderName);
+                setFolderContextMenu(null);
+              }}
+              style={{
+                width: '100%',
+                height: 36,
+                padding: '0 12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                border: 'none',
+                backgroundColor: 'transparent',
+                fontSize: 13,
+                color: '#334155',
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FAFC'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <Pencil size={14} color="#64748B" />
+              Rename
+            </button>
+          )}
+          {onDeleteFolder && (
+            <button
+              onClick={() => {
+                onDeleteFolder(folderContextMenu.folderId, folderContextMenu.folderName);
+                setFolderContextMenu(null);
+              }}
+              style={{
+                width: '100%',
+                height: 36,
+                padding: '0 12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                border: 'none',
+                backgroundColor: 'transparent',
+                fontSize: 13,
+                color: '#DC2626',
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FEF2F2'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <Trash2 size={14} color="#DC2626" />
+              Delete
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -353,6 +467,7 @@ interface FolderTreeItemProps {
   expandedFolders: Set<string>;
   onSelect: (id: string) => void;
   onToggleExpand: (id: string, e: React.MouseEvent) => void;
+  onContextMenu: (e: React.MouseEvent, folder: FolderItem) => void;
   depth: number;
   showNested: boolean;
 }
@@ -364,6 +479,7 @@ function FolderTreeItem({
   expandedFolders,
   onSelect,
   onToggleExpand,
+  onContextMenu,
   depth,
   showNested,
 }: FolderTreeItemProps) {
@@ -378,6 +494,7 @@ function FolderTreeItem({
     <>
       <div
         onClick={() => onSelect(folder.id)}
+        onContextMenu={(e) => onContextMenu(e, folder)}
         style={{
           height: 36,
           padding: '0 12px',
@@ -464,6 +581,7 @@ function FolderTreeItem({
           expandedFolders={expandedFolders}
           onSelect={onSelect}
           onToggleExpand={onToggleExpand}
+          onContextMenu={onContextMenu}
           depth={depth + 1}
           showNested={showNested}
         />

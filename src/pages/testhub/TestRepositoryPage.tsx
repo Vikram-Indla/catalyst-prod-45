@@ -443,6 +443,84 @@ export function TestRepositoryPage() {
     setSelectedIds(new Set());
   };
 
+  // Folder delete handler
+  const handleDeleteFolder = async (folderId: string, folderName: string) => {
+    // Check if folder has test cases
+    const folder = folders.find(f => f.id === folderId);
+    if (folder && folder.testCaseCount > 0) {
+      toast({
+        title: 'Cannot delete folder',
+        description: `Folder "${folderName}" contains ${folder.testCaseCount} test case(s). Move or delete them first.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Check if folder has children
+    const hasChildren = folders.some(f => f.parentId === folderId);
+    if (hasChildren) {
+      toast({
+        title: 'Cannot delete folder',
+        description: `Folder "${folderName}" contains sub-folders. Delete them first.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Delete folder
+    const { error } = await supabase
+      .from('th_folders')
+      .delete()
+      .eq('id', folderId);
+
+    if (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to delete folder: ' + error.message,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    toast({
+      title: 'Folder deleted',
+      description: `"${folderName}" has been deleted`,
+    });
+
+    // Clear selection if deleted folder was selected
+    if (selectedFolderId === folderId) {
+      setSelectedFolderId(null);
+    }
+    
+    fetchFolders();
+  };
+
+  // Folder rename handler (placeholder - opens rename modal in future)
+  const handleRenameFolder = (folderId: string, currentName: string) => {
+    const newName = window.prompt('Enter new folder name:', currentName);
+    if (newName && newName.trim() && newName !== currentName) {
+      supabase
+        .from('th_folders')
+        .update({ name: newName.trim() })
+        .eq('id', folderId)
+        .then(({ error }) => {
+          if (error) {
+            toast({
+              title: 'Error',
+              description: 'Failed to rename folder: ' + error.message,
+              variant: 'destructive',
+            });
+          } else {
+            toast({
+              title: 'Folder renamed',
+              description: `Renamed to "${newName.trim()}"`,
+            });
+            fetchFolders();
+          }
+        });
+    }
+  };
+
   const handleOpenCreateModal = () => {
     setEditMode(false);
     setSelectedTestCase(null);
@@ -603,6 +681,8 @@ export function TestRepositoryPage() {
             selectedFolderId={selectedFolderId}
             onSelectFolder={setSelectedFolderId}
             onCreateFolder={() => setIsCreateFolderModalOpen(true)}
+            onDeleteFolder={handleDeleteFolder}
+            onRenameFolder={handleRenameFolder}
             totalTestCases={totalTestCases}
           />
 
