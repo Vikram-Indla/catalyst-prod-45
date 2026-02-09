@@ -36,16 +36,15 @@ serve(async (req) => {
     const authHeader = 'Basic ' + btoa(`${conn.auth_email}:${conn.auth_token_encrypted}`)
     const headers = { 'Authorization': authHeader, 'Accept': 'application/json', 'Content-Type': 'application/json' }
 
-    // Fetch issue counts grouped by issuetype and project using JQL search
     const jql = 'updated >= -90d ORDER BY updated DESC'
-    const fetchFields = ['issuetype', 'status', 'project']
+    const fetchFields = ['issuetype', 'status', 'project', 'parent', 'summary']
 
-    let issuesByType: Record<string, { count: number; statuses: Record<string, number> }> = {}
-    let issuesByProject: Record<string, { key: string; count: number; types: Record<string, number>; statuses: Record<string, number> }> = {}
-    let apiTotal = 0
+    // Collect all raw issues
+    const allIssues: any[] = []
     let startAt = 0
     const maxResults = 100
     let hasMore = true
+    let apiTotal = 0
 
     while (hasMore) {
       const searchApproaches = [
@@ -75,61 +74,26 @@ serve(async (req) => {
 
       const data = JSON.parse(body)
       const issues = data.issues || []
-      processIssues(issues, issuesByType)
-      processIssuesByProject(issues, issuesByProject)
+      allIssues.push(...issues)
       apiTotal = data.total || apiTotal
       startAt += maxResults
-      // Use processedCount to determine pagination if apiTotal is 0
-      const processedCount = Object.values(issuesByType).reduce((sum, t) => sum + t.count, 0)
       hasMore = issues.length === maxResults && startAt < 500
     }
 
-    // Calculate actual scanned count from processed data
-    const scannedCount = Object.values(issuesByType).reduce((sum, t) => sum + t.count, 0)
-    const totalCount = apiTotal > 0 ? apiTotal : scannedCount
-
-    // Build type summary
-    const typeSummary = Object.entries(issuesByType).map(([type, info]) => ({
-      type,
-      count: info.count,
-      statuses: Object.entries(info.statuses).map(([status, count]) => ({ status, count }))
-        .sort((a, b) => b.count - a.count)
-    })).sort((a, b) => b.count - a.count)
-
-    // Build project summary
-    const projectSummary = Object.entries(issuesByProject).map(([name, info]) => ({
-      name,
-      key: info.key,
-      count: info.count,
-      types: Object.entries(info.types).map(([type, count]) => ({ type, count }))
-        .sort((a, b) => b.count - a.count),
-      statuses: Object.entries(info.statuses).map(([status, count]) => ({ status, count }))
-        .sort((a, b) => b.count - a.count),
-    })).sort((a, b) => b.count - a.count)
-
-    // Aggregate status totals
-    const statusTotals: Record<string, number> = {}
-    for (const t of typeSummary) {
-      for (const s of t.statuses) {
-        statusTotals[s.status] = (statusTotals[s.status] || 0) + s.count
-      }
-    }
-    const statusSummary = Object.entries(statusTotals)
-      .map(([status, count]) => ({ status, count }))
-      .sort((a, b) => b.count - a.count)
+    // Build hierarchical project data
+    const result = buildHierarchy(allIssues)
 
     // Update total counts in DB
     await supabase.from('wh_jira_connection').update({
-      total_issue_count: totalCount,
+      total_issue_count: apiTotal > 0 ? apiTotal : allIssues.length,
     }).eq('id', conn.id)
 
     return new Response(JSON.stringify({
       success: true,
-      total: totalCount,
-      scanned: scannedCount,
-      types: typeSummary,
-      statuses: statusSummary,
-      projects: projectSummary,
+      total: apiTotal > 0 ? apiTotal : allIssues.length,
+      scanned: allIssues.length,
+      projects: result.projects,
+      statusSummary: result.statusSummary,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
@@ -142,37 +106,266 @@ serve(async (req) => {
   }
 })
 
-function processIssues(
-  issues: any[],
-  issuesByType: Record<string, { count: number; statuses: Record<string, number> }>
-) {
-  for (const issue of issues) {
-    const typeName = issue.fields?.issuetype?.name || 'Unknown'
-    const statusName = issue.fields?.status?.name || 'Unknown'
+// Defect-like type names (case-insensitive matching)
+const DEFECT_TYPES = ['production incident', 'qa bug', 'defect', 'bug']
 
-    if (!issuesByType[typeName]) {
-      issuesByType[typeName] = { count: 0, statuses: {} }
-    }
-    issuesByType[typeName].count++
-    issuesByType[typeName].statuses[statusName] = (issuesByType[typeName].statuses[statusName] || 0) + 1
-  }
+function isDefectType(typeName: string): boolean {
+  return DEFECT_TYPES.includes(typeName.toLowerCase())
 }
 
-function processIssuesByProject(
-  issues: any[],
-  issuesByProject: Record<string, { key: string; count: number; types: Record<string, number>; statuses: Record<string, number> }>
-) {
-  for (const issue of issues) {
-    const projectName = issue.fields?.project?.name || 'Unknown'
-    const projectKey = issue.fields?.project?.key || '?'
-    const typeName = issue.fields?.issuetype?.name || 'Unknown'
-    const statusName = issue.fields?.status?.name || 'Unknown'
+// Hierarchy types in Jira: Epic > Story > Sub-task
+const HIERARCHY_TYPES: Record<string, number> = {
+  'epic': 0,
+  'story': 1,
+  'task': 1,
+  'sub-task': 2,
+  'subtask': 2,
+}
 
-    if (!issuesByProject[projectName]) {
-      issuesByProject[projectName] = { key: projectKey, count: 0, types: {}, statuses: {} }
-    }
-    issuesByProject[projectName].count++
-    issuesByProject[projectName].types[typeName] = (issuesByProject[projectName].types[typeName] || 0) + 1
-    issuesByProject[projectName].statuses[statusName] = (issuesByProject[projectName].statuses[statusName] || 0) + 1
+function getHierarchyLevel(typeName: string): number {
+  return HIERARCHY_TYPES[typeName.toLowerCase()] ?? 1 // default to story level
+}
+
+interface HierarchyIssue {
+  key: string
+  summary: string
+  type: string
+  status: string
+  parentKey: string | null
+  children: HierarchyIssue[]
+}
+
+interface ProjectHierarchy {
+  name: string
+  key: string
+  totalCount: number
+  epics: EpicNode[]
+  defects: DefectSummary[]
+  statusCounts: Array<{ status: string; count: number }>
+  typeCounts: Array<{ type: string; count: number }>
+}
+
+interface EpicNode {
+  key: string
+  summary: string
+  status: string
+  storyCount: number
+  subtaskCount: number
+  stories: StoryNode[]
+  statusCounts: Array<{ status: string; count: number }>
+}
+
+interface StoryNode {
+  key: string
+  summary: string
+  type: string
+  status: string
+  subtaskCount: number
+  subtasks: Array<{ key: string; summary: string; status: string }>
+}
+
+interface DefectSummary {
+  type: string
+  count: number
+  statuses: Array<{ status: string; count: number }>
+}
+
+function buildHierarchy(issues: any[]) {
+  // Index all issues by key
+  const issueMap: Record<string, any> = {}
+  for (const issue of issues) {
+    issueMap[issue.key] = issue
   }
+
+  // Group by project
+  const projectMap: Record<string, any[]> = {}
+  for (const issue of issues) {
+    const projKey = issue.fields?.project?.key || '?'
+    const projName = issue.fields?.project?.name || 'Unknown'
+    const pk = `${projKey}::${projName}`
+    if (!projectMap[pk]) projectMap[pk] = []
+    projectMap[pk].push(issue)
+  }
+
+  // Global status counts
+  const globalStatuses: Record<string, number> = {}
+
+  const projects: ProjectHierarchy[] = []
+
+  for (const [pk, projIssues] of Object.entries(projectMap)) {
+    const [projKey, projName] = pk.split('::')
+
+    const statusCounts: Record<string, number> = {}
+    const typeCounts: Record<string, number> = {}
+    const defectMap: Record<string, { count: number; statuses: Record<string, number> }> = {}
+
+    // Separate epics, stories/tasks, subtasks, and defects
+    const epics: any[] = []
+    const storiesAndTasks: any[] = []
+    const subtasks: any[] = []
+    const defectIssues: any[] = []
+
+    for (const issue of projIssues) {
+      const typeName = issue.fields?.issuetype?.name || 'Unknown'
+      const statusName = issue.fields?.status?.name || 'Unknown'
+      const isSubtask = issue.fields?.issuetype?.subtask === true
+
+      statusCounts[statusName] = (statusCounts[statusName] || 0) + 1
+      typeCounts[typeName] = (typeCounts[typeName] || 0) + 1
+      globalStatuses[statusName] = (globalStatuses[statusName] || 0) + 1
+
+      if (isDefectType(typeName)) {
+        defectIssues.push(issue)
+        if (!defectMap[typeName]) defectMap[typeName] = { count: 0, statuses: {} }
+        defectMap[typeName].count++
+        defectMap[typeName].statuses[statusName] = (defectMap[typeName].statuses[statusName] || 0) + 1
+      } else if (typeName.toLowerCase() === 'epic') {
+        epics.push(issue)
+      } else if (isSubtask) {
+        subtasks.push(issue)
+      } else {
+        storiesAndTasks.push(issue)
+      }
+    }
+
+    // Build epic nodes
+    const epicNodes: EpicNode[] = []
+    const epicKeys = new Set(epics.map(e => e.key))
+
+    // Map stories to their parent epic
+    const epicStoriesMap: Record<string, any[]> = {}
+    const orphanStories: any[] = []
+
+    for (const story of storiesAndTasks) {
+      const parentKey = story.fields?.parent?.key
+      if (parentKey && epicKeys.has(parentKey)) {
+        if (!epicStoriesMap[parentKey]) epicStoriesMap[parentKey] = []
+        epicStoriesMap[parentKey].push(story)
+      } else {
+        orphanStories.push(story)
+      }
+    }
+
+    // Map subtasks to their parent story
+    const storySubtaskMap: Record<string, any[]> = {}
+    const orphanSubtasks: any[] = []
+    const allStoryKeys = new Set([...storiesAndTasks.map(s => s.key)])
+
+    for (const sub of subtasks) {
+      const parentKey = sub.fields?.parent?.key
+      if (parentKey && allStoryKeys.has(parentKey)) {
+        if (!storySubtaskMap[parentKey]) storySubtaskMap[parentKey] = []
+        storySubtaskMap[parentKey].push(sub)
+      } else {
+        orphanSubtasks.push(sub)
+      }
+    }
+
+    // Build story nodes helper
+    function buildStoryNodes(stories: any[]): StoryNode[] {
+      return stories.map(s => {
+        const subs = storySubtaskMap[s.key] || []
+        return {
+          key: s.key,
+          summary: s.fields?.summary || '',
+          type: s.fields?.issuetype?.name || 'Story',
+          status: s.fields?.status?.name || 'Unknown',
+          subtaskCount: subs.length,
+          subtasks: subs.map(st => ({
+            key: st.key,
+            summary: st.fields?.summary || '',
+            status: st.fields?.status?.name || 'Unknown',
+          })),
+        }
+      })
+    }
+
+    for (const epic of epics) {
+      const stories = epicStoriesMap[epic.key] || []
+      const storyNodes = buildStoryNodes(stories)
+      const totalSubtasks = storyNodes.reduce((s, n) => s + n.subtaskCount, 0)
+
+      // Collect statuses for epic scope
+      const epicStatuses: Record<string, number> = {}
+      const epicStatus = epic.fields?.status?.name || 'Unknown'
+      epicStatuses[epicStatus] = 1
+      for (const st of stories) {
+        const sn = st.fields?.status?.name || 'Unknown'
+        epicStatuses[sn] = (epicStatuses[sn] || 0) + 1
+      }
+      for (const st of stories) {
+        for (const sub of (storySubtaskMap[st.key] || [])) {
+          const sn = sub.fields?.status?.name || 'Unknown'
+          epicStatuses[sn] = (epicStatuses[sn] || 0) + 1
+        }
+      }
+
+      epicNodes.push({
+        key: epic.key,
+        summary: epic.fields?.summary || '',
+        status: epicStatus,
+        storyCount: stories.length,
+        subtaskCount: totalSubtasks,
+        stories: storyNodes,
+        statusCounts: Object.entries(epicStatuses)
+          .map(([status, count]) => ({ status, count }))
+          .sort((a, b) => b.count - a.count),
+      })
+    }
+
+    // If there are orphan stories, group them under a virtual "Unlinked" epic
+    if (orphanStories.length > 0) {
+      const storyNodes = buildStoryNodes(orphanStories)
+      const totalSubtasks = storyNodes.reduce((s, n) => s + n.subtaskCount, 0)
+      const orphanStatuses: Record<string, number> = {}
+      for (const s of orphanStories) {
+        const sn = s.fields?.status?.name || 'Unknown'
+        orphanStatuses[sn] = (orphanStatuses[sn] || 0) + 1
+      }
+      epicNodes.push({
+        key: '_unlinked',
+        summary: 'Stories without Epic',
+        status: '-',
+        storyCount: orphanStories.length,
+        subtaskCount: totalSubtasks,
+        stories: storyNodes,
+        statusCounts: Object.entries(orphanStatuses)
+          .map(([status, count]) => ({ status, count }))
+          .sort((a, b) => b.count - a.count),
+      })
+    }
+
+    // Build defect summary
+    const defects: DefectSummary[] = Object.entries(defectMap)
+      .map(([type, info]) => ({
+        type,
+        count: info.count,
+        statuses: Object.entries(info.statuses)
+          .map(([status, count]) => ({ status, count }))
+          .sort((a, b) => b.count - a.count),
+      }))
+      .sort((a, b) => b.count - a.count)
+
+    projects.push({
+      name: projName,
+      key: projKey,
+      totalCount: projIssues.length,
+      epics: epicNodes.sort((a, b) => b.storyCount - a.storyCount),
+      defects,
+      statusCounts: Object.entries(statusCounts)
+        .map(([status, count]) => ({ status, count }))
+        .sort((a, b) => b.count - a.count),
+      typeCounts: Object.entries(typeCounts)
+        .map(([type, count]) => ({ type, count }))
+        .sort((a, b) => b.count - a.count),
+    })
+  }
+
+  projects.sort((a, b) => b.totalCount - a.totalCount)
+
+  const statusSummary = Object.entries(globalStatuses)
+    .map(([status, count]) => ({ status, count }))
+    .sort((a, b) => b.count - a.count)
+
+  return { projects, statusSummary }
 }

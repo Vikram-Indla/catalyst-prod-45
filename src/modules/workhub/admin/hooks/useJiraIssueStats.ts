@@ -1,27 +1,53 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-export interface IssueTypeStats {
+export interface SubtaskNode {
+  key: string;
+  summary: string;
+  status: string;
+}
+
+export interface StoryNode {
+  key: string;
+  summary: string;
+  type: string;
+  status: string;
+  subtaskCount: number;
+  subtasks: SubtaskNode[];
+}
+
+export interface EpicNode {
+  key: string;
+  summary: string;
+  status: string;
+  storyCount: number;
+  subtaskCount: number;
+  stories: StoryNode[];
+  statusCounts: Array<{ status: string; count: number }>;
+}
+
+export interface DefectSummary {
   type: string;
   count: number;
   statuses: Array<{ status: string; count: number }>;
 }
 
-export interface ProjectStats {
+export interface ProjectHierarchy {
   name: string;
   key: string;
-  count: number;
-  types: Array<{ type: string; count: number }>;
-  statuses: Array<{ status: string; count: number }>;
+  totalCount: number;
+  epics: EpicNode[];
+  defects: DefectSummary[];
+  statusCounts: Array<{ status: string; count: number }>;
+  typeCounts: Array<{ type: string; count: number }>;
 }
 
 export interface IssueStatsResponse {
   success: boolean;
   total: number;
   scanned: number;
-  types: IssueTypeStats[];
-  statuses: Array<{ status: string; count: number }>;
-  projects: ProjectStats[];
+  projects: ProjectHierarchy[];
+  statusSummary: Array<{ status: string; count: number }>;
 }
 
 export function useJiraIssueStats(enabled: boolean) {
@@ -34,7 +60,7 @@ export function useJiraIssueStats(enabled: boolean) {
       return data as IssueStatsResponse;
     },
     enabled,
-    staleTime: 5 * 60_000, // 5 minutes
-    refetchInterval: 10 * 60_000, // 10 minutes
+    staleTime: 5 * 60_000,
+    refetchInterval: 10 * 60_000,
   });
 }
