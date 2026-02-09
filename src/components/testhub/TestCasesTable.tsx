@@ -22,6 +22,7 @@ interface TestCasesTableProps {
   onRowClick: (testCase: TestCase) => void;
   onRowAction?: (testCase: TestCase, action: string) => void;
   onContextMenu?: (e: React.MouseEvent, testCase: TestCase) => void;
+  onActionClick?: (testCase: TestCase, rect: DOMRect) => void;
   onSort: (column: string) => void;
   sortColumn: string | null;
   sortDirection: 'asc' | 'desc';
@@ -35,6 +36,7 @@ export function TestCasesTable({
   onRowClick,
   onRowAction,
   onContextMenu,
+  onActionClick,
   onSort,
   sortColumn,
   sortDirection,
@@ -81,15 +83,10 @@ export function TestCasesTable({
   const handleActionClick = (e: React.MouseEvent, tc: TestCase) => {
     e.stopPropagation();
     e.preventDefault();
-    // Use native event to prevent document click handler from firing
     e.nativeEvent.stopImmediatePropagation();
     
     const rect = e.currentTarget.getBoundingClientRect();
-    onContextMenu?.({ 
-      ...e, 
-      clientX: rect.right - 180, // Position menu to the left of the button
-      clientY: rect.bottom + 4,
-    } as React.MouseEvent, tc);
+    onActionClick?.(tc, rect);
   };
 
   // Header cell styles
