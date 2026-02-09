@@ -5,7 +5,6 @@ interface FilterState {
   priorities: string[];
   statuses: string[];
   types: string[];
-  automations: string[];
 }
 
 interface FilterDropdownProps {
@@ -17,7 +16,6 @@ interface FilterDropdownProps {
 const PRIORITY_OPTIONS = ['critical', 'high', 'medium', 'low'];
 const STATUS_OPTIONS = ['draft', 'ready', 'approved', 'deprecated'];
 const TYPE_OPTIONS = ['functional', 'security', 'integration', 'api', 'regression'];
-const AUTOMATION_OPTIONS = ['manual', 'automated', 'planned'];
 
 export function FilterDropdown({ filters, onChange, onClose }: FilterDropdownProps) {
   const [localFilters, setLocalFilters] = useState<FilterState>(filters);
@@ -45,7 +43,7 @@ export function FilterDropdown({ filters, onChange, onClose }: FilterDropdownPro
   };
 
   const clearAll = () => {
-    setLocalFilters({ priorities: [], statuses: [], types: [], automations: [] });
+    setLocalFilters({ priorities: [], statuses: [], types: [] });
   };
 
   const applyFilters = () => {
@@ -168,23 +166,6 @@ export function FilterDropdown({ filters, onChange, onClose }: FilterDropdownPro
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
           {TYPE_OPTIONS.map(t => renderCheckbox('types', t, t.charAt(0).toUpperCase() + t.slice(1)))}
-        </div>
-      </div>
-
-      {/* Automation */}
-      <div style={{ marginBottom: 16 }}>
-        <div style={{
-          fontSize: 10,
-          fontWeight: 600,
-          textTransform: 'uppercase',
-          letterSpacing: '0.06em',
-          color: '#64748B',
-          marginBottom: 8,
-        }}>
-          Automation
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>
-          {AUTOMATION_OPTIONS.map(a => renderCheckbox('automations', a, a.charAt(0).toUpperCase() + a.slice(1)))}
         </div>
       </div>
 

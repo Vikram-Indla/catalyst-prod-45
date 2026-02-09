@@ -5,7 +5,6 @@ interface TestCase {
   priority: 'critical' | 'high' | 'medium' | 'low';
   type: string;
   status: 'draft' | 'ready' | 'approved' | 'deprecated';
-  automation: 'manual' | 'automated' | 'planned';
   ownerInitials?: string | null;
   ownerName?: string | null;
   updatedAt: string;
@@ -146,17 +145,6 @@ export function TestCaseGridView({ testCases, selectedIds, onSelectOne, onRowCli
                 color: statusStyle.color,
               }}>
                 {tc.status}
-              </span>
-              <span style={{
-                fontSize: 10,
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                padding: '2px 6px',
-                borderRadius: 4,
-                backgroundColor: tc.automation === 'automated' ? 'rgba(16,185,129,0.1)' : '#F1F5F9',
-                color: tc.automation === 'automated' ? '#059669' : '#64748B',
-              }}>
-                {tc.automation === 'automated' ? 'Auto' : tc.automation === 'planned' ? 'Plan' : 'Manual'}
               </span>
             </div>
 

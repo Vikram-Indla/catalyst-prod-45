@@ -12,7 +12,6 @@ interface TestCase {
   folder_id: string | null;
   priority: string;
   type: string;
-  automation: string;
 }
 
 interface CloneTestCaseModalProps {
@@ -77,7 +76,7 @@ export function CloneTestCaseModal({
           priority: testCase.priority,
           type: testCase.type,
           status: 'draft', // Always start as draft
-          automation: testCase.automation,
+          automation: 'manual', // Default automation status
           version: 1,
         })
         .select()

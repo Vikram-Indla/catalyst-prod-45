@@ -14,7 +14,6 @@ interface TestCase {
   priority: string;
   type: string;
   status: string;
-  automation: string;
   version: number;
   updated_at: string;
 }
@@ -807,9 +806,6 @@ export function ViewTestCaseModal({
               </span>
               <span style={{ padding: '4px 10px', backgroundColor: '#F1F5F9', color: '#64748B', borderRadius: 12, fontFamily: 'Inter', fontSize: 12, fontWeight: 500, textTransform: 'capitalize' }}>
                 {testCase.type}
-              </span>
-              <span style={{ padding: '4px 10px', backgroundColor: '#F1F5F9', color: '#64748B', borderRadius: 12, fontFamily: 'Inter', fontSize: 12, fontWeight: 500, textTransform: 'capitalize' }}>
-                {testCase.automation}
               </span>
               <span style={{ fontFamily: 'Inter', fontSize: 12, color: '#94A3B8' }}>v{testCase.version}</span>
               <span style={{ fontFamily: 'Inter', fontSize: 12, color: '#94A3B8' }}>

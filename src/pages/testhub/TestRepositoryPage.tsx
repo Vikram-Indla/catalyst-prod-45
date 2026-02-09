@@ -30,7 +30,6 @@ interface TestCase {
   priority: 'critical' | 'high' | 'medium' | 'low';
   type: 'functional' | 'regression' | 'security' | 'integration' | 'performance';
   status: 'draft' | 'ready' | 'approved' | 'deprecated';
-  automation: 'manual' | 'automated' | 'planned';
   ownerName?: string;
   ownerInitials?: string;
   ownerColor?: string;
@@ -65,7 +64,6 @@ interface RawTestCase {
   priority: string;
   type: string;
   status: string;
-  automation: string;
   version: number;
   updated_at: string;
 }
@@ -90,7 +88,7 @@ export function TestRepositoryPage() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [totalTestCases, setTotalTestCases] = useState(0);
-  const [filters, setFilters] = useState({ priorities: [] as string[], statuses: [] as string[], types: [] as string[], automations: [] as string[] });
+  const [filters, setFilters] = useState({ priorities: [] as string[], statuses: [] as string[], types: [] as string[] });
 
   // Modal states
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
@@ -186,7 +184,6 @@ export function TestRepositoryPage() {
        priority: tc.priority as TestCase['priority'],
        type: tc.type as TestCase['type'],
        status: tc.status as TestCase['status'],
-       automation: tc.automation as TestCase['automation'],
        ownerInitials: 'AK',
        ownerColor: 'blue',
        updatedAt: tc.updated_at,
@@ -197,13 +194,12 @@ export function TestRepositoryPage() {
      })) || [];
 
      // Apply client-side filtering
-     if (filters.priorities.length > 0 || filters.statuses.length > 0 || filters.types.length > 0 || filters.automations.length > 0) {
+     if (filters.priorities.length > 0 || filters.statuses.length > 0 || filters.types.length > 0) {
        mapped = mapped.filter(tc => {
          const priorityMatch = filters.priorities.length === 0 || filters.priorities.includes(tc.priority);
          const statusMatch = filters.statuses.length === 0 || filters.statuses.includes(tc.status);
          const typeMatch = filters.types.length === 0 || filters.types.includes(tc.type);
-         const automationMatch = filters.automations.length === 0 || filters.automations.includes(tc.automation);
-         return priorityMatch && statusMatch && typeMatch && automationMatch;
+         return priorityMatch && statusMatch && typeMatch;
        });
      }
 
@@ -241,7 +237,7 @@ export function TestRepositoryPage() {
      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [selectedFolderId, searchQuery, sortColumn, sortDirection, 
        filters.priorities.join(','), filters.statuses.join(','), 
-       filters.types.join(','), filters.automations.join(',')]);
+       filters.types.join(',')]);
 
   // Handlers
   const handleSelectAll = (selected: boolean) => {
@@ -283,7 +279,6 @@ export function TestRepositoryPage() {
       priority: testCase.priority,
       type: testCase.type,
       status: testCase.status,
-      automation: testCase.automation,
       version: testCase.version || 1,
       updated_at: testCase.updatedAt,
     };
@@ -939,7 +934,6 @@ export function TestRepositoryPage() {
           priority: selectedTestCase.priority,
           type: selectedTestCase.type,
           status: selectedTestCase.status,
-          automation: selectedTestCase.automation,
           version: selectedTestCase.version || 1,
         } : undefined}
         existingSteps={selectedTestCaseSteps.length > 0 ? selectedTestCaseSteps : undefined}
