@@ -26,7 +26,7 @@ serve(async (req) => {
   // Create log entry
   const { data: logEntry } = await supabase
     .from('wh_sync_log')
-    .insert({ sync_type: syncType, status: 'running' })
+    .insert({ sync_type: syncType, status: 'running', projects_synced: overrideProjects || [] })
     .select()
     .single()
   const logId = logEntry?.id

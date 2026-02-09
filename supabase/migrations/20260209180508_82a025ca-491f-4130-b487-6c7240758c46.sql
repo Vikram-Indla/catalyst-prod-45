@@ -1,0 +1,1 @@
+ALTER TABLE wh_sync_log ADD COLUMN IF NOT EXISTS projects_synced text[] DEFAULT '{}';

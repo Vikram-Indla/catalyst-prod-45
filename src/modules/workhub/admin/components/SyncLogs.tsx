@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Loader2, CheckCircle2, XCircle, AlertTriangle, Clock, RefreshCw, Trash2, Filter, ChevronDown, ChevronRight } from 'lucide-react'
+import { Loader2, CheckCircle2, XCircle, AlertTriangle, Clock, RefreshCw, Trash2, Filter, ChevronDown, ChevronRight, Save } from 'lucide-react'
 import { toast } from 'sonner'
 import { formatDistanceToNow } from 'date-fns'
 import {
@@ -8,6 +8,7 @@ import {
   useForceSync,
   useSyncConfig,
   useUpdateSyncSchedule,
+  useSaveFilterSettings,
   useAvailableIssueTypes,
   useAvailableFixVersions,
   useAvailableProjects,
@@ -22,6 +23,7 @@ export function SyncLogs() {
   const { data: config } = useSyncConfig()
   const forceSync = useForceSync()
   const updateSchedule = useUpdateSyncSchedule()
+  const saveFilters = useSaveFilterSettings()
   const { data: availableTypes } = useAvailableIssueTypes()
   const { data: availableVersions } = useAvailableFixVersions()
   const { data: availableProjects } = useAvailableProjects()
@@ -99,6 +101,18 @@ export function SyncLogs() {
     }, {
       onSuccess: () => toast.success('Schedule saved'),
       onError: (err) => toast.error(`Failed to save: ${err.message}`),
+    })
+  }
+
+  const handleSaveFilters = () => {
+    saveFilters.mutate({
+      sync_projects: selectedProjects,
+      sync_issue_types: selectedTypes,
+      sync_fix_versions: selectedVersions,
+      sync_lookback_months: lookbackMonths,
+    }, {
+      onSuccess: () => toast.success('Filter settings saved'),
+      onError: (err) => toast.error(`Failed to save filters: ${err.message}`),
     })
   }
 
@@ -264,6 +278,23 @@ export function SyncLogs() {
             {!hasFilters && (typeOptions.length > 0 || projectOptions.length > 0) && (
               <span style={{ fontSize: '10px', color: '#EF4444', fontWeight: 600 }}>⚠ Select at least one project, type, or version to sync</span>
             )}
+
+            {/* Save Filters */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '4px' }}>
+              <button
+                onClick={handleSaveFilters}
+                disabled={saveFilters.isPending}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '6px',
+                  padding: '7px 16px', borderRadius: '6px', border: '1px solid #E2E8F0',
+                  background: '#fff', color: '#334155', fontSize: '12px', fontWeight: 600,
+                  cursor: saveFilters.isPending ? 'not-allowed' : 'pointer', fontFamily: 'Inter, sans-serif',
+                }}
+              >
+                <Save size={13} />
+                {saveFilters.isPending ? 'Saving…' : 'Save Filter Settings'}
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -390,8 +421,8 @@ export function SyncLogs() {
           <span style={{ fontSize: '11px', color: '#64748B', background: '#F1F5F9', padding: '2px 8px', borderRadius: '4px' }}>Last 10 runs</span>
         </div>
         <div style={{ maxHeight: '340px', overflowY: 'auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '140px 90px 80px 1fr 70px', padding: '8px 20px', background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', position: 'sticky', top: 0, zIndex: 1 }}>
-            {['TIMESTAMP', 'TYPE', 'STATUS', 'DETAILS', 'DURATION'].map(h => (
+          <div style={{ display: 'grid', gridTemplateColumns: '140px 90px 80px 1fr 100px 70px', padding: '8px 20px', background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', position: 'sticky', top: 0, zIndex: 1 }}>
+            {['TIMESTAMP', 'TYPE', 'STATUS', 'DETAILS', 'PROJECTS', 'DURATION'].map(h => (
               <span key={h} style={{ fontFamily: 'Sora, sans-serif', fontSize: '10px', fontWeight: 600, color: '#94A3B8', letterSpacing: '.5px', textTransform: 'uppercase', textAlign: h === 'DURATION' ? 'right' : 'left' }}>{h}</span>
             ))}
           </div>
@@ -450,9 +481,11 @@ function LogRow({ log, formatDuration }: { log: SyncLogEntry; formatDuration: (m
   const ts = new Date(log.started_at)
   const timestamp = `${ts.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} ${ts.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`
 
+  const projectChips = log.projects_synced && log.projects_synced.length > 0 ? log.projects_synced : null
+
   return (
     <div
-      style={{ display: 'grid', gridTemplateColumns: '140px 90px 80px 1fr 70px', padding: '10px 20px', borderBottom: '1px solid #F1F5F9', alignItems: 'center', fontSize: '12px' }}
+      style={{ display: 'grid', gridTemplateColumns: '140px 90px 80px 1fr 100px 70px', padding: '10px 20px', borderBottom: '1px solid #F1F5F9', alignItems: 'center', fontSize: '12px' }}
       onMouseOver={(e) => (e.currentTarget.style.background = '#F8FAFC')}
       onMouseOut={(e) => (e.currentTarget.style.background = 'transparent')}
     >
@@ -460,6 +493,19 @@ function LogRow({ log, formatDuration }: { log: SyncLogEntry; formatDuration: (m
       <span><span style={{ fontSize: '9px', padding: '2px 8px', borderRadius: '3px', background: tc.bg, color: tc.text, fontWeight: 600, textTransform: 'capitalize', fontFamily: 'Inter, sans-serif' }}>{log.sync_type}</span></span>
       <span><span style={{ fontSize: '10px', padding: '2px 10px', borderRadius: '10px', background: sc.bg, color: sc.text, fontWeight: 600, textTransform: 'capitalize', fontFamily: 'Inter, sans-serif' }}>{log.status}</span></span>
       <span style={{ color: '#334155', fontSize: '12px', fontFamily: 'Inter, sans-serif', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{details}</span>
+      <span style={{ display: 'flex', gap: '3px', flexWrap: 'wrap' }}>
+        {projectChips ? (
+          projectChips.length <= 3 ? (
+            projectChips.map(p => (
+              <span key={p} style={{ fontSize: '9px', padding: '1px 6px', borderRadius: '3px', background: '#E0F2FE', color: '#0369A1', fontWeight: 600, fontFamily: 'Inter, sans-serif' }}>{p}</span>
+            ))
+          ) : (
+            <span style={{ fontSize: '9px', padding: '1px 6px', borderRadius: '3px', background: '#E0F2FE', color: '#0369A1', fontWeight: 600, fontFamily: 'Inter, sans-serif' }}>{projectChips.length} projects</span>
+          )
+        ) : (
+          <span style={{ fontSize: '9px', color: '#CBD5E1' }}>All</span>
+        )}
+      </span>
       <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: '#94A3B8', textAlign: 'right' }}>{log.duration_ms ? formatDuration(log.duration_ms) : '—'}</span>
     </div>
   )

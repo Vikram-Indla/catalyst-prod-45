@@ -16,6 +16,7 @@ export interface SyncLogEntry {
   completed_at: string | null
   lookback_months: number
   jql_query: string
+  projects_synced: string[] | null
 }
 
 export interface SyncHealth {
@@ -224,6 +225,44 @@ export function useUpdateSyncSchedule() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['wh'] })
+    },
+  })
+}
+
+export function useSaveFilterSettings() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (input: {
+      sync_projects?: string[]
+      sync_issue_types?: string[]
+      sync_fix_versions?: string[]
+      sync_lookback_months?: number
+    }) => {
+      const updates = []
+      if (input.sync_projects !== undefined) {
+        updates.push(
+          (supabase as any).from('wh_config').upsert({ key: 'sync_projects', value: JSON.stringify(input.sync_projects) }, { onConflict: 'key' })
+        )
+      }
+      if (input.sync_issue_types !== undefined) {
+        updates.push(
+          (supabase as any).from('wh_config').upsert({ key: 'sync_issue_types', value: JSON.stringify(input.sync_issue_types) }, { onConflict: 'key' })
+        )
+      }
+      if (input.sync_fix_versions !== undefined) {
+        updates.push(
+          (supabase as any).from('wh_config').upsert({ key: 'sync_fix_versions', value: JSON.stringify(input.sync_fix_versions) }, { onConflict: 'key' })
+        )
+      }
+      if (input.sync_lookback_months !== undefined) {
+        updates.push(
+          (supabase as any).from('wh_config').upsert({ key: 'sync_lookback_months', value: input.sync_lookback_months }, { onConflict: 'key' })
+        )
+      }
+      await Promise.all(updates)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['wh', 'sync-config'] })
     },
   })
 }
