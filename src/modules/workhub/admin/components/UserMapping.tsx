@@ -1,29 +1,173 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import {
   useUserMappings, useBatchSaveUserMappings, useAutoMatchUsers,
-  useRefreshJiraUsers, useCatalystProfiles,
+  useRefreshJiraUsers, useCatalystProfilesWithDept, useCapacityDepartments,
 } from '../hooks/useAdminConfig'
+import type { CatalystProfileWithDept } from '../hooks/useAdminConfig'
 import type { JiraUserMapping } from '../types/admin-config.types'
 import toast from 'react-hot-toast'
 
+// ═══ FUZZY NAME MATCHING ═══
+
+function normalizeStr(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]/g, '')
+}
+
+function tokenize(name: string): string[] {
+  return name.toLowerCase().trim().split(/\s+/).filter(Boolean)
+}
+
+/** Simple bigram similarity (0–1) */
+function bigramSimilarity(a: string, b: string): number {
+  const na = normalizeStr(a)
+  const nb = normalizeStr(b)
+  if (na === nb) return 1
+  if (na.length < 2 || nb.length < 2) return na === nb ? 1 : 0
+  const bigramsA = new Set<string>()
+  for (let i = 0; i < na.length - 1; i++) bigramsA.add(na.slice(i, i + 2))
+  const bigramsB = new Set<string>()
+  for (let i = 0; i < nb.length - 1; i++) bigramsB.add(nb.slice(i, i + 2))
+  let overlap = 0
+  bigramsA.forEach(bg => { if (bigramsB.has(bg)) overlap++ })
+  return (2 * overlap) / (bigramsA.size + bigramsB.size)
+}
+
+/** Score how well a Catalyst profile matches a Jira display name */
+function matchScore(jiraName: string, catalystName: string): number {
+  // Exact normalized match
+  if (normalizeStr(jiraName) === normalizeStr(catalystName)) return 1
+
+  const jTokens = tokenize(jiraName)
+  const cTokens = tokenize(catalystName)
+
+  // Token overlap: check if any first/last name tokens match
+  let tokenMatches = 0
+  for (const jt of jTokens) {
+    for (const ct of cTokens) {
+      if (jt === ct) { tokenMatches++; break }
+      // Prefix match (e.g., "Abdulrhman" vs "Abdulrahman")
+      if (jt.length > 3 && ct.length > 3 && (jt.startsWith(ct.slice(0, 4)) || ct.startsWith(jt.slice(0, 4)))) {
+        tokenMatches += 0.7
+        break
+      }
+    }
+  }
+
+  const tokenScore = jTokens.length > 0 ? tokenMatches / Math.max(jTokens.length, cTokens.length) : 0
+  const bigram = bigramSimilarity(jiraName, catalystName)
+
+  return tokenScore * 0.6 + bigram * 0.4
+}
+
+function findBestMatch(
+  jiraName: string,
+  profiles: CatalystProfileWithDept[],
+  threshold = 0.35,
+): { profile: CatalystProfileWithDept; score: number } | null {
+  let best: { profile: CatalystProfileWithDept; score: number } | null = null
+  for (const p of profiles) {
+    if (!p.full_name) continue
+    const s = matchScore(jiraName, p.full_name)
+    if (s >= threshold && (!best || s > best.score)) {
+      best = { profile: p, score: s }
+    }
+  }
+  return best
+}
+
+// ═══ HELPERS ═══
+
+const getInitials = (name: string) =>
+  name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+
+const AVATAR_COLORS = ['#8B5CF6', '#06B6D4', '#EC4899', '#F97316', '#14B8A6', '#6366F1']
+const getAvatarColor = (name: string) => AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length]
+
+const Avatar = ({ name, size = 24 }: { name: string; size?: number }) => (
+  <span style={{
+    width: size, height: size, borderRadius: '50%', display: 'inline-flex',
+    alignItems: 'center', justifyContent: 'center', fontSize: size * 0.38,
+    fontWeight: 700, color: '#fff', background: getAvatarColor(name), flexShrink: 0,
+  }}>
+    {getInitials(name)}
+  </span>
+)
+
+// ═══ COMPONENT ═══
+
 export function UserMapping() {
-  const { data: users = [], isLoading } = useUserMappings()
-  const { data: profiles = [] } = useCatalystProfiles()
+  const { data: jiraUsers = [], isLoading } = useUserMappings()
+  const { data: profiles = [] } = useCatalystProfilesWithDept()
+  const { data: departments = [] } = useCapacityDepartments()
   const batchSave = useBatchSaveUserMappings()
   const autoMatch = useAutoMatchUsers()
   const refreshUsers = useRefreshJiraUsers()
 
+  const [departmentFilter, setDepartmentFilter] = useState<string>('all')
+  const [searchText, setSearchText] = useState('')
   const [localMappings, setLocalMappings] = useState<Record<string, string | null>>({})
+  const [initialized, setInitialized] = useState(false)
 
-  useEffect(() => {
-    if (users.length > 0) {
+  // Initialize local mappings from server data
+  React.useEffect(() => {
+    if (jiraUsers.length > 0 && !initialized) {
       const map: Record<string, string | null> = {}
-      users.forEach(u => { map[u.id] = u.catalyst_profile_id })
+      jiraUsers.forEach(u => { map[u.id] = u.catalyst_profile_id })
       setLocalMappings(map)
+      setInitialized(true)
     }
-  }, [users])
+  }, [jiraUsers, initialized])
 
-  const unmappedCount = users.filter(u => !u.is_mapped && !localMappings[u.id]).length
+  // Filter Catalyst profiles by department
+  const filteredProfiles = useMemo(() => {
+    if (departmentFilter === 'all') return profiles
+    return profiles.filter(p => p.department_id === departmentFilter)
+  }, [profiles, departmentFilter])
+
+  // Build rows: one row per Catalyst profile (filtered), with Jira suggestion
+  const rows = useMemo(() => {
+    let base = filteredProfiles
+
+    if (searchText.trim()) {
+      const q = searchText.toLowerCase()
+      base = base.filter(p =>
+        (p.full_name?.toLowerCase().includes(q)) ||
+        (p.email?.toLowerCase().includes(q))
+      )
+    }
+
+    return base.map(profile => {
+      // Check if already mapped
+      const existingMapping = jiraUsers.find(j => localMappings[j.id] === profile.id)
+      // Find best fuzzy match from Jira users
+      const suggestion = findBestMatch(profile.full_name || '', jiraUsers.map(j => ({
+        id: j.id,
+        full_name: j.jira_display_name,
+        email: j.jira_email,
+        role: null,
+        avatar_url: j.jira_avatar_url,
+        department_id: null,
+        department_name: null,
+      })))
+
+      return {
+        profile,
+        existingJiraMapping: existingMapping || null,
+        suggestedJira: suggestion ? {
+          jiraUser: jiraUsers.find(j => j.id === suggestion.profile.id)!,
+          score: suggestion.score,
+        } : null,
+      }
+    })
+  }, [filteredProfiles, jiraUsers, localMappings, searchText])
+
+  const handleAcceptSuggestion = (profileId: string, jiraUserId: string) => {
+    setLocalMappings(prev => ({ ...prev, [jiraUserId]: profileId }))
+  }
+
+  const handleClearMapping = (jiraUserId: string) => {
+    setLocalMappings(prev => ({ ...prev, [jiraUserId]: null }))
+  }
 
   const handleSave = async () => {
     const mappings = Object.entries(localMappings).map(([id, catalyst_profile_id]) => ({
@@ -42,80 +186,125 @@ export function UserMapping() {
     try {
       const result = await autoMatch.mutateAsync()
       toast.success(`Auto-matched ${result.matched} users`)
+      setInitialized(false) // re-load
     } catch {
       toast.error('Auto-match failed')
     }
   }
 
-  const getInitials = (name: string) => {
-    return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
-  }
-
-  const getAvatarColor = (name: string) => {
-    const colors = ['#8B5CF6', '#06B6D4', '#EC4899', '#F97316', '#14B8A6', '#6366F1']
-    const idx = name.charCodeAt(0) % colors.length
-    return colors[idx]
-  }
+  const mappedCount = Object.values(localMappings).filter(Boolean).length
+  const unmappedJiraCount = jiraUsers.filter(j => !localMappings[j.id]).length
 
   if (isLoading) {
     return <div style={{ padding: 40, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>Loading...</div>
   }
 
-  const cardStyle: React.CSSProperties = {
-    background: '#fff', border: '1px solid #E2E8F0', borderRadius: 8,
-    padding: 20, marginBottom: 16, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
-  }
-
-  // Map profile IDs that are already assigned
-  const mappedProfileIds = new Set(Object.values(localMappings).filter(Boolean))
+  const cardBg = '#fff'
+  const borderColor = '#E2E8F0'
 
   return (
-    <div style={{ maxWidth: 1000, fontFamily: 'Inter, sans-serif' }}>
-      <div style={{ marginBottom: 24 }}>
+    <div style={{ maxWidth: 1200, fontFamily: 'Inter, sans-serif' }}>
+      {/* Header */}
+      <div style={{ marginBottom: 20 }}>
         <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
           User Mapping
         </h1>
         <p style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
-          Link Jira accounts to Catalyst profiles. Unmapped users show Jira display names in views.
+          Link Catalyst resources to Jira accounts. Filter by department and use smart name matching for suggestions.
         </p>
       </div>
 
-      {/* Unmapped warning */}
-      {unmappedCount > 0 && (
-        <div style={{
-          background: '#FFFBEB', border: '1px solid #FCD34D', borderRadius: 6,
-          padding: '8px 14px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8,
-        }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#F59E0B', flexShrink: 0 }} />
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#F59E0B' }}>
-            {unmappedCount} unmapped Jira users detected — assign Catalyst profiles below
-          </span>
-        </div>
-      )}
+      {/* Stats bar */}
+      <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+        {[
+          { label: 'Catalyst Profiles', value: filteredProfiles.length, color: '#2563EB' },
+          { label: 'Jira Users', value: jiraUsers.length, color: '#8B5CF6' },
+          { label: 'Mapped', value: mappedCount, color: '#10B981' },
+          { label: 'Unmapped Jira', value: unmappedJiraCount, color: '#F59E0B' },
+        ].map(s => (
+          <div key={s.label} style={{
+            background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 8,
+            padding: '10px 16px', flex: 1, display: 'flex', alignItems: 'center', gap: 10,
+          }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: s.color, flexShrink: 0 }} />
+            <div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: '#0F172A' }}>{s.value}</div>
+              <div style={{ fontSize: 10, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.3px' }}>{s.label}</div>
+            </div>
+          </div>
+        ))}
+      </div>
 
-      {/* Card 1: User Mapping Table */}
-      <div style={cardStyle}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: '#0F172A', margin: 0 }}>
-            Jira → Catalyst User Mapping
-          </h2>
-          <span style={{
-            fontSize: 10, background: '#F1F5F9', color: '#64748B', padding: '2px 8px',
-            borderRadius: 3, fontWeight: 500,
-          }}>{users.length} users</span>
-        </div>
+      {/* Filters bar */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16,
+        background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 8, padding: '10px 14px',
+      }}>
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#64748B' }}>Department</span>
+        <select
+          value={departmentFilter}
+          onChange={e => setDepartmentFilter(e.target.value)}
+          style={{
+            padding: '5px 10px', borderRadius: 6, fontSize: 12, border: `1px solid ${borderColor}`,
+            background: '#F8FAFC', color: '#334155', minWidth: 160,
+          }}
+        >
+          <option value="all">All Departments</option>
+          {departments.map(d => (
+            <option key={d.id} value={d.id}>{d.name}</option>
+          ))}
+        </select>
 
-        <div style={{
-          maxHeight: 380, overflowY: 'auto', border: '1px solid #F1F5F9', borderRadius: 6,
-        }}>
+        <div style={{ width: 1, height: 24, background: '#E2E8F0', margin: '0 4px' }} />
+
+        <input
+          type="text"
+          placeholder="Search by name…"
+          value={searchText}
+          onChange={e => setSearchText(e.target.value)}
+          style={{
+            padding: '5px 10px', borderRadius: 6, fontSize: 12, border: `1px solid ${borderColor}`,
+            background: '#F8FAFC', color: '#334155', width: 200, outline: 'none',
+          }}
+        />
+
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+          <button onClick={() => refreshUsers.mutate()} disabled={refreshUsers.isPending} style={{
+            padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 500,
+            background: '#F8FAFC', color: '#334155', border: `1px solid ${borderColor}`, cursor: 'pointer',
+          }}>
+            {refreshUsers.isPending ? 'Refreshing…' : '↻ Refresh Jira'}
+          </button>
+          <button onClick={handleAutoMatch} disabled={autoMatch.isPending} style={{
+            padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 500,
+            background: '#F8FAFC', color: '#334155', border: `1px solid ${borderColor}`, cursor: 'pointer',
+          }}>
+            {autoMatch.isPending ? 'Matching…' : '⚡ Auto-Match Email'}
+          </button>
+          <button onClick={handleSave} disabled={batchSave.isPending} style={{
+            padding: '6px 14px', borderRadius: 6, fontSize: 11, fontWeight: 600,
+            background: '#2563EB', color: '#fff', border: 'none', cursor: 'pointer',
+            opacity: batchSave.isPending ? 0.6 : 1,
+          }}>
+            {batchSave.isPending ? 'Saving…' : '💾 Save All'}
+          </button>
+        </div>
+      </div>
+
+      {/* Main mapping table */}
+      <div style={{
+        background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 8,
+        boxShadow: '0 1px 3px rgba(0,0,0,.04)',
+      }}>
+        <div style={{ maxHeight: 600, overflowY: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
-              <tr style={{ background: '#F8FAFC', position: 'sticky', top: 0, zIndex: 1 }}>
-                {['#', 'Account ID', 'Jira User', 'Email', 'Catalyst Profile', 'Status'].map(h => (
+              <tr style={{ background: '#F8FAFC', position: 'sticky', top: 0, zIndex: 2 }}>
+                {['#', 'CATALYST RESOURCE', 'DEPT', 'JIRA ACCOUNT (MAPPED)', 'SUGGESTED MATCH', 'ACTION'].map(h => (
                   <th key={h} style={{
                     fontFamily: 'Sora, sans-serif', fontSize: 9, textTransform: 'uppercase',
-                    color: '#94A3B8', padding: '8px 10px', textAlign: 'left', fontWeight: 600,
-                    letterSpacing: '.3px',
+                    color: '#94A3B8', padding: '10px 12px', textAlign: 'left', fontWeight: 600,
+                    letterSpacing: '.4px', borderBottom: `1px solid ${borderColor}`,
                   }}>
                     {h}
                   </th>
@@ -123,154 +312,172 @@ export function UserMapping() {
               </tr>
             </thead>
             <tbody>
-              {users.map((u, idx) => {
-                const isMapped = u.is_mapped || !!localMappings[u.id]
+              {rows.map((row, idx) => {
+                const { profile, existingJiraMapping, suggestedJira } = row
+                const isMapped = !!existingJiraMapping
+
                 return (
-                  <tr key={u.id} style={{
-                    background: isMapped ? '#fff' : '#FFFBEB',
-                    borderBottom: '1px solid #F1F5F9',
+                  <tr key={profile.id} style={{
+                    borderBottom: `1px solid #F1F5F9`,
+                    background: isMapped ? '#fff' : '#FEFCE8',
                   }}>
-                    <td style={{ padding: '8px 10px', color: '#94A3B8', width: 30 }}>{idx + 1}</td>
-                    <td style={{
-                      padding: '8px 10px', width: 100,
-                      fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#64748B',
-                      maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                    }}>
-                      {u.jira_account_id.slice(0, 12)}…
+                    {/* # */}
+                    <td style={{ padding: '10px 12px', color: '#94A3B8', width: 36, fontSize: 11 }}>
+                      {idx + 1}
                     </td>
-                    <td style={{ padding: '8px 10px' }}>
+
+                    {/* Catalyst Resource */}
+                    <td style={{ padding: '10px 12px', width: 240 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{
-                          width: 22, height: 22, borderRadius: '50%', display: 'flex', alignItems: 'center',
-                          justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#fff',
-                          background: getAvatarColor(u.jira_display_name), flexShrink: 0,
-                        }}>
-                          {getInitials(u.jira_display_name)}
-                        </span>
-                        <span style={{ fontWeight: 500, color: '#0F172A' }}>{u.jira_display_name}</span>
+                        <Avatar name={profile.full_name || 'U'} size={28} />
+                        <div>
+                          <div style={{ fontWeight: 600, color: '#0F172A', fontSize: 12 }}>
+                            {profile.full_name || 'Unnamed'}
+                          </div>
+                          <div style={{ fontSize: 10, color: '#94A3B8' }}>
+                            {profile.email || '—'}
+                          </div>
+                        </div>
                       </div>
                     </td>
-                    <td style={{ padding: '8px 10px', fontSize: 11, color: '#64748B' }}>
-                      {u.jira_email || '—'}
+
+                    {/* Dept */}
+                    <td style={{ padding: '10px 12px', width: 100 }}>
+                      {profile.department_name ? (
+                        <span style={{
+                          fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
+                          background: profile.department_name === 'Delivery' ? 'rgba(37,99,235,0.08)' :
+                            profile.department_name === 'Product' ? 'rgba(139,92,246,0.08)' :
+                              'rgba(148,163,184,0.08)',
+                          color: profile.department_name === 'Delivery' ? '#2563EB' :
+                            profile.department_name === 'Product' ? '#8B5CF6' : '#64748B',
+                        }}>
+                          {profile.department_name}
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: 10, color: '#CBD5E1' }}>—</span>
+                      )}
                     </td>
-                    <td style={{ padding: '8px 10px', width: 220 }}>
-                      <select
-                        value={localMappings[u.id] || ''}
-                        onChange={(e) => setLocalMappings(prev => ({
-                          ...prev,
-                          [u.id]: e.target.value || null,
-                        }))}
-                        style={{
-                          width: '100%', padding: '5px 8px', borderRadius: 4, fontSize: 11,
-                          border: '1px solid',
-                          borderColor: isMapped ? '#E2E8F0' : '#F59E0B',
-                          background: '#fff', color: '#334155',
-                        }}
-                      >
-                        <option value="">— Select Catalyst User —</option>
-                        {profiles.map(p => (
-                          <option key={p.id} value={p.id}>
-                            {p.full_name || p.email || p.id.slice(0, 8)}
-                          </option>
-                        ))}
-                      </select>
+
+                    {/* Jira Account (Mapped) */}
+                    <td style={{ padding: '10px 12px', width: 260 }}>
+                      {isMapped ? (
+                        <div style={{
+                          display: 'flex', alignItems: 'center', gap: 8,
+                          background: '#ECFDF5', padding: '6px 10px', borderRadius: 6,
+                          border: '1px solid #A7F3D0',
+                        }}>
+                          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', flexShrink: 0 }} />
+                          <Avatar name={existingJiraMapping.jira_display_name} size={22} />
+                          <div>
+                            <div style={{ fontWeight: 600, color: '#0F172A', fontSize: 11 }}>
+                              {existingJiraMapping.jira_display_name}
+                            </div>
+                            <div style={{ fontSize: 9, color: '#64748B', fontFamily: 'JetBrains Mono, monospace' }}>
+                              {existingJiraMapping.jira_account_id.slice(0, 16)}…
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <span style={{
+                          fontSize: 10, color: '#F59E0B', fontWeight: 500,
+                          display: 'inline-flex', alignItems: 'center', gap: 4,
+                        }}>
+                          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#F59E0B' }} />
+                          Not mapped
+                        </span>
+                      )}
                     </td>
-                    <td style={{ padding: '8px 10px', width: 80 }}>
-                      <span style={{
-                        padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 600,
-                        background: isMapped ? '#ECFDF5' : '#FFFBEB',
-                        color: isMapped ? '#10B981' : '#F59E0B',
-                      }}>
-                        ● {isMapped ? 'Mapped' : 'Unmapped'}
-                      </span>
+
+                    {/* Suggested Match */}
+                    <td style={{ padding: '10px 12px', width: 260 }}>
+                      {suggestedJira && !isMapped ? (
+                        <div style={{
+                          display: 'flex', alignItems: 'center', gap: 8,
+                          background: suggestedJira.score >= 0.7 ? 'rgba(37,99,235,0.06)' : 'rgba(251,191,36,0.06)',
+                          padding: '6px 10px', borderRadius: 6,
+                          border: `1px solid ${suggestedJira.score >= 0.7 ? '#93C5FD' : '#FDE68A'}`,
+                        }}>
+                          <Avatar name={suggestedJira.jiraUser.jira_display_name} size={22} />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontWeight: 600, color: '#0F172A', fontSize: 11 }}>
+                              {suggestedJira.jiraUser.jira_display_name}
+                            </div>
+                            <div style={{ fontSize: 9, color: '#64748B' }}>
+                              {Math.round(suggestedJira.score * 100)}% match
+                            </div>
+                          </div>
+                          <span style={{
+                            fontSize: 8, fontWeight: 700, padding: '2px 5px', borderRadius: 3,
+                            background: suggestedJira.score >= 0.7 ? '#DBEAFE' : '#FEF3C7',
+                            color: suggestedJira.score >= 0.7 ? '#1D4ED8' : '#92400E',
+                          }}>
+                            {suggestedJira.score >= 0.7 ? 'HIGH' : 'LOW'}
+                          </span>
+                        </div>
+                      ) : isMapped ? (
+                        <span style={{ fontSize: 10, color: '#CBD5E1' }}>—</span>
+                      ) : (
+                        <span style={{ fontSize: 10, color: '#CBD5E1', fontStyle: 'italic' }}>No match found</span>
+                      )}
+                    </td>
+
+                    {/* Action */}
+                    <td style={{ padding: '10px 12px', width: 120 }}>
+                      {isMapped ? (
+                        <button
+                          onClick={() => handleClearMapping(existingJiraMapping.id)}
+                          style={{
+                            padding: '4px 10px', borderRadius: 4, fontSize: 10, fontWeight: 500,
+                            background: '#FEF2F2', color: '#EF4444', border: '1px solid #FECACA',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          ✕ Unlink
+                        </button>
+                      ) : suggestedJira ? (
+                        <button
+                          onClick={() => handleAcceptSuggestion(profile.id, suggestedJira.jiraUser.id)}
+                          style={{
+                            padding: '4px 10px', borderRadius: 4, fontSize: 10, fontWeight: 600,
+                            background: '#2563EB', color: '#fff', border: 'none', cursor: 'pointer',
+                          }}
+                        >
+                          ✓ Accept
+                        </button>
+                      ) : (
+                        <select
+                          value=""
+                          onChange={e => {
+                            if (e.target.value) handleAcceptSuggestion(profile.id, e.target.value)
+                          }}
+                          style={{
+                            padding: '4px 6px', borderRadius: 4, fontSize: 10,
+                            border: `1px solid ${borderColor}`, background: '#F8FAFC',
+                            color: '#64748B', width: 100,
+                          }}
+                        >
+                          <option value="">Manual…</option>
+                          {jiraUsers
+                            .filter(j => !Object.values(localMappings).includes(j.id))
+                            .map(j => (
+                              <option key={j.id} value={j.id}>{j.jira_display_name}</option>
+                            ))}
+                        </select>
+                      )}
                     </td>
                   </tr>
                 )
               })}
-              {users.length === 0 && (
+              {rows.length === 0 && (
                 <tr>
-                  <td colSpan={6} style={{ padding: 30, textAlign: 'center', color: '#94A3B8', fontSize: 12 }}>
-                    No Jira users found. Run a sync to populate user data.
+                  <td colSpan={6} style={{ padding: 40, textAlign: 'center', color: '#94A3B8', fontSize: 12 }}>
+                    No resources found for the selected department.
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 14 }}>
-          <button onClick={handleSave} disabled={batchSave.isPending} style={{
-            padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-            background: '#2563EB', color: '#fff', border: 'none', cursor: 'pointer',
-            opacity: batchSave.isPending ? 0.6 : 1,
-          }}>
-            {batchSave.isPending ? 'Saving...' : 'Save All Mappings'}
-          </button>
-          <button onClick={() => refreshUsers.mutate()} disabled={refreshUsers.isPending} style={{
-            padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-            background: '#F8FAFC', color: '#334155', border: '1px solid #E2E8F0', cursor: 'pointer',
-          }}>
-            {refreshUsers.isPending ? 'Refreshing...' : '↻ Refresh from Jira'}
-          </button>
-          <button onClick={handleAutoMatch} disabled={autoMatch.isPending} style={{
-            padding: '8px 20px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-            background: '#F8FAFC', color: '#334155', border: '1px solid #E2E8F0', cursor: 'pointer',
-          }}>
-            {autoMatch.isPending ? 'Matching...' : '⚡ Auto-Match by Email'}
-          </button>
-          <span style={{ marginLeft: 'auto', fontSize: 10, color: '#94A3B8' }}>
-            Unmapped users show Jira display name in all views
-          </span>
-        </div>
-      </div>
-
-      {/* Card 2: Catalyst Profiles */}
-      <div style={cardStyle}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: '#0F172A', margin: 0 }}>
-            Catalyst Profiles
-          </h2>
-          <span style={{
-            fontSize: 10, background: '#F1F5F9', color: '#64748B', padding: '2px 8px',
-            borderRadius: 3, fontWeight: 500,
-          }}>From profiles table</span>
-        </div>
-        <p style={{ fontSize: 12, color: '#64748B', marginBottom: 12 }}>
-          Available Catalyst user profiles for mapping.
-        </p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-          {profiles.map(p => {
-            const isLinked = mappedProfileIds.has(p.id)
-            return (
-              <div key={p.id} style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                padding: '6px 12px', borderRadius: 6,
-                border: '1px solid',
-                borderColor: isLinked ? '#6EE7B7' : '#FCD34D',
-                background: isLinked ? '#ECFDF5' : '#FFFBEB',
-                fontSize: 11,
-              }}>
-                <span style={{
-                  width: 20, height: 20, borderRadius: '50%', display: 'flex', alignItems: 'center',
-                  justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#fff',
-                  background: getAvatarColor(p.full_name || 'U'),
-                }}>
-                  {getInitials(p.full_name || 'U')}
-                </span>
-                <span style={{ fontWeight: 600, color: '#0F172A' }}>
-                  {p.full_name || p.email || 'Unnamed'}
-                </span>
-                {p.role && <span style={{ color: '#94A3B8' }}>{p.role}</span>}
-                <span style={{
-                  width: 6, height: 6, borderRadius: '50%',
-                  background: isLinked ? '#10B981' : '#F59E0B',
-                }} />
-              </div>
-            )
-          })}
-          {profiles.length === 0 && (
-            <span style={{ fontSize: 12, color: '#94A3B8' }}>No profiles found.</span>
-          )}
         </div>
       </div>
     </div>
