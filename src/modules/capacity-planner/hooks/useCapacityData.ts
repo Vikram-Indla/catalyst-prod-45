@@ -145,11 +145,8 @@ export function useCapacityData() {
       
       // QA: Log resources with country flags for verification
       const resourcesWithFlags = mappedResources.filter(r => r.country_flag_svg);
-      console.log('[Capacity QA] Resources with country flags:', resourcesWithFlags.map(r => ({
-        name: r.name,
-        country: r.country,
-        flag_svg: r.country_flag_svg
-      })));
+      console.log('[Capacity QA] Resources with country flags:', resourcesWithFlags.length);
+      console.log('[Capacity QA] Resources with avatars:', mappedResources.filter(r => r.avatar_url).length, '/', mappedResources.length);
       
       return mappedResources as CapacityResource[];
     },
