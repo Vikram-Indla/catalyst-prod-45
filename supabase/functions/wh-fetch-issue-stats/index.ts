@@ -48,42 +48,36 @@ serve(async (req) => {
     let hasMore = true
 
     while (hasMore) {
-      const searchRes = await fetch(`${base}/rest/api/3/search/jql`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          jql,
-          maxResults,
-          startAt,
-          fields: ['issuetype', 'status']
-        })
-      })
+      // Try multiple search approaches (same resilience as wh-test-connection)
+      const searchApproaches = [
+        // 1. GET /rest/api/3/search/jql (new Jira Cloud endpoint)
+        () => fetch(`${base}/rest/api/3/search/jql?jql=${encodeURIComponent(jql)}&maxResults=${maxResults}&startAt=${startAt}&fields=issuetype,status`, { headers }),
+        // 2. POST /rest/api/3/search/jql
+        () => fetch(`${base}/rest/api/3/search/jql`, {
+          method: 'POST', headers,
+          body: JSON.stringify({ jql, maxResults, startAt, fields: ['issuetype', 'status'] })
+        }),
+        // 3. POST /rest/api/3/search (legacy but not yet removed on all instances)
+        () => fetch(`${base}/rest/api/3/search`, {
+          method: 'POST', headers,
+          body: JSON.stringify({ jql, maxResults, startAt, fields: ['issuetype', 'status'] })
+        }),
+      ]
 
-      if (!searchRes.ok) {
-        // Fallback to legacy endpoint
-        const fallbackRes = await fetch(`${base}/rest/api/2/search`, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({
-            jql,
-            maxResults,
-            startAt,
-            fields: ['issuetype', 'status']
-          })
-        })
-        if (!fallbackRes.ok) {
-          const errText = await fallbackRes.text()
-          throw new Error(`Jira search failed: ${fallbackRes.status} ${errText.substring(0, 200)}`)
-        }
-        const data = await fallbackRes.json()
-        processIssues(data.issues || [], issuesByType)
-        totalCount = data.total || 0
-        startAt += maxResults
-        hasMore = startAt < totalCount && startAt < 500 // Cap at 500 for performance
-        continue
+      let res: Response | null = null
+      let body = ''
+      for (const attempt of searchApproaches) {
+        res = await attempt()
+        body = await res.text()
+        console.log(`Issue stats attempt: ${res.url} -> ${res.status}`)
+        if (res.ok || res.status === 401 || res.status === 403) break
       }
 
-      const data = await searchRes.json()
+      if (!res || !res.ok) {
+        throw new Error(`Jira search failed: ${res?.status} ${body.substring(0, 200)}`)
+      }
+
+      const data = JSON.parse(body)
       processIssues(data.issues || [], issuesByType)
       totalCount = data.total || 0
       startAt += maxResults
