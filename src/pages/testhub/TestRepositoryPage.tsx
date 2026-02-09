@@ -151,67 +151,88 @@ export function TestRepositoryPage() {
     setTotalTestCases(counts?.length || 0);
   };
 
-  // Fetch test cases
-  const fetchTestCases = async () => {
-    setIsLoading(true);
+   // Fetch test cases
+   const fetchTestCases = async () => {
+     setIsLoading(true);
 
-    let query = supabase.from('th_test_cases').select('*');
+     let query = supabase.from('th_test_cases').select('*');
 
-    if (selectedFolderId) {
-      query = query.eq('folder_id', selectedFolderId);
-    }
+     if (selectedFolderId) {
+       query = query.eq('folder_id', selectedFolderId);
+     }
 
-    if (searchQuery) {
-      query = query.or(`title.ilike.%${searchQuery}%,case_key.ilike.%${searchQuery}%`);
-    }
+     if (searchQuery) {
+       query = query.or(`title.ilike.%${searchQuery}%,case_key.ilike.%${searchQuery}%`);
+     }
 
-    if (sortColumn) {
-      const columnMap: Record<string, string> = {
-        caseKey: 'case_key',
-        title: 'title',
-        priority: 'priority',
-        status: 'status',
-        updatedAt: 'updated_at',
-      };
-      query = query.order(columnMap[sortColumn] || sortColumn, { ascending: sortDirection === 'asc' });
-    }
+     const { data, error } = await query;
 
-    const { data, error } = await query;
+     if (error) {
+       console.error('Error fetching test cases:', error);
+       setIsLoading(false);
+       return;
+     }
 
-    if (error) {
-      console.error('Error fetching test cases:', error);
-      setIsLoading(false);
-      return;
-    }
+     let mapped = data?.map(tc => ({
+       id: tc.id,
+       caseKey: tc.case_key,
+       title: tc.title,
+       priority: tc.priority as TestCase['priority'],
+       type: tc.type as TestCase['type'],
+       status: tc.status as TestCase['status'],
+       automation: tc.automation as TestCase['automation'],
+       ownerInitials: 'AK',
+       ownerColor: 'blue',
+       updatedAt: tc.updated_at,
+       objective: tc.objective,
+       preconditions: tc.preconditions,
+       folderId: tc.folder_id,
+       version: tc.version || 1,
+     })) || [];
 
-    const mapped = data?.map(tc => ({
-      id: tc.id,
-      caseKey: tc.case_key,
-      title: tc.title,
-      priority: tc.priority as TestCase['priority'],
-      type: tc.type as TestCase['type'],
-      status: tc.status as TestCase['status'],
-      automation: tc.automation as TestCase['automation'],
-      ownerInitials: 'AK',
-      ownerColor: 'blue',
-      updatedAt: tc.updated_at,
-      objective: tc.objective,
-      preconditions: tc.preconditions,
-      folderId: tc.folder_id,
-      version: tc.version || 1,
-    })) || [];
+     // Apply client-side filtering
+     if (filters.priorities.length > 0 || filters.statuses.length > 0 || filters.types.length > 0 || filters.automations.length > 0) {
+       mapped = mapped.filter(tc => {
+         const priorityMatch = filters.priorities.length === 0 || filters.priorities.includes(tc.priority);
+         const statusMatch = filters.statuses.length === 0 || filters.statuses.includes(tc.status);
+         const typeMatch = filters.types.length === 0 || filters.types.includes(tc.type);
+         const automationMatch = filters.automations.length === 0 || filters.automations.includes(tc.automation);
+         return priorityMatch && statusMatch && typeMatch && automationMatch;
+       });
+     }
 
-    setTestCases(mapped);
-    setIsLoading(false);
-  };
+     // Apply client-side sorting
+     if (sortColumn) {
+       const sortMap: Record<string, (tc: TestCase) => any> = {
+         caseKey: (tc) => tc.caseKey.toLowerCase(),
+         title: (tc) => tc.title.toLowerCase(),
+         priority: (tc) => tc.priority,
+         status: (tc) => tc.status,
+         updatedAt: (tc) => new Date(tc.updatedAt).getTime(),
+       };
 
-  useEffect(() => {
-    fetchFolders();
-  }, []);
+       const sortFn = sortMap[sortColumn];
+       if (sortFn) {
+         mapped.sort((a, b) => {
+           const aVal = sortFn(a);
+           const bVal = sortFn(b);
+           const comparison = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+           return sortDirection === 'asc' ? comparison : -comparison;
+         });
+       }
+     }
 
-  useEffect(() => {
-    fetchTestCases();
-  }, [selectedFolderId, searchQuery, sortColumn, sortDirection]);
+     setTestCases(mapped);
+     setIsLoading(false);
+   };
+
+   useEffect(() => {
+     fetchFolders();
+   }, []);
+
+   useEffect(() => {
+     fetchTestCases();
+   }, [selectedFolderId, searchQuery, sortColumn, sortDirection, filters]);
 
   // Handlers
   const handleSelectAll = (selected: boolean) => {
@@ -705,40 +726,71 @@ export function TestRepositoryPage() {
               </div>
             )}
 
-            {/* Table */}
-            <div className="th-table-container">
-              {isLoading ? (
-                <div className="th-loading">
-                  <div className="th-spinner"></div>
-                </div>
-              ) : testCases.length === 0 ? (
-                <div className="th-empty-state">
-                  <div className="th-empty-icon">📋</div>
-                  <h3 className="th-empty-title">No test cases found</h3>
-                  <p className="th-empty-description">
-                    {selectedFolderId
-                      ? 'This folder is empty. Create a test case to get started.'
-                      : 'Create your first test case to get started.'}
-                  </p>
-                  <button className="th-btn-primary" onClick={handleOpenCreateModal}>
-                    <Plus />
-                    Create Test Case
-                  </button>
-                </div>
-              ) : (
-                <TestCasesTable
-                  testCases={testCases}
-                  selectedIds={selectedIds}
-                  onSelectAll={handleSelectAll}
-                  onSelectOne={handleSelectOne}
-                  onRowClick={handleRowClick}
-                  onContextMenu={handleContextMenu}
-                  sortColumn={sortColumn}
-                  sortDirection={sortDirection}
-                  onSort={handleSort}
-                />
-              )}
-            </div>
+            {/* Table / Grid View */}
+             {viewMode === 'list' ? (
+               <div className="th-table-container">
+                 {isLoading ? (
+                   <div className="th-loading">
+                     <div className="th-spinner"></div>
+                   </div>
+                 ) : testCases.length === 0 ? (
+                   <div className="th-empty-state">
+                     <div className="th-empty-icon">📋</div>
+                     <h3 className="th-empty-title">No test cases found</h3>
+                     <p className="th-empty-description">
+                       {selectedFolderId
+                         ? 'This folder is empty. Create a test case to get started.'
+                         : 'Create your first test case to get started.'}
+                     </p>
+                     <button className="th-btn-primary" onClick={handleOpenCreateModal}>
+                       <Plus />
+                       Create Test Case
+                     </button>
+                   </div>
+                 ) : (
+                   <TestCasesTable
+                     testCases={testCases}
+                     selectedIds={selectedIds}
+                     onSelectAll={handleSelectAll}
+                     onSelectOne={handleSelectOne}
+                     onRowClick={handleRowClick}
+                     onContextMenu={handleContextMenu}
+                     sortColumn={sortColumn}
+                     sortDirection={sortDirection}
+                     onSort={handleSort}
+                   />
+                 )}
+               </div>
+             ) : (
+               <div style={{ padding: 20 }}>
+                 {isLoading ? (
+                   <div className="th-loading">
+                     <div className="th-spinner"></div>
+                   </div>
+                 ) : testCases.length === 0 ? (
+                   <div className="th-empty-state">
+                     <div className="th-empty-icon">📋</div>
+                     <h3 className="th-empty-title">No test cases found</h3>
+                     <p className="th-empty-description">
+                       {selectedFolderId
+                         ? 'This folder is empty. Create a test case to get started.'
+                         : 'Create your first test case to get started.'}
+                     </p>
+                     <button className="th-btn-primary" onClick={handleOpenCreateModal}>
+                       <Plus />
+                       Create Test Case
+                     </button>
+                   </div>
+                 ) : (
+                   <TestCaseGridView
+                     testCases={testCases}
+                     selectedIds={selectedIds}
+                     onSelectOne={handleSelectOne}
+                     onRowClick={handleRowClick}
+                   />
+                 )}
+               </div>
+             )}
 
             {/* Pagination */}
             {testCases.length > 0 && (
@@ -831,15 +883,36 @@ export function TestRepositoryPage() {
         testCases={testCasesToDelete}
       />
 
-      {/* Create Folder Modal */}
-      <CreateFolderModal
-        isOpen={isCreateFolderModalOpen}
-        onClose={() => setIsCreateFolderModalOpen(false)}
+      {/* Import Modal */}
+      <ImportTestCasesModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
         onSuccess={() => {
+          fetchTestCases();
           fetchFolders();
-          setIsCreateFolderModalOpen(false);
+          setIsImportModalOpen(false);
         }}
-        folders={folders.map(f => ({ id: f.id, name: f.name, parentId: f.parentId }))}
+        folders={folders.map(f => ({ id: f.id, name: f.name }))}
+      />
+
+      {/* Export Modal */}
+      <ExportTestCasesModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        testCaseCount={testCases.length}
+        selectedFolderId={selectedFolderId}
+      />
+
+      {/* AI Generate Modal */}
+      <AIGenerateModal
+        isOpen={isAIGenerateModalOpen}
+        onClose={() => setIsAIGenerateModalOpen(false)}
+        onSuccess={() => {
+          fetchTestCases();
+          fetchFolders();
+          setIsAIGenerateModalOpen(false);
+        }}
+        currentFolderId={selectedFolderId}
       />
     </div>
   );
