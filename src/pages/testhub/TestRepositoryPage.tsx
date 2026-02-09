@@ -69,6 +69,7 @@ interface RawTestCase {
   status: string;
   version: number;
   updated_at: string;
+  owner_id?: string | null;
 }
 
 interface ContextMenuState {
@@ -982,6 +983,7 @@ export function TestRepositoryPage() {
           type: selectedTestCase.type,
           status: selectedTestCase.status,
           version: selectedTestCase.version || 1,
+          owner_id: selectedTestCase.owner_id || null,
         } : undefined}
         existingSteps={selectedTestCaseSteps.length > 0 ? selectedTestCaseSteps : undefined}
       />

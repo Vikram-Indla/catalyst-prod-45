@@ -112,21 +112,22 @@ export function TestCasesTable({
   };
 
   return (
-    <div style={{
+    <div className="th-table-wrapper" style={{
       backgroundColor: '#FFFFFF',
       border: '1px solid #E2E8F0',
       borderRadius: 8,
       overflow: 'hidden',
     }}>
-      <table style={{
+      <table className="th-table-responsive" style={{
         width: '100%',
         borderCollapse: 'collapse',
         tableLayout: 'fixed',
+        minWidth: 700,
       }}>
         <thead>
           <tr>
             {/* Checkbox */}
-            <th style={{ ...headerCellStyle, width: 44, textAlign: 'center' }}>
+            <th className="th-table-col-checkbox" style={{ ...headerCellStyle, width: 44, textAlign: 'center' }}>
               <input
                 type="checkbox"
                 checked={allSelected}
@@ -137,6 +138,7 @@ export function TestCasesTable({
             </th>
             {/* ID */}
             <th 
+              className="th-table-col-id"
               onClick={() => onSort('caseKey')} 
               style={{ ...headerCellStyle, width: 90, textAlign: 'left', cursor: 'pointer', userSelect: 'none' }}
             >
@@ -146,6 +148,7 @@ export function TestCasesTable({
             </th>
             {/* Title */}
             <th 
+              className="th-table-col-title"
               onClick={() => onSort('title')} 
               style={{ ...headerCellStyle, textAlign: 'left', cursor: 'pointer', userSelect: 'none' }}
             >
@@ -155,6 +158,7 @@ export function TestCasesTable({
             </th>
             {/* Priority */}
             <th 
+              className="th-table-col-priority"
               onClick={() => onSort('priority')} 
               style={{ ...headerCellStyle, width: 80, textAlign: 'left', cursor: 'pointer', userSelect: 'none' }}
             >
@@ -163,11 +167,12 @@ export function TestCasesTable({
               </span>
             </th>
             {/* Type */}
-            <th style={{ ...headerCellStyle, width: 100, textAlign: 'left' }}>
+            <th className="th-table-col-type" style={{ ...headerCellStyle, width: 100, textAlign: 'left' }}>
               Type
             </th>
             {/* Status */}
             <th 
+              className="th-table-col-status"
               onClick={() => onSort('status')} 
               style={{ ...headerCellStyle, width: 100, textAlign: 'left', cursor: 'pointer', userSelect: 'none' }}
             >
@@ -176,11 +181,12 @@ export function TestCasesTable({
               </span>
             </th>
             {/* Assigned To */}
-            <th style={{ ...headerCellStyle, width: 160, textAlign: 'left' }}>
+            <th className="th-table-col-assignee" style={{ ...headerCellStyle, width: 160, textAlign: 'left' }}>
               Assigned To
             </th>
             {/* Updated - separate column */}
             <th 
+              className="th-table-col-updated"
               onClick={() => onSort('updatedAt')} 
               style={{ ...headerCellStyle, width: 90, textAlign: 'left', cursor: 'pointer', userSelect: 'none' }}
             >
@@ -189,7 +195,7 @@ export function TestCasesTable({
               </span>
             </th>
             {/* Actions */}
-            <th style={{ ...headerCellStyle, width: 50 }}></th>
+            <th className="th-table-col-actions" style={{ ...headerCellStyle, width: 50 }}></th>
           </tr>
         </thead>
         <tbody>
@@ -213,6 +219,7 @@ export function TestCasesTable({
               >
                 {/* Checkbox */}
                 <td 
+                  className="th-table-col-checkbox"
                   onClick={(e) => e.stopPropagation()}
                   style={{ ...bodyCellStyle, textAlign: 'center' }}
                 >
@@ -225,7 +232,7 @@ export function TestCasesTable({
                 </td>
                 
                 {/* ID */}
-                <td style={{
+                <td className="th-table-col-id" style={{
                   ...bodyCellStyle,
                   fontFamily: 'Consolas, Monaco, monospace',
                   fontSize: 12,
@@ -235,7 +242,7 @@ export function TestCasesTable({
                 </td>
                 
                 {/* Title - Allow multi-line wrapping */}
-                <td style={{
+                <td className="th-table-col-title" style={{
                   ...bodyCellStyle,
                   fontWeight: 500,
                   color: '#0F172A',
@@ -248,7 +255,7 @@ export function TestCasesTable({
                 </td>
                 
                 {/* Priority - Bold colored text */}
-                <td style={bodyCellStyle}>
+                <td className="th-table-col-priority" style={bodyCellStyle}>
                   <span style={{
                     fontWeight: 600,
                     fontSize: 13,
@@ -261,7 +268,7 @@ export function TestCasesTable({
                 </td>
                 
                 {/* Type - Pill badge */}
-                <td style={bodyCellStyle}>
+                <td className="th-table-col-type" style={bodyCellStyle}>
                   <span style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -284,7 +291,7 @@ export function TestCasesTable({
                 </td>
                 
                 {/* Status - Colored pill badge */}
-                <td style={bodyCellStyle}>
+                <td className="th-table-col-status" style={bodyCellStyle}>
                   <span style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -308,7 +315,7 @@ export function TestCasesTable({
                 
                 
                 {/* Assigned To - Avatar + Full Name */}
-                <td style={bodyCellStyle}>
+                <td className="th-table-col-assignee" style={bodyCellStyle}>
                   {tc.ownerName ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       {tc.ownerAvatarUrl ? (
@@ -352,7 +359,7 @@ export function TestCasesTable({
                 </td>
                 
                 {/* Updated - Gray relative time */}
-                <td style={bodyCellStyle}>
+                <td className="th-table-col-updated" style={bodyCellStyle}>
                   <span style={{ fontSize: 12, color: '#94A3B8' }}>
                     {formatRelativeTime(tc.updatedAt)}
                   </span>
@@ -360,6 +367,7 @@ export function TestCasesTable({
                 
                 {/* Actions - Visible on hover */}
                 <td 
+                  className="th-table-col-actions"
                   onClick={(e) => e.stopPropagation()}
                   style={{ ...bodyCellStyle, textAlign: 'center' }}
                 >

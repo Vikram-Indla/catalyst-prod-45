@@ -1310,3 +1310,166 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* =====================================================
+   RESPONSIVE TABLE
+   ===================================================== */
+
+/* Scrollable wrapper */
+.th-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Tablet: hide less important columns */
+@media (max-width: 1024px) {
+  .th-table-col-type,
+  .th-table-col-updated {
+    display: none;
+  }
+
+  .th-table-col-id {
+    width: 70px !important;
+  }
+
+  .th-table-col-assignee {
+    width: 120px !important;
+  }
+
+  .th-page-header {
+    padding: 0 16px;
+    height: 56px;
+  }
+
+  .th-page-title {
+    font-size: 16px;
+  }
+}
+
+/* Mobile: card-based layout */
+@media (max-width: 640px) {
+  .th-page-header {
+    padding: 0 12px;
+    height: 48px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .th-page-actions {
+    gap: 4px;
+  }
+
+  .th-page-actions .th-btn-primary,
+  .th-page-actions .th-btn-secondary {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  /* Hide table header on mobile */
+  .th-table-responsive thead {
+    display: none;
+  }
+
+  .th-table-responsive tbody tr {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 12px;
+    border-bottom: 1px solid #E2E8F0;
+    gap: 6px 12px;
+    align-items: center;
+  }
+
+  .th-table-responsive tbody td {
+    border-bottom: none !important;
+    height: auto !important;
+    padding: 0 !important;
+  }
+
+  /* Checkbox */
+  .th-table-col-checkbox {
+    flex: 0 0 auto;
+    order: 0;
+  }
+
+  /* ID */
+  .th-table-col-id {
+    flex: 0 0 auto;
+    order: 1;
+    width: auto !important;
+  }
+
+  /* Priority */
+  .th-table-col-priority {
+    flex: 0 0 auto;
+    order: 2;
+    width: auto !important;
+  }
+
+  /* Status */
+  .th-table-col-status {
+    flex: 0 0 auto;
+    order: 3;
+    width: auto !important;
+  }
+
+  /* Actions */
+  .th-table-col-actions {
+    flex: 0 0 auto;
+    order: 4;
+    margin-left: auto;
+    width: auto !important;
+  }
+
+  /* Title - full width on its own line */
+  .th-table-col-title {
+    flex: 1 1 100%;
+    order: 5;
+    width: auto !important;
+  }
+
+  /* Hide type and updated on mobile */
+  .th-table-col-type,
+  .th-table-col-updated {
+    display: none;
+  }
+
+  /* Assignee */
+  .th-table-col-assignee {
+    flex: 1 1 100%;
+    order: 6;
+    width: auto !important;
+  }
+
+  /* Folder panel adjustments */
+  .th-folder-panel {
+    width: 100% !important;
+    max-width: none !important;
+    border-right: none !important;
+    border-bottom: 1px solid #E2E8F0;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .th-page-content {
+    flex-direction: column !important;
+  }
+
+  /* Bulk actions bar */
+  .th-bulk-actions {
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    gap: 6px;
+  }
+
+  .th-bulk-actions button {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+
+  /* Toolbar */
+  .th-toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+}
