@@ -65,23 +65,43 @@ serve(async (req) => {
     let startAt = 0
     const maxResults = 100
     let total = 0
+    const fields = ['summary','status','assignee','issuetype','parent','fixVersions','duedate','labels','components','priority','created','updated','resolution','customfield_10016']
+
+    // Use POST-based search to avoid 410 Gone on deprecated GET endpoints
+    async function searchJira(jql: string, startAt: number, maxResults: number): Promise<{ issues: any[]; total: number }> {
+      const postBody = JSON.stringify({ jql, startAt, maxResults, fields })
+      const postHeaders = { ...headers, 'Content-Type': 'application/json' }
+
+      // Try POST /rest/api/3/search/jql first
+      const endpoints = [
+        `${base}/rest/api/3/search/jql`,
+        `${base}/rest/api/2/search/jql`,
+        `${base}/rest/api/3/search`,
+        `${base}/rest/api/2/search`,
+      ]
+
+      for (const url of endpoints) {
+        try {
+          const res = await fetch(url, { method: 'POST', headers: postHeaders, body: postBody })
+          if (res.ok) {
+            const data = await res.json()
+            return { issues: data.issues || [], total: data.total || 0 }
+          }
+          if (res.status === 404 || res.status === 405 || res.status === 410) continue
+          // Other errors (401, 403, 500) — throw
+          throw new Error(`Jira API error: ${res.status} ${res.statusText}`)
+        } catch (e: any) {
+          if (e.message?.startsWith('Jira API error')) throw e
+          continue
+        }
+      }
+      throw new Error('All Jira search endpoints failed (410/404). Check Jira instance compatibility.')
+    }
 
     do {
-      const searchUrl = `${base}/rest/api/3/search?jql=${encodeURIComponent(jql)}&startAt=${startAt}&maxResults=${maxResults}&fields=summary,status,assignee,issuetype,parent,fixVersions,duedate,labels,components,priority,created,updated,resolution,customfield_10016`
-      const res = await fetch(searchUrl, { headers })
-      if (!res.ok) {
-        // Fallback to API v2
-        const v2Url = `${base}/rest/api/2/search?jql=${encodeURIComponent(jql)}&startAt=${startAt}&maxResults=${maxResults}&fields=summary,status,assignee,issuetype,parent,fixVersions,duedate,labels,components,priority,created,updated,resolution,customfield_10016`
-        const res2 = await fetch(v2Url, { headers })
-        if (!res2.ok) throw new Error(`Jira API error: ${res.status} ${res.statusText}`)
-        const data2 = await res2.json()
-        total = data2.total
-        allIssues = allIssues.concat(data2.issues || [])
-      } else {
-        const data = await res.json()
-        total = data.total
-        allIssues = allIssues.concat(data.issues || [])
-      }
+      const result = await searchJira(jql, startAt, maxResults)
+      total = result.total
+      allIssues = allIssues.concat(result.issues)
       startAt += maxResults
     } while (startAt < total && startAt < 5000)
 
