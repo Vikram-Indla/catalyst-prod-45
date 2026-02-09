@@ -28,7 +28,8 @@ export function SyncLogs() {
   const [lookbackMonths, setLookbackMonths] = useState<number>(6)
   const [selectedTypes, setSelectedTypes] = useState<string[]>([])
   const [selectedVersions, setSelectedVersions] = useState<string[]>([])
-  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [filtersOpen, setFiltersOpen] = useState(true)
+  const [confirmFullSync, setConfirmFullSync] = useState(false)
 
   useEffect(() => {
     if (config) {
@@ -49,7 +50,12 @@ export function SyncLogs() {
   const lastError = logs?.find(l => l.status === 'error')
   const syncStatus = isSyncing ? 'syncing' : lastError && logs?.[0]?.status === 'error' ? 'error' : health?.lastSync ? 'healthy' : 'waiting'
 
-  const handleForceSync = () => {
+  const handleFilteredSync = () => {
+    if (!hasFilters) {
+      toast.error('Please select at least one work item type or fix version filter before syncing.')
+      setFiltersOpen(true)
+      return
+    }
     forceSync.mutate({
       sync_type: 'full',
       lookback_months: lookbackMonths,
@@ -57,6 +63,23 @@ export function SyncLogs() {
       fix_versions: selectedVersions,
     }, {
       onSuccess: () => toast.success('Sync completed successfully'),
+      onError: (err) => toast.error(`Sync failed: ${err.message}`),
+    })
+  }
+
+  const handleFullSync = () => {
+    if (!confirmFullSync) {
+      setConfirmFullSync(true)
+      return
+    }
+    setConfirmFullSync(false)
+    forceSync.mutate({
+      sync_type: 'full',
+      lookback_months: lookbackMonths,
+      issue_types: [],
+      fix_versions: [],
+    }, {
+      onSuccess: () => toast.success('Full sync completed'),
       onError: (err) => toast.error(`Sync failed: ${err.message}`),
     })
   }
@@ -211,9 +234,7 @@ export function SyncLogs() {
                   })
                 )}
               </div>
-              {selectedTypes.length === 0 && (availableTypes || []).length > 0 && (
-                <span style={{ fontSize: '10px', color: '#94A3B8', marginTop: '4px', display: 'block' }}>No filter = sync all types</span>
-              )}
+                <span style={{ fontSize: '10px', color: '#EF4444', marginTop: '4px', display: 'block', fontWeight: 600 }}>⚠ Select at least one type or version to sync</span>
             </div>
 
             {/* Fix Versions */}
@@ -255,8 +276,8 @@ export function SyncLogs() {
                   })
                 )}
               </div>
-              {selectedVersions.length === 0 && (availableVersions || []).length > 0 && (
-                <span style={{ fontSize: '10px', color: '#94A3B8', marginTop: '4px', display: 'block' }}>No filter = sync all versions</span>
+              {selectedVersions.length === 0 && selectedTypes.length === 0 && (availableVersions || []).length > 0 && (
+                <span style={{ fontSize: '10px', color: '#EF4444', marginTop: '4px', display: 'block', fontWeight: 600 }}>⚠ Select at least one type or version to sync</span>
               )}
             </div>
           </div>
@@ -264,29 +285,75 @@ export function SyncLogs() {
       </div>
 
       {/* Action Buttons */}
-      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
         <button
-          onClick={handleForceSync}
-          disabled={isSyncing}
+          onClick={handleFilteredSync}
+          disabled={isSyncing || !hasFilters}
+          title={!hasFilters ? 'Select filters first' : ''}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: '6px',
             padding: '8px 16px', borderRadius: '6px', border: 'none',
-            background: isSyncing ? '#94A3B8' : '#2563EB', color: '#fff',
-            fontSize: '12px', fontWeight: 600, cursor: isSyncing ? 'not-allowed' : 'pointer',
+            background: isSyncing ? '#94A3B8' : !hasFilters ? '#CBD5E1' : '#2563EB', color: '#fff',
+            fontSize: '12px', fontWeight: 600, cursor: isSyncing || !hasFilters ? 'not-allowed' : 'pointer',
             fontFamily: 'Inter, sans-serif',
           }}
         >
           {isSyncing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
-          {isSyncing ? 'Syncing…' : 'Force Sync Now'}
+          {isSyncing ? 'Syncing…' : 'Sync with Filters'}
         </button>
         {hasFilters && !isSyncing && (
           <span style={{ fontSize: '11px', color: '#64748B', fontFamily: 'Inter, sans-serif' }}>
             {lookbackMonths}mo lookback{selectedTypes.length > 0 ? ` · ${selectedTypes.length} types` : ''}{selectedVersions.length > 0 ? ` · ${selectedVersions.length} versions` : ''}
           </span>
         )}
+        {!hasFilters && !isSyncing && (
+          <span style={{ fontSize: '11px', color: '#EF4444', fontFamily: 'Inter, sans-serif' }}>
+            Select work item types or fix versions above
+          </span>
+        )}
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {confirmFullSync ? (
+            <>
+              <span style={{ fontSize: '11px', color: '#EF4444', fontWeight: 600 }}>Pull ALL data? This may be slow.</span>
+              <button
+                onClick={handleFullSync}
+                disabled={isSyncing}
+                style={{
+                  padding: '6px 12px', borderRadius: '6px', border: '1px solid #EF4444',
+                  background: '#FEF2F2', color: '#EF4444', fontSize: '11px', fontWeight: 600,
+                  cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+                }}
+              >
+                Yes, Force Full Sync
+              </button>
+              <button
+                onClick={() => setConfirmFullSync(false)}
+                style={{
+                  padding: '6px 12px', borderRadius: '6px', border: '1px solid #E2E8F0',
+                  background: '#fff', color: '#64748B', fontSize: '11px', fontWeight: 600,
+                  cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+                }}
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={handleFullSync}
+              disabled={isSyncing}
+              style={{
+                padding: '6px 12px', borderRadius: '6px', border: '1px solid #E2E8F0',
+                background: '#fff', color: '#64748B', fontSize: '11px', fontWeight: 600,
+                cursor: isSyncing ? 'not-allowed' : 'pointer', fontFamily: 'Inter, sans-serif',
+              }}
+            >
+              Force Full Sync (All Data)
+            </button>
+          )}
+        </div>
         {syncStatus === 'error' && (
           <button
-            onClick={handleForceSync}
+            onClick={handleFilteredSync}
             style={{
               display: 'inline-flex', alignItems: 'center', gap: '6px',
               padding: '8px 16px', borderRadius: '6px', border: '1px solid #FCA5A5',
