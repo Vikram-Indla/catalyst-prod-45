@@ -234,6 +234,7 @@ import { PlanHubGeneralSettings, PlanHubTemplates, PlanHubAIConfig, PlanHubActiv
 const WorkHubAdminPage = lazy(() => import("./modules/workhub/admin/pages/WorkHubAdmin"));
 const WorkHubSettingsLayout = lazy(() => import("./modules/workhub/admin/pages/WorkHubSettingsLayout"));
 const WorkHubComingSoon = lazy(() => import("./modules/workhub/admin/pages/WorkHubComingSoon"));
+const WorkHubSyncLogs = lazy(() => import("./modules/workhub/admin/pages/WorkHubSyncLogsPage"));
 
 const SoftwareLicensesPage = lazy(() => import("./modules/budget/components/SoftwareLicensesPage").then(m => ({ default: m.SoftwareLicensesPage })));
 import RoutesComponentsRegistry from "./pages/admin/RoutesComponentsRegistry";
@@ -1043,7 +1044,7 @@ const App = () => (
                 <Route path="workhub/status-mapping" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
                 <Route path="workhub/user-mapping" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
                 <Route path="workhub/data-scope" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
-                <Route path="workhub/sync-logs" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
+                <Route path="workhub/sync-logs" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubSyncLogs /></Suspense>} />
                 <Route path="workhub/*" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
               </Route>
 

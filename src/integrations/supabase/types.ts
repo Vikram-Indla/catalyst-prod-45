@@ -30408,6 +30408,111 @@ export type Database = {
           },
         ]
       }
+      wh_config: {
+        Row: {
+          description: string | null
+          key: string
+          updated_at: string | null
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          description?: string | null
+          key: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          description?: string | null
+          key?: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
+      wh_issues: {
+        Row: {
+          assignee_account_id: string | null
+          assignee_display_name: string | null
+          components: Json | null
+          due_date: string | null
+          effective_due_date: string | null
+          effective_due_source: string | null
+          fix_versions: Json | null
+          hierarchy_level: number | null
+          issue_key: string
+          issue_type: string
+          jira_created_at: string | null
+          jira_updated_at: string | null
+          labels: Json | null
+          parent_key: string | null
+          priority: string | null
+          project_key: string
+          raw_json: Json | null
+          resolution: string | null
+          sprint_name: string | null
+          status: string
+          status_category: string | null
+          story_points: number | null
+          summary: string
+          synced_at: string | null
+        }
+        Insert: {
+          assignee_account_id?: string | null
+          assignee_display_name?: string | null
+          components?: Json | null
+          due_date?: string | null
+          effective_due_date?: string | null
+          effective_due_source?: string | null
+          fix_versions?: Json | null
+          hierarchy_level?: number | null
+          issue_key: string
+          issue_type?: string
+          jira_created_at?: string | null
+          jira_updated_at?: string | null
+          labels?: Json | null
+          parent_key?: string | null
+          priority?: string | null
+          project_key: string
+          raw_json?: Json | null
+          resolution?: string | null
+          sprint_name?: string | null
+          status?: string
+          status_category?: string | null
+          story_points?: number | null
+          summary?: string
+          synced_at?: string | null
+        }
+        Update: {
+          assignee_account_id?: string | null
+          assignee_display_name?: string | null
+          components?: Json | null
+          due_date?: string | null
+          effective_due_date?: string | null
+          effective_due_source?: string | null
+          fix_versions?: Json | null
+          hierarchy_level?: number | null
+          issue_key?: string
+          issue_type?: string
+          jira_created_at?: string | null
+          jira_updated_at?: string | null
+          labels?: Json | null
+          parent_key?: string | null
+          priority?: string | null
+          project_key?: string
+          raw_json?: Json | null
+          resolution?: string | null
+          sprint_name?: string | null
+          status?: string
+          status_category?: string | null
+          story_points?: number | null
+          summary?: string
+          synced_at?: string | null
+        }
+        Relationships: []
+      }
       wh_jira_connection: {
         Row: {
           accessible_projects: Json | null
@@ -30477,6 +30582,203 @@ export type Database = {
           total_issue_count?: number | null
           total_version_count?: number | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      wh_sync_log: {
+        Row: {
+          completed_at: string | null
+          duration_ms: number | null
+          error_message: string | null
+          id: string
+          issues_fetched: number | null
+          issues_pruned: number | null
+          issues_upserted: number | null
+          jql_query: string | null
+          lookback_months: number | null
+          started_at: string | null
+          status: string
+          sync_type: string
+          versions_fetched: number | null
+          warnings: string[] | null
+        }
+        Insert: {
+          completed_at?: string | null
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          issues_fetched?: number | null
+          issues_pruned?: number | null
+          issues_upserted?: number | null
+          jql_query?: string | null
+          lookback_months?: number | null
+          started_at?: string | null
+          status?: string
+          sync_type: string
+          versions_fetched?: number | null
+          warnings?: string[] | null
+        }
+        Update: {
+          completed_at?: string | null
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          issues_fetched?: number | null
+          issues_pruned?: number | null
+          issues_upserted?: number | null
+          jql_query?: string | null
+          lookback_months?: number | null
+          started_at?: string | null
+          status?: string
+          sync_type?: string
+          versions_fetched?: number | null
+          warnings?: string[] | null
+        }
+        Relationships: []
+      }
+      wh_theme_items: {
+        Row: {
+          added_at: string | null
+          added_by: string | null
+          issue_key: string
+          theme_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          added_by?: string | null
+          issue_key: string
+          theme_id: string
+        }
+        Update: {
+          added_at?: string | null
+          added_by?: string | null
+          issue_key?: string
+          theme_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wh_theme_items_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "wh_themes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wh_themes: {
+        Row: {
+          color: string
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          name: string
+          owner_id: string | null
+          status: string | null
+          target_date: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          owner_id?: string | null
+          status?: string | null
+          target_date?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          owner_id?: string | null
+          status?: string | null
+          target_date?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      wh_user_mapping: {
+        Row: {
+          auto_matched: boolean | null
+          catalyst_profile_id: string | null
+          created_at: string | null
+          id: string
+          is_mapped: boolean | null
+          jira_account_id: string
+          jira_avatar_url: string | null
+          jira_display_name: string | null
+          jira_email: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          auto_matched?: boolean | null
+          catalyst_profile_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_mapped?: boolean | null
+          jira_account_id: string
+          jira_avatar_url?: string | null
+          jira_display_name?: string | null
+          jira_email?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          auto_matched?: boolean | null
+          catalyst_profile_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_mapped?: boolean | null
+          jira_account_id?: string
+          jira_avatar_url?: string | null
+          jira_display_name?: string | null
+          jira_email?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      wh_versions: {
+        Row: {
+          archived: boolean | null
+          description: string | null
+          jira_id: string
+          name: string
+          parsed_date: string | null
+          project_key: string
+          release_date: string | null
+          released: boolean | null
+          start_date: string | null
+          synced_at: string | null
+        }
+        Insert: {
+          archived?: boolean | null
+          description?: string | null
+          jira_id: string
+          name: string
+          parsed_date?: string | null
+          project_key: string
+          release_date?: string | null
+          released?: boolean | null
+          start_date?: string | null
+          synced_at?: string | null
+        }
+        Update: {
+          archived?: boolean | null
+          description?: string | null
+          jira_id?: string
+          name?: string
+          parsed_date?: string | null
+          project_key?: string
+          release_date?: string | null
+          released?: boolean | null
+          start_date?: string | null
+          synced_at?: string | null
         }
         Relationships: []
       }
@@ -33563,6 +33865,75 @@ export type Database = {
         }
         Relationships: []
       }
+      wh_at_risk_items: {
+        Row: {
+          assignee_display_name: string | null
+          effective_due_date: string | null
+          effective_due_source: string | null
+          fix_versions: Json | null
+          issue_key: string | null
+          issue_type: string | null
+          parent_key: string | null
+          project_key: string | null
+          risk_tag: string | null
+          status: string | null
+          status_category: string | null
+          summary: string | null
+        }
+        Relationships: []
+      }
+      wh_exceptions: {
+        Row: {
+          effective_due_date: string | null
+          effective_due_source: string | null
+          exception_type: string | null
+          issue_key: string | null
+          issue_type: string | null
+          parent_key: string | null
+          project_key: string | null
+          status_category: string | null
+          summary: string | null
+        }
+        Relationships: []
+      }
+      wh_overview_stats: {
+        Row: {
+          active_count: number | null
+          blocked_count: number | null
+          done_this_week: number | null
+          overdue_count: number | null
+          stale_count: number | null
+        }
+        Relationships: []
+      }
+      wh_person_workload: {
+        Row: {
+          active_count: number | null
+          assignee_account_id: string | null
+          assignee_display_name: string | null
+          blocked_count: number | null
+          done_count: number | null
+          done_this_week: number | null
+          overdue_count: number | null
+        }
+        Relationships: []
+      }
+      wh_release_health: {
+        Row: {
+          blocked_count: number | null
+          completion_pct: number | null
+          done_count: number | null
+          effective_release_date: string | null
+          in_progress_count: number | null
+          jira_id: string | null
+          project_key: string | null
+          released: boolean | null
+          todo_count: number | null
+          total_issues: number | null
+          version_name: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       add_test_cases_to_run: {
@@ -35165,6 +35536,10 @@ export type Database = {
         Returns: boolean
       }
       validate_batch_update: { Args: { p_job_id: string }; Returns: Json }
+      wh_parse_and_update_versions: { Args: never; Returns: undefined }
+      wh_parse_version_name: { Args: { vname: string }; Returns: string }
+      wh_prune_stale: { Args: { window_months?: number }; Returns: number }
+      wh_recompute_all: { Args: never; Returns: undefined }
       worker_heartbeat: { Args: { p_worker_id: string }; Returns: Json }
     }
     Enums: {
