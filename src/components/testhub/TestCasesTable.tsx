@@ -10,6 +10,7 @@ interface TestCase {
   status: 'draft' | 'ready' | 'approved' | 'deprecated';
   ownerInitials?: string | null;
   ownerName?: string | null;
+  ownerAvatarUrl?: string | null;
   updatedAt: string;
 }
 
@@ -177,9 +178,9 @@ export function TestCasesTable({
                 Status <SortIcon column="status" />
               </span>
             </th>
-            {/* Owner - separate column */}
-            <th style={{ ...headerCellStyle, width: 50, textAlign: 'center' }}>
-              Owner
+            {/* Assigned To */}
+            <th style={{ ...headerCellStyle, width: 160, textAlign: 'left' }}>
+              Assigned To
             </th>
             {/* Updated - separate column */}
             <th 
@@ -309,28 +310,47 @@ export function TestCasesTable({
                 </td>
                 
                 
-                {/* Owner - Avatar with colors based on initials */}
-                <td style={{ ...bodyCellStyle, textAlign: 'center' }}>
-                  {tc.ownerInitials ? (
-                    <div
-                      title={tc.ownerName || ''}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 28,
-                        height: 28,
-                        borderRadius: '50%',
-                        backgroundColor: getAvatarColor(tc.ownerInitials),
-                        color: '#FFFFFF',
-                        fontSize: 10,
-                        fontWeight: 600,
-                      }}
-                    >
-                      {tc.ownerInitials}
+                {/* Assigned To - Avatar + Full Name */}
+                <td style={bodyCellStyle}>
+                  {tc.ownerName ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      {tc.ownerAvatarUrl ? (
+                        <img
+                          src={tc.ownerAvatarUrl}
+                          alt={tc.ownerName}
+                          style={{
+                            width: 24,
+                            height: 24,
+                            borderRadius: '50%',
+                            objectFit: 'cover',
+                            flexShrink: 0,
+                          }}
+                        />
+                      ) : (
+                        <div
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: 24,
+                            height: 24,
+                            borderRadius: '50%',
+                            backgroundColor: getAvatarColor(tc.ownerInitials),
+                            color: '#FFFFFF',
+                            fontSize: 9,
+                            fontWeight: 600,
+                            flexShrink: 0,
+                          }}
+                        >
+                          {tc.ownerInitials}
+                        </div>
+                      )}
+                      <span style={{ fontSize: 12, color: '#334155', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {tc.ownerName}
+                      </span>
                     </div>
                   ) : (
-                    <span style={{ color: '#94A3B8', fontSize: 12 }}>—</span>
+                    <span style={{ color: '#94A3B8', fontSize: 12, fontStyle: 'italic' }}>Unassigned</span>
                   )}
                 </td>
                 
