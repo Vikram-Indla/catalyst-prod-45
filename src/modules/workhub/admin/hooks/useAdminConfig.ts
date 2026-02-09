@@ -193,7 +193,17 @@ export function useRefreshJiraUsers() {
   })
 }
 
-// ═══ CATALYST PROFILES ═══
+// ═══ CATALYST PROFILES (enriched with department) ═══
+
+export interface CatalystProfileWithDept {
+  id: string
+  full_name: string | null
+  email: string | null
+  role: string | null
+  avatar_url: string | null
+  department_id: string | null
+  department_name: string | null
+}
 
 export function useCatalystProfiles() {
   return useQuery({
@@ -205,6 +215,63 @@ export function useCatalystProfiles() {
         .order('full_name')
       if (error) throw error
       return data || []
+    },
+    staleTime: 60_000,
+  })
+}
+
+export function useCatalystProfilesWithDept() {
+  return useQuery({
+    queryKey: ['wh', 'catalyst-profiles-dept'],
+    queryFn: async () => {
+      // Get profiles with their resource_inventory department
+      const { data: resources, error: riErr } = await (supabase as any)
+        .from('resource_inventory')
+        .select('profile_id, department_id')
+        .eq('is_active', true)
+      if (riErr) throw riErr
+
+      const { data: profiles, error: pErr } = await supabase
+        .from('profiles')
+        .select('id, full_name, email, role, avatar_url')
+        .order('full_name')
+      if (pErr) throw pErr
+
+      const { data: depts, error: dErr } = await (supabase as any)
+        .from('capacity_departments')
+        .select('id, name')
+        .eq('is_active', true)
+      if (dErr) throw dErr
+
+      const deptMap: Record<string, string> = {}
+      depts?.forEach((d: any) => { deptMap[d.id] = d.name })
+
+      const riMap: Record<string, string> = {}
+      resources?.forEach((r: any) => {
+        if (r.profile_id && r.department_id) riMap[r.profile_id] = r.department_id
+      })
+
+      return (profiles || []).map((p: any): CatalystProfileWithDept => ({
+        ...p,
+        department_id: riMap[p.id] || null,
+        department_name: riMap[p.id] ? (deptMap[riMap[p.id]] || null) : null,
+      }))
+    },
+    staleTime: 60_000,
+  })
+}
+
+export function useCapacityDepartments() {
+  return useQuery({
+    queryKey: ['wh', 'capacity-departments'],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('capacity_departments')
+        .select('id, name')
+        .eq('is_active', true)
+        .order('name')
+      if (error) throw error
+      return (data || []) as Array<{ id: string; name: string }>
     },
     staleTime: 60_000,
   })
