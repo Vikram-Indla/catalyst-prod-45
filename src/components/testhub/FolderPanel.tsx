@@ -129,8 +129,10 @@ export function FolderPanel({
 
   // Expanded state
   return (
-    <div style={{
+    <div className="th-folder-panel" style={{
       width: 280,
+      minWidth: 280,
+      maxWidth: 280,
       backgroundColor: '#FFFFFF',
       borderRight: '1px solid #E2E8F0',
       display: 'flex',
