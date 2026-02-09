@@ -134,12 +134,20 @@ export function useAvailableProjects() {
   return useQuery({
     queryKey: ['wh', 'available-projects'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('wh_issues')
-        .select('project_key')
-      if (error) throw new Error(error.message)
       const projects = new Set<string>()
-      data?.forEach((r: any) => projects.add(r.project_key))
+      let from = 0
+      const pageSize = 1000
+      while (true) {
+        const { data, error } = await (supabase as any)
+          .from('wh_issues')
+          .select('project_key')
+          .range(from, from + pageSize - 1)
+        if (error) throw new Error(error.message)
+        if (!data || data.length === 0) break
+        data.forEach((r: any) => projects.add(r.project_key))
+        if (data.length < pageSize) break
+        from += pageSize
+      }
       return Array.from(projects).sort()
     },
     staleTime: 60_000,
@@ -150,12 +158,20 @@ export function useAvailableIssueTypes() {
   return useQuery({
     queryKey: ['wh', 'available-issue-types'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('wh_issues')
-        .select('issue_type')
-      if (error) throw new Error(error.message)
       const types = new Set<string>()
-      data?.forEach((r: any) => types.add(r.issue_type))
+      let from = 0
+      const pageSize = 1000
+      while (true) {
+        const { data, error } = await (supabase as any)
+          .from('wh_issues')
+          .select('issue_type')
+          .range(from, from + pageSize - 1)
+        if (error) throw new Error(error.message)
+        if (!data || data.length === 0) break
+        data.forEach((r: any) => types.add(r.issue_type))
+        if (data.length < pageSize) break
+        from += pageSize
+      }
       return Array.from(types).sort()
     },
     staleTime: 60_000,
@@ -170,6 +186,7 @@ export function useAvailableFixVersions() {
         .from('wh_versions')
         .select('name, project_key, released')
         .order('name')
+        .limit(5000)
       if (error) throw new Error(error.message)
       return (data || []) as Array<{ name: string; project_key: string; released: boolean }>
     },
