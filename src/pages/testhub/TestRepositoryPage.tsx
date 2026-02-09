@@ -7,12 +7,16 @@ import { RefreshCw, Plus, Trash2, MoveRight, CheckSquare, Download, Upload, Spar
 import { FolderPanel } from '@/components/testhub/FolderPanel';
 import { TestCasesTable } from '@/components/testhub/TestCasesTable';
 import { TestCasesToolbar } from '@/components/testhub/TestCasesToolbar';
+import { TestCaseGridView } from '@/components/testhub/TestCaseGridView';
 import { CreateTestCaseModal } from '@/components/testhub/CreateTestCaseModal';
 import { ViewTestCaseModal } from '@/components/testhub/ViewTestCaseModal';
 import { CloneTestCaseModal } from '@/components/testhub/CloneTestCaseModal';
 import { DeleteTestCaseModal } from '@/components/testhub/DeleteTestCaseModal';
 import { TestCaseContextMenu } from '@/components/testhub/TestCaseContextMenu';
 import { CreateFolderModal } from '@/components/testhub/CreateFolderModal';
+import { ImportTestCasesModal } from '@/components/testhub/ImportTestCasesModal';
+import { ExportTestCasesModal } from '@/components/testhub/ExportTestCasesModal';
+import { AIGenerateModal } from '@/components/testhub/AIGenerateModal';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -82,12 +86,16 @@ export function TestRepositoryPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [sortColumn, setSortColumn] = useState<string | null>('updatedAt');
+  const [sortColumn, setSortColumn] = useState<string>('updated_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [totalTestCases, setTotalTestCases] = useState(0);
+  const [filters, setFilters] = useState({ priorities: [] as string[], statuses: [] as string[], types: [] as string[], automations: [] as string[] });
 
   // Modal states
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isAIGenerateModalOpen, setIsAIGenerateModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isCloneModalOpen, setIsCloneModalOpen] = useState(false);
@@ -473,30 +481,12 @@ export function TestRepositoryPage() {
 
             {/* Import */}
             <button 
-              onClick={() => toast({ title: 'Import', description: 'Import functionality coming soon' })}
+              onClick={() => setIsImportModalOpen(true)}
               style={{
-                height: 40,
-                padding: '0 16px',
-                backgroundColor: '#FFFFFF',
-                border: '1.5px solid #E2E8F0',
-                borderRadius: 8,
-                fontFamily: 'Inter, sans-serif',
-                fontSize: 14,
-                fontWeight: 500,
-                color: '#334155',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                transition: 'all 0.15s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#F8FAFC';
-                e.currentTarget.style.borderColor = '#CBD5E1';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#FFFFFF';
-                e.currentTarget.style.borderColor = '#E2E8F0';
+                height: 40, padding: '0 16px', backgroundColor: '#FFFFFF',
+                border: '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'Inter, sans-serif',
+                fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
             >
               <Download style={{ width: 16, height: 16, color: '#64748B' }} />
@@ -505,30 +495,12 @@ export function TestRepositoryPage() {
 
             {/* Export */}
             <button 
-              onClick={() => toast({ title: 'Export', description: 'Export functionality coming soon' })}
+              onClick={() => setIsExportModalOpen(true)}
               style={{
-                height: 40,
-                padding: '0 16px',
-                backgroundColor: '#FFFFFF',
-                border: '1.5px solid #E2E8F0',
-                borderRadius: 8,
-                fontFamily: 'Inter, sans-serif',
-                fontSize: 14,
-                fontWeight: 500,
-                color: '#334155',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                transition: 'all 0.15s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#F8FAFC';
-                e.currentTarget.style.borderColor = '#CBD5E1';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#FFFFFF';
-                e.currentTarget.style.borderColor = '#E2E8F0';
+                height: 40, padding: '0 16px', backgroundColor: '#FFFFFF',
+                border: '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'Inter, sans-serif',
+                fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
             >
               <Upload style={{ width: 16, height: 16, color: '#64748B' }} />
@@ -537,31 +509,14 @@ export function TestRepositoryPage() {
 
             {/* Generate with AI - GREEN */}
             <button 
-              onClick={() => toast({ title: 'Generate with AI', description: 'AI generation coming soon' })}
+              onClick={() => setIsAIGenerateModalOpen(true)}
               style={{
-                height: 40,
-                padding: '0 16px',
+                height: 40, padding: '0 16px',
                 background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
-                border: 'none',
-                borderRadius: 8,
-                fontFamily: 'Inter, sans-serif',
-                fontSize: 14,
-                fontWeight: 600,
-                color: '#FFFFFF',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)',
-                transition: 'all 0.15s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.35)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(16, 185, 129, 0.25)';
+                border: 'none', borderRadius: 8, fontFamily: 'Inter, sans-serif',
+                fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 8,
+                boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)', transition: 'all 0.15s',
               }}
             >
               <Sparkles style={{ width: 16, height: 16, color: '#FFFFFF' }} />
@@ -623,9 +578,10 @@ export function TestRepositoryPage() {
               testCaseCount={testCases.length}
               viewMode={viewMode}
               onViewModeChange={setViewMode}
-              hasActiveFilters={false}
-              onFilterClick={() => console.log('Open filters')}
-              onSortClick={() => console.log('Open sort')}
+              filters={filters}
+              onFiltersChange={setFilters}
+              sort={{ column: sortColumn, direction: sortDirection }}
+              onSortChange={(s) => { setSortColumn(s.column); setSortDirection(s.direction); }}
             />
 
             {/* Bulk Actions Bar */}
