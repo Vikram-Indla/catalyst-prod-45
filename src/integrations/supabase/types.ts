@@ -24065,6 +24065,88 @@ export type Database = {
         }
         Relationships: []
       }
+      th_step_attachments: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          file_type: string | null
+          id: string
+          step_id: string | null
+          step_number: number | null
+          test_case_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          step_id?: string | null
+          step_number?: number | null
+          test_case_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          step_id?: string | null
+          step_number?: number | null
+          test_case_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_step_attachments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_step_attachments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_step_attachments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_step_attachments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_step_attachments_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_steps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_step_attachments_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       th_test_case_attachments: {
         Row: {
           file_name: string

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, Library } from 'lucide-react';
-import { StepsEditor } from './StepsEditor';
+import { StepsEditor, Step, StepAttachment } from './StepsEditor';
 import { SharedStepsModal } from './SharedStepsModal';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -9,6 +9,7 @@ interface TestStep {
   id: string;
   action: string;
   expectedResult: string;
+  attachments?: StepAttachment[];
 }
 
 interface Folder {
@@ -61,7 +62,7 @@ export function CreateTestCaseModal({
   const [automation, setAutomation] = useState('manual');
   const [assignedTo, setAssignedTo] = useState('');
   const [steps, setSteps] = useState<TestStep[]>([
-    { id: '1', action: '', expectedResult: '' }
+    { id: '1', action: '', expectedResult: '', attachments: [] }
   ]);
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState<{ title?: string; folder?: string }>({});
@@ -98,9 +99,9 @@ export function CreateTestCaseModal({
         setStatus(testCase.status);
         setAutomation('manual'); // Default value
         if (existingSteps && existingSteps.length > 0) {
-          setSteps(existingSteps);
+          setSteps(existingSteps.map(s => ({ ...s, attachments: [] })));
         } else {
-          setSteps([{ id: '1', action: '', expectedResult: '' }]);
+          setSteps([{ id: '1', action: '', expectedResult: '', attachments: [] }]);
         }
       } else {
         // Reset for create mode
@@ -112,7 +113,7 @@ export function CreateTestCaseModal({
         setType('functional');
         setStatus('draft');
         setAutomation('manual');
-        setSteps([{ id: '1', action: '', expectedResult: '' }]);
+        setSteps([{ id: '1', action: '', expectedResult: '', attachments: [] }]);
         setAssignedTo('');
       }
       setErrors({});
@@ -209,20 +210,57 @@ export function CreateTestCaseModal({
     if (error) throw error;
 
     // 3. Insert steps
-    const stepsToInsert = steps
-      .filter(s => s.action.trim())
-      .map((s, i) => ({
-        test_case_id: newCase.id,
-        step_number: i + 1,
-        action: s.action.trim(),
-        expected_result: s.expectedResult.trim() || null,
-      }));
+    const validSteps = steps.filter(s => s.action.trim());
+    const stepsToInsert = validSteps.map((s, i) => ({
+      test_case_id: newCase.id,
+      step_number: i + 1,
+      action: s.action.trim(),
+      expected_result: s.expectedResult.trim() || null,
+    }));
 
     if (stepsToInsert.length > 0) {
       const { error: stepsError } = await supabase
         .from('th_test_steps')
         .insert(stepsToInsert);
       if (stepsError) throw stepsError;
+    }
+
+    // 4. Upload attachments for each step
+    for (let i = 0; i < validSteps.length; i++) {
+      const step = validSteps[i];
+      if (step.attachments && step.attachments.length > 0) {
+        for (const attachment of step.attachments) {
+          if (!attachment.file) continue;
+          
+          try {
+            // Generate unique file path
+            const filePath = `test-cases/${newCase.id}/step-${i + 1}/${Date.now()}-${attachment.name}`;
+            
+            // Upload to Supabase Storage
+            const { error: uploadError } = await supabase.storage
+              .from('testhub-attachments')
+              .upload(filePath, attachment.file);
+            
+            if (uploadError) {
+              console.error('Upload error:', uploadError);
+              continue;
+            }
+            
+            // Save attachment record
+            await supabase.from('th_step_attachments').insert({
+              test_case_id: newCase.id,
+              step_number: i + 1,
+              file_name: attachment.name,
+              file_path: filePath,
+              file_size: attachment.size,
+              file_type: attachment.type,
+            });
+            
+          } catch (err) {
+            console.error('Attachment error:', err);
+          }
+        }
+      }
     }
 
     toast({
