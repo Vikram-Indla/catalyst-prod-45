@@ -80,10 +80,15 @@ export function TestCasesTable({
 
   const handleActionClick = (e: React.MouseEvent, tc: TestCase) => {
     e.stopPropagation();
+    e.preventDefault();
+    // Use native event to prevent document click handler from firing
+    e.nativeEvent.stopImmediatePropagation();
+    
+    const rect = e.currentTarget.getBoundingClientRect();
     onContextMenu?.({ 
       ...e, 
-      clientX: e.currentTarget.getBoundingClientRect().left,
-      clientY: e.currentTarget.getBoundingClientRect().bottom,
+      clientX: rect.right - 180, // Position menu to the left of the button
+      clientY: rect.bottom + 4,
     } as React.MouseEvent, tc);
   };
 
