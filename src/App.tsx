@@ -940,7 +940,7 @@ const App = () => (
               <Route path="/admin/user-roles" element={<AdminGuard><UserRoles /></AdminGuard>} />
               <Route path="/admin/permissions" element={<AdminGuard><Permissions /></AdminGuard>} />
               <Route path="/admin/integrations" element={<AdminGuard><Integrations /></AdminGuard>} />
-              <Route path="/admin/workhub-connection" element={<AdminGuard><WorkHubAdminPage /></AdminGuard>} />
+              
               <Route path="/admin/activity-log" element={<AdminGuard><ActivityLog /></AdminGuard>} />
               
               <Route path="/admin" element={<AdminLayout />}>
@@ -1033,6 +1033,7 @@ const App = () => (
                 <Route path="slack" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SlackIntegrationPage /></Suspense>} />
                 {/* Enhanced Task List */}
                 <Route path="task-list" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TaskListPage /></Suspense>} />
+                <Route path="workhub-connection" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubAdminPage /></Suspense>} />
               </Route>
 
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
