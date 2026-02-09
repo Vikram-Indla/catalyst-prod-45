@@ -234,6 +234,11 @@ import { PlanHubGeneralSettings, PlanHubTemplates, PlanHubAIConfig, PlanHubActiv
 const WorkHubAdminPage = lazy(() => import("./modules/workhub/admin/pages/WorkHubAdmin"));
 const WorkHubSettingsLayout = lazy(() => import("./modules/workhub/admin/pages/WorkHubSettingsLayout"));
 const WorkHubComingSoon = lazy(() => import("./modules/workhub/admin/pages/WorkHubComingSoon"));
+const WorkHubHierarchyPage = lazy(() => import("./modules/workhub/admin/pages/WorkHubHierarchyPage"));
+const WorkHubSchedulingPage = lazy(() => import("./modules/workhub/admin/pages/WorkHubSchedulingPage"));
+const WorkHubStatusMappingPage = lazy(() => import("./modules/workhub/admin/pages/WorkHubStatusMappingPage"));
+const WorkHubUserMappingPage = lazy(() => import("./modules/workhub/admin/pages/WorkHubUserMappingPage"));
+const WorkHubDataScopePage = lazy(() => import("./modules/workhub/admin/pages/WorkHubDataScopePage"));
 const WorkHubSyncLogs = lazy(() => import("./modules/workhub/admin/pages/WorkHubSyncLogsPage"));
 
 const SoftwareLicensesPage = lazy(() => import("./modules/budget/components/SoftwareLicensesPage").then(m => ({ default: m.SoftwareLicensesPage })));
@@ -1039,11 +1044,11 @@ const App = () => (
                 <Route path="workhub-connection" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
                 <Route path="workhub" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
                 <Route path="workhub/jira-connection" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubAdminPage /></Suspense>} />
-                <Route path="workhub/hierarchy-mapping" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
-                <Route path="workhub/scheduling-rules" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
-                <Route path="workhub/status-mapping" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
-                <Route path="workhub/user-mapping" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
-                <Route path="workhub/data-scope" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
+                <Route path="workhub/hierarchy-mapping" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubHierarchyPage /></Suspense>} />
+                <Route path="workhub/scheduling-rules" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubSchedulingPage /></Suspense>} />
+                <Route path="workhub/status-mapping" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubStatusMappingPage /></Suspense>} />
+                <Route path="workhub/user-mapping" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubUserMappingPage /></Suspense>} />
+                <Route path="workhub/data-scope" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubDataScopePage /></Suspense>} />
                 <Route path="workhub/sync-logs" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubSyncLogs /></Suspense>} />
                 <Route path="workhub/*" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
               </Route>
