@@ -82,9 +82,19 @@ export function useSyncLogs(limit: number = 10) {
 export function useForceSync() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (syncType: 'incremental' | 'full' = 'full') => {
+    mutationFn: async (params: {
+      sync_type?: 'incremental' | 'full'
+      lookback_months?: number
+      issue_types?: string[]
+      fix_versions?: string[]
+    } = {}) => {
       const { data, error } = await supabase.functions.invoke('wh-jira-sync', {
-        body: { sync_type: syncType },
+        body: {
+          sync_type: params.sync_type || 'full',
+          lookback_months: params.lookback_months,
+          issue_types: params.issue_types?.length ? params.issue_types : undefined,
+          fix_versions: params.fix_versions?.length ? params.fix_versions : undefined,
+        },
       })
       if (error) throw new Error(error.message)
       return data
@@ -103,7 +113,7 @@ export function useSyncConfig() {
       const { data, error } = await (supabase as any)
         .from('wh_config')
         .select('key, value')
-        .in('key', ['sync_interval_minutes', 'sync_full_time_utc'])
+        .in('key', ['sync_interval_minutes', 'sync_full_time_utc', 'sync_max_months', 'sync_lookback_months', 'sync_issue_types', 'sync_fix_versions'])
       if (error) throw new Error(error.message)
       const cfg: Record<string, any> = {}
       data?.forEach((c: any) => {
@@ -115,6 +125,37 @@ export function useSyncConfig() {
       })
       return cfg
     },
+  })
+}
+
+export function useAvailableIssueTypes() {
+  return useQuery({
+    queryKey: ['wh', 'available-issue-types'],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('wh_issues')
+        .select('issue_type')
+      if (error) throw new Error(error.message)
+      const types = new Set<string>()
+      data?.forEach((r: any) => types.add(r.issue_type))
+      return Array.from(types).sort()
+    },
+    staleTime: 60_000,
+  })
+}
+
+export function useAvailableFixVersions() {
+  return useQuery({
+    queryKey: ['wh', 'available-fix-versions'],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('wh_versions')
+        .select('name, project_key, released')
+        .order('name')
+      if (error) throw new Error(error.message)
+      return (data || []) as Array<{ name: string; project_key: string; released: boolean }>
+    },
+    staleTime: 60_000,
   })
 }
 
