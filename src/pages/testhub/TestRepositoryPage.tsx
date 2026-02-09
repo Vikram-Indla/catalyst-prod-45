@@ -1,6 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════
 // TEST REPOSITORY PAGE - MAIN COMPONENT
-// Copy this ENTIRE file to: src/pages/testhub/TestRepositoryPage.tsx
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react';
@@ -9,6 +8,8 @@ import { FolderPanel } from '@/components/testhub/FolderPanel';
 import { TestCasesTable } from '@/components/testhub/TestCasesTable';
 import { TestCasesToolbar } from '@/components/testhub/TestCasesToolbar';
 import { CreateTestCaseModal } from '@/components/testhub/CreateTestCaseModal';
+import { ViewTestCaseModal } from '@/components/testhub/ViewTestCaseModal';
+import { CloneTestCaseModal } from '@/components/testhub/CloneTestCaseModal';
 import { supabase } from '@/integrations/supabase/client';
 
 // Import the CSS
@@ -26,6 +27,11 @@ interface TestCase {
   ownerInitials?: string;
   ownerColor?: string;
   updatedAt: string;
+  // For edit/view operations
+  objective?: string | null;
+  preconditions?: string | null;
+  folderId?: string | null;
+  version?: number;
 }
 
 interface Folder {
@@ -33,6 +39,27 @@ interface Folder {
   name: string;
   parentId: string | null;
   testCaseCount: number;
+}
+
+interface TestStep {
+  id: string;
+  action: string;
+  expectedResult: string;
+}
+
+interface RawTestCase {
+  id: string;
+  case_key: string;
+  title: string;
+  objective: string | null;
+  preconditions: string | null;
+  folder_id: string | null;
+  priority: string;
+  type: string;
+  status: string;
+  automation: string;
+  version: number;
+  updated_at: string;
 }
 
 export function TestRepositoryPage() {
@@ -46,8 +73,15 @@ export function TestRepositoryPage() {
   const [sortColumn, setSortColumn] = useState<string | null>('updatedAt');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [totalTestCases, setTotalTestCases] = useState(0);
+
+  // Modal states
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [isCloneModalOpen, setIsCloneModalOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [selectedTestCase, setSelectedTestCase] = useState<RawTestCase | null>(null);
+  const [selectedTestCaseSteps, setSelectedTestCaseSteps] = useState<TestStep[]>([]);
 
   // Fetch folders
   const fetchFolders = async () => {
@@ -130,6 +164,10 @@ export function TestRepositoryPage() {
       ownerInitials: 'AK',
       ownerColor: 'blue',
       updatedAt: tc.updated_at,
+      objective: tc.objective,
+      preconditions: tc.preconditions,
+      folderId: tc.folder_id,
+      version: tc.version || 1,
     })) || [];
 
     setTestCases(mapped);
@@ -172,69 +210,94 @@ export function TestRepositoryPage() {
     }
   };
 
-  const handleRowClick = (testCase: TestCase) => {
-    // Open view modal - to be implemented
-    console.log('View test case:', testCase);
-  };
-
-  const handleRowAction = (testCase: TestCase, action: string) => {
-    console.log('Action:', action, 'on', testCase);
-  };
-
-  const handleCreateTestCase = async (data: any) => {
-    // Generate case key
-    const { data: lastCase } = await supabase
+  const handleRowClick = async (testCase: TestCase) => {
+    // Fetch full test case data
+    const { data: fullTC } = await supabase
       .from('th_test_cases')
-      .select('case_key')
-      .order('created_at', { ascending: false })
-      .limit(1);
-
-    let nextNum = 1;
-    if (lastCase && lastCase.length > 0) {
-      const match = lastCase[0].case_key.match(/TC-(\d+)/);
-      if (match) {
-        nextNum = parseInt(match[1]) + 1;
-      }
-    }
-    const caseKey = `TC-${String(nextNum).padStart(3, '0')}`;
-
-    // Insert test case - uses simplified schema with direct priority/type/automation columns
-    const { data: newCase, error } = await supabase
-      .from('th_test_cases')
-      .insert({
-        case_key: caseKey,
-        title: data.title,
-        objective: data.objective,
-        preconditions: data.preconditions,
-        folder_id: data.folderId || null,
-        priority: data.priority,
-        type: data.type,
-        status: data.status,
-        automation: data.automation,
-      })
-      .select()
+      .select('*')
+      .eq('id', testCase.id)
       .single();
 
-    if (error) {
-      console.error('Error creating test case:', error);
-      throw error;
+    if (fullTC) {
+      setSelectedTestCase(fullTC as RawTestCase);
+      setIsViewModalOpen(true);
     }
+  };
 
-    // Insert steps
-    if (data.steps && data.steps.length > 0) {
-      const stepsToInsert = data.steps.map((step: any, index: number) => ({
-        test_case_id: newCase.id,
-        step_number: index + 1,
-        action: step.action,
-        expected_result: step.expectedResult,
-      }));
+  const handleRowAction = async (testCase: TestCase, action: string) => {
+    const { data: fullTC } = await supabase
+      .from('th_test_cases')
+      .select('*')
+      .eq('id', testCase.id)
+      .single();
 
-      await supabase.from('th_test_steps').insert(stepsToInsert);
+    if (!fullTC) return;
+
+    if (action === 'edit') {
+      await openEditModal(fullTC as RawTestCase);
+    } else if (action === 'clone') {
+      setSelectedTestCase(fullTC as RawTestCase);
+      setIsCloneModalOpen(true);
+    } else if (action === 'delete') {
+      if (confirm(`Delete test case ${testCase.caseKey}?`)) {
+        await supabase.from('th_test_cases').delete().eq('id', testCase.id);
+        fetchTestCases();
+        fetchFolders();
+      }
     }
+  };
 
-    // Refresh
+  const openEditModal = async (tc: RawTestCase) => {
+    // Fetch steps
+    const { data: stepsData } = await supabase
+      .from('th_test_steps')
+      .select('*')
+      .eq('test_case_id', tc.id)
+      .order('step_number');
+
+    const mappedSteps: TestStep[] = (stepsData || []).map(s => ({
+      id: s.id,
+      action: s.action,
+      expectedResult: s.expected_result || '',
+    }));
+
+    setSelectedTestCase(tc);
+    setSelectedTestCaseSteps(mappedSteps.length > 0 ? mappedSteps : [{ id: '1', action: '', expectedResult: '' }]);
+    setEditMode(true);
+    setIsCreateModalOpen(true);
+  };
+
+  const handleEditFromView = async () => {
+    if (selectedTestCase) {
+      setIsViewModalOpen(false);
+      await openEditModal(selectedTestCase);
+    }
+  };
+
+  const handleCloneFromView = () => {
+    setIsViewModalOpen(false);
+    setIsCloneModalOpen(true);
+  };
+
+  const handleRefresh = () => {
     fetchTestCases();
     fetchFolders();
+  };
+
+  const handleCreateSuccess = () => {
+    fetchTestCases();
+    fetchFolders();
+    setIsCreateModalOpen(false);
+    setEditMode(false);
+    setSelectedTestCase(null);
+    setSelectedTestCaseSteps([]);
+  };
+
+  const handleCloneSuccess = () => {
+    fetchTestCases();
+    fetchFolders();
+    setIsCloneModalOpen(false);
+    setSelectedTestCase(null);
   };
 
   const handleBulkDelete = async () => {
@@ -260,6 +323,20 @@ export function TestRepositoryPage() {
     setSelectedIds(new Set());
   };
 
+  const handleOpenCreateModal = () => {
+    setEditMode(false);
+    setSelectedTestCase(null);
+    setSelectedTestCaseSteps([]);
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCloseCreateModal = () => {
+    setIsCreateModalOpen(false);
+    setEditMode(false);
+    setSelectedTestCase(null);
+    setSelectedTestCaseSteps([]);
+  };
+
   return (
     <div className="testhub">
       <div className="th-page">
@@ -283,7 +360,7 @@ export function TestRepositoryPage() {
           }}>Test Repository</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <button 
-              onClick={() => { fetchTestCases(); fetchFolders(); }}
+              onClick={handleRefresh}
               style={{
                 height: 40,
                 padding: '0 20px',
@@ -313,7 +390,7 @@ export function TestRepositoryPage() {
               Refresh
             </button>
             <button 
-              onClick={() => setIsCreateModalOpen(true)}
+              onClick={handleOpenCreateModal}
               style={{
                 height: 40,
                 padding: '0 20px',
@@ -409,7 +486,7 @@ export function TestRepositoryPage() {
                       ? 'This folder is empty. Create a test case to get started.'
                       : 'Create your first test case to get started.'}
                   </p>
-                  <button className="th-btn-primary" onClick={() => setIsCreateModalOpen(true)}>
+                  <button className="th-btn-primary" onClick={handleOpenCreateModal}>
                     <Plus />
                     Create Test Case
                   </button>
@@ -450,13 +527,51 @@ export function TestRepositoryPage() {
         </div>
       </div>
 
-      {/* Create Modal */}
+      {/* Create/Edit Modal */}
       <CreateTestCaseModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSave={handleCreateTestCase}
+        onClose={handleCloseCreateModal}
+        onSuccess={handleCreateSuccess}
         folders={folders.map(f => ({ id: f.id, name: f.name }))}
         selectedFolderId={selectedFolderId || undefined}
+        editMode={editMode}
+        testCase={selectedTestCase ? {
+          id: selectedTestCase.id,
+          case_key: selectedTestCase.case_key,
+          title: selectedTestCase.title,
+          objective: selectedTestCase.objective,
+          preconditions: selectedTestCase.preconditions,
+          folder_id: selectedTestCase.folder_id,
+          priority: selectedTestCase.priority,
+          type: selectedTestCase.type,
+          status: selectedTestCase.status,
+          automation: selectedTestCase.automation,
+          version: selectedTestCase.version || 1,
+        } : undefined}
+        existingSteps={selectedTestCaseSteps.length > 0 ? selectedTestCaseSteps : undefined}
+      />
+
+      {/* View Modal */}
+      <ViewTestCaseModal
+        isOpen={isViewModalOpen}
+        onClose={() => {
+          setIsViewModalOpen(false);
+          setSelectedTestCase(null);
+        }}
+        testCase={selectedTestCase}
+        onEdit={handleEditFromView}
+        onClone={handleCloneFromView}
+      />
+
+      {/* Clone Modal */}
+      <CloneTestCaseModal
+        isOpen={isCloneModalOpen}
+        onClose={() => {
+          setIsCloneModalOpen(false);
+          setSelectedTestCase(null);
+        }}
+        onSuccess={handleCloneSuccess}
+        testCase={selectedTestCase}
       />
     </div>
   );
