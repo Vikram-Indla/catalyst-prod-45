@@ -3,6 +3,7 @@ import { Eye, EyeOff, Globe, Mail, Key, RefreshCw, Pencil } from 'lucide-react';
 import { ReadOnlyBanner } from './ReadOnlyBanner';
 import { ConnectionStatusBadge } from './ConnectionStatusBadge';
 import { TestConnectionModal } from './TestConnectionModal';
+import { WorkItemsDashboard } from './WorkItemsDashboard';
 import { useJiraConnection, useUpdateJiraConnection, useTestConnection } from '../hooks/useJiraConnection';
 
 import '../../shared/tokens/workhub-tokens.css';
@@ -410,6 +411,9 @@ export function JiraConnection() {
             </div>
           </div>
         )}
+
+        {/* Work Items Dashboard */}
+        <WorkItemsDashboard isConnected={status === 'connected'} />
       </div>
 
       {/* Test Modal */}
