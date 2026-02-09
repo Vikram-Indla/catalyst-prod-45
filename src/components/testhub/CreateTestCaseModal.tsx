@@ -59,12 +59,30 @@ export function CreateTestCaseModal({
   const [type, setType] = useState('functional');
   const [status, setStatus] = useState('draft');
   const [automation, setAutomation] = useState('manual');
-  const [owner, setOwner] = useState('');
+  const [assignedTo, setAssignedTo] = useState('');
   const [steps, setSteps] = useState<TestStep[]>([
     { id: '1', action: '', expectedResult: '' }
   ]);
   const [isSaving, setIsSaving] = useState(false);
-  const [titleError, setTitleError] = useState('');
+  const [errors, setErrors] = useState<{ title?: string; folder?: string }>({});
+  
+  // Users from profiles table
+  const [users, setUsers] = useState<Array<{ id: string; full_name: string | null; avatar_url?: string | null }>>([]);
+
+  // Fetch users from profiles table
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .order('full_name');
+      
+      if (data && !error) {
+        setUsers(data);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   // Reset or pre-fill form when modal opens
   useEffect(() => {
@@ -94,16 +112,28 @@ export function CreateTestCaseModal({
         setStatus('draft');
         setAutomation('manual');
         setSteps([{ id: '1', action: '', expectedResult: '' }]);
+        setAssignedTo('');
       }
-      setTitleError('');
+      setErrors({});
     }
   }, [isOpen, editMode, testCase, existingSteps, selectedFolderId]);
 
   const validateForm = () => {
+    const newErrors: { title?: string; folder?: string } = {};
+    
     if (!title.trim()) {
-      setTitleError('Title is required');
+      newErrors.title = 'Title is required';
+    }
+    
+    if (!folderId) {
+      newErrors.folder = 'Please select a folder';
+    }
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return false;
     }
+    
     const hasValidStep = steps.some(s => s.action.trim());
     if (!hasValidStep) {
       toast({
@@ -166,6 +196,7 @@ export function CreateTestCaseModal({
         type,
         status,
         automation,
+        owner_id: assignedTo || null,
         version: 1,
       })
       .select()
@@ -216,6 +247,7 @@ export function CreateTestCaseModal({
         type,
         status,
         automation,
+        owner_id: assignedTo || null,
         version: newVersion,
       })
       .eq('id', testCase.id);
@@ -427,29 +459,29 @@ export function CreateTestCaseModal({
                   value={title}
                   onChange={(e) => {
                     setTitle(e.target.value);
-                    if (titleError) setTitleError('');
+                    if (errors.title) setErrors({ ...errors, title: undefined });
                   }}
-                  style={titleError ? inputErrorStyle : inputStyle}
+                  style={errors.title ? inputErrorStyle : inputStyle}
                   onFocus={(e) => {
-                    if (!titleError) {
+                    if (!errors.title) {
                       e.target.style.borderColor = '#2563EB';
                       e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
                     }
                   }}
                   onBlur={(e) => {
-                    if (!titleError) {
+                    if (!errors.title) {
                       e.target.style.borderColor = '#E2E8F0';
                       e.target.style.boxShadow = 'none';
                     }
                   }}
                 />
-                {titleError && (
+                {errors.title && (
                   <p style={{
                     fontFamily: 'Inter, sans-serif',
                     fontSize: 12,
                     color: '#EF4444',
                     marginTop: 4,
-                  }}>{titleError}</p>
+                  }}>{errors.title}</p>
                 )}
               </div>
 
@@ -501,21 +533,33 @@ export function CreateTestCaseModal({
               border: '1px solid #E2E8F0',
               height: 'fit-content',
             }}>
-              {/* Folder - Full width */}
+              {/* Folder - Full width with validation */}
               <div>
                 <label style={{ ...labelStyle, fontSize: 13 }}>
                   Folder <span style={{ color: '#EF4444' }}>*</span>
                 </label>
                 <select
                   value={folderId}
-                  onChange={(e) => setFolderId(e.target.value)}
-                  style={{ ...selectStyle, backgroundColor: '#FFFFFF' }}
+                  onChange={(e) => {
+                    setFolderId(e.target.value);
+                    if (errors.folder) setErrors({ ...errors, folder: undefined });
+                  }}
+                  style={{ 
+                    ...selectStyle, 
+                    backgroundColor: '#FFFFFF',
+                    borderColor: errors.folder ? '#EF4444' : '#E2E8F0',
+                  }}
                 >
-                  <option value="">No folder</option>
+                  <option value="">Select a folder...</option>
                   {folders.map(f => (
                     <option key={f.id} value={f.id}>{f.name}</option>
                   ))}
                 </select>
+                {errors.folder && (
+                  <p style={{ fontSize: 12, color: '#EF4444', marginTop: 4 }}>
+                    {errors.folder}
+                  </p>
+                )}
               </div>
               
               {/* Priority + Type - 2 column grid */}
@@ -583,20 +627,20 @@ export function CreateTestCaseModal({
                 </div>
               </div>
               
-              {/* Owner - Full width */}
+              {/* Assigned To - Full width with profiles data */}
               <div>
-                <label style={{ ...labelStyle, fontSize: 13 }}>Owner</label>
+                <label style={{ ...labelStyle, fontSize: 13 }}>Assigned To</label>
                 <select
-                  value={owner}
-                  onChange={(e) => setOwner(e.target.value)}
+                  value={assignedTo}
+                  onChange={(e) => setAssignedTo(e.target.value)}
                   style={{ ...selectStyle, backgroundColor: '#FFFFFF' }}
                 >
-                  <option value="">Select an owner...</option>
-                  <option value="ahmed-khan">Ahmed Khan</option>
-                  <option value="sarah-lee">Sarah Lee</option>
-                  <option value="mike-chen">Mike Chen</option>
-                  <option value="fatima">Fatima</option>
-                  <option value="omar-patel">Omar Patel</option>
+                  <option value="">Unassigned</option>
+                  {users.map(user => (
+                    <option key={user.id} value={user.id}>
+                      {user.full_name || 'Unknown User'}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>

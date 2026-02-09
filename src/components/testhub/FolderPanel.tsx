@@ -1,5 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Folder, FolderOpen, Plus, ChevronsLeft, ChevronRight, Search } from 'lucide-react';
+import { 
+  Folder, 
+  FolderOpen, 
+  Plus, 
+  ChevronsLeft, 
+  ChevronRight, 
+  Search, 
+  Shield, 
+  LayoutDashboard, 
+  Users, 
+  BarChart3, 
+  Plug, 
+  Settings 
+} from 'lucide-react';
 
 interface FolderItem {
   id: string;
@@ -17,19 +30,25 @@ interface FolderPanelProps {
   totalTestCases: number;
 }
 
-// Emoji icons only for main/root folders, children get simple folder icon
-const getFolderIcon = (name: string, hasParent: boolean): string => {
-  // Child folders always get simple folder icon
-  if (hasParent) return '📁';
+// Lucide icon mapping function based on folder name
+const getFolderIcon = (folderName: string, isSelected: boolean = false, hasParent: boolean = false) => {
+  const color = isSelected ? '#2563EB' : '#64748B';
+  const size = 16;
   
-  const lower = name.toLowerCase();
-  if (lower.includes('auth')) return '🔐';
-  if (lower.includes('dashboard')) return '📊';
-  if (lower.includes('user')) return '👥';
-  if (lower.includes('report')) return '📈';
-  if (lower.includes('api') || lower.includes('endpoint')) return '🔌';
-  if (lower.includes('setting')) return '⚙️';
-  return '📁';
+  // Child folders always get simple folder icon
+  if (hasParent) {
+    return <Folder size={size} color={color} />;
+  }
+  
+  const name = folderName.toLowerCase();
+  if (name === 'all test cases') return <FolderOpen size={size} color={color} />;
+  if (name.includes('auth') || name.includes('login') || name.includes('password')) return <Shield size={size} color={color} />;
+  if (name.includes('dashboard')) return <LayoutDashboard size={size} color={color} />;
+  if (name.includes('user')) return <Users size={size} color={color} />;
+  if (name.includes('report')) return <BarChart3 size={size} color={color} />;
+  if (name.includes('api') || name.includes('endpoint')) return <Plug size={size} color={color} />;
+  if (name.includes('setting')) return <Settings size={size} color={color} />;
+  return <Folder size={size} color={color} />;
 };
 
 export function FolderPanel({
@@ -298,7 +317,7 @@ export function FolderPanel({
               borderRadius: '0 2px 2px 0',
             }} />
           )}
-          <span style={{ fontSize: 16, marginRight: 10 }}>📁</span>
+          <span style={{ display: 'flex', alignItems: 'center', marginRight: 10 }}>{getFolderIcon('All Test Cases', selectedFolderId === null, false)}</span>
           <span style={{
             flex: 1,
             fontSize: 14,
@@ -353,7 +372,7 @@ function FolderTreeItem({
   const isExpanded = expandedFolders.has(folder.id);
   const isSelected = selectedFolderId === folder.id;
   const hasParent = folder.parentId !== null;
-  const icon = folder.icon || getFolderIcon(folder.name, hasParent);
+  const icon = getFolderIcon(folder.name, isSelected, hasParent);
 
   return (
     <>
@@ -417,8 +436,8 @@ function FolderTreeItem({
           </div>
         )}
 
-        {/* Emoji Icon */}
-        <span style={{ fontSize: 16, marginRight: 10 }}>{icon}</span>
+        {/* Lucide Icon */}
+        <span style={{ display: 'flex', alignItems: 'center', marginRight: 10 }}>{icon}</span>
 
         {/* Name */}
         <span style={{
