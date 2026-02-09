@@ -422,7 +422,7 @@ export function UserMapping() {
                     {/* Catalyst Resource */}
                     <td style={{ padding: '10px 12px', width: 240 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <Avatar name={profile.full_name || 'U'} url={profile.avatar_url} size={28} />
+                        <Avatar name={profile.full_name || 'U'} url={existingJiraMapping?.jira_avatar_url || profile.avatar_url} size={28} />
                         <div>
                           <div style={{ fontWeight: 600, color: '#0F172A', fontSize: 12 }}>
                             {profile.full_name || 'Unnamed'}
