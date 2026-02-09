@@ -17,13 +17,13 @@ export function ConnectionStatusBadge({ status }: ConnectionStatusBadgeProps) {
   return (
     <span
       className={config.className}
-      aria-label={`Connection status: ${status}`}
+      aria-label={`Connection status: ${config.label}`}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
         gap: 6,
         padding: '4px 12px',
-        borderRadius: 'var(--wh-rad)',
+        borderRadius: 20,
         fontSize: 12,
         fontWeight: 600,
         fontFamily: 'var(--wh-fn)',

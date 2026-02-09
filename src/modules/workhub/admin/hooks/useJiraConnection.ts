@@ -13,6 +13,8 @@ export interface JiraConnection {
   project_count: number;
   accessible_projects: Array<{ key: string; name: string; type: string }>;
   permissions_level: string;
+  total_issue_count: number;
+  total_version_count: number;
   configured_by: string | null;
   created_at: string;
   updated_at: string;

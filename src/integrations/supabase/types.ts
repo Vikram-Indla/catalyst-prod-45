@@ -30428,6 +30428,8 @@ export type Database = {
           server_title: string | null
           site_url: string
           status: string
+          total_issue_count: number | null
+          total_version_count: number | null
           updated_at: string | null
         }
         Insert: {
@@ -30449,6 +30451,8 @@ export type Database = {
           server_title?: string | null
           site_url?: string
           status?: string
+          total_issue_count?: number | null
+          total_version_count?: number | null
           updated_at?: string | null
         }
         Update: {
@@ -30470,6 +30474,8 @@ export type Database = {
           server_title?: string | null
           site_url?: string
           status?: string
+          total_issue_count?: number | null
+          total_version_count?: number | null
           updated_at?: string | null
         }
         Relationships: []
