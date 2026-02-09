@@ -3,7 +3,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 import { useState, useEffect } from 'react';
-import { RefreshCw, Plus, Trash2, MoveRight, CheckSquare } from 'lucide-react';
+import { RefreshCw, Plus, Trash2, MoveRight, CheckSquare, Download, Upload, Sparkles } from 'lucide-react';
 import { FolderPanel } from '@/components/testhub/FolderPanel';
 import { TestCasesTable } from '@/components/testhub/TestCasesTable';
 import { TestCasesToolbar } from '@/components/testhub/TestCasesToolbar';
@@ -423,20 +423,58 @@ export function TestRepositoryPage() {
           alignItems: 'center',
           justifyContent: 'space-between',
         }}>
-          <h1 style={{
-            fontFamily: 'Sora, sans-serif',
-            fontSize: 18,
-            fontWeight: 700,
-            color: '#0F172A',
-            letterSpacing: '-0.01em',
-            margin: 0,
-          }}>Test Repository</h1>
+          <div>
+            <h1 style={{
+              fontFamily: 'Sora, sans-serif',
+              fontSize: 18,
+              fontWeight: 700,
+              color: '#0F172A',
+              letterSpacing: '-0.01em',
+              margin: 0,
+            }}>Test Repository</h1>
+            <p style={{
+              fontFamily: 'Inter, sans-serif',
+              fontSize: 13,
+              color: '#64748B',
+              margin: '2px 0 0 0',
+            }}>Manage your test case repository</p>
+          </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {/* Refresh */}
             <button 
               onClick={handleRefresh}
+              title="Refresh"
+              style={{
+                width: 40,
+                height: 40,
+                padding: 0,
+                backgroundColor: '#FFFFFF',
+                border: '1.5px solid #E2E8F0',
+                borderRadius: 8,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#F8FAFC';
+                e.currentTarget.style.borderColor = '#CBD5E1';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#FFFFFF';
+                e.currentTarget.style.borderColor = '#E2E8F0';
+              }}
+            >
+              <RefreshCw style={{ width: 16, height: 16, color: '#64748B' }} />
+            </button>
+
+            {/* Import */}
+            <button 
+              onClick={() => toast({ title: 'Import', description: 'Import functionality coming soon' })}
               style={{
                 height: 40,
-                padding: '0 20px',
+                padding: '0 16px',
                 backgroundColor: '#FFFFFF',
                 border: '1.5px solid #E2E8F0',
                 borderRadius: 8,
@@ -459,9 +497,76 @@ export function TestRepositoryPage() {
                 e.currentTarget.style.borderColor = '#E2E8F0';
               }}
             >
-              <RefreshCw style={{ width: 16, height: 16, color: '#64748B' }} />
-              Refresh
+              <Download style={{ width: 16, height: 16, color: '#64748B' }} />
+              Import
             </button>
+
+            {/* Export */}
+            <button 
+              onClick={() => toast({ title: 'Export', description: 'Export functionality coming soon' })}
+              style={{
+                height: 40,
+                padding: '0 16px',
+                backgroundColor: '#FFFFFF',
+                border: '1.5px solid #E2E8F0',
+                borderRadius: 8,
+                fontFamily: 'Inter, sans-serif',
+                fontSize: 14,
+                fontWeight: 500,
+                color: '#334155',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#F8FAFC';
+                e.currentTarget.style.borderColor = '#CBD5E1';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#FFFFFF';
+                e.currentTarget.style.borderColor = '#E2E8F0';
+              }}
+            >
+              <Upload style={{ width: 16, height: 16, color: '#64748B' }} />
+              Export
+            </button>
+
+            {/* Generate with AI - GREEN */}
+            <button 
+              onClick={() => toast({ title: 'Generate with AI', description: 'AI generation coming soon' })}
+              style={{
+                height: 40,
+                padding: '0 16px',
+                background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                border: 'none',
+                borderRadius: 8,
+                fontFamily: 'Inter, sans-serif',
+                fontSize: 14,
+                fontWeight: 600,
+                color: '#FFFFFF',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-1px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.35)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 2px 8px rgba(16, 185, 129, 0.25)';
+              }}
+            >
+              <Sparkles style={{ width: 16, height: 16, color: '#FFFFFF' }} />
+              Generate with AI
+            </button>
+
+            {/* Create Test Case - BLUE */}
             <button 
               onClick={handleOpenCreateModal}
               style={{
@@ -491,7 +596,7 @@ export function TestRepositoryPage() {
               }}
             >
               <Plus style={{ width: 16, height: 16, color: '#FFFFFF' }} />
-              New Test Case
+              Create Test Case
             </button>
           </div>
         </div>
@@ -518,6 +623,7 @@ export function TestRepositoryPage() {
               onViewModeChange={setViewMode}
               hasActiveFilters={false}
               onFilterClick={() => console.log('Open filters')}
+              onSortClick={() => console.log('Open sort')}
             />
 
             {/* Bulk Actions Bar */}

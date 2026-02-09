@@ -1,4 +1,4 @@
-import { Search, Filter, List, LayoutGrid } from 'lucide-react';
+import { Search, Filter, ArrowUpDown, List, LayoutGrid } from 'lucide-react';
 
 interface TestCasesToolbarProps {
   searchQuery: string;
@@ -8,6 +8,7 @@ interface TestCasesToolbarProps {
   onViewModeChange: (mode: 'list' | 'grid') => void;
   hasActiveFilters: boolean;
   onFilterClick: () => void;
+  onSortClick?: () => void;
 }
 
 export function TestCasesToolbar({
@@ -18,6 +19,7 @@ export function TestCasesToolbar({
   onViewModeChange,
   hasActiveFilters,
   onFilterClick,
+  onSortClick,
 }: TestCasesToolbarProps) {
   return (
     <div style={{
@@ -105,7 +107,39 @@ export function TestCasesToolbar({
           }}
         >
           <Filter style={{ width: 16, height: 16, color: hasActiveFilters ? '#2563EB' : '#64748B' }} />
-          Filters
+          Filter
+        </button>
+
+        {/* Sort button */}
+        <button
+          onClick={onSortClick}
+          style={{
+            height: 40,
+            padding: '0 16px',
+            backgroundColor: '#FFFFFF',
+            border: '1.5px solid #E2E8F0',
+            borderRadius: 8,
+            fontSize: 14,
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: 500,
+            color: '#334155',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            transition: 'all 0.15s',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#F8FAFC';
+            e.currentTarget.style.borderColor = '#CBD5E1';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = '#FFFFFF';
+            e.currentTarget.style.borderColor = '#E2E8F0';
+          }}
+        >
+          <ArrowUpDown style={{ width: 16, height: 16, color: '#64748B' }} />
+          Sort
         </button>
       </div>
 

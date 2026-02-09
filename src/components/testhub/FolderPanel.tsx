@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Folder, FolderOpen, Plus, ChevronsLeft, ChevronRight } from 'lucide-react';
+import { Folder, FolderOpen, Plus, ChevronsLeft, ChevronRight, Search } from 'lucide-react';
 
 interface FolderItem {
   id: string;
   name: string;
   parentId: string | null;
   testCaseCount: number;
+  icon?: string;
 }
 
 interface FolderPanelProps {
@@ -16,6 +17,24 @@ interface FolderPanelProps {
   totalTestCases: number;
 }
 
+// Default emoji icons for folders based on name patterns
+const getFolderIcon = (name: string): string => {
+  const lower = name.toLowerCase();
+  if (lower.includes('auth') || lower.includes('login') || lower.includes('password')) return '🔐';
+  if (lower.includes('dashboard') || lower.includes('analytics')) return '📊';
+  if (lower.includes('user') || lower.includes('account') || lower.includes('profile')) return '👥';
+  if (lower.includes('report') || lower.includes('chart')) return '📈';
+  if (lower.includes('api') || lower.includes('endpoint') || lower.includes('integration')) return '🔌';
+  if (lower.includes('setting') || lower.includes('config') || lower.includes('admin')) return '⚙️';
+  if (lower.includes('payment') || lower.includes('billing') || lower.includes('invoice')) return '💳';
+  if (lower.includes('notification') || lower.includes('alert')) return '🔔';
+  if (lower.includes('search') || lower.includes('filter')) return '🔍';
+  if (lower.includes('security') || lower.includes('permission')) return '🛡️';
+  if (lower.includes('file') || lower.includes('upload') || lower.includes('document')) return '📄';
+  if (lower.includes('email') || lower.includes('message')) return '✉️';
+  return '📁';
+};
+
 export function FolderPanel({
   folders,
   selectedFolderId,
@@ -25,6 +44,7 @@ export function FolderPanel({
 }: FolderPanelProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState('');
 
   const toggleExpand = (folderId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -38,6 +58,14 @@ export function FolderPanel({
   };
 
   const rootFolders = folders.filter(f => f.parentId === null);
+  
+  // Filter folders by search
+  const filterFolders = (items: FolderItem[]): FolderItem[] => {
+    if (!searchQuery.trim()) return items;
+    return items.filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  };
+
+  const filteredRootFolders = searchQuery ? filterFolders(folders) : rootFolders;
 
   // Collapsed state - show only icon
   if (isCollapsed) {
@@ -87,7 +115,7 @@ export function FolderPanel({
   // Expanded state
   return (
     <div style={{
-      width: 240,
+      width: 280,
       backgroundColor: '#FFFFFF',
       borderRight: '1px solid #E2E8F0',
       display: 'flex',
@@ -103,16 +131,13 @@ export function FolderPanel({
         alignItems: 'center',
         justifyContent: 'space-between',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Folder style={{ width: 16, height: 16, color: '#64748B' }} />
-          <span style={{
-            fontSize: 11,
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            color: '#64748B',
-          }}>Folders</span>
-        </div>
+        <span style={{
+          fontSize: 12,
+          fontWeight: 600,
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+          color: '#64748B',
+        }}>Folders</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           <button
             onClick={onCreateFolder}
@@ -171,8 +196,54 @@ export function FolderPanel({
         </div>
       </div>
 
+      {/* Search Box */}
+      <div style={{ padding: '12px 16px' }}>
+        <div style={{ position: 'relative' }}>
+          <Search style={{
+            position: 'absolute',
+            left: 10,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: 14,
+            height: 14,
+            color: '#94A3B8',
+            pointerEvents: 'none',
+          }} />
+          <input
+            type="text"
+            placeholder="Search folders..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              height: 36,
+              paddingLeft: 32,
+              paddingRight: 12,
+              fontSize: 13,
+              fontFamily: 'Inter, sans-serif',
+              color: '#0F172A',
+              backgroundColor: '#F8FAFC',
+              border: '1px solid #E2E8F0',
+              borderRadius: 8,
+              outline: 'none',
+              transition: 'all 0.15s',
+            }}
+            onFocus={(e) => {
+              e.target.style.backgroundColor = '#FFFFFF';
+              e.target.style.borderColor = '#2563EB';
+              e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)';
+            }}
+            onBlur={(e) => {
+              e.target.style.backgroundColor = '#F8FAFC';
+              e.target.style.borderColor = '#E2E8F0';
+              e.target.style.boxShadow = 'none';
+            }}
+          />
+        </div>
+      </div>
+
       {/* Folder Tree */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0 0 8px 0' }}>
         {/* All Test Cases */}
         <div
           onClick={() => onSelectFolder(null)}
@@ -210,24 +281,18 @@ export function FolderPanel({
               borderRadius: '0 2px 2px 0',
             }} />
           )}
-          <div style={{ width: 20, height: 20, marginRight: 0 }} /> {/* Spacer for alignment */}
-          <Folder style={{
-            width: 17,
-            height: 17,
-            marginRight: 12,
-            color: selectedFolderId === null ? '#2563EB' : '#64748B',
-          }} />
+          <span style={{ fontSize: 16, marginRight: 10 }}>📁</span>
           <span style={{
             flex: 1,
-            fontSize: 13.5,
+            fontSize: 14,
             fontWeight: selectedFolderId === null ? 600 : 500,
-            color: selectedFolderId === null ? '#2563EB' : '#475569',
+            color: selectedFolderId === null ? '#2563EB' : '#334155',
           }}>All Test Cases</span>
           <span style={{ fontSize: 12, color: '#94A3B8' }}>{totalTestCases}</span>
         </div>
 
-        {/* Root Folders */}
-        {rootFolders.map(folder => (
+        {/* Folders */}
+        {(searchQuery ? filteredRootFolders : rootFolders).map(folder => (
           <FolderTreeItem
             key={folder.id}
             folder={folder}
@@ -237,6 +302,7 @@ export function FolderPanel({
             onSelect={onSelectFolder}
             onToggleExpand={toggleExpand}
             depth={0}
+            showNested={!searchQuery}
           />
         ))}
       </div>
@@ -252,6 +318,7 @@ interface FolderTreeItemProps {
   onSelect: (id: string) => void;
   onToggleExpand: (id: string, e: React.MouseEvent) => void;
   depth: number;
+  showNested: boolean;
 }
 
 function FolderTreeItem({
@@ -262,11 +329,13 @@ function FolderTreeItem({
   onSelect,
   onToggleExpand,
   depth,
+  showNested,
 }: FolderTreeItemProps) {
   const children = allFolders.filter(f => f.parentId === folder.id);
   const hasChildren = children.length > 0;
   const isExpanded = expandedFolders.has(folder.id);
   const isSelected = selectedFolderId === folder.id;
+  const icon = folder.icon || getFolderIcon(folder.name);
 
   return (
     <>
@@ -309,47 +378,36 @@ function FolderTreeItem({
         )}
         
         {/* Chevron */}
-        <div
-          onClick={(e) => hasChildren && onToggleExpand(folder.id, e)}
-          style={{
-            width: 20,
-            height: 20,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#94A3B8',
-            cursor: hasChildren ? 'pointer' : 'default',
-            transform: isExpanded ? 'rotate(90deg)' : 'none',
-            transition: 'transform 0.15s',
-            visibility: hasChildren ? 'visible' : 'hidden',
-          }}
-        >
-          <ChevronRight style={{ width: 14, height: 14 }} />
-        </div>
-
-        {/* Folder Icon */}
-        {isExpanded && hasChildren ? (
-          <FolderOpen style={{
-            width: 17,
-            height: 17,
-            marginRight: 12,
-            color: isSelected ? '#2563EB' : '#64748B',
-          }} />
-        ) : (
-          <Folder style={{
-            width: 17,
-            height: 17,
-            marginRight: 12,
-            color: isSelected ? '#2563EB' : '#64748B',
-          }} />
+        {showNested && (
+          <div
+            onClick={(e) => hasChildren && onToggleExpand(folder.id, e)}
+            style={{
+              width: 20,
+              height: 20,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#94A3B8',
+              cursor: hasChildren ? 'pointer' : 'default',
+              transform: isExpanded ? 'rotate(90deg)' : 'none',
+              transition: 'transform 0.15s',
+              visibility: hasChildren ? 'visible' : 'hidden',
+              marginRight: 2,
+            }}
+          >
+            <ChevronRight style={{ width: 14, height: 14 }} />
+          </div>
         )}
+
+        {/* Emoji Icon */}
+        <span style={{ fontSize: 16, marginRight: 10 }}>{icon}</span>
 
         {/* Name */}
         <span style={{
           flex: 1,
-          fontSize: 13.5,
+          fontSize: 14,
           fontWeight: isSelected ? 600 : 500,
-          color: isSelected ? '#2563EB' : '#475569',
+          color: isSelected ? '#2563EB' : '#334155',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
@@ -360,7 +418,7 @@ function FolderTreeItem({
       </div>
 
       {/* Children */}
-      {hasChildren && isExpanded && children.map(child => (
+      {showNested && hasChildren && isExpanded && children.map(child => (
         <FolderTreeItem
           key={child.id}
           folder={child}
@@ -370,6 +428,7 @@ function FolderTreeItem({
           onSelect={onSelect}
           onToggleExpand={onToggleExpand}
           depth={depth + 1}
+          showNested={showNested}
         />
       ))}
     </>

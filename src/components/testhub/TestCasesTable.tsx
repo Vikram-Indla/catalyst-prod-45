@@ -236,15 +236,15 @@ export function TestCasesTable({
                   {tc.caseKey}
                 </td>
                 
-                {/* Title */}
+                {/* Title - Allow multi-line wrapping */}
                 <td style={{
                   ...bodyCellStyle,
                   fontWeight: 500,
                   color: '#0F172A',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  maxWidth: 300,
+                  lineHeight: 1.4,
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  maxWidth: 350,
                 }}>
                   {tc.title}
                 </td>
