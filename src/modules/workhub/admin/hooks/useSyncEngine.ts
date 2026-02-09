@@ -140,15 +140,21 @@ export function useAvailableProjects() {
   return useQuery({
     queryKey: ['wh', 'available-projects'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('wh_jira_connection')
         .select('accessible_projects')
         .single()
       if (error) throw new Error(error.message)
-      const projects = (data?.accessible_projects as any[] | null) || []
+      const raw = data?.accessible_projects
+      const projects: any[] = Array.isArray(raw)
+        ? raw
+        : typeof raw === 'string'
+          ? JSON.parse(raw)
+          : []
       return projects
-        .map((p: any) => ({ key: p.key as string, name: (p.name as string) || p.key, type: p.type as string | undefined }))
-        .sort((a, b) => a.key.localeCompare(b.key)) as JiraProject[]
+        .filter((p: any) => p && p.key)
+        .map((p: any) => ({ key: String(p.key), name: String(p.name || p.key), type: p.type ? String(p.type) : undefined }))
+        .sort((a: JiraProject, b: JiraProject) => a.key.localeCompare(b.key)) as JiraProject[]
     },
     staleTime: 60_000,
   })
