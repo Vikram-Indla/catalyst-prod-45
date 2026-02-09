@@ -169,19 +169,22 @@ export function CreateTestCaseModal({
   };
 
   const handleCreate = async () => {
-    // 1. Generate case_key
-    const { data: lastCase } = await supabase
+    // 1. Generate case_key - get ALL keys and find the MAX number to avoid duplicates
+    const { data: allCases } = await supabase
       .from('th_test_cases')
-      .select('case_key')
-      .order('created_at', { ascending: false })
-      .limit(1);
+      .select('case_key');
 
-    let nextNum = 1;
-    if (lastCase && lastCase.length > 0) {
-      const match = lastCase[0].case_key.match(/TC-(\d+)/);
-      if (match) nextNum = parseInt(match[1]) + 1;
+    let maxNum = 0;
+    if (allCases && allCases.length > 0) {
+      for (const tc of allCases) {
+        const match = tc.case_key?.match(/TC-(\d+)/);
+        if (match) {
+          const num = parseInt(match[1], 10);
+          if (num > maxNum) maxNum = num;
+        }
+      }
     }
-    const caseKey = `TC-${String(nextNum).padStart(3, '0')}`;
+    const caseKey = `TC-${String(maxNum + 1).padStart(3, '0')}`;
 
     // 2. Insert test case
     const { data: newCase, error } = await supabase
