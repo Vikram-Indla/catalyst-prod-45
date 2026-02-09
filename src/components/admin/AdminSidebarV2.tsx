@@ -107,6 +107,7 @@ const adminPockets = [
     path: '/admin/integrations-hub',
     children: [
       { label: 'Jira Integration', path: '/admin/jira-config' },
+      { label: 'WorkHub Connection', path: '/admin/workhub-connection' },
       { label: 'Slack', path: '/admin/slack' },
       { label: 'Import Data', path: '/admin/import-data' },
     ],
