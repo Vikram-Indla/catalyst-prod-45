@@ -45,7 +45,7 @@ serve(async (req) => {
     })
 
     const lookbackMonths = syncType === 'full' ? (cfg.sync_max_months || 6) : (cfg.sync_lookback_months || 1)
-    const includedProjects: string[] = cfg.included_projects || []
+    let includedProjects: string[] = cfg.included_projects || []
     const hierarchyLevels: Array<{ level: number; name: string; jiraTypes: string[] }> = cfg.hierarchy_levels || []
     const statusMapping: Record<string, string[]> = cfg.status_mapping || {}
 
@@ -53,7 +53,32 @@ serve(async (req) => {
     const authHeader = 'Basic ' + btoa(`${conn.auth_email}:${conn.auth_token_encrypted}`)
     const headers = { 'Authorization': authHeader, 'Accept': 'application/json' }
 
-    // 3. Build JQL
+    // 3. Discover actual project keys if config has stale defaults
+    // Fetch all accessible projects from Jira to validate included_projects
+    try {
+      const projRes = await fetch(`${base}/rest/api/3/project`, { headers })
+      if (projRes.ok) {
+        const projects = await projRes.json()
+        const actualKeys: string[] = projects.map((p: any) => p.key)
+        if (includedProjects.length > 0) {
+          // Filter to only projects that actually exist
+          const validKeys = includedProjects.filter(k => actualKeys.includes(k))
+          if (validKeys.length === 0) {
+            // None of the configured projects exist — use all accessible projects
+            includedProjects = actualKeys
+            console.log(`Config projects not found in Jira. Using all ${actualKeys.length} accessible projects.`)
+          } else {
+            includedProjects = validKeys
+          }
+        } else {
+          includedProjects = actualKeys
+        }
+      }
+    } catch (e) {
+      console.warn('Could not fetch Jira projects for validation:', e)
+    }
+
+    // 4. Build JQL
     const projectFilter = includedProjects.length > 0
       ? `project in (${includedProjects.join(',')}) AND `
       : ''
