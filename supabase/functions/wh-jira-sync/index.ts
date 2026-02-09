@@ -200,7 +200,7 @@ serve(async (req) => {
     if (uniqueUsers.size > 0) {
       await supabase
         .from('wh_user_mapping')
-        .upsert(Array.from(uniqueUsers.values()), { onConflict: 'jira_account_id', ignoreDuplicates: true })
+        .upsert(Array.from(uniqueUsers.values()), { onConflict: 'jira_account_id', ignoreDuplicates: false })
     }
 
     // 9. Fetch and upsert versions
