@@ -58,6 +58,7 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
           {/* Avatar with flag overlay - V10 Style: Unified CapacityAvatar */}
           <CapacityAvatar
             initials={initials}
+            avatarUrl={(resource as any).avatar_url}
             flagUrl={flagUrl}
             countryName={countryName}
             size="md"

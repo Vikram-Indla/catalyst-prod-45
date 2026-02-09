@@ -2008,6 +2008,7 @@ function CardsView({
                     totalAllocation={getTotalAllocationForResource(resource.id, (resource as any).resourceInventoryId)}
                     allocations={getResourceAllocations(resource.id, (resource as any).resourceInventoryId)}
                     country_flag_svg={(resource as any).country_flag_svg}
+                    avatar_url={resource.avatar_url}
                     onOpen360={() => onResourceClick(resource)}
                     onEdit={() => onEditResource(resource.id)}
                   />
@@ -2110,6 +2111,7 @@ function CardsView({
                       totalAllocation={getTotalAllocationForResource(resource.id, (resource as any).resourceInventoryId)}
                       allocations={getResourceAllocations(resource.id, (resource as any).resourceInventoryId)}
                       country_flag_svg={(resource as any).country_flag_svg}
+                      avatar_url={resource.avatar_url}
                       onOpen360={() => onResourceClick(resource)}
                       onEdit={() => onEditResource(resource.id)}
                     />
@@ -2136,6 +2138,7 @@ function CardsView({
           totalAllocation={getTotalAllocationForResource(resource.id, (resource as any).resourceInventoryId)}
           allocations={getResourceAllocations(resource.id, (resource as any).resourceInventoryId)}
           country_flag_svg={(resource as any).country_flag_svg}
+          avatar_url={resource.avatar_url}
           onOpen360={() => onResourceClick(resource)}
           onEdit={() => onEditResource(resource.id)}
         />

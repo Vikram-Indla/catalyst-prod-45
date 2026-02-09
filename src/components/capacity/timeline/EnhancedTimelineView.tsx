@@ -72,13 +72,15 @@ interface AvatarProps {
   initials: string;
   contractEndDate?: string | null;
   flagSvg?: string | null;
+  avatarUrl?: string | null;
 }
 
-function ResourceAvatarWrapper({ initials, contractEndDate, flagSvg }: AvatarProps) {
+function ResourceAvatarWrapper({ initials, contractEndDate, flagSvg, avatarUrl }: AvatarProps) {
   // V10 Unified Style - Use CapacityAvatar component
   return (
     <CapacityAvatar
       initials={initials}
+      avatarUrl={avatarUrl}
       flagUrl={flagSvg}
       size="md"
       showTooltip={false}
@@ -463,6 +465,7 @@ export function EnhancedTimelineView({
                           initials={getInitials(resource.name)}
                           contractEndDate={resource.contractEndDate}
                           flagSvg={resource.country_flag_svg}
+                          avatarUrl={(resource as any).avatar_url}
                         />
                         <div className={styles.resourceInfo}>
                           <div className={styles.textResourceName}>{resource.name}</div>
@@ -584,6 +587,7 @@ export function EnhancedTimelineView({
                   <ResourceAvatarWrapper
                     initials={getInitials(resource.name)}
                     contractEndDate={resource.contractEndDate}
+                    avatarUrl={(resource as any).avatar_url}
                   />
                   <div className={styles.resourceInfo}>
                     <div className={styles.textResourceName}>{resource.name}</div>

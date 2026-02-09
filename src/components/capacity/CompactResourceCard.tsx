@@ -36,6 +36,7 @@ interface CompactResourceCardProps {
   totalAllocation: number;
   allocations?: ResourceAllocation[];
   country_flag_svg?: string | null;
+  avatar_url?: string | null;
   onOpen360: () => void;
   onEdit: () => void;
 }
@@ -49,6 +50,7 @@ export function CompactResourceCard({
   totalAllocation,
   allocations = [],
   country_flag_svg,
+  avatar_url,
   onOpen360, 
   onEdit 
 }: CompactResourceCardProps) {
@@ -197,6 +199,7 @@ export function CompactResourceCard({
           {/* Avatar - V10 Unified Style */}
           <CapacityAvatar
             initials={initials}
+            avatarUrl={avatar_url}
             flagUrl={country_flag_svg}
             size="md"
             onClick={(e) => { e?.stopPropagation?.(); onOpen360(); }}
