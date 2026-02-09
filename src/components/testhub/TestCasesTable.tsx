@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { MoreVertical, ChevronUp, ChevronDown } from 'lucide-react';
 
 interface TestCase {
@@ -21,6 +20,7 @@ interface TestCasesTableProps {
   onSelectOne: (id: string, selected: boolean) => void;
   onRowClick: (testCase: TestCase) => void;
   onRowAction?: (testCase: TestCase, action: string) => void;
+  onContextMenu?: (e: React.MouseEvent, testCase: TestCase) => void;
   onSort: (column: string) => void;
   sortColumn: string | null;
   sortDirection: 'asc' | 'desc';
@@ -32,6 +32,8 @@ export function TestCasesTable({
   onSelectAll,
   onSelectOne,
   onRowClick,
+  onRowAction,
+  onContextMenu,
   onSort,
   sortColumn,
   sortDirection,
@@ -67,6 +69,21 @@ export function TestCasesTable({
     return sortDirection === 'asc' ? 
       <ChevronUp style={{ width: 14, height: 14, marginLeft: 4 }} /> : 
       <ChevronDown style={{ width: 14, height: 14, marginLeft: 4 }} />;
+  };
+
+  const handleContextMenu = (e: React.MouseEvent, tc: TestCase) => {
+    e.preventDefault();
+    onContextMenu?.(e, tc);
+  };
+
+  const handleActionClick = (e: React.MouseEvent, tc: TestCase) => {
+    e.stopPropagation();
+    // Simulate right-click at button position
+    onContextMenu?.({ 
+      ...e, 
+      clientX: e.currentTarget.getBoundingClientRect().left,
+      clientY: e.currentTarget.getBoundingClientRect().bottom,
+    } as React.MouseEvent, tc);
   };
 
   return (
@@ -238,6 +255,7 @@ export function TestCasesTable({
               <tr
                 key={tc.id}
                 onClick={() => onRowClick(tc)}
+                onContextMenu={(e) => handleContextMenu(e, tc)}
                 style={{
                   height: 36,
                   backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.06)' : '#FFFFFF',
@@ -414,19 +432,30 @@ export function TestCasesTable({
                     textAlign: 'center',
                   }}
                 >
-                  <button style={{
-                    width: 28,
-                    height: 28,
-                    padding: 0,
-                    border: 'none',
-                    borderRadius: 6,
-                    backgroundColor: 'transparent',
-                    color: '#94A3B8',
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
+                  <button 
+                    onClick={(e) => handleActionClick(e, tc)}
+                    style={{
+                      width: 28,
+                      height: 28,
+                      padding: 0,
+                      border: 'none',
+                      borderRadius: 6,
+                      backgroundColor: 'transparent',
+                      color: '#94A3B8',
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#F1F5F9';
+                      e.currentTarget.style.color = '#64748B';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.color = '#94A3B8';
+                    }}
+                  >
                     <MoreVertical style={{ width: 16, height: 16 }} />
                   </button>
                 </td>
