@@ -7,6 +7,12 @@ import { useJiraConnection, useUpdateJiraConnection, useTestConnection } from '.
 
 import '../../shared/tokens/workhub-tokens.css';
 
+const WORKSTREAM_COLORS: Record<string, string> = {
+  software: '#2563EB',
+  business: '#7C3AED',
+  service_desk: '#F59E0B',
+};
+
 export function JiraConnection() {
   const { data: connection, isLoading } = useJiraConnection();
   const updateMutation = useUpdateJiraConnection();
@@ -19,13 +25,13 @@ export function JiraConnection() {
   const [isEditing, setIsEditing] = useState(false);
   const [isTestModalOpen, setIsTestModalOpen] = useState(false);
   const [errors, setErrors] = useState<{ url?: string; email?: string; token?: string }>({});
+  const [touched, setTouched] = useState<{ url?: boolean; email?: boolean; token?: boolean }>({});
 
   // Sync from DB
   useEffect(() => {
     if (connection) {
       setSiteUrl(connection.site_url);
       setAuthEmail(connection.auth_email);
-      // Don't expose token - show placeholder
       setAuthToken('');
     }
   }, [connection]);
@@ -33,7 +39,29 @@ export function JiraConnection() {
   const status = connection?.status || 'not_configured';
   const showForm = status === 'not_configured' || status === 'error' || isEditing;
 
+  const validateField = (field: 'url' | 'email' | 'token') => {
+    const newErrors = { ...errors };
+    if (field === 'url' && (!siteUrl.startsWith('https://') || !siteUrl.includes('.atlassian.net'))) {
+      newErrors.url = 'Must be https://yourorg.atlassian.net';
+    } else if (field === 'url') {
+      delete newErrors.url;
+    }
+    if (field === 'email' && !authEmail.includes('@')) {
+      newErrors.email = 'Enter a valid email address';
+    } else if (field === 'email') {
+      delete newErrors.email;
+    }
+    if (field === 'token' && !authToken && status !== 'connected') {
+      newErrors.token = 'API token is required';
+    } else if (field === 'token') {
+      delete newErrors.token;
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const validate = () => {
+    setTouched({ url: true, email: true, token: true });
     const newErrors: typeof errors = {};
     if (!siteUrl.startsWith('https://') || !siteUrl.includes('.atlassian.net')) {
       newErrors.url = 'Must be https://yourorg.atlassian.net';
@@ -46,6 +74,11 @@ export function JiraConnection() {
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handleBlur = (field: 'url' | 'email' | 'token') => {
+    setTouched(p => ({ ...p, [field]: true }));
+    validateField(field);
   };
 
   const handleSaveAndTest = async () => {
@@ -91,12 +124,15 @@ export function JiraConnection() {
     );
   }
 
+  const checks = connection?.last_test_result?.checks as Array<{ name: string; passed: boolean; message: string; duration_ms: number }> | undefined;
+  const projects = (connection?.accessible_projects || []) as Array<{ key: string; name: string; type: string }>;
+
   return (
     <div className="wh-page">
       <h1 className="wh-page-title">Jira Connection</h1>
       <p className="wh-page-subtitle">Configure your Jira Cloud connection for read-only data synchronization.</p>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {/* Read-only banner */}
         <ReadOnlyBanner />
 
@@ -124,24 +160,102 @@ export function JiraConnection() {
                   <div style={{ fontSize: 13, color: 'var(--wh-tx2)', fontFamily: 'var(--wh-mo)' }}>
                     {connection?.site_url}
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--wh-tx3)', marginTop: 2 }}>
-                    {connection?.project_count || 0} projects accessible · {connection?.permissions_level === 'read_write' ? 'Read-write' : 'Read-only'} access
-                  </div>
                 </div>
               </div>
             </div>
 
+            {/* Stat boxes grid — connected state */}
+            {status === 'connected' && (
+              <div style={{
+                display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginTop: 16,
+              }}>
+                {[
+                  { label: 'Projects', value: connection?.project_count ?? 0 },
+                  { label: 'Access Level', value: connection?.permissions_level === 'read_write' ? 'Read-Write' : 'Read-Only' },
+                  { label: 'Issues', value: connection?.total_issue_count ?? '—' },
+                  { label: 'Versions', value: connection?.total_version_count ?? '—' },
+                ].map(stat => (
+                  <div key={stat.label} style={{
+                    background: 'var(--wh-sf)', borderRadius: 'var(--wh-rad)',
+                    padding: '14px 12px', textAlign: 'center',
+                    border: '1px solid var(--wh-bdr)',
+                  }}>
+                    <div style={{
+                      fontFamily: 'var(--wh-fh)', fontSize: 22, fontWeight: 700,
+                      color: 'var(--wh-tx)', marginBottom: 4,
+                    }}>
+                      {stat.value}
+                    </div>
+                    <div style={{
+                      fontFamily: 'var(--wh-fh)', fontSize: 11, fontWeight: 600,
+                      color: 'var(--wh-tx4)', textTransform: 'uppercase', letterSpacing: '0.04em',
+                    }}>
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Project chips with colored dots — connected state */}
+            {status === 'connected' && projects.length > 0 && (
+              <div style={{ marginTop: 16 }}>
+                <div style={{
+                  fontFamily: 'var(--wh-fh)', fontSize: 11, fontWeight: 600,
+                  color: 'var(--wh-tx4)', textTransform: 'uppercase', letterSpacing: '0.04em',
+                  marginBottom: 8,
+                }}>
+                  ACCESSIBLE PROJECTS
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {projects.map(p => (
+                    <span key={p.key} style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 5,
+                      background: 'var(--wh-sf)', border: '1px solid var(--wh-bdr)',
+                      borderRadius: 20, padding: '3px 10px 3px 8px',
+                      fontSize: 12, fontFamily: 'var(--wh-mo)', fontWeight: 500,
+                      color: 'var(--wh-tx2)',
+                    }}>
+                      <span style={{
+                        width: 6, height: 6, borderRadius: '50%',
+                        background: WORKSTREAM_COLORS[p.type] || 'var(--wh-tx4)',
+                      }} />
+                      {p.key}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Inline test results row — connected state */}
+            {status === 'connected' && checks && checks.length > 0 && (
+              <div style={{
+                display: 'flex', gap: 16, marginTop: 16, paddingTop: 16,
+                borderTop: '1px solid var(--wh-bdr)', flexWrap: 'wrap',
+              }}>
+                {checks.map(c => (
+                  <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12 }}>
+                    <span>{c.passed ? '✅' : '❌'}</span>
+                    <span style={{ color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)' }}>{c.name}</span>
+                    <span style={{ color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', fontSize: 11 }}>
+                      {c.duration_ms}ms
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Error details */}
-            {status === 'error' && connection?.last_test_result?.checks && (
+            {status === 'error' && checks && (
               <div style={{
                 marginTop: 16, padding: '12px 14px',
                 background: 'var(--wh-dng-bg)', borderRadius: 'var(--wh-rad)',
                 border: '1px solid rgba(239,68,68,0.2)',
               }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--wh-dng)', marginBottom: 8 }}>
-                  Failed checks:
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--wh-dng)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  ❌ Connection failed
                 </div>
-                {connection.last_test_result.checks
+                {checks
                   .filter((c: any) => !c.passed)
                   .map((c: any) => (
                     <div key={c.name} style={{ fontSize: 12, color: 'var(--wh-tx2)', marginBottom: 2 }}>
@@ -149,6 +263,23 @@ export function JiraConnection() {
                     </div>
                   ))
                 }
+              </div>
+            )}
+
+            {/* Inline test results row — error state */}
+            {status === 'error' && checks && checks.length > 0 && (
+              <div style={{
+                display: 'flex', gap: 16, marginTop: 12, flexWrap: 'wrap',
+              }}>
+                {checks.map((c: any) => (
+                  <div key={c.name} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12 }}>
+                    <span>{c.passed ? '✅' : '❌'}</span>
+                    <span style={{ color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)' }}>{c.name}</span>
+                    <span style={{ color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', fontSize: 11 }}>
+                      {c.duration_ms}ms
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
 
@@ -187,15 +318,16 @@ export function JiraConnection() {
                   }} />
                   <input
                     id="wh-site-url"
-                    className={`wh-input ${errors.url ? 'error' : ''}`}
+                    className={`wh-input ${touched.url && errors.url ? 'error' : ''}`}
                     style={{ paddingLeft: 36 }}
                     placeholder="https://myorg.atlassian.net"
                     value={siteUrl}
                     onChange={(e) => { setSiteUrl(e.target.value); setErrors(p => ({ ...p, url: undefined })); }}
+                    onBlur={() => handleBlur('url')}
                     aria-describedby={errors.url ? 'wh-url-error' : undefined}
                   />
                 </div>
-                {errors.url && <span id="wh-url-error" style={{ fontSize: 12, color: 'var(--wh-dng)', marginTop: 4, display: 'block' }}>{errors.url}</span>}
+                {touched.url && errors.url && <span id="wh-url-error" style={{ fontSize: 12, color: 'var(--wh-dng)', marginTop: 4, display: 'block' }}>{errors.url}</span>}
               </div>
 
               {/* Email */}
@@ -210,16 +342,17 @@ export function JiraConnection() {
                   }} />
                   <input
                     id="wh-auth-email"
-                    className={`wh-input ${errors.email ? 'error' : ''}`}
+                    className={`wh-input ${touched.email && errors.email ? 'error' : ''}`}
                     style={{ paddingLeft: 36 }}
                     type="email"
                     placeholder="admin@company.com"
                     value={authEmail}
                     onChange={(e) => { setAuthEmail(e.target.value); setErrors(p => ({ ...p, email: undefined })); }}
+                    onBlur={() => handleBlur('email')}
                     aria-describedby={errors.email ? 'wh-email-error' : undefined}
                   />
                 </div>
-                {errors.email && <span id="wh-email-error" style={{ fontSize: 12, color: 'var(--wh-dng)', marginTop: 4, display: 'block' }}>{errors.email}</span>}
+                {touched.email && errors.email && <span id="wh-email-error" style={{ fontSize: 12, color: 'var(--wh-dng)', marginTop: 4, display: 'block' }}>{errors.email}</span>}
               </div>
 
               {/* API Token */}
@@ -234,12 +367,13 @@ export function JiraConnection() {
                   }} />
                   <input
                     id="wh-auth-token"
-                    className={`wh-input ${errors.token ? 'error' : ''}`}
+                    className={`wh-input ${touched.token && errors.token ? 'error' : ''}`}
                     style={{ paddingLeft: 36, paddingRight: 40 }}
                     type={showToken ? 'text' : 'password'}
                     placeholder={status === 'connected' ? '••••••••••••••••' : 'Paste your Jira API token'}
                     value={authToken}
                     onChange={(e) => { setAuthToken(e.target.value); setErrors(p => ({ ...p, token: undefined })); }}
+                    onBlur={() => handleBlur('token')}
                     aria-describedby={errors.token ? 'wh-token-error' : undefined}
                   />
                   <button
@@ -250,11 +384,12 @@ export function JiraConnection() {
                       border: 'none', background: 'none', cursor: 'pointer', padding: 4,
                       color: 'var(--wh-tx4)',
                     }}
+                    aria-label={showToken ? 'Hide token' : 'Show token'}
                   >
                     {showToken ? <EyeOff style={{ width: 16, height: 16 }} /> : <Eye style={{ width: 16, height: 16 }} />}
                   </button>
                 </div>
-                {errors.token && <span id="wh-token-error" style={{ fontSize: 12, color: 'var(--wh-dng)', marginTop: 4, display: 'block' }}>{errors.token}</span>}
+                {touched.token && errors.token && <span id="wh-token-error" style={{ fontSize: 12, color: 'var(--wh-dng)', marginTop: 4, display: 'block' }}>{errors.token}</span>}
               </div>
 
               {/* Actions */}

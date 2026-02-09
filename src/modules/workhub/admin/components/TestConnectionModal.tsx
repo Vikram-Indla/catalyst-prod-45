@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { X, Check, AlertCircle, Loader2, Circle } from 'lucide-react';
 
 interface CheckResult {
@@ -18,12 +18,55 @@ interface TestConnectionModalProps {
 
 export function TestConnectionModal({ isOpen, onClose, checks, isRunning, error }: TestConnectionModalProps) {
   const [totalDuration, setTotalDuration] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(0);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (checks.length > 0) {
       setTotalDuration(checks.reduce((sum, c) => sum + c.duration_ms, 0));
     }
   }, [checks]);
+
+  // Staggered animation: reveal checks one by one
+  useEffect(() => {
+    if (!isOpen) { setVisibleCount(0); return; }
+    if (checks.length === 0) { setVisibleCount(0); return; }
+    if (visibleCount < checks.length) {
+      const timer = setTimeout(() => setVisibleCount(v => v + 1), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, checks.length, visibleCount]);
+
+  // Escape key handler
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape' && !isRunning) onClose();
+    // Focus trap
+    if (e.key === 'Tab' && modalRef.current) {
+      const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }, [isRunning, onClose]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      // Focus the close button on open
+      setTimeout(() => closeButtonRef.current?.focus(), 50);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isOpen, handleKeyDown]);
 
   if (!isOpen) return null;
 
@@ -32,17 +75,24 @@ export function TestConnectionModal({ isOpen, onClose, checks, isRunning, error 
   const hasFailed = checks.some(c => !c.passed);
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0, zIndex: 99999,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'rgba(0,0,0,0.4)',
-    }}
-    onClick={(e) => { if (e.target === e.currentTarget && !isRunning) onClose(); }}
+    <div
+      style={{
+        position: 'fixed', inset: 0, zIndex: 99999,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(2px)',
+      }}
+      onClick={(e) => { if (e.target === e.currentTarget && !isRunning) onClose(); }}
     >
-      <div style={{
-        width: 480, background: 'var(--wh-bg)', borderRadius: 'var(--wh-rad2)',
-        boxShadow: 'var(--wh-shm)', overflow: 'hidden',
-      }}>
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Testing Jira Connection"
+        style={{
+          width: 480, background: 'var(--wh-bg)', borderRadius: 12,
+          boxShadow: 'var(--wh-shm)', overflow: 'hidden',
+        }}
+      >
         {/* Header */}
         <div style={{
           padding: '16px 20px', borderBottom: '1px solid var(--wh-bdr)',
@@ -51,10 +101,16 @@ export function TestConnectionModal({ isOpen, onClose, checks, isRunning, error 
           <span style={{ fontFamily: 'var(--wh-fh)', fontWeight: 700, fontSize: 16, color: 'var(--wh-tx)' }}>
             Testing Jira Connection
           </span>
-          <button onClick={onClose} disabled={isRunning} style={{
-            border: 'none', background: 'none', cursor: isRunning ? 'not-allowed' : 'pointer',
-            color: 'var(--wh-tx3)', padding: 4,
-          }}>
+          <button
+            ref={closeButtonRef}
+            onClick={onClose}
+            disabled={isRunning}
+            aria-label="Close dialog"
+            style={{
+              border: 'none', background: 'none', cursor: isRunning ? 'not-allowed' : 'pointer',
+              color: 'var(--wh-tx3)', padding: 4,
+            }}
+          >
             <X style={{ width: 18, height: 18 }} />
           </button>
         </div>
@@ -74,17 +130,26 @@ export function TestConnectionModal({ isOpen, onClose, checks, isRunning, error 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {allCheckNames.map((name, idx) => {
               const check = checks.find(c => c.name === name);
+              const isRevealed = idx < visibleCount;
               const isCurrentlyRunning = isRunning && checks.length === idx && !hasFailed;
               const isSkipped = hasFailed && !check;
               const isPending = !check && !isCurrentlyRunning && !isSkipped;
 
               return (
-                <div key={name} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                <div
+                  key={name}
+                  style={{
+                    display: 'flex', alignItems: 'flex-start', gap: 12,
+                    opacity: check ? (isRevealed ? 1 : 0) : (isCurrentlyRunning ? 1 : isPending ? 0.4 : 0.4),
+                    transform: check && !isRevealed ? 'translateY(4px)' : 'translateY(0)',
+                    transition: 'opacity 0.3s ease, transform 0.3s ease',
+                  }}
+                >
                   {/* Icon */}
                   <div style={{ width: 22, height: 22, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {check?.passed ? (
+                    {check?.passed && isRevealed ? (
                       <Check style={{ width: 18, height: 18, color: 'var(--wh-suc)' }} />
-                    ) : check && !check.passed ? (
+                    ) : check && !check.passed && isRevealed ? (
                       <AlertCircle style={{ width: 18, height: 18, color: 'var(--wh-dng)' }} />
                     ) : isCurrentlyRunning ? (
                       <Loader2 style={{ width: 18, height: 18, color: 'var(--wh-pri)', animation: 'spin 1s linear infinite' }} />
@@ -96,21 +161,22 @@ export function TestConnectionModal({ isOpen, onClose, checks, isRunning, error 
                   {/* Content */}
                   <div style={{ flex: 1 }}>
                     <div style={{
-                      fontWeight: 600, fontSize: 13, color: check ? 'var(--wh-tx)' : 'var(--wh-tx4)',
+                      fontWeight: 600, fontSize: 13, color: check && isRevealed ? 'var(--wh-tx)' : 'var(--wh-tx4)',
                       fontFamily: 'var(--wh-fn)',
                     }}>
                       {name}
                     </div>
                     <div style={{
-                      fontSize: 12, color: check?.passed ? 'var(--wh-tx3)' : check ? 'var(--wh-dng)' : 'var(--wh-tx4)',
+                      fontSize: 12,
+                      color: check?.passed && isRevealed ? 'var(--wh-tx3)' : check && isRevealed ? 'var(--wh-dng)' : 'var(--wh-tx4)',
                       marginTop: 2, fontFamily: 'var(--wh-fn)',
                     }}>
-                      {check ? check.message : isCurrentlyRunning ? 'Checking...' : isSkipped ? 'Skipped' : 'Pending...'}
+                      {check && isRevealed ? check.message : isCurrentlyRunning ? 'Checking...' : isSkipped ? 'Skipped' : 'Pending...'}
                     </div>
                   </div>
 
                   {/* Duration */}
-                  {check && (
+                  {check && isRevealed && (
                     <span style={{
                       fontSize: 11, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)',
                       whiteSpace: 'nowrap',

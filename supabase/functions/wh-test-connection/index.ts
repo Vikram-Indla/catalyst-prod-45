@@ -145,10 +145,12 @@ serve(async (req) => {
         }
         if (res && res.ok) {
           const data = JSON.parse(lastBody)
+          const issueTotal = data.total ?? data.issues?.length ?? 0
           checks.push({
             name: 'Issue Read', passed: true,
-            message: `Can read issues (${data.total ?? data.issues?.length ?? 0} total)`,
-            duration_ms: Date.now() - c3Start
+            message: `Can read issues (${issueTotal} total)`,
+            duration_ms: Date.now() - c3Start,
+            data: { total: issueTotal }
           })
         } else {
           checks.push({
@@ -175,10 +177,12 @@ serve(async (req) => {
         )
         if (res.ok) {
           const data = await res.json()
+          const versionTotal = data.length
           checks.push({
             name: 'Version Read', passed: true,
-            message: `Can read versions (${data.length} in ${projects[0].key})`,
-            duration_ms: Date.now() - c4Start
+            message: `Can read versions (${versionTotal} in ${projects[0].key})`,
+            duration_ms: Date.now() - c4Start,
+            data: { total: versionTotal }
           })
         } else {
           checks.push({
@@ -233,6 +237,9 @@ serve(async (req) => {
     const permLevel = checks.find(c => c.name === 'Write Detection')?.data?.hasWrite
       ? 'read_write' : 'read_only'
 
+    const totalIssues = checks.find(c => c.name === 'Issue Read')?.data?.total ?? 0
+    const totalVersions = checks.find(c => c.name === 'Version Read')?.data?.total ?? 0
+
     await supabase.from('wh_jira_connection').update({
       status: allPassed ? 'connected' : 'error',
       last_tested_at: new Date().toISOString(),
@@ -240,6 +247,8 @@ serve(async (req) => {
       project_count: projectCount,
       accessible_projects: projects,
       permissions_level: permLevel,
+      total_issue_count: totalIssues,
+      total_version_count: totalVersions,
     }).eq('id', conn.id)
 
     return new Response(JSON.stringify({ success: allPassed, checks }), {
