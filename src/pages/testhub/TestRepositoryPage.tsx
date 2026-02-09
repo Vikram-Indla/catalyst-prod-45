@@ -325,6 +325,14 @@ export function TestRepositoryPage() {
     });
   };
 
+  const handleActionClick = (testCase: TestCase, rect: DOMRect) => {
+    setContextMenu({
+      x: rect.right - 180,
+      y: rect.bottom + 4,
+      testCase,
+    });
+  };
+
   const openEditModal = async (tc: RawTestCase) => {
     const { data: stepsData } = await supabase
       .from('th_test_steps')
@@ -883,9 +891,10 @@ export function TestRepositoryPage() {
                      onSelectAll={handleSelectAll}
                      onSelectOne={handleSelectOne}
                      onRowClick={handleRowClick}
-                     onContextMenu={handleContextMenu}
-                     sortColumn={sortColumn}
-                     sortDirection={sortDirection}
+                      onContextMenu={handleContextMenu}
+                      onActionClick={handleActionClick}
+                      sortColumn={sortColumn}
+                      sortDirection={sortDirection}
                      onSort={handleSort}
                    />
                  )}
