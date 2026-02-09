@@ -7,12 +7,21 @@ export interface IssueTypeStats {
   statuses: Array<{ status: string; count: number }>;
 }
 
+export interface ProjectStats {
+  name: string;
+  key: string;
+  count: number;
+  types: Array<{ type: string; count: number }>;
+  statuses: Array<{ status: string; count: number }>;
+}
+
 export interface IssueStatsResponse {
   success: boolean;
   total: number;
   scanned: number;
   types: IssueTypeStats[];
   statuses: Array<{ status: string; count: number }>;
+  projects: ProjectStats[];
 }
 
 export function useJiraIssueStats(enabled: boolean) {
