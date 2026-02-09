@@ -105,6 +105,7 @@ export function useAnalyticsData({ departmentFilter = 'all', viewScope = 'h1', y
           } : null,
           contract_end_date: ri.contract_end_date,
           country: countryData,
+          avatar_url: profile?.avatar_url || null,
         } as AnalyticsResource;
       });
     },

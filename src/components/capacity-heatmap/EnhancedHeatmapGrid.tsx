@@ -259,13 +259,17 @@ const EnhancedResourceRow = memo(function EnhancedResourceRow({
       {/* Resource info */}
       <div className="w-60 flex-shrink-0 px-4 py-3 border-r border-border flex items-center gap-3">
         <div className={cn(
-          "w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold ring-2 flex-shrink-0",
+          "w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold ring-2 flex-shrink-0 overflow-hidden",
           ringColor
         )} style={{ 
-          backgroundColor: `${CATALYST_COLORS.primary}15`,
+          backgroundColor: resource.avatarUrl ? 'transparent' : `${CATALYST_COLORS.primary}15`,
           color: CATALYST_COLORS.primary
         }}>
-          {resource.initials}
+          {resource.avatarUrl ? (
+            <img src={resource.avatarUrl} alt={resource.initials} className="w-full h-full object-cover" />
+          ) : (
+            resource.initials
+          )}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
