@@ -1,13 +1,24 @@
 import { useState, useRef, useEffect } from 'react';
-import { GripVertical, Paperclip, Copy, ArrowUp, Trash2, Plus, ChevronDown, Library } from 'lucide-react';
+import { GripVertical, Paperclip, Copy, ArrowUp, Trash2, Plus, ChevronDown, Library, X } from 'lucide-react';
 import { SharedStepsModal } from './SharedStepsModal';
 import { toast } from 'sonner';
 
-interface Step {
+export interface StepAttachment {
+  id?: string;
+  file?: File;
+  name: string;
+  size: number;
+  type: string;
+  url?: string;
+  uploading?: boolean;
+}
+
+export interface Step {
   id: string;
   action: string;
   expectedResult: string;
   sharedStepId?: string;
+  attachments?: StepAttachment[];
 }
 
 interface StepsEditorProps {
@@ -31,12 +42,12 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
   }, []);
 
   const addStep = () => {
-    onChange([...steps, { id: Date.now().toString(), action: '', expectedResult: '' }]);
+    onChange([...steps, { id: Date.now().toString(), action: '', expectedResult: '', attachments: [] }]);
     setDropdownOpen(false);
   };
 
   const insertSharedStep = (step: { action: string; expectedResult: string; sharedStepId: string }) => {
-    onChange([...steps, { id: Date.now().toString(), action: step.action, expectedResult: step.expectedResult, sharedStepId: step.sharedStepId }]);
+    onChange([...steps, { id: Date.now().toString(), action: step.action, expectedResult: step.expectedResult, sharedStepId: step.sharedStepId, attachments: [] }]);
   };
 
   const updateStep = (id: string, field: 'action' | 'expectedResult', value: string) => {
@@ -52,15 +63,71 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
     }
   };
 
-  const handleAttachFile = () => {
-    toast.info('File attachment coming soon');
+  const handleAttachFile = (stepId: string) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.multiple = true;
+    input.accept = 'image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv';
+    
+    input.onchange = async (e) => {
+      const files = (e.target as HTMLInputElement).files;
+      if (!files || files.length === 0) return;
+      
+      const newAttachments: StepAttachment[] = [];
+      
+      for (const file of Array.from(files)) {
+        // Validate file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+          toast.error(`${file.name} is too large (max 10MB)`);
+          continue;
+        }
+        
+        newAttachments.push({
+          file,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          uploading: false,
+        });
+      }
+      
+      if (newAttachments.length === 0) return;
+      
+      // Add to step's attachments
+      onChange(steps.map(step => {
+        if (step.id === stepId) {
+          return {
+            ...step,
+            attachments: [...(step.attachments || []), ...newAttachments],
+          };
+        }
+        return step;
+      }));
+      
+      toast.success(`${newAttachments.length} file(s) attached`);
+    };
+    
+    input.click();
+  };
+
+  const handleRemoveAttachment = (stepId: string, attachmentIndex: number) => {
+    onChange(steps.map(step => {
+      if (step.id === stepId) {
+        return {
+          ...step,
+          attachments: (step.attachments || []).filter((_, j) => j !== attachmentIndex),
+        };
+      }
+      return step;
+    }));
+    toast.success('Attachment removed');
   };
 
   const cloneStep = (id: string) => {
     const index = steps.findIndex(s => s.id === id);
     if (index !== -1) {
       const step = steps[index];
-      const newStep = { id: Date.now().toString(), action: step.action, expectedResult: step.expectedResult };
+      const newStep = { id: Date.now().toString(), action: step.action, expectedResult: step.expectedResult, attachments: [] };
       const newSteps = [...steps];
       newSteps.splice(index + 1, 0, newStep);
       onChange(newSteps);
@@ -71,7 +138,7 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
   const insertAbove = (id: string) => {
     const index = steps.findIndex(s => s.id === id);
     if (index !== -1) {
-      const newStep = { id: Date.now().toString(), action: '', expectedResult: '' };
+      const newStep = { id: Date.now().toString(), action: '', expectedResult: '', attachments: [] };
       const newSteps = [...steps];
       newSteps.splice(index, 0, newStep);
       onChange(newSteps);
@@ -248,6 +315,64 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
                     />
                   </div>
                 </div>
+
+                {/* Attachments display */}
+                {step.attachments && step.attachments.length > 0 && (
+                  <div style={{
+                    marginTop: 12,
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 8,
+                  }}>
+                    {step.attachments.map((att, attIndex) => (
+                      <div
+                        key={attIndex}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          padding: '4px 8px',
+                          backgroundColor: '#F1F5F9',
+                          borderRadius: 6,
+                          fontSize: 12,
+                        }}
+                      >
+                        <Paperclip size={12} style={{ color: '#64748B' }} />
+                        <span style={{ 
+                          color: '#334155', 
+                          maxWidth: 120, 
+                          overflow: 'hidden', 
+                          textOverflow: 'ellipsis', 
+                          whiteSpace: 'nowrap' 
+                        }}>
+                          {att.name}
+                        </span>
+                        <span style={{ color: '#94A3B8' }}>
+                          ({Math.round(att.size / 1024)}KB)
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveAttachment(step.id, attIndex)}
+                          style={{
+                            padding: 2,
+                            border: 'none',
+                            background: 'none',
+                            color: '#94A3B8',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            borderRadius: 4,
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.color = '#DC2626'}
+                          onMouseLeave={(e) => e.currentTarget.style.color = '#94A3B8'}
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Actions Column - TOP ALIGNED */}
@@ -261,7 +386,10 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
                 paddingTop: 16,
                 gap: 4,
               }}>
-                <ActionButton icon={Paperclip} title="Attach file" onClick={handleAttachFile} />
+                <AttachButton 
+                  onClick={() => handleAttachFile(step.id)} 
+                  count={step.attachments?.length || 0} 
+                />
                 <ActionButton icon={Copy} title="Clone step" onClick={() => cloneStep(step.id)} />
                 <ActionButton icon={ArrowUp} title="Insert above" onClick={() => insertAbove(step.id)} />
                 <ActionButton 
@@ -389,6 +517,60 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
         onInsert={insertSharedStep}
       />
     </>
+  );
+}
+
+function AttachButton({ onClick, count }: { onClick: () => void; count: number }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title="Attach file"
+      style={{
+        width: 32,
+        height: 32,
+        padding: 0,
+        border: '1px solid #E2E8F0',
+        borderRadius: 6,
+        backgroundColor: count > 0 ? '#EFF6FF' : '#FFFFFF',
+        color: count > 0 ? '#2563EB' : '#94A3B8',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        transition: 'all 0.15s',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = count > 0 ? '#DBEAFE' : '#F8FAFC';
+        e.currentTarget.style.borderColor = count > 0 ? '#93C5FD' : '#CBD5E1';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = count > 0 ? '#EFF6FF' : '#FFFFFF';
+        e.currentTarget.style.borderColor = '#E2E8F0';
+      }}
+    >
+      <Paperclip size={14} />
+      {count > 0 && (
+        <span style={{
+          position: 'absolute',
+          top: -4,
+          right: -4,
+          width: 16,
+          height: 16,
+          borderRadius: '50%',
+          backgroundColor: '#2563EB',
+          color: '#FFFFFF',
+          fontSize: 10,
+          fontWeight: 600,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          {count}
+        </span>
+      )}
+    </button>
   );
 }
 
