@@ -232,6 +232,8 @@ import DeliveryPlatforms from "./pages/admin/DeliveryPlatforms";
 import RiskSeverityLevels from "./pages/admin/RiskSeverityLevels";
 import { PlanHubGeneralSettings, PlanHubTemplates, PlanHubAIConfig, PlanHubActivityLog } from "./pages/admin/planhub";
 const WorkHubAdminPage = lazy(() => import("./modules/workhub/admin/pages/WorkHubAdmin"));
+const WorkHubSettingsLayout = lazy(() => import("./modules/workhub/admin/pages/WorkHubSettingsLayout"));
+const WorkHubComingSoon = lazy(() => import("./modules/workhub/admin/pages/WorkHubComingSoon"));
 
 const SoftwareLicensesPage = lazy(() => import("./modules/budget/components/SoftwareLicensesPage").then(m => ({ default: m.SoftwareLicensesPage })));
 import RoutesComponentsRegistry from "./pages/admin/RoutesComponentsRegistry";
@@ -1033,7 +1035,17 @@ const App = () => (
                 <Route path="slack" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SlackIntegrationPage /></Suspense>} />
                 {/* Enhanced Task List */}
                 <Route path="task-list" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TaskListPage /></Suspense>} />
-                <Route path="workhub-connection" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubAdminPage /></Suspense>} />
+                <Route path="workhub-connection" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
+                <Route path="workhub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubSettingsLayout /></Suspense>}>
+                  <Route index element={<Navigate to="jira-connection" replace />} />
+                  <Route path="jira-connection" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubAdminPage /></Suspense>} />
+                  <Route path="hierarchy-mapping" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
+                  <Route path="scheduling-rules" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
+                  <Route path="status-mapping" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
+                  <Route path="user-mapping" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
+                  <Route path="data-scope" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
+                  <Route path="sync-logs" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubComingSoon /></Suspense>} />
+                </Route>
               </Route>
 
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
