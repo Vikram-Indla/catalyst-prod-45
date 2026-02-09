@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { MoreVertical, ChevronUp, ChevronDown } from 'lucide-react';
 
 interface TestCase {
@@ -38,6 +39,7 @@ export function TestCasesTable({
   sortColumn,
   sortDirection,
 }: TestCasesTableProps) {
+  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const allSelected = testCases.length > 0 && testCases.every(tc => selectedIds.has(tc.id));
   const someSelected = testCases.some(tc => selectedIds.has(tc.id)) && !allSelected;
 
@@ -54,14 +56,14 @@ export function TestCasesTable({
     return date.toLocaleDateString();
   };
 
-  const getAvatarColor = (initials: string | null | undefined) => {
+  const getAvatarColor = (initials: string | null | undefined): string => {
     if (!initials) return '#94A3B8';
     const letter = initials.charAt(0).toUpperCase();
-    if (letter <= 'E') return '#3B82F6';
-    if (letter <= 'J') return '#10B981';
-    if (letter <= 'O') return '#8B5CF6';
-    if (letter <= 'T') return '#F97316';
-    return '#EC4899';
+    if (letter <= 'E') return '#3B82F6'; // Blue
+    if (letter <= 'J') return '#10B981'; // Green
+    if (letter <= 'O') return '#8B5CF6'; // Purple
+    if (letter <= 'T') return '#F97316'; // Orange
+    return '#EC4899'; // Pink
   };
 
   const SortIcon = ({ column }: { column: string }) => {
@@ -78,12 +80,33 @@ export function TestCasesTable({
 
   const handleActionClick = (e: React.MouseEvent, tc: TestCase) => {
     e.stopPropagation();
-    // Simulate right-click at button position
     onContextMenu?.({ 
       ...e, 
       clientX: e.currentTarget.getBoundingClientRect().left,
       clientY: e.currentTarget.getBoundingClientRect().bottom,
     } as React.MouseEvent, tc);
+  };
+
+  // Header cell styles
+  const headerCellStyle: React.CSSProperties = {
+    height: 44,
+    padding: '0 12px',
+    backgroundColor: '#F8FAFC',
+    borderBottom: '1px solid #E2E8F0',
+    fontSize: 11,
+    fontWeight: 600,
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    color: '#64748B',
+    verticalAlign: 'middle',
+  };
+
+  // Body cell base styles
+  const bodyCellStyle: React.CSSProperties = {
+    height: 36,
+    padding: '0 12px',
+    borderBottom: '1px solid #E2E8F0',
+    verticalAlign: 'middle',
   };
 
   return (
@@ -99,14 +122,9 @@ export function TestCasesTable({
         tableLayout: 'fixed',
       }}>
         <thead>
-          <tr style={{ backgroundColor: '#F8FAFC' }}>
-            <th style={{
-              width: 44,
-              height: 44,
-              padding: '0 12px',
-              borderBottom: '1px solid #E2E8F0',
-              textAlign: 'center',
-            }}>
+          <tr>
+            {/* Checkbox */}
+            <th style={{ ...headerCellStyle, width: 44, textAlign: 'center' }}>
               <input
                 type="checkbox"
                 checked={allSelected}
@@ -115,168 +133,90 @@ export function TestCasesTable({
                 style={{ width: 16, height: 16, cursor: 'pointer' }}
               />
             </th>
-            <th onClick={() => onSort('caseKey')} style={{
-              width: 90,
-              height: 44,
-              padding: '0 12px',
-              borderBottom: '1px solid #E2E8F0',
-              textAlign: 'left',
-              fontSize: 11,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: '#64748B',
-              cursor: 'pointer',
-              userSelect: 'none',
-            }}>
+            {/* ID */}
+            <th 
+              onClick={() => onSort('caseKey')} 
+              style={{ ...headerCellStyle, width: 90, textAlign: 'left', cursor: 'pointer', userSelect: 'none' }}
+            >
               <span style={{ display: 'flex', alignItems: 'center' }}>
                 ID <SortIcon column="caseKey" />
               </span>
             </th>
-            <th onClick={() => onSort('title')} style={{
-              height: 44,
-              padding: '0 12px',
-              borderBottom: '1px solid #E2E8F0',
-              textAlign: 'left',
-              fontSize: 11,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: '#64748B',
-              cursor: 'pointer',
-              userSelect: 'none',
-            }}>
+            {/* Title */}
+            <th 
+              onClick={() => onSort('title')} 
+              style={{ ...headerCellStyle, textAlign: 'left', cursor: 'pointer', userSelect: 'none' }}
+            >
               <span style={{ display: 'flex', alignItems: 'center' }}>
                 Title <SortIcon column="title" />
               </span>
             </th>
-            <th onClick={() => onSort('priority')} style={{
-              width: 80,
-              height: 44,
-              padding: '0 12px',
-              borderBottom: '1px solid #E2E8F0',
-              textAlign: 'left',
-              fontSize: 11,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: '#64748B',
-              cursor: 'pointer',
-              userSelect: 'none',
-            }}>
+            {/* Priority */}
+            <th 
+              onClick={() => onSort('priority')} 
+              style={{ ...headerCellStyle, width: 80, textAlign: 'left', cursor: 'pointer', userSelect: 'none' }}
+            >
               <span style={{ display: 'flex', alignItems: 'center' }}>
                 Priority <SortIcon column="priority" />
               </span>
             </th>
-            <th style={{
-              width: 100,
-              height: 44,
-              padding: '0 12px',
-              borderBottom: '1px solid #E2E8F0',
-              textAlign: 'left',
-              fontSize: 11,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: '#64748B',
-            }}>Type</th>
-            <th onClick={() => onSort('status')} style={{
-              width: 100,
-              height: 44,
-              padding: '0 12px',
-              borderBottom: '1px solid #E2E8F0',
-              textAlign: 'left',
-              fontSize: 11,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: '#64748B',
-              cursor: 'pointer',
-              userSelect: 'none',
-            }}>
+            {/* Type */}
+            <th style={{ ...headerCellStyle, width: 100, textAlign: 'left' }}>
+              Type
+            </th>
+            {/* Status */}
+            <th 
+              onClick={() => onSort('status')} 
+              style={{ ...headerCellStyle, width: 100, textAlign: 'left', cursor: 'pointer', userSelect: 'none' }}
+            >
               <span style={{ display: 'flex', alignItems: 'center' }}>
                 Status <SortIcon column="status" />
               </span>
             </th>
-            <th style={{
-              width: 90,
-              height: 44,
-              padding: '0 12px',
-              borderBottom: '1px solid #E2E8F0',
-              textAlign: 'left',
-              fontSize: 11,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: '#64748B',
-            }}>Auto</th>
-            <th style={{
-              width: 50,
-              height: 44,
-              padding: '0 12px',
-              borderBottom: '1px solid #E2E8F0',
-              textAlign: 'center',
-              fontSize: 11,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: '#64748B',
-            }}>Owner</th>
-            <th onClick={() => onSort('updatedAt')} style={{
-              width: 90,
-              height: 44,
-              padding: '0 12px',
-              borderBottom: '1px solid #E2E8F0',
-              textAlign: 'left',
-              fontSize: 11,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: '#64748B',
-              cursor: 'pointer',
-              userSelect: 'none',
-            }}>
+            {/* Auto */}
+            <th style={{ ...headerCellStyle, width: 90, textAlign: 'left' }}>
+              Auto
+            </th>
+            {/* Owner - separate column */}
+            <th style={{ ...headerCellStyle, width: 50, textAlign: 'center' }}>
+              Owner
+            </th>
+            {/* Updated - separate column */}
+            <th 
+              onClick={() => onSort('updatedAt')} 
+              style={{ ...headerCellStyle, width: 90, textAlign: 'left', cursor: 'pointer', userSelect: 'none' }}
+            >
               <span style={{ display: 'flex', alignItems: 'center' }}>
                 Updated <SortIcon column="updatedAt" />
               </span>
             </th>
-            <th style={{
-              width: 50,
-              height: 44,
-              padding: '0 12px',
-              borderBottom: '1px solid #E2E8F0',
-            }}></th>
+            {/* Actions */}
+            <th style={{ ...headerCellStyle, width: 50 }}></th>
           </tr>
         </thead>
         <tbody>
           {testCases.map((tc) => {
             const isSelected = selectedIds.has(tc.id);
+            const isHovered = hoveredRowId === tc.id;
+            
             return (
               <tr
                 key={tc.id}
                 onClick={() => onRowClick(tc)}
                 onContextMenu={(e) => handleContextMenu(e, tc)}
+                onMouseEnter={() => setHoveredRowId(tc.id)}
+                onMouseLeave={() => setHoveredRowId(null)}
                 style={{
                   height: 36,
-                  backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.06)' : '#FFFFFF',
+                  backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.06)' : isHovered ? '#F1F5F9' : '#FFFFFF',
                   cursor: 'pointer',
                   transition: 'background-color 0.1s',
                 }}
-                onMouseEnter={(e) => {
-                  if (!isSelected) e.currentTarget.style.backgroundColor = '#F1F5F9';
-                }}
-                onMouseLeave={(e) => {
-                  if (!isSelected) e.currentTarget.style.backgroundColor = '#FFFFFF';
-                }}
               >
+                {/* Checkbox */}
                 <td 
                   onClick={(e) => e.stopPropagation()}
-                  style={{
-                    height: 36,
-                    padding: '0 12px',
-                    borderBottom: '1px solid #E2E8F0',
-                    textAlign: 'center',
-                  }}
+                  style={{ ...bodyCellStyle, textAlign: 'center' }}
                 >
                   <input
                     type="checkbox"
@@ -285,42 +225,45 @@ export function TestCasesTable({
                     style={{ width: 16, height: 16, cursor: 'pointer' }}
                   />
                 </td>
+                
+                {/* ID */}
                 <td style={{
-                  height: 36,
-                  padding: '0 12px',
-                  borderBottom: '1px solid #E2E8F0',
+                  ...bodyCellStyle,
                   fontFamily: 'Consolas, Monaco, monospace',
                   fontSize: 12,
                   color: '#64748B',
-                }}>{tc.caseKey}</td>
+                }}>
+                  {tc.caseKey}
+                </td>
+                
+                {/* Title */}
                 <td style={{
-                  height: 36,
-                  padding: '0 12px',
-                  borderBottom: '1px solid #E2E8F0',
+                  ...bodyCellStyle,
                   fontWeight: 500,
                   color: '#0F172A',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   maxWidth: 300,
-                }}>{tc.title}</td>
-                <td style={{
-                  height: 36,
-                  padding: '0 12px',
-                  borderBottom: '1px solid #E2E8F0',
-                  fontWeight: 600,
-                  fontSize: 13,
-                  color: tc.priority === 'critical' ? '#991B1B' :
-                         tc.priority === 'high' ? '#C2410C' :
-                         tc.priority === 'medium' ? '#A16207' : '#64748B',
                 }}>
-                  {tc.priority.charAt(0).toUpperCase() + tc.priority.slice(1)}
+                  {tc.title}
                 </td>
-                <td style={{
-                  height: 36,
-                  padding: '0 12px',
-                  borderBottom: '1px solid #E2E8F0',
-                }}>
+                
+                {/* Priority - Bold colored text */}
+                <td style={bodyCellStyle}>
+                  <span style={{
+                    fontWeight: 600,
+                    fontSize: 13,
+                    color: tc.priority === 'critical' ? '#991B1B' :
+                           tc.priority === 'high' ? '#C2410C' :
+                           tc.priority === 'medium' ? '#A16207' : '#64748B',
+                  }}>
+                    {tc.priority.charAt(0).toUpperCase() + tc.priority.slice(1)}
+                  </span>
+                </td>
+                
+                {/* Type - Pill badge */}
+                <td style={bodyCellStyle}>
                   <span style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -338,14 +281,12 @@ export function TestCasesTable({
                            tc.type === 'performance' ? '#B45309' :
                            tc.type === 'api' ? '#7C3AED' : '#475569',
                   }}>
-                    {tc.type.charAt(0).toUpperCase() + tc.type.slice(1)}
+                    {tc.type.toUpperCase()}
                   </span>
                 </td>
-                <td style={{
-                  height: 36,
-                  padding: '0 12px',
-                  borderBottom: '1px solid #E2E8F0',
-                }}>
+                
+                {/* Status - Colored pill badge */}
+                <td style={bodyCellStyle}>
                   <span style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -363,14 +304,12 @@ export function TestCasesTable({
                            tc.status === 'ready' ? '#2563EB' :
                            tc.status === 'deprecated' ? '#DC2626' : '#64748B',
                   }}>
-                    {tc.status.charAt(0).toUpperCase() + tc.status.slice(1)}
+                    {tc.status.toUpperCase()}
                   </span>
                 </td>
-                <td style={{
-                  height: 36,
-                  padding: '0 12px',
-                  borderBottom: '1px solid #E2E8F0',
-                }}>
+                
+                {/* Auto - Pill badge */}
+                <td style={bodyCellStyle}>
                   <span style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -386,17 +325,14 @@ export function TestCasesTable({
                     color: tc.automation === 'automated' ? '#059669' :
                            tc.automation === 'planned' ? '#2563EB' : '#64748B',
                   }}>
-                    {tc.automation === 'automated' ? 'Auto' : 
-                     tc.automation === 'planned' ? 'Plan' : 'Manual'}
+                    {tc.automation === 'automated' ? 'AUTO' : 
+                     tc.automation === 'planned' ? 'PLAN' : 'MANUAL'}
                   </span>
                 </td>
-                <td style={{
-                  height: 36,
-                  padding: '0 12px',
-                  borderBottom: '1px solid #E2E8F0',
-                  textAlign: 'center',
-                }}>
-                  {tc.ownerInitials && (
+                
+                {/* Owner - Avatar with colors based on initials */}
+                <td style={{ ...bodyCellStyle, textAlign: 'center' }}>
+                  {tc.ownerInitials ? (
                     <div
                       title={tc.ownerName || ''}
                       style={{
@@ -414,23 +350,22 @@ export function TestCasesTable({
                     >
                       {tc.ownerInitials}
                     </div>
+                  ) : (
+                    <span style={{ color: '#94A3B8', fontSize: 12 }}>—</span>
                   )}
                 </td>
-                <td style={{
-                  height: 36,
-                  padding: '0 12px',
-                  borderBottom: '1px solid #E2E8F0',
-                  fontSize: 12,
-                  color: '#94A3B8',
-                }}>{formatRelativeTime(tc.updatedAt)}</td>
+                
+                {/* Updated - Gray relative time */}
+                <td style={bodyCellStyle}>
+                  <span style={{ fontSize: 12, color: '#94A3B8' }}>
+                    {formatRelativeTime(tc.updatedAt)}
+                  </span>
+                </td>
+                
+                {/* Actions - Visible on hover */}
                 <td 
                   onClick={(e) => e.stopPropagation()}
-                  style={{
-                    height: 36,
-                    padding: '0 12px',
-                    borderBottom: '1px solid #E2E8F0',
-                    textAlign: 'center',
-                  }}
+                  style={{ ...bodyCellStyle, textAlign: 'center' }}
                 >
                   <button 
                     onClick={(e) => handleActionClick(e, tc)}
@@ -446,6 +381,8 @@ export function TestCasesTable({
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      opacity: isHovered ? 1 : 0.5,
+                      transition: 'opacity 0.15s, background-color 0.15s',
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = '#F1F5F9';
