@@ -265,17 +265,24 @@ export function TestRepositoryPage() {
     }
   };
 
-  const handleRowClick = async (testCase: TestCase) => {
-    const { data: fullTC } = await supabase
-      .from('th_test_cases')
-      .select('*')
-      .eq('id', testCase.id)
-      .single();
-
-    if (fullTC) {
-      setSelectedTestCase(fullTC as RawTestCase);
-      setIsViewModalOpen(true);
-    }
+  const handleRowClick = (testCase: TestCase) => {
+    // Use already-loaded data instead of fetching again
+    const rawTC: RawTestCase = {
+      id: testCase.id,
+      case_key: testCase.caseKey,
+      title: testCase.title,
+      objective: testCase.objective || null,
+      preconditions: testCase.preconditions || null,
+      folder_id: testCase.folderId || null,
+      priority: testCase.priority,
+      type: testCase.type,
+      status: testCase.status,
+      automation: testCase.automation,
+      version: testCase.version || 1,
+      updated_at: testCase.updatedAt,
+    };
+    setSelectedTestCase(rawTC);
+    setIsViewModalOpen(true);
   };
 
   const handleContextMenu = (e: React.MouseEvent, testCase: TestCase) => {
