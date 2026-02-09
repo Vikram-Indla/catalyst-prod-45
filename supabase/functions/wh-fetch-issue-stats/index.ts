@@ -36,31 +36,27 @@ serve(async (req) => {
     const authHeader = 'Basic ' + btoa(`${conn.auth_email}:${conn.auth_token_encrypted}`)
     const headers = { 'Authorization': authHeader, 'Accept': 'application/json', 'Content-Type': 'application/json' }
 
-    // Fetch issue counts grouped by issuetype using JQL search
-    // We'll use multiple JQL queries to get type+status breakdown
+    // Fetch issue counts grouped by issuetype and project using JQL search
     const jql = 'updated >= -90d ORDER BY updated DESC'
+    const fetchFields = ['issuetype', 'status', 'project']
 
-    // Get issue type counts via POST search
     let issuesByType: Record<string, { count: number; statuses: Record<string, number> }> = {}
-    let totalCount = 0
+    let issuesByProject: Record<string, { key: string; count: number; types: Record<string, number>; statuses: Record<string, number> }> = {}
+    let apiTotal = 0
     let startAt = 0
     const maxResults = 100
     let hasMore = true
 
     while (hasMore) {
-      // Try multiple search approaches (same resilience as wh-test-connection)
       const searchApproaches = [
-        // 1. GET /rest/api/3/search/jql (new Jira Cloud endpoint)
-        () => fetch(`${base}/rest/api/3/search/jql?jql=${encodeURIComponent(jql)}&maxResults=${maxResults}&startAt=${startAt}&fields=issuetype,status`, { headers }),
-        // 2. POST /rest/api/3/search/jql
+        () => fetch(`${base}/rest/api/3/search/jql?jql=${encodeURIComponent(jql)}&maxResults=${maxResults}&startAt=${startAt}&fields=${fetchFields.join(',')}`, { headers }),
         () => fetch(`${base}/rest/api/3/search/jql`, {
           method: 'POST', headers,
-          body: JSON.stringify({ jql, maxResults, startAt, fields: ['issuetype', 'status'] })
+          body: JSON.stringify({ jql, maxResults, startAt, fields: fetchFields })
         }),
-        // 3. POST /rest/api/3/search (legacy but not yet removed on all instances)
         () => fetch(`${base}/rest/api/3/search`, {
           method: 'POST', headers,
-          body: JSON.stringify({ jql, maxResults, startAt, fields: ['issuetype', 'status'] })
+          body: JSON.stringify({ jql, maxResults, startAt, fields: fetchFields })
         }),
       ]
 
@@ -78,18 +74,37 @@ serve(async (req) => {
       }
 
       const data = JSON.parse(body)
-      processIssues(data.issues || [], issuesByType)
-      totalCount = data.total || 0
+      const issues = data.issues || []
+      processIssues(issues, issuesByType)
+      processIssuesByProject(issues, issuesByProject)
+      apiTotal = data.total || apiTotal
       startAt += maxResults
-      hasMore = startAt < totalCount && startAt < 500
+      // Use processedCount to determine pagination if apiTotal is 0
+      const processedCount = Object.values(issuesByType).reduce((sum, t) => sum + t.count, 0)
+      hasMore = issues.length === maxResults && startAt < 500
     }
 
-    // Build summary
+    // Calculate actual scanned count from processed data
+    const scannedCount = Object.values(issuesByType).reduce((sum, t) => sum + t.count, 0)
+    const totalCount = apiTotal > 0 ? apiTotal : scannedCount
+
+    // Build type summary
     const typeSummary = Object.entries(issuesByType).map(([type, info]) => ({
       type,
       count: info.count,
       statuses: Object.entries(info.statuses).map(([status, count]) => ({ status, count }))
         .sort((a, b) => b.count - a.count)
+    })).sort((a, b) => b.count - a.count)
+
+    // Build project summary
+    const projectSummary = Object.entries(issuesByProject).map(([name, info]) => ({
+      name,
+      key: info.key,
+      count: info.count,
+      types: Object.entries(info.types).map(([type, count]) => ({ type, count }))
+        .sort((a, b) => b.count - a.count),
+      statuses: Object.entries(info.statuses).map(([status, count]) => ({ status, count }))
+        .sort((a, b) => b.count - a.count),
     })).sort((a, b) => b.count - a.count)
 
     // Aggregate status totals
@@ -111,9 +126,10 @@ serve(async (req) => {
     return new Response(JSON.stringify({
       success: true,
       total: totalCount,
-      scanned: Math.min(startAt, totalCount),
+      scanned: scannedCount,
       types: typeSummary,
       statuses: statusSummary,
+      projects: projectSummary,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
@@ -139,5 +155,24 @@ function processIssues(
     }
     issuesByType[typeName].count++
     issuesByType[typeName].statuses[statusName] = (issuesByType[typeName].statuses[statusName] || 0) + 1
+  }
+}
+
+function processIssuesByProject(
+  issues: any[],
+  issuesByProject: Record<string, { key: string; count: number; types: Record<string, number>; statuses: Record<string, number> }>
+) {
+  for (const issue of issues) {
+    const projectName = issue.fields?.project?.name || 'Unknown'
+    const projectKey = issue.fields?.project?.key || '?'
+    const typeName = issue.fields?.issuetype?.name || 'Unknown'
+    const statusName = issue.fields?.status?.name || 'Unknown'
+
+    if (!issuesByProject[projectName]) {
+      issuesByProject[projectName] = { key: projectKey, count: 0, types: {}, statuses: {} }
+    }
+    issuesByProject[projectName].count++
+    issuesByProject[projectName].types[typeName] = (issuesByProject[projectName].types[typeName] || 0) + 1
+    issuesByProject[projectName].statuses[statusName] = (issuesByProject[projectName].statuses[statusName] || 0) + 1
   }
 }
