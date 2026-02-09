@@ -15,7 +15,8 @@ import {
   Wand2,
   Bell,
   Wallet,
-  Calendar
+  Calendar,
+  Cable
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -101,12 +102,17 @@ const adminPockets = [
     ],
   },
   {
+    id: 'workhub',
+    label: 'WorkHub',
+    icon: Cable,
+    path: '/admin/workhub',
+  },
+  {
     id: 'integrations',
     label: 'Integrations',
     icon: Link2,
     path: '/admin/integrations-hub',
     children: [
-      { label: 'WorkHub', path: '/admin/workhub' },
       { label: 'Slack', path: '/admin/slack' },
       { label: 'Import Data', path: '/admin/import-data' },
     ],
