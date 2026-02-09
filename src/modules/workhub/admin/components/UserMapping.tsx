@@ -17,7 +17,6 @@ function tokenize(name: string): string[] {
   return name.toLowerCase().trim().split(/\s+/).filter(Boolean)
 }
 
-/** Simple bigram similarity (0–1) */
 function bigramSimilarity(a: string, b: string): number {
   const na = normalizeStr(a)
   const nb = normalizeStr(b)
@@ -32,44 +31,36 @@ function bigramSimilarity(a: string, b: string): number {
   return (2 * overlap) / (bigramsA.size + bigramsB.size)
 }
 
-/** Score how well a Catalyst profile matches a Jira display name */
 function matchScore(jiraName: string, catalystName: string): number {
-  // Exact normalized match
   if (normalizeStr(jiraName) === normalizeStr(catalystName)) return 1
-
   const jTokens = tokenize(jiraName)
   const cTokens = tokenize(catalystName)
-
-  // Token overlap: check if any first/last name tokens match
   let tokenMatches = 0
   for (const jt of jTokens) {
     for (const ct of cTokens) {
       if (jt === ct) { tokenMatches++; break }
-      // Prefix match (e.g., "Abdulrhman" vs "Abdulrahman")
       if (jt.length > 3 && ct.length > 3 && (jt.startsWith(ct.slice(0, 4)) || ct.startsWith(jt.slice(0, 4)))) {
         tokenMatches += 0.7
         break
       }
     }
   }
-
   const tokenScore = jTokens.length > 0 ? tokenMatches / Math.max(jTokens.length, cTokens.length) : 0
   const bigram = bigramSimilarity(jiraName, catalystName)
-
   return tokenScore * 0.6 + bigram * 0.4
 }
 
 function findBestMatch(
-  jiraName: string,
-  profiles: CatalystProfileWithDept[],
+  catalystName: string,
+  jiraUsers: JiraUserMapping[],
   threshold = 0.35,
-): { profile: CatalystProfileWithDept; score: number } | null {
-  let best: { profile: CatalystProfileWithDept; score: number } | null = null
-  for (const p of profiles) {
-    if (!p.full_name) continue
-    const s = matchScore(jiraName, p.full_name)
+): { jiraUser: JiraUserMapping; score: number } | null {
+  let best: { jiraUser: JiraUserMapping; score: number } | null = null
+  for (const j of jiraUsers) {
+    if (!j.jira_display_name) continue
+    const s = matchScore(j.jira_display_name, catalystName)
     if (s >= threshold && (!best || s > best.score)) {
-      best = { profile: p, score: s }
+      best = { jiraUser: j, score: s }
     }
   }
   return best
@@ -83,15 +74,21 @@ const getInitials = (name: string) =>
 const AVATAR_COLORS = ['#8B5CF6', '#06B6D4', '#EC4899', '#F97316', '#14B8A6', '#6366F1']
 const getAvatarColor = (name: string) => AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length]
 
-const Avatar = ({ name, size = 24 }: { name: string; size?: number }) => (
-  <span style={{
-    width: size, height: size, borderRadius: '50%', display: 'inline-flex',
-    alignItems: 'center', justifyContent: 'center', fontSize: size * 0.38,
-    fontWeight: 700, color: '#fff', background: getAvatarColor(name), flexShrink: 0,
-  }}>
-    {getInitials(name)}
-  </span>
+const Avatar = ({ name, url, size = 24 }: { name: string; url?: string | null; size?: number }) => (
+  url ? (
+    <img src={url} alt={name} style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+  ) : (
+    <span style={{
+      width: size, height: size, borderRadius: '50%', display: 'inline-flex',
+      alignItems: 'center', justifyContent: 'center', fontSize: size * 0.38,
+      fontWeight: 700, color: '#fff', background: getAvatarColor(name), flexShrink: 0,
+    }}>
+      {getInitials(name)}
+    </span>
+  )
 )
+
+type ViewMode = 'all' | 'unmapped'
 
 // ═══ COMPONENT ═══
 
@@ -105,6 +102,7 @@ export function UserMapping() {
 
   const [departmentFilter, setDepartmentFilter] = useState<string>('all')
   const [searchText, setSearchText] = useState('')
+  const [viewMode, setViewMode] = useState<ViewMode>('all')
   const [localMappings, setLocalMappings] = useState<Record<string, string | null>>({})
   const [initialized, setInitialized] = useState(false)
 
@@ -118,15 +116,24 @@ export function UserMapping() {
     }
   }, [jiraUsers, initialized])
 
-  // Filter Catalyst profiles by department
-  const filteredProfiles = useMemo(() => {
+  // Reverse map: catalyst profile id -> jira mapping id
+  const catalystToJira = useMemo(() => {
+    const map: Record<string, string> = {}
+    Object.entries(localMappings).forEach(([jiraId, profileId]) => {
+      if (profileId) map[profileId] = jiraId
+    })
+    return map
+  }, [localMappings])
+
+  // Filter profiles by department
+  const deptFilteredProfiles = useMemo(() => {
     if (departmentFilter === 'all') return profiles
     return profiles.filter(p => p.department_id === departmentFilter)
   }, [profiles, departmentFilter])
 
-  // Build rows: one row per Catalyst profile (filtered), with Jira suggestion
+  // Build rows for the main table
   const rows = useMemo(() => {
-    let base = filteredProfiles
+    let base = deptFilteredProfiles
 
     if (searchText.trim()) {
       const q = searchText.toLowerCase()
@@ -137,32 +144,34 @@ export function UserMapping() {
     }
 
     return base.map(profile => {
-      // Check if already mapped
-      const existingMapping = jiraUsers.find(j => localMappings[j.id] === profile.id)
-      // Find best fuzzy match from Jira users
-      const suggestion = findBestMatch(profile.full_name || '', jiraUsers.map(j => ({
-        id: j.id,
-        full_name: j.jira_display_name,
-        email: j.jira_email,
-        role: null,
-        avatar_url: j.jira_avatar_url,
-        department_id: null,
-        department_name: null,
-      })))
+      const mappedJiraId = catalystToJira[profile.id]
+      const existingJiraMapping = mappedJiraId ? jiraUsers.find(j => j.id === mappedJiraId) || null : null
+      const isMapped = !!existingJiraMapping
 
-      return {
-        profile,
-        existingJiraMapping: existingMapping || null,
-        suggestedJira: suggestion ? {
-          jiraUser: jiraUsers.find(j => j.id === suggestion.profile.id)!,
-          score: suggestion.score,
-        } : null,
-      }
+      const suggestion = !isMapped
+        ? findBestMatch(profile.full_name || '', jiraUsers)
+        : null
+
+      return { profile, existingJiraMapping, suggestedJira: suggestion, isMapped }
     })
-  }, [filteredProfiles, jiraUsers, localMappings, searchText])
+  }, [deptFilteredProfiles, jiraUsers, catalystToJira, searchText])
+
+  // Filtered by view mode
+  const visibleRows = useMemo(() => {
+    if (viewMode === 'unmapped') return rows.filter(r => !r.isMapped)
+    return rows
+  }, [rows, viewMode])
+
+  const unmappedProfiles = useMemo(() => rows.filter(r => !r.isMapped), [rows])
 
   const handleAcceptSuggestion = (profileId: string, jiraUserId: string) => {
-    setLocalMappings(prev => ({ ...prev, [jiraUserId]: profileId }))
+    // Clear any previous mapping for this jira user
+    setLocalMappings(prev => {
+      const next = { ...prev }
+      // Remove old catalyst mapping if this jira user was mapped to someone else
+      next[jiraUserId] = profileId
+      return next
+    })
   }
 
   const handleClearMapping = (jiraUserId: string) => {
@@ -186,14 +195,17 @@ export function UserMapping() {
     try {
       const result = await autoMatch.mutateAsync()
       toast.success(`Auto-matched ${result.matched} users`)
-      setInitialized(false) // re-load
+      setInitialized(false)
     } catch {
       toast.error('Auto-match failed')
     }
   }
 
-  const mappedCount = Object.values(localMappings).filter(Boolean).length
-  const unmappedJiraCount = jiraUsers.filter(j => !localMappings[j.id]).length
+  const mappedCount = rows.filter(r => r.isMapped).length
+  const unmappedCount = rows.filter(r => !r.isMapped).length
+  const totalUnmappedAll = useMemo(() => {
+    return profiles.filter(p => !catalystToJira[p.id]).length
+  }, [profiles, catalystToJira])
 
   if (isLoading) {
     return <div style={{ padding: 40, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>Loading...</div>
@@ -201,6 +213,9 @@ export function UserMapping() {
 
   const cardBg = '#fff'
   const borderColor = '#E2E8F0'
+
+  // Available (unmapped) Jira users for manual dropdown
+  const availableJiraUsers = jiraUsers.filter(j => !Object.values(localMappings).includes(j.id) || !localMappings[j.id])
 
   return (
     <div style={{ maxWidth: 1200, fontFamily: 'Inter, sans-serif' }}>
@@ -217,15 +232,23 @@ export function UserMapping() {
       {/* Stats bar */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
         {[
-          { label: 'Catalyst Profiles', value: filteredProfiles.length, color: '#2563EB' },
-          { label: 'Jira Users', value: jiraUsers.length, color: '#8B5CF6' },
-          { label: 'Mapped', value: mappedCount, color: '#10B981' },
-          { label: 'Unmapped Jira', value: unmappedJiraCount, color: '#F59E0B' },
+          { label: 'Catalyst Profiles', value: deptFilteredProfiles.length, color: '#2563EB', mode: 'all' as ViewMode },
+          { label: 'Jira Users', value: jiraUsers.length, color: '#8B5CF6', mode: null },
+          { label: 'Mapped', value: mappedCount, color: '#10B981', mode: null },
+          { label: 'Unmapped', value: unmappedCount, color: '#F59E0B', mode: 'unmapped' as ViewMode },
         ].map(s => (
-          <div key={s.label} style={{
-            background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 8,
-            padding: '10px 16px', flex: 1, display: 'flex', alignItems: 'center', gap: 10,
-          }}>
+          <div
+            key={s.label}
+            onClick={s.mode ? () => setViewMode(s.mode!) : undefined}
+            style={{
+              background: viewMode === s.mode ? 'rgba(37,99,235,0.04)' : cardBg,
+              border: `1px solid ${viewMode === s.mode ? '#93C5FD' : borderColor}`,
+              borderRadius: 8, padding: '10px 16px', flex: 1,
+              display: 'flex', alignItems: 'center', gap: 10,
+              cursor: s.mode ? 'pointer' : 'default',
+              transition: 'all .15s',
+            }}
+          >
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: s.color, flexShrink: 0 }} />
             <div>
               <div style={{ fontSize: 18, fontWeight: 700, color: '#0F172A' }}>{s.value}</div>
@@ -234,6 +257,54 @@ export function UserMapping() {
           </div>
         ))}
       </div>
+
+      {/* Unmapped Resources Widget */}
+      {viewMode === 'unmapped' && unmappedProfiles.length > 0 && (
+        <div style={{
+          background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 8,
+          padding: 16, marginBottom: 16,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 16 }}>⚠️</span>
+              <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 13, fontWeight: 700, color: '#92400E' }}>
+                {unmappedCount} Unmapped Catalyst Resource{unmappedCount !== 1 ? 's' : ''}
+              </span>
+              {departmentFilter !== 'all' && (
+                <span style={{
+                  fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
+                  background: 'rgba(146,64,14,0.08)', color: '#92400E',
+                }}>
+                  {departments.find(d => d.id === departmentFilter)?.name || 'Filtered'}
+                </span>
+              )}
+            </div>
+            <span style={{ fontSize: 10, color: '#B45309' }}>
+              {totalUnmappedAll} total unmapped across all departments
+            </span>
+          </div>
+          <p style={{ fontSize: 11, color: '#92400E', margin: '0 0 12px', lineHeight: 1.5 }}>
+            These Catalyst users have no linked Jira account. Map them manually using the dropdown in the table below, or use Auto-Match to link by email.
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {unmappedProfiles.slice(0, 20).map(r => (
+              <span key={r.profile.id} style={{
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                background: '#FEF3C7', border: '1px solid #FDE68A', borderRadius: 6,
+                padding: '4px 10px', fontSize: 11, color: '#78350F', fontWeight: 500,
+              }}>
+                <Avatar name={r.profile.full_name || 'U'} url={r.profile.avatar_url} size={18} />
+                {r.profile.full_name || 'Unnamed'}
+              </span>
+            ))}
+            {unmappedProfiles.length > 20 && (
+              <span style={{ fontSize: 11, color: '#B45309', alignSelf: 'center' }}>
+                +{unmappedProfiles.length - 20} more
+              </span>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Filters bar */}
       <div style={{
@@ -254,6 +325,29 @@ export function UserMapping() {
             <option key={d.id} value={d.id}>{d.name}</option>
           ))}
         </select>
+
+        <div style={{ width: 1, height: 24, background: '#E2E8F0', margin: '0 4px' }} />
+
+        {/* View mode toggle */}
+        <div style={{ display: 'flex', borderRadius: 6, overflow: 'hidden', border: `1px solid ${borderColor}` }}>
+          {[
+            { mode: 'all' as ViewMode, label: 'All' },
+            { mode: 'unmapped' as ViewMode, label: 'Unmapped Only' },
+          ].map(v => (
+            <button
+              key={v.mode}
+              onClick={() => setViewMode(v.mode)}
+              style={{
+                padding: '5px 12px', fontSize: 11, fontWeight: 600, border: 'none', cursor: 'pointer',
+                background: viewMode === v.mode ? '#2563EB' : '#F8FAFC',
+                color: viewMode === v.mode ? '#fff' : '#64748B',
+                transition: 'all .15s',
+              }}
+            >
+              {v.label}
+            </button>
+          ))}
+        </div>
 
         <div style={{ width: 1, height: 24, background: '#E2E8F0', margin: '0 4px' }} />
 
@@ -312,13 +406,12 @@ export function UserMapping() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((row, idx) => {
-                const { profile, existingJiraMapping, suggestedJira } = row
-                const isMapped = !!existingJiraMapping
+              {visibleRows.map((row, idx) => {
+                const { profile, existingJiraMapping, suggestedJira, isMapped } = row
 
                 return (
                   <tr key={profile.id} style={{
-                    borderBottom: `1px solid #F1F5F9`,
+                    borderBottom: '1px solid #F1F5F9',
                     background: isMapped ? '#fff' : '#FEFCE8',
                   }}>
                     {/* # */}
@@ -329,7 +422,7 @@ export function UserMapping() {
                     {/* Catalyst Resource */}
                     <td style={{ padding: '10px 12px', width: 240 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <Avatar name={profile.full_name || 'U'} size={28} />
+                        <Avatar name={profile.full_name || 'U'} url={profile.avatar_url} size={28} />
                         <div>
                           <div style={{ fontWeight: 600, color: '#0F172A', fontSize: 12 }}>
                             {profile.full_name || 'Unnamed'}
@@ -361,14 +454,14 @@ export function UserMapping() {
 
                     {/* Jira Account (Mapped) */}
                     <td style={{ padding: '10px 12px', width: 260 }}>
-                      {isMapped ? (
+                      {isMapped && existingJiraMapping ? (
                         <div style={{
                           display: 'flex', alignItems: 'center', gap: 8,
                           background: '#ECFDF5', padding: '6px 10px', borderRadius: 6,
                           border: '1px solid #A7F3D0',
                         }}>
                           <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', flexShrink: 0 }} />
-                          <Avatar name={existingJiraMapping.jira_display_name} size={22} />
+                          <Avatar name={existingJiraMapping.jira_display_name} url={existingJiraMapping.jira_avatar_url} size={22} />
                           <div>
                             <div style={{ fontWeight: 600, color: '#0F172A', fontSize: 11 }}>
                               {existingJiraMapping.jira_display_name}
@@ -379,13 +472,24 @@ export function UserMapping() {
                           </div>
                         </div>
                       ) : (
-                        <span style={{
-                          fontSize: 10, color: '#F59E0B', fontWeight: 500,
-                          display: 'inline-flex', alignItems: 'center', gap: 4,
-                        }}>
-                          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#F59E0B' }} />
-                          Not mapped
-                        </span>
+                        <select
+                          value=""
+                          onChange={e => {
+                            if (e.target.value) handleAcceptSuggestion(profile.id, e.target.value)
+                          }}
+                          style={{
+                            padding: '5px 8px', borderRadius: 6, fontSize: 11, width: '100%',
+                            border: '1px solid #FDE68A', background: '#FFFBEB',
+                            color: '#92400E',
+                          }}
+                        >
+                          <option value="">— Select Jira User —</option>
+                          {jiraUsers.map(j => (
+                            <option key={j.id} value={j.id}>
+                              {j.jira_display_name} ({j.jira_email || j.jira_account_id.slice(0, 12)})
+                            </option>
+                          ))}
+                        </select>
                       )}
                     </td>
 
@@ -398,7 +502,7 @@ export function UserMapping() {
                           padding: '6px 10px', borderRadius: 6,
                           border: `1px solid ${suggestedJira.score >= 0.7 ? '#93C5FD' : '#FDE68A'}`,
                         }}>
-                          <Avatar name={suggestedJira.jiraUser.jira_display_name} size={22} />
+                          <Avatar name={suggestedJira.jiraUser.jira_display_name} url={suggestedJira.jiraUser.jira_avatar_url} size={22} />
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ fontWeight: 600, color: '#0F172A', fontSize: 11 }}>
                               {suggestedJira.jiraUser.jira_display_name}
@@ -424,7 +528,7 @@ export function UserMapping() {
 
                     {/* Action */}
                     <td style={{ padding: '10px 12px', width: 120 }}>
-                      {isMapped ? (
+                      {isMapped && existingJiraMapping ? (
                         <button
                           onClick={() => handleClearMapping(existingJiraMapping.id)}
                           style={{
@@ -445,34 +549,15 @@ export function UserMapping() {
                         >
                           ✓ Accept
                         </button>
-                      ) : (
-                        <select
-                          value=""
-                          onChange={e => {
-                            if (e.target.value) handleAcceptSuggestion(profile.id, e.target.value)
-                          }}
-                          style={{
-                            padding: '4px 6px', borderRadius: 4, fontSize: 10,
-                            border: `1px solid ${borderColor}`, background: '#F8FAFC',
-                            color: '#64748B', width: 100,
-                          }}
-                        >
-                          <option value="">Manual…</option>
-                          {jiraUsers
-                            .filter(j => !Object.values(localMappings).includes(j.id))
-                            .map(j => (
-                              <option key={j.id} value={j.id}>{j.jira_display_name}</option>
-                            ))}
-                        </select>
-                      )}
+                      ) : null}
                     </td>
                   </tr>
                 )
               })}
-              {rows.length === 0 && (
+              {visibleRows.length === 0 && (
                 <tr>
                   <td colSpan={6} style={{ padding: 40, textAlign: 'center', color: '#94A3B8', fontSize: 12 }}>
-                    No resources found for the selected department.
+                    {viewMode === 'unmapped' ? 'All resources in this department are mapped! 🎉' : 'No resources found for the selected filters.'}
                   </td>
                 </tr>
               )}
