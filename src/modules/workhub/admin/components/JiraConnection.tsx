@@ -413,7 +413,7 @@ export function JiraConnection() {
         )}
 
         {/* Work Items Dashboard */}
-        <WorkItemsDashboard isConnected={status === 'connected'} />
+        <WorkItemsDashboard isConnected={status === 'connected'} siteUrl={connection?.site_url || ''} />
       </div>
 
       {/* Test Modal */}
