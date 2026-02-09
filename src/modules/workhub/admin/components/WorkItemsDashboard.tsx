@@ -24,9 +24,17 @@ function getStatusColor(status: string): string {
 
 interface WorkItemsDashboardProps {
   isConnected: boolean;
+  siteUrl: string;
 }
 
-export function WorkItemsDashboard({ isConnected }: WorkItemsDashboardProps) {
+function buildJiraUrl(siteUrl: string, jql: string): string {
+  const base = siteUrl.replace(/\/$/, '');
+  return `${base}/issues/?jql=${encodeURIComponent(jql)}`;
+}
+
+const BASE_JQL = 'updated >= -90d';
+
+export function WorkItemsDashboard({ isConnected, siteUrl }: WorkItemsDashboardProps) {
   const { data, isLoading, error, refetch, isFetching } = useJiraIssueStats(isConnected);
   const [expandedType, setExpandedType] = useState<string | null>(null);
   const [expandedProject, setExpandedProject] = useState<string | null>(null);
@@ -99,6 +107,7 @@ export function WorkItemsDashboard({ isConnected }: WorkItemsDashboardProps) {
                 key={t.type}
                 type={t}
                 total={data.scanned}
+                siteUrl={siteUrl}
                 isLast={idx === data.types.length - 1}
                 isExpanded={expandedType === t.type}
                 onToggle={() => setExpandedType(expandedType === t.type ? null : t.type)}
@@ -115,6 +124,7 @@ export function WorkItemsDashboard({ isConnected }: WorkItemsDashboardProps) {
                 key={p.key}
                 project={p}
                 total={data.scanned}
+                siteUrl={siteUrl}
                 isLast={idx === data.projects.length - 1}
                 isExpanded={expandedProject === p.key}
                 onToggle={() => setExpandedProject(expandedProject === p.key ? null : p.key)}
@@ -209,38 +219,57 @@ function MiniBar({ items, getColor, total }: { items: Array<{ label: string; cou
   );
 }
 
-function ChipList({ items, getColor }: { items: Array<{ label: string; count: number }>; getColor: (l: string) => string }) {
+function ChipList({ items, getColor, getHref }: { items: Array<{ label: string; count: number }>; getColor: (l: string) => string; getHref?: (label: string) => string }) {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-      {items.map(s => (
-        <span key={s.label} style={{
-          display: 'inline-flex', alignItems: 'center', gap: 5,
-          background: 'var(--wh-bg)', border: '1px solid var(--wh-bdr)',
-          borderRadius: 20, padding: '3px 10px 3px 8px',
-          fontSize: 12, fontFamily: 'var(--wh-fn)', color: 'var(--wh-tx2)',
-        }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: getColor(s.label) }} />
-          {s.label}
+      {items.map(s => {
+        const href = getHref?.(s.label);
+        const countEl = href ? (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            style={{ fontFamily: 'var(--wh-mo)', fontSize: 11, color: 'var(--wh-pri)', textDecoration: 'none', borderBottom: '1px dashed var(--wh-pri)' }}
+            title="Open in Jira"
+          >
+            {s.count}
+          </a>
+        ) : (
           <span style={{ fontFamily: 'var(--wh-mo)', fontSize: 11, color: 'var(--wh-tx4)' }}>{s.count}</span>
-        </span>
-      ))}
+        );
+        return (
+          <span key={s.label} style={{
+            display: 'inline-flex', alignItems: 'center', gap: 5,
+            background: 'var(--wh-bg)', border: '1px solid var(--wh-bdr)',
+            borderRadius: 20, padding: '3px 10px 3px 8px',
+            fontSize: 12, fontFamily: 'var(--wh-fn)', color: 'var(--wh-tx2)',
+          }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: getColor(s.label) }} />
+            {s.label}
+            {countEl}
+          </span>
+        );
+      })}
     </div>
   );
 }
 
 /* ── Row components ── */
 
-function TypeRow({ type, total, isLast, isExpanded, onToggle }: {
-  type: IssueTypeStats; total: number; isLast: boolean;
+function TypeRow({ type, total, siteUrl, isLast, isExpanded, onToggle }: {
+  type: IssueTypeStats; total: number; siteUrl: string; isLast: boolean;
   isExpanded: boolean; onToggle: () => void;
 }) {
   const pct = total > 0 ? ((type.count / total) * 100).toFixed(1) : '0';
+  const jiraUrl = siteUrl ? buildJiraUrl(siteUrl, `${BASE_JQL} AND issuetype = "${type.type}"`) : '';
   return (
     <>
       <ExpandableRow
         label={type.type}
         count={type.count}
         pct={pct}
+        href={jiraUrl}
         isExpanded={isExpanded}
         isLast={isLast}
         onToggle={onToggle}
@@ -254,18 +283,23 @@ function TypeRow({ type, total, isLast, isExpanded, onToggle }: {
           borderBottom: isLast ? 'none' : '1px solid var(--wh-bdr)',
           background: 'var(--wh-sf)',
         }}>
-          <ChipList items={type.statuses.map(s => ({ label: s.status, count: s.count }))} getColor={getStatusColor} />
+          <ChipList
+            items={type.statuses.map(s => ({ label: s.status, count: s.count }))}
+            getColor={getStatusColor}
+            getHref={siteUrl ? (status) => buildJiraUrl(siteUrl, `${BASE_JQL} AND issuetype = "${type.type}" AND status = "${status}"`) : undefined}
+          />
         </div>
       )}
     </>
   );
 }
 
-function ProjectRow({ project, total, isLast, isExpanded, onToggle }: {
-  project: ProjectStats; total: number; isLast: boolean;
+function ProjectRow({ project, total, siteUrl, isLast, isExpanded, onToggle }: {
+  project: ProjectStats; total: number; siteUrl: string; isLast: boolean;
   isExpanded: boolean; onToggle: () => void;
 }) {
   const pct = total > 0 ? ((project.count / total) * 100).toFixed(1) : '0';
+  const jiraUrl = siteUrl ? buildJiraUrl(siteUrl, `${BASE_JQL} AND project = "${project.key}"`) : '';
   return (
     <>
       <ExpandableRow
@@ -273,6 +307,7 @@ function ProjectRow({ project, total, isLast, isExpanded, onToggle }: {
         sublabel={project.key}
         count={project.count}
         pct={pct}
+        href={jiraUrl}
         isExpanded={isExpanded}
         isLast={isLast}
         onToggle={onToggle}
@@ -289,19 +324,27 @@ function ProjectRow({ project, total, isLast, isExpanded, onToggle }: {
           <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--wh-tx4)', marginBottom: 6, fontFamily: 'var(--wh-fh)', textTransform: 'uppercase' }}>
             Types
           </div>
-          <ChipList items={project.types.map(t => ({ label: t.type, count: t.count }))} getColor={() => 'var(--wh-pri)'} />
+          <ChipList
+            items={project.types.map(t => ({ label: t.type, count: t.count }))}
+            getColor={() => 'var(--wh-pri)'}
+            getHref={siteUrl ? (type) => buildJiraUrl(siteUrl, `${BASE_JQL} AND project = "${project.key}" AND issuetype = "${type}"`) : undefined}
+          />
           <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--wh-tx4)', marginBottom: 6, marginTop: 10, fontFamily: 'var(--wh-fh)', textTransform: 'uppercase' }}>
             Statuses
           </div>
-          <ChipList items={project.statuses.map(s => ({ label: s.status, count: s.count }))} getColor={getStatusColor} />
+          <ChipList
+            items={project.statuses.map(s => ({ label: s.status, count: s.count }))}
+            getColor={getStatusColor}
+            getHref={siteUrl ? (status) => buildJiraUrl(siteUrl, `${BASE_JQL} AND project = "${project.key}" AND status = "${status}"`) : undefined}
+          />
         </div>
       )}
     </>
   );
 }
 
-function ExpandableRow({ label, sublabel, count, pct, isExpanded, isLast, onToggle, barItems, barTotal, getColor }: {
-  label: string; sublabel?: string; count: number; pct: string;
+function ExpandableRow({ label, sublabel, count, pct, href, isExpanded, isLast, onToggle, barItems, barTotal, getColor }: {
+  label: string; sublabel?: string; count: number; pct: string; href?: string;
   isExpanded: boolean; isLast: boolean; onToggle: () => void;
   barItems: Array<{ label: string; count: number }>; barTotal: number;
   getColor: (l: string) => string;
@@ -328,8 +371,22 @@ function ExpandableRow({ label, sublabel, count, pct, isExpanded, isLast, onTogg
           <span style={{ fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', background: 'var(--wh-sf2)', padding: '1px 6px', borderRadius: 4 }}>{sublabel}</span>
         )}
       </div>
-      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--wh-tx)', fontFamily: 'var(--wh-mo)', textAlign: 'right' }}>
-        {count}
+      <div style={{ fontSize: 13, fontWeight: 700, fontFamily: 'var(--wh-mo)', textAlign: 'right' }}>
+        {href ? (
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              color: 'var(--wh-pri)', textDecoration: 'none', borderBottom: '1px dashed var(--wh-pri)',
+              cursor: 'pointer',
+            }}
+            title="Open in Jira"
+          >
+            {count}
+          </a>
+        ) : count}
         <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--wh-tx4)', marginLeft: 4 }}>({pct}%)</span>
       </div>
       <div style={{ paddingLeft: 16, display: 'flex', alignItems: 'center' }}>
