@@ -79,6 +79,7 @@ export function TestCaseContextMenu({
 
   return (
     <div
+      data-context-menu
       style={{
         position: 'fixed',
         left: Math.max(8, adjustedX),
@@ -89,7 +90,7 @@ export function TestCaseContextMenu({
         boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
         minWidth: menuWidth,
         padding: 6,
-        zIndex: 1001,
+        zIndex: 99999,
       }}
       onClick={(e) => e.stopPropagation()}
     >
