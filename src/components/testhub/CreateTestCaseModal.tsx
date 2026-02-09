@@ -59,6 +59,7 @@ export function CreateTestCaseModal({
   const [type, setType] = useState('functional');
   const [status, setStatus] = useState('draft');
   const [automation, setAutomation] = useState('manual');
+  const [owner, setOwner] = useState('');
   const [steps, setSteps] = useState<TestStep[]>([
     { id: '1', action: '', expectedResult: '' }
   ]);
@@ -307,10 +308,15 @@ export function CreateTestCaseModal({
     marginBottom: 6,
   };
 
+  const selectedFolder = folders.find(f => f.id === folderId);
+  const folderPath = selectedFolder 
+    ? `${selectedFolder.name}` 
+    : 'the repository';
+  
   const modalTitle = editMode ? 'Edit Test Case' : 'Create Test Case';
   const modalSubtitle = editMode 
     ? `Modify test case ${testCase?.case_key}` 
-    : 'Add a new test case to the repository';
+    : `Add a new test case to ${folderPath}`;
   const submitText = editMode 
     ? (isSaving ? 'Saving...' : 'Save Changes')
     : (isSaving ? 'Creating...' : 'Create Test Case');
@@ -484,7 +490,7 @@ export function CreateTestCaseModal({
               </div>
             </div>
 
-            {/* Right column - metadata dropdowns */}
+            {/* Right column - metadata dropdowns - 2x2 GRID */}
             <div style={{ 
               display: 'flex', 
               flexDirection: 'column', 
@@ -495,34 +501,133 @@ export function CreateTestCaseModal({
               border: '1px solid #E2E8F0',
               height: 'fit-content',
             }}>
-              {[
-                { label: 'Folder', value: folderId, onChange: setFolderId, options: [{ value: '', label: 'No folder' }, ...folders.map(f => ({ value: f.id, label: f.name }))] },
-                { label: 'Priority', value: priority, onChange: setPriority, options: [{ value: 'critical', label: 'Critical' }, { value: 'high', label: 'High' }, { value: 'medium', label: 'Medium' }, { value: 'low', label: 'Low' }] },
-                { label: 'Type', value: type, onChange: setType, options: [{ value: 'functional', label: 'Functional' }, { value: 'regression', label: 'Regression' }, { value: 'security', label: 'Security' }, { value: 'integration', label: 'Integration' }, { value: 'performance', label: 'Performance' }, { value: 'api', label: 'API' }] },
-                { label: 'Status', value: status, onChange: setStatus, options: [{ value: 'draft', label: 'Draft' }, { value: 'ready', label: 'Ready' }, { value: 'approved', label: 'Approved' }, { value: 'deprecated', label: 'Deprecated' }] },
-                { label: 'Automation', value: automation, onChange: setAutomation, options: [{ value: 'manual', label: 'Manual' }, { value: 'automated', label: 'Automated' }, { value: 'planned', label: 'Planned' }] },
-              ].map(({ label, value, onChange, options }) => (
-                <div key={label}>
-                  <label style={{ ...labelStyle, fontSize: 12 }}>{label}</label>
+              {/* Folder - Full width */}
+              <div>
+                <label style={{ ...labelStyle, fontSize: 13 }}>
+                  Folder <span style={{ color: '#EF4444' }}>*</span>
+                </label>
+                <select
+                  value={folderId}
+                  onChange={(e) => setFolderId(e.target.value)}
+                  style={{ ...selectStyle, backgroundColor: '#FFFFFF' }}
+                >
+                  <option value="">No folder</option>
+                  {folders.map(f => (
+                    <option key={f.id} value={f.id}>{f.name}</option>
+                  ))}
+                </select>
+              </div>
+              
+              {/* Priority + Type - 2 column grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ ...labelStyle, fontSize: 13 }}>
+                    Priority <span style={{ color: '#EF4444' }}>*</span>
+                  </label>
                   <select
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
+                    value={priority}
+                    onChange={(e) => setPriority(e.target.value)}
                     style={{ ...selectStyle, backgroundColor: '#FFFFFF' }}
                   >
-                    {options.map(opt => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
+                    <option value="critical">Critical</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
                   </select>
                 </div>
-              ))}
+                <div>
+                  <label style={{ ...labelStyle, fontSize: 13 }}>
+                    Type <span style={{ color: '#EF4444' }}>*</span>
+                  </label>
+                  <select
+                    value={type}
+                    onChange={(e) => setType(e.target.value)}
+                    style={{ ...selectStyle, backgroundColor: '#FFFFFF' }}
+                  >
+                    <option value="functional">Functional</option>
+                    <option value="regression">Regression</option>
+                    <option value="security">Security</option>
+                    <option value="integration">Integration</option>
+                    <option value="performance">Performance</option>
+                    <option value="api">API</option>
+                  </select>
+                </div>
+              </div>
+              
+              {/* Status + Automation - 2 column grid */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div>
+                  <label style={{ ...labelStyle, fontSize: 13 }}>Status</label>
+                  <select
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                    style={{ ...selectStyle, backgroundColor: '#FFFFFF' }}
+                  >
+                    <option value="draft">Draft</option>
+                    <option value="ready">Ready</option>
+                    <option value="approved">Approved</option>
+                    <option value="deprecated">Deprecated</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ ...labelStyle, fontSize: 13 }}>Automation</label>
+                  <select
+                    value={automation}
+                    onChange={(e) => setAutomation(e.target.value)}
+                    style={{ ...selectStyle, backgroundColor: '#FFFFFF' }}
+                  >
+                    <option value="manual">Manual</option>
+                    <option value="automated">Automated</option>
+                    <option value="planned">Planned</option>
+                  </select>
+                </div>
+              </div>
+              
+              {/* Owner - Full width */}
+              <div>
+                <label style={{ ...labelStyle, fontSize: 13 }}>Owner</label>
+                <select
+                  value={owner}
+                  onChange={(e) => setOwner(e.target.value)}
+                  style={{ ...selectStyle, backgroundColor: '#FFFFFF' }}
+                >
+                  <option value="">Select an owner...</option>
+                  <option value="ahmed-khan">Ahmed Khan</option>
+                  <option value="sarah-lee">Sarah Lee</option>
+                  <option value="mike-chen">Mike Chen</option>
+                  <option value="fatima">Fatima</option>
+                  <option value="omar-patel">Omar Patel</option>
+                </select>
+              </div>
             </div>
           </div>
 
           {/* BOTTOM SECTION: Steps editor - FULL WIDTH */}
           <div>
-            <label style={{ ...labelStyle, marginBottom: 12 }}>
-              Test Steps <span style={{ color: '#EF4444' }}>*</span>
-            </label>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 12,
+            }}>
+              <label style={{ ...labelStyle, marginBottom: 0 }}>
+                Test Steps <span style={{ color: '#EF4444' }}>*</span>
+              </label>
+              <button style={{
+                background: 'none',
+                border: 'none',
+                color: '#2563EB',
+                fontSize: 13,
+                fontWeight: 500,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+              }}>
+                <span style={{ fontSize: 14 }}>📚</span>
+                Insert from Library
+              </button>
+            </div>
             <StepsEditor steps={steps} onChange={setSteps} />
           </div>
         </div>
@@ -538,6 +643,25 @@ export function CreateTestCaseModal({
         }}>
           <button
             onClick={onClose}
+            style={{
+              height: 40,
+              padding: '0 16px',
+              background: 'none',
+              border: 'none',
+              fontSize: 14,
+              fontWeight: 500,
+              color: '#64748B',
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#0F172A';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = '#64748B';
+            }}
+          >Cancel</button>
+          <button
             style={{
               height: 40,
               padding: '0 20px',
@@ -559,7 +683,7 @@ export function CreateTestCaseModal({
               e.currentTarget.style.backgroundColor = '#FFFFFF';
               e.currentTarget.style.borderColor = '#E2E8F0';
             }}
-          >Cancel</button>
+          >Save Draft</button>
           <button
             onClick={handleSave}
             disabled={isSaving}

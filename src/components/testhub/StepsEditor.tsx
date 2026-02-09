@@ -146,7 +146,7 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
                 </div>
               </div>
 
-              {/* Content - FULL WIDTH */}
+              {/* Content - FULL WIDTH with side-by-side layout */}
               <div style={{ flex: 1, padding: 16, minWidth: 0 }}>
                 {step.sharedStepId && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
@@ -157,84 +157,87 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
                   </div>
                 )}
                 
-                {/* Action Field */}
-                <div style={{ marginBottom: 12 }}>
-                  <label style={{
-                    display: 'block',
-                    fontSize: 10,
-                    fontWeight: 600,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                    color: '#64748B',
-                    marginBottom: 6,
-                  }}>Action</label>
-                  <textarea
-                    value={step.action}
-                    onChange={(e) => updateStep(step.id, 'action', e.target.value)}
-                    placeholder="Describe the action to perform..."
-                    style={{
-                      width: '100%',
-                      minHeight: 80,
-                      padding: '10px 12px',
-                      fontSize: 14,
-                      fontFamily: 'Inter, sans-serif',
-                      color: '#0F172A',
-                      backgroundColor: '#FFFFFF',
-                      border: '1.5px solid #E2E8F0',
-                      borderRadius: 8,
-                      resize: 'vertical',
-                      outline: 'none',
-                      transition: 'border-color 0.15s, box-shadow 0.15s',
-                    }}
-                    onFocus={(e) => {
-                      e.target.style.borderColor = '#2563EB';
-                      e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.borderColor = '#E2E8F0';
-                      e.target.style.boxShadow = 'none';
-                    }}
-                  />
-                </div>
+                {/* Two column grid for Action and Expected Result - SIDE BY SIDE */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                  {/* Action Field */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: 10,
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
+                      color: '#64748B',
+                      marginBottom: 6,
+                    }}>Action</label>
+                    <textarea
+                      value={step.action}
+                      onChange={(e) => updateStep(step.id, 'action', e.target.value)}
+                      placeholder="Describe the action to perform..."
+                      style={{
+                        width: '100%',
+                        minHeight: 80,
+                        padding: '10px 12px',
+                        fontSize: 14,
+                        fontFamily: 'Inter, sans-serif',
+                        color: '#0F172A',
+                        backgroundColor: '#FFFFFF',
+                        border: '1.5px solid #E2E8F0',
+                        borderRadius: 8,
+                        resize: 'vertical',
+                        outline: 'none',
+                        transition: 'border-color 0.15s, box-shadow 0.15s',
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = '#2563EB';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = '#E2E8F0';
+                        e.target.style.boxShadow = 'none';
+                      }}
+                    />
+                  </div>
 
-                {/* Expected Result Field */}
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: 10,
-                    fontWeight: 600,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                    color: '#64748B',
-                    marginBottom: 6,
-                  }}>Expected Result</label>
-                  <textarea
-                    value={step.expectedResult}
-                    onChange={(e) => updateStep(step.id, 'expectedResult', e.target.value)}
-                    placeholder="Describe the expected outcome..."
-                    style={{
-                      width: '100%',
-                      minHeight: 80,
-                      padding: '10px 12px',
-                      fontSize: 14,
-                      fontFamily: 'Inter, sans-serif',
-                      color: '#0F172A',
-                      backgroundColor: '#FFFFFF',
-                      border: '1.5px solid #E2E8F0',
-                      borderRadius: 8,
-                      resize: 'vertical',
-                      outline: 'none',
-                      transition: 'border-color 0.15s, box-shadow 0.15s',
-                    }}
-                    onFocus={(e) => {
-                      e.target.style.borderColor = '#2563EB';
-                      e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.borderColor = '#E2E8F0';
-                      e.target.style.boxShadow = 'none';
-                    }}
-                  />
+                  {/* Expected Result Field */}
+                  <div>
+                    <label style={{
+                      display: 'block',
+                      fontSize: 10,
+                      fontWeight: 600,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
+                      color: '#64748B',
+                      marginBottom: 6,
+                    }}>Expected Result</label>
+                    <textarea
+                      value={step.expectedResult}
+                      onChange={(e) => updateStep(step.id, 'expectedResult', e.target.value)}
+                      placeholder="Describe the expected outcome..."
+                      style={{
+                        width: '100%',
+                        minHeight: 80,
+                        padding: '10px 12px',
+                        fontSize: 14,
+                        fontFamily: 'Inter, sans-serif',
+                        color: '#0F172A',
+                        backgroundColor: '#FFFFFF',
+                        border: '1.5px solid #E2E8F0',
+                        borderRadius: 8,
+                        resize: 'vertical',
+                        outline: 'none',
+                        transition: 'border-color 0.15s, box-shadow 0.15s',
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = '#2563EB';
+                        e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = '#E2E8F0';
+                        e.target.style.boxShadow = 'none';
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
 
