@@ -17,6 +17,10 @@ serve(async (req) => {
 
   const body = await req.json().catch(() => ({}))
   const syncType: string = body.sync_type || 'full'
+  // Override filters from request body (UI-driven sync)
+  const overrideLookbackMonths: number | undefined = body.lookback_months
+  const overrideIssueTypes: string[] | undefined = body.issue_types
+  const overrideFixVersions: string[] | undefined = body.fix_versions
 
   // Create log entry
   const { data: logEntry } = await supabase
@@ -44,10 +48,12 @@ serve(async (req) => {
       }
     })
 
-    const lookbackMonths = syncType === 'full' ? (cfg.sync_max_months || 6) : (cfg.sync_lookback_months || 1)
+    const lookbackMonths = overrideLookbackMonths || (syncType === 'full' ? (cfg.sync_max_months || 6) : (cfg.sync_lookback_months || 1))
     let includedProjects: string[] = cfg.included_projects || []
     const hierarchyLevels: Array<{ level: number; name: string; jiraTypes: string[] }> = cfg.hierarchy_levels || []
     const statusMapping: Record<string, string[]> = cfg.status_mapping || {}
+    const syncIssueTypes: string[] = overrideIssueTypes || cfg.sync_issue_types || []
+    const syncFixVersions: string[] = overrideFixVersions || cfg.sync_fix_versions || []
 
     const base = conn.site_url.replace(/\/$/, '')
     const authHeader = 'Basic ' + btoa(`${conn.auth_email}:${conn.auth_token_encrypted}`)
@@ -66,13 +72,18 @@ serve(async (req) => {
       console.warn('Could not fetch Jira projects:', e)
     }
 
-    // Don't filter issues by project — sync everything accessible with date bound
-    const dateFilter = `updated >= -${lookbackMonths * 30}d`
-    const jql = `${dateFilter} ORDER BY updated DESC`
+    // Build JQL with optional filters
+    const jqlParts: string[] = []
+    jqlParts.push(`updated >= -${lookbackMonths * 30}d`)
+    if (syncIssueTypes.length > 0) {
+      jqlParts.push(`issuetype in (${syncIssueTypes.map(t => `"${t}"`).join(',')})`)
+    }
+    if (syncFixVersions.length > 0) {
+      jqlParts.push(`fixVersion in (${syncFixVersions.map(v => `"${v}"`).join(',')})`)
+    }
+    const jql = `${jqlParts.join(' AND ')} ORDER BY updated DESC`
     // For version fetching, use all accessible projects
     includedProjects = allProjectKeys.length > 0 ? allProjectKeys : includedProjects
-
-
     // 4. Fetch issues with pagination using /search/jql (new Jira Cloud endpoint)
     let allIssues: any[] = []
     const maxResults = 100
