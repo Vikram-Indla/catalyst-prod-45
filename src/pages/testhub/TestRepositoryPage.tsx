@@ -10,7 +10,10 @@ import { TestCasesToolbar } from '@/components/testhub/TestCasesToolbar';
 import { CreateTestCaseModal } from '@/components/testhub/CreateTestCaseModal';
 import { ViewTestCaseModal } from '@/components/testhub/ViewTestCaseModal';
 import { CloneTestCaseModal } from '@/components/testhub/CloneTestCaseModal';
+import { DeleteTestCaseModal } from '@/components/testhub/DeleteTestCaseModal';
+import { TestCaseContextMenu } from '@/components/testhub/TestCaseContextMenu';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 // Import the CSS
 import '@/styles/testhub.css';
@@ -27,7 +30,6 @@ interface TestCase {
   ownerInitials?: string;
   ownerColor?: string;
   updatedAt: string;
-  // For edit/view operations
   objective?: string | null;
   preconditions?: string | null;
   folderId?: string | null;
@@ -62,7 +64,15 @@ interface RawTestCase {
   updated_at: string;
 }
 
+interface ContextMenuState {
+  x: number;
+  y: number;
+  testCase: TestCase;
+}
+
 export function TestRepositoryPage() {
+  const { toast } = useToast();
+  
   // State
   const [folders, setFolders] = useState<Folder[]>([]);
   const [testCases, setTestCases] = useState<TestCase[]>([]);
@@ -79,9 +89,21 @@ export function TestRepositoryPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isCloneModalOpen, setIsCloneModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [selectedTestCase, setSelectedTestCase] = useState<RawTestCase | null>(null);
   const [selectedTestCaseSteps, setSelectedTestCaseSteps] = useState<TestStep[]>([]);
+  const [testCasesToDelete, setTestCasesToDelete] = useState<{ id: string; case_key: string; title: string }[]>([]);
+  
+  // Context menu state
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
+
+  // Close context menu on click outside
+  useEffect(() => {
+    const handleClick = () => setContextMenu(null);
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, []);
 
   // Fetch folders
   const fetchFolders = async () => {
@@ -95,7 +117,6 @@ export function TestRepositoryPage() {
       return;
     }
 
-    // Get counts
     const { data: counts } = await supabase
       .from('th_test_cases')
       .select('folder_id');
@@ -122,9 +143,7 @@ export function TestRepositoryPage() {
   const fetchTestCases = async () => {
     setIsLoading(true);
 
-    let query = supabase
-      .from('th_test_cases')
-      .select('*');
+    let query = supabase.from('th_test_cases').select('*');
 
     if (selectedFolderId) {
       query = query.eq('folder_id', selectedFolderId);
@@ -211,7 +230,6 @@ export function TestRepositoryPage() {
   };
 
   const handleRowClick = async (testCase: TestCase) => {
-    // Fetch full test case data
     const { data: fullTC } = await supabase
       .from('th_test_cases')
       .select('*')
@@ -224,31 +242,16 @@ export function TestRepositoryPage() {
     }
   };
 
-  const handleRowAction = async (testCase: TestCase, action: string) => {
-    const { data: fullTC } = await supabase
-      .from('th_test_cases')
-      .select('*')
-      .eq('id', testCase.id)
-      .single();
-
-    if (!fullTC) return;
-
-    if (action === 'edit') {
-      await openEditModal(fullTC as RawTestCase);
-    } else if (action === 'clone') {
-      setSelectedTestCase(fullTC as RawTestCase);
-      setIsCloneModalOpen(true);
-    } else if (action === 'delete') {
-      if (confirm(`Delete test case ${testCase.caseKey}?`)) {
-        await supabase.from('th_test_cases').delete().eq('id', testCase.id);
-        fetchTestCases();
-        fetchFolders();
-      }
-    }
+  const handleContextMenu = (e: React.MouseEvent, testCase: TestCase) => {
+    e.preventDefault();
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      testCase,
+    });
   };
 
   const openEditModal = async (tc: RawTestCase) => {
-    // Fetch steps
     const { data: stepsData } = await supabase
       .from('th_test_steps')
       .select('*')
@@ -265,6 +268,77 @@ export function TestRepositoryPage() {
     setSelectedTestCaseSteps(mappedSteps.length > 0 ? mappedSteps : [{ id: '1', action: '', expectedResult: '' }]);
     setEditMode(true);
     setIsCreateModalOpen(true);
+  };
+
+  const handleViewFromContext = async () => {
+    if (!contextMenu) return;
+    const { data: fullTC } = await supabase
+      .from('th_test_cases')
+      .select('*')
+      .eq('id', contextMenu.testCase.id)
+      .single();
+
+    if (fullTC) {
+      setSelectedTestCase(fullTC as RawTestCase);
+      setIsViewModalOpen(true);
+    }
+    setContextMenu(null);
+  };
+
+  const handleEditFromContext = async () => {
+    if (!contextMenu) return;
+    const { data: fullTC } = await supabase
+      .from('th_test_cases')
+      .select('*')
+      .eq('id', contextMenu.testCase.id)
+      .single();
+
+    if (fullTC) {
+      await openEditModal(fullTC as RawTestCase);
+    }
+    setContextMenu(null);
+  };
+
+  const handleCloneFromContext = async () => {
+    if (!contextMenu) return;
+    const { data: fullTC } = await supabase
+      .from('th_test_cases')
+      .select('*')
+      .eq('id', contextMenu.testCase.id)
+      .single();
+
+    if (fullTC) {
+      setSelectedTestCase(fullTC as RawTestCase);
+      setIsCloneModalOpen(true);
+    }
+    setContextMenu(null);
+  };
+
+  const handleDeleteFromContext = () => {
+    if (!contextMenu) return;
+    setTestCasesToDelete([{
+      id: contextMenu.testCase.id,
+      case_key: contextMenu.testCase.caseKey,
+      title: contextMenu.testCase.title,
+    }]);
+    setIsDeleteModalOpen(true);
+    setContextMenu(null);
+  };
+
+  const handleMoveFromContext = () => {
+    toast({
+      title: 'Move',
+      description: 'Move functionality coming soon',
+    });
+    setContextMenu(null);
+  };
+
+  const handleStatusFromContext = () => {
+    toast({
+      title: 'Change Status',
+      description: 'Status change functionality coming soon',
+    });
+    setContextMenu(null);
   };
 
   const handleEditFromView = async () => {
@@ -300,23 +374,20 @@ export function TestRepositoryPage() {
     setSelectedTestCase(null);
   };
 
-  const handleBulkDelete = async () => {
-    if (selectedIds.size === 0) return;
-    if (!confirm(`Delete ${selectedIds.size} test case(s)?`)) return;
-
-    const { error } = await supabase
-      .from('th_test_cases')
-      .delete()
-      .in('id', Array.from(selectedIds));
-
-    if (error) {
-      console.error('Error deleting:', error);
-      return;
-    }
-
-    setSelectedIds(new Set());
+  const handleDeleteSuccess = () => {
     fetchTestCases();
     fetchFolders();
+    setIsDeleteModalOpen(false);
+    setTestCasesToDelete([]);
+    setSelectedIds(new Set());
+  };
+
+  const handleBulkDelete = () => {
+    const toDelete = testCases
+      .filter(tc => selectedIds.has(tc.id))
+      .map(tc => ({ id: tc.id, case_key: tc.caseKey, title: tc.title }));
+    setTestCasesToDelete(toDelete);
+    setIsDeleteModalOpen(true);
   };
 
   const clearSelection = () => {
@@ -449,23 +520,120 @@ export function TestRepositoryPage() {
 
             {/* Bulk Actions Bar */}
             {selectedIds.size > 0 && (
-              <div className="th-bulk-bar visible">
-                <span className="th-bulk-count">{selectedIds.size} selected</span>
-                <div className="th-bulk-actions">
-                  <button className="th-bulk-btn">
-                    <MoveRight />
+              <div style={{
+                height: 48,
+                padding: '0 20px',
+                backgroundColor: '#EFF6FF',
+                borderBottom: '1px solid #BFDBFE',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 16,
+              }}>
+                <span style={{
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: '#2563EB',
+                }}>
+                  {selectedIds.size} selected
+                </span>
+                
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button 
+                    onClick={() => toast({ title: 'Move', description: 'Move functionality coming soon' })}
+                    style={{
+                      height: 32,
+                      padding: '0 12px',
+                      backgroundColor: '#FFFFFF',
+                      border: '1px solid #E2E8F0',
+                      borderRadius: 6,
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: 13,
+                      fontWeight: 500,
+                      color: '#334155',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                    }}
+                  >
+                    <MoveRight style={{ width: 14, height: 14 }} />
                     Move
                   </button>
-                  <button className="th-bulk-btn">
-                    <CheckSquare />
+                  <button 
+                    onClick={() => toast({ title: 'Status', description: 'Status change functionality coming soon' })}
+                    style={{
+                      height: 32,
+                      padding: '0 12px',
+                      backgroundColor: '#FFFFFF',
+                      border: '1px solid #E2E8F0',
+                      borderRadius: 6,
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: 13,
+                      fontWeight: 500,
+                      color: '#334155',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                    }}
+                  >
+                    <CheckSquare style={{ width: 14, height: 14 }} />
                     Status
                   </button>
-                  <button className="th-bulk-btn danger" onClick={handleBulkDelete}>
-                    <Trash2 />
+                  <button 
+                    onClick={handleBulkDelete}
+                    style={{
+                      height: 32,
+                      padding: '0 12px',
+                      backgroundColor: '#FFFFFF',
+                      border: '1px solid #E2E8F0',
+                      borderRadius: 6,
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: 13,
+                      fontWeight: 500,
+                      color: '#DC2626',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#FEF2F2';
+                      e.currentTarget.style.borderColor = '#FECACA';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = '#FFFFFF';
+                      e.currentTarget.style.borderColor = '#E2E8F0';
+                    }}
+                  >
+                    <Trash2 style={{ width: 14, height: 14 }} />
                     Delete
                   </button>
                 </div>
-                <button className="th-bulk-clear" onClick={clearSelection}>
+                
+                <button
+                  onClick={clearSelection}
+                  style={{
+                    marginLeft: 'auto',
+                    height: 32,
+                    padding: '0 12px',
+                    background: 'transparent',
+                    border: 'none',
+                    borderRadius: 6,
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: 13,
+                    fontWeight: 500,
+                    color: '#64748B',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.05)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
+                >
                   Clear selection
                 </button>
               </div>
@@ -498,7 +666,7 @@ export function TestRepositoryPage() {
                   onSelectAll={handleSelectAll}
                   onSelectOne={handleSelectOne}
                   onRowClick={handleRowClick}
-                  onRowAction={handleRowAction}
+                  onContextMenu={handleContextMenu}
                   sortColumn={sortColumn}
                   sortDirection={sortDirection}
                   onSort={handleSort}
@@ -513,19 +681,31 @@ export function TestRepositoryPage() {
                   Showing 1-{testCases.length} of {testCases.length}
                 </span>
                 <div className="th-pagination-buttons">
-                  <button className="th-pagination-btn" disabled>
-                    ←
-                  </button>
+                  <button className="th-pagination-btn" disabled>←</button>
                   <button className="th-pagination-btn active">1</button>
-                  <button className="th-pagination-btn" disabled>
-                    →
-                  </button>
+                  <button className="th-pagination-btn" disabled>→</button>
                 </div>
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Context Menu */}
+      {contextMenu && (
+        <TestCaseContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          testCase={contextMenu.testCase}
+          onView={handleViewFromContext}
+          onEdit={handleEditFromContext}
+          onClone={handleCloneFromContext}
+          onMove={handleMoveFromContext}
+          onChangeStatus={handleStatusFromContext}
+          onDelete={handleDeleteFromContext}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
 
       {/* Create/Edit Modal */}
       <CreateTestCaseModal
@@ -572,6 +752,17 @@ export function TestRepositoryPage() {
         }}
         onSuccess={handleCloneSuccess}
         testCase={selectedTestCase}
+      />
+
+      {/* Delete Modal */}
+      <DeleteTestCaseModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setTestCasesToDelete([]);
+        }}
+        onSuccess={handleDeleteSuccess}
+        testCases={testCasesToDelete}
       />
     </div>
   );
