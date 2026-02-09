@@ -22,6 +22,12 @@
   height: 100vh;
 }
 
+.th-page-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
 .th-page-header {
   height: 64px;
   padding: 0 24px;
