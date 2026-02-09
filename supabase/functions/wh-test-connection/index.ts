@@ -110,15 +110,30 @@ serve(async (req) => {
     const c3Start = Date.now()
     if (checks[0].passed) {
       try {
-        // Use api/2 as api/3 search returns 410 on many Jira Cloud instances
+        // Use POST /search/jql (new endpoint) with GET fallbacks
         let res = await fetch(
-          `${base}/rest/api/2/search?jql=order+by+updated+desc&maxResults=1&fields=summary`,
-          { headers: { 'Authorization': authHeader, 'Accept': 'application/json' } }
+          `${base}/rest/api/2/search/jql`,
+          {
+            method: 'POST',
+            headers: { 'Authorization': authHeader, 'Accept': 'application/json', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ jql: 'order by updated desc', maxResults: 1, fields: ['summary'] })
+          }
         )
-        // Fallback to api/3 if api/2 fails
+        // Fallback: POST to old /search endpoint
         if (!res.ok && res.status !== 401 && res.status !== 403) {
           res = await fetch(
-            `${base}/rest/api/3/search?jql=order+by+updated+desc&maxResults=1&fields=summary`,
+            `${base}/rest/api/2/search`,
+            {
+              method: 'POST',
+              headers: { 'Authorization': authHeader, 'Accept': 'application/json', 'Content-Type': 'application/json' },
+              body: JSON.stringify({ jql: 'order by updated desc', maxResults: 1, fields: ['summary'] })
+            }
+          )
+        }
+        // Fallback: GET (older instances)
+        if (!res.ok && res.status !== 401 && res.status !== 403) {
+          res = await fetch(
+            `${base}/rest/api/2/search?jql=order+by+updated+desc&maxResults=1&fields=summary`,
             { headers: { 'Authorization': authHeader, 'Accept': 'application/json' } }
           )
         }
