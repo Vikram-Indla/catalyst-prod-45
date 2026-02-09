@@ -17,6 +17,7 @@ import { CreateFolderModal } from '@/components/testhub/CreateFolderModal';
 import { ImportTestCasesModal } from '@/components/testhub/ImportTestCasesModal';
 import { ExportTestCasesModal } from '@/components/testhub/ExportTestCasesModal';
 import { AIGenerateModal } from '@/components/testhub/AIGenerateModal';
+import { RenameFolderModal } from '@/components/testhub/RenameFolderModal';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -99,6 +100,10 @@ export function TestRepositoryPage() {
   const [isCloneModalOpen, setIsCloneModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
+  const [isRenameFolderModalOpen, setIsRenameFolderModalOpen] = useState(false);
+  const [renameFolderId, setRenameFolderId] = useState<string | null>(null);
+  const [renameFolderCurrentName, setRenameFolderCurrentName] = useState('');
+  const [isRenaming, setIsRenaming] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [selectedTestCase, setSelectedTestCase] = useState<RawTestCase | null>(null);
   const [selectedTestCaseSteps, setSelectedTestCaseSteps] = useState<TestStep[]>([]);
@@ -490,29 +495,27 @@ export function TestRepositoryPage() {
     fetchFolders();
   };
 
-  // Folder rename handler (placeholder - opens rename modal in future)
+  // Folder rename handler - opens Catalyst dialog
   const handleRenameFolder = (folderId: string, currentName: string) => {
-    const newName = window.prompt('Enter new folder name:', currentName);
-    if (newName && newName.trim() && newName !== currentName) {
-      supabase
-        .from('th_folders')
-        .update({ name: newName.trim() })
-        .eq('id', folderId)
-        .then(({ error }) => {
-          if (error) {
-            toast({
-              title: 'Error',
-              description: 'Failed to rename folder: ' + error.message,
-              variant: 'destructive',
-            });
-          } else {
-            toast({
-              title: 'Folder renamed',
-              description: `Renamed to "${newName.trim()}"`,
-            });
-            fetchFolders();
-          }
-        });
+    setRenameFolderId(folderId);
+    setRenameFolderCurrentName(currentName);
+    setIsRenameFolderModalOpen(true);
+  };
+
+  const handleRenameFolderSubmit = async (newName: string) => {
+    if (!renameFolderId) return;
+    setIsRenaming(true);
+    const { error } = await supabase
+      .from('th_folders')
+      .update({ name: newName })
+      .eq('id', renameFolderId);
+    setIsRenaming(false);
+    if (error) {
+      toast({ title: 'Error', description: 'Failed to rename folder: ' + error.message, variant: 'destructive' });
+    } else {
+      toast({ title: 'Folder renamed', description: `Renamed to "${newName}"` });
+      setIsRenameFolderModalOpen(false);
+      fetchFolders();
     }
   };
 
@@ -1003,6 +1006,15 @@ export function TestRepositoryPage() {
           setIsAIGenerateModalOpen(false);
         }}
         currentFolderId={selectedFolderId}
+      />
+
+      {/* Rename Folder Modal */}
+      <RenameFolderModal
+        open={isRenameFolderModalOpen}
+        onOpenChange={setIsRenameFolderModalOpen}
+        currentName={renameFolderCurrentName}
+        onRename={handleRenameFolderSubmit}
+        isPending={isRenaming}
       />
     </div>
   );
