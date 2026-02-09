@@ -130,25 +130,25 @@ export function useSyncConfig() {
   })
 }
 
+export interface JiraProject {
+  key: string
+  name: string
+  type?: string
+}
+
 export function useAvailableProjects() {
   return useQuery({
     queryKey: ['wh', 'available-projects'],
     queryFn: async () => {
-      const projects = new Set<string>()
-      let from = 0
-      const pageSize = 1000
-      while (true) {
-        const { data, error } = await (supabase as any)
-          .from('wh_issues')
-          .select('project_key')
-          .range(from, from + pageSize - 1)
-        if (error) throw new Error(error.message)
-        if (!data || data.length === 0) break
-        data.forEach((r: any) => projects.add(r.project_key))
-        if (data.length < pageSize) break
-        from += pageSize
-      }
-      return Array.from(projects).sort()
+      const { data, error } = await supabase
+        .from('wh_jira_connection')
+        .select('accessible_projects')
+        .single()
+      if (error) throw new Error(error.message)
+      const projects = (data?.accessible_projects as any[] | null) || []
+      return projects
+        .map((p: any) => ({ key: p.key as string, name: (p.name as string) || p.key, type: p.type as string | undefined }))
+        .sort((a, b) => a.key.localeCompare(b.key)) as JiraProject[]
     },
     staleTime: 60_000,
   })
