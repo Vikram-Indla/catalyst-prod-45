@@ -106,6 +106,15 @@ const adminPockets = [
     label: 'WorkHub',
     icon: Cable,
     path: '/admin/workhub',
+    children: [
+      { label: 'Jira Connection', path: '/admin/workhub/jira-connection' },
+      { label: 'Hierarchy Mapping', path: '/admin/workhub/hierarchy-mapping' },
+      { label: 'Scheduling Rules', path: '/admin/workhub/scheduling-rules' },
+      { label: 'Status Mapping', path: '/admin/workhub/status-mapping' },
+      { label: 'User Mapping', path: '/admin/workhub/user-mapping' },
+      { label: 'Data Scope', path: '/admin/workhub/data-scope' },
+      { label: 'Sync & Logs', path: '/admin/workhub/sync-logs' },
+    ],
   },
   {
     id: 'integrations',
