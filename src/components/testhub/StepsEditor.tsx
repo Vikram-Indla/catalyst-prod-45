@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { GripVertical, Paperclip, Copy, ArrowUp, Trash2, Plus, ChevronDown, Library } from 'lucide-react';
 import { SharedStepsModal } from './SharedStepsModal';
+import { toast } from 'sonner';
 
 interface Step {
   id: string;
@@ -45,7 +46,14 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
   const deleteStep = (id: string) => {
     if (steps.length > 1) {
       onChange(steps.filter(s => s.id !== id));
+      toast.success('Step deleted');
+    } else {
+      toast.error('At least one step is required');
     }
+  };
+
+  const handleAttachFile = () => {
+    toast.info('File attachment coming soon');
   };
 
   const cloneStep = (id: string) => {
@@ -56,6 +64,7 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
       const newSteps = [...steps];
       newSteps.splice(index + 1, 0, newStep);
       onChange(newSteps);
+      toast.success('Step cloned');
     }
   };
 
@@ -252,7 +261,7 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
                 paddingTop: 16,
                 gap: 4,
               }}>
-                <ActionButton icon={Paperclip} title="Attach file" onClick={() => {}} />
+                <ActionButton icon={Paperclip} title="Attach file" onClick={handleAttachFile} />
                 <ActionButton icon={Copy} title="Clone step" onClick={() => cloneStep(step.id)} />
                 <ActionButton icon={ArrowUp} title="Insert above" onClick={() => insertAbove(step.id)} />
                 <ActionButton 

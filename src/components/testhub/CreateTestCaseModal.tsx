@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, Library } from 'lucide-react';
 import { StepsEditor } from './StepsEditor';
+import { SharedStepsModal } from './SharedStepsModal';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -65,6 +66,7 @@ export function CreateTestCaseModal({
   ]);
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState<{ title?: string; folder?: string }>({});
+  const [isSharedStepsModalOpen, setIsSharedStepsModalOpen] = useState(false);
   
   // Users from profiles table
   const [users, setUsers] = useState<Array<{ id: string; full_name: string | null; avatar_url?: string | null }>>([]);
@@ -660,24 +662,46 @@ export function CreateTestCaseModal({
               <label style={{ ...labelStyle, marginBottom: 0 }}>
                 Test Steps <span style={{ color: '#EF4444' }}>*</span>
               </label>
-              <button style={{
-                background: 'none',
-                border: 'none',
-                color: '#2563EB',
-                fontSize: 13,
-                fontWeight: 500,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-              }}>
-                <span style={{ fontSize: 14 }}>📚</span>
+              <button
+                type="button"
+                onClick={() => setIsSharedStepsModalOpen(true)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#2563EB',
+                  fontSize: 13,
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                }}
+              >
+                <Library size={14} />
                 Insert from Library
               </button>
             </div>
             <StepsEditor steps={steps} onChange={setSteps} />
           </div>
         </div>
+
+        {/* Shared Steps Modal */}
+        <SharedStepsModal
+          isOpen={isSharedStepsModalOpen}
+          onClose={() => setIsSharedStepsModalOpen(false)}
+          onInsert={(sharedStep) => {
+            setSteps(prev => [...prev, {
+              id: Date.now().toString(),
+              action: sharedStep.action,
+              expectedResult: sharedStep.expectedResult,
+            }]);
+            setIsSharedStepsModalOpen(false);
+            toast({
+              title: 'Shared step inserted',
+              description: 'The step has been added to your test case',
+            });
+          }}
+        />
 
         {/* Footer */}
         <div style={{
