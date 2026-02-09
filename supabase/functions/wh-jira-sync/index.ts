@@ -69,33 +69,64 @@ serve(async (req) => {
 
     // Use POST-based search to avoid 410 Gone on deprecated GET endpoints
     async function searchJira(jql: string, startAt: number, maxResults: number): Promise<{ issues: any[]; total: number }> {
-      const postBody = JSON.stringify({ jql, startAt, maxResults, fields })
       const postHeaders = { ...headers, 'Content-Type': 'application/json' }
 
-      // Try POST /rest/api/3/search/jql first
-      const endpoints = [
-        `${base}/rest/api/3/search/jql`,
-        `${base}/rest/api/2/search/jql`,
+      // Strategy 1: POST /search (traditional format) — works on most Jira instances
+      const traditionalBody = JSON.stringify({ jql, startAt, maxResults, fields })
+      const traditionalEndpoints = [
         `${base}/rest/api/3/search`,
         `${base}/rest/api/2/search`,
       ]
 
-      for (const url of endpoints) {
+      for (const url of traditionalEndpoints) {
         try {
-          const res = await fetch(url, { method: 'POST', headers: postHeaders, body: postBody })
+          const res = await fetch(url, { method: 'POST', headers: postHeaders, body: traditionalBody })
           if (res.ok) {
             const data = await res.json()
             return { issues: data.issues || [], total: data.total || 0 }
           }
-          if (res.status === 404 || res.status === 405 || res.status === 410) continue
-          // Other errors (401, 403, 500) — throw
+          // 400/404/405/410 → try next endpoint
+          if ([400, 404, 405, 410].includes(res.status)) continue
           throw new Error(`Jira API error: ${res.status} ${res.statusText}`)
         } catch (e: any) {
           if (e.message?.startsWith('Jira API error')) throw e
           continue
         }
       }
-      throw new Error('All Jira search endpoints failed (410/404). Check Jira instance compatibility.')
+
+      // Strategy 2: POST /search/jql (newer Jira Cloud format)
+      const jqlBody = JSON.stringify({ jql, fields, maxResults })
+      const jqlEndpoints = [
+        `${base}/rest/api/3/search/jql`,
+        `${base}/rest/api/2/search/jql`,
+      ]
+
+      for (const url of jqlEndpoints) {
+        try {
+          const res = await fetch(url, { method: 'POST', headers: postHeaders, body: jqlBody })
+          if (res.ok) {
+            const data = await res.json()
+            return { issues: data.issues || [], total: data.total || 0 }
+          }
+          if ([400, 404, 405, 410].includes(res.status)) continue
+          throw new Error(`Jira API error: ${res.status} ${res.statusText}`)
+        } catch (e: any) {
+          if (e.message?.startsWith('Jira API error')) throw e
+          continue
+        }
+      }
+
+      // Strategy 3: GET /search (legacy, last resort)
+      const getUrl = `${base}/rest/api/2/search?jql=${encodeURIComponent(jql)}&startAt=${startAt}&maxResults=${maxResults}&fields=${fields.join(',')}`
+      try {
+        const res = await fetch(getUrl, { headers })
+        if (res.ok) {
+          const data = await res.json()
+          return { issues: data.issues || [], total: data.total || 0 }
+        }
+      } catch { /* fall through */ }
+
+      throw new Error('All Jira search endpoints failed. Check Jira instance compatibility.')
     }
 
     do {
