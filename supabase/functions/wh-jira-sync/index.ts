@@ -21,6 +21,7 @@ serve(async (req) => {
   const overrideLookbackMonths: number | undefined = body.lookback_months
   const overrideIssueTypes: string[] | undefined = body.issue_types
   const overrideFixVersions: string[] | undefined = body.fix_versions
+  const overrideProjects: string[] | undefined = body.projects
 
   // Create log entry
   const { data: logEntry } = await supabase
@@ -54,6 +55,7 @@ serve(async (req) => {
     const statusMapping: Record<string, string[]> = cfg.status_mapping || {}
     const syncIssueTypes: string[] = overrideIssueTypes || cfg.sync_issue_types || []
     const syncFixVersions: string[] = overrideFixVersions || cfg.sync_fix_versions || []
+    const syncProjects: string[] = overrideProjects || cfg.sync_projects || []
 
     const base = conn.site_url.replace(/\/$/, '')
     const authHeader = 'Basic ' + btoa(`${conn.auth_email}:${conn.auth_token_encrypted}`)
@@ -75,6 +77,9 @@ serve(async (req) => {
     // Build JQL with optional filters
     const jqlParts: string[] = []
     jqlParts.push(`updated >= -${lookbackMonths * 30}d`)
+    if (syncProjects.length > 0) {
+      jqlParts.push(`project in (${syncProjects.map(p => `"${p}"`).join(',')})`)
+    }
     if (syncIssueTypes.length > 0) {
       jqlParts.push(`issuetype in (${syncIssueTypes.map(t => `"${t}"`).join(',')})`)
     }

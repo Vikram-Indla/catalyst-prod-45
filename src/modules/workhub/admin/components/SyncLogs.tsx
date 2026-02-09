@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Loader2, CheckCircle2, XCircle, AlertTriangle, Clock, RefreshCw, Trash2, Filter, ChevronDown, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 import { formatDistanceToNow } from 'date-fns'
@@ -10,8 +10,10 @@ import {
   useUpdateSyncSchedule,
   useAvailableIssueTypes,
   useAvailableFixVersions,
+  useAvailableProjects,
   type SyncLogEntry,
 } from '../hooks/useSyncEngine'
+import { MultiSelectDropdown, type MultiSelectOption } from './MultiSelectDropdown'
 import '../../shared/tokens/workhub-tokens.css'
 
 export function SyncLogs() {
@@ -22,12 +24,14 @@ export function SyncLogs() {
   const updateSchedule = useUpdateSyncSchedule()
   const { data: availableTypes } = useAvailableIssueTypes()
   const { data: availableVersions } = useAvailableFixVersions()
+  const { data: availableProjects } = useAvailableProjects()
 
   const [intervalMin, setIntervalMin] = useState<number>(15)
   const [fullSyncTime, setFullSyncTime] = useState<string>('02:00')
   const [lookbackMonths, setLookbackMonths] = useState<number>(6)
   const [selectedTypes, setSelectedTypes] = useState<string[]>([])
   const [selectedVersions, setSelectedVersions] = useState<string[]>([])
+  const [selectedProjects, setSelectedProjects] = useState<string[]>([])
   const [filtersOpen, setFiltersOpen] = useState(true)
   const [confirmFullSync, setConfirmFullSync] = useState(false)
 
@@ -43,6 +47,9 @@ export function SyncLogs() {
       if (Array.isArray(config.sync_fix_versions) && config.sync_fix_versions.length > 0) {
         setSelectedVersions(config.sync_fix_versions)
       }
+      if (Array.isArray(config.sync_projects) && config.sync_projects.length > 0) {
+        setSelectedProjects(config.sync_projects)
+      }
     }
   }, [config])
 
@@ -52,7 +59,7 @@ export function SyncLogs() {
 
   const handleFilteredSync = () => {
     if (!hasFilters) {
-      toast.error('Please select at least one work item type or fix version filter before syncing.')
+      toast.error('Please select at least one project, work item type, or fix version filter before syncing.')
       setFiltersOpen(true)
       return
     }
@@ -61,6 +68,7 @@ export function SyncLogs() {
       lookback_months: lookbackMonths,
       issue_types: selectedTypes,
       fix_versions: selectedVersions,
+      projects: selectedProjects,
     }, {
       onSuccess: () => toast.success('Sync completed successfully'),
       onError: (err) => toast.error(`Sync failed: ${err.message}`),
@@ -102,6 +110,27 @@ export function SyncLogs() {
     setSelectedVersions(prev => prev.includes(name) ? prev.filter(v => v !== name) : [...prev, name])
   }
 
+  // Build dropdown options
+  const typeOptions: MultiSelectOption[] = useMemo(() =>
+    (availableTypes || []).map(t => ({ value: t, label: t })),
+    [availableTypes]
+  )
+
+  const versionOptions: MultiSelectOption[] = useMemo(() =>
+    (availableVersions || []).map(v => ({
+      value: v.name,
+      label: v.name,
+      sublabel: v.project_key,
+      badge: v.released ? '✓' : undefined,
+    })),
+    [availableVersions]
+  )
+
+  const projectOptions: MultiSelectOption[] = useMemo(() =>
+    (availableProjects || []).map(p => ({ value: p, label: p })),
+    [availableProjects]
+  )
+
   const formatDuration = (ms: number) => {
     if (ms < 1000) return `${ms}ms`
     return `${(ms / 1000).toFixed(1)}s`
@@ -109,7 +138,8 @@ export function SyncLogs() {
 
   const formatNumber = (n: number) => n.toLocaleString()
 
-  const hasFilters = selectedTypes.length > 0 || selectedVersions.length > 0
+  const hasFilters = selectedTypes.length > 0 || selectedVersions.length > 0 || selectedProjects.length > 0
+  const activeFilterCount = selectedTypes.length + selectedVersions.length + selectedProjects.length
 
   return (
     <div className="wh-module space-y-6">
@@ -159,7 +189,7 @@ export function SyncLogs() {
             </span>
             {hasFilters && (
               <span style={{ fontSize: '10px', padding: '1px 8px', borderRadius: '10px', background: '#DBEAFE', color: '#2563EB', fontWeight: 600, fontFamily: 'Inter, sans-serif' }}>
-                {selectedTypes.length + selectedVersions.length} active
+                {activeFilterCount} active
               </span>
             )}
           </div>
@@ -198,88 +228,42 @@ export function SyncLogs() {
               </div>
             </div>
 
+            {/* Projects (Jira Spaces) */}
+            <MultiSelectDropdown
+              label="Projects (Jira Spaces)"
+              options={projectOptions}
+              selected={selectedProjects}
+              onChange={setSelectedProjects}
+              placeholder="Select projects…"
+              emptyMessage="Run a sync first to populate projects"
+              accentColor="#0891B2"
+            />
+
             {/* Issue Types */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <label style={{ fontSize: '11px', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '.4px', fontFamily: 'Inter, sans-serif' }}>
-                  Work Item Types
-                </label>
-                {selectedTypes.length > 0 && (
-                  <button onClick={() => setSelectedTypes([])} style={{ fontSize: '10px', color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                    Clear all
-                  </button>
-                )}
-              </div>
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                {(availableTypes || []).length === 0 ? (
-                  <span style={{ fontSize: '11px', color: '#94A3B8', fontStyle: 'italic' }}>Run a sync first to populate types</span>
-                ) : (
-                  (availableTypes || []).map(type => {
-                    const isSelected = selectedTypes.includes(type)
-                    return (
-                      <button
-                        key={type}
-                        onClick={() => toggleType(type)}
-                        style={{
-                          padding: '4px 12px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,
-                          fontFamily: 'Inter, sans-serif', cursor: 'pointer',
-                          border: isSelected ? '1px solid #2563EB' : '1px solid #E2E8F0',
-                          background: isSelected ? '#EFF6FF' : '#fff',
-                          color: isSelected ? '#2563EB' : '#334155',
-                        }}
-                      >
-                        {type}
-                      </button>
-                    )
-                  })
-                )}
-              </div>
-                <span style={{ fontSize: '10px', color: '#EF4444', marginTop: '4px', display: 'block', fontWeight: 600 }}>⚠ Select at least one type or version to sync</span>
-            </div>
+            <MultiSelectDropdown
+              label="Work Item Types"
+              options={typeOptions}
+              selected={selectedTypes}
+              onChange={setSelectedTypes}
+              placeholder="Select work item types…"
+              emptyMessage="Run a sync first to populate types"
+              accentColor="#2563EB"
+            />
 
             {/* Fix Versions */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <label style={{ fontSize: '11px', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '.4px', fontFamily: 'Inter, sans-serif' }}>
-                  Fix Version / Releases
-                </label>
-                {selectedVersions.length > 0 && (
-                  <button onClick={() => setSelectedVersions([])} style={{ fontSize: '10px', color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                    Clear all
-                  </button>
-                )}
-              </div>
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', maxHeight: '120px', overflowY: 'auto' }}>
-                {(availableVersions || []).length === 0 ? (
-                  <span style={{ fontSize: '11px', color: '#94A3B8', fontStyle: 'italic' }}>Run a sync first to populate versions</span>
-                ) : (
-                  (availableVersions || []).map((v, i) => {
-                    const isSelected = selectedVersions.includes(v.name)
-                    return (
-                      <button
-                        key={`${v.project_key}-${v.name}-${i}`}
-                        onClick={() => toggleVersion(v.name)}
-                        style={{
-                          padding: '4px 12px', borderRadius: '4px', fontSize: '11px', fontWeight: 500,
-                          fontFamily: 'Inter, sans-serif', cursor: 'pointer',
-                          border: isSelected ? '1px solid #7C3AED' : '1px solid #E2E8F0',
-                          background: isSelected ? '#F5F3FF' : '#fff',
-                          color: isSelected ? '#7C3AED' : '#334155',
-                          display: 'inline-flex', alignItems: 'center', gap: '4px',
-                        }}
-                      >
-                        {v.name}
-                        <span style={{ fontSize: '9px', color: isSelected ? '#9061F9' : '#94A3B8' }}>{v.project_key}</span>
-                        {v.released && <span style={{ fontSize: '8px', color: '#10B981' }}>✓</span>}
-                      </button>
-                    )
-                  })
-                )}
-              </div>
-              {selectedVersions.length === 0 && selectedTypes.length === 0 && (availableVersions || []).length > 0 && (
-                <span style={{ fontSize: '10px', color: '#EF4444', marginTop: '4px', display: 'block', fontWeight: 600 }}>⚠ Select at least one type or version to sync</span>
-              )}
-            </div>
+            <MultiSelectDropdown
+              label="Fix Version / Releases"
+              options={versionOptions}
+              selected={selectedVersions}
+              onChange={setSelectedVersions}
+              placeholder="Select fix versions…"
+              emptyMessage="Run a sync first to populate versions"
+              accentColor="#7C3AED"
+            />
+
+            {!hasFilters && (typeOptions.length > 0 || projectOptions.length > 0) && (
+              <span style={{ fontSize: '10px', color: '#EF4444', fontWeight: 600 }}>⚠ Select at least one project, type, or version to sync</span>
+            )}
           </div>
         )}
       </div>
@@ -303,7 +287,7 @@ export function SyncLogs() {
         </button>
         {hasFilters && !isSyncing && (
           <span style={{ fontSize: '11px', color: '#64748B', fontFamily: 'Inter, sans-serif' }}>
-            {lookbackMonths}mo lookback{selectedTypes.length > 0 ? ` · ${selectedTypes.length} types` : ''}{selectedVersions.length > 0 ? ` · ${selectedVersions.length} versions` : ''}
+            {lookbackMonths}mo lookback{selectedProjects.length > 0 ? ` · ${selectedProjects.length} projects` : ''}{selectedTypes.length > 0 ? ` · ${selectedTypes.length} types` : ''}{selectedVersions.length > 0 ? ` · ${selectedVersions.length} versions` : ''}
           </span>
         )}
         {!hasFilters && !isSyncing && (

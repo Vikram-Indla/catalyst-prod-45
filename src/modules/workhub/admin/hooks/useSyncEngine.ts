@@ -87,6 +87,7 @@ export function useForceSync() {
       lookback_months?: number
       issue_types?: string[]
       fix_versions?: string[]
+      projects?: string[]
     } = {}) => {
       const { data, error } = await supabase.functions.invoke('wh-jira-sync', {
         body: {
@@ -94,6 +95,7 @@ export function useForceSync() {
           lookback_months: params.lookback_months,
           issue_types: params.issue_types?.length ? params.issue_types : undefined,
           fix_versions: params.fix_versions?.length ? params.fix_versions : undefined,
+          projects: params.projects?.length ? params.projects : undefined,
         },
       })
       if (error) throw new Error(error.message)
@@ -113,7 +115,7 @@ export function useSyncConfig() {
       const { data, error } = await (supabase as any)
         .from('wh_config')
         .select('key, value')
-        .in('key', ['sync_interval_minutes', 'sync_full_time_utc', 'sync_max_months', 'sync_lookback_months', 'sync_issue_types', 'sync_fix_versions'])
+        .in('key', ['sync_interval_minutes', 'sync_full_time_utc', 'sync_max_months', 'sync_lookback_months', 'sync_issue_types', 'sync_fix_versions', 'sync_projects'])
       if (error) throw new Error(error.message)
       const cfg: Record<string, any> = {}
       data?.forEach((c: any) => {
@@ -125,6 +127,22 @@ export function useSyncConfig() {
       })
       return cfg
     },
+  })
+}
+
+export function useAvailableProjects() {
+  return useQuery({
+    queryKey: ['wh', 'available-projects'],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('wh_issues')
+        .select('project_key')
+      if (error) throw new Error(error.message)
+      const projects = new Set<string>()
+      data?.forEach((r: any) => projects.add(r.project_key))
+      return Array.from(projects).sort()
+    },
+    staleTime: 60_000,
   })
 }
 
