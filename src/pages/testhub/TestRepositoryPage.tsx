@@ -232,7 +232,10 @@ export function TestRepositoryPage() {
 
    useEffect(() => {
      fetchTestCases();
-   }, [selectedFolderId, searchQuery, sortColumn, sortDirection, filters]);
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [selectedFolderId, searchQuery, sortColumn, sortDirection, 
+       filters.priorities.join(','), filters.statuses.join(','), 
+       filters.types.join(','), filters.automations.join(',')]);
 
   // Handlers
   const handleSelectAll = (selected: boolean) => {
