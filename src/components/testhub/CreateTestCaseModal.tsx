@@ -26,7 +26,6 @@ interface TestCaseForEdit {
   priority: string;
   type: string;
   status: string;
-  automation: string;
   version: number;
 }
 
@@ -97,7 +96,7 @@ export function CreateTestCaseModal({
         setPriority(testCase.priority);
         setType(testCase.type);
         setStatus(testCase.status);
-        setAutomation(testCase.automation);
+        setAutomation('manual'); // Default value
         if (existingSteps && existingSteps.length > 0) {
           setSteps(existingSteps);
         } else {
@@ -603,33 +602,19 @@ export function CreateTestCaseModal({
                 </div>
               </div>
               
-              {/* Status + Automation - 2 column grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <div>
-                  <label style={{ ...labelStyle, fontSize: 13 }}>Status</label>
-                  <select
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    style={{ ...selectStyle, backgroundColor: '#FFFFFF' }}
-                  >
-                    <option value="draft">Draft</option>
-                    <option value="ready">Ready</option>
-                    <option value="approved">Approved</option>
-                    <option value="deprecated">Deprecated</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={{ ...labelStyle, fontSize: 13 }}>Automation</label>
-                  <select
-                    value={automation}
-                    onChange={(e) => setAutomation(e.target.value)}
-                    style={{ ...selectStyle, backgroundColor: '#FFFFFF' }}
-                  >
-                    <option value="manual">Manual</option>
-                    <option value="automated">Automated</option>
-                    <option value="planned">Planned</option>
-                  </select>
-                </div>
+              {/* Status - Full width */}
+              <div>
+                <label style={{ ...labelStyle, fontSize: 13 }}>Status</label>
+                <select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  style={{ ...selectStyle, backgroundColor: '#FFFFFF' }}
+                >
+                  <option value="draft">Draft</option>
+                  <option value="ready">Ready</option>
+                  <option value="approved">Approved</option>
+                  <option value="deprecated">Deprecated</option>
+                </select>
               </div>
               
               {/* Assigned To - Full width with profiles data */}

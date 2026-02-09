@@ -5,7 +5,6 @@ interface FilterState {
   priorities: string[];
   statuses: string[];
   types: string[];
-  automations: string[];
 }
 
 interface SortState {
@@ -28,7 +27,6 @@ interface TestCasesToolbarProps {
 const PRIORITY_OPTIONS = ['critical', 'high', 'medium', 'low'];
 const STATUS_OPTIONS = ['draft', 'ready', 'approved', 'deprecated'];
 const TYPE_OPTIONS = ['functional', 'security', 'integration', 'api', 'regression'];
-const AUTOMATION_OPTIONS = ['manual', 'automated', 'planned'];
 
 const SORT_OPTIONS = [
   { value: 'case_key', label: 'ID (Case Key)' },
@@ -76,7 +74,7 @@ export function TestCasesToolbar({
     setLocalFilters(filters);
   }, [filters]);
 
-  const activeFilterCount = filters.priorities.length + filters.statuses.length + filters.types.length + filters.automations.length;
+  const activeFilterCount = filters.priorities.length + filters.statuses.length + filters.types.length;
 
   const toggleFilter = (category: keyof FilterState, value: string) => {
     setLocalFilters(prev => {
@@ -90,7 +88,7 @@ export function TestCasesToolbar({
   };
 
   const clearAllFilters = () => {
-    const empty = { priorities: [], statuses: [], types: [], automations: [] };
+    const empty = { priorities: [], statuses: [], types: [] };
     setLocalFilters(empty);
     onFiltersChange(empty);
     setIsFilterOpen(false);
@@ -181,10 +179,6 @@ export function TestCasesToolbar({
               <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: 8 }}>Type</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>{TYPE_OPTIONS.map(t => renderCheckbox('types', t, t.charAt(0).toUpperCase() + t.slice(1)))}</div>
-              </div>
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: 8 }}>Automation</div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16 }}>{AUTOMATION_OPTIONS.map(a => renderCheckbox('automations', a, a.charAt(0).toUpperCase() + a.slice(1)))}</div>
               </div>
               <button onClick={applyFilters} style={{ width: '100%', height: 36, background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer' }}>Apply Filters</button>
             </div>

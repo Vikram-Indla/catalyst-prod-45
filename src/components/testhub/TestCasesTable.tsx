@@ -8,7 +8,6 @@ interface TestCase {
   priority: 'critical' | 'high' | 'medium' | 'low';
   type: string;
   status: 'draft' | 'ready' | 'approved' | 'deprecated';
-  automation: 'manual' | 'automated' | 'planned';
   ownerInitials?: string | null;
   ownerName?: string | null;
   updatedAt: string;
@@ -178,10 +177,6 @@ export function TestCasesTable({
                 Status <SortIcon column="status" />
               </span>
             </th>
-            {/* Auto */}
-            <th style={{ ...headerCellStyle, width: 90, textAlign: 'left' }}>
-              Auto
-            </th>
             {/* Owner - separate column */}
             <th style={{ ...headerCellStyle, width: 50, textAlign: 'center' }}>
               Owner
@@ -313,27 +308,6 @@ export function TestCasesTable({
                   </span>
                 </td>
                 
-                {/* Auto - Pill badge */}
-                <td style={bodyCellStyle}>
-                  <span style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    height: 22,
-                    padding: '0 8px',
-                    fontSize: 11,
-                    fontWeight: 600,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.04em',
-                    borderRadius: 4,
-                    backgroundColor: tc.automation === 'automated' ? 'rgba(16,185,129,0.1)' :
-                                    tc.automation === 'planned' ? 'rgba(37,99,235,0.1)' : '#F1F5F9',
-                    color: tc.automation === 'automated' ? '#059669' :
-                           tc.automation === 'planned' ? '#2563EB' : '#64748B',
-                  }}>
-                    {tc.automation === 'automated' ? 'AUTO' : 
-                     tc.automation === 'planned' ? 'PLAN' : 'MANUAL'}
-                  </span>
-                </td>
                 
                 {/* Owner - Avatar with colors based on initials */}
                 <td style={{ ...bodyCellStyle, textAlign: 'center' }}>
