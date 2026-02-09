@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { BarChart3, RefreshCw, ChevronDown, ChevronRight, FolderKanban } from 'lucide-react';
-import { useJiraIssueStats, IssueTypeStats, ProjectStats } from '../hooks/useJiraIssueStats';
+import { BarChart3, RefreshCw, ChevronDown, ChevronRight, FolderKanban, AlertTriangle, Bug, Layers } from 'lucide-react';
+import { useJiraIssueStats, ProjectHierarchy, EpicNode, StoryNode } from '../hooks/useJiraIssueStats';
 import '../../shared/tokens/workhub-tokens.css';
 
 const STATUS_COLORS: Record<string, string> = {
@@ -22,6 +22,17 @@ function getStatusColor(status: string): string {
   return STATUS_COLORS[status] || '#94A3B8';
 }
 
+const DEFECT_COLORS: Record<string, string> = {
+  'production incident': '#EF4444',
+  'qa bug': '#F59E0B',
+  'defect': '#8B5CF6',
+  'bug': '#F59E0B',
+};
+
+function getDefectColor(type: string): string {
+  return DEFECT_COLORS[type.toLowerCase()] || '#94A3B8';
+}
+
 interface WorkItemsDashboardProps {
   isConnected: boolean;
   siteUrl: string;
@@ -32,12 +43,15 @@ function buildJiraUrl(siteUrl: string, jql: string): string {
   return `${base}/issues/?jql=${encodeURIComponent(jql)}`;
 }
 
+function buildBrowseUrl(siteUrl: string, key: string): string {
+  const base = siteUrl.replace(/\/$/, '');
+  return `${base}/browse/${key}`;
+}
+
 const BASE_JQL = 'updated >= -90d';
 
 export function WorkItemsDashboard({ isConnected, siteUrl }: WorkItemsDashboardProps) {
   const { data, isLoading, error, refetch, isFetching } = useJiraIssueStats(isConnected);
-  const [expandedType, setExpandedType] = useState<string | null>(null);
-  const [expandedProject, setExpandedProject] = useState<string | null>(null);
 
   if (!isConnected) return null;
 
@@ -47,10 +61,7 @@ export function WorkItemsDashboard({ isConnected, siteUrl }: WorkItemsDashboardP
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <BarChart3 style={{ width: 18, height: 18, color: 'var(--wh-pri)' }} />
-          <h3 style={{
-            fontFamily: 'var(--wh-fh)', fontSize: 15, fontWeight: 700,
-            color: 'var(--wh-tx)', margin: 0,
-          }}>
+          <h3 style={{ fontFamily: 'var(--wh-fh)', fontSize: 15, fontWeight: 700, color: 'var(--wh-tx)', margin: 0 }}>
             Work Items Overview
           </h3>
           {data && (
@@ -95,46 +106,20 @@ export function WorkItemsDashboard({ isConnected, siteUrl }: WorkItemsDashboardP
 
       {data && !isLoading && (
         <>
-          {/* Status summary bar */}
-          <StatusBar statuses={data.statuses} total={data.scanned} />
+          {/* Global Status Bar */}
+          <StatusBar statuses={data.statusSummary} total={data.scanned} />
 
-          {/* By Issue Type */}
-          <SectionHeader icon={<BarChart3 style={{ width: 13, height: 13 }} />} label="By Issue Type" />
-          <div style={{ border: '1px solid var(--wh-bdr)', borderRadius: 'var(--wh-rad)', overflow: 'hidden', marginBottom: 20 }}>
-            <TableHeader columns={['Type', 'Count', 'Status Breakdown']} />
-            {data.types.map((t, idx) => (
-              <TypeRow
-                key={t.type}
-                type={t}
-                total={data.scanned}
-                siteUrl={siteUrl}
-                isLast={idx === data.types.length - 1}
-                isExpanded={expandedType === t.type}
-                onToggle={() => setExpandedType(expandedType === t.type ? null : t.type)}
-              />
-            ))}
-          </div>
-
-          {/* By Project */}
-          <SectionHeader icon={<FolderKanban style={{ width: 13, height: 13 }} />} label="By Project" />
-          <div style={{ border: '1px solid var(--wh-bdr)', borderRadius: 'var(--wh-rad)', overflow: 'hidden' }}>
-            <TableHeader columns={['Project', 'Count', 'Type / Status Breakdown']} />
-            {data.projects.map((p, idx) => (
-              <ProjectRow
-                key={p.key}
-                project={p}
-                total={data.scanned}
-                siteUrl={siteUrl}
-                isLast={idx === data.projects.length - 1}
-                isExpanded={expandedProject === p.key}
-                onToggle={() => setExpandedProject(expandedProject === p.key ? null : p.key)}
-              />
+          {/* Projects */}
+          <SectionHeader icon={<FolderKanban style={{ width: 13, height: 13 }} />} label="Projects" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {data.projects.map(project => (
+              <ProjectCard key={project.key} project={project} total={data.scanned} siteUrl={siteUrl} />
             ))}
           </div>
 
           {data.total > data.scanned && (
             <div style={{
-              marginTop: 8, fontSize: 11, color: 'var(--wh-tx4)',
+              marginTop: 12, fontSize: 11, color: 'var(--wh-tx4)',
               fontFamily: 'var(--wh-fn)', fontStyle: 'italic',
             }}>
               Showing {data.scanned.toLocaleString()} of {data.total.toLocaleString()} issues (last 90 days)
@@ -162,27 +147,9 @@ function SectionHeader({ icon, label }: { icon: React.ReactNode; label: string }
   );
 }
 
-function TableHeader({ columns }: { columns: string[] }) {
-  return (
-    <div style={{
-      display: 'grid', gridTemplateColumns: '28px 1fr 80px 1fr',
-      padding: '8px 12px', background: 'var(--wh-sf)',
-      borderBottom: '1px solid var(--wh-bdr)',
-      fontSize: 11, fontWeight: 600, color: 'var(--wh-tx4)',
-      fontFamily: 'var(--wh-fh)', textTransform: 'uppercase', letterSpacing: '0.04em',
-    }}>
-      <div />
-      <div>{columns[0]}</div>
-      <div style={{ textAlign: 'right' }}>{columns[1]}</div>
-      <div style={{ paddingLeft: 16 }}>{columns[2]}</div>
-    </div>
-  );
-}
-
 function StatusBar({ statuses, total }: { statuses: Array<{ status: string; count: number }>; total: number }) {
   return (
     <div style={{ marginBottom: 20 }}>
-      <SectionHeader icon={null} label="Status Distribution" />
       <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', background: 'var(--wh-sf2)' }}>
         {statuses.map(s => (
           <div key={s.status} title={`${s.status}: ${s.count}`} style={{
@@ -219,179 +186,292 @@ function MiniBar({ items, getColor, total }: { items: Array<{ label: string; cou
   );
 }
 
-function ChipList({ items, getColor, getHref }: { items: Array<{ label: string; count: number }>; getColor: (l: string) => string; getHref?: (label: string) => string }) {
+function StatusDot({ status }: { status: string }) {
+  return <span style={{ width: 7, height: 7, borderRadius: '50%', background: getStatusColor(status), flexShrink: 0 }} />;
+}
+
+function JiraLink({ href, children, onClick }: { href: string; children: React.ReactNode; onClick?: (e: React.MouseEvent) => void }) {
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-      {items.map(s => {
-        const href = getHref?.(s.label);
-        const countEl = href ? (
-          <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            style={{ fontFamily: 'var(--wh-mo)', fontSize: 11, color: 'var(--wh-pri)', textDecoration: 'none', borderBottom: '1px dashed var(--wh-pri)' }}
-            title="Open in Jira"
-          >
-            {s.count}
-          </a>
-        ) : (
-          <span style={{ fontFamily: 'var(--wh-mo)', fontSize: 11, color: 'var(--wh-tx4)' }}>{s.count}</span>
-        );
-        return (
-          <span key={s.label} style={{
-            display: 'inline-flex', alignItems: 'center', gap: 5,
-            background: 'var(--wh-bg)', border: '1px solid var(--wh-bdr)',
-            borderRadius: 20, padding: '3px 10px 3px 8px',
-            fontSize: 12, fontFamily: 'var(--wh-fn)', color: 'var(--wh-tx2)',
-          }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: getColor(s.label) }} />
-            {s.label}
-            {countEl}
-          </span>
-        );
-      })}
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={onClick || ((e) => e.stopPropagation())}
+      style={{
+        color: 'var(--wh-pri)', textDecoration: 'none', borderBottom: '1px dashed var(--wh-pri)',
+        fontFamily: 'var(--wh-mo)', cursor: 'pointer',
+      }}
+      title="Open in Jira"
+    >
+      {children}
+    </a>
+  );
+}
+
+function KeyBadge({ children }: { children: string }) {
+  return (
+    <span style={{
+      fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)',
+      background: 'var(--wh-sf2)', padding: '1px 6px', borderRadius: 4,
+    }}>{children}</span>
+  );
+}
+
+/* ── Project Card ── */
+
+function ProjectCard({ project, total, siteUrl }: { project: ProjectHierarchy; total: number; siteUrl: string }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const pct = total > 0 ? ((project.totalCount / total) * 100).toFixed(1) : '0';
+  const jiraUrl = siteUrl ? buildJiraUrl(siteUrl, `${BASE_JQL} AND project = "${project.key}"`) : '';
+  const totalDefects = project.defects.reduce((s, d) => s + d.count, 0);
+
+  return (
+    <div style={{
+      border: '1px solid var(--wh-bdr)', borderRadius: 'var(--wh-rad)',
+      overflow: 'hidden', background: 'var(--wh-bg)',
+    }}>
+      {/* Project header */}
+      <div
+        onClick={() => setIsExpanded(!isExpanded)}
+        style={{
+          display: 'grid', gridTemplateColumns: '28px 1fr auto',
+          padding: '12px 14px', cursor: 'pointer',
+          background: isExpanded ? 'var(--wh-sf)' : 'transparent',
+          transition: 'background 0.15s',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          {isExpanded
+            ? <ChevronDown style={{ width: 14, height: 14, color: 'var(--wh-tx4)' }} />
+            : <ChevronRight style={{ width: 14, height: 14, color: 'var(--wh-tx4)' }} />}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          <FolderKanban style={{ width: 14, height: 14, color: 'var(--wh-pri)', flexShrink: 0 }} />
+          <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--wh-tx)', fontFamily: 'var(--wh-fn)' }}>{project.name}</span>
+          <KeyBadge>{project.key}</KeyBadge>
+          {/* Quick defect badges */}
+          {project.defects.map(d => (
+            <span key={d.type} style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              fontSize: 10, fontWeight: 600, fontFamily: 'var(--wh-mo)',
+              color: getDefectColor(d.type), background: `${getDefectColor(d.type)}15`,
+              padding: '2px 7px', borderRadius: 10,
+            }}>
+              {d.type === 'Production Incident' ? <AlertTriangle style={{ width: 10, height: 10 }} /> : <Bug style={{ width: 10, height: 10 }} />}
+              {d.count}
+            </span>
+          ))}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, fontFamily: 'var(--wh-mo)', textAlign: 'right' }}>
+            {jiraUrl ? <JiraLink href={jiraUrl}>{project.totalCount}</JiraLink> : project.totalCount}
+            <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--wh-tx4)', marginLeft: 4 }}>({pct}%)</span>
+          </div>
+          <MiniBar
+            items={project.statusCounts.map(s => ({ label: s.status, count: s.count }))}
+            getColor={getStatusColor}
+            total={project.totalCount}
+          />
+        </div>
+      </div>
+
+      {/* Expanded content */}
+      {isExpanded && (
+        <div style={{ borderTop: '1px solid var(--wh-bdr)' }}>
+          {/* Defects section */}
+          {project.defects.length > 0 && (
+            <div style={{ padding: '12px 14px 12px 42px', borderBottom: '1px solid var(--wh-bdr)', background: 'var(--wh-sf)' }}>
+              <div style={{
+                fontSize: 10, fontWeight: 700, color: 'var(--wh-tx4)', marginBottom: 8,
+                fontFamily: 'var(--wh-fh)', textTransform: 'uppercase', letterSpacing: '0.04em',
+                display: 'flex', alignItems: 'center', gap: 5,
+              }}>
+                <Bug style={{ width: 11, height: 11 }} /> Defects & Incidents
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {project.defects.map(d => {
+                  const href = siteUrl ? buildJiraUrl(siteUrl, `${BASE_JQL} AND project = "${project.key}" AND issuetype = "${d.type}"`) : '';
+                  return (
+                    <div key={d.type} style={{
+                      display: 'flex', alignItems: 'center', gap: 6,
+                      background: 'var(--wh-bg)', border: '1px solid var(--wh-bdr)',
+                      borderRadius: 8, padding: '6px 12px',
+                    }}>
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: getDefectColor(d.type) }} />
+                      <span style={{ fontSize: 12, fontFamily: 'var(--wh-fn)', color: 'var(--wh-tx2)' }}>{d.type}</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, fontFamily: 'var(--wh-mo)' }}>
+                        {href ? <JiraLink href={href}>{d.count}</JiraLink> : d.count}
+                      </span>
+                      {/* Mini status chips */}
+                      {d.statuses.slice(0, 3).map(s => (
+                        <span key={s.status} style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 3,
+                          fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-fn)',
+                        }}>
+                          <StatusDot status={s.status} />
+                          {s.count}
+                        </span>
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Epics hierarchy */}
+          <div style={{ padding: '12px 14px 8px 42px' }}>
+            <div style={{
+              fontSize: 10, fontWeight: 700, color: 'var(--wh-tx4)', marginBottom: 8,
+              fontFamily: 'var(--wh-fh)', textTransform: 'uppercase', letterSpacing: '0.04em',
+              display: 'flex', alignItems: 'center', gap: 5,
+            }}>
+              <Layers style={{ width: 11, height: 11 }} /> Hierarchy (Epic → Story → Subtask)
+            </div>
+            {project.epics.map((epic, idx) => (
+              <EpicRow key={epic.key} epic={epic} projectKey={project.key} siteUrl={siteUrl} isLast={idx === project.epics.length - 1} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-/* ── Row components ── */
+/* ── Epic Row ── */
 
-function TypeRow({ type, total, siteUrl, isLast, isExpanded, onToggle }: {
-  type: IssueTypeStats; total: number; siteUrl: string; isLast: boolean;
-  isExpanded: boolean; onToggle: () => void;
-}) {
-  const pct = total > 0 ? ((type.count / total) * 100).toFixed(1) : '0';
-  const jiraUrl = siteUrl ? buildJiraUrl(siteUrl, `${BASE_JQL} AND issuetype = "${type.type}"`) : '';
+function EpicRow({ epic, projectKey, siteUrl, isLast }: { epic: EpicNode; projectKey: string; siteUrl: string; isLast: boolean }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const isUnlinked = epic.key === '_unlinked';
+  const browseUrl = !isUnlinked && siteUrl ? buildBrowseUrl(siteUrl, epic.key) : '';
+
   return (
-    <>
-      <ExpandableRow
-        label={type.type}
-        count={type.count}
-        pct={pct}
-        href={jiraUrl}
-        isExpanded={isExpanded}
-        isLast={isLast}
-        onToggle={onToggle}
-        barItems={type.statuses.map(s => ({ label: s.status, count: s.count }))}
-        barTotal={type.count}
-        getColor={getStatusColor}
-      />
-      {isExpanded && (
-        <div style={{
-          padding: '8px 12px 12px 40px',
-          borderBottom: isLast ? 'none' : '1px solid var(--wh-bdr)',
-          background: 'var(--wh-sf)',
+    <div style={{ marginBottom: isLast ? 0 : 4 }}>
+      <div
+        onClick={() => setIsExpanded(!isExpanded)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px',
+          cursor: 'pointer', borderRadius: 6,
+          background: isExpanded ? 'var(--wh-sf2)' : 'transparent',
+          transition: 'background 0.15s',
+        }}
+      >
+        {epic.stories.length > 0
+          ? (isExpanded
+            ? <ChevronDown style={{ width: 12, height: 12, color: 'var(--wh-tx4)' }} />
+            : <ChevronRight style={{ width: 12, height: 12, color: 'var(--wh-tx4)' }} />)
+          : <span style={{ width: 12 }} />}
+        <StatusDot status={epic.status} />
+        {browseUrl ? (
+          <JiraLink href={browseUrl} onClick={(e) => e.stopPropagation()}>
+            <span style={{ fontSize: 11 }}>{epic.key}</span>
+          </JiraLink>
+        ) : null}
+        <span style={{
+          fontSize: 12, fontWeight: 600, color: isUnlinked ? 'var(--wh-tx3)' : 'var(--wh-tx)',
+          fontFamily: 'var(--wh-fn)', fontStyle: isUnlinked ? 'italic' : 'normal',
+          flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
-          <ChipList
-            items={type.statuses.map(s => ({ label: s.status, count: s.count }))}
-            getColor={getStatusColor}
-            getHref={siteUrl ? (status) => buildJiraUrl(siteUrl, `${BASE_JQL} AND issuetype = "${type.type}" AND status = "${status}"`) : undefined}
-          />
-        </div>
-      )}
-    </>
-  );
-}
-
-function ProjectRow({ project, total, siteUrl, isLast, isExpanded, onToggle }: {
-  project: ProjectStats; total: number; siteUrl: string; isLast: boolean;
-  isExpanded: boolean; onToggle: () => void;
-}) {
-  const pct = total > 0 ? ((project.count / total) * 100).toFixed(1) : '0';
-  const jiraUrl = siteUrl ? buildJiraUrl(siteUrl, `${BASE_JQL} AND project = "${project.key}"`) : '';
-  return (
-    <>
-      <ExpandableRow
-        label={`${project.name}`}
-        sublabel={project.key}
-        count={project.count}
-        pct={pct}
-        href={jiraUrl}
-        isExpanded={isExpanded}
-        isLast={isLast}
-        onToggle={onToggle}
-        barItems={project.statuses.map(s => ({ label: s.status, count: s.count }))}
-        barTotal={project.count}
-        getColor={getStatusColor}
-      />
-      {isExpanded && (
-        <div style={{
-          padding: '8px 12px 12px 40px',
-          borderBottom: isLast ? 'none' : '1px solid var(--wh-bdr)',
-          background: 'var(--wh-sf)',
-        }}>
-          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--wh-tx4)', marginBottom: 6, fontFamily: 'var(--wh-fh)', textTransform: 'uppercase' }}>
-            Types
-          </div>
-          <ChipList
-            items={project.types.map(t => ({ label: t.type, count: t.count }))}
-            getColor={() => 'var(--wh-pri)'}
-            getHref={siteUrl ? (type) => buildJiraUrl(siteUrl, `${BASE_JQL} AND project = "${project.key}" AND issuetype = "${type}"`) : undefined}
-          />
-          <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--wh-tx4)', marginBottom: 6, marginTop: 10, fontFamily: 'var(--wh-fh)', textTransform: 'uppercase' }}>
-            Statuses
-          </div>
-          <ChipList
-            items={project.statuses.map(s => ({ label: s.status, count: s.count }))}
-            getColor={getStatusColor}
-            getHref={siteUrl ? (status) => buildJiraUrl(siteUrl, `${BASE_JQL} AND project = "${project.key}" AND status = "${status}"`) : undefined}
-          />
-        </div>
-      )}
-    </>
-  );
-}
-
-function ExpandableRow({ label, sublabel, count, pct, href, isExpanded, isLast, onToggle, barItems, barTotal, getColor }: {
-  label: string; sublabel?: string; count: number; pct: string; href?: string;
-  isExpanded: boolean; isLast: boolean; onToggle: () => void;
-  barItems: Array<{ label: string; count: number }>; barTotal: number;
-  getColor: (l: string) => string;
-}) {
-  return (
-    <div
-      onClick={onToggle}
-      style={{
-        display: 'grid', gridTemplateColumns: '28px 1fr 80px 1fr',
-        padding: '10px 12px', cursor: 'pointer',
-        borderBottom: isLast && !isExpanded ? 'none' : '1px solid var(--wh-bdr)',
-        background: isExpanded ? 'var(--wh-sf)' : 'transparent',
-        transition: 'background 0.15s',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        {isExpanded
-          ? <ChevronDown style={{ width: 14, height: 14, color: 'var(--wh-tx4)' }} />
-          : <ChevronRight style={{ width: 14, height: 14, color: 'var(--wh-tx4)' }} />}
+          {epic.summary}
+        </span>
+        <span style={{ fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', flexShrink: 0 }}>
+          {epic.storyCount}S · {epic.subtaskCount}T
+        </span>
+        <MiniBar
+          items={epic.statusCounts.map(s => ({ label: s.status, count: s.count }))}
+          getColor={getStatusColor}
+          total={epic.storyCount + epic.subtaskCount + 1}
+        />
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--wh-tx)', fontFamily: 'var(--wh-fn)' }}>{label}</span>
-        {sublabel && (
-          <span style={{ fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', background: 'var(--wh-sf2)', padding: '1px 6px', borderRadius: 4 }}>{sublabel}</span>
+      {isExpanded && epic.stories.length > 0 && (
+        <div style={{ paddingLeft: 28 }}>
+          {epic.stories.map((story, idx) => (
+            <StoryRow key={story.key} story={story} projectKey={projectKey} siteUrl={siteUrl} isLast={idx === epic.stories.length - 1} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Story Row ── */
+
+function StoryRow({ story, projectKey, siteUrl, isLast }: { story: StoryNode; projectKey: string; siteUrl: string; isLast: boolean }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const browseUrl = siteUrl ? buildBrowseUrl(siteUrl, story.key) : '';
+
+  return (
+    <div style={{ marginBottom: isLast ? 4 : 0 }}>
+      <div
+        onClick={() => story.subtasks.length > 0 && setIsExpanded(!isExpanded)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px',
+          cursor: story.subtasks.length > 0 ? 'pointer' : 'default',
+          borderRadius: 4,
+          transition: 'background 0.15s',
+        }}
+      >
+        {story.subtasks.length > 0
+          ? (isExpanded
+            ? <ChevronDown style={{ width: 11, height: 11, color: 'var(--wh-tx4)' }} />
+            : <ChevronRight style={{ width: 11, height: 11, color: 'var(--wh-tx4)' }} />)
+          : <span style={{ width: 11 }} />}
+        <StatusDot status={story.status} />
+        {browseUrl ? (
+          <JiraLink href={browseUrl} onClick={(e) => e.stopPropagation()}>
+            <span style={{ fontSize: 10 }}>{story.key}</span>
+          </JiraLink>
+        ) : null}
+        <span style={{
+          fontSize: 11, color: 'var(--wh-tx2)', fontFamily: 'var(--wh-fn)',
+          flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        }}>
+          {story.summary}
+        </span>
+        <span style={{
+          fontSize: 9, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)',
+          background: 'var(--wh-sf2)', padding: '1px 5px', borderRadius: 3, flexShrink: 0,
+        }}>
+          {story.type}
+        </span>
+        {story.subtaskCount > 0 && (
+          <span style={{ fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', flexShrink: 0 }}>
+            {story.subtaskCount}T
+          </span>
         )}
       </div>
-      <div style={{ fontSize: 13, fontWeight: 700, fontFamily: 'var(--wh-mo)', textAlign: 'right' }}>
-        {href ? (
-          <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              color: 'var(--wh-pri)', textDecoration: 'none', borderBottom: '1px dashed var(--wh-pri)',
-              cursor: 'pointer',
-            }}
-            title="Open in Jira"
-          >
-            {count}
-          </a>
-        ) : count}
-        <span style={{ fontSize: 11, fontWeight: 400, color: 'var(--wh-tx4)', marginLeft: 4 }}>({pct}%)</span>
-      </div>
-      <div style={{ paddingLeft: 16, display: 'flex', alignItems: 'center' }}>
-        <MiniBar items={barItems} getColor={getColor} total={barTotal} />
-      </div>
+      {isExpanded && story.subtasks.length > 0 && (
+        <div style={{ paddingLeft: 28 }}>
+          {story.subtasks.map(sub => {
+            const subUrl = siteUrl ? buildBrowseUrl(siteUrl, sub.key) : '';
+            return (
+              <div key={sub.key} style={{
+                display: 'flex', alignItems: 'center', gap: 6, padding: '3px 8px',
+                fontSize: 11,
+              }}>
+                <span style={{ width: 11 }} />
+                <StatusDot status={sub.status} />
+                {subUrl ? (
+                  <JiraLink href={subUrl}>
+                    <span style={{ fontSize: 10 }}>{sub.key}</span>
+                  </JiraLink>
+                ) : null}
+                <span style={{
+                  color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)',
+                  flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>
+                  {sub.summary}
+                </span>
+                <span style={{
+                  fontSize: 9, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-fn)',
+                }}>
+                  {sub.status}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
