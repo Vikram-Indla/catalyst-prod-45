@@ -42,6 +42,7 @@ interface Folder {
   name: string;
   parentId: string | null;
   testCaseCount: number;
+  icon?: string;
 }
 
 interface TestStep {
@@ -135,6 +136,7 @@ export function TestRepositoryPage() {
       name: f.name,
       parentId: f.parent_id,
       testCaseCount: countMap[f.id] || 0,
+      icon: f.icon || '📁',
     })) || [];
 
     setFolders(foldersWithCounts);

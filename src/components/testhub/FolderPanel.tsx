@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Folder, FolderOpen, Plus, ChevronsLeft, ChevronRight, Search } from 'lucide-react';
 
 interface FolderItem {
@@ -43,8 +43,26 @@ export function FolderPanel({
   totalTestCases,
 }: FolderPanelProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+  
+  // Auto-expand parent folders that have children
+  const getInitialExpandedFolders = () => {
+    const expanded = new Set<string>();
+    folders.forEach(folder => {
+      const hasChildren = folders.some(f => f.parentId === folder.id);
+      if (hasChildren) {
+        expanded.add(folder.id);
+      }
+    });
+    return expanded;
+  };
+  
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(getInitialExpandedFolders());
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Update expanded folders when folders prop changes
+  useEffect(() => {
+    setExpandedFolders(getInitialExpandedFolders());
+  }, [folders.length]); // Only re-run when folder count changes
 
   const toggleExpand = (folderId: string, e: React.MouseEvent) => {
     e.stopPropagation();
