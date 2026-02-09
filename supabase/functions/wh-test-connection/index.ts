@@ -110,44 +110,50 @@ serve(async (req) => {
     const c3Start = Date.now()
     if (checks[0].passed) {
       try {
-        // Use POST /search/jql (new endpoint) with GET fallbacks
-        let res = await fetch(
-          `${base}/rest/api/2/search/jql`,
-          {
+        // The new /search/jql endpoint requires bounded JQL queries
+        const boundedJql = 'updated >= -30d order by updated desc'
+        const searchApproaches = [
+          // 1. New Jira Cloud endpoint: GET /rest/api/3/search/jql (bounded query required)
+          () => fetch(`${base}/rest/api/3/search/jql?jql=${encodeURIComponent(boundedJql)}&maxResults=1&fields=summary`, {
+            headers: { 'Authorization': authHeader, 'Accept': 'application/json' }
+          }),
+          // 2. New Jira Cloud endpoint: POST /rest/api/3/search/jql
+          () => fetch(`${base}/rest/api/3/search/jql`, {
             method: 'POST',
             headers: { 'Authorization': authHeader, 'Accept': 'application/json', 'Content-Type': 'application/json' },
-            body: JSON.stringify({ jql: 'order by updated desc', maxResults: 1, fields: ['summary'] })
-          }
-        )
-        // Fallback: POST to old /search endpoint
-        if (!res.ok && res.status !== 401 && res.status !== 403) {
-          res = await fetch(
-            `${base}/rest/api/2/search`,
-            {
-              method: 'POST',
-              headers: { 'Authorization': authHeader, 'Accept': 'application/json', 'Content-Type': 'application/json' },
-              body: JSON.stringify({ jql: 'order by updated desc', maxResults: 1, fields: ['summary'] })
-            }
-          )
+            body: JSON.stringify({ jql: boundedJql, maxResults: 1 })
+          }),
+          // 3. POST to /rest/api/3/search (legacy)
+          () => fetch(`${base}/rest/api/3/search`, {
+            method: 'POST',
+            headers: { 'Authorization': authHeader, 'Accept': 'application/json', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ jql: boundedJql, maxResults: 1, fields: ['summary'] })
+          }),
+          // 4. GET /rest/api/2/search (legacy)
+          () => fetch(`${base}/rest/api/2/search?jql=${encodeURIComponent(boundedJql)}&maxResults=1&fields=summary`, {
+            headers: { 'Authorization': authHeader, 'Accept': 'application/json' }
+          }),
+        ]
+
+        let res: Response | null = null
+        let lastBody = ''
+        for (const attempt of searchApproaches) {
+          res = await attempt()
+          lastBody = await res.text()
+          console.log(`Issue Read attempt: ${res.url} -> ${res.status}: ${lastBody.substring(0, 300)}`)
+          if (res.ok || res.status === 401 || res.status === 403) break
         }
-        // Fallback: GET (older instances)
-        if (!res.ok && res.status !== 401 && res.status !== 403) {
-          res = await fetch(
-            `${base}/rest/api/2/search?jql=order+by+updated+desc&maxResults=1&fields=summary`,
-            { headers: { 'Authorization': authHeader, 'Accept': 'application/json' } }
-          )
-        }
-        if (res.ok) {
-          const data = await res.json()
+        if (res && res.ok) {
+          const data = JSON.parse(lastBody)
           checks.push({
             name: 'Issue Read', passed: true,
-            message: `Can read issues (${data.total} total)`,
+            message: `Can read issues (${data.total ?? data.issues?.length ?? 0} total)`,
             duration_ms: Date.now() - c3Start
           })
         } else {
           checks.push({
             name: 'Issue Read', passed: false,
-            message: `Cannot read issues: ${res.status}`,
+            message: `Cannot read issues: ${res?.status}`,
             duration_ms: Date.now() - c3Start
           })
         }
