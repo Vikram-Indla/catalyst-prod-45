@@ -31,9 +31,9 @@ interface TestCase {
   priority: 'critical' | 'high' | 'medium' | 'low';
   type: 'functional' | 'regression' | 'security' | 'integration' | 'performance';
   status: 'draft' | 'ready' | 'approved' | 'deprecated';
-  ownerName?: string;
-  ownerInitials?: string;
-  ownerColor?: string;
+  ownerName?: string | null;
+  ownerInitials?: string | null;
+  ownerAvatarUrl?: string | null;
   updatedAt: string;
   objective?: string | null;
   preconditions?: string | null;
@@ -182,21 +182,37 @@ export function TestRepositoryPage() {
        return;
      }
 
-     let mapped = data?.map(tc => ({
-       id: tc.id,
-       caseKey: tc.case_key,
-       title: tc.title,
-       priority: tc.priority as TestCase['priority'],
-       type: tc.type as TestCase['type'],
-       status: tc.status as TestCase['status'],
-       ownerInitials: 'AK',
-       ownerColor: 'blue',
-       updatedAt: tc.updated_at,
-       objective: tc.objective,
-       preconditions: tc.preconditions,
-       folderId: tc.folder_id,
-       version: tc.version || 1,
-     })) || [];
+     // Fetch owner profiles
+     const ownerIds = [...new Set(data?.map(tc => tc.owner_id).filter(Boolean) as string[])];
+     let profilesMap: Record<string, { full_name: string | null; avatar_url: string | null }> = {};
+     if (ownerIds.length > 0) {
+       const { data: profiles } = await supabase
+         .from('profiles')
+         .select('id, full_name, avatar_url')
+         .in('id', ownerIds);
+       profiles?.forEach(p => { profilesMap[p.id] = { full_name: p.full_name, avatar_url: p.avatar_url }; });
+     }
+
+     let mapped = data?.map(tc => {
+       const owner = tc.owner_id ? profilesMap[tc.owner_id] : null;
+       const ownerName = owner?.full_name || null;
+       return {
+        id: tc.id,
+        caseKey: tc.case_key,
+        title: tc.title,
+        priority: tc.priority as TestCase['priority'],
+        type: tc.type as TestCase['type'],
+        status: tc.status as TestCase['status'],
+        ownerInitials: ownerName ? ownerName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) : null,
+        ownerName,
+        ownerAvatarUrl: owner?.avatar_url || null,
+        updatedAt: tc.updated_at,
+        objective: tc.objective,
+        preconditions: tc.preconditions,
+        folderId: tc.folder_id,
+        version: tc.version || 1,
+       };
+     }) || [];
 
      // Apply client-side filtering
      if (filters.priorities.length > 0 || filters.statuses.length > 0 || filters.types.length > 0) {
