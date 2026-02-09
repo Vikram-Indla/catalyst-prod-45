@@ -12,6 +12,7 @@ import { ViewTestCaseModal } from '@/components/testhub/ViewTestCaseModal';
 import { CloneTestCaseModal } from '@/components/testhub/CloneTestCaseModal';
 import { DeleteTestCaseModal } from '@/components/testhub/DeleteTestCaseModal';
 import { TestCaseContextMenu } from '@/components/testhub/TestCaseContextMenu';
+import { CreateFolderModal } from '@/components/testhub/CreateFolderModal';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -90,6 +91,7 @@ export function TestRepositoryPage() {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isCloneModalOpen, setIsCloneModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [selectedTestCase, setSelectedTestCase] = useState<RawTestCase | null>(null);
   const [selectedTestCaseSteps, setSelectedTestCaseSteps] = useState<TestStep[]>([]);
@@ -501,7 +503,7 @@ export function TestRepositoryPage() {
             folders={folders}
             selectedFolderId={selectedFolderId}
             onSelectFolder={setSelectedFolderId}
-            onCreateFolder={() => console.log('Create folder')}
+            onCreateFolder={() => setIsCreateFolderModalOpen(true)}
             totalTestCases={totalTestCases}
           />
 
@@ -763,6 +765,17 @@ export function TestRepositoryPage() {
         }}
         onSuccess={handleDeleteSuccess}
         testCases={testCasesToDelete}
+      />
+
+      {/* Create Folder Modal */}
+      <CreateFolderModal
+        isOpen={isCreateFolderModalOpen}
+        onClose={() => setIsCreateFolderModalOpen(false)}
+        onSuccess={() => {
+          fetchFolders();
+          setIsCreateFolderModalOpen(false);
+        }}
+        folders={folders.map(f => ({ id: f.id, name: f.name, parentId: f.parentId }))}
       />
     </div>
   );

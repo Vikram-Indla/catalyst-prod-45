@@ -11,3 +11,4 @@ export { DeleteTestCaseModal } from './DeleteTestCaseModal';
 export { TestCaseContextMenu } from './TestCaseContextMenu';
 export { StepsEditor } from './StepsEditor';
 export { SharedStepsModal } from './SharedStepsModal';
+export { CreateFolderModal } from './CreateFolderModal';
