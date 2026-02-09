@@ -174,7 +174,7 @@ export function SyncLogs() {
       )}
 
       {/* Sync Filters Card */}
-      <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', overflow: 'hidden' }}>
+      <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', overflow: 'visible' }}>
         <button
           onClick={() => setFiltersOpen(!filtersOpen)}
           style={{
