@@ -4,7 +4,6 @@
 
 import { useState, useEffect } from 'react';
 import { RefreshCw, Plus, Trash2, MoveRight, CheckSquare, Download, Upload, Sparkles } from 'lucide-react';
-import { TestHubSidebar } from '@/components/testhub/TestHubSidebar';
 import { FolderPanel } from '@/components/testhub/FolderPanel';
 import { TestCasesTable } from '@/components/testhub/TestCasesTable';
 import { TestCasesToolbar } from '@/components/testhub/TestCasesToolbar';
@@ -606,14 +605,6 @@ export function TestRepositoryPage() {
 
         {/* Content */}
         <div className="th-page-content">
-          {/* Left Navigation Sidebar */}
-          <TestHubSidebar
-            testCaseCount={totalTestCases}
-            sharedStepCount={32}
-            testCycleCount={8}
-            releaseCount={5}
-          />
-
           {/* Folder Panel */}
           <FolderPanel
             folders={folders}
