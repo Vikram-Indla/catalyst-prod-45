@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -33,17 +33,14 @@ export function CloneTestCaseModal({
   const [includeAttachments, setIncludeAttachments] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Initialize title when modal opens
-  useState(() => {
+  // Initialize title when modal opens or testCase changes
+  useEffect(() => {
     if (isOpen && testCase) {
       setNewTitle(`${testCase.title} (Copy)`);
+      setIncludeSteps(true);
+      setIncludeAttachments(false);
     }
-  });
-
-  // Reset when testCase changes
-  if (testCase && newTitle === '') {
-    setNewTitle(`${testCase.title} (Copy)`);
-  }
+  }, [isOpen, testCase]);
 
   const handleClone = async () => {
     if (!testCase || !newTitle.trim()) return;

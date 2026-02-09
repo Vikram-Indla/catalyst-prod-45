@@ -17,6 +17,8 @@ import { CreateFolderModal } from '@/components/testhub/CreateFolderModal';
 import { ImportTestCasesModal } from '@/components/testhub/ImportTestCasesModal';
 import { ExportTestCasesModal } from '@/components/testhub/ExportTestCasesModal';
 import { AIGenerateModal } from '@/components/testhub/AIGenerateModal';
+import { MoveToFolderModal } from '@/components/testhub/MoveToFolderModal';
+import { ChangeStatusModal } from '@/components/testhub/ChangeStatusModal';
 import { RenameFolderModal } from '@/components/testhub/RenameFolderModal';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -99,6 +101,12 @@ export function TestRepositoryPage() {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isCloneModalOpen, setIsCloneModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+  const [isChangeStatusModalOpen, setIsChangeStatusModalOpen] = useState(false);
+  const [moveTestCaseIds, setMoveTestCaseIds] = useState<string[]>([]);
+  const [statusTestCaseIds, setStatusTestCaseIds] = useState<string[]>([]);
+  const [statusCurrentStatus, setStatusCurrentStatus] = useState<string | undefined>(undefined);
+  const [moveFolderId, setMoveFolderId] = useState<string | null>(null);
   const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
   const [isRenameFolderModalOpen, setIsRenameFolderModalOpen] = useState(false);
   const [renameFolderId, setRenameFolderId] = useState<string | null>(null);
@@ -391,18 +399,18 @@ export function TestRepositoryPage() {
   };
 
   const handleMoveFromContext = () => {
-    toast({
-      title: 'Move',
-      description: 'Move functionality coming soon',
-    });
+    if (!contextMenu) return;
+    setMoveTestCaseIds([contextMenu.testCase.id]);
+    setMoveFolderId(contextMenu.testCase.folderId || null);
+    setIsMoveModalOpen(true);
     setContextMenu(null);
   };
 
   const handleStatusFromContext = () => {
-    toast({
-      title: 'Change Status',
-      description: 'Status change functionality coming soon',
-    });
+    if (!contextMenu) return;
+    setStatusTestCaseIds([contextMenu.testCase.id]);
+    setStatusCurrentStatus(contextMenu.testCase.status);
+    setIsChangeStatusModalOpen(true);
     setContextMenu(null);
   };
 
@@ -737,7 +745,12 @@ export function TestRepositoryPage() {
                 
                 <div style={{ display: 'flex', gap: 8 }}>
                   <button 
-                    onClick={() => toast({ title: 'Move', description: 'Move functionality coming soon' })}
+                    onClick={() => {
+                      const ids = [...selectedIds];
+                      setMoveTestCaseIds(ids);
+                      setMoveFolderId(selectedFolderId);
+                      setIsMoveModalOpen(true);
+                    }}
                     style={{
                       height: 32,
                       padding: '0 12px',
@@ -758,7 +771,12 @@ export function TestRepositoryPage() {
                     Move
                   </button>
                   <button 
-                    onClick={() => toast({ title: 'Status', description: 'Status change functionality coming soon' })}
+                    onClick={() => {
+                      const ids = [...selectedIds];
+                      setStatusTestCaseIds(ids);
+                      setStatusCurrentStatus(undefined);
+                      setIsChangeStatusModalOpen(true);
+                    }}
                     style={{
                       height: 32,
                       padding: '0 12px',
@@ -1031,6 +1049,47 @@ export function TestRepositoryPage() {
         currentName={renameFolderCurrentName}
         onRename={handleRenameFolderSubmit}
         isPending={isRenaming}
+      />
+
+      {/* Create Folder Modal */}
+      <CreateFolderModal
+        isOpen={isCreateFolderModalOpen}
+        onClose={() => setIsCreateFolderModalOpen(false)}
+        onSuccess={() => {
+          fetchFolders();
+          setIsCreateFolderModalOpen(false);
+        }}
+        folders={folders}
+      />
+
+      {/* Move to Folder Modal */}
+      <MoveToFolderModal
+        isOpen={isMoveModalOpen}
+        onClose={() => { setIsMoveModalOpen(false); setMoveTestCaseIds([]); }}
+        onSuccess={() => {
+          fetchTestCases();
+          fetchFolders();
+          setIsMoveModalOpen(false);
+          setMoveTestCaseIds([]);
+          setSelectedIds(new Set());
+        }}
+        testCaseIds={moveTestCaseIds}
+        folders={folders}
+        currentFolderId={moveFolderId}
+      />
+
+      {/* Change Status Modal */}
+      <ChangeStatusModal
+        isOpen={isChangeStatusModalOpen}
+        onClose={() => { setIsChangeStatusModalOpen(false); setStatusTestCaseIds([]); }}
+        onSuccess={() => {
+          fetchTestCases();
+          setIsChangeStatusModalOpen(false);
+          setStatusTestCaseIds([]);
+          setSelectedIds(new Set());
+        }}
+        testCaseIds={statusTestCaseIds}
+        currentStatus={statusCurrentStatus}
       />
     </div>
   );
