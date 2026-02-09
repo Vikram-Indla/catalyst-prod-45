@@ -97,33 +97,38 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
               key={step.id}
               style={{
                 display: 'flex',
-                borderBottom: index < steps.length - 1 ? '1px solid #E2E8F0' : 'none',
+                borderBottom: '1px solid #E2E8F0',
                 backgroundColor: step.sharedStepId ? '#FEFCE8' : '#FFFFFF',
                 transition: 'background-color 0.1s',
               }}
               onMouseEnter={(e) => { if (!step.sharedStepId) e.currentTarget.style.backgroundColor = '#FAFBFC'; }}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = step.sharedStepId ? '#FEFCE8' : '#FFFFFF'}
             >
-              {/* Drag Handle */}
+              {/* Drag Handle - TOP ALIGNED */}
               <div style={{
                 width: 40,
                 display: 'flex',
-                alignItems: 'center',
+                alignItems: 'flex-start',
                 justifyContent: 'center',
+                paddingTop: 20,
                 borderRight: '1px solid #E2E8F0',
                 cursor: 'grab',
                 color: '#CBD5E1',
-                transition: 'all 0.15s',
-              }}>
+                transition: 'color 0.15s',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#94A3B8'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#CBD5E1'}
+              >
                 <GripVertical style={{ width: 16, height: 16 }} />
               </div>
 
-              {/* Number Badge */}
+              {/* Number Badge - TOP ALIGNED */}
               <div style={{
                 width: 56,
                 display: 'flex',
-                alignItems: 'center',
+                alignItems: 'flex-start',
                 justifyContent: 'center',
+                paddingTop: 20,
               }}>
                 <div style={{
                   width: 32,
@@ -141,7 +146,7 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
                 </div>
               </div>
 
-              {/* Content */}
+              {/* Content - FULL WIDTH */}
               <div style={{ flex: 1, padding: 16, minWidth: 0 }}>
                 {step.sharedStepId && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
@@ -233,15 +238,15 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
                 </div>
               </div>
 
-              {/* Actions Column */}
+              {/* Actions Column - TOP ALIGNED */}
               <div style={{
                 width: 80,
                 borderLeft: '1px solid #E2E8F0',
-                padding: 8,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: 'flex-start',
+                paddingTop: 16,
                 gap: 4,
               }}>
                 <ActionButton icon={Paperclip} title="Attach file" onClick={() => {}} />

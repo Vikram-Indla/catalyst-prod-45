@@ -332,9 +332,9 @@ export function CreateTestCaseModal({
       <div 
         onClick={(e) => e.stopPropagation()}
         style={{
-          width: 800,
+          width: 880,
           maxWidth: '95vw',
-          maxHeight: '85vh',
+          maxHeight: '90vh',
           backgroundColor: '#FFFFFF',
           borderRadius: 12,
           boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
@@ -350,6 +350,7 @@ export function CreateTestCaseModal({
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'flex-start',
+          flexShrink: 0,
         }}>
           <div>
             <h2 style={{
@@ -395,18 +396,20 @@ export function CreateTestCaseModal({
           </button>
         </div>
 
-        {/* Body */}
+        {/* Body - Scrollable */}
         <div style={{
           padding: 24,
           overflowY: 'auto',
           flex: 1,
         }}>
+          {/* TOP SECTION: Two column layout for main fields and metadata */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: '1fr 280px',
             gap: 24,
+            marginBottom: 24,
           }}>
-            {/* Left column */}
+            {/* Left column - main fields */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               <div>
                 <label style={labelStyle}>
@@ -479,17 +482,19 @@ export function CreateTestCaseModal({
                   }}
                 />
               </div>
-
-              <div>
-                <label style={labelStyle}>
-                  Test Steps <span style={{ color: '#EF4444' }}>*</span>
-                </label>
-                <StepsEditor steps={steps} onChange={setSteps} />
-              </div>
             </div>
 
-            {/* Right column */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {/* Right column - metadata dropdowns */}
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: 16,
+              backgroundColor: '#F8FAFC',
+              padding: 16,
+              borderRadius: 8,
+              border: '1px solid #E2E8F0',
+              height: 'fit-content',
+            }}>
               {[
                 { label: 'Folder', value: folderId, onChange: setFolderId, options: [{ value: '', label: 'No folder' }, ...folders.map(f => ({ value: f.id, label: f.name }))] },
                 { label: 'Priority', value: priority, onChange: setPriority, options: [{ value: 'critical', label: 'Critical' }, { value: 'high', label: 'High' }, { value: 'medium', label: 'Medium' }, { value: 'low', label: 'Low' }] },
@@ -498,11 +503,11 @@ export function CreateTestCaseModal({
                 { label: 'Automation', value: automation, onChange: setAutomation, options: [{ value: 'manual', label: 'Manual' }, { value: 'automated', label: 'Automated' }, { value: 'planned', label: 'Planned' }] },
               ].map(({ label, value, onChange, options }) => (
                 <div key={label}>
-                  <label style={labelStyle}>{label}</label>
+                  <label style={{ ...labelStyle, fontSize: 12 }}>{label}</label>
                   <select
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
-                    style={selectStyle}
+                    style={{ ...selectStyle, backgroundColor: '#FFFFFF' }}
                   >
                     {options.map(opt => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -511,6 +516,14 @@ export function CreateTestCaseModal({
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* BOTTOM SECTION: Steps editor - FULL WIDTH */}
+          <div>
+            <label style={{ ...labelStyle, marginBottom: 12 }}>
+              Test Steps <span style={{ color: '#EF4444' }}>*</span>
+            </label>
+            <StepsEditor steps={steps} onChange={setSteps} />
           </div>
         </div>
 
@@ -521,6 +534,7 @@ export function CreateTestCaseModal({
           display: 'flex',
           justifyContent: 'flex-end',
           gap: 12,
+          flexShrink: 0,
         }}>
           <button
             onClick={onClose}
