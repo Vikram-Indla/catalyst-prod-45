@@ -123,14 +123,15 @@ export function TestRepositoryPage() {
   // Close context menu on click outside
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      // Don't close if clicking on the context menu itself
       const target = e.target as HTMLElement;
+      // Don't close if clicking on the context menu itself
       if (target.closest('[data-context-menu]')) return;
+      // Don't close if clicking the kebab/actions button (it toggles the menu)
+      if (target.closest('[data-actions-trigger]')) return;
       setContextMenu(null);
     };
-    // Use capture phase to ensure we check before other handlers
-    document.addEventListener('click', handleClick, true);
-    return () => document.removeEventListener('click', handleClick, true);
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
   // Fetch folders

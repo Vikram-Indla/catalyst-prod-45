@@ -367,6 +367,7 @@ export function TestCasesTable({
                   style={{ ...bodyCellStyle, textAlign: 'center' }}
                 >
                   <button 
+                    data-actions-trigger
                     onClick={(e) => handleActionClick(e, tc)}
                     style={{
                       width: 28,
