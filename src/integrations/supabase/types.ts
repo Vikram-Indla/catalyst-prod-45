@@ -34959,8 +34959,85 @@ export type Database = {
           total_test_cases: number
         }[]
       }
+      get_cycle_daily_executions: {
+        Args: { p_cycle_id: string }
+        Returns: {
+          blocked: number
+          execution_date: string
+          failed: number
+          passed: number
+          skipped: number
+          total: number
+        }[]
+      }
+      get_cycle_failure_reasons: {
+        Args: { p_cycle_id: string }
+        Returns: {
+          count: number
+          failure_reason: string
+        }[]
+      }
+      get_cycle_pass_rates: {
+        Args: { p_limit?: number }
+        Returns: {
+          created_at: string
+          cycle_id: string
+          cycle_key: string
+          cycle_name: string
+          executed: number
+          pass_rate: number
+          status: string
+          total_cases: number
+        }[]
+      }
       get_cycle_progress: { Args: { p_cycle_id: string }; Returns: Json }
-      get_dashboard_stats: { Args: { p_project_id: string }; Returns: Json }
+      get_cycle_stats_by_priority: {
+        Args: { p_cycle_id: string }
+        Returns: {
+          blocked: number
+          executed: number
+          failed: number
+          not_run: number
+          pass_rate: number
+          passed: number
+          priority: string
+          skipped: number
+          total: number
+        }[]
+      }
+      get_cycle_stats_by_tester: {
+        Args: { p_cycle_id: string }
+        Returns: {
+          blocked: number
+          executed: number
+          failed: number
+          not_run: number
+          pass_rate: number
+          passed: number
+          skipped: number
+          tester_id: string
+          tester_name: string
+          total_assigned: number
+        }[]
+      }
+      get_dashboard_stats:
+        | {
+            Args: never
+            Returns: {
+              active_cycles: number
+              completed_cycles: number
+              overall_pass_rate: number
+              total_blocked: number
+              total_cycles: number
+              total_executed: number
+              total_failed: number
+              total_not_run: number
+              total_passed: number
+              total_skipped: number
+              total_test_cases: number
+            }[]
+          }
+        | { Args: { p_project_id: string }; Returns: Json }
       get_delete_dependencies: {
         Args: { p_test_case_ids: Json }
         Returns: Json
@@ -35137,6 +35214,17 @@ export type Database = {
       get_test_case_for_execution_v2: {
         Args: { p_run_id: string; p_test_case_id: string }
         Returns: Json
+      }
+      get_top_failing_tests: {
+        Args: { p_limit?: number }
+        Returns: {
+          case_key: string
+          failure_count: number
+          last_failed: string
+          priority: string
+          test_case_id: string
+          title: string
+        }[]
       }
       get_trend_data: {
         Args: {
