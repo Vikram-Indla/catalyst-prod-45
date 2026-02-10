@@ -122,7 +122,7 @@ export function TestCasesTable({
         width: '100%',
         borderCollapse: 'collapse',
         tableLayout: 'fixed',
-        minWidth: 700,
+        minWidth: 900,
       }}>
         <thead>
           <tr>
@@ -160,7 +160,7 @@ export function TestCasesTable({
             <th 
               className="th-table-col-priority"
               onClick={() => onSort('priority')} 
-              style={{ ...headerCellStyle, width: 80, textAlign: 'left', cursor: 'pointer', userSelect: 'none' }}
+              style={{ ...headerCellStyle, width: 100, textAlign: 'left', cursor: 'pointer', userSelect: 'none' }}
             >
               <span style={{ display: 'flex', alignItems: 'center' }}>
                 Priority <SortIcon column="priority" />
