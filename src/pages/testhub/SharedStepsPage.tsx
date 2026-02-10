@@ -9,7 +9,8 @@ import {
   Library, Plus, Search, Filter, ArrowUpDown, RefreshCw,
   MoreVertical, Pencil, Copy, Trash2, Eye, Tag,
   Shield, Navigation2, FormInput, Plug, CheckCircle,
-  Database, Gauge, Folder,
+  Database, Gauge, Folder, List, LayoutGrid, ChevronDown,
+  ArrowUp, ArrowDown,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -119,6 +120,14 @@ export default function SharedStepsPage() {
   const [viewStep, setViewStep] = useState<SharedStep | null>(null);
   const [deleteStep, setDeleteStep] = useState<SharedStep | null>(null);
 
+  // Filter, Sort, View mode state
+  const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const [sortField, setSortField] = useState<'usage_count' | 'name' | 'updated_at'>('usage_count');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+
   // Fetch categories with step counts
   const fetchCategories = async () => {
     try {
@@ -148,11 +157,18 @@ export default function SharedStepsPage() {
 
   useEffect(() => { fetchCategories(); }, []);
 
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handleClickOutside = () => { setIsFilterOpen(false); setIsSortOpen(false); };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
   // Fetch steps when filters change
   useEffect(() => {
     fetchSharedSteps();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategoryId, searchQuery]);
+  }, [selectedCategoryId, searchQuery, sortField, sortDirection, activeFilters]);
 
   const fetchSharedSteps = async () => {
     setLoading(true);
@@ -165,15 +181,18 @@ export default function SharedStepsPage() {
             id, name, color, icon
           )
         `, { count: 'exact' })
-        .eq('is_active', true)
-        .order('usage_count', { ascending: false });
+        .eq('is_active', true);
 
       if (selectedCategoryId) {
         query = query.eq('category_id', selectedCategoryId);
       }
-      if (searchQuery.trim()) {
-        query = query.or(`name.ilike.%${searchQuery}%,action.ilike.%${searchQuery}%`);
+      if (activeFilters.length > 0 && !selectedCategoryId) {
+        query = query.in('category_id', activeFilters);
       }
+      if (searchQuery.trim()) {
+        query = query.or(`name.ilike.%${searchQuery}%,action.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`);
+      }
+      query = query.order(sortField, { ascending: sortDirection === 'asc' });
 
       const { data, error, count } = await query;
       if (error) {
@@ -342,15 +361,188 @@ export default function SharedStepsPage() {
                 }}
               />
             </div>
-            <ToolbarButton icon={<Filter size={16} />} label="Filter" onClick={() => toast.info('Filters coming soon')} />
-            <ToolbarButton icon={<ArrowUpDown size={16} />} label="Sort" onClick={() => toast.info('Sort options coming soon')} />
+
+            {/* Filter Dropdown */}
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={(e) => { e.stopPropagation(); setIsFilterOpen(!isFilterOpen); setIsSortOpen(false); }}
+                style={{
+                  height: 40, padding: '0 14px',
+                  border: `1.5px solid ${activeFilters.length > 0 ? '#2563EB' : '#E2E8F0'}`,
+                  borderRadius: 8,
+                  backgroundColor: activeFilters.length > 0 ? '#EFF6FF' : '#FFFFFF',
+                  color: activeFilters.length > 0 ? '#2563EB' : '#334155',
+                  fontSize: 14, fontWeight: 500, cursor: 'pointer',
+                  display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'Inter',
+                }}
+              >
+                <Filter size={16} />
+                Filter
+                {activeFilters.length > 0 && (
+                  <span style={{
+                    width: 20, height: 20, borderRadius: '50%', backgroundColor: '#2563EB',
+                    color: '#FFFFFF', fontSize: 11, fontWeight: 700,
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    {activeFilters.length}
+                  </span>
+                )}
+                <ChevronDown size={14} />
+              </button>
+
+              {isFilterOpen && (
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 280,
+                    backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12,
+                    boxShadow: '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, overflow: 'hidden',
+                  }}
+                >
+                  <div style={{
+                    padding: '12px 16px', borderBottom: '1px solid #F1F5F9',
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: '#64748B', fontFamily: 'Inter' }}>Filter by Category</span>
+                    {activeFilters.length > 0 && (
+                      <button onClick={() => setActiveFilters([])} style={{
+                        background: 'none', border: 'none', color: '#2563EB', fontSize: 12,
+                        fontWeight: 500, cursor: 'pointer', padding: 0, fontFamily: 'Inter',
+                      }}>
+                        Clear all
+                      </button>
+                    )}
+                  </div>
+                  <div style={{ padding: 8, maxHeight: 240, overflowY: 'auto' }}>
+                    {categories.map((cat) => {
+                      const isChecked = activeFilters.includes(cat.id);
+                      return (
+                        <label key={cat.id} style={{
+                          display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px',
+                          borderRadius: 8, cursor: 'pointer', fontSize: 14, color: '#334155', fontFamily: 'Inter',
+                          backgroundColor: isChecked ? '#EFF6FF' : 'transparent',
+                        }}>
+                          <input
+                            type="checkbox" checked={isChecked}
+                            onChange={() => {
+                              setActiveFilters(prev =>
+                                isChecked ? prev.filter(id => id !== cat.id) : [...prev, cat.id]
+                              );
+                            }}
+                            style={{ width: 16, height: 16, accentColor: '#2563EB' }}
+                          />
+                          <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: cat.color, flexShrink: 0 }} />
+                          <span style={{ flex: 1 }}>{cat.name}</span>
+                          <span style={{ fontSize: 12, color: '#94A3B8' }}>{cat.step_count || 0}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  <div style={{ padding: '8px 12px', borderTop: '1px solid #F1F5F9' }}>
+                    <button onClick={() => setIsFilterOpen(false)} style={{
+                      width: '100%', height: 36,
+                      background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                      border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 13,
+                      fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter',
+                    }}>
+                      Apply Filter
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Sort Dropdown */}
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={(e) => { e.stopPropagation(); setIsSortOpen(!isSortOpen); setIsFilterOpen(false); }}
+                style={{
+                  height: 40, padding: '0 14px', border: '1.5px solid #E2E8F0', borderRadius: 8,
+                  backgroundColor: '#FFFFFF', color: '#334155', fontSize: 14, fontWeight: 500,
+                  cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'Inter',
+                }}
+              >
+                <ArrowUpDown size={16} />
+                Sort
+                <ChevronDown size={14} />
+              </button>
+
+              {isSortOpen && (
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 220,
+                    backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12,
+                    boxShadow: '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 8,
+                  }}
+                >
+                  {([
+                    { field: 'usage_count' as const, label: 'Most Used', defaultDir: 'desc' as const },
+                    { field: 'name' as const, label: 'Name (A-Z)', defaultDir: 'asc' as const },
+                    { field: 'updated_at' as const, label: 'Recently Updated', defaultDir: 'desc' as const },
+                  ]).map((option) => {
+                    const isActive = sortField === option.field;
+                    return (
+                      <button
+                        key={option.field}
+                        onClick={() => {
+                          if (isActive) {
+                            setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setSortField(option.field);
+                            setSortDirection(option.defaultDir);
+                          }
+                          setIsSortOpen(false);
+                        }}
+                        style={{
+                          width: '100%', height: 40, padding: '0 12px', border: 'none', borderRadius: 8,
+                          backgroundColor: isActive ? '#EFF6FF' : 'transparent',
+                          color: isActive ? '#2563EB' : '#334155', fontSize: 14,
+                          fontWeight: isActive ? 600 : 400, cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                          textAlign: 'left', fontFamily: 'Inter',
+                        }}
+                      >
+                        {option.label}
+                        {isActive && (
+                          sortDirection === 'asc' ? <ArrowUp size={14} /> : <ArrowDown size={14} />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             <div style={{ flex: 1 }} />
+
+            {/* View Toggle */}
+            <div style={{ display: 'flex', border: '1.5px solid #E2E8F0', borderRadius: 8, overflow: 'hidden' }}>
+              <button onClick={() => setViewMode('list')} title="List view" style={{
+                width: 40, height: 38, padding: 0, border: 'none',
+                backgroundColor: viewMode === 'list' ? '#EFF6FF' : '#FFFFFF',
+                color: viewMode === 'list' ? '#2563EB' : '#64748B', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <List size={18} />
+              </button>
+              <button onClick={() => setViewMode('card')} title="Card view" style={{
+                width: 40, height: 38, padding: 0, border: 'none',
+                borderLeft: '1px solid #E2E8F0',
+                backgroundColor: viewMode === 'card' ? '#EFF6FF' : '#FFFFFF',
+                color: viewMode === 'card' ? '#2563EB' : '#64748B', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <LayoutGrid size={18} />
+              </button>
+            </div>
+
             <span style={{ fontSize: 13, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>
               {totalCount} shared step{totalCount !== 1 ? 's' : ''}
             </span>
           </div>
 
-          {/* Steps List */}
+          {/* Steps Content */}
           <div style={{ flex: 1, padding: 24, overflowY: 'auto' }}>
             {loading ? (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 300 }}>
@@ -366,11 +558,99 @@ export default function SharedStepsPage() {
               }}>
                 <Library size={48} style={{ marginBottom: 16, opacity: 0.5 }} />
                 <p style={{ fontSize: 16, fontWeight: 500, margin: '0 0 8px', fontFamily: 'Inter' }}>
-                  {searchQuery || selectedCategoryId ? 'No matching shared steps' : 'No shared steps yet'}
+                  {searchQuery || selectedCategoryId || activeFilters.length > 0 ? 'No matching shared steps' : 'No shared steps yet'}
                 </p>
                 <p style={{ fontSize: 14, margin: 0, fontFamily: 'Inter' }}>
-                  {searchQuery ? 'Try a different search term' : 'Create your first shared step to get started'}
+                  {searchQuery || activeFilters.length > 0 ? 'Try different search or filters' : 'Create your first shared step to get started'}
                 </p>
+              </div>
+            ) : viewMode === 'list' ? (
+              <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, overflow: 'hidden' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid #E2E8F0', backgroundColor: '#F8FAFC' }}>
+                      <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Name</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Category</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', width: 80 }}>Variables</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', width: 70 }}>Used</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', width: 80 }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sharedSteps.map((step, index) => {
+                      const variables = Array.isArray(step.variables) ? step.variables : [];
+                      return (
+                        <tr
+                          key={step.id}
+                          onClick={() => setViewStep(step)}
+                          style={{
+                            borderBottom: index < sharedSteps.length - 1 ? '1px solid #F1F5F9' : 'none',
+                            cursor: 'pointer', transition: 'background-color 0.15s',
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FAFC'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                        >
+                          <td style={{ padding: '12px 16px' }}>
+                            <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{step.name}</div>
+                            {step.description && (
+                              <div style={{ fontSize: 12, color: '#64748B', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 400 }}>
+                                {step.description}
+                              </div>
+                            )}
+                          </td>
+                          <td style={{ padding: '12px 16px' }}>
+                            {step.category ? (
+                              <span style={{
+                                display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 10px',
+                                backgroundColor: `${step.category.color}15`, borderRadius: 12, fontSize: 12,
+                                fontWeight: 600, color: step.category.color,
+                              }}>
+                                <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: step.category.color }} />
+                                {step.category.name}
+                              </span>
+                            ) : (
+                              <span style={{ color: '#94A3B8', fontSize: 13 }}>—</span>
+                            )}
+                          </td>
+                          <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                            {variables.length > 0 ? (
+                              <span style={{ padding: '2px 8px', backgroundColor: '#EFF6FF', borderRadius: 10, fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
+                                {variables.length}
+                              </span>
+                            ) : (
+                              <span style={{ color: '#94A3B8', fontSize: 13 }}>—</span>
+                            )}
+                          </td>
+                          <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                            <span style={{
+                              padding: '2px 8px', borderRadius: 10, fontSize: 12, fontWeight: 600,
+                              backgroundColor: step.usage_count > 0 ? '#F0FDF4' : '#F1F5F9',
+                              color: step.usage_count > 0 ? '#059669' : '#64748B',
+                            }}>
+                              {step.usage_count}x
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px 16px', textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
+                            <button onClick={() => setEditingStep(step)} title="Edit" style={{
+                              width: 32, height: 32, padding: 0, border: 'none', borderRadius: 6,
+                              backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer',
+                              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                            }}>
+                              <Pencil size={14} />
+                            </button>
+                            <button onClick={() => handleDelete(step)} title="Delete" style={{
+                              width: 32, height: 32, padding: 0, border: 'none', borderRadius: 6,
+                              backgroundColor: 'transparent', color: '#64748B', cursor: 'pointer',
+                              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                            }}>
+                              <Trash2 size={14} />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 16 }}>
