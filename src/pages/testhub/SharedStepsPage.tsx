@@ -13,7 +13,7 @@ import {
   ArrowUp, ArrowDown,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/components/ui/CatalystToast';
 import { CreateSharedStepModal } from '@/components/testhub/CreateSharedStepModal';
 import { ViewSharedStepModal } from '@/components/testhub/ViewSharedStepModal';
 import { DeleteSharedStepModal } from '@/components/testhub/DeleteSharedStepModal';
@@ -197,14 +197,14 @@ export default function SharedStepsPage() {
       const { data, error, count } = await query;
       if (error) {
         console.error('Fetch error:', error);
-        toast.error('Failed to load shared steps');
+        catalystToast.error('Failed to load shared steps', { title: 'Error' });
         return;
       }
       setSharedSteps((data || []) as any);
       setTotalCount(count || 0);
     } catch (err) {
       console.error('Fetch error:', err);
-      toast.error('Failed to load shared steps');
+      catalystToast.error('Failed to load shared steps', { title: 'Error' });
     } finally {
       setLoading(false);
     }
@@ -213,7 +213,7 @@ export default function SharedStepsPage() {
   const handleRefresh = () => {
     fetchSharedSteps();
     fetchCategories();
-    toast.success('Refreshed');
+    catalystToast.success('Shared steps refreshed');
   };
 
   const handleDelete = (step: SharedStep) => {
@@ -234,11 +234,11 @@ export default function SharedStepsPage() {
       })
       .select(`*, category:th_shared_step_categories ( id, name, color, icon )`)
       .single();
-    if (error) { toast.error('Failed to duplicate'); return; }
+    if (error) { catalystToast.error('Failed to duplicate'); return; }
     if (data) {
       setSharedSteps(prev => [data as any, ...prev]);
       setTotalCount(prev => prev + 1);
-      toast.success('Step duplicated');
+      catalystToast.success('Step duplicated');
     }
   };
 
@@ -965,15 +965,15 @@ function CreateEditModal({ step, categories, onClose, onSave }: {
         .select(`*, category:th_shared_step_categories ( id, name, color, icon )`)
         .single();
       if (!error && data) onSave(data as any);
-      else toast.error('Failed to save');
+      else catalystToast.error('Failed to save');
     } else {
       const { data, error } = await supabase
         .from('th_shared_steps')
         .insert({ ...payload, usage_count: 0 })
         .select(`*, category:th_shared_step_categories ( id, name, color, icon )`)
         .single();
-      if (!error && data) { onSave(data as any); toast.success('Step created'); }
-      else toast.error('Failed to create');
+      if (!error && data) { onSave(data as any); catalystToast.success('Step created'); }
+      else catalystToast.error('Failed to create');
     }
     setSaving(false);
   };

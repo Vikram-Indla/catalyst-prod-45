@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { AlertTriangle, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/components/ui/CatalystToast';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,14 +30,14 @@ export function DeleteSharedStepModal({ isOpen, sharedStep, onClose, onSuccess }
       await supabase.from('th_shared_step_usage').delete().eq('shared_step_id', sharedStep.id);
       const { error } = await supabase.from('th_shared_steps').delete().eq('id', sharedStep.id);
       if (error) {
-        toast.error('Failed to delete: ' + error.message);
+        catalystToast.error(error.message || 'Failed to delete', { title: 'Delete Failed' });
         return;
       }
-      toast.success('Shared step deleted');
+      catalystToast.success('Shared step deleted successfully', { title: 'Deleted' });
       onSuccess();
       onClose();
     } catch (err: any) {
-      toast.error(err.message || 'Failed to delete');
+      catalystToast.error(err.message || 'Failed to delete', { title: 'Delete Failed' });
     } finally {
       setIsDeleting(false);
     }
