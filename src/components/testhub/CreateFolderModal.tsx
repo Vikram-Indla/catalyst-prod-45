@@ -3,8 +3,8 @@
  * Step 25: 440px modal with name, parent selection, and icon picker
  */
 
-import { useState, useEffect } from 'react';
-import { X, Folder, Loader2 } from 'lucide-react';
+import { useState, useEffect, type ReactNode } from 'react';
+import { X, Folder, Loader2, Shield, BarChart3, Users, TrendingUp, Plug, Settings, FlaskConical, ClipboardList, Target, Search, Briefcase } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -23,8 +23,21 @@ interface CreateFolderModalProps {
   parentId?: string | null;
 }
 
-// Icon options for folder customization
-const FOLDER_ICONS = ['📁', '🔐', '📊', '👥', '📈', '🔌', '⚙️', '🧪', '📋', '🎯', '🔍', '💼'];
+// Icon options for folder customization — Lucide icons instead of emojis
+const FOLDER_ICON_OPTIONS: { key: string; icon: ReactNode; label: string }[] = [
+  { key: 'folder', icon: <Folder size={18} />, label: 'Folder' },
+  { key: 'shield', icon: <Shield size={18} />, label: 'Auth' },
+  { key: 'bar-chart', icon: <BarChart3 size={18} />, label: 'Reports' },
+  { key: 'users', icon: <Users size={18} />, label: 'Users' },
+  { key: 'trending-up', icon: <TrendingUp size={18} />, label: 'Analytics' },
+  { key: 'plug', icon: <Plug size={18} />, label: 'API' },
+  { key: 'settings', icon: <Settings size={18} />, label: 'Settings' },
+  { key: 'flask', icon: <FlaskConical size={18} />, label: 'Testing' },
+  { key: 'clipboard', icon: <ClipboardList size={18} />, label: 'Tasks' },
+  { key: 'target', icon: <Target size={18} />, label: 'Goals' },
+  { key: 'search', icon: <Search size={18} />, label: 'Search' },
+  { key: 'briefcase', icon: <Briefcase size={18} />, label: 'Business' },
+];
 
 export function CreateFolderModal({
   isOpen,
@@ -36,7 +49,7 @@ export function CreateFolderModal({
   const { toast } = useToast();
   const [name, setName] = useState('');
   const [parentId, setParentId] = useState<string | null>(initialParentId);
-  const [icon, setIcon] = useState('📁');
+  const [icon, setIcon] = useState('folder');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Reset form when modal opens
@@ -44,7 +57,7 @@ export function CreateFolderModal({
     if (isOpen) {
       setName('');
       setParentId(initialParentId);
-      setIcon('📁');
+      setIcon('folder');
     }
   }, [isOpen, initialParentId]);
 
@@ -195,18 +208,19 @@ export function CreateFolderModal({
               flexWrap: 'wrap',
               gap: 8,
             }}>
-              {FOLDER_ICONS.map(emoji => (
+              {FOLDER_ICON_OPTIONS.map(opt => (
                 <button
-                  key={emoji}
+                  key={opt.key}
                   type="button"
-                  onClick={() => setIcon(emoji)}
+                  onClick={() => setIcon(opt.key)}
+                  title={opt.label}
                   style={{
                     width: 42,
                     height: 42,
-                    fontSize: 20,
-                    border: icon === emoji ? '2px solid #2563EB' : '1.5px solid #E2E8F0',
+                    border: icon === opt.key ? '2px solid #2563EB' : '1.5px solid #E2E8F0',
                     borderRadius: 10,
-                    background: icon === emoji ? 'rgba(37,99,235,0.1)' : '#FFFFFF',
+                    background: icon === opt.key ? 'rgba(37,99,235,0.1)' : '#FFFFFF',
+                    color: icon === opt.key ? '#2563EB' : '#64748B',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -214,19 +228,19 @@ export function CreateFolderModal({
                     transition: 'all 0.15s',
                   }}
                   onMouseEnter={(e) => {
-                    if (icon !== emoji) {
+                    if (icon !== opt.key) {
                       e.currentTarget.style.borderColor = '#CBD5E1';
                       e.currentTarget.style.backgroundColor = '#F8FAFC';
                     }
                   }}
                   onMouseLeave={(e) => {
-                    if (icon !== emoji) {
+                    if (icon !== opt.key) {
                       e.currentTarget.style.borderColor = '#E2E8F0';
                       e.currentTarget.style.backgroundColor = '#FFFFFF';
                     }
                   }}
                 >
-                  {emoji}
+                  {opt.icon}
                 </button>
               ))}
             </div>
