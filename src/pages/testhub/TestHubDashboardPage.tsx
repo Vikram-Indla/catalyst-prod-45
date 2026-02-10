@@ -11,22 +11,31 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { DashboardStatCards, type DashboardStats } from '@/components/testhub/dashboard/DashboardStatCards';
+import { PassRateTrendChart, type CyclePassRate } from '@/components/testhub/dashboard/PassRateTrendChart';
+import { StatusDistributionChart } from '@/components/testhub/dashboard/StatusDistributionChart';
 
 export default function TestHubDashboardPage() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [passRateTrend, setPassRateTrend] = useState<CyclePassRate[]>([]);
 
   const fetchDashboardData = async () => {
     setIsLoading(true);
     try {
-      const { data: statsData, error: statsError } = await supabase.rpc('get_dashboard_stats');
-      if (statsError) {
-        console.error('Stats error:', statsError);
-      } else if (statsData && statsData.length > 0) {
-        setStats(statsData[0] as unknown as DashboardStats);
+      const [statsRes, trendRes] = await Promise.all([
+        supabase.rpc('get_dashboard_stats'),
+        supabase.rpc('get_cycle_pass_rates', { p_limit: 10 }),
+      ]);
+
+      if (!statsRes.error && statsRes.data?.length) {
+        setStats(statsRes.data[0] as unknown as DashboardStats);
       }
+      if (!trendRes.error && trendRes.data) {
+        setPassRateTrend(trendRes.data as unknown as CyclePassRate[]);
+      }
+
       setLastUpdated(new Date());
     } catch (err) {
       console.error('Dashboard fetch error:', err);
@@ -188,47 +197,10 @@ export default function TestHubDashboardPage() {
           {/* Stat Cards */}
           <DashboardStatCards stats={stats} />
 
-          {/* Charts Row — G5-04 */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: 16,
-              marginBottom: 24,
-            }}
-          >
-            <div
-              style={{
-                backgroundColor: 'hsl(var(--card))',
-                border: '1px solid hsl(var(--border))',
-                borderRadius: 12,
-                padding: 24,
-                minHeight: 280,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'hsl(var(--muted-foreground))',
-                fontSize: 13,
-              }}
-            >
-              Pass Rate Trend Chart — G5-04
-            </div>
-            <div
-              style={{
-                backgroundColor: 'hsl(var(--card))',
-                border: '1px solid hsl(var(--border))',
-                borderRadius: 12,
-                padding: 24,
-                minHeight: 280,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'hsl(var(--muted-foreground))',
-                fontSize: 13,
-              }}
-            >
-              Status Distribution Chart — G5-04
-            </div>
+          {/* Charts Row */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
+            <PassRateTrendChart data={passRateTrend} />
+            <StatusDistributionChart stats={stats} />
           </div>
 
           {/* Lists Row — G5-05 */}
