@@ -15,6 +15,7 @@ import { PassRateTrendChart, type CyclePassRate } from '@/components/testhub/das
 import { StatusDistributionChart } from '@/components/testhub/dashboard/StatusDistributionChart';
 import { ActiveCyclesList, type ActiveCycle } from '@/components/testhub/dashboard/ActiveCyclesList';
 import { RecentActivityFeed, type RecentActivity } from '@/components/testhub/dashboard/RecentActivityFeed';
+import { TopFailingTests, type FailingTest } from '@/components/testhub/dashboard/TopFailingTests';
 
 export default function TestHubDashboardPage() {
   const navigate = useNavigate();
@@ -24,11 +25,12 @@ export default function TestHubDashboardPage() {
   const [passRateTrend, setPassRateTrend] = useState<CyclePassRate[]>([]);
   const [activeCycles, setActiveCycles] = useState<ActiveCycle[]>([]);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
+  const [failingTests, setFailingTests] = useState<FailingTest[]>([]);
 
   const fetchDashboardData = async () => {
     setIsLoading(true);
     try {
-      const [statsRes, trendRes, cyclesRes, activityRes] = await Promise.all([
+      const [statsRes, trendRes, cyclesRes, activityRes, failingRes] = await Promise.all([
         supabase.rpc('get_dashboard_stats'),
         supabase.rpc('get_cycle_pass_rates', { p_limit: 10 }),
         supabase
@@ -43,6 +45,7 @@ export default function TestHubDashboardPage() {
           .not('executed_at', 'is', null)
           .order('executed_at', { ascending: false })
           .limit(10),
+        supabase.rpc('get_top_failing_tests', { p_limit: 5 }),
       ]);
 
       if (!statsRes.error && statsRes.data?.length) {
@@ -67,6 +70,9 @@ export default function TestHubDashboardPage() {
             executed_by_name: a.profiles?.full_name ?? 'Unknown',
           }))
         );
+      }
+      if (!failingRes.error && failingRes.data) {
+        setFailingTests(failingRes.data as unknown as FailingTest[]);
       }
 
       setLastUpdated(new Date());
@@ -242,23 +248,8 @@ export default function TestHubDashboardPage() {
             <RecentActivityFeed activities={recentActivity} />
           </div>
 
-          {/* Top Failing Tests — G5-05 */}
-          <div
-            style={{
-              backgroundColor: 'hsl(var(--card))',
-              border: '1px solid hsl(var(--border))',
-              borderRadius: 12,
-              padding: 24,
-              minHeight: 200,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'hsl(var(--muted-foreground))',
-              fontSize: 13,
-            }}
-          >
-            Top Failing Tests — G5-05
-          </div>
+          {/* Top Failing Tests */}
+          <TopFailingTests tests={failingTests} />
         </>
       )}
 
