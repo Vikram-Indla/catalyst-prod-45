@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, Pencil, Play, CheckCircle2, XCircle, AlertTriangle,
-  Clock, Plus, User, Calendar, RefreshCw, Trash2
+  Clock, Plus, User, Calendar, RefreshCw, Trash2, Download, Users
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
@@ -110,6 +110,47 @@ export default function TestCycleDetailPage() {
 
   const filteredTestCases = statusFilter === 'all' ? testCases : testCases.filter(tc => tc.execution_status === statusFilter);
 
+  // By Tester stats
+  const testerStats = (() => {
+    const map = new Map<string, { name: string; total: number; executed: number }>();
+    testCases.forEach(tc => {
+      const name = tc.assignee?.full_name || 'Unassigned';
+      const key = tc.assigned_to || 'unassigned';
+      if (!map.has(key)) map.set(key, { name, total: 0, executed: 0 });
+      const entry = map.get(key)!;
+      entry.total++;
+      if (tc.execution_status !== 'not_run') entry.executed++;
+    });
+    return Array.from(map.values()).sort((a, b) => b.total - a.total);
+  })();
+
+  // Blocked test cases
+  const blockedTestCases = testCases.filter(tc => tc.execution_status === 'blocked');
+
+  // Export CSV
+  const handleExportCSV = () => {
+    if (!cycle || testCases.length === 0) return;
+    const headers = ['Case Key', 'Title', 'Priority', 'Assigned To', 'Status', 'Executed At', 'Notes'];
+    const rows = testCases.map(tc => [
+      tc.test_case?.case_key || '',
+      tc.test_case?.title || '',
+      tc.test_case?.priority || '',
+      tc.assignee?.full_name || '',
+      tc.execution_status,
+      tc.executed_at ? new Date(tc.executed_at).toLocaleString() : '',
+      (tc.notes || '').replace(/"/g, '""'),
+    ]);
+    const csvContent = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${cycle.cycle_key}-report.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    catalystToast.success('Cycle report exported as CSV', { title: 'Export Complete' });
+  };
+
   // Selection helpers
   const toggleTestCaseSelection = (id: string) => {
     const newSelected = new Set(selectedTestCaseIds);
@@ -193,6 +234,10 @@ export default function TestCycleDetailPage() {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={handleExportCSV} title="Export CSV" disabled={testCases.length === 0}
+              style={{ width: 40, height: 40, padding: 0, border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: testCases.length > 0 ? '#64748B' : '#CBD5E1', cursor: testCases.length > 0 ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Download size={18} />
+            </button>
             <button onClick={() => { setIsLoading(true); fetchCycle(); fetchTestCases(); catalystToast.success('Refreshed'); }} title="Refresh"
               style={{ width: 40, height: 40, padding: 0, border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#64748B', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <RefreshCw size={18} />
@@ -213,42 +258,97 @@ export default function TestCycleDetailPage() {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div style={{ padding: '24px 32px', display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>
-        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 20, textAlign: 'center' }}>
-          <div style={{ width: 80, height: 80, margin: '0 auto 12px', position: 'relative' }}>
+      {/* Stats Cards - 3-panel layout per spec */}
+      <div style={{ padding: '24px 32px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        {/* Progress Panel */}
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 24, textAlign: 'center' }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>Progress</p>
+          <div style={{ width: 100, height: 100, margin: '0 auto 16px', position: 'relative' }}>
             <svg viewBox="0 0 36 36" style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }}>
               <circle cx="18" cy="18" r="15.9155" fill="none" stroke="#E2E8F0" strokeWidth="3" />
               <circle cx="18" cy="18" r="15.9155" fill="none" stroke={cycle.progress_percent === 100 ? '#059669' : '#2563EB'} strokeWidth="3" strokeDasharray={`${cycle.progress_percent} ${100 - cycle.progress_percent}`} strokeLinecap="round" />
             </svg>
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 700, color: cycle.progress_percent === 100 ? '#059669' : '#2563EB' }}>
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, fontWeight: 700, color: cycle.progress_percent === 100 ? '#059669' : '#2563EB' }}>
               {cycle.progress_percent}%
             </div>
           </div>
-          <p style={{ fontSize: 13, fontWeight: 600, color: '#334155', margin: 0 }}>Progress</p>
-          <p style={{ fontSize: 12, color: '#94A3B8', margin: '4px 0 0' }}>{cycle.total_cases - cycle.not_run_count}/{cycle.total_cases} executed</p>
+          <p style={{ fontSize: 14, color: '#334155', margin: 0, fontWeight: 500 }}>{cycle.total_cases - cycle.not_run_count}/{cycle.total_cases} executed</p>
         </div>
-        <div style={{ backgroundColor: '#ECFDF5', border: '1px solid #A7F3D0', borderRadius: 12, padding: 20, textAlign: 'center' }}>
-          <CheckCircle2 size={32} style={{ color: '#059669', marginBottom: 8 }} />
-          <p style={{ fontSize: 28, fontWeight: 700, color: '#059669', margin: 0 }}>{cycle.passed_count}</p>
-          <p style={{ fontSize: 13, color: '#059669', margin: '4px 0 0' }}>Passed</p>
+
+        {/* By Status Panel */}
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 24 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px' }}>By Status</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <button onClick={() => setStatusFilter('passed')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'passed' ? '#ECFDF5' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
+              <CheckCircle2 size={18} style={{ color: '#059669' }} />
+              <span style={{ flex: 1, fontSize: 14, color: '#334155' }}>Passed</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#059669' }}>{cycle.passed_count}</span>
+            </button>
+            <button onClick={() => setStatusFilter('failed')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'failed' ? '#FEF2F2' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
+              <XCircle size={18} style={{ color: '#DC2626' }} />
+              <span style={{ flex: 1, fontSize: 14, color: '#334155' }}>Failed</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#DC2626' }}>{cycle.failed_count}</span>
+            </button>
+            <button onClick={() => setStatusFilter('blocked')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'blocked' ? '#FFFBEB' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
+              <AlertTriangle size={18} style={{ color: '#D97706' }} />
+              <span style={{ flex: 1, fontSize: 14, color: '#334155' }}>Blocked</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#D97706' }}>{cycle.blocked_count}</span>
+            </button>
+            <button onClick={() => setStatusFilter('not_run')} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', border: 'none', borderRadius: 8, backgroundColor: statusFilter === 'not_run' ? '#F8FAFC' : 'transparent', cursor: 'pointer', width: '100%', textAlign: 'left' }}>
+              <Clock size={18} style={{ color: '#64748B' }} />
+              <span style={{ flex: 1, fontSize: 14, color: '#334155' }}>Not Run</span>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#64748B' }}>{cycle.not_run_count}</span>
+            </button>
+            {statusFilter !== 'all' && (
+              <button onClick={() => setStatusFilter('all')} style={{ padding: '6px 12px', border: 'none', backgroundColor: 'transparent', color: '#2563EB', fontSize: 12, fontWeight: 500, cursor: 'pointer', textAlign: 'center' }}>
+                Show all
+              </button>
+            )}
+          </div>
         </div>
-        <div style={{ backgroundColor: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 12, padding: 20, textAlign: 'center' }}>
-          <XCircle size={32} style={{ color: '#DC2626', marginBottom: 8 }} />
-          <p style={{ fontSize: 28, fontWeight: 700, color: '#DC2626', margin: 0 }}>{cycle.failed_count}</p>
-          <p style={{ fontSize: 13, color: '#DC2626', margin: '4px 0 0' }}>Failed</p>
-        </div>
-        <div style={{ backgroundColor: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 12, padding: 20, textAlign: 'center' }}>
-          <AlertTriangle size={32} style={{ color: '#D97706', marginBottom: 8 }} />
-          <p style={{ fontSize: 28, fontWeight: 700, color: '#D97706', margin: 0 }}>{cycle.blocked_count}</p>
-          <p style={{ fontSize: 13, color: '#D97706', margin: '4px 0 0' }}>Blocked</p>
-        </div>
-        <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 12, padding: 20, textAlign: 'center' }}>
-          <Clock size={32} style={{ color: '#64748B', marginBottom: 8 }} />
-          <p style={{ fontSize: 28, fontWeight: 700, color: '#64748B', margin: 0 }}>{cycle.not_run_count}</p>
-          <p style={{ fontSize: 13, color: '#64748B', margin: '4px 0 0' }}>Not Run</p>
+
+        {/* By Tester Panel */}
+        <div style={{ backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 24 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Users size={14} /> By Tester
+          </p>
+          {testerStats.length === 0 ? (
+            <p style={{ fontSize: 13, color: '#94A3B8', textAlign: 'center', padding: 20, margin: 0 }}>No test cases assigned</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {testerStats.map((ts, i) => {
+                const pct = ts.total > 0 ? Math.round((ts.executed / ts.total) * 100) : 0;
+                return (
+                  <div key={i}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                      <span style={{ fontSize: 13, fontWeight: 500, color: '#334155' }}>{ts.name}</span>
+                      <span style={{ fontSize: 12, color: '#64748B' }}>{ts.executed}/{ts.total}</span>
+                    </div>
+                    <div style={{ height: 6, backgroundColor: '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${pct}%`, backgroundColor: pct === 100 ? '#059669' : '#2563EB', borderRadius: 3, transition: 'width 0.3s' }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Blocked Items Banner */}
+      {blockedTestCases.length > 0 && (
+        <div style={{ padding: '0 32px 16px' }}>
+          <div style={{ padding: '14px 20px', backgroundColor: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <AlertTriangle size={18} style={{ color: '#D97706', flexShrink: 0 }} />
+            <span style={{ fontSize: 14, fontWeight: 500, color: '#92400E' }}>
+              {blockedTestCases.length} blocked test case{blockedTestCases.length !== 1 ? 's' : ''} require attention
+            </span>
+            <button onClick={() => setStatusFilter('blocked')} style={{ marginLeft: 'auto', padding: '4px 12px', border: '1px solid #FDE68A', borderRadius: 6, backgroundColor: '#FFFFFF', color: '#D97706', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+              View Blocked
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Test Cases Section */}
       <div style={{ flex: 1, padding: '0 32px 32px', display: 'flex', flexDirection: 'column', minHeight: 0 }}>

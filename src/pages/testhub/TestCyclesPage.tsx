@@ -51,6 +51,9 @@ export default function TestCyclesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isDateFilterOpen, setIsDateFilterOpen] = useState(false);
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [sortField, setSortField] = useState<'start_date' | 'name' | 'progress_percent'>('start_date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -68,6 +71,8 @@ export default function TestCyclesPage() {
         .order(sortField, { ascending: sortDirection === 'asc' });
       if (statusFilter.length > 0) query = query.in('status', statusFilter);
       if (searchQuery.trim()) query = query.or(`name.ilike.%${searchQuery}%,cycle_key.ilike.%${searchQuery}%`);
+      if (dateFrom) query = query.gte('start_date', dateFrom);
+      if (dateTo) query = query.lte('end_date', dateTo);
       const { data, error } = await query;
       if (error) { catalystToast.error('Failed to load test cycles'); return; }
       setCycles(data || []);
@@ -75,10 +80,10 @@ export default function TestCyclesPage() {
     finally { setIsLoading(false); }
   };
 
-  useEffect(() => { fetchCycles(); }, [searchQuery, statusFilter, sortField, sortDirection]);
+  useEffect(() => { fetchCycles(); }, [searchQuery, statusFilter, sortField, sortDirection, dateFrom, dateTo]);
 
   useEffect(() => {
-    const handleClickOutside = () => { setIsFilterOpen(false); setIsSortOpen(false); };
+    const handleClickOutside = () => { setIsFilterOpen(false); setIsSortOpen(false); setIsDateFilterOpen(false); };
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
@@ -146,6 +151,34 @@ export default function TestCyclesPage() {
               })}
               {statusFilter.length > 0 && (
                 <button onClick={() => setStatusFilter([])} style={{ width: '100%', marginTop: 8, padding: '8px 12px', border: 'none', backgroundColor: 'transparent', color: '#2563EB', fontSize: 13, fontWeight: 500, cursor: 'pointer', textAlign: 'center' }}>Clear filters</button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Date Filter */}
+        <div style={{ position: 'relative' }}>
+          <button onClick={(e) => { e.stopPropagation(); setIsDateFilterOpen(!isDateFilterOpen); setIsFilterOpen(false); setIsSortOpen(false); }}
+            style={{ height: 40, padding: '0 14px', border: `1.5px solid ${(dateFrom || dateTo) ? '#2563EB' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: (dateFrom || dateTo) ? '#EFF6FF' : '#FFFFFF', color: (dateFrom || dateTo) ? '#2563EB' : '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <Calendar size={16} /> Date
+            {(dateFrom || dateTo) && <span style={{ minWidth: 8, height: 8, backgroundColor: '#2563EB', borderRadius: '50%', display: 'inline-block' }} />}
+            <ChevronDown size={14} />
+          </button>
+          {isDateFilterOpen && (
+            <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 260, backgroundColor: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, boxShadow: '0 10px 40px rgba(0,0,0,0.12)', zIndex: 200, padding: 16 }}>
+              <p style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 8px' }}>Date Range</p>
+              <div style={{ marginBottom: 12 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#334155', marginBottom: 4 }}>From</label>
+                <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)}
+                  style={{ width: '100%', height: 36, padding: '0 10px', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 13, color: '#0F172A' }} />
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 500, color: '#334155', marginBottom: 4 }}>To</label>
+                <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} min={dateFrom}
+                  style={{ width: '100%', height: 36, padding: '0 10px', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 13, color: '#0F172A' }} />
+              </div>
+              {(dateFrom || dateTo) && (
+                <button onClick={() => { setDateFrom(''); setDateTo(''); }} style={{ width: '100%', padding: '8px 12px', border: 'none', backgroundColor: 'transparent', color: '#2563EB', fontSize: 13, fontWeight: 500, cursor: 'pointer', textAlign: 'center' }}>Clear dates</button>
               )}
             </div>
           )}
