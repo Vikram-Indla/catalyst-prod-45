@@ -254,8 +254,11 @@ export default function TestCycleDetailPage() {
             {cycle.status === 'active' && (
               <button onClick={() => {
                 const notRun = testCases.find(tc => tc.execution_status === 'not_run');
-                if (notRun) { setExecutingTestCase(notRun); setIsExecutionModalOpen(true); }
-                else catalystToast.info('All test cases have been executed', { title: 'Complete' });
+                if (notRun) {
+                  navigate(`/testhub/cycles/${cycleId}/execute?testId=${notRun.id}`);
+                } else {
+                  catalystToast.info('All test cases have been executed', { title: 'Complete' });
+                }
               }}
                 style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Play size={16} /> Execute Tests
@@ -534,7 +537,7 @@ export default function TestCycleDetailPage() {
                         </td>
                         <td style={{ padding: '14px 16px', textAlign: 'center' }}>
                           {cycle.status === 'active' && (
-                            <button onClick={(e) => { e.stopPropagation(); setExecutingTestCase(ctc); setIsExecutionModalOpen(true); }} style={{ height: 30, padding: '0 12px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                            <button onClick={(e) => { e.stopPropagation(); navigate(`/testhub/cycles/${cycleId}/execute?testId=${ctc.id}`); }} style={{ height: 30, padding: '0 12px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                               <Play size={12} /> Run
                             </button>
                           )}
