@@ -223,6 +223,7 @@ export function TestRepositoryPage() {
         preconditions: tc.preconditions,
         folderId: tc.folder_id,
         version: tc.version || 1,
+        is_ai_generated: tc.is_ai_generated === true,
        };
      }) || [];
 
