@@ -8,8 +8,8 @@ import { useState, useEffect, useRef, Fragment } from 'react';
 import {
   Library, Plus, Search, Filter, ArrowUpDown, RefreshCw,
   MoreVertical, Pencil, Copy, Trash2, Eye, Tag,
-  Shield, Navigation, FormInput, Plug, CheckCircle,
-  Database, Gauge,
+  Shield, Navigation2, FormInput, Plug, CheckCircle,
+  Database, Gauge, Folder,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -50,9 +50,28 @@ interface Category {
   color: string;
   icon: string;
   sort_order: number;
+  step_count?: number;
 }
 
 // --- Helpers ---
+
+const CATEGORY_ICON_MAP: Record<string, React.ComponentType<any>> = {
+  'shield': Shield,
+  'navigation': Navigation2,
+  'form-input': FormInput,
+  'plug': Plug,
+  'check-circle': CheckCircle,
+  'database': Database,
+  'eye': Eye,
+  'gauge': Gauge,
+  'folder': Folder,
+  'tag': Tag,
+};
+
+function getCategoryIcon(iconName: string, color: string, size: number = 16) {
+  const IconComponent = CATEGORY_ICON_MAP[iconName] || Tag;
+  return <IconComponent size={size} style={{ color }} />;
+}
 
 /** Highlight {{variable}} placeholders in text */
 function highlightVariables(text: string) {
@@ -93,15 +112,36 @@ export default function SharedStepsPage() {
   const [totalCount, setTotalCount] = useState(0);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingStep, setEditingStep] = useState<SharedStep | null>(null);
+  const [isCreateCategoryModalOpen, setIsCreateCategoryModalOpen] = useState(false);
 
-  // Fetch categories once on mount
-  useEffect(() => {
-    supabase
-      .from('th_shared_step_categories')
-      .select('*')
-      .order('sort_order', { ascending: true })
-      .then(({ data }) => { if (data) setCategories(data); });
-  }, []);
+  // Fetch categories with step counts
+  const fetchCategories = async () => {
+    try {
+      const { data: categoriesData, error: catError } = await supabase
+        .from('th_shared_step_categories')
+        .select('*')
+        .order('sort_order', { ascending: true });
+
+      if (catError) { console.error('Categories fetch error:', catError); return; }
+
+      const { data: countsData } = await supabase
+        .from('th_shared_steps')
+        .select('category_id')
+        .eq('is_active', true);
+
+      if (countsData) {
+        const countMap: Record<string, number> = {};
+        countsData.forEach((step: any) => {
+          if (step.category_id) countMap[step.category_id] = (countMap[step.category_id] || 0) + 1;
+        });
+        setCategories((categoriesData || []).map(cat => ({ ...cat, step_count: countMap[cat.id] || 0 })));
+      } else {
+        setCategories(categoriesData || []);
+      }
+    } catch (err) { console.error('Categories fetch error:', err); }
+  };
+
+  useEffect(() => { fetchCategories(); }, []);
 
   // Fetch steps when filters change
   useEffect(() => {
@@ -148,6 +188,7 @@ export default function SharedStepsPage() {
 
   const handleRefresh = () => {
     fetchSharedSteps();
+    fetchCategories();
     toast.success('Refreshed');
   };
 
@@ -182,8 +223,7 @@ export default function SharedStepsPage() {
     }
   };
 
-  const getCategoryStepCount = (catId: string) =>
-    sharedSteps.filter(s => s.category_id === catId).length;
+  // no longer needed — counts come from fetchCategories
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
@@ -230,27 +270,57 @@ export default function SharedStepsPage() {
         {/* Category Sidebar */}
         <div style={{
           width: 260, backgroundColor: '#FFFFFF', borderRight: '1px solid #E2E8F0',
-          padding: '20px 0', display: 'flex', flexDirection: 'column', overflowY: 'auto',
+          display: 'flex', flexDirection: 'column', overflow: 'hidden',
         }}>
-          <div style={{ padding: '0 16px 16px', borderBottom: '1px solid #F1F5F9' }}>
+          {/* Sidebar Header */}
+          <div style={{
+            padding: '16px 16px 12px', borderBottom: '1px solid #F1F5F9',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          }}>
             <h2 style={{
               fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase',
               letterSpacing: '0.05em', margin: 0, fontFamily: 'Inter, sans-serif',
+            }}>Categories</h2>
+            <button onClick={() => setIsCreateCategoryModalOpen(true)} title="Add category" style={{
+              width: 28, height: 28, padding: 0, border: '1px solid #E2E8F0', borderRadius: 6,
+              backgroundColor: '#FFFFFF', color: '#64748B', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              Categories
-            </h2>
+              <Plus size={14} />
+            </button>
           </div>
-          <SidebarItem label="All Steps" count={totalCount} isSelected={!selectedCategoryId} onClick={() => setSelectedCategoryId(null)} />
-          {categories.map(cat => (
-            <SidebarItem
-              key={cat.id}
-              label={cat.name}
-              count={getCategoryStepCount(cat.id)}
-              color={cat.color}
-              isSelected={selectedCategoryId === cat.id}
-              onClick={() => setSelectedCategoryId(cat.id)}
+
+          {/* Category List */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: 8 }}>
+            {/* All Steps */}
+            <CategorySidebarItem
+              label="All Steps"
+              icon={<Folder size={16} style={{ color: !selectedCategoryId ? '#2563EB' : '#64748B' }} />}
+              count={totalCount}
+              isSelected={!selectedCategoryId}
+              selectedColor="#2563EB"
+              onClick={() => setSelectedCategoryId(null)}
             />
-          ))}
+
+            <div style={{ height: 1, backgroundColor: '#F1F5F9', margin: '8px 0' }} />
+
+            {categories.map(cat => (
+              <CategorySidebarItem
+                key={cat.id}
+                label={cat.name}
+                icon={getCategoryIcon(cat.icon, selectedCategoryId === cat.id ? cat.color : '#64748B')}
+                count={cat.step_count || 0}
+                isSelected={selectedCategoryId === cat.id}
+                selectedColor={cat.color}
+                onClick={() => setSelectedCategoryId(cat.id)}
+              />
+            ))}
+          </div>
+
+          {/* Sidebar Footer */}
+          <div style={{ padding: '12px 16px', borderTop: '1px solid #F1F5F9', fontSize: 12, color: '#94A3B8' }}>
+            {categories.length} categories
+          </div>
         </div>
 
         {/* Content */}
@@ -344,29 +414,70 @@ export default function SharedStepsPage() {
         />
       )}
 
+      {/* Create Category Modal */}
+      {isCreateCategoryModalOpen && (
+        <div onClick={() => setIsCreateCategoryModalOpen(false)} style={{
+          position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)',
+          backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
+        }}>
+          <div onClick={(e) => e.stopPropagation()} style={{
+            width: 440, backgroundColor: '#FFFFFF', borderRadius: 12,
+            boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+          }}>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0' }}>
+              <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: 'Inter' }}>Create Category</h2>
+            </div>
+            <div style={{ padding: 24 }}>
+              <p style={{ color: '#64748B', fontFamily: 'Inter' }}>Category creation will be implemented in a later phase.</p>
+            </div>
+            <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end' }}>
+              <button onClick={() => setIsCreateCategoryModalOpen(false)} style={{
+                height: 40, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0',
+                borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer', fontFamily: 'Inter',
+              }}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
 
-// --- Sidebar Item ---
-function SidebarItem({ label, count, color, isSelected, onClick }: {
-  label: string; count: number; color?: string; isSelected: boolean; onClick: () => void;
+// --- Category Sidebar Item ---
+function CategorySidebarItem({ label, icon, count, isSelected, selectedColor, onClick }: {
+  label: string; icon: React.ReactNode; count: number; isSelected: boolean; selectedColor: string; onClick: () => void;
 }) {
   return (
-    <button onClick={onClick} style={{
-      width: '100%', padding: '10px 16px', border: 'none', textAlign: 'left', cursor: 'pointer',
-      backgroundColor: isSelected ? 'rgba(37,99,235,0.08)' : 'transparent',
-      borderLeft: isSelected ? '3px solid #2563EB' : '3px solid transparent',
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
-      color: isSelected ? '#2563EB' : '#334155', transition: 'all 0.15s',
-    }}>
-      <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        {color && <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: color, flexShrink: 0 }} />}
+    <button
+      onClick={onClick}
+      style={{
+        width: '100%', padding: '10px 12px', border: 'none', borderRadius: 8,
+        backgroundColor: isSelected ? `${selectedColor}15` : 'transparent',
+        cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
+        textAlign: 'left', transition: 'background-color 0.15s', marginBottom: 2,
+      }}
+    >
+      <div style={{
+        width: 32, height: 32, borderRadius: 8, flexShrink: 0,
+        backgroundColor: isSelected ? `${selectedColor}25` : '#F1F5F9',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        {icon}
+      </div>
+      <span style={{
+        flex: 1, fontSize: 14, fontWeight: isSelected ? 600 : 500,
+        color: isSelected ? selectedColor : '#334155', fontFamily: 'Inter',
+        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+      }}>
         {label}
       </span>
-      <span style={{ fontSize: 12, fontWeight: 600, color: isSelected ? '#2563EB' : '#94A3B8' }}>
+      <span style={{
+        fontSize: 12, fontWeight: 500, padding: '2px 8px', borderRadius: 10, flexShrink: 0,
+        color: isSelected ? selectedColor : '#94A3B8',
+        backgroundColor: isSelected ? `${selectedColor}20` : '#F1F5F9',
+      }}>
         {count}
       </span>
     </button>
