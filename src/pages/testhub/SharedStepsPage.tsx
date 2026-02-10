@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { CreateSharedStepModal } from '@/components/testhub/CreateSharedStepModal';
 
 // --- Types ---
 
@@ -390,18 +391,13 @@ export default function SharedStepsPage() {
         </div>
       </div>
 
-      {/* Modals */}
-      {createModalOpen && (
-        <CreateEditModal
-          categories={categories}
-          onClose={() => setCreateModalOpen(false)}
-          onSave={(step) => {
-            setSharedSteps(prev => [step, ...prev]);
-            setTotalCount(prev => prev + 1);
-            setCreateModalOpen(false);
-          }}
-        />
-      )}
+      {/* Create Modal */}
+      <CreateSharedStepModal
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSuccess={() => { fetchSharedSteps(); fetchCategories(); }}
+        categories={categories}
+      />
       {editingStep && (
         <CreateEditModal
           step={editingStep}
