@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   MoreVertical, Play, Eye, Pencil, Copy, Trash2, 
@@ -66,8 +66,20 @@ export function TestCycleCard({
   cycle, onView, onEdit, onClone, onDelete, onStart, onComplete, onReopen, onArchive,
 }: TestCycleCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const status = statusConfig[cycle.status];
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [menuOpen]);
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '—';
@@ -118,7 +130,7 @@ export function TestCycleCard({
         </div>
 
         {/* Actions Menu */}
-        <div style={{ position: 'relative' }} onClick={(e) => e.stopPropagation()}>
+        <div ref={menuRef} style={{ position: 'relative' }} onClick={(e) => e.stopPropagation()}>
           <button onClick={() => setMenuOpen(!menuOpen)} style={{
             width: 32, height: 32, padding: 0, border: 'none', borderRadius: 6,
             backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer',

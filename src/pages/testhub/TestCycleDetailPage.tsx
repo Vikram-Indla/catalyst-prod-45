@@ -11,6 +11,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { AddTestCasesModal } from '@/components/testhub/AddTestCasesModal';
+import { EditTestCycleModal } from '@/components/testhub/EditTestCycleModal';
 
 interface TestCycle {
   id: string;
@@ -71,6 +72,7 @@ export default function TestCycleDetailPage() {
   const [testCases, setTestCases] = useState<CycleTestCase[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
   const fetchCycle = async () => {
@@ -143,7 +145,7 @@ export default function TestCycleDetailPage() {
               <RefreshCw size={18} />
             </button>
             {cycle.status !== 'archived' && cycle.status !== 'completed' && (
-              <button onClick={() => catalystToast.info('Edit coming in next iteration')}
+              <button onClick={() => setIsEditModalOpen(true)}
                 style={{ height: 40, padding: '0 16px', border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Pencil size={16} /> Edit
               </button>
@@ -292,6 +294,12 @@ export default function TestCycleDetailPage() {
         existingTestCaseIds={testCases.map(tc => tc.test_case_id)}
         onClose={() => setIsAddModalOpen(false)}
         onSuccess={() => { fetchCycle(); fetchTestCases(); }}
+      />
+      <EditTestCycleModal
+        isOpen={isEditModalOpen}
+        cycle={cycle}
+        onClose={() => setIsEditModalOpen(false)}
+        onSuccess={() => { fetchCycle(); setIsEditModalOpen(false); }}
       />
     </div>
   );
