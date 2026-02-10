@@ -24022,8 +24022,10 @@ export type Database = {
           executed_by: string | null
           execution_status: string | null
           execution_time_seconds: number | null
+          failure_reason: string | null
           id: string
           notes: string | null
+          started_at: string | null
           test_case_id: string
           updated_at: string | null
         }
@@ -24036,8 +24038,10 @@ export type Database = {
           executed_by?: string | null
           execution_status?: string | null
           execution_time_seconds?: number | null
+          failure_reason?: string | null
           id?: string
           notes?: string | null
+          started_at?: string | null
           test_case_id: string
           updated_at?: string | null
         }
@@ -24050,8 +24054,10 @@ export type Database = {
           executed_by?: string | null
           execution_status?: string | null
           execution_time_seconds?: number | null
+          failure_reason?: string | null
           id?: string
           notes?: string | null
+          started_at?: string | null
           test_case_id?: string
           updated_at?: string | null
         }
@@ -24124,6 +24130,144 @@ export type Database = {
             columns: ["test_case_id"]
             isOneToOne: false
             referencedRelation: "th_test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_execution_attachments: {
+        Row: {
+          cycle_test_case_id: string
+          file_name: string
+          file_path: string
+          file_size: number | null
+          file_type: string | null
+          id: string
+          uploaded_at: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          cycle_test_case_id: string
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          uploaded_at?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          cycle_test_case_id?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          uploaded_at?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_execution_attachments_cycle_test_case_id_fkey"
+            columns: ["cycle_test_case_id"]
+            isOneToOne: false
+            referencedRelation: "th_cycle_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_execution_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_execution_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_execution_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_execution_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_execution_history: {
+        Row: {
+          changed_at: string | null
+          changed_by: string | null
+          cycle_test_case_id: string
+          execution_time_seconds: number | null
+          id: string
+          new_status: string
+          notes: string | null
+          old_status: string | null
+        }
+        Insert: {
+          changed_at?: string | null
+          changed_by?: string | null
+          cycle_test_case_id: string
+          execution_time_seconds?: number | null
+          id?: string
+          new_status: string
+          notes?: string | null
+          old_status?: string | null
+        }
+        Update: {
+          changed_at?: string | null
+          changed_by?: string | null
+          cycle_test_case_id?: string
+          execution_time_seconds?: number | null
+          id?: string
+          new_status?: string
+          notes?: string | null
+          old_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_execution_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_execution_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_execution_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_execution_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_execution_history_cycle_test_case_id_fkey"
+            columns: ["cycle_test_case_id"]
+            isOneToOne: false
+            referencedRelation: "th_cycle_test_cases"
             referencedColumns: ["id"]
           },
         ]
@@ -24438,6 +24582,72 @@ export type Database = {
             columns: ["test_case_id"]
             isOneToOne: false
             referencedRelation: "th_test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_step_results: {
+        Row: {
+          cycle_test_case_id: string
+          executed_at: string | null
+          executed_by: string | null
+          id: string
+          notes: string | null
+          status: string | null
+          step_index: number
+        }
+        Insert: {
+          cycle_test_case_id: string
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+          step_index: number
+        }
+        Update: {
+          cycle_test_case_id?: string
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+          step_index?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_step_results_cycle_test_case_id_fkey"
+            columns: ["cycle_test_case_id"]
+            isOneToOne: false
+            referencedRelation: "th_cycle_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_step_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_step_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_step_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_step_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
         ]

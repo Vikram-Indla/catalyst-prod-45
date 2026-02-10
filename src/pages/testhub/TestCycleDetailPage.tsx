@@ -249,7 +249,7 @@ export default function TestCycleDetailPage() {
               </button>
             )}
             {cycle.status === 'active' && (
-              <button onClick={() => catalystToast.info('Execute mode coming in Group 4')}
+              <button onClick={() => navigate(`/testhub/cycles/${cycleId}/execute`)}
                 style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Play size={16} /> Execute Tests
               </button>
