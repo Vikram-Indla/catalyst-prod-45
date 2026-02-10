@@ -6,7 +6,7 @@
 import { useState, useEffect, Fragment } from 'react';
 import { X, Plus, Trash2, Variable, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/components/ui/CatalystToast';
 
 interface StepVariable {
   name: string;
@@ -116,18 +116,18 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
         const { error } = await supabase.from('th_shared_steps')
           .update({ ...stepData, updated_at: new Date().toISOString() })
           .eq('id', sharedStep.id);
-        if (error) { toast.error('Failed to update: ' + error.message); return; }
-        toast.success('Shared step updated successfully');
+        if (error) { catalystToast.error(error.message || 'Failed to update', { title: 'Update Failed' }); return; }
+        catalystToast.success('Shared step updated successfully', { title: 'Updated' });
       } else {
         const { error } = await supabase.from('th_shared_steps')
           .insert({ ...stepData, usage_count: 0, is_active: true });
-        if (error) { toast.error('Failed to create: ' + error.message); return; }
-        toast.success('Shared step created successfully');
+        if (error) { catalystToast.error(error.message || 'Failed to create', { title: 'Creation Failed' }); return; }
+        catalystToast.success('Shared step created successfully', { title: 'Created' });
       }
       onSuccess();
       onClose();
     } catch (err: any) {
-      toast.error(err.message || 'Failed to save shared step');
+      catalystToast.error(err.message || 'Failed to save shared step', { title: 'Error' });
     } finally {
       setIsSubmitting(false);
     }
