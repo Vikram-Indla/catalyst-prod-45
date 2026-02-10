@@ -517,7 +517,7 @@ const App = () => (
               
               {/* TestHub Module */}
               <Route path="/testhub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubPage /></Suspense>}>
-                <Route index element={<Navigate to="/testhub/repository" replace />} />
+                <Route index element={<Navigate to="/testhub/dashboard" replace />} />
                 <Route path="repository" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestRepositoryPage /></Suspense>} />
                 <Route path="dashboard" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubDashboardPage /></Suspense>} />
                 <Route path="shared-steps" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SharedStepsPage /></Suspense>} />
