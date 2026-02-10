@@ -10,17 +10,23 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
+import { DashboardStatCards, type DashboardStats } from '@/components/testhub/dashboard/DashboardStatCards';
 
 export default function TestHubDashboardPage() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [stats, setStats] = useState<DashboardStats | null>(null);
 
   const fetchDashboardData = async () => {
     setIsLoading(true);
     try {
-      // Data fetching will be wired in G5-03+
-      await new Promise((r) => setTimeout(r, 400));
+      const { data: statsData, error: statsError } = await supabase.rpc('get_dashboard_stats');
+      if (statsError) {
+        console.error('Stats error:', statsError);
+      } else if (statsData && statsData.length > 0) {
+        setStats(statsData[0] as unknown as DashboardStats);
+      }
       setLastUpdated(new Date());
     } catch (err) {
       console.error('Dashboard fetch error:', err);
@@ -179,35 +185,8 @@ export default function TestHubDashboardPage() {
         </div>
       ) : (
         <>
-          {/* Stat Cards Row — G5-03 */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-              gap: 16,
-              marginBottom: 24,
-            }}
-          >
-            {['Total Cases', 'Active Cycles', 'Pass Rate', 'Open Defects'].map((label) => (
-              <div
-                key={label}
-                style={{
-                  backgroundColor: 'hsl(var(--card))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: 12,
-                  padding: '20px 24px',
-                  minHeight: 100,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'hsl(var(--muted-foreground))',
-                  fontSize: 13,
-                }}
-              >
-                {label} — G5-03
-              </div>
-            ))}
-          </div>
+          {/* Stat Cards */}
+          <DashboardStatCards stats={stats} />
 
           {/* Charts Row — G5-04 */}
           <div
