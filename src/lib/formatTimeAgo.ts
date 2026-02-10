@@ -10,9 +10,11 @@ import { differenceInMinutes, differenceInHours, differenceInDays, differenceInW
  * @param addSuffix - Whether to add "ago" suffix (default: true)
  * @returns Abbreviated time string like "23h" or "23h ago"
  */
-export function formatTimeAbbreviated(date: Date | string, addSuffix = true): string {
+export function formatTimeAbbreviated(date: Date | string | null | undefined, addSuffix = true): string {
+  if (!date) return '—';
   const now = new Date();
   const targetDate = typeof date === 'string' ? new Date(date) : date;
+  if (isNaN(targetDate.getTime())) return '—';
   
   const minutes = differenceInMinutes(now, targetDate);
   const hours = differenceInHours(now, targetDate);
