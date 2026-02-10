@@ -16,6 +16,7 @@ import { StatusDistributionChart } from '@/components/testhub/dashboard/StatusDi
 import { ActiveCyclesList, type ActiveCycle } from '@/components/testhub/dashboard/ActiveCyclesList';
 import { RecentActivityFeed, type RecentActivity } from '@/components/testhub/dashboard/RecentActivityFeed';
 import { TopFailingTests, type FailingTest } from '@/components/testhub/dashboard/TopFailingTests';
+import { DefectStatsWidget, type DefectStats } from '@/components/testhub/dashboard/DefectStatsWidget';
 
 export default function TestHubDashboardPage() {
   const navigate = useNavigate();
@@ -26,11 +27,12 @@ export default function TestHubDashboardPage() {
   const [activeCycles, setActiveCycles] = useState<ActiveCycle[]>([]);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [failingTests, setFailingTests] = useState<FailingTest[]>([]);
+  const [defectStats, setDefectStats] = useState<DefectStats | null>(null);
 
   const fetchDashboardData = async () => {
     setIsLoading(true);
     try {
-      const [statsRes, trendRes, cyclesRes, activityRes, failingRes] = await Promise.all([
+      const [statsRes, trendRes, cyclesRes, activityRes, failingRes, defectStatsRes] = await Promise.all([
         supabase.rpc('get_dashboard_stats'),
         supabase.rpc('get_cycle_pass_rates', { p_limit: 10 }),
         supabase
@@ -46,6 +48,7 @@ export default function TestHubDashboardPage() {
           .order('executed_at', { ascending: false })
           .limit(10),
         supabase.rpc('get_top_failing_tests', { p_limit: 5 }),
+        supabase.rpc('get_defect_stats'),
       ]);
 
       if (!statsRes.error && statsRes.data?.length) {
@@ -73,6 +76,9 @@ export default function TestHubDashboardPage() {
       }
       if (!failingRes.error && failingRes.data) {
         setFailingTests(failingRes.data as unknown as FailingTest[]);
+      }
+      if (!defectStatsRes.error && defectStatsRes.data?.length) {
+        setDefectStats(defectStatsRes.data[0] as unknown as DefectStats);
       }
 
       setLastUpdated(new Date());
@@ -248,8 +254,11 @@ export default function TestHubDashboardPage() {
             <RecentActivityFeed activities={recentActivity} />
           </div>
 
-          {/* Top Failing Tests */}
-          <TopFailingTests tests={failingTests} />
+          {/* Bottom Row: Failing Tests + Defect Stats */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
+            <TopFailingTests tests={failingTests} />
+            <DefectStatsWidget stats={defectStats} />
+          </div>
         </>
       )}
 

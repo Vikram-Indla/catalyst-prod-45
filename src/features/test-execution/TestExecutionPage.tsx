@@ -19,7 +19,7 @@ import { ExecutionFooter } from './components/ExecutionFooter';
 import { DefectPrompt } from './components/DefectPrompt';
 import { NoteModal } from './components/Modals/NoteModal';
 import { ExitModal } from './components/Modals/ExitModal';
-import { LogDefectModal } from '@/components/releases/test-execution/LogDefectModal';
+import { CreateDefectModal } from '@/components/testhub/defects/CreateDefectModal';
 import { Loader2 } from 'lucide-react';
 
 export default function TestExecutionFocusPage() {
@@ -232,12 +232,14 @@ export default function TestExecutionFocusPage() {
         totalSteps={steps.length}
       />
       
-      <LogDefectModal
+      <CreateDefectModal
         isOpen={defectModalOpen}
         onClose={() => setDefectModalOpen(false)}
-        testCaseId={session.testCaseId}
-        stepNumber={currentStepIndex + 1}
-        actualResult=""
+        onCreated={() => setDefectModalOpen(false)}
+        prefill={{
+          title: `Defect in ${session.testCaseId} - Step ${currentStepIndex + 1}`,
+          testCaseId: session.testCaseId,
+        }}
       />
     </motion.div>
   );
