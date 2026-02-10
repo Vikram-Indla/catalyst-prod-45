@@ -13,6 +13,7 @@ import { catalystToast } from '@/components/ui/CatalystToast';
 import { AddTestCasesModal } from '@/components/testhub/AddTestCasesModal';
 import { CreateTestCycleModal } from '@/components/testhub/CreateTestCycleModal';
 import { AssignTesterModal } from '@/components/testhub/AssignTesterModal';
+import { QuickExecutionModal } from '@/components/testhub/QuickExecutionModal';
 
 interface TestCycle {
   id: string;
@@ -76,6 +77,8 @@ export default function TestCycleDetailPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [isExecutionModalOpen, setIsExecutionModalOpen] = useState(false);
+  const [executingTestCase, setExecutingTestCase] = useState<any>(null);
 
   // Selection state for G3-10 & G3-11
   const [selectedTestCaseIds, setSelectedTestCaseIds] = useState<Set<string>>(new Set());
@@ -249,7 +252,11 @@ export default function TestCycleDetailPage() {
               </button>
             )}
             {cycle.status === 'active' && (
-              <button onClick={() => navigate(`/testhub/cycles/${cycleId}/execute`)}
+              <button onClick={() => {
+                const notRun = testCases.find(tc => tc.execution_status === 'not_run');
+                if (notRun) { setExecutingTestCase(notRun); setIsExecutionModalOpen(true); }
+                else catalystToast.info('All test cases have been executed', { title: 'Complete' });
+              }}
                 style={{ height: 40, padding: '0 16px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 8, color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Play size={16} /> Execute Tests
               </button>
@@ -526,8 +533,8 @@ export default function TestCycleDetailPage() {
                           </span>
                         </td>
                         <td style={{ padding: '14px 16px', textAlign: 'center' }}>
-                          {cycle.status === 'active' && ctc.execution_status === 'not_run' && (
-                            <button onClick={() => catalystToast.info('Execute coming in Group 4')} style={{ height: 30, padding: '0 12px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                          {cycle.status === 'active' && (
+                            <button onClick={(e) => { e.stopPropagation(); setExecutingTestCase(ctc); setIsExecutionModalOpen(true); }} style={{ height: 30, padding: '0 12px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', border: 'none', borderRadius: 6, color: '#FFFFFF', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                               <Play size={12} /> Run
                             </button>
                           )}
@@ -564,6 +571,12 @@ export default function TestCycleDetailPage() {
           fetchTestCases();
           setSelectedTestCaseIds(new Set());
         }}
+      />
+      <QuickExecutionModal
+        isOpen={isExecutionModalOpen}
+        cycleTestCase={executingTestCase}
+        onClose={() => { setIsExecutionModalOpen(false); setExecutingTestCase(null); }}
+        onSuccess={() => { fetchCycle(); fetchTestCases(); }}
       />
 
       {/* Remove Confirmation Dialog */}
