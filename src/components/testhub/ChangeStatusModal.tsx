@@ -3,7 +3,7 @@
  * Allows changing status for one or more test cases
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Clock, FileCheck, CheckCircle, Archive, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -33,6 +33,13 @@ export function ChangeStatusModal({
   const { toast } = useToast();
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+
+  // Reset selection every time modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedStatus(null);
+    }
+  }, [isOpen]);
 
   const handleUpdate = async () => {
     if (!selectedStatus) {
@@ -89,7 +96,7 @@ export function ChangeStatusModal({
           {STATUSES.map(status => {
             const Icon = status.icon;
             const isSelected = selectedStatus === status.value;
-            const isCurrent = currentStatus === status.value;
+            const isCurrent = currentStatus?.toLowerCase() === status.value;
 
             return (
               <button
