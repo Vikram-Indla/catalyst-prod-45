@@ -2,6 +2,23 @@ import { useState, useRef, useEffect } from 'react';
 import { GripVertical, Paperclip, Copy, ArrowUp, Trash2, Plus, ChevronDown, Library, X } from 'lucide-react';
 import { SharedStepsModal } from './SharedStepsModal';
 import { toast } from 'sonner';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 export interface StepAttachment {
   id?: string;
@@ -26,10 +43,114 @@ interface StepsEditorProps {
   onChange: (steps: Step[]) => void;
 }
 
+// Sortable Step Row Component
+function SortableStepRow({
+  step, index, stepsCount, onUpdate, onClone, onInsertAbove, onDelete, onAttach, onRemoveAttachment,
+}: {
+  step: Step; index: number; stepsCount: number;
+  onUpdate: (field: 'action' | 'expectedResult', value: string) => void;
+  onClone: () => void; onInsertAbove: () => void; onDelete: () => void; onAttach: () => void;
+  onRemoveAttachment: (attIndex: number) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: step.id });
+
+  const rowStyle: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : undefined,
+    display: 'flex',
+    borderBottom: '1px solid #E2E8F0',
+    backgroundColor: step.sharedStepId ? '#FEFCE8' : '#FFFFFF',
+    position: 'relative',
+  };
+
+  return (
+    <div ref={setNodeRef} style={rowStyle} {...attributes}>
+      {/* Drag Handle */}
+      <div {...listeners} style={{
+        width: 40, display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+        paddingTop: 20, borderRight: '1px solid #E2E8F0',
+        cursor: isDragging ? 'grabbing' : 'grab', color: '#CBD5E1', transition: 'color 0.15s',
+      }}
+        onMouseEnter={(e) => e.currentTarget.style.color = '#94A3B8'}
+        onMouseLeave={(e) => e.currentTarget.style.color = '#CBD5E1'}
+      >
+        <GripVertical style={{ width: 16, height: 16 }} />
+      </div>
+
+      {/* Number Badge */}
+      <div style={{ width: 56, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 20 }}>
+        <div style={{
+          width: 32, height: 32, borderRadius: '50%',
+          backgroundColor: step.sharedStepId ? '#CA8A04' : '#2563EB',
+          color: '#FFFFFF', fontSize: 13, fontWeight: 600,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>{index + 1}</div>
+      </div>
+
+      {/* Content */}
+      <div style={{ flex: 1, padding: 16, minWidth: 0 }}>
+        {step.sharedStepId && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+            <Library style={{ width: 12, height: 12, color: '#CA8A04' }} />
+            <span style={{ fontSize: 11, fontWeight: 600, color: '#CA8A04', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Shared Step</span>
+          </div>
+        )}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div>
+            <label style={{ display: 'block', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: 6 }}>Action</label>
+            <textarea value={step.action} onChange={(e) => onUpdate('action', e.target.value)} placeholder="Describe the action to perform..."
+              style={{ width: '100%', minHeight: 80, padding: '10px 12px', fontSize: 14, fontFamily: 'Inter, sans-serif', color: '#0F172A', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 8, resize: 'vertical', outline: 'none', transition: 'border-color 0.15s, box-shadow 0.15s' }}
+              onFocus={(e) => { e.target.style.borderColor = '#2563EB'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
+              onBlur={(e) => { e.target.style.borderColor = '#E2E8F0'; e.target.style.boxShadow = 'none'; }}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: 6 }}>Expected Result</label>
+            <textarea value={step.expectedResult} onChange={(e) => onUpdate('expectedResult', e.target.value)} placeholder="Describe the expected outcome..."
+              style={{ width: '100%', minHeight: 80, padding: '10px 12px', fontSize: 14, fontFamily: 'Inter, sans-serif', color: '#0F172A', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 8, resize: 'vertical', outline: 'none', transition: 'border-color 0.15s, box-shadow 0.15s' }}
+              onFocus={(e) => { e.target.style.borderColor = '#2563EB'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
+              onBlur={(e) => { e.target.style.borderColor = '#E2E8F0'; e.target.style.boxShadow = 'none'; }}
+            />
+          </div>
+        </div>
+        {step.attachments && step.attachments.length > 0 && (
+          <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {step.attachments.map((att, attIndex) => (
+              <div key={attIndex} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', backgroundColor: '#F1F5F9', borderRadius: 6, fontSize: 12 }}>
+                <Paperclip size={12} style={{ color: '#64748B' }} />
+                <span style={{ color: '#334155', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{att.name}</span>
+                <span style={{ color: '#94A3B8' }}>({Math.round(att.size / 1024)}KB)</span>
+                <button type="button" onClick={() => onRemoveAttachment(attIndex)} style={{ padding: 2, border: 'none', background: 'none', color: '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4 }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#DC2626'} onMouseLeave={(e) => e.currentTarget.style.color = '#94A3B8'}
+                ><X size={14} /></button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Actions Column */}
+      <div style={{ width: 80, borderLeft: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingTop: 16, gap: 4 }}>
+        <AttachButton onClick={onAttach} count={step.attachments?.length || 0} />
+        <ActionButton icon={Copy} title="Clone step" onClick={onClone} />
+        <ActionButton icon={ArrowUp} title="Insert above" onClick={onInsertAbove} />
+        <ActionButton icon={Trash2} title="Delete step" onClick={onDelete} danger disabled={stepsCount === 1} />
+      </div>
+    </div>
+  );
+}
+
 export function StepsEditor({ steps, onChange }: StepsEditorProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sharedStepsModalOpen, setSharedStepsModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -41,8 +162,17 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = steps.findIndex(s => s.id === active.id);
+      const newIndex = steps.findIndex(s => s.id === over.id);
+      onChange(arrayMove(steps, oldIndex, newIndex));
+    }
+  };
+
   const addStep = () => {
-    onChange([...steps, { id: Date.now().toString(), action: '', expectedResult: '', attachments: [] }]);
+    onChange([...steps, { id: `step-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`, action: '', expectedResult: '', attachments: [] }]);
     setDropdownOpen(false);
   };
 
@@ -168,240 +298,24 @@ export function StepsEditor({ steps, onChange }: StepsEditorProps) {
 
         {/* Steps List */}
         <div style={{ maxHeight: 400, overflowY: 'auto' }}>
-          {steps.map((step, index) => (
-            <div
-              key={step.id}
-              style={{
-                display: 'flex',
-                borderBottom: '1px solid #E2E8F0',
-                backgroundColor: step.sharedStepId ? '#FEFCE8' : '#FFFFFF',
-                transition: 'background-color 0.1s',
-              }}
-              onMouseEnter={(e) => { if (!step.sharedStepId) e.currentTarget.style.backgroundColor = '#FAFBFC'; }}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = step.sharedStepId ? '#FEFCE8' : '#FFFFFF'}
-            >
-              {/* Drag Handle - TOP ALIGNED */}
-              <div style={{
-                width: 40,
-                display: 'flex',
-                alignItems: 'flex-start',
-                justifyContent: 'center',
-                paddingTop: 20,
-                borderRight: '1px solid #E2E8F0',
-                cursor: 'grab',
-                color: '#CBD5E1',
-                transition: 'color 0.15s',
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#94A3B8'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#CBD5E1'}
-              >
-                <GripVertical style={{ width: 16, height: 16 }} />
-              </div>
-
-              {/* Number Badge - TOP ALIGNED */}
-              <div style={{
-                width: 56,
-                display: 'flex',
-                alignItems: 'flex-start',
-                justifyContent: 'center',
-                paddingTop: 20,
-              }}>
-                <div style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: '50%',
-                  backgroundColor: step.sharedStepId ? '#CA8A04' : '#2563EB',
-                  color: '#FFFFFF',
-                  fontSize: 13,
-                  fontWeight: 600,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                  {index + 1}
-                </div>
-              </div>
-
-              {/* Content - FULL WIDTH with side-by-side layout */}
-              <div style={{ flex: 1, padding: 16, minWidth: 0 }}>
-                {step.sharedStepId && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                    <Library style={{ width: 12, height: 12, color: '#CA8A04' }} />
-                    <span style={{ fontSize: 11, fontWeight: 600, color: '#CA8A04', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Shared Step
-                    </span>
-                  </div>
-                )}
-                
-                {/* Two column grid for Action and Expected Result - SIDE BY SIDE */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  {/* Action Field */}
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: 10,
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.06em',
-                      color: '#64748B',
-                      marginBottom: 6,
-                    }}>Action</label>
-                    <textarea
-                      value={step.action}
-                      onChange={(e) => updateStep(step.id, 'action', e.target.value)}
-                      placeholder="Describe the action to perform..."
-                      style={{
-                        width: '100%',
-                        minHeight: 80,
-                        padding: '10px 12px',
-                        fontSize: 14,
-                        fontFamily: 'Inter, sans-serif',
-                        color: '#0F172A',
-                        backgroundColor: '#FFFFFF',
-                        border: '1.5px solid #E2E8F0',
-                        borderRadius: 8,
-                        resize: 'vertical',
-                        outline: 'none',
-                        transition: 'border-color 0.15s, box-shadow 0.15s',
-                      }}
-                      onFocus={(e) => {
-                        e.target.style.borderColor = '#2563EB';
-                        e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
-                      }}
-                      onBlur={(e) => {
-                        e.target.style.borderColor = '#E2E8F0';
-                        e.target.style.boxShadow = 'none';
-                      }}
-                    />
-                  </div>
-
-                  {/* Expected Result Field */}
-                  <div>
-                    <label style={{
-                      display: 'block',
-                      fontSize: 10,
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.06em',
-                      color: '#64748B',
-                      marginBottom: 6,
-                    }}>Expected Result</label>
-                    <textarea
-                      value={step.expectedResult}
-                      onChange={(e) => updateStep(step.id, 'expectedResult', e.target.value)}
-                      placeholder="Describe the expected outcome..."
-                      style={{
-                        width: '100%',
-                        minHeight: 80,
-                        padding: '10px 12px',
-                        fontSize: 14,
-                        fontFamily: 'Inter, sans-serif',
-                        color: '#0F172A',
-                        backgroundColor: '#FFFFFF',
-                        border: '1.5px solid #E2E8F0',
-                        borderRadius: 8,
-                        resize: 'vertical',
-                        outline: 'none',
-                        transition: 'border-color 0.15s, box-shadow 0.15s',
-                      }}
-                      onFocus={(e) => {
-                        e.target.style.borderColor = '#2563EB';
-                        e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)';
-                      }}
-                      onBlur={(e) => {
-                        e.target.style.borderColor = '#E2E8F0';
-                        e.target.style.boxShadow = 'none';
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* Attachments display */}
-                {step.attachments && step.attachments.length > 0 && (
-                  <div style={{
-                    marginTop: 12,
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: 8,
-                  }}>
-                    {step.attachments.map((att, attIndex) => (
-                      <div
-                        key={attIndex}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          padding: '4px 8px',
-                          backgroundColor: '#F1F5F9',
-                          borderRadius: 6,
-                          fontSize: 12,
-                        }}
-                      >
-                        <Paperclip size={12} style={{ color: '#64748B' }} />
-                        <span style={{ 
-                          color: '#334155', 
-                          maxWidth: 120, 
-                          overflow: 'hidden', 
-                          textOverflow: 'ellipsis', 
-                          whiteSpace: 'nowrap' 
-                        }}>
-                          {att.name}
-                        </span>
-                        <span style={{ color: '#94A3B8' }}>
-                          ({Math.round(att.size / 1024)}KB)
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveAttachment(step.id, attIndex)}
-                          style={{
-                            padding: 2,
-                            border: 'none',
-                            background: 'none',
-                            color: '#94A3B8',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            borderRadius: 4,
-                          }}
-                          onMouseEnter={(e) => e.currentTarget.style.color = '#DC2626'}
-                          onMouseLeave={(e) => e.currentTarget.style.color = '#94A3B8'}
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Actions Column - TOP ALIGNED */}
-              <div style={{
-                width: 80,
-                borderLeft: '1px solid #E2E8F0',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'flex-start',
-                paddingTop: 16,
-                gap: 4,
-              }}>
-                <AttachButton 
-                  onClick={() => handleAttachFile(step.id)} 
-                  count={step.attachments?.length || 0} 
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={steps.map(s => s.id)} strategy={verticalListSortingStrategy}>
+              {steps.map((step, index) => (
+                <SortableStepRow
+                  key={step.id}
+                  step={step}
+                  index={index}
+                  stepsCount={steps.length}
+                  onUpdate={(field, value) => updateStep(step.id, field, value)}
+                  onClone={() => cloneStep(step.id)}
+                  onInsertAbove={() => insertAbove(step.id)}
+                  onDelete={() => deleteStep(step.id)}
+                  onAttach={() => handleAttachFile(step.id)}
+                  onRemoveAttachment={(attIndex) => handleRemoveAttachment(step.id, attIndex)}
                 />
-                <ActionButton icon={Copy} title="Clone step" onClick={() => cloneStep(step.id)} />
-                <ActionButton icon={ArrowUp} title="Insert above" onClick={() => insertAbove(step.id)} />
-                <ActionButton 
-                  icon={Trash2} 
-                  title="Delete step" 
-                  onClick={() => deleteStep(step.id)}
-                  danger
-                  disabled={steps.length === 1}
-                />
-              </div>
-            </div>
-          ))}
+              ))}
+            </SortableContext>
+          </DndContext>
         </div>
 
         {/* Add Step with Dropdown */}
