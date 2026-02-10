@@ -24035,35 +24035,199 @@ export type Database = {
           },
         ]
       }
+      th_shared_step_categories: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      th_shared_step_usage: {
+        Row: {
+          id: string
+          inserted_at: string | null
+          shared_step_id: string
+          test_case_id: string
+          test_step_id: string | null
+          variable_values: Json | null
+        }
+        Insert: {
+          id?: string
+          inserted_at?: string | null
+          shared_step_id: string
+          test_case_id: string
+          test_step_id?: string | null
+          variable_values?: Json | null
+        }
+        Update: {
+          id?: string
+          inserted_at?: string | null
+          shared_step_id?: string
+          test_case_id?: string
+          test_step_id?: string | null
+          variable_values?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_shared_step_usage_shared_step_id_fkey"
+            columns: ["shared_step_id"]
+            isOneToOne: false
+            referencedRelation: "th_shared_steps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_shared_step_usage_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_shared_step_usage_test_step_id_fkey"
+            columns: ["test_step_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       th_shared_steps: {
         Row: {
           action: string
+          category_id: string | null
           created_at: string | null
+          created_by: string | null
+          description: string | null
           expected_result: string
           id: string
+          is_active: boolean | null
           name: string
           updated_at: string | null
+          updated_by: string | null
           usage_count: number | null
+          variables: Json | null
         }
         Insert: {
           action: string
+          category_id?: string | null
           created_at?: string | null
+          created_by?: string | null
+          description?: string | null
           expected_result: string
           id?: string
+          is_active?: boolean | null
           name: string
           updated_at?: string | null
+          updated_by?: string | null
           usage_count?: number | null
+          variables?: Json | null
         }
         Update: {
           action?: string
+          category_id?: string | null
           created_at?: string | null
+          created_by?: string | null
+          description?: string | null
           expected_result?: string
           id?: string
+          is_active?: boolean | null
           name?: string
           updated_at?: string | null
+          updated_by?: string | null
           usage_count?: number | null
+          variables?: Json | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "th_shared_steps_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "th_shared_step_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       th_step_attachments: {
         Row: {
