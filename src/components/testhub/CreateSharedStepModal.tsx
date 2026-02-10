@@ -20,14 +20,27 @@ interface Category {
   icon: string;
 }
 
+interface SharedStepInput {
+  id: string;
+  name: string;
+  description: string | null;
+  action: string;
+  expected_result: string | null;
+  category_id: string | null;
+  variables: any;
+  usage_count: number;
+}
+
 interface CreateSharedStepModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
   categories: Category[];
+  mode?: 'create' | 'edit';
+  sharedStep?: SharedStepInput | null;
 }
 
-export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories }: CreateSharedStepModalProps) {
+export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, mode = 'create', sharedStep }: CreateSharedStepModalProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState('');
@@ -37,13 +50,24 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories }
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Reset on open
+  // Reset/prefill on open
   useEffect(() => {
     if (isOpen) {
-      setName(''); setDescription(''); setCategoryId(''); setAction('');
-      setExpectedResult(''); setVariables([]); setErrors({});
+      if (mode === 'edit' && sharedStep) {
+        setName(sharedStep.name || '');
+        setDescription(sharedStep.description || '');
+        setCategoryId(sharedStep.category_id || '');
+        setAction(sharedStep.action || '');
+        setExpectedResult(sharedStep.expected_result || '');
+        const vars = Array.isArray(sharedStep.variables) ? sharedStep.variables : [];
+        setVariables(vars.map((v: any) => ({ name: v.name || '', default: v.default || '' })));
+      } else {
+        setName(''); setDescription(''); setCategoryId(''); setAction('');
+        setExpectedResult(''); setVariables([]);
+      }
+      setErrors({});
     }
-  }, [isOpen]);
+  }, [isOpen, mode, sharedStep]);
 
   // Auto-detect variables from action text
   useEffect(() => {
@@ -79,22 +103,31 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories }
     setIsSubmitting(true);
     try {
       const cleanVars = variables.filter(v => v.name.trim()).map(v => ({ name: v.name.trim(), default: v.default.trim() }));
-      const { error } = await supabase.from('th_shared_steps').insert({
+      const stepData = {
         name: name.trim(),
         description: description.trim() || null,
         category_id: categoryId || null,
         action: action.trim(),
         expected_result: expectedResult.trim() || null,
         variables: cleanVars as any,
-        usage_count: 0,
-        is_active: true,
-      });
-      if (error) { toast.error('Failed to create: ' + error.message); return; }
-      toast.success('Shared step created successfully');
+      };
+
+      if (mode === 'edit' && sharedStep) {
+        const { error } = await supabase.from('th_shared_steps')
+          .update({ ...stepData, updated_at: new Date().toISOString() })
+          .eq('id', sharedStep.id);
+        if (error) { toast.error('Failed to update: ' + error.message); return; }
+        toast.success('Shared step updated successfully');
+      } else {
+        const { error } = await supabase.from('th_shared_steps')
+          .insert({ ...stepData, usage_count: 0, is_active: true });
+        if (error) { toast.error('Failed to create: ' + error.message); return; }
+        toast.success('Shared step created successfully');
+      }
       onSuccess();
       onClose();
     } catch (err: any) {
-      toast.error(err.message || 'Failed to create shared step');
+      toast.error(err.message || 'Failed to save shared step');
     } finally {
       setIsSubmitting(false);
     }
@@ -139,10 +172,10 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories }
         }}>
           <div>
             <h2 style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
-              Create Shared Step
+              {mode === 'edit' ? 'Edit Shared Step' : 'Create Shared Step'}
             </h2>
             <p style={{ fontFamily: 'Inter', fontSize: 13, color: '#64748B', margin: '4px 0 0' }}>
-              Create a reusable test step for your test cases
+              {mode === 'edit' ? 'Update this shared step' : 'Create a reusable test step for your test cases'}
             </p>
           </div>
           <button onClick={onClose} style={{
@@ -312,7 +345,7 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories }
             color: '#FFFFFF', cursor: isSubmitting ? 'wait' : 'pointer',
             opacity: isSubmitting ? 0.7 : 1, fontFamily: 'Inter',
           }}>
-            {isSubmitting ? 'Creating...' : 'Create Shared Step'}
+            {isSubmitting ? (mode === 'edit' ? 'Saving...' : 'Creating...') : (mode === 'edit' ? 'Save Changes' : 'Create Shared Step')}
           </button>
         </div>
       </div>

@@ -410,17 +410,15 @@ export default function SharedStepsPage() {
         onSuccess={() => { fetchSharedSteps(); fetchCategories(); }}
         categories={categories}
       />
-      {editingStep && (
-        <CreateEditModal
-          step={editingStep}
-          categories={categories}
-          onClose={() => setEditingStep(null)}
-          onSave={(step) => {
-            setSharedSteps(prev => prev.map(s => s.id === step.id ? step : s));
-            setEditingStep(null);
-          }}
-        />
-      )}
+      {/* Edit Modal */}
+      <CreateSharedStepModal
+        isOpen={!!editingStep}
+        onClose={() => setEditingStep(null)}
+        onSuccess={() => { fetchSharedSteps(); fetchCategories(); setEditingStep(null); }}
+        categories={categories}
+        mode="edit"
+        sharedStep={editingStep}
+      />
 
       {/* Create Category Modal */}
       {isCreateCategoryModalOpen && (
