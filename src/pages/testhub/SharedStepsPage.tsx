@@ -17,6 +17,7 @@ import { catalystToast } from '@/components/ui/CatalystToast';
 import { CreateSharedStepModal } from '@/components/testhub/CreateSharedStepModal';
 import { ViewSharedStepModal } from '@/components/testhub/ViewSharedStepModal';
 import { DeleteSharedStepModal } from '@/components/testhub/DeleteSharedStepModal';
+import { CreateCategoryModal } from '@/components/testhub/CreateCategoryModal';
 
 // --- Types ---
 
@@ -706,30 +707,12 @@ export default function SharedStepsPage() {
       />
 
       {/* Create Category Modal */}
-      {isCreateCategoryModalOpen && (
-        <div onClick={() => setIsCreateCategoryModalOpen(false)} style={{
-          position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)',
-          backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
-        }}>
-          <div onClick={(e) => e.stopPropagation()} style={{
-            width: 440, backgroundColor: '#FFFFFF', borderRadius: 12,
-            boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
-          }}>
-            <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0' }}>
-              <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0, fontFamily: 'Inter' }}>Create Category</h2>
-            </div>
-            <div style={{ padding: 24 }}>
-              <p style={{ color: '#64748B', fontFamily: 'Inter' }}>Category creation will be implemented in a later phase.</p>
-            </div>
-            <div style={{ padding: '16px 24px', borderTop: '1px solid #E2E8F0', display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={() => setIsCreateCategoryModalOpen(false)} style={{
-                height: 40, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0',
-                borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer', fontFamily: 'Inter',
-              }}>Close</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <CreateCategoryModal
+        isOpen={isCreateCategoryModalOpen}
+        onClose={() => setIsCreateCategoryModalOpen(false)}
+        onSuccess={() => fetchCategories()}
+        existingCategories={categories}
+      />
 
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </div>
