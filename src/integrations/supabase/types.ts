@@ -23997,6 +23997,137 @@ export type Database = {
           },
         ]
       }
+      th_cycle_key_sequence: {
+        Row: {
+          id: number
+          last_number: number | null
+        }
+        Insert: {
+          id?: number
+          last_number?: number | null
+        }
+        Update: {
+          id?: number
+          last_number?: number | null
+        }
+        Relationships: []
+      }
+      th_cycle_test_cases: {
+        Row: {
+          assigned_to: string | null
+          created_at: string | null
+          cycle_id: string
+          defect_ids: string[] | null
+          executed_at: string | null
+          executed_by: string | null
+          execution_status: string | null
+          execution_time_seconds: number | null
+          id: string
+          notes: string | null
+          test_case_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string | null
+          cycle_id: string
+          defect_ids?: string[] | null
+          executed_at?: string | null
+          executed_by?: string | null
+          execution_status?: string | null
+          execution_time_seconds?: number | null
+          id?: string
+          notes?: string | null
+          test_case_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string | null
+          cycle_id?: string
+          defect_ids?: string[] | null
+          executed_at?: string | null
+          executed_by?: string | null
+          execution_status?: string | null
+          execution_time_seconds?: number | null
+          id?: string
+          notes?: string | null
+          test_case_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_cycle_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       th_folders: {
         Row: {
           created_at: string | null
@@ -24484,6 +24615,126 @@ export type Database = {
             columns: ["folder_id"]
             isOneToOne: false
             referencedRelation: "th_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_test_cycles: {
+        Row: {
+          blocked_count: number | null
+          created_at: string | null
+          created_by: string | null
+          cycle_key: string
+          description: string | null
+          end_date: string | null
+          failed_count: number | null
+          id: string
+          name: string
+          not_run_count: number | null
+          owner_id: string | null
+          passed_count: number | null
+          progress_percent: number | null
+          skipped_count: number | null
+          start_date: string | null
+          status: string | null
+          total_cases: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          blocked_count?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          cycle_key: string
+          description?: string | null
+          end_date?: string | null
+          failed_count?: number | null
+          id?: string
+          name: string
+          not_run_count?: number | null
+          owner_id?: string | null
+          passed_count?: number | null
+          progress_percent?: number | null
+          skipped_count?: number | null
+          start_date?: string | null
+          status?: string | null
+          total_cases?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          blocked_count?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          cycle_key?: string
+          description?: string | null
+          end_date?: string | null
+          failed_count?: number | null
+          id?: string
+          name?: string
+          not_run_count?: number | null
+          owner_id?: string | null
+          passed_count?: number | null
+          progress_percent?: number | null
+          skipped_count?: number | null
+          start_date?: string | null
+          status?: string | null
+          total_cases?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
         ]
@@ -34434,6 +34685,7 @@ export type Database = {
         }[]
       }
       generate_change_number: { Args: never; Returns: string }
+      generate_cycle_key: { Args: never; Returns: string }
       generate_evidence_path: {
         Args: {
           p_execution_id: string
@@ -35635,6 +35887,7 @@ export type Database = {
         }
         Returns: Json
       }
+      update_cycle_stats: { Args: { p_cycle_id: string }; Returns: undefined }
       update_execution_run: {
         Args: {
           p_assigned_testers?: string[]
