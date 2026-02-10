@@ -14,6 +14,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { CreateSharedStepModal } from '@/components/testhub/CreateSharedStepModal';
+import { ViewSharedStepModal } from '@/components/testhub/ViewSharedStepModal';
 
 // --- Types ---
 
@@ -114,6 +115,7 @@ export default function SharedStepsPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingStep, setEditingStep] = useState<SharedStep | null>(null);
   const [isCreateCategoryModalOpen, setIsCreateCategoryModalOpen] = useState(false);
+  const [viewStep, setViewStep] = useState<SharedStep | null>(null);
 
   // Fetch categories with step counts
   const fetchCategories = async () => {
@@ -379,7 +381,7 @@ export default function SharedStepsPage() {
                   <SharedStepCard
                     key={step.id}
                     step={step}
-                    onView={() => toast.info('View modal coming in G2-06')}
+                    onView={() => setViewStep(step)}
                     onEdit={() => setEditingStep(step)}
                     onDuplicate={() => handleDuplicate(step)}
                     onDelete={() => handleDelete(step.id)}
@@ -390,6 +392,16 @@ export default function SharedStepsPage() {
           </div>
         </div>
       </div>
+
+      {/* View Modal */}
+      <ViewSharedStepModal
+        isOpen={!!viewStep}
+        sharedStep={viewStep}
+        onClose={() => setViewStep(null)}
+        onEdit={() => { setEditingStep(viewStep); setViewStep(null); }}
+        onDelete={() => { if (viewStep) { handleDelete(viewStep.id); setViewStep(null); } }}
+        onDuplicate={() => { if (viewStep) { handleDuplicate(viewStep); setViewStep(null); } }}
+      />
 
       {/* Create Modal */}
       <CreateSharedStepModal
