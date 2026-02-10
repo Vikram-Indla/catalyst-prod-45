@@ -40,7 +40,7 @@ export function ActiveCyclesList({ cycles }: Props) {
           </div>
         </div>
         <button
-          onClick={() => navigate('/testhub/test-cycles')}
+          onClick={() => navigate('/testhub/cycles')}
           style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', border: 'none', borderRadius: 6, backgroundColor: 'transparent', color: '#2563EB', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
         >
           View All <ChevronRight size={14} />
@@ -62,7 +62,7 @@ export function ActiveCyclesList({ cycles }: Props) {
             return (
               <div
                 key={cycle.id}
-                onClick={() => navigate(`/testhub/test-cycles/${cycle.id}`)}
+                onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
                 style={{ padding: 14, backgroundColor: 'hsl(var(--muted) / .35)', borderRadius: 10, cursor: 'pointer', transition: 'background-color 0.15s', border: '1px solid transparent' }}
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'hsl(217 91% 96%)'; e.currentTarget.style.borderColor = '#BFDBFE'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'hsl(var(--muted) / .35)'; e.currentTarget.style.borderColor = 'transparent'; }}
@@ -98,7 +98,7 @@ export function ActiveCyclesList({ cycles }: Props) {
             <Play size={32} style={{ marginBottom: 8, opacity: 0.4 }} />
             <p style={{ fontSize: 13, margin: '0 0 12px' }}>No active cycles</p>
             <button
-              onClick={() => navigate('/testhub/test-cycles')}
+              onClick={() => navigate('/testhub/cycles')}
               style={{ padding: '8px 16px', border: 'none', borderRadius: 6, backgroundColor: '#2563EB', color: '#FFF', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}
             >
               Create Cycle

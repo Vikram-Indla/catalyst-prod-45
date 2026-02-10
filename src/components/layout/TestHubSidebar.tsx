@@ -13,9 +13,8 @@ import {
   FileText,
   RefreshCw,
   Bug,
-  BarChart3,
   Settings,
-  LayoutDashboard,
+  BarChart3,
   Layers,
   Play,
   Target,
@@ -40,7 +39,7 @@ const testHubSidebarConfig: SidebarConfig = {
     {
       title: 'Overview',
       items: [
-        { id: 'dashboard', title: 'Dashboard', path: '/testhub/dashboard', icon: LayoutDashboard, exact: true },
+        { id: 'dashboard', title: 'Dashboard', path: '/testhub/dashboard', icon: BarChart3, exact: true },
       ],
     },
     {
