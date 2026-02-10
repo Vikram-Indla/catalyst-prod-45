@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, Pencil, Play, CheckCircle2, XCircle, AlertTriangle,
-  Clock, Plus, User, Calendar, RefreshCw, Trash2, Download, Users
+  Clock, Plus, User, Calendar, RefreshCw, Trash2, Download, Users, BarChart3
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
@@ -237,6 +237,10 @@ export default function TestCycleDetailPage() {
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={() => navigate(`/testhub/cycles/${cycleId}/report`)}
+              style={{ height: 40, padding: '0 16px', border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <BarChart3 size={16} /> Report
+            </button>
             <button onClick={handleExportCSV} title="Export CSV" disabled={testCases.length === 0}
               style={{ width: 40, height: 40, padding: 0, border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: testCases.length > 0 ? '#64748B' : '#CBD5E1', cursor: testCases.length > 0 ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Download size={18} />
