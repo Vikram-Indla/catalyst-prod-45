@@ -8,6 +8,7 @@ import {
   X, Pencil, Trash2, Copy, Tag, Clock,
   Variable, Link2, CheckCircle, ExternalLink,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { formatTimestamp } from '@/lib/formatTimestamp';
 
@@ -62,6 +63,7 @@ function highlightVariables(text: string) {
 }
 
 export function ViewSharedStepModal({ isOpen, sharedStep, onClose, onEdit, onDelete, onDuplicate }: ViewSharedStepModalProps) {
+  const navigate = useNavigate();
   const [linkedTestCases, setLinkedTestCases] = useState<LinkedTestCase[]>([]);
   const [isLoadingLinks, setIsLoadingLinks] = useState(false);
 
@@ -211,17 +213,29 @@ export function ViewSharedStepModal({ isOpen, sharedStep, onClose, onEdit, onDel
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {linkedTestCases.map(tc => (
-                  <div key={tc.id} style={{
-                    display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
-                    backgroundColor: '#F8FAFC', borderRadius: 8,
-                  }}>
+                  <button
+                    key={tc.id}
+                    onClick={() => {
+                      onClose();
+                      navigate(`/testhub/test-repository?view=${tc.id}`);
+                    }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px',
+                      backgroundColor: '#F8FAFC', borderRadius: 8, border: '1px solid #E2E8F0',
+                      cursor: 'pointer', textAlign: 'left', width: '100%',
+                      transition: 'all 0.15s', fontFamily: 'Inter',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#EFF6FF'; e.currentTarget.style.borderColor = '#BFDBFE'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#F8FAFC'; e.currentTarget.style.borderColor = '#E2E8F0'; }}
+                  >
                     <span style={{
                       fontFamily: 'monospace', fontSize: 12, fontWeight: 600, color: '#2563EB',
-                      backgroundColor: '#EFF6FF', padding: '2px 8px', borderRadius: 4,
+                      backgroundColor: '#EFF6FF', padding: '4px 10px', borderRadius: 6,
+                      border: '1px solid #BFDBFE', flexShrink: 0,
                     }}>{tc.case_key}</span>
-                    <span style={{ flex: 1, fontSize: 13, color: '#334155', fontFamily: 'Inter' }}>{tc.title}</span>
+                    <span style={{ flex: 1, fontSize: 13, color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tc.title}</span>
                     <ExternalLink size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />
-                  </div>
+                  </button>
                 ))}
                 {sharedStep.usage_count > linkedTestCases.length && (
                   <p style={{ fontSize: 12, color: '#94A3B8', margin: '4px 0 0', fontFamily: 'Inter' }}>
