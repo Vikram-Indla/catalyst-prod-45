@@ -88,7 +88,7 @@ export function TopFailingTests({ tests }: Props) {
                 </div>
                 <div style={{ textAlign: 'center' }}>
                   <p style={{ fontSize: 12, fontWeight: 600, color: 'hsl(var(--foreground))', margin: 0 }}>
-                    {formatTimeAbbreviated(test.last_failed)}
+                    {test.last_failed ? formatTimeAbbreviated(test.last_failed) : '—'}
                   </p>
                   <p style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', margin: 0 }}>last failed</p>
                 </div>

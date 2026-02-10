@@ -54,7 +54,7 @@ export function RecentActivityFeed({ activities }: Props) {
             return (
               <div
                 key={a.id}
-                onClick={() => navigate(`/testhub/test-cycles/${a.cycle_id}`)}
+                onClick={() => navigate(`/testhub/cycles/${a.cycle_id}`)}
                 style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: i < activities.length - 1 ? '1px solid hsl(var(--border))' : 'none', cursor: 'pointer' }}
               >
                 <div style={{ width: 30, height: 30, borderRadius: '50%', backgroundColor: cfg.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
