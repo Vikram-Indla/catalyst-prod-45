@@ -25086,6 +25086,7 @@ export type Database = {
           created_at: string | null
           folder_id: string | null
           id: string
+          is_ai_generated: boolean
           objective: string | null
           owner_id: string | null
           preconditions: string | null
@@ -25102,6 +25103,7 @@ export type Database = {
           created_at?: string | null
           folder_id?: string | null
           id?: string
+          is_ai_generated?: boolean
           objective?: string | null
           owner_id?: string | null
           preconditions?: string | null
@@ -25118,6 +25120,7 @@ export type Database = {
           created_at?: string | null
           folder_id?: string | null
           id?: string
+          is_ai_generated?: boolean
           objective?: string | null
           owner_id?: string | null
           preconditions?: string | null
