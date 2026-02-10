@@ -15,6 +15,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { CreateSharedStepModal } from '@/components/testhub/CreateSharedStepModal';
 import { ViewSharedStepModal } from '@/components/testhub/ViewSharedStepModal';
+import { DeleteSharedStepModal } from '@/components/testhub/DeleteSharedStepModal';
 
 // --- Types ---
 
@@ -116,6 +117,7 @@ export default function SharedStepsPage() {
   const [editingStep, setEditingStep] = useState<SharedStep | null>(null);
   const [isCreateCategoryModalOpen, setIsCreateCategoryModalOpen] = useState(false);
   const [viewStep, setViewStep] = useState<SharedStep | null>(null);
+  const [deleteStep, setDeleteStep] = useState<SharedStep | null>(null);
 
   // Fetch categories with step counts
   const fetchCategories = async () => {
@@ -195,13 +197,8 @@ export default function SharedStepsPage() {
     toast.success('Refreshed');
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this shared step?')) return;
-    const { error } = await supabase.from('th_shared_steps').delete().eq('id', id);
-    if (error) { toast.error('Failed to delete'); return; }
-    setSharedSteps(prev => prev.filter(s => s.id !== id));
-    setTotalCount(prev => prev - 1);
-    toast.success('Shared step deleted');
+  const handleDelete = (step: SharedStep) => {
+    setDeleteStep(step);
   };
 
   const handleDuplicate = async (step: SharedStep) => {
@@ -384,7 +381,7 @@ export default function SharedStepsPage() {
                     onView={() => setViewStep(step)}
                     onEdit={() => setEditingStep(step)}
                     onDuplicate={() => handleDuplicate(step)}
-                    onDelete={() => handleDelete(step.id)}
+                    onDelete={() => handleDelete(step)}
                   />
                 ))}
               </div>
@@ -399,7 +396,7 @@ export default function SharedStepsPage() {
         sharedStep={viewStep}
         onClose={() => setViewStep(null)}
         onEdit={() => { setEditingStep(viewStep); setViewStep(null); }}
-        onDelete={() => { if (viewStep) { handleDelete(viewStep.id); setViewStep(null); } }}
+        onDelete={() => { if (viewStep) { handleDelete(viewStep); setViewStep(null); } }}
         onDuplicate={() => { if (viewStep) { handleDuplicate(viewStep); setViewStep(null); } }}
       />
 
@@ -418,6 +415,14 @@ export default function SharedStepsPage() {
         categories={categories}
         mode="edit"
         sharedStep={editingStep}
+      />
+
+      {/* Delete Modal */}
+      <DeleteSharedStepModal
+        isOpen={!!deleteStep}
+        sharedStep={deleteStep}
+        onClose={() => setDeleteStep(null)}
+        onSuccess={() => { fetchSharedSteps(); fetchCategories(); setDeleteStep(null); }}
       />
 
       {/* Create Category Modal */}
