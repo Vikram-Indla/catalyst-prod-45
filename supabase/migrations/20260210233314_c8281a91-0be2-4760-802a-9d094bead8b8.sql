@@ -1,0 +1,1 @@
+ALTER TABLE public.th_test_cases ADD COLUMN is_ai_generated boolean NOT NULL DEFAULT false;

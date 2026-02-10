@@ -223,7 +223,8 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
             type: tc.testType,
             status: 'draft',
             automation: 'manual',
-          })
+            is_ai_generated: true,
+          } as any)
           .select()
           .single();
 

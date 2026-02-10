@@ -16,6 +16,7 @@ import {
   XCircle,
   Clock,
   AlertCircle,
+  Sparkles,
 } from 'lucide-react';
 import { TMTestCase } from '@/types/test-management';
 import { cn } from '@/lib/utils';
@@ -100,6 +101,7 @@ export function TestHubCasesTable({ cases, projectId, onRefresh }: TestHubCasesT
             const isSelected = selectedIds.has(testCase.id);
             const caseKey = (testCase as any).case_key || testCase.key || '';
             const stepCount = (testCase as any).steps?.length || 0;
+            const isAiGenerated = (testCase as any).is_ai_generated === true;
 
             return (
               <tr
@@ -114,7 +116,28 @@ export function TestHubCasesTable({ cases, projectId, onRefresh }: TestHubCasesT
                     onChange={(e) => handleSelectOne(testCase.id, e.target.checked)}
                   />
                 </td>
-                <td className="th-cell-id">{caseKey}</td>
+                <td className="th-cell-id">
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                    {caseKey}
+                    {isAiGenerated && (
+                      <span
+                        title="AI Generated"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: 18,
+                          height: 18,
+                          borderRadius: 4,
+                          background: 'linear-gradient(135deg, #8B5CF6, #6366F1)',
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Sparkles style={{ width: 11, height: 11, color: '#FFFFFF' }} />
+                      </span>
+                    )}
+                  </span>
+                </td>
                 <td>
                   <div className="th-cell-title">{testCase.title}</div>
                   {testCase.folder && (
