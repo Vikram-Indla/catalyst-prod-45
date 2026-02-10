@@ -2,7 +2,8 @@
 // TEST REPOSITORY PAGE - MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { RefreshCw, Plus, Trash2, MoveRight, CheckSquare, Download, Upload, Sparkles } from 'lucide-react';
 import { FolderPanel } from '@/components/testhub/FolderPanel';
 import { TestCasesTable } from '@/components/testhub/TestCasesTable';
@@ -80,6 +81,7 @@ interface ContextMenuState {
 
 export function TestRepositoryPage() {
   const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   
   // State
   const [folders, setFolders] = useState<Folder[]>([]);
@@ -269,6 +271,26 @@ export function TestRepositoryPage() {
    }, [selectedFolderId, searchQuery, sortColumn, sortDirection, 
        filters.priorities.join(','), filters.statuses.join(','), 
        filters.types.join(',')]);
+
+  // Handle ?view=<id> URL parameter to open a test case modal
+  useEffect(() => {
+    const viewId = searchParams.get('view');
+    if (!viewId) return;
+    const openFromUrl = async () => {
+      const { data } = await supabase
+        .from('th_test_cases')
+        .select('*')
+        .eq('id', viewId)
+        .maybeSingle();
+      if (data) {
+        setSelectedTestCase(data as any);
+        setIsViewModalOpen(true);
+      }
+      searchParams.delete('view');
+      setSearchParams(searchParams, { replace: true });
+    };
+    openFromUrl();
+  }, [searchParams]);
 
   // Handlers
   const handleSelectAll = (selected: boolean) => {
