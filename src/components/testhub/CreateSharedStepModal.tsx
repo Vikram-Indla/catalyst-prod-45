@@ -159,7 +159,7 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
   return (
     <div onClick={onClose} style={{
       position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)',
-      backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
+      backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1200,
     }}>
       <div onClick={(e) => e.stopPropagation()} style={{
         width: 600, maxHeight: '90vh', backgroundColor: '#FFFFFF', borderRadius: 12,
