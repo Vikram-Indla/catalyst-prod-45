@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { X, Edit2, Copy, FileText, ClipboardList, Paperclip, Link2, History, Play, Plus, Trash2, Download, Upload, Bug, BookOpen, ImageIcon, Table, File } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
@@ -52,8 +52,8 @@ interface Attachment {
   file_url: string;
   file_size: number;
   file_type: string;
-  step_number?: number | null;
-  created_at?: string;
+  step_id?: string | null;
+  uploaded_at?: string;
 }
 
 interface ViewTestCaseModalProps {
@@ -240,6 +240,8 @@ export function ViewTestCaseModal({
   const [runs, setRuns] = useState<Execution[]>([]);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Add Link modal state
   const [addLinkOpen, setAddLinkOpen] = useState(false);
@@ -299,15 +301,75 @@ export function ViewTestCaseModal({
   };
 
   // --- ATTACHMENT OPERATIONS ---
+  const handleUploadFiles = useCallback(async (files: File[]) => {
+    if (!testCase || files.length === 0) return;
+    setIsUploading(true);
+
+    try {
+      for (const file of files) {
+        if (file.size > 10 * 1024 * 1024) {
+          console.error(`${file.name} is too large (max 10MB)`);
+          continue;
+        }
+
+        const filePath = `test-cases/${testCase.id}/attachments/${Date.now()}-${file.name}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('testhub-attachments')
+          .upload(filePath, file);
+
+        if (uploadError) {
+          console.error('Upload error:', uploadError);
+          continue;
+        }
+
+        const { data: urlData } = supabase.storage
+          .from('testhub-attachments')
+          .getPublicUrl(filePath);
+
+        const { data: insertedAtt, error: dbError } = await supabase
+          .from('th_test_case_attachments')
+          .insert({
+            test_case_id: testCase.id,
+            file_name: file.name,
+            file_url: urlData.publicUrl,
+            file_size: file.size,
+            file_type: file.type,
+          })
+          .select()
+          .single();
+
+        if (!dbError && insertedAtt) {
+          setAttachments(prev => [insertedAtt, ...prev]);
+        }
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+    } finally {
+      setIsUploading(false);
+    }
+  }, [testCase]);
+
   const handleDeleteAttachment = async (attId: string) => {
+    const att = attachments.find(a => a.id === attId);
+    if (!att) return;
+
+    // Try to extract storage path from the public URL
+    try {
+      const url = new URL(att.file_url);
+      const pathMatch = url.pathname.match(/\/object\/public\/testhub-attachments\/(.*)/);
+      if (pathMatch) {
+        await supabase.storage.from('testhub-attachments').remove([pathMatch[1]]);
+      }
+    } catch {}
+
     await supabase.from('th_test_case_attachments').delete().eq('id', attId);
     setAttachments(attachments.filter(a => a.id !== attId));
   };
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    // TODO: Implement with Supabase Storage
-    console.log('Files to upload:', acceptedFiles);
-  }, []);
+    handleUploadFiles(acceptedFiles);
+  }, [handleUploadFiles]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
@@ -391,7 +453,7 @@ export function ViewTestCaseModal({
             {/* Header with Upload */}
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button
-                onClick={() => {/* TODO: open file picker */}}
+                onClick={() => fileInputRef.current?.click()}
                 style={{
                   height: 36,
                   padding: '0 16px',
@@ -445,8 +507,7 @@ export function ViewTestCaseModal({
                         </p>
                         <p style={{ fontFamily: 'Inter', fontSize: 12, color: '#94A3B8', margin: '2px 0 0 0' }}>
                           {fileExt} • {fileSizeKb} KB
-                          {att.step_number && ` • Step ${att.step_number}`}
-                          {att.created_at && ` • Uploaded ${formatDistanceToNow(new Date(att.created_at), { addSuffix: true })}`}
+                          {att.uploaded_at && ` • Uploaded ${formatDistanceToNow(new Date(att.uploaded_at), { addSuffix: true })}`}
                         </p>
                       </div>
                       <button
@@ -494,6 +555,20 @@ export function ViewTestCaseModal({
               </div>
             ) : null}
 
+            {/* Hidden file input for Upload button */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              onChange={(e) => {
+                if (e.target.files) {
+                  handleUploadFiles(Array.from(e.target.files));
+                  e.target.value = '';
+                }
+              }}
+              style={{ display: 'none' }}
+            />
+
             {/* Upload Dropzone */}
             <div
               {...getRootProps()}
@@ -508,10 +583,20 @@ export function ViewTestCaseModal({
               }}
             >
               <input {...getInputProps()} />
-              <Upload style={{ width: 24, height: 24, color: '#64748B', margin: '0 auto 8px' }} />
-              <p style={{ fontFamily: 'Inter', fontSize: 14, color: '#64748B', margin: 0 }}>
-                {isDragActive ? 'Drop files here...' : 'Drag and drop files here, or click to upload'}
-              </p>
+              {isUploading ? (
+                <>
+                  <div style={{ width: 24, height: 24, border: '3px solid #E2E8F0', borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 8px' }} />
+                  <p style={{ fontFamily: 'Inter', fontSize: 14, color: '#64748B', margin: 0 }}>Uploading...</p>
+                </>
+              ) : (
+                <>
+                  <Upload style={{ width: 24, height: 24, color: '#64748B', margin: '0 auto 8px' }} />
+                  <p style={{ fontFamily: 'Inter', fontSize: 14, color: '#64748B', margin: 0 }}>
+                    {isDragActive ? 'Drop files here...' : 'Drag and drop files here, or click to upload'}
+                  </p>
+                  <p style={{ fontFamily: 'Inter', fontSize: 12, color: '#94A3B8', margin: '4px 0 0' }}>Max 10MB per file</p>
+                </>
+              )}
             </div>
           </div>
         );
