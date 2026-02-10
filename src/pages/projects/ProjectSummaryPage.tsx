@@ -6,7 +6,8 @@ import { useProjectKeyResolver } from '@/hooks/useKeyAliasResolver';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -467,6 +468,7 @@ function ListView() {
   const [expandedFeatures, setExpandedFeatures] = useState<string[]>(['FEAT-1', 'FEAT-3']);
   const [expandedStories, setExpandedStories] = useState<string[]>(['STORY-1', 'STORY-6']);
   const [searchQuery, setSearchQuery] = useState('');
+  const nameAvatarMap = useProfileAvatarsByName();
 
   const toggleFeature = (key: string) => {
     setExpandedFeatures((prev) =>
@@ -546,6 +548,7 @@ function ListView() {
                     </TableCell>
                     <TableCell>
                       <Avatar className="h-6 w-6">
+                        <AvatarImage src={nameAvatarMap.get(feature.assignee?.toLowerCase())} alt={feature.assignee} />
                         <AvatarFallback className="text-xs">{getInitials(feature.assignee)}</AvatarFallback>
                       </Avatar>
                     </TableCell>
@@ -595,6 +598,7 @@ function ListView() {
                           </TableCell>
                           <TableCell>
                             <Avatar className="h-6 w-6">
+                              <AvatarImage src={nameAvatarMap.get(story.assignee?.toLowerCase())} alt={story.assignee} />
                               <AvatarFallback className="text-xs">{getInitials(story.assignee)}</AvatarFallback>
                             </Avatar>
                           </TableCell>
@@ -633,6 +637,7 @@ function ListView() {
                             </TableCell>
                             <TableCell>
                               <Avatar className="h-6 w-6">
+                                <AvatarImage src={nameAvatarMap.get(subtask.assignee?.toLowerCase())} alt={subtask.assignee} />
                                 <AvatarFallback className="text-xs">{getInitials(subtask.assignee)}</AvatarFallback>
                               </Avatar>
                             </TableCell>
@@ -671,6 +676,7 @@ function ListView() {
 // ============================================
 
 function KanbanView() {
+  const nameAvatarMap = useProfileAvatarsByName();
   const columns = [
     { id: 'todo', name: 'To Do', items: mockHierarchicalData.filter((f) => f.status === 'To Do') },
     { id: 'inprogress', name: 'In Progress', items: mockHierarchicalData.filter((f) => f.status === 'In Progress') },
@@ -705,6 +711,7 @@ function KanbanView() {
                       {item.key}
                     </Link>
                     <Avatar className="h-5 w-5">
+                      <AvatarImage src={nameAvatarMap.get(item.assignee?.toLowerCase())} alt={item.assignee} />
                       <AvatarFallback className="text-[10px]">{getInitials(item.assignee)}</AvatarFallback>
                     </Avatar>
                   </div>
@@ -733,6 +740,7 @@ export default function ProjectSummaryPage() {
   const navigate = useNavigate();
   const projectKey = routeProjectKey || 'TEST';
   const projectName = 'Test Project';
+  const nameAvatarMap = useProfileAvatarsByName();
 
   // Check if this is an old key alias and redirect if needed
   const { isAlias, currentKey, isLoading } = useProjectKeyResolver(routeProjectKey);

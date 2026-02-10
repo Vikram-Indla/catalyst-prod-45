@@ -126,13 +126,17 @@ export function AllocationModal({ resource, onClose }: AllocationModalProps) {
           <div className="h-16 px-6 flex items-center gap-4 border-b border-border bg-muted/30 flex-shrink-0">
             {/* Avatar */}
             <div 
-              className="w-[52px] h-[52px] rounded-[14px] flex items-center justify-center text-[18px] font-extrabold text-white flex-shrink-0"
+              className="w-[52px] h-[52px] rounded-[14px] flex items-center justify-center text-[18px] font-extrabold text-white flex-shrink-0 overflow-hidden"
               style={{ 
-                background: departmentGradient,
-                boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)'
+                background: resource.avatarUrl ? 'transparent' : departmentGradient,
+                boxShadow: resource.avatarUrl ? 'none' : '0 4px 12px rgba(37, 99, 235, 0.3)'
               }}
             >
-              {initials}
+              {resource.avatarUrl ? (
+                <img src={resource.avatarUrl} alt={resource.name} className="w-full h-full object-cover" />
+              ) : (
+                initials
+              )}
             </div>
             
             {/* Info */}

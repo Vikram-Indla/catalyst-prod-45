@@ -2,6 +2,7 @@
 // Weekly Insights View
 
 import { useState, useMemo, useRef } from 'react';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { CheckCircle, Clock, AlertTriangle, XCircle, FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -28,7 +29,7 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('individual');
   const [selectedUserId, setSelectedUserId] = useState(users[0]?.id || '');
   const [selectedTeamId, setSelectedTeamId] = useState(teams[0]?.id || '');
-
+  const nameAvatarMap = useProfileAvatarsByName();
   // Get current week range
   const today = new Date();
   const weekStart = new Date(today);
@@ -517,12 +518,19 @@ export function WorkManagerInsights({ tasks }: WorkManagerInsightsProps) {
                     <tr key={member.userId} className="border-b border-border-subtle hover:bg-muted/50 transition-colors cursor-pointer">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <div 
-                            className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
-                            style={{ backgroundColor: avatarColor }}
-                          >
-                            {member.initials}
-                          </div>
+                          {(() => {
+                            const avatarUrl = nameAvatarMap.get(member.name?.toLowerCase());
+                            return avatarUrl ? (
+                              <img src={avatarUrl} alt={member.name} className="w-7 h-7 rounded-full object-cover" />
+                            ) : (
+                              <div 
+                                className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white"
+                                style={{ backgroundColor: avatarColor }}
+                              >
+                                {member.initials}
+                              </div>
+                            );
+                          })()}
                           <span className="text-[13px] text-foreground">{member.name}</span>
                         </div>
                       </td>

@@ -30,6 +30,7 @@ export interface AllocationResource {
   contractEnd: string;    // ISO date
   forecastBoundary: string; // ISO date
   profileId?: string;
+  avatarUrl?: string | null;
 }
 
 // ============================================

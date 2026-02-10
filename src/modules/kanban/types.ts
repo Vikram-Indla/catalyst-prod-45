@@ -79,6 +79,7 @@ export interface TeamMember {
   name: string;
   initials: string;
   color: string;
+  avatarUrl?: string | null;
 }
 
 export interface BusinessOwner {
@@ -86,6 +87,7 @@ export interface BusinessOwner {
   name: string;
   initials: string;
   color: string;
+  avatarUrl?: string | null;
 }
 
 export interface GroupByConfig {

@@ -17,8 +17,8 @@ export function Resource360Header({ resource }: Resource360HeaderProps) {
         <div className="relative">
           <div 
             className={cn(
-              "w-16 h-16 rounded-full flex items-center justify-center",
-              "bg-primary/10 text-primary text-xl font-semibold",
+              "w-16 h-16 rounded-full flex items-center justify-center overflow-hidden",
+              !resource.avatar_url && "bg-primary/10 text-primary text-xl font-semibold",
               "border-2 border-dashed border-primary/60"
             )}
           >
@@ -26,7 +26,7 @@ export function Resource360Header({ resource }: Resource360HeaderProps) {
               <img 
                 src={resource.avatar_url} 
                 alt={resource.name} 
-                className="w-full h-full rounded-full object-cover"
+                className="w-full h-full object-cover"
               />
             ) : (
               getInitials(resource.name)

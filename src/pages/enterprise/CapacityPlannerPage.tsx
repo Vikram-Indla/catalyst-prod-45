@@ -1642,6 +1642,7 @@ export default function CapacityPlannerPage() {
             contractEnd: allocationModalResource.contract_end_date || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
             forecastBoundary: getDefaultForecastBoundary(),
             profileId: allocationModalResource.id, // Keep profile_id for profile-related operations
+            avatarUrl: allocationModalResource.avatar_url,
           };
           return (
             <AllocationModal 

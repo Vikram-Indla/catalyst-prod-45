@@ -26,26 +26,43 @@ export function QuickFilterAvatars({ members, selected, onToggle }: QuickFilterA
             transition: 'all 0.15s',
           }}
         >
-          <div
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: '50%',
-              backgroundColor: member.color,
-              color: 'white',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 11,
-              fontWeight: 600,
-              cursor: 'pointer',
-              border: '2px solid white',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            }}
-            title={member.name}
-          >
-            {member.initials}
-          </div>
+          {member.avatarUrl ? (
+            <img
+              src={member.avatarUrl}
+              alt={member.name}
+              title={member.name}
+              style={{
+                width: 30,
+                height: 30,
+                borderRadius: '50%',
+                objectFit: 'cover',
+                cursor: 'pointer',
+                border: '2px solid white',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                width: 30,
+                height: 30,
+                borderRadius: '50%',
+                backgroundColor: member.color,
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 11,
+                fontWeight: 600,
+                cursor: 'pointer',
+                border: '2px solid white',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              }}
+              title={member.name}
+            >
+              {member.initials}
+            </div>
+          )}
         </div>
       ))}
     </div>

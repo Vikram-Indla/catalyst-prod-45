@@ -2,6 +2,7 @@
 // Premium Enterprise-Grade Task Detail Drawer
 
 import { useState, useEffect } from 'react';
+import { useProfileAvatars } from '@/hooks/useProfileAvatars';
 import { 
   Link2, 
   RefreshCw, 
@@ -96,6 +97,7 @@ const taskTypeIcons: Record<TaskType, typeof Folder> = {
 export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUpdate, onDelete }: TaskDrawerProps) {
   const [localTask, setLocalTask] = useState<Partial<TaskExtended>>({});
   const [showToast, setShowToast] = useState(false);
+  const profileAvatars = useProfileAvatars();
   const [isSaving, setIsSaving] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -321,11 +323,18 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                       <SelectValue>
                         {assignee && (
                           <div className="flex items-center gap-2.5">
-                            <div 
-                              className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 text-primary-foreground bg-primary"
-                            >
-                              {assignee.initials}
-                            </div>
+                            {(() => {
+                              const avatarUrl = profileAvatars.get(assignee.id);
+                              return avatarUrl ? (
+                                <img src={avatarUrl} alt={assignee.name} className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
+                              ) : (
+                                <div 
+                                  className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 text-primary-foreground bg-primary"
+                                >
+                                  {assignee.initials}
+                                </div>
+                              );
+                            })()}
                             <span className="font-medium truncate">{assignee.name}</span>
                           </div>
                         )}
@@ -338,12 +347,19 @@ export function TaskDrawer({ isOpen, task, activeTab, onClose, onTabChange, onUp
                         return (
                           <SelectItem key={u.id} value={u.id} className="py-2">
                             <div className="flex items-center gap-3">
-                              <div 
-                                className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 text-white"
-                                style={{ backgroundColor: avatarColor }}
-                              >
-                                {u.initials}
-                              </div>
+                              {(() => {
+                                const avatarUrl = profileAvatars.get(u.id);
+                                return avatarUrl ? (
+                                  <img src={avatarUrl} alt={u.name} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                                ) : (
+                                  <div 
+                                    className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 text-white"
+                                    style={{ backgroundColor: avatarColor }}
+                                  >
+                                    {u.initials}
+                                  </div>
+                                );
+                              })()}
                               <div>
                                 <div className="text-[13px] font-medium">{u.name}</div>
                                 <div className="text-[11px] text-gray-500">{u.role || 'Team Member'}</div>
