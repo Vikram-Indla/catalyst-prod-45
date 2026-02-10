@@ -55,7 +55,7 @@ export function AddTestCasesModal({ isOpen, cycleId, existingTestCaseIds, onClos
     setIsLoading(true);
     try {
       const [foldersRes, casesRes] = await Promise.all([
-        supabase.from('th_test_folders' as any).select('id, name, parent_id').order('name'),
+        supabase.from('th_folders').select('id, name, parent_id').order('name'),
         supabase.from('th_test_cases').select('id, case_key, title, priority, type, folder_id').order('case_key'),
       ]);
       setFolders((foldersRes.data as any[]) || []);

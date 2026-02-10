@@ -2,7 +2,7 @@
  * Test Cycles Page — TestHub Module
  * Route: /testhub/cycles
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Plus, RefreshCw, Search, Filter, ArrowUpDown, 
@@ -12,6 +12,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { TestCycleCard } from '@/components/testhub/TestCycleCard';
 import { CreateTestCycleModal } from '@/components/testhub/CreateTestCycleModal';
+import { EditTestCycleModal } from '@/components/testhub/EditTestCycleModal';
+import { DeleteTestCycleModal } from '@/components/testhub/DeleteTestCycleModal';
+import { CloneTestCycleModal } from '@/components/testhub/CloneTestCycleModal';
 
 interface TestCycle {
   id: string;
@@ -30,6 +33,7 @@ interface TestCycle {
   not_run_count: number;
   created_at: string;
   updated_at: string;
+  owner_id?: string | null;
   owner?: { id: string; full_name: string };
 }
 
@@ -51,6 +55,9 @@ export default function TestCyclesPage() {
   const [sortField, setSortField] = useState<'start_date' | 'name' | 'progress_percent'>('start_date');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editCycle, setEditCycle] = useState<TestCycle | null>(null);
+  const [deleteCycle, setDeleteCycle] = useState<TestCycle | null>(null);
+  const [cloneCycle, setCloneCycle] = useState<TestCycle | null>(null);
 
   const fetchCycles = async () => {
     setIsLoading(true);
@@ -203,9 +210,9 @@ export default function TestCyclesPage() {
                 key={cycle.id}
                 cycle={cycle}
                 onView={() => navigate(`/testhub/cycles/${cycle.id}`)}
-                onEdit={() => catalystToast.info('Edit coming soon')}
-                onClone={() => catalystToast.info('Clone coming soon')}
-                onDelete={() => catalystToast.info('Delete coming soon')}
+                onEdit={() => setEditCycle(cycle)}
+                onClone={() => setCloneCycle(cycle)}
+                onDelete={() => setDeleteCycle(cycle)}
                 onStart={() => handleStatusChange(cycle.id, 'active', 'Started')}
                 onComplete={() => handleStatusChange(cycle.id, 'completed', 'Completed')}
                 onReopen={() => handleStatusChange(cycle.id, 'active', 'Reopened')}
@@ -220,6 +227,24 @@ export default function TestCyclesPage() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSuccess={() => { fetchCycles(); setIsCreateModalOpen(false); }}
+      />
+      <EditTestCycleModal
+        isOpen={!!editCycle}
+        cycle={editCycle}
+        onClose={() => setEditCycle(null)}
+        onSuccess={() => { fetchCycles(); setEditCycle(null); }}
+      />
+      <DeleteTestCycleModal
+        isOpen={!!deleteCycle}
+        cycle={deleteCycle}
+        onClose={() => setDeleteCycle(null)}
+        onSuccess={() => { fetchCycles(); setDeleteCycle(null); }}
+      />
+      <CloneTestCycleModal
+        isOpen={!!cloneCycle}
+        cycle={cloneCycle}
+        onClose={() => setCloneCycle(null)}
+        onSuccess={() => { fetchCycles(); setCloneCycle(null); }}
       />
     </div>
   );
