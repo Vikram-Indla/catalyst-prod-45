@@ -403,6 +403,9 @@ export default function TestHubExecutionPage() {
         isOpen={isFailureModalOpen}
         testCaseKey={currentTestCase?.test_case?.case_key || ''}
         testCaseTitle={currentTestCase?.test_case?.title || ''}
+        testCaseId={currentTestCase?.test_case_id}
+        cycleId={cycleId}
+        cycleTestCaseId={selectedTestCaseId || undefined}
         onClose={() => setIsFailureModalOpen(false)}
         onConfirm={handleFailureConfirm}
       />
