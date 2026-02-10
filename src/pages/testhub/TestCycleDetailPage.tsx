@@ -11,7 +11,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { AddTestCasesModal } from '@/components/testhub/AddTestCasesModal';
-import { EditTestCycleModal } from '@/components/testhub/EditTestCycleModal';
+import { CreateTestCycleModal } from '@/components/testhub/CreateTestCycleModal';
 import { AssignTesterModal } from '@/components/testhub/AssignTesterModal';
 
 interface TestCycle {
@@ -449,11 +449,12 @@ export default function TestCycleDetailPage() {
         onClose={() => setIsAddModalOpen(false)}
         onSuccess={() => { fetchCycle(); fetchTestCases(); }}
       />
-      <EditTestCycleModal
+      <CreateTestCycleModal
         isOpen={isEditModalOpen}
-        cycle={cycle}
         onClose={() => setIsEditModalOpen(false)}
         onSuccess={() => { fetchCycle(); setIsEditModalOpen(false); }}
+        mode="edit"
+        cycle={cycle}
       />
       <AssignTesterModal
         isOpen={isAssignModalOpen}

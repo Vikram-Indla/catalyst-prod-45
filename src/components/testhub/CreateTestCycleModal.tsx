@@ -8,13 +8,26 @@ interface Profile {
   full_name: string;
 }
 
+interface TestCycleData {
+  id: string;
+  cycle_key: string;
+  name: string;
+  description: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  owner_id?: string | null;
+  status: string;
+}
+
 interface CreateTestCycleModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  mode?: 'create' | 'edit';
+  cycle?: TestCycleData | null;
 }
 
-export function CreateTestCycleModal({ isOpen, onClose, onSuccess }: CreateTestCycleModalProps) {
+export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'create', cycle }: CreateTestCycleModalProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState('');
@@ -29,9 +42,23 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess }: CreateTestC
       supabase.from('profiles').select('id, full_name').order('full_name').then(({ data }) => {
         if (data) setProfiles(data);
       });
-      setName(''); setDescription(''); setStartDate(''); setEndDate(''); setOwnerId(''); setErrors({});
+
+      if (mode === 'edit' && cycle) {
+        setName(cycle.name || '');
+        setDescription(cycle.description || '');
+        setStartDate(cycle.start_date || '');
+        setEndDate(cycle.end_date || '');
+        setOwnerId(cycle.owner_id || '');
+      } else {
+        setName('');
+        setDescription('');
+        setStartDate('');
+        setEndDate('');
+        setOwnerId('');
+      }
+      setErrors({});
     }
-  }, [isOpen]);
+  }, [isOpen, mode, cycle]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -60,29 +87,54 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess }: CreateTestC
   const handleSubmit = async () => {
     if (!validate()) return;
     setIsSubmitting(true);
-    try {
-      const cycleKey = await generateCycleKey();
-      const { error } = await supabase.from('th_test_cycles').insert({
-        cycle_key: cycleKey,
-        name: name.trim(),
-        description: description.trim() || null,
-        start_date: startDate || null,
-        end_date: endDate || null,
-        owner_id: ownerId || null,
-        status: 'draft',
-        progress_percent: 0, total_cases: 0, passed_count: 0, failed_count: 0,
-        blocked_count: 0, skipped_count: 0, not_run_count: 0,
-      }).select().single();
 
-      if (error) {
-        catalystToast.error(error.message || 'Failed to create test cycle', { title: 'Creation Failed' });
-        return;
+    try {
+      if (mode === 'edit' && cycle) {
+        const updateData = {
+          name: name.trim(),
+          description: description.trim() || null,
+          start_date: startDate || null,
+          end_date: endDate || null,
+          owner_id: ownerId || null,
+          updated_at: new Date().toISOString(),
+        };
+
+        const { error } = await supabase
+          .from('th_test_cycles')
+          .update(updateData)
+          .eq('id', cycle.id);
+
+        if (error) {
+          catalystToast.error(error.message || 'Failed to update cycle', { title: 'Update Failed' });
+          return;
+        }
+
+        catalystToast.success('Test cycle updated successfully', { title: 'Cycle Updated' });
+      } else {
+        const cycleKey = await generateCycleKey();
+        const { error } = await supabase.from('th_test_cycles').insert({
+          cycle_key: cycleKey,
+          name: name.trim(),
+          description: description.trim() || null,
+          start_date: startDate || null,
+          end_date: endDate || null,
+          owner_id: ownerId || null,
+          status: 'draft',
+          progress_percent: 0, total_cases: 0, passed_count: 0, failed_count: 0,
+          blocked_count: 0, skipped_count: 0, not_run_count: 0,
+        }).select().single();
+
+        if (error) {
+          catalystToast.error(error.message || 'Failed to create test cycle', { title: 'Creation Failed' });
+          return;
+        }
+        catalystToast.success(`Test cycle "${name.trim()}" created successfully`, { title: 'Cycle Created' });
       }
-      catalystToast.success(`Test cycle "${name.trim()}" created successfully`, { title: 'Cycle Created' });
+
       onSuccess();
       onClose();
     } catch (err: any) {
-      catalystToast.error(err.message || 'Failed to create test cycle', { title: 'Error' });
+      catalystToast.error(err.message || 'Failed to save cycle');
     } finally {
       setIsSubmitting(false);
     }
@@ -90,14 +142,20 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess }: CreateTestC
 
   if (!isOpen) return null;
 
+  const isEdit = mode === 'edit';
+
   return (
     <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
       <div style={{ width: 560, maxHeight: '90vh', backgroundColor: '#FFFFFF', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column' }}>
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: '1px solid #E2E8F0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div>
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>Create Test Cycle</h2>
-            <p style={{ fontSize: 14, color: '#64748B', margin: '4px 0 0' }}>Plan a new test execution cycle</p>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
+              {isEdit ? 'Edit Test Cycle' : 'Create Test Cycle'}
+            </h2>
+            <p style={{ fontSize: 14, color: '#64748B', margin: '4px 0 0' }}>
+              {isEdit ? 'Update cycle details' : 'Plan a new test execution cycle'}
+            </p>
           </div>
           <button onClick={onClose} style={{ width: 32, height: 32, padding: 0, border: 'none', borderRadius: 8, backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={20} />
@@ -161,11 +219,13 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess }: CreateTestC
             </select>
           </div>
 
-          <div style={{ padding: 16, backgroundColor: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 8 }}>
-            <p style={{ fontSize: 13, color: '#1E40AF', margin: 0 }}>
-              <strong>Note:</strong> The cycle will be created in <strong>Draft</strong> status. Add test cases and start when ready.
-            </p>
-          </div>
+          {!isEdit && (
+            <div style={{ padding: 16, backgroundColor: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: 8 }}>
+              <p style={{ fontSize: 13, color: '#1E40AF', margin: 0 }}>
+                <strong>Note:</strong> The cycle will be created in <strong>Draft</strong> status. Add test cases and start when ready.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
@@ -177,7 +237,10 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess }: CreateTestC
             border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
             cursor: name.trim() ? 'pointer' : 'not-allowed', opacity: isSubmitting ? 0.7 : 1,
           }}>
-            {isSubmitting ? 'Creating...' : 'Create Cycle'}
+            {isSubmitting
+              ? (isEdit ? 'Saving...' : 'Creating...')
+              : (isEdit ? 'Save Changes' : 'Create Cycle')
+            }
           </button>
         </div>
       </div>

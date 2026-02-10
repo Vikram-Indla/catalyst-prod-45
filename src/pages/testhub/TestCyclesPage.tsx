@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { TestCycleCard } from '@/components/testhub/TestCycleCard';
 import { CreateTestCycleModal } from '@/components/testhub/CreateTestCycleModal';
-import { EditTestCycleModal } from '@/components/testhub/EditTestCycleModal';
+
 import { DeleteTestCycleModal } from '@/components/testhub/DeleteTestCycleModal';
 import { CloneTestCycleModal } from '@/components/testhub/CloneTestCycleModal';
 
@@ -228,11 +228,12 @@ export default function TestCyclesPage() {
         onClose={() => setIsCreateModalOpen(false)}
         onSuccess={() => { fetchCycles(); setIsCreateModalOpen(false); }}
       />
-      <EditTestCycleModal
+      <CreateTestCycleModal
         isOpen={!!editCycle}
-        cycle={editCycle}
         onClose={() => setEditCycle(null)}
         onSuccess={() => { fetchCycles(); setEditCycle(null); }}
+        mode="edit"
+        cycle={editCycle}
       />
       <DeleteTestCycleModal
         isOpen={!!deleteCycle}
