@@ -10,7 +10,8 @@ import {
   MoreVertical, Pencil, Copy, Trash2, Eye, Tag,
   Shield, Navigation2, FormInput, Plug, CheckCircle,
   Database, Gauge, Folder, List, LayoutGrid, ChevronDown,
-  ArrowUp, ArrowDown,
+  ArrowUp, ArrowDown, Settings, Users, FileText, Zap,
+  Globe, Lock, Bell, Heart, Star,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
@@ -71,6 +72,15 @@ const CATEGORY_ICON_MAP: Record<string, React.ComponentType<any>> = {
   'gauge': Gauge,
   'folder': Folder,
   'tag': Tag,
+  'settings': Settings,
+  'users': Users,
+  'file-text': FileText,
+  'zap': Zap,
+  'globe': Globe,
+  'lock': Lock,
+  'bell': Bell,
+  'heart': Heart,
+  'star': Star,
 };
 
 function getCategoryIcon(iconName: string, color: string, size: number = 16) {
@@ -758,20 +768,6 @@ function CategorySidebarItem({ label, icon, count, isSelected, selectedColor, on
   );
 }
 
-// --- Toolbar Button ---
-function ToolbarButton({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
-  return (
-    <button onClick={onClick} style={{
-      height: 40, padding: '0 16px', border: '1.5px solid #E2E8F0', borderRadius: 8,
-      backgroundColor: '#FFFFFF', color: '#334155', fontSize: 14, fontWeight: 500,
-      cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'Inter',
-    }}>
-      {icon}
-      {label}
-    </button>
-  );
-}
-
 // --- Shared Step Card ---
 function SharedStepCard({ step, onView, onEdit, onDuplicate, onDelete }: {
   step: SharedStep; onView: () => void; onEdit: () => void; onDuplicate: () => void; onDelete: () => void;
@@ -917,117 +913,3 @@ function MenuButton({ icon, label, onClick, danger }: {
   );
 }
 
-// --- Create/Edit Modal ---
-function CreateEditModal({ step, categories, onClose, onSave }: {
-  step?: SharedStep; categories: Category[]; onClose: () => void; onSave: (step: SharedStep) => void;
-}) {
-  const [name, setName] = useState(step?.name || '');
-  const [action, setAction] = useState(step?.action || '');
-  const [expectedResult, setExpectedResult] = useState(step?.expected_result || '');
-  const [categoryId, setCategoryId] = useState(step?.category_id || '');
-  const [saving, setSaving] = useState(false);
-
-  const isEdit = !!step;
-  const isValid = name.trim() && action.trim();
-
-  const handleSave = async () => {
-    if (!isValid) return;
-    setSaving(true);
-    const payload = {
-      name: name.trim(),
-      action: action.trim(),
-      expected_result: expectedResult.trim() || null,
-      category_id: categoryId || null,
-    };
-
-    if (isEdit) {
-      const { data, error } = await supabase
-        .from('th_shared_steps')
-        .update(payload)
-        .eq('id', step.id)
-        .select(`*, category:th_shared_step_categories ( id, name, color, icon )`)
-        .single();
-      if (!error && data) onSave(data as any);
-      else catalystToast.error('Failed to save');
-    } else {
-      const { data, error } = await supabase
-        .from('th_shared_steps')
-        .insert({ ...payload, usage_count: 0 })
-        .select(`*, category:th_shared_step_categories ( id, name, color, icon )`)
-        .single();
-      if (!error && data) { onSave(data as any); catalystToast.success('Step created'); }
-      else catalystToast.error('Failed to create');
-    }
-    setSaving(false);
-  };
-
-  return (
-    <div onClick={onClose} style={{
-      position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)',
-      backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
-    }}>
-      <div onClick={(e) => e.stopPropagation()} style={{
-        width: 520, backgroundColor: '#FFFFFF', borderRadius: 12,
-        boxShadow: '0 20px 60px rgba(0,0,0,0.15)', overflow: 'hidden',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid #E2E8F0' }}>
-          <h3 style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 600, color: '#0F172A', margin: 0 }}>
-            {isEdit ? 'Edit Shared Step' : 'Create Shared Step'}
-          </h3>
-          <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer', fontSize: 20 }}>
-            ×
-          </button>
-        </div>
-
-        <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <FieldGroup label="Name *">
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g., Login to Application"
-              style={{ width: '100%', height: 44, padding: '0 12px', fontSize: 14, fontFamily: 'Inter', border: '1.5px solid #E2E8F0', borderRadius: 8 }} />
-          </FieldGroup>
-          <FieldGroup label="Category">
-            <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}
-              style={{ width: '100%', height: 44, padding: '0 12px', fontSize: 14, fontFamily: 'Inter', border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF' }}>
-              <option value="">No category</option>
-              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
-          </FieldGroup>
-          <FieldGroup label="Action *">
-            <textarea value={action} onChange={(e) => setAction(e.target.value)} placeholder="Describe the action to perform..." rows={4}
-              style={{ width: '100%', padding: '10px 12px', fontSize: 14, fontFamily: 'Inter', border: '1.5px solid #E2E8F0', borderRadius: 8, resize: 'vertical' }} />
-          </FieldGroup>
-          <FieldGroup label="Expected Result">
-            <textarea value={expectedResult} onChange={(e) => setExpectedResult(e.target.value)} placeholder="Describe the expected outcome..." rows={4}
-              style={{ width: '100%', padding: '10px 12px', fontSize: 14, fontFamily: 'Inter', border: '1.5px solid #E2E8F0', borderRadius: 8, resize: 'vertical' }} />
-          </FieldGroup>
-        </div>
-
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '16px 20px', borderTop: '1px solid #E2E8F0' }}>
-          <button onClick={onClose} style={{ height: 40, padding: '0 20px', backgroundColor: '#FFFFFF', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#64748B', cursor: 'pointer', fontFamily: 'Inter' }}>
-            Cancel
-          </button>
-          <button onClick={handleSave} disabled={!isValid || saving} style={{
-            height: 40, padding: '0 20px',
-            background: isValid && !saving ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)' : '#E2E8F0',
-            border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600,
-            color: isValid && !saving ? '#FFFFFF' : '#94A3B8',
-            cursor: isValid && !saving ? 'pointer' : 'not-allowed', fontFamily: 'Inter',
-          }}>
-            {saving ? 'Saving...' : isEdit ? 'Save Changes' : 'Create Step'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// --- Field Group ---
-function FieldGroup({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label style={{ display: 'block', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#64748B', marginBottom: 6, fontFamily: 'Inter' }}>
-        {label}
-      </label>
-      {children}
-    </div>
-  );
-}
