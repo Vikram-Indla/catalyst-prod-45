@@ -179,7 +179,7 @@ export function useTeamMembers() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, role')
+        .select('id, full_name, role, avatar_url')
         .limit(20);
       
       if (error) throw error;
@@ -200,6 +200,7 @@ export function useTeamMembers() {
         name,
         initials,
         color: colors[idx % colors.length],
+        avatarUrl: (p as any).avatar_url || null,
       };
     });
   }, [profiles]);

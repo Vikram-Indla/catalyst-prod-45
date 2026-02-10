@@ -146,12 +146,16 @@ export function ReassignModal({
         onClick={() => setSelectedMember(member)}
       >
         {/* Avatar */}
-        <div className={cn(
-          "w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0",
-          getAvatarColor(member.name)
-        )}>
-          {member.initials}
-        </div>
+        {member.avatarUrl ? (
+          <img src={member.avatarUrl} alt={member.name} className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+        ) : (
+          <div className={cn(
+            "w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0",
+            getAvatarColor(member.name)
+          )}>
+            {member.initials}
+          </div>
+        )}
         
         {/* Info */}
         <div className="flex-1 min-w-0">

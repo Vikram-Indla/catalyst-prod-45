@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, ExternalLink, MoreHorizontal, Zap, Bug, Bookmark, CircleDot, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
@@ -154,6 +154,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
                 {item.assignee ? (
                   <>
                     <Avatar className="h-6 w-6">
+                      {item.assignee.avatar && <AvatarImage src={item.assignee.avatar} alt={item.assignee.name} />}
                       <AvatarFallback className={cn("text-[10px] text-white", getAvatarColor(item.assignee.name))}>
                         {getInitials(item.assignee.name)}
                       </AvatarFallback>

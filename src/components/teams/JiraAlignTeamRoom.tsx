@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useProfileAvatars } from '@/hooks/useProfileAvatars';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { Team } from '@/types/team.types';
@@ -40,6 +41,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
   const { data: stories = [] } = useSprintStories(selectedSprintId || sprints[0]?.id);
   const { data: dependencies = [] } = useTeamDependencies(team?.id);
   const { data: teamMembers = [] } = useTeamMembers(team?.id);
+  const profileAvatars = useProfileAvatars();
   const { data: objectivesData } = useObjectives({ 
     programIds: team?.project_id ? [team.project_id] : [],
     includeParentHierarchy: true
@@ -206,6 +208,12 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
             <div className="flex -space-x-2">
               {teamMembers.slice(0, 14).map((member, index) => (
                 <Avatar key={member.id} className="w-8 h-8 border-2 border-background">
+                  {(() => {
+                    const avatarUrl = member.user_id ? profileAvatars.get(member.user_id) : undefined;
+                    return avatarUrl ? (
+                      <AvatarImage src={avatarUrl} alt={getInitials(member)} />
+                    ) : null;
+                  })()}
                   <AvatarFallback className={`${getAvatarColor(index)} text-white text-xs`}>
                     {getInitials(member)}
                   </AvatarFallback>

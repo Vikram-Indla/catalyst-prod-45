@@ -12,7 +12,25 @@ interface CardDetailPanelProps {
 }
 
 // Avatar Component
-function Avatar({ member, size = 24 }: { member: { name: string; initials: string; color: string }; size?: number }) {
+function Avatar({ member, size = 24 }: { member: { name: string; initials: string; color: string; avatarUrl?: string | null }; size?: number }) {
+  if (member.avatarUrl) {
+    return (
+      <img
+        src={member.avatarUrl}
+        alt={member.name}
+        title={member.name}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: '50%',
+          objectFit: 'cover',
+          flexShrink: 0,
+          border: '2px solid white',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+        }}
+      />
+    );
+  }
   return (
     <div
       style={{

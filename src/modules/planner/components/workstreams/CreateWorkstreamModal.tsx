@@ -5,6 +5,7 @@
 
 import '@/styles/workstreams.css';
 import { useState, useMemo } from 'react';
+import { useProfileAvatars } from '@/hooks/useProfileAvatars';
 import { X, Check, ChevronRight, Search, Crown, Info, Users } from 'lucide-react';
 import { useCreateWorkstream, useAddWorkstreamMember } from '../../hooks/usePlannerWorkstreams';
 import { useResourceInventory, Resource } from '../../hooks/useResourceInventory';
@@ -32,6 +33,7 @@ interface CreateWorkstreamModalProps {
 export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModalProps) {
   // Form state
   const [step, setStep] = useState<1 | 2>(1);
+  const profileAvatars = useProfileAvatars();
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
   const [description, setDescription] = useState('');
@@ -363,12 +365,19 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
                         </div>
 
                         {/* Avatar */}
-                        <div 
-                          className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold text-white flex-shrink-0"
-                          style={{ background: getAvatarColor(resource.name) }}
-                        >
-                          {resource.initials}
-                        </div>
+                        {(() => {
+                          const avatarUrl = resource.profile_id ? profileAvatars.get(resource.profile_id) : undefined;
+                          return avatarUrl ? (
+                            <img src={avatarUrl} alt={resource.name} className="w-9 h-9 rounded-full object-cover flex-shrink-0" />
+                          ) : (
+                            <div 
+                              className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold text-white flex-shrink-0"
+                              style={{ background: getAvatarColor(resource.name) }}
+                            >
+                              {resource.initials}
+                            </div>
+                          );
+                        })()}
 
                         {/* Info */}
                         <div className="flex-1 min-w-0">
@@ -480,16 +489,23 @@ export function CreateWorkstreamModal({ isOpen, onClose }: CreateWorkstreamModal
                             border: isLead ? '1px solid #fcd34d' : '1px solid #e5e7eb'
                           }}
                         >
-                          <div 
-                            className="w-5 h-5 rounded-full flex items-center justify-center text-white"
-                            style={{ 
-                              background: getAvatarColor(resource.name),
-                              fontSize: '9px',
-                              fontWeight: 600
-                            }}
-                          >
-                            {resource.initials}
-                          </div>
+                          {(() => {
+                            const avatarUrl = resource.profile_id ? profileAvatars.get(resource.profile_id) : undefined;
+                            return avatarUrl ? (
+                              <img src={avatarUrl} alt={resource.name} className="w-5 h-5 rounded-full object-cover" />
+                            ) : (
+                              <div 
+                                className="w-5 h-5 rounded-full flex items-center justify-center text-white"
+                                style={{ 
+                                  background: getAvatarColor(resource.name),
+                                  fontSize: '9px',
+                                  fontWeight: 600
+                                }}
+                              >
+                                {resource.initials}
+                              </div>
+                            );
+                          })()}
                           {isLead && <Crown className="w-3 h-3" style={{ color: '#f59e0b' }} />}
                           <span style={{ color: '#374151' }}>{resource.name.split(' ')[0]}</span>
                           <button
