@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { X, Sparkles, Loader2, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { X, Sparkles, Loader2, CheckCircle2, XCircle, AlertTriangle, FolderOpen, ChevronRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -8,6 +8,12 @@ interface AIGenerateModalProps {
   onClose: () => void;
   onSuccess: () => void;
   currentFolderId?: string | null;
+}
+
+interface Folder {
+  id: string;
+  name: string;
+  parent_id: string | null;
 }
 
 interface GeneratedTestCase {
@@ -26,8 +32,51 @@ const CATEGORY_CONFIG = {
   edge_case: { label: 'Edge Case', icon: AlertTriangle, color: '#D97706', bg: 'rgba(217,119,6,0.08)', border: '#D97706' },
 };
 
+// Build a nested tree from flat folder list
+function buildFolderTree(folders: Folder[], parentId: string | null = null): (Folder & { children: any[] })[] {
+  return folders
+    .filter(f => f.parent_id === parentId)
+    .map(f => ({ ...f, children: buildFolderTree(folders, f.id) }));
+}
+
+// Get the full breadcrumb path for a folder
+function getFolderPath(folders: Folder[], folderId: string): string[] {
+  const folder = folders.find(f => f.id === folderId);
+  if (!folder) return [];
+  if (!folder.parent_id) return [folder.name];
+  return [...getFolderPath(folders, folder.parent_id), folder.name];
+}
+
+/**
+ * Fetch the next unique case_key by scanning ALL existing keys and finding the max.
+ * Returns consecutive keys for batch inserts (e.g., TC-010, TC-011, TC-012).
+ */
+async function getNextCaseKeys(batchSize: number): Promise<string[]> {
+  const { data: allCases } = await supabase
+    .from('th_test_cases')
+    .select('case_key');
+
+  let maxNum = 0;
+  if (allCases) {
+    for (const row of allCases) {
+      const match = row.case_key?.match(/TC-(\d+)/);
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (num > maxNum) maxNum = num;
+      }
+    }
+  }
+
+  return Array.from({ length: batchSize }, (_, i) =>
+    `TC-${String(maxNum + 1 + i).padStart(3, '0')}`
+  );
+}
+
 export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }: AIGenerateModalProps) {
-  const [step, setStep] = useState<'input' | 'preview'>('input');
+  const [step, setStep] = useState<'folder' | 'input' | 'preview'>('folder');
+  const [folders, setFolders] = useState<Folder[]>([]);
+  const [loadingFolders, setLoadingFolders] = useState(false);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(currentFolderId || null);
   const [description, setDescription] = useState('');
   const [count, setCount] = useState(5);
   const [includeSteps, setIncludeSteps] = useState(true);
@@ -36,9 +85,39 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
   const [generated, setGenerated] = useState<GeneratedTestCase[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+
+  // Fetch folders when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      fetchFolders();
+      // Pre-select the current folder if provided
+      setSelectedFolderId(currentFolderId || null);
+    }
+  }, [isOpen, currentFolderId]);
+
+  const fetchFolders = async () => {
+    setLoadingFolders(true);
+    try {
+      const { data, error } = await supabase
+        .from('th_folders')
+        .select('id, name, parent_id')
+        .order('sort_order');
+      if (error) throw error;
+      setFolders(data || []);
+      // Auto-expand all parent folders
+      const parentIds = new Set<string>();
+      (data || []).forEach(f => { if (f.parent_id) parentIds.add(f.parent_id); });
+      setExpandedFolders(parentIds);
+    } catch {
+      toast.error('Failed to load folders');
+    } finally {
+      setLoadingFolders(false);
+    }
+  };
 
   const resetState = () => {
-    setStep('input');
+    setStep('folder');
     setDescription('');
     setCount(5);
     setIncludeSteps(true);
@@ -46,11 +125,20 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
     setGenerated([]);
     setSelected(new Set());
     setValidationError(null);
+    setSelectedFolderId(currentFolderId || null);
   };
 
   const handleClose = () => {
     resetState();
     onClose();
+  };
+
+  const handleFolderContinue = () => {
+    if (!selectedFolderId) {
+      toast.error('Please select a target folder');
+      return;
+    }
+    setStep('input');
   };
 
   const handleGenerate = async () => {
@@ -68,10 +156,7 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
       });
 
       if (error) {
-        // Try to parse the error body for validation messages
-        const errBody = typeof error === 'object' && 'context' in error 
-          ? error 
-          : null;
+        const errBody = typeof error === 'object' && 'context' in error ? error : null;
         throw new Error(errBody?.message || 'Failed to generate test cases');
       }
 
@@ -102,7 +187,6 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
       setStep('preview');
     } catch (err: any) {
       console.error('AI generation error:', err);
-      // Check for validation error in response
       if (err?.message?.includes('too short') || err?.message?.includes('too vague') || err?.message?.includes('lacks enough detail')) {
         setValidationError(err.message);
       } else {
@@ -123,26 +207,18 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
     setIsInserting(true);
 
     try {
-      for (const tc of toInsert) {
-        const { data: lastCase } = await supabase
-          .from('th_test_cases')
-          .select('case_key')
-          .order('created_at', { ascending: false })
-          .limit(1);
+      // Get all unique case keys for the batch upfront
+      const caseKeys = await getNextCaseKeys(toInsert.length);
 
-        let nextNum = 1;
-        if (lastCase?.[0]?.case_key) {
-          const match = lastCase[0].case_key.match(/TC-(\d+)/);
-          if (match) nextNum = parseInt(match[1]) + 1;
-        }
-
+      for (let i = 0; i < toInsert.length; i++) {
+        const tc = toInsert[i];
         const { data: newCase, error: tcError } = await supabase
           .from('th_test_cases')
           .insert({
-            case_key: `TC-${String(nextNum).padStart(3, '0')}`,
+            case_key: caseKeys[i],
             title: tc.title,
             objective: tc.summary,
-            folder_id: currentFolderId || null,
+            folder_id: selectedFolderId,
             priority: tc.priority,
             type: tc.testType,
             status: 'draft',
@@ -155,9 +231,9 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
 
         if (includeSteps && tc.steps?.length && newCase) {
           await supabase.from('th_test_steps').insert(
-            tc.steps.map((s, i) => ({
+            tc.steps.map((s, idx) => ({
               test_case_id: newCase.id,
-              step_number: s.stepNumber || i + 1,
+              step_number: s.stepNumber || idx + 1,
               action: s.action,
               expected_result: s.expectedResult,
             }))
@@ -165,7 +241,8 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
         }
       }
 
-      toast.success(`Created ${toInsert.length} test cases`);
+      const folderName = folders.find(f => f.id === selectedFolderId)?.name || 'selected folder';
+      toast.success(`Created ${toInsert.length} test cases in "${folderName}"`);
       onSuccess();
       handleClose();
     } catch (err) {
@@ -178,21 +255,89 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
 
   const toggleSelection = (id: string) => {
     const newSelected = new Set(selected);
-    if (newSelected.has(id)) {
-      newSelected.delete(id);
-    } else {
-      newSelected.add(id);
-    }
+    if (newSelected.has(id)) newSelected.delete(id);
+    else newSelected.add(id);
     setSelected(newSelected);
+  };
+
+  const toggleFolderExpand = (folderId: string) => {
+    const next = new Set(expandedFolders);
+    if (next.has(folderId)) next.delete(folderId);
+    else next.add(folderId);
+    setExpandedFolders(next);
   };
 
   if (!isOpen) return null;
 
-  // Count categories for summary
   const categoryCounts = generated.reduce((acc, tc) => {
     acc[tc.testCategory] = (acc[tc.testCategory] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
+
+  const selectedFolderPath = selectedFolderId ? getFolderPath(folders, selectedFolderId) : [];
+  const tree = buildFolderTree(folders);
+
+  // Recursive folder tree renderer
+  const renderFolderTree = (nodes: (Folder & { children: any[] })[], depth: number = 0) => {
+    return nodes.map(node => {
+      const isSelected = selectedFolderId === node.id;
+      const hasChildren = node.children.length > 0;
+      const isExpanded = expandedFolders.has(node.id);
+
+      return (
+        <div key={node.id}>
+          <div
+            onClick={() => setSelectedFolderId(node.id)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '8px 12px', paddingLeft: 12 + depth * 20,
+              borderRadius: 6, cursor: 'pointer', transition: 'all 0.1s',
+              backgroundColor: isSelected ? 'rgba(37,99,235,0.08)' : 'transparent',
+              border: isSelected ? '1px solid rgba(37,99,235,0.25)' : '1px solid transparent',
+            }}
+            onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = '#F8FAFC'; }}
+            onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
+          >
+            {hasChildren ? (
+              <button
+                onClick={(e) => { e.stopPropagation(); toggleFolderExpand(node.id); }}
+                style={{
+                  width: 18, height: 18, padding: 0, border: 'none', borderRadius: 3,
+                  backgroundColor: 'transparent', cursor: 'pointer', display: 'flex',
+                  alignItems: 'center', justifyContent: 'center', color: '#94A3B8',
+                }}
+              >
+                <ChevronRight size={14} style={{
+                  transform: isExpanded ? 'rotate(90deg)' : 'none',
+                  transition: 'transform 0.15s',
+                }} />
+              </button>
+            ) : (
+              <span style={{ width: 18 }} />
+            )}
+            <FolderOpen size={16} style={{ color: isSelected ? '#2563EB' : '#94A3B8', flexShrink: 0 }} />
+            <span style={{
+              fontSize: 14, fontWeight: isSelected ? 600 : 400,
+              color: isSelected ? '#2563EB' : '#334155',
+            }}>
+              {node.name}
+            </span>
+            {isSelected && (
+              <CheckCircle2 size={14} style={{ color: '#2563EB', marginLeft: 'auto' }} />
+            )}
+          </div>
+          {hasChildren && isExpanded && renderFolderTree(node.children, depth + 1)}
+        </div>
+      );
+    });
+  };
+
+  // Step titles
+  const stepConfig = {
+    folder: { title: 'Select Target Folder', subtitle: 'Choose the folder where generated test cases will be stored' },
+    input: { title: 'Generate Test Cases with AI', subtitle: 'Powered by Google Gemini · 60% positive · 20% negative · 20% edge cases' },
+    preview: { title: 'Review Generated Test Cases', subtitle: `${generated.length} test cases generated` },
+  };
 
   return (
     <div style={{
@@ -212,35 +357,119 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
               width: 36, height: 36, borderRadius: 8,
-              background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+              background: step === 'folder'
+                ? 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)'
+                : 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Sparkles size={20} style={{ color: '#FFFFFF' }} />
+              {step === 'folder' ? <FolderOpen size={20} style={{ color: '#FFFFFF' }} /> : <Sparkles size={20} style={{ color: '#FFFFFF' }} />}
             </div>
             <div>
               <h2 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0 }}>
-                Generate Test Cases with AI
+                {stepConfig[step].title}
               </h2>
               <p style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>
-                {step === 'input'
-                  ? 'Powered by Google Gemini · 60% positive · 20% negative · 20% edge cases'
-                  : `${generated.length} test cases generated`}
+                {stepConfig[step].subtitle}
               </p>
             </div>
           </div>
-          <button onClick={handleClose} style={{
-            width: 32, height: 32, border: 'none', borderRadius: 8,
-            backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <X size={20} />
-          </button>
+          {/* Step indicator */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              {(['folder', 'input', 'preview'] as const).map((s, i) => (
+                <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{
+                    width: 22, height: 22, borderRadius: '50%', fontSize: 11, fontWeight: 700,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    backgroundColor: step === s ? '#2563EB' : (['folder', 'input', 'preview'].indexOf(step) > i ? '#059669' : '#E2E8F0'),
+                    color: step === s || (['folder', 'input', 'preview'].indexOf(step) > i) ? '#FFFFFF' : '#94A3B8',
+                  }}>
+                    {['folder', 'input', 'preview'].indexOf(step) > i ? '✓' : i + 1}
+                  </div>
+                  {i < 2 && <div style={{ width: 16, height: 1, backgroundColor: '#E2E8F0' }} />}
+                </div>
+              ))}
+            </div>
+            <button onClick={handleClose} style={{
+              width: 32, height: 32, border: 'none', borderRadius: 8,
+              backgroundColor: 'transparent', color: '#94A3B8', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <X size={20} />
+            </button>
+          </div>
         </div>
 
         {/* Body */}
         <div style={{ padding: 24, flex: 1, overflowY: 'auto' }}>
-          {step === 'input' ? (
+          {/* ──── STEP 1: FOLDER SELECTION ──── */}
+          {step === 'folder' && (
             <>
+              {loadingFolders ? (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 40 }}>
+                  <Loader2 size={20} style={{ animation: 'spin 1s linear infinite', color: '#2563EB' }} />
+                  <span style={{ marginLeft: 10, color: '#64748B', fontSize: 14 }}>Loading folders...</span>
+                </div>
+              ) : folders.length === 0 ? (
+                <div style={{
+                  padding: '32px 20px', textAlign: 'center', borderRadius: 8,
+                  backgroundColor: '#FFFBEB', border: '1px solid #FDE68A',
+                }}>
+                  <AlertTriangle size={24} style={{ color: '#D97706', margin: '0 auto 8px' }} />
+                  <p style={{ fontSize: 14, fontWeight: 600, color: '#92400E', margin: 0 }}>No folders found</p>
+                  <p style={{ fontSize: 13, color: '#A16207', marginTop: 4 }}>
+                    Please create a folder in the Test Repository before generating test cases.
+                  </p>
+                </div>
+              ) : (
+                <div style={{
+                  border: '1px solid #E2E8F0', borderRadius: 8,
+                  maxHeight: 340, overflowY: 'auto', padding: '4px 0',
+                }}>
+                  {renderFolderTree(tree)}
+                </div>
+              )}
+
+              {/* Selected folder breadcrumb */}
+              {selectedFolderId && selectedFolderPath.length > 0 && (
+                <div style={{
+                  marginTop: 16, padding: '10px 14px', borderRadius: 8,
+                  backgroundColor: 'rgba(37,99,235,0.04)', border: '1px solid rgba(37,99,235,0.12)',
+                  display: 'flex', alignItems: 'center', gap: 6,
+                }}>
+                  <FolderOpen size={14} style={{ color: '#2563EB', flexShrink: 0 }} />
+                  <span style={{ fontSize: 13, color: '#1E40AF', fontWeight: 500 }}>
+                    Target: {selectedFolderPath.join(' / ')}
+                  </span>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* ──── STEP 2: DESCRIPTION INPUT ──── */}
+          {step === 'input' && (
+            <>
+              {/* Show selected folder */}
+              <div style={{
+                marginBottom: 20, padding: '10px 14px', borderRadius: 8,
+                backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0',
+                display: 'flex', alignItems: 'center', gap: 8,
+              }}>
+                <FolderOpen size={14} style={{ color: '#2563EB', flexShrink: 0 }} />
+                <span style={{ fontSize: 13, color: '#334155' }}>
+                  <strong>Folder:</strong> {selectedFolderPath.join(' / ')}
+                </span>
+                <button
+                  onClick={() => setStep('folder')}
+                  style={{
+                    marginLeft: 'auto', fontSize: 12, color: '#2563EB', fontWeight: 500,
+                    background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline',
+                  }}
+                >
+                  Change
+                </button>
+              </div>
+
               {/* Description */}
               <div style={{ marginBottom: 20 }}>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 8, color: '#0F172A' }}>
@@ -300,10 +529,24 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                 <span style={{ fontSize: 14, color: '#334155' }}>Include detailed steps</span>
               </label>
             </>
-          ) : (
+          )}
+
+          {/* ──── STEP 3: PREVIEW ──── */}
+          {step === 'preview' && (
             <>
-              {/* Category Summary Bar */}
-              <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+              {/* Folder + Category Summary */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap',
+              }}>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  padding: '6px 12px', borderRadius: 6,
+                  backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0',
+                  fontSize: 12, fontWeight: 500, color: '#334155',
+                }}>
+                  <FolderOpen size={13} style={{ color: '#2563EB' }} />
+                  {selectedFolderPath.join(' / ')}
+                </div>
                 {(['positive', 'negative', 'edge_case'] as const).map(cat => {
                   const cfg = CATEGORY_CONFIG[cat];
                   const Icon = cfg.icon;
@@ -346,7 +589,6 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                           </p>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0, marginLeft: 12 }}>
-                          {/* Category badge */}
                           <span style={{
                             display: 'inline-flex', alignItems: 'center', gap: 4,
                             fontSize: 10, fontWeight: 700, textTransform: 'uppercase', padding: '2px 8px',
@@ -355,7 +597,6 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                             <CatIcon size={11} />
                             {catCfg.label}
                           </span>
-                          {/* Priority badge */}
                           <span style={{
                             fontSize: 11, fontWeight: 600, textTransform: 'uppercase', padding: '2px 8px',
                             borderRadius: 4,
@@ -402,7 +643,23 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
             borderRadius: 8, fontSize: 14, fontWeight: 500, color: '#334155', cursor: 'pointer',
           }}>Cancel</button>
 
-          {step === 'input' ? (
+          {step === 'folder' && (
+            <button
+              onClick={handleFolderContinue}
+              disabled={!selectedFolderId || folders.length === 0}
+              style={{
+                height: 40, padding: '0 20px',
+                background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF',
+                cursor: (!selectedFolderId || folders.length === 0) ? 'not-allowed' : 'pointer',
+                opacity: (!selectedFolderId || folders.length === 0) ? 0.5 : 1,
+              }}
+            >
+              Continue
+            </button>
+          )}
+
+          {step === 'input' && (
             <button
               onClick={handleGenerate}
               disabled={isGenerating || !description.trim()}
@@ -427,7 +684,9 @@ export function AIGenerateModal({ isOpen, onClose, onSuccess, currentFolderId }:
                 </>
               )}
             </button>
-          ) : (
+          )}
+
+          {step === 'preview' && (
             <button
               onClick={handleInsert}
               disabled={isInserting || selected.size === 0}
