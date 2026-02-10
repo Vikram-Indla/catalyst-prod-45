@@ -758,6 +758,11 @@ export function CreateTestCaseModal({
             }}
           >Cancel</button>
           <button
+            onClick={() => {
+              setStatus('draft');
+              handleSave();
+            }}
+            disabled={isSaving}
             style={{
               height: 40,
               padding: '0 20px',
@@ -768,7 +773,7 @@ export function CreateTestCaseModal({
               fontSize: 14,
               fontWeight: 500,
               color: '#334155',
-              cursor: 'pointer',
+              cursor: isSaving ? 'not-allowed' : 'pointer',
               transition: 'all 0.15s',
             }}
             onMouseEnter={(e) => {
