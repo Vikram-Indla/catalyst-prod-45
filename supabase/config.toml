@@ -92,3 +92,6 @@ verify_jwt = false
 
 [functions.t10-ai-suggestions]
 verify_jwt = false
+
+[functions.ai-generate-test-cases]
+verify_jwt = false
