@@ -4,7 +4,7 @@
  * Full-screen split layout for executing test cases in a cycle.
  */
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   ArrowLeft, Play, Clock, CheckCircle2, XCircle, 
   AlertTriangle, SkipForward, User, Timer
@@ -58,6 +58,7 @@ interface CycleTestCase {
 export default function TestHubExecutionPage() {
   const { cycleId } = useParams<{ cycleId: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [cycle, setCycle] = useState<TestCycle | null>(null);
   const [testCases, setTestCases] = useState<CycleTestCase[]>([]);
@@ -124,7 +125,11 @@ export default function TestHubExecutionPage() {
       }
       if (error) throw error;
       setTestCases(data || []);
-      if (data && data.length > 0 && !selectedTestCaseId) setSelectedTestCaseId(data[0].id);
+      if (data && data.length > 0 && !selectedTestCaseId) {
+        const testIdFromUrl = searchParams.get('testId');
+        const matchFromUrl = testIdFromUrl ? data.find(tc => tc.id === testIdFromUrl) : null;
+        setSelectedTestCaseId(matchFromUrl ? matchFromUrl.id : data[0].id);
+      }
     } catch { /* ignore */ }
     finally { setIsLoading(false); }
   };
