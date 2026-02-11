@@ -37666,6 +37666,26 @@ export type Database = {
           sort_order: number
         }[]
       }
+      get_my_scope: {
+        Args: { p_user_id: string }
+        Returns: {
+          assigned_at: string
+          case_key: string
+          cycle_id: string
+          cycle_name: string
+          cycle_test_case_id: string
+          execution_status: string
+          failure_reason: string
+          notes: string
+          priority: string
+          release_id: string
+          release_name: string
+          release_version: string
+          test_case_id: string
+          title: string
+        }[]
+      }
+      get_my_stats: { Args: { p_user_id: string }; Returns: Json }
       get_next_test_in_cycle: {
         Args: { p_current_run_id?: string; p_cycle_id: string }
         Returns: Json
