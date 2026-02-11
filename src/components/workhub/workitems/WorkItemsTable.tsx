@@ -38,8 +38,16 @@ export function WorkItemsTable({
     return keys;
   });
 
+  // Compute tree and flatten before any early returns (hooks must be called every render)
   const tree = useMemo(() => buildTree(items), [items]);
   const flatNodes = useMemo(() => flattenTree(tree, expandedKeys), [tree, expandedKeys]);
+
+  // Check which keys have children
+  const keysWithChildren = useMemo(() => {
+    const s = new Set<string>();
+    items.forEach(i => { if (i.parent_key) s.add(i.parent_key); });
+    return s;
+  }, [items]);
 
   const toggleExpand = useCallback((key: string) => {
     setExpandedKeys(prev => {
@@ -103,13 +111,6 @@ export function WorkItemsTable({
       </div>
     );
   }
-
-  // Check which keys have children
-  const keysWithChildren = useMemo(() => {
-    const s = new Set<string>();
-    items.forEach(i => { if (i.parent_key) s.add(i.parent_key); });
-    return s;
-  }, [items]);
 
   return (
     <div className="rounded-xl border overflow-hidden" style={{ borderColor: 'var(--wh-border, #e2e8f0)', backgroundColor: 'var(--wh-surface, #fff)' }}>
