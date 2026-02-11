@@ -4,7 +4,7 @@
  */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ClipboardList, Plus, Search, X, ChevronDown, Trash2, Loader2 } from 'lucide-react';
+import { ClipboardList, Plus, Search, X, ChevronDown, Trash2, Loader2, Sparkles, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -17,6 +17,9 @@ import { useTestPlans, useCreateTestPlan, useDeleteTestPlan, useTemplates } from
 import { PlanStatus, PlanFilters } from '@/types/testPlans';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { TemplateSelector } from '@/components/test-plans/TemplateSelector';
+import { AIGeneratorModal } from '@/components/test-plans/AIGeneratorModal';
+import { toast } from 'sonner';
 
 export default function TestPlansListPage() {
   const navigate = useNavigate();
@@ -182,32 +185,128 @@ export default function TestPlansListPage() {
 function CreatePlanDialog({ open, onClose, onCreate }: { open: boolean; onClose: () => void; onCreate: (data: any) => Promise<void> }) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [objectives, setObjectives] = useState('');
+  const [entryCriteria, setEntryCriteria] = useState('');
+  const [exitCriteria, setExitCriteria] = useState('');
+  const [risksAssumptions, setRisksAssumptions] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
+  const [showAIGenerator, setShowAIGenerator] = useState(false);
+
+  const resetForm = () => {
+    setName(''); setDescription(''); setObjectives('');
+    setEntryCriteria(''); setExitCriteria(''); setRisksAssumptions('');
+  };
 
   const handleSubmit = async () => {
     if (!name.trim()) return;
     setIsSubmitting(true);
     try {
-      await onCreate({ name: name.trim(), description: description.trim() || null, status: 'draft' });
-      setName(''); setDescription('');
+      await onCreate({
+        name: name.trim(),
+        description: description.trim() || null,
+        objectives: objectives.trim() || null,
+        entry_criteria: entryCriteria.trim() || null,
+        exit_criteria: exitCriteria.trim() || null,
+        risks_assumptions: risksAssumptions.trim() || null,
+        status: 'draft',
+      });
+      resetForm();
     } finally { setIsSubmitting(false); }
   };
 
+  const handleTemplateSelect = (template: any) => {
+    setName((template.template_name || template.name) + ' (Copy)');
+    setDescription(template.description || '');
+    setObjectives(template.objectives || '');
+    setEntryCriteria(template.entry_criteria || '');
+    setExitCriteria(template.exit_criteria || '');
+    setRisksAssumptions(template.risks_assumptions || '');
+    toast.success('Template loaded! Customize as needed.');
+  };
+
+  const handleAIGenerate = (generated: any) => {
+    setName(generated.name || '');
+    setDescription(generated.description || '');
+    setObjectives(generated.objectives || '');
+    setEntryCriteria(generated.entry_criteria || '');
+    setExitCriteria(generated.exit_criteria || '');
+    setRisksAssumptions(generated.risks_assumptions || '');
+  };
+
   return (
-    <Dialog open={open} onOpenChange={o => { if (!o) { onClose(); setName(''); setDescription(''); } }}>
-      <DialogContent className="max-w-md">
-        <DialogHeader><DialogTitle>Create Test Plan</DialogTitle></DialogHeader>
-        <div className="space-y-4">
-          <div className="space-y-2"><Label>Plan Name *</Label><Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Release 3.0 Test Plan" /></div>
-          <div className="space-y-2"><Label>Description</Label><Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Brief description of this test plan..." rows={3} /></div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={handleSubmit} disabled={!name.trim() || isSubmitting}>
-            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Plus className="h-4 w-4 mr-2" />}Create Plan
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <>
+      <Dialog open={open} onOpenChange={o => { if (!o) { onClose(); resetForm(); } }}>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <DialogTitle>Create Test Plan</DialogTitle>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => setShowAIGenerator(true)}>
+                  <Sparkles className="h-4 w-4 mr-1" />Create with AI
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setShowTemplateSelector(true)}>
+                  <FileText className="h-4 w-4 mr-1" />From Template
+                </Button>
+              </div>
+            </div>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Plan Name *</Label>
+              <Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Release 3.0 Test Plan" maxLength={100} />
+              <span className="text-xs text-muted-foreground text-right block">{name.length}/100</span>
+            </div>
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Brief description of this test plan..." rows={3} maxLength={500} />
+              <span className="text-xs text-muted-foreground text-right block">{description.length}/500</span>
+            </div>
+            {objectives && (
+              <div className="space-y-2">
+                <Label>Objectives</Label>
+                <Textarea value={objectives} onChange={e => setObjectives(e.target.value)} rows={4} />
+              </div>
+            )}
+            {entryCriteria && (
+              <div className="space-y-2">
+                <Label>Entry Criteria</Label>
+                <Textarea value={entryCriteria} onChange={e => setEntryCriteria(e.target.value)} rows={3} />
+              </div>
+            )}
+            {exitCriteria && (
+              <div className="space-y-2">
+                <Label>Exit Criteria</Label>
+                <Textarea value={exitCriteria} onChange={e => setExitCriteria(e.target.value)} rows={3} />
+              </div>
+            )}
+            {risksAssumptions && (
+              <div className="space-y-2">
+                <Label>Risks & Assumptions</Label>
+                <Textarea value={risksAssumptions} onChange={e => setRisksAssumptions(e.target.value)} rows={4} />
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={onClose}>Cancel</Button>
+            <Button onClick={handleSubmit} disabled={!name.trim() || isSubmitting}>
+              {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Plus className="h-4 w-4 mr-2" />}Create Plan
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <TemplateSelector
+        open={showTemplateSelector}
+        onClose={() => setShowTemplateSelector(false)}
+        onSelect={handleTemplateSelect}
+      />
+
+      <AIGeneratorModal
+        open={showAIGenerator}
+        onClose={() => setShowAIGenerator(false)}
+        onGenerate={handleAIGenerate}
+      />
+    </>
   );
 }
