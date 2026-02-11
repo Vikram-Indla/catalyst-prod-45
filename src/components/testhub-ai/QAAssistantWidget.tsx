@@ -1,10 +1,11 @@
 /**
  * QA Assistant Widget — TestHub AI Chat Panel
  * Reuses CATY AI V7 design system (ring-fenced CSS)
- * Template: No domain-specific logic yet — ready for next prompts.
+ * Renders AI responses with proper markdown formatting.
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Minus, RefreshCw, Send, Paperclip } from 'lucide-react';
 import { HubIcon } from '@/components/caty-ai/constants';
 import '@/components/caty-ai/CatyWidget.css';
@@ -330,8 +331,10 @@ export function QAAssistantWidget({ onClose }: QAAssistantWidgetProps) {
                         </div>
                       )}
                       <div className="caty-msg-body">
-                        {msg.isHtml ? (
-                          <div dangerouslySetInnerHTML={{ __html: msg.content }} />
+                        {msg.type === 'assistant' ? (
+                          <div className="caty-bubble prose prose-sm max-w-none prose-headings:text-[#0f172a] prose-headings:font-semibold prose-headings:mt-3 prose-headings:mb-1 prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-strong:text-[#0f172a] text-[#334155] text-[13px] leading-relaxed">
+                            <ReactMarkdown>{msg.content}</ReactMarkdown>
+                          </div>
                         ) : (
                           <div className="caty-bubble">
                             <p>{msg.content}</p>
