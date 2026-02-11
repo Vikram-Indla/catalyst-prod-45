@@ -59,9 +59,9 @@ export function WorkItemsPage() {
 
   const { data, isLoading, error, refetch, isFetching } = useWorkItems(filters, pagination);
 
-  const items = data?.items ?? [];
-  const totalCount = data?.totalCount ?? 0;
-  const totalPages = data?.totalPages ?? 0;
+  const items = Array.isArray(data?.items) ? data.items : [];
+  const totalCount = typeof data?.totalCount === 'number' ? data.totalCount : 0;
+  const totalPages = typeof data?.totalPages === 'number' ? data.totalPages : 0;
   const currentPage = pagination.page;
 
   // Init: expand all Epics on first load
@@ -80,11 +80,12 @@ export function WorkItemsPage() {
   }, [jiraProjects]);
 
   const uniqueProjects = useMemo(() => {
+    if (!Array.isArray(items)) return 0;
     return new Set(items.map(i => i.jira_project_id).filter(Boolean)).size;
   }, [items]);
 
   const lastSync = useMemo(() => {
-    if (items.length === 0) return null;
+    if (!Array.isArray(items) || items.length === 0) return null;
     const synced = items.filter(i => i.last_synced_at).map(i => new Date(i.last_synced_at!).getTime());
     if (!synced.length) return null;
     return new Date(Math.max(...synced));
@@ -118,7 +119,7 @@ export function WorkItemsPage() {
     if (selectAllState === 'all') {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(items.map(i => i.id)));
+      if (Array.isArray(items)) setSelectedIds(new Set(items.map(i => i.id)));
     }
   }, [items, selectAllState]);
 
