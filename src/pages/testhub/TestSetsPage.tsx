@@ -1,20 +1,155 @@
 /**
- * Test Sets Page — TestHub Module
+ * G22: Test Sets List Page
  * Route: /testhub/test-sets
  */
 
-import { Layers } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, Layers, MoreHorizontal, Play, RefreshCw, Zap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Search } from 'lucide-react';
+import { useTestSets, useDeleteTestSet, useRefreshDynamicSet, useCloneTestSet, useArchiveTestSet } from '@/hooks/useTestSets';
+import { useProjectContext } from '@/hooks/useProjectContext';
+import { SetTypeBadge } from '@/components/test-sets/SetTypeBadge';
+import { CreateTestSetModal } from '@/components/test-sets/CreateTestSetModal';
+import { TestSet, TestSetFilters, TEST_SET_TYPE_CONFIG } from '@/types/test-sets';
+import { formatDistanceToNow } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 export default function TestSetsPage() {
+  const { projectId } = useProjectContext();
+  const navigate = useNavigate();
+  const [filters, setFilters] = useState<TestSetFilters>({ search: '', type: 'all', status: 'active' });
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editingSet, setEditingSet] = useState<TestSet | null>(null);
+
+  const { data: testSets, isLoading } = useTestSets(projectId || '', filters);
+  const deleteMutation = useDeleteTestSet();
+  const refreshMutation = useRefreshDynamicSet();
+  const cloneMutation = useCloneTestSet();
+  const archiveMutation = useArchiveTestSet();
+
+  const handleEdit = (set: TestSet) => { setEditingSet(set); setIsCreateOpen(true); };
+  const handleClose = () => { setIsCreateOpen(false); setEditingSet(null); };
+
   return (
     <div className="flex-1 p-6 overflow-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <Layers className="h-6 w-6 text-primary" />
-        <h1 className="text-2xl font-semibold">Test Sets</h1>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+            <Layers className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Test Sets</h1>
+            <p className="text-sm text-muted-foreground">Reusable test case collections</p>
+          </div>
+        </div>
+        <Button onClick={() => setIsCreateOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />Create Test Set
+        </Button>
       </div>
-      <div className="bg-muted/30 border border-border rounded-lg p-8 text-center">
-        <p className="text-muted-foreground">Test Sets management coming soon.</p>
+
+      {/* Filters */}
+      <div className="flex items-center gap-4 mb-6">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Search test sets..." value={filters.search} onChange={e => setFilters({ ...filters, search: e.target.value })} className="pl-9 h-9" />
+        </div>
+        <Select value={filters.type} onValueChange={v => setFilters({ ...filters, type: v as any })}>
+          <SelectTrigger className="w-40 h-9"><SelectValue placeholder="Type" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            {Object.entries(TEST_SET_TYPE_CONFIG).map(([k, c]) => <SelectItem key={k} value={k}>{c.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={filters.status} onValueChange={v => setFilters({ ...filters, status: v as any })}>
+          <SelectTrigger className="w-32 h-9"><SelectValue placeholder="Status" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="archived">Archived</SelectItem>
+          </SelectContent>
+        </Select>
+        <span className="text-sm text-muted-foreground ml-auto">{testSets?.length || 0} test sets</span>
       </div>
+
+      {/* Content */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1,2,3].map(i => <Skeleton key={i} className="h-48" />)}
+        </div>
+      ) : !testSets?.length ? (
+        <div className="text-center py-12 border border-dashed border-border rounded-lg">
+          <Layers className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+          <h3 className="text-lg font-medium mb-2 text-foreground">No test sets found</h3>
+          <p className="text-muted-foreground mb-4">Create your first test set to organize test cases</p>
+          <Button onClick={() => setIsCreateOpen(true)}><Plus className="h-4 w-4 mr-2" />Create Test Set</Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {testSets.map(set => (
+            <Card key={set.id} className="cursor-pointer transition-all hover:shadow-md hover:border-primary/30" onClick={() => navigate(`/testhub/test-sets/${set.id}`)}>
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono text-muted-foreground">{set.set_key}</span>
+                    {set.membership_type === 'dynamic' && (
+                      <Badge variant="outline" className="text-[10px] gap-0.5 text-primary border-primary/30">
+                        <Zap className="h-3 w-3" />Dynamic
+                      </Badge>
+                    )}
+                  </div>
+                  <SetTypeBadge type={set.set_type} size="sm" />
+                </div>
+                <h3 className="font-semibold text-foreground mb-1">{set.name}</h3>
+                {set.description && <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{set.description}</p>}
+                <div className="flex items-center gap-3 text-xs text-muted-foreground mb-4">
+                  <span><Layers className="h-3 w-3 inline mr-1" />{set.test_count} tests</span>
+                  <span>·</span>
+                  <span>{set.owner?.full_name || 'Unassigned'}</span>
+                  <span>·</span>
+                  <span>{formatDistanceToNow(new Date(set.updated_at), { addSuffix: true })}</span>
+                </div>
+                <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => navigate(`/testhub/test-sets/${set.id}`)}>
+                    <Play className="h-4 w-4 mr-1" />View
+                  </Button>
+                  {set.membership_type === 'dynamic' && (
+                    <Button variant="outline" size="sm" onClick={() => refreshMutation.mutate(set.id)} disabled={refreshMutation.isPending}>
+                      <RefreshCw className={cn('h-4 w-4', refreshMutation.isPending && 'animate-spin')} />
+                    </Button>
+                  )}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild><Button variant="ghost" size="sm"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => handleEdit(set)}>Edit</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => cloneMutation.mutate({ setId: set.id })}>Clone</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => archiveMutation.mutate({ setId: set.id, archive: set.is_active })}>
+                        {set.is_active ? 'Archive' : 'Restore'}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem className="text-destructive" onClick={() => deleteMutation.mutate(set.id)}>Delete</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      <CreateTestSetModal open={isCreateOpen} onClose={handleClose} editingSet={editingSet} projectId={projectId || ''} />
     </div>
   );
 }
