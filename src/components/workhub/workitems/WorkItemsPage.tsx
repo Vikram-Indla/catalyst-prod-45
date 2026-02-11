@@ -1,13 +1,13 @@
 /**
- * WorkItemsPage — Full page orchestration (Tasks 2 + 8)
- * Phase 3: Re-sync Jira enabled + Jira Projects link
+ * WorkItemsPage — Full page orchestration
+ * Server-side pagination + virtualized table + project filters
  */
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { FileStack, RefreshCw, Loader2, ExternalLink } from 'lucide-react';
+import { FileStack, RefreshCw, Loader2, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useWorkItems } from '@/hooks/workhub/useWorkItems';
-import type { WorkItemFilterConfig } from '@/hooks/workhub/useWorkItems';
+import type { WorkItemFilterConfig, PaginationConfig } from '@/hooks/workhub/useWorkItems';
 import type { WorkItemFull } from '@/types/workhub.types';
 import { WorkItemFilters } from './WorkItemFilters';
 import { WorkItemsTable } from './WorkItemsTable';
@@ -18,7 +18,8 @@ import { useJiraProjects } from '@/hooks/workhub/useJiraProjects';
 import { useTriggerSync } from '@/hooks/workhub/useSyncLog';
 import { SyncBadge } from '../shared/SyncBadge';
 import { toast } from 'sonner';
-import { formatDistanceToNow } from 'date-fns';
+
+const PAGE_SIZE = 50;
 
 export function WorkItemsPage() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ export function WorkItemsPage() {
   const projectFilter = searchParams.get('project');
 
   const [filters, setFilters] = useState<Partial<WorkItemFilterConfig>>({});
+  const [pagination, setPagination] = useState<PaginationConfig>({ page: 0, pageSize: PAGE_SIZE });
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [drawerItemId, setDrawerItemId] = useState<string | null>(null);
@@ -44,15 +46,27 @@ export function WorkItemsPage() {
   // Apply project filter from URL
   useEffect(() => {
     if (projectFilter) {
-      setFilters(prev => ({ ...prev, jira_project_id: projectFilter }));
+      setFilters(prev => ({ ...prev, project_ids: [projectFilter] }));
     }
   }, [projectFilter]);
 
-  const { data: items, isLoading, error, refetch } = useWorkItems(filters);
+  // Reset page when filters change
+  const handleFilterChange = useCallback((newFilters: Partial<WorkItemFilterConfig>) => {
+    setFilters(newFilters);
+    setPagination(prev => ({ ...prev, page: 0 }));
+    setSelectedIds(new Set());
+  }, []);
+
+  const { data, isLoading, error, refetch, isFetching } = useWorkItems(filters, pagination);
+
+  const items = data?.items ?? [];
+  const totalCount = data?.totalCount ?? 0;
+  const totalPages = data?.totalPages ?? 0;
+  const currentPage = pagination.page;
 
   // Init: expand all Epics on first load
   useEffect(() => {
-    if (items && items.length > 0 && !initExpanded) {
+    if (items.length > 0 && !initExpanded) {
       setExpandedIds(new Set(items.filter(i => i.item_type === 'Epic').map(i => i.id)));
       setInitExpanded(true);
     }
@@ -66,12 +80,11 @@ export function WorkItemsPage() {
   }, [jiraProjects]);
 
   const uniqueProjects = useMemo(() => {
-    if (!items) return 0;
     return new Set(items.map(i => i.jira_project_id).filter(Boolean)).size;
   }, [items]);
 
   const lastSync = useMemo(() => {
-    if (!items || items.length === 0) return null;
+    if (items.length === 0) return null;
     const synced = items.filter(i => i.last_synced_at).map(i => new Date(i.last_synced_at!).getTime());
     if (!synced.length) return null;
     return new Date(Math.max(...synced));
@@ -96,13 +109,12 @@ export function WorkItemsPage() {
   }, []);
 
   const selectAllState = useMemo((): 'none' | 'some' | 'all' => {
-    if (!items || selectedIds.size === 0) return 'none';
+    if (selectedIds.size === 0) return 'none';
     if (selectedIds.size === items.length) return 'all';
     return 'some';
   }, [items, selectedIds]);
 
   const handleSelectAll = useCallback(() => {
-    if (!items) return;
     if (selectAllState === 'all') {
       setSelectedIds(new Set());
     } else {
@@ -113,10 +125,8 @@ export function WorkItemsPage() {
   const handleSyncSelected = async () => {
     setSyncRunning(true);
     const selected = Array.from(syncSelectedProjects);
-    let totalUpdated = 0;
     try {
       for (const projectId of selected) {
-        const project = jiraProjects.find(p => p.id === projectId);
         await triggerSync.mutateAsync({ projectId, syncType: 'manual' });
       }
       toast.success(`Sync complete — ${selected.length} project(s) refreshed`);
@@ -137,11 +147,19 @@ export function WorkItemsPage() {
     });
   };
 
-  // Get current theme_id for inline editor
   const themeEditorItem = useMemo(() => {
-    if (!themeEditorTarget || !items) return null;
+    if (!themeEditorTarget) return null;
     return items.find(i => i.id === themeEditorTarget.itemId) || null;
   }, [themeEditorTarget, items]);
+
+  // Pagination helpers
+  const goToPage = (page: number) => {
+    setPagination(prev => ({ ...prev, page }));
+    setSelectedIds(new Set());
+  };
+
+  const pageStart = currentPage * PAGE_SIZE + 1;
+  const pageEnd = Math.min((currentPage + 1) * PAGE_SIZE, totalCount);
 
   return (
     <div style={{ fontFamily: 'var(--wh-font-sans)' }}>
@@ -162,7 +180,12 @@ export function WorkItemsPage() {
               Work Items
             </h1>
             <p className="text-sm mt-0.5" style={{ color: 'var(--wh-text-secondary)' }}>
-              Jira-synced hierarchy — {items?.length ?? 0} items across {uniqueProjects} projects
+              Jira-synced hierarchy — {totalCount} items across {uniqueProjects} projects
+              {isFetching && !isLoading && (
+                <span className="ml-2 inline-flex items-center gap-1 text-xs" style={{ color: 'var(--wh-primary)' }}>
+                  <Loader2 className="w-3 h-3 animate-spin" /> updating...
+                </span>
+              )}
             </p>
           </div>
         </div>
@@ -193,7 +216,6 @@ export function WorkItemsPage() {
               Re-sync Jira
             </button>
 
-            {/* Project Picker Dropdown */}
             {showSyncPicker && (
               <div
                 className="absolute right-0 top-full mt-1 w-64 rounded-lg border shadow-lg z-50 p-3"
@@ -206,7 +228,7 @@ export function WorkItemsPage() {
                   {jiraProjects.map(p => (
                     <label
                       key={p.id}
-                      className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-blue-50/50 cursor-pointer text-xs"
+                      className="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-xs"
                       style={{ color: 'var(--wh-text-secondary)' }}
                     >
                       <input
@@ -251,7 +273,7 @@ export function WorkItemsPage() {
 
       {/* Filters */}
       <div className="mb-4">
-        <WorkItemFilters filters={filters} onChange={setFilters} />
+        <WorkItemFilters filters={filters} onChange={handleFilterChange} />
       </div>
 
       {/* Bulk Edit Bar */}
@@ -267,7 +289,7 @@ export function WorkItemsPage() {
 
       {/* Table */}
       <WorkItemsTable
-        items={items ?? []}
+        items={items}
         isLoading={isLoading}
         error={error as Error | null}
         expandedIds={expandedIds}
@@ -280,6 +302,67 @@ export function WorkItemsPage() {
         onOpenThemeEditor={(itemId, anchorEl) => setThemeEditorTarget({ itemId, anchorEl })}
         onRetry={() => refetch()}
       />
+
+      {/* Pagination Controls */}
+      {totalCount > PAGE_SIZE && (
+        <div
+          className="flex items-center justify-between mt-3 px-4 py-2.5 rounded-lg border"
+          style={{
+            backgroundColor: 'var(--wh-surface)',
+            borderColor: 'var(--wh-border)',
+          }}
+        >
+          <span className="text-xs" style={{ color: 'var(--wh-text-tertiary)' }}>
+            Showing <b style={{ color: 'var(--wh-text-primary)' }}>{pageStart}–{pageEnd}</b> of{' '}
+            <b style={{ color: 'var(--wh-text-primary)' }}>{totalCount}</b> items
+          </span>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => goToPage(currentPage - 1)}
+              disabled={currentPage === 0}
+              className="p-1.5 rounded-md border disabled:opacity-30 transition-colors"
+              style={{ borderColor: 'var(--wh-border)' }}
+              aria-label="Previous page"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" style={{ color: 'var(--wh-text-secondary)' }} />
+            </button>
+            {Array.from({ length: Math.min(totalPages, 7) }).map((_, i) => {
+              let pageNum: number;
+              if (totalPages <= 7) {
+                pageNum = i;
+              } else if (currentPage < 3) {
+                pageNum = i;
+              } else if (currentPage > totalPages - 4) {
+                pageNum = totalPages - 7 + i;
+              } else {
+                pageNum = currentPage - 3 + i;
+              }
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => goToPage(pageNum)}
+                  className="w-7 h-7 rounded-md text-xs font-medium transition-colors"
+                  style={{
+                    backgroundColor: pageNum === currentPage ? 'var(--wh-primary)' : 'transparent',
+                    color: pageNum === currentPage ? 'white' : 'var(--wh-text-secondary)',
+                  }}
+                >
+                  {pageNum + 1}
+                </button>
+              );
+            })}
+            <button
+              onClick={() => goToPage(currentPage + 1)}
+              disabled={currentPage >= totalPages - 1}
+              className="p-1.5 rounded-md border disabled:opacity-30 transition-colors"
+              style={{ borderColor: 'var(--wh-border)' }}
+              aria-label="Next page"
+            >
+              <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--wh-text-secondary)' }} />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Inline Theme Editor */}
       {themeEditorTarget && themeEditorItem && (
