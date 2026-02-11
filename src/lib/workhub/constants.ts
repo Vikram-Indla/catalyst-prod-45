@@ -81,12 +81,12 @@ export const PRIORITY_CONFIG: Record<Priority, { color: string; label: string }>
 };
 
 /* ── Release Status Colors ── */
-export const RELEASE_STATUS_CONFIG: Record<ReleaseStatus, { bg: string; text: string }> = {
-  'Planned': { bg: '#f1f5f9', text: '#475569' },
-  'Active': { bg: '#dbeafe', text: '#1d4ed8' },
-  'At Risk': { bg: '#fee2e2', text: '#dc2626' },
-  'Completed': { bg: '#d1fae5', text: '#047857' },
-  'Cancelled': { bg: '#f1f5f9', text: '#94a3b8' },
+export const RELEASE_STATUS_CONFIG: Record<ReleaseStatus, { bg: string; text: string; dot: string }> = {
+  'Planned': { bg: '#f1f5f9', text: '#475569', dot: '#94a3b8' },
+  'Active': { bg: '#dbeafe', text: '#1d4ed8', dot: '#2563eb' },
+  'At Risk': { bg: '#fee2e2', text: '#991b1b', dot: '#ef4444' },
+  'Completed': { bg: '#d1fae5', text: '#047857', dot: '#16a34a' },
+  'Cancelled': { bg: '#f1f5f9', text: '#475569', dot: '#64748b' },
 };
 
 /* ── Sidebar Navigation Items ── */
