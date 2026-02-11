@@ -8,7 +8,10 @@ const corsHeaders = {
 
 interface ProjectConfig {
   lookback_months: number
-  statuses: string[]
+  status_categories?: string[]
+  statuses?: string[]  // legacy support
+  issue_types?: string[]
+  fix_versions?: string[]
 }
 
 serve(async (req) => {
@@ -90,7 +93,7 @@ serve(async (req) => {
     const projectsToSync = syncProjects.length > 0 ? syncProjects : allProjectKeys
 
     for (const projectKey of projectsToSync) {
-      const pConfig = projectConfigs[projectKey] || { lookback_months: 3, statuses: [] }
+      const pConfig = projectConfigs[projectKey] || { lookback_months: 3, status_categories: [], issue_types: [], fix_versions: [] }
       const lookbackDays = pConfig.lookback_months * 30
 
       // Build JQL for this project
@@ -98,13 +101,29 @@ serve(async (req) => {
       jqlParts.push(`project = "${projectKey}"`)
       jqlParts.push(`updated >= -${lookbackDays}d`)
 
-      if (pConfig.statuses.length > 0) {
+      // Status category filter (Jira native: "To Do", "In Progress", "Done")
+      const statusCategories = pConfig.status_categories || []
+      if (statusCategories.length > 0) {
+        jqlParts.push(`statusCategory in (${statusCategories.map(c => `"${c}"`).join(',')})`)
+      } else if (pConfig.statuses && pConfig.statuses.length > 0) {
+        // Legacy fallback: individual statuses
         jqlParts.push(`status in (${pConfig.statuses.map(s => `"${s}"`).join(',')})`)
       }
-      if (syncIssueTypes.length > 0) {
+
+      // Per-project issue type filter
+      const projIssueTypes = pConfig.issue_types || []
+      if (projIssueTypes.length > 0) {
+        jqlParts.push(`issuetype in (${projIssueTypes.map(t => `"${t}"`).join(',')})`)
+      } else if (syncIssueTypes.length > 0) {
+        // Global fallback
         jqlParts.push(`issuetype in (${syncIssueTypes.map(t => `"${t}"`).join(',')})`)
       }
-      if (syncFixVersions.length > 0) {
+
+      // Per-project fix version filter
+      const projFixVersions = pConfig.fix_versions || []
+      if (projFixVersions.length > 0) {
+        jqlParts.push(`fixVersion in (${projFixVersions.map(v => `"${v}"`).join(',')})`)
+      } else if (syncFixVersions.length > 0) {
         jqlParts.push(`fixVersion in (${syncFixVersions.map(v => `"${v}"`).join(',')})`)
       }
 
@@ -189,7 +208,7 @@ serve(async (req) => {
         issue_type: issue.fields.issuetype?.name || 'Task',
         summary: issue.fields.summary || '',
         status: issue.fields.status?.name || 'To Do',
-        status_category: mapStatusCategory(issue.fields.status?.name || 'To Do'),
+        status_category: issue.fields.status?.statusCategory?.name || mapStatusCategory(issue.fields.status?.name || 'To Do'),
         assignee_account_id: issue.fields.assignee?.accountId || null,
         assignee_display_name: issue.fields.assignee?.displayName || null,
         parent_key: issue.fields.parent?.key || null,
