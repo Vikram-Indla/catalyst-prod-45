@@ -258,7 +258,24 @@ export default function ReleaseDashboardOverviewPage() {
 
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <AISummaryCard insights={dashboardData.aiInsights} />
+          <AISummaryCard insights={dashboardData.aiInsights} releaseData={currentRelease ? {
+            name: currentRelease.name,
+            version: currentRelease.version,
+            status: currentRelease.status,
+            target_date: currentRelease.target_date,
+            start_date: currentRelease.start_date,
+            progress: currentRelease.progress,
+            test_cases_total: currentRelease.test_cases_total,
+            test_cases_passed: currentRelease.test_cases_passed,
+            test_cases_failed: currentRelease.test_cases_failed,
+            coverage_percent: currentRelease.coverage_percent,
+            defects_open: currentRelease.defects_open,
+            defects_closed: 0,
+            healthScore: dashboardData.healthScore.score,
+            healthLevel: dashboardData.healthScore.level,
+            qualityGates: dashboardData.qualityGates.map(g => ({ name: g.name, status: g.status, current: g.currentValue, threshold: g.threshold })),
+            daysRemaining: dashboardData.release.daysRemaining,
+          } : undefined} />
           <DefectSummaryCard defects={dashboardData.defectSummary} />
         </div>
 
