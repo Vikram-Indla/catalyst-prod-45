@@ -26866,6 +26866,7 @@ export type Database = {
           owner_id: string | null
           passed_count: number | null
           progress_percent: number | null
+          release_id: string | null
           skipped_count: number | null
           start_date: string | null
           status: string | null
@@ -26887,6 +26888,7 @@ export type Database = {
           owner_id?: string | null
           passed_count?: number | null
           progress_percent?: number | null
+          release_id?: string | null
           skipped_count?: number | null
           start_date?: string | null
           status?: string | null
@@ -26908,6 +26910,7 @@ export type Database = {
           owner_id?: string | null
           passed_count?: number | null
           progress_percent?: number | null
+          release_id?: string | null
           skipped_count?: number | null
           start_date?: string | null
           status?: string | null
@@ -26976,6 +26979,13 @@ export type Database = {
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
             referencedColumns: ["id"]
           },
         ]
@@ -37666,25 +37676,47 @@ export type Database = {
           sort_order: number
         }[]
       }
-      get_my_scope: {
-        Args: { p_user_id: string }
-        Returns: {
-          assigned_at: string
-          case_key: string
-          cycle_id: string
-          cycle_name: string
-          cycle_test_case_id: string
-          execution_status: string
-          failure_reason: string
-          notes: string
-          priority: string
-          release_id: string
-          release_name: string
-          release_version: string
-          test_case_id: string
-          title: string
-        }[]
-      }
+      get_my_scope:
+        | {
+            Args: { p_user_id: string }
+            Returns: {
+              assigned_at: string
+              case_key: string
+              cycle_id: string
+              cycle_name: string
+              cycle_test_case_id: string
+              execution_status: string
+              failure_reason: string
+              notes: string
+              priority: string
+              release_id: string
+              release_name: string
+              release_version: string
+              test_case_id: string
+              title: string
+            }[]
+          }
+        | {
+            Args: { p_project_id?: string; p_user_id: string }
+            Returns: {
+              assigned_at: string
+              case_key: string
+              cycle_end_date: string
+              cycle_id: string
+              cycle_name: string
+              cycle_test_case_id: string
+              estimated_time: number
+              execution_status: string
+              failure_reason: string
+              notes: string
+              priority: string
+              release_id: string
+              release_name: string
+              release_version: string
+              test_case_id: string
+              title: string
+            }[]
+          }
       get_my_stats: { Args: { p_user_id: string }; Returns: Json }
       get_next_test_in_cycle: {
         Args: { p_current_run_id?: string; p_cycle_id: string }

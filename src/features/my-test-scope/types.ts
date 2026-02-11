@@ -34,6 +34,9 @@ export interface TestAssignment {
   urgency: 'overdue' | 'due_today' | 'due_soon' | 'on_track';
   cycleId: string;
   cycleName: string;
+  releaseId?: string;
+  releaseName?: string;
+  releaseVersion?: string;
   linkedStories: string[];
   linkedDefects: string[];
   linkedIncidents: string[];
@@ -91,6 +94,7 @@ export interface TestScopeFilters {
   priority: string[];
   urgency: string[];
   cycleId: string;
+  releaseId: string;
   search: string;
   groupBy: 'none' | 'feature' | 'defect' | 'cycle';
   sortBy: 'score' | 'dueDate' | 'status' | 'priority';

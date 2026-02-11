@@ -3,10 +3,12 @@
  * Main dashboard component with all tabs and features
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
-import { useMyTestScope } from '../hooks/useMyTestScope';
+import { Loader2, PartyPopper } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { useMyTestScope, myTestScopeKeys } from '../hooks/useMyTestScope';
 import { useQuickExecute } from '../hooks/useQuickExecute';
 import { ScopeHeader } from './ScopeHeader';
 import { ProgressGauge } from './ProgressGauge';
@@ -27,6 +29,7 @@ interface MyTestScopeDashboardProps {
 
 export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboardProps) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { data, isLoading, error } = useMyTestScope();
   const quickExecute = useQuickExecute();
   const [activeTab, setActiveTab] = useState<TestScopeTab>('tests');
@@ -35,11 +38,30 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
     priority: [],
     urgency: [],
     cycleId: 'all',
+    releaseId: 'all',
     search: '',
     groupBy: 'none',
     sortBy: 'score',
     sortOrder: 'desc',
   });
+
+  // Real-time subscription for assignment changes
+  useEffect(() => {
+    const channel = supabase
+      .channel('my-scope-realtime')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'th_cycle_test_cases' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: myTestScopeKeys.all });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   const uniqueCycles = useMemo(() => {
     if (!data?.tests) return [];
@@ -52,13 +74,41 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
     return Array.from(seen, ([id, name]) => ({ id, name }));
   }, [data?.tests]);
 
+  const uniqueReleases = useMemo(() => {
+    if (!data?.tests) return [];
+    const seen = new Map<string, string>();
+    data.tests.forEach(t => {
+      if (t.releaseId && !seen.has(t.releaseId)) {
+        seen.set(t.releaseId, t.releaseName || t.releaseVersion || 'Unknown Release');
+      }
+    });
+    return Array.from(seen, ([id, name]) => ({ id, name }));
+  }, [data?.tests]);
+
   const handleExport = useCallback(() => {
-    console.log('Export clicked');
-  }, []);
+    if (!data?.tests || data.tests.length === 0) return;
+    const headers = ['Key', 'Title', 'Priority', 'Status', 'Cycle', 'Due Date', 'Est. Minutes'];
+    const rows = data.tests.map(t => [
+      t.key, t.title, t.priority, t.status, t.cycleName,
+      t.dueDate || 'N/A', String(t.estimatedMinutes),
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `my-scope-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [data?.tests]);
 
   const handleExecuteAll = useCallback(() => {
-    console.log('Execute all clicked');
-  }, []);
+    if (!data?.tests) return;
+    const firstNotRun = data.tests.find(t => t.status === 'not_run');
+    if (firstNotRun) {
+      navigate(`/releases/execute/${firstNotRun.cycleId}/${firstNotRun.id}`);
+    }
+  }, [navigate, data?.tests]);
 
   const handleStartTest = useCallback((scopeId: string) => {
     const test = data?.tests.find(t => t.scopeId === scopeId);
@@ -68,7 +118,7 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
   }, [navigate, data?.tests]);
 
   const handleSkipRecommendation = useCallback(() => {
-    console.log('Skip recommendation');
+    // Skip to next recommended test - no-op for now
   }, []);
 
   const handleAttentionCardClick = useCallback((type: 'overdue' | 'today' | 'defects' | 'incidents') => {
@@ -129,6 +179,8 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
     );
   }
 
+  const allComplete = data.summary.totalTests > 0 && data.summary.notRunTests === 0 && data.summary.failedTests === 0 && data.summary.blockedTests === 0;
+
   return (
     <div className="flex flex-col h-full bg-background">
       <ScopeHeader
@@ -149,6 +201,18 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
         </div>
       </div>
 
+      {allComplete && (
+        <div className="flex items-center gap-3 px-6 py-4 bg-success/10 border-b border-success/20">
+          <PartyPopper className="h-6 w-6 text-success" />
+          <div>
+            <p className="font-semibold text-success">All tests complete! 🎉</p>
+            <p className="text-sm text-muted-foreground">
+              Great job, {userName}! All {data.summary.totalTests} tests have been executed successfully.
+            </p>
+          </div>
+        </div>
+      )}
+
       <AttentionCards summary={data.summary} onCardClick={handleAttentionCardClick} />
 
       <ScopeTabs
@@ -168,6 +232,7 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
               filters={filters}
               onFiltersChange={setFilters}
               cycles={uniqueCycles}
+              releases={uniqueReleases}
             />
             <div className="flex-1 overflow-auto">
               <TestsTable
