@@ -145,7 +145,7 @@ export function CatalystHeader() {
   const allNavItems = [
     { label: "Home", path: "/for-you", moduleKey: "home", visibleToProductOwner: true },
     { label: "StrategyHub", path: "/enterprise/strategy-room", moduleKey: "enterprise", requiresEnterpriseAccess: true, visibleToProductOwner: true },
-    { label: "ProductHub", hasDropdown: true, moduleKey: "product", visibleToProductOwner: true },
+    { label: "ProductHub", path: "/industry", moduleKey: "product", visibleToProductOwner: true },
     { label: "Project", isLabel: true, moduleKey: "project", visibleToProductOwner: true },
     { label: "ReleaseHub", path: "/releasehub/command-center", moduleKey: "releases", visibleToProductOwner: false },
     { label: "TestHub", path: "/testhub/dashboard", moduleKey: "testhub", visibleToProductOwner: false },
