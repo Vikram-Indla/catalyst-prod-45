@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { Plus, Layers, MoreHorizontal, Play, RefreshCw, Zap } from 'lucide-react';
+import { Plus, Layers, MoreHorizontal, Play, RefreshCw, Zap, Zap as ZapIcon, TestTubes, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,6 +35,7 @@ export default function TestSetsPage() {
   const [filters, setFilters] = useState<TestSetFilters>({ search: '', type: 'all', status: 'active' });
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingSet, setEditingSet] = useState<TestSet | null>(null);
+  const [sortBy, setSortBy] = useState<'created' | 'updated' | 'name' | 'count'>('updated');
 
   const { data: testSets, isLoading } = useTestSets(projectId, filters);
   const deleteMutation = useDeleteTestSet();
@@ -44,6 +45,15 @@ export default function TestSetsPage() {
 
   const handleEdit = (set: TestSet) => { setEditingSet(set); setIsCreateOpen(true); };
   const handleClose = () => { setIsCreateOpen(false); setEditingSet(null); };
+
+  const sortedSets = (testSets || []).sort((a, b) => {
+    switch(sortBy) {
+      case 'name': return a.name.localeCompare(b.name);
+      case 'count': return b.test_count - a.test_count;
+      case 'created': return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      case 'updated': default: return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+    }
+  });
 
   return (
     <div className="flex-1 p-6 overflow-auto">
@@ -84,6 +94,15 @@ export default function TestSetsPage() {
             <SelectItem value="archived">Archived</SelectItem>
           </SelectContent>
         </Select>
+        <Select value={sortBy} onValueChange={v => setSortBy(v as any)}>
+          <SelectTrigger className="w-40 h-9"><SelectValue placeholder="Sort by" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="updated">Last Updated</SelectItem>
+            <SelectItem value="created">Created Date</SelectItem>
+            <SelectItem value="name">Name (A-Z)</SelectItem>
+            <SelectItem value="count">Test Count</SelectItem>
+          </SelectContent>
+        </Select>
         <span className="text-sm text-muted-foreground ml-auto">{testSets?.length || 0} test sets</span>
       </div>
 
@@ -101,7 +120,7 @@ export default function TestSetsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {testSets.map(set => (
+          {sortedSets.map(set => (
             <Card key={set.id} className="cursor-pointer transition-all hover:shadow-md hover:border-primary/30" onClick={() => navigate(`/testhub/test-sets/${set.id}`)}>
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-2">
@@ -117,7 +136,7 @@ export default function TestSetsPage() {
                 </div>
                 <h3 className="font-semibold text-foreground mb-1">{set.name}</h3>
                 {set.description && <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{set.description}</p>}
-                <div className="flex items-center gap-3 text-xs text-muted-foreground mb-4">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
                   <span><Layers className="h-3 w-3 inline mr-1" />{set.test_count} tests</span>
                   <span>·</span>
                   <span>{set.owner?.full_name || 'Unassigned'}</span>
@@ -125,16 +144,22 @@ export default function TestSetsPage() {
                   <span>{formatDistanceToNow(new Date(set.updated_at), { addSuffix: true })}</span>
                 </div>
                 <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
-                  <Button variant="outline" size="sm" className="flex-1" onClick={() => navigate(`/testhub/test-sets/${set.id}`)}>
-                    <Play className="h-4 w-4 mr-1" />View
-                  </Button>
+                  <button onClick={() => navigate(`/testhub/test-sets/${set.id}`)} className="flex-1 h-9 px-3 rounded-md border border-border hover:bg-muted transition-colors flex items-center justify-center gap-1 text-sm">
+                    <Play className="h-4 w-4" />View
+                  </button>
+                  <button onClick={() => {
+                    // TODO: Create cycle from test set logic
+                    console.log('Creating cycle from:', set.id);
+                  }} className="h-9 px-3 rounded-md border border-border hover:bg-muted transition-colors flex items-center justify-center gap-1 text-sm" title="Create test cycle from this set">
+                    <TestTubes className="h-4 w-4" />
+                  </button>
                   {set.membership_type === 'dynamic' && (
-                    <Button variant="outline" size="sm" onClick={() => refreshMutation.mutate(set.id)} disabled={refreshMutation.isPending}>
+                    <button onClick={() => refreshMutation.mutate(set.id)} className="h-9 px-3 rounded-md border border-border hover:bg-muted transition-colors flex items-center justify-center" disabled={refreshMutation.isPending}>
                       <RefreshCw className={cn('h-4 w-4', refreshMutation.isPending && 'animate-spin')} />
-                    </Button>
+                    </button>
                   )}
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild><Button variant="ghost" size="sm"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                    <DropdownMenuTrigger asChild><button className="h-9 px-2 rounded-md border border-border hover:bg-muted transition-colors flex items-center"><MoreHorizontal className="h-4 w-4" /></button></DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => handleEdit(set)}>Edit</DropdownMenuItem>
                       <DropdownMenuItem onClick={() => cloneMutation.mutate({ setId: set.id })}>Clone</DropdownMenuItem>

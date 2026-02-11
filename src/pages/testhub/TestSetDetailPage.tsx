@@ -3,9 +3,13 @@
  * Route: /testhub/test-sets/:setId
  */
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit, Plus, RefreshCw, Zap, Layers, Users, Calendar, ExternalLink, X, GripVertical } from 'lucide-react';
+import { ArrowLeft, Edit, Plus, RefreshCw, Zap, Layers, Users, Calendar, ExternalLink, X, GripVertical, Zap as ZapIcon } from 'lucide-react';
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -25,6 +29,28 @@ const priorityColors: Record<string, string> = {
   low: 'bg-muted text-muted-foreground',
 };
 
+function DraggableRow({ item, isSelected, onToggle, navigate }: any) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: item.id });
+  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 };
+  const tc = item.test_case;
+  if (!tc) return null;
+
+  return (
+    <div ref={setNodeRef} style={style} className={cn('grid grid-cols-[40px_40px_100px_1fr_100px_40px] items-center px-2 h-9 border-b border-border hover:bg-muted/30 transition-colors', isSelected && 'bg-primary/5')}>
+      <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
+        <GripVertical className="h-4 w-4 text-muted-foreground mx-auto" />
+      </div>
+      <Checkbox checked={isSelected} onCheckedChange={ch => onToggle(tc.id, ch as boolean)} />
+      <span className="text-sm font-mono text-primary">{tc.case_key}</span>
+      <span className="text-sm text-foreground truncate">{tc.title}</span>
+      <Badge variant="outline" className={cn('text-[10px] capitalize w-fit', priorityColors[(tc.priority?.name || '').toLowerCase()])}>{tc.priority?.name || '-'}</Badge>
+      <button onClick={() => navigate(`/testhub/repository?view=${tc.id}`)} className="h-7 w-7 p-0 flex items-center justify-center hover:bg-muted rounded transition-colors">
+        <ExternalLink className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
+
 export default function TestSetDetailPage() {
   const { setId } = useParams<{ setId: string }>();
   const navigate = useNavigate();
@@ -39,6 +65,30 @@ export default function TestSetDetailPage() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [items, setItems] = useState<any[]>([]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id && testCases) {
+      const oldIndex = testCases.findIndex(i => i.id === active.id);
+      const newIndex = testCases.findIndex(i => i.id === over.id);
+      const newOrder = arrayMove(testCases, oldIndex, newIndex);
+      setItems(newOrder);
+      if (setId) {
+        reorderMutation.mutate({ setId, orderedIds: newOrder.map(i => i.id) });
+      }
+    }
+  }, [testCases, setId, reorderMutation]);
+
+  // Sync items with testCases on load
+  if (testCases && items.length === 0) {
+    setItems(testCases);
+  }
 
   if (isLoadingSet) {
     return <div className="p-6"><Skeleton className="h-8 w-48 mb-4" /><Skeleton className="h-32 w-full" /></div>;
@@ -55,6 +105,7 @@ export default function TestSetDetailPage() {
 
   const isStatic = testSet.membership_type === 'static';
   const existingIds = testCases?.map((tc: any) => tc.test_case?.id).filter(Boolean) || [];
+  const displayItems = items.length > 0 ? items : testCases || [];
 
   const toggle = (id: string, checked: boolean) => {
     const next = new Set(selectedIds);
@@ -157,38 +208,29 @@ export default function TestSetDetailPage() {
 
         {isLoadingCases ? (
           <div className="space-y-2">{[1,2,3].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div>
-        ) : !testCases?.length ? (
+        ) : !displayItems?.length ? (
           <div className="text-center py-8 border border-dashed border-border rounded-lg">
             <p className="text-muted-foreground">{isStatic ? 'Click "Add Test Cases" to add tests' : 'Click "Refresh" to populate'}</p>
           </div>
         ) : (
-          <div className="border border-border rounded-lg overflow-hidden">
-            <div className="grid grid-cols-[40px_40px_100px_1fr_100px_40px] bg-muted/50 border-b border-border h-9 items-center px-2">
-              <span></span>
-              <Checkbox checked={selectedIds.size === testCases.length && testCases.length > 0}
-                onCheckedChange={ch => ch ? setSelectedIds(new Set(testCases.map((tc: any) => tc.test_case?.id).filter(Boolean))) : setSelectedIds(new Set())} />
-              <span className="text-xs font-medium text-muted-foreground uppercase">Key</span>
-              <span className="text-xs font-medium text-muted-foreground uppercase">Title</span>
-              <span className="text-xs font-medium text-muted-foreground uppercase">Priority</span>
-              <span></span>
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <div className="border border-border rounded-lg overflow-hidden">
+              <div className="grid grid-cols-[40px_40px_100px_1fr_100px_40px] bg-muted/50 border-b border-border h-9 items-center px-2">
+                <span></span>
+                <Checkbox checked={selectedIds.size === displayItems.length && displayItems.length > 0}
+                  onCheckedChange={ch => ch ? setSelectedIds(new Set(displayItems.map((tc: any) => tc.test_case?.id).filter(Boolean))) : setSelectedIds(new Set())} />
+                <span className="text-xs font-medium text-muted-foreground uppercase">Key</span>
+                <span className="text-xs font-medium text-muted-foreground uppercase">Title</span>
+                <span className="text-xs font-medium text-muted-foreground uppercase">Priority</span>
+                <span></span>
+              </div>
+              <SortableContext items={displayItems.map(i => i.id)} strategy={verticalListSortingStrategy}>
+                {displayItems.map((item: any) => (
+                  <DraggableRow key={item.id} item={item} isSelected={selectedIds.has(item.test_case?.id)} onToggle={toggle} navigate={navigate} />
+                ))}
+              </SortableContext>
             </div>
-            {testCases.map((item: any) => {
-              const tc = item.test_case;
-              if (!tc) return null;
-              return (
-                <div key={item.id} className={cn('grid grid-cols-[40px_40px_100px_1fr_100px_40px] items-center px-2 h-9 border-b border-border hover:bg-muted/30 transition-colors', selectedIds.has(tc.id) && 'bg-primary/5')}>
-                  <GripVertical className="h-4 w-4 text-muted-foreground mx-auto" />
-                  <Checkbox checked={selectedIds.has(tc.id)} onCheckedChange={ch => toggle(tc.id, ch as boolean)} />
-                  <span className="text-sm font-mono text-primary">{tc.case_key}</span>
-                  <span className="text-sm text-foreground truncate">{tc.title}</span>
-                  <Badge variant="outline" className={cn('text-[10px] capitalize w-fit', priorityColors[(tc.priority?.name || '').toLowerCase()])}>{tc.priority?.name || '-'}</Badge>
-                  <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => navigate(`/testhub/repository?view=${tc.id}`)}>
-                    <ExternalLink className="h-4 w-4" />
-                  </Button>
-                </div>
-              );
-            })}
-          </div>
+          </DndContext>
         )}
       </div>
 
