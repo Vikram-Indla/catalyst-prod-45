@@ -7,6 +7,8 @@ export { AIInsightsDrawer } from './components/AIInsightsDrawer';
 export { ReleaseCard } from './components/ReleaseCard';
 export { CardGridView } from './components/CardGridView';
 export { Toolbar } from './components/Toolbar';
+export { BulkActionBar } from './components/BulkActionBar';
+export { Pagination } from './components/Pagination';
 export type { SortOption } from './components/Toolbar';
 
 // Legacy exports kept for backward compat
