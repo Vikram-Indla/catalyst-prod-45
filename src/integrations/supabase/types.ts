@@ -26757,24 +26757,30 @@ export type Database = {
         Row: {
           changed_at: string | null
           changed_by: string | null
+          changed_fields: string[] | null
           changes: Json
           id: string
+          steps: Json | null
           test_case_id: string
           version: number
         }
         Insert: {
           changed_at?: string | null
           changed_by?: string | null
+          changed_fields?: string[] | null
           changes: Json
           id?: string
+          steps?: Json | null
           test_case_id: string
           version: number
         }
         Update: {
           changed_at?: string | null
           changed_by?: string | null
+          changed_fields?: string[] | null
           changes?: Json
           id?: string
+          steps?: Json | null
           test_case_id?: string
           version?: number
         }
@@ -30993,6 +30999,7 @@ export type Database = {
           cloned_from_id: string | null
           created_at: string | null
           created_by: string | null
+          current_version: number | null
           custom_fields: Json | null
           description: string | null
           description_html: string | null
@@ -31031,6 +31038,7 @@ export type Database = {
           cloned_from_id?: string | null
           created_at?: string | null
           created_by?: string | null
+          current_version?: number | null
           custom_fields?: Json | null
           description?: string | null
           description_html?: string | null
@@ -31069,6 +31077,7 @@ export type Database = {
           cloned_from_id?: string | null
           created_at?: string | null
           created_by?: string | null
+          current_version?: number | null
           custom_fields?: Json | null
           description?: string | null
           description_html?: string | null

@@ -2,6 +2,7 @@
  * Test Case Version History Component — Shows version changes from DB
  */
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   GitCommit, 
@@ -9,6 +10,7 @@ import {
   RotateCcw,
   ChevronRight,
   Loader2,
+  GitCompare,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -31,6 +33,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useParams } from 'react-router-dom';
 import { useTestCaseVersions, useRestoreTestCaseVersion, type TestCaseVersion } from '@/hooks/test-management/useTestCaseVersions';
+import { VersionDiffView } from '@/components/testhub/versioning/VersionDiffView';
 import { formatDistanceToNow, format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -73,6 +76,7 @@ interface TestCaseVersionHistoryProps {
 export function TestCaseVersionHistory({ testCaseId: propTestCaseId, currentVersion = 1 }: TestCaseVersionHistoryProps) {
   const { id: routeId } = useParams<{ id: string }>();
   const testCaseId = propTestCaseId || routeId;
+  const [showDiff, setShowDiff] = useState(false);
   
   const { data: versions = [], isLoading } = useTestCaseVersions(testCaseId);
   const restoreMutation = useRestoreTestCaseVersion();
@@ -114,6 +118,12 @@ export function TestCaseVersionHistory({ testCaseId: propTestCaseId, currentVers
         <Badge variant="outline" className="text-xs">
           {versions.length} version{versions.length !== 1 ? 's' : ''}
         </Badge>
+        {versions.length >= 2 && (
+          <Button variant="outline" size="sm" onClick={() => setShowDiff(true)} className="ml-2">
+            <GitCompare className="w-3.5 h-3.5 mr-1" />
+            Compare
+          </Button>
+        )}
       </div>
 
       {/* Version Timeline */}
@@ -227,6 +237,13 @@ export function TestCaseVersionHistory({ testCaseId: propTestCaseId, currentVers
           })}
         </div>
       </div>
+
+      {/* Version Diff Modal */}
+      <VersionDiffView
+        open={showDiff}
+        onOpenChange={setShowDiff}
+        versions={versions}
+      />
     </div>
   );
 }
