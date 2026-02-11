@@ -25531,15 +25531,24 @@ export type Database = {
       th_defects: {
         Row: {
           actual_result: string | null
+          affected_version: string | null
           assigned_to: string | null
+          closed_at: string | null
+          component: string | null
           created_at: string | null
           defect_key: string
           description: string | null
+          due_date: string | null
           environment: string | null
           expected_result: string | null
+          external_id: string | null
+          external_url: string | null
+          fixed_version: string | null
+          folder_id: string | null
           id: string
           priority: string | null
           reported_by: string | null
+          resolution: string | null
           resolved_at: string | null
           severity: string | null
           status: string | null
@@ -25550,15 +25559,24 @@ export type Database = {
         }
         Insert: {
           actual_result?: string | null
+          affected_version?: string | null
           assigned_to?: string | null
+          closed_at?: string | null
+          component?: string | null
           created_at?: string | null
           defect_key: string
           description?: string | null
+          due_date?: string | null
           environment?: string | null
           expected_result?: string | null
+          external_id?: string | null
+          external_url?: string | null
+          fixed_version?: string | null
+          folder_id?: string | null
           id?: string
           priority?: string | null
           reported_by?: string | null
+          resolution?: string | null
           resolved_at?: string | null
           severity?: string | null
           status?: string | null
@@ -25569,15 +25587,24 @@ export type Database = {
         }
         Update: {
           actual_result?: string | null
+          affected_version?: string | null
           assigned_to?: string | null
+          closed_at?: string | null
+          component?: string | null
           created_at?: string | null
           defect_key?: string
           description?: string | null
+          due_date?: string | null
           environment?: string | null
           expected_result?: string | null
+          external_id?: string | null
+          external_url?: string | null
+          fixed_version?: string | null
+          folder_id?: string | null
           id?: string
           priority?: string | null
           reported_by?: string | null
+          resolution?: string | null
           resolved_at?: string | null
           severity?: string | null
           status?: string | null
@@ -25613,6 +25640,20 @@ export type Database = {
             columns: ["assigned_to"]
             isOneToOne: false
             referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_defects_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "tm_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_defects_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "tm_folders_with_counts"
             referencedColumns: ["id"]
           },
           {
@@ -38389,21 +38430,23 @@ export type Database = {
         Args: { p_end_date?: string; p_start_date?: string }
         Returns: Json
       }
-      get_defect_stats: {
-        Args: never
-        Returns: {
-          closed_defects: number
-          critical_defects: number
-          fixed_defects: number
-          high_defects: number
-          in_progress_defects: number
-          low_defects: number
-          medium_defects: number
-          open_defects: number
-          total_defects: number
-          verified_defects: number
-        }[]
-      }
+      get_defect_stats:
+        | {
+            Args: never
+            Returns: {
+              closed_defects: number
+              critical_defects: number
+              fixed_defects: number
+              high_defects: number
+              in_progress_defects: number
+              low_defects: number
+              medium_defects: number
+              open_defects: number
+              total_defects: number
+              verified_defects: number
+            }[]
+          }
+        | { Args: { p_project_id?: string }; Returns: Json }
       get_delete_dependencies: {
         Args: { p_test_case_ids: Json }
         Returns: Json
