@@ -627,7 +627,7 @@ export default function CoverageReportsPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'requirements');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedRelease, setSelectedRelease] = useState(mockReleases[0].id);
+  const [selectedRelease, setSelectedRelease] = useState(mockReleases[0]?.id || '');
   const [filters, setFilters] = useState({
     coverage: 'all',
     priority: 'all',
