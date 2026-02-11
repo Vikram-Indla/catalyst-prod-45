@@ -71,7 +71,9 @@ const TestPlansListPage = lazy(() => import("./pages/testhub/TestPlansListPage")
 const PlanDetailPage = lazy(() => import("./pages/testhub/PlanDetailPage"));
 const TestHubDefectsPage = lazy(() => import("./pages/testhub/DefectsPage"));
 const DefectDetailPage = lazy(() => import("./pages/testhub/DefectDetailPage"));
-const TestHubRequirementsPage = lazy(() => import("./pages/testhub/RequirementsPage"));
+const TestHubRequirementsPage = lazy(() => import("./pages/testhub/RequirementsListPage"));
+const RequirementDetailPage = lazy(() => import("./pages/testhub/RequirementDetailPage"));
+const CoverageMatrixPage = lazy(() => import("./pages/testhub/CoverageMatrixPage"));
 const TestHubTraceabilityPage = lazy(() => import("./pages/testhub/TraceabilityPage"));
 const TestHubReportsPage = lazy(() => import("./pages/testhub/ReportsPage"));
 const TestHubSettingsPage = lazy(() => import("./pages/testhub/SettingsPage"));
@@ -534,6 +536,8 @@ const App = () => (
                 <Route path="defects" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubDefectsPage /></Suspense>} />
                 <Route path="defects/:defectId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><DefectDetailPage /></Suspense>} />
                 <Route path="requirements" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubRequirementsPage /></Suspense>} />
+                <Route path="requirements/:requirementId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementDetailPage /></Suspense>} />
+                <Route path="coverage-matrix" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CoverageMatrixPage /></Suspense>} />
                 <Route path="traceability" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubTraceabilityPage /></Suspense>} />
                 <Route path="reports" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubReportsPage /></Suspense>} />
                 <Route path="settings" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubSettingsPage /></Suspense>} />
