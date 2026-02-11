@@ -642,7 +642,7 @@ export default function CoverageReportsPage() {
   const coveredCount = mockRequirements.filter(r => r.coverage === 'covered').length;
   const partialCount = mockRequirements.filter(r => r.coverage === 'partial').length;
   const uncoveredCount = mockRequirements.filter(r => r.coverage === 'uncovered').length;
-  const overallCoverage = Math.round(((coveredCount + partialCount * 0.5) / totalRequirements) * 100);
+  const overallCoverage = totalRequirements > 0 ? Math.round(((coveredCount + partialCount * 0.5) / totalRequirements) * 100) : 0;
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -740,19 +740,19 @@ export default function CoverageReportsPage() {
             icon={<CheckCircle2 className="h-6 w-6 text-teal-600" />}
             label="Covered"
             value={coveredCount}
-            subValue={`${Math.round((coveredCount / totalRequirements) * 100)}% of total`}
+            subValue={`${totalRequirements > 0 ? Math.round((coveredCount / totalRequirements) * 100) : 0}% of total`}
           />
           <StatCard
             icon={<Circle className="h-6 w-6 text-amber-500 fill-amber-500" />}
             label="Partial"
             value={partialCount}
-            subValue={`${Math.round((partialCount / totalRequirements) * 100)}% of total`}
+            subValue={`${totalRequirements > 0 ? Math.round((partialCount / totalRequirements) * 100) : 0}% of total`}
           />
           <StatCard
             icon={<AlertTriangle className="h-6 w-6 text-red-500" />}
             label="Uncovered"
             value={uncoveredCount}
-            subValue={`${Math.round((uncoveredCount / totalRequirements) * 100)}% of total`}
+            subValue={`${totalRequirements > 0 ? Math.round((uncoveredCount / totalRequirements) * 100) : 0}% of total`}
           />
           <StatCard
             icon={<Target className="h-6 w-6 text-primary" />}
