@@ -2,10 +2,16 @@
  * All Releases Feature - Public Exports
  */
 
-export { SummaryCards } from './components/SummaryCards';
-export { AIInsightsBar } from './components/AIInsightsBar';
+export { StatStrip } from './components/StatStrip';
+export { AIInsightsDrawer } from './components/AIInsightsDrawer';
 export { ReleaseCard } from './components/ReleaseCard';
 export { CardGridView } from './components/CardGridView';
+export { Toolbar } from './components/Toolbar';
+export type { SortOption } from './components/Toolbar';
+
+// Legacy exports kept for backward compat
+export { SummaryCards } from './components/SummaryCards';
+export { AIInsightsBar } from './components/AIInsightsBar';
 export { ViewToggle } from './components/ViewToggle';
 export { FilterBar } from './components/FilterBar';
 

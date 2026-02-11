@@ -1,19 +1,19 @@
 /**
- * ALL RELEASES PAGE
- * Enhanced with Summary Cards, AI Insights, and Card Grid View
+ * ALL RELEASES PAGE — Enterprise Redesign
+ * Compressed layout with StatStrip, Toolbar, AI Drawer, env progression
  */
 
 import { useState, useMemo } from 'react';
 import { Plus, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 import { useAllReleases } from '@/hooks/releases/useAllReleases';
 import {
   ReleasesTable,
   ReleasesTimeline,
   ReleasesBulkActionBar,
   ReleasesEmptyState,
-  ReleasesPagination,
   ExportReleasesDropdown,
   BulkStatusChangeDialog,
   BulkReassignDialog,
@@ -23,18 +23,20 @@ import { useReleasesFilter } from '@/hooks/releases/useReleasesFilter';
 import { useReleasesSelection } from '@/hooks/releases/useReleasesSelection';
 import { ReleasesSort } from '@/types/releases';
 import {
-  SummaryCards,
-  AIInsightsBar,
+  StatStrip,
+  AIInsightsDrawer,
   CardGridView,
-  ViewToggle,
-  FilterBar,
+  Toolbar,
   ViewMode,
   ReleaseSummary,
   AIReleaseInsight,
   Release as EnhancedRelease,
+  ReleaseStatus as EnhancedStatus,
   getHealthLevel,
 } from '@/features/all-releases';
+import type { SortOption } from '@/features/all-releases';
 import { ReleaseDialog } from '@/components/forms/ReleaseDialog';
+import { HealthLevel } from '@/features/all-releases/utils/healthScore';
 
 // Transform legacy release to enhanced release
 function transformRelease(r: any): EnhancedRelease {
@@ -42,7 +44,6 @@ function transformRelease(r: any): EnhancedRelease {
     ? (r.test_cases_passed / r.test_cases_total) * 100 
     : 100;
   
-  // Calculate health score based on available data
   const healthScore = Math.round(
     (passRate * 0.4) + 
     ((r.coverage_percent || 0) * 0.3) + 
@@ -87,16 +88,20 @@ function transformRelease(r: any): EnhancedRelease {
 }
 
 export default function AllReleasesPage() {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<ViewMode>('cards');
   const [sort, setSort] = useState<ReleasesSort>({ column: 'name', direction: 'asc' });
   const [page, setPage] = useState(0);
-  const [statusFilter, setStatusFilter] = useState<string[]>([]);
-  const [healthFilter, setHealthFilter] = useState<string[]>([]);
+  const [pageSize, setPageSize] = useState(12);
+  const [sortBy, setSortBy] = useState<SortOption>('health-asc');
+  const [statusFilter, setStatusFilter] = useState<EnhancedStatus[]>([]);
+  const [healthFilter, setHealthFilter] = useState<HealthLevel[]>([]);
   const [quarterFilter, setQuarterFilter] = useState('all');
   const [searchFilter, setSearchFilter] = useState('');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isAIDrawerOpen, setIsAIDrawerOpen] = useState(false);
   const [bulkAction, setBulkAction] = useState<'status' | 'reassign' | 'archive' | null>(null);
-  const pageSize = 12;
+  const [statFilter, setStatFilter] = useState<string | null>(null);
   
   const { filter, clearFilters } = useReleasesFilter();
   
@@ -110,10 +115,8 @@ export default function AllReleasesPage() {
   const releases = data?.releases ?? [];
   const total = data?.total ?? 0;
   
-  // Transform releases
   const enhancedReleases = useMemo(() => releases.map(transformRelease), [releases]);
   
-  // Get selected releases for export
   const { selected, toggle, toggleAll, clear, selectAllState } = useReleasesSelection(
     releases.map(r => r.id)
   );
@@ -168,10 +171,48 @@ export default function AllReleasesPage() {
     });
     return result.slice(0, 5);
   }, [enhancedReleases]);
+
+  // Client-side sort
+  const sortedReleases = useMemo(() => {
+    return [...enhancedReleases].sort((a, b) => {
+      switch (sortBy) {
+        case 'health-asc': return a.healthScore - b.healthScore;
+        case 'health-desc': return b.healthScore - a.healthScore;
+        case 'name-asc': return a.name.localeCompare(b.name);
+        case 'name-desc': return b.name.localeCompare(a.name);
+        case 'date-asc': return new Date(a.plannedDate).getTime() - new Date(b.plannedDate).getTime();
+        case 'date-desc': return new Date(b.plannedDate).getTime() - new Date(a.plannedDate).getTime();
+        default: return 0;
+      }
+    });
+  }, [enhancedReleases, sortBy]);
+
+  // Client-side filter count
+  const activeFilterCount = statusFilter.length + healthFilter.length + (quarterFilter !== 'all' ? 1 : 0) + (searchFilter ? 1 : 0);
+
+  const handleStatusToggle = (status: EnhancedStatus) => {
+    setStatusFilter(prev => prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status]);
+  };
+
+  const handleHealthToggle = (health: HealthLevel) => {
+    setHealthFilter(prev => prev.includes(health) ? prev.filter(h => h !== health) : [...prev, health]);
+  };
+
+  const handleClearFilters = () => {
+    setStatusFilter([]);
+    setHealthFilter([]);
+    setQuarterFilter('all');
+    setSearchFilter('');
+    setStatFilter(null);
+  };
   
   const handleCreateSuccess = () => {
     refetch();
     setIsCreateDialogOpen(false);
+  };
+
+  const handleReleaseClick = (release: EnhancedRelease) => {
+    navigate(`/releases/dashboard/${release.id}`);
   };
   
   const handleBulkStatusChange = async (newStatus: string) => {
@@ -225,75 +266,127 @@ export default function AllReleasesPage() {
     }
   };
   
+  // Pagination
+  const totalPages = Math.ceil(sortedReleases.length / pageSize);
+  const paginatedReleases = sortedReleases.slice(page * pageSize, (page + 1) * pageSize);
+  const showingFrom = sortedReleases.length > 0 ? page * pageSize + 1 : 0;
+  const showingTo = Math.min((page + 1) * pageSize, sortedReleases.length);
+
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Header */}
+      {/* Header — 36px single row */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
-        <div className="max-w-[1440px] mx-auto px-6 py-4">
-          <div className="flex items-center justify-between mb-1">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">All Releases</h1>
-              <p className="text-sm text-slate-500">Manage and monitor all releases across your portfolio</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <ExportReleasesDropdown
-                releases={releases}
-                selectedReleases={selectedReleases}
-                hasSelection={selected.size > 0}
-              />
-              <Button 
-                className="bg-primary hover:bg-primary/90"
-                onClick={() => setIsCreateDialogOpen(true)}
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                New Release
-              </Button>
-            </div>
+        <div className="max-w-[1440px] mx-auto px-6 flex items-center justify-between" style={{ height: '52px' }}>
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg font-bold text-slate-900">All Releases</h1>
+            <span className="px-2 py-0.5 text-xs font-medium text-slate-500 bg-slate-100 rounded-full">
+              {total} releases
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <ExportReleasesDropdown
+              releases={releases}
+              selectedReleases={selectedReleases}
+              hasSelection={selected.size > 0}
+            />
+            <Button
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white h-8 text-xs"
+              onClick={() => setIsCreateDialogOpen(true)}
+            >
+              <Plus className="w-3.5 h-3.5 mr-1.5" />
+              New Release
+            </Button>
           </div>
         </div>
       </header>
       
       {/* Main */}
-      <main className="max-w-[1440px] mx-auto px-6 py-6">
-        {/* Summary Cards */}
-        <SummaryCards summary={summary} />
+      <main className="max-w-[1440px] mx-auto px-6 py-5">
+        {/* StatStrip */}
+        <StatStrip
+          summary={summary}
+          activeFilter={statFilter}
+          onFilterClick={(f) => setStatFilter(prev => prev === f ? null : f)}
+          aiInsightCount={insights.length}
+          onAIInsightClick={() => setIsAIDrawerOpen(true)}
+        />
         
         {/* Toolbar */}
-        <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-          <FilterBar
-            filter={{
-              status: statusFilter as any,
-              health: healthFilter as any,
-              quarter: quarterFilter,
-              search: searchFilter,
-            }}
-            onStatusChange={setStatusFilter as any}
-            onHealthChange={setHealthFilter as any}
-            onQuarterChange={setQuarterFilter}
-            onSearchChange={setSearchFilter}
-            onClearFilters={() => {
-              setStatusFilter([]);
-              setHealthFilter([]);
-              setQuarterFilter('all');
-              setSearchFilter('');
-            }}
-            activeFilterCount={statusFilter.length + healthFilter.length + (quarterFilter !== 'all' ? 1 : 0) + (searchFilter ? 1 : 0)}
-          />
-          <ViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
-        </div>
-        
-        {/* AI Insights */}
-        {insights.length > 0 && <AIInsightsBar insights={insights} />}
+        <Toolbar
+          search={searchFilter}
+          onSearchChange={setSearchFilter}
+          statusFilter={statusFilter}
+          onStatusToggle={handleStatusToggle}
+          healthFilter={healthFilter}
+          onHealthToggle={handleHealthToggle}
+          quarter={quarterFilter}
+          onQuarterChange={setQuarterFilter}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          onClearFilters={handleClearFilters}
+          activeFilterCount={activeFilterCount}
+        />
+
+        {/* Bulk Action Bar */}
+        {selected.size > 0 && (
+          <div className="mb-4 flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg animate-in slide-in-from-top-2 duration-200">
+            <span className="text-xs font-medium">{selected.size} selected</span>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 text-xs text-white hover:bg-white/15 border border-white/20"
+              onClick={() => setBulkAction('status')}
+            >
+              Change Status
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 text-xs text-white hover:bg-white/15 border border-white/20"
+              onClick={() => setBulkAction('reassign')}
+            >
+              Reassign
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 text-xs text-white hover:bg-white/15 border border-white/20"
+              onClick={() => setBulkAction('archive')}
+            >
+              Archive
+            </Button>
+            <div className="flex-1" />
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 text-xs text-white/80 hover:text-white hover:bg-white/15"
+              onClick={clear}
+            >
+              Clear
+            </Button>
+          </div>
+        )}
         
         {/* Content */}
         {isLoading ? (
-          <div className="bg-white rounded-2xl p-12 text-center">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />
+          <div className="bg-white rounded-lg border border-slate-200 p-12 text-center">
+            <Loader2 className="w-6 h-6 animate-spin mx-auto text-blue-600" />
           </div>
-        ) : enhancedReleases.length === 0 ? (
-          <ReleasesEmptyState onClearFilters={clearFilters} />
+        ) : sortedReleases.length === 0 ? (
+          <ReleasesEmptyState onClearFilters={handleClearFilters} />
         ) : viewMode === 'cards' ? (
-          <CardGridView releases={enhancedReleases} />
+          <CardGridView
+            releases={paginatedReleases}
+            selectedIds={selected}
+            onSelect={(id) => {
+              const idx = releases.findIndex(r => r.id === id);
+              toggle(id, idx, false);
+            }}
+            onReleaseClick={handleReleaseClick}
+          />
         ) : viewMode === 'table' ? (
           <ReleasesTable
             releases={releases}
@@ -308,22 +401,37 @@ export default function AllReleasesPage() {
           <ReleasesTimeline releases={releases} />
         )}
         
-        {enhancedReleases.length > 0 && (
-          <ReleasesPagination
-            page={page}
-            pageSize={pageSize}
-            total={total}
-            onPageChange={setPage}
-          />
+        {/* Pagination */}
+        {sortedReleases.length > 0 && (
+          <div className="flex items-center justify-between mt-5 text-xs text-slate-500">
+            <span>
+              Showing {showingFrom}-{showingTo} of {sortedReleases.length} releases
+            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="mr-1">Per page:</span>
+              {[6, 12, 24].map(size => (
+                <button
+                  key={size}
+                  onClick={() => { setPageSize(size); setPage(0); }}
+                  className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                    pageSize === size
+                      ? 'bg-blue-50 text-blue-600 border border-blue-200'
+                      : 'bg-white border border-slate-200 text-slate-500 hover:bg-slate-50'
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
         )}
       </main>
       
-      <ReleasesBulkActionBar
-        selectedCount={selected.size}
-        onClear={clear}
-        onChangeStatus={() => setBulkAction('status')}
-        onReassign={() => setBulkAction('reassign')}
-        onArchive={() => setBulkAction('archive')}
+      {/* AI Insights Drawer */}
+      <AIInsightsDrawer
+        isOpen={isAIDrawerOpen}
+        onClose={() => setIsAIDrawerOpen(false)}
+        insights={insights}
       />
       
       {/* Create Release Dialog */}
