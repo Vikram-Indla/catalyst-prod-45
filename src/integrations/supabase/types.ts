@@ -1331,6 +1331,90 @@ export type Database = {
           },
         ]
       }
+      dashboard_widgets: {
+        Row: {
+          config: Json
+          created_at: string | null
+          height: number | null
+          id: string
+          is_visible: boolean | null
+          position_x: number | null
+          position_y: number | null
+          project_id: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+          widget_type: string
+          width: number | null
+        }
+        Insert: {
+          config?: Json
+          created_at?: string | null
+          height?: number | null
+          id?: string
+          is_visible?: boolean | null
+          position_x?: number | null
+          position_y?: number | null
+          project_id?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+          widget_type: string
+          width?: number | null
+        }
+        Update: {
+          config?: Json
+          created_at?: string | null
+          height?: number | null
+          id?: string
+          is_visible?: boolean | null
+          position_x?: number | null
+          position_y?: number | null
+          project_id?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          widget_type?: string
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dashboard_widgets_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dashboard_widgets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "dashboard_widgets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dashboard_widgets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "dashboard_widgets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       data_access_audit: {
         Row: {
           action: string
@@ -17924,6 +18008,256 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      report_definitions: {
+        Row: {
+          config: Json
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_favorite: boolean | null
+          is_public: boolean | null
+          name: string
+          project_id: string | null
+          report_type: string
+          shared_with: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          config?: Json
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          is_public?: boolean | null
+          name: string
+          project_id?: string | null
+          report_type?: string
+          shared_with?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          config?: Json
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          is_public?: boolean | null
+          name?: string
+          project_id?: string | null
+          report_type?: string
+          shared_with?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "report_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "report_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "report_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "report_definitions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      report_schedules: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          day_of_month: number | null
+          day_of_week: number | null
+          export_format: string | null
+          frequency: Database["public"]["Enums"]["report_frequency"]
+          id: string
+          is_active: boolean | null
+          last_run_at: string | null
+          next_run_at: string | null
+          recipients: Json
+          report_id: string
+          time_of_day: string
+          timezone: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          day_of_month?: number | null
+          day_of_week?: number | null
+          export_format?: string | null
+          frequency: Database["public"]["Enums"]["report_frequency"]
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          next_run_at?: string | null
+          recipients?: Json
+          report_id: string
+          time_of_day?: string
+          timezone?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          day_of_month?: number | null
+          day_of_week?: number | null
+          export_format?: string | null
+          frequency?: Database["public"]["Enums"]["report_frequency"]
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          next_run_at?: string | null
+          recipients?: Json
+          report_id?: string
+          time_of_day?: string
+          timezone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_schedules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "report_schedules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "report_schedules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "report_schedules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "report_schedules_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "report_definitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      report_snapshots: {
+        Row: {
+          file_format: string | null
+          file_path: string | null
+          file_size: number | null
+          filters_used: Json | null
+          generated_at: string | null
+          generated_by: string | null
+          id: string
+          report_id: string
+          schedule_id: string | null
+          snapshot_data: Json
+        }
+        Insert: {
+          file_format?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          filters_used?: Json | null
+          generated_at?: string | null
+          generated_by?: string | null
+          id?: string
+          report_id: string
+          schedule_id?: string | null
+          snapshot_data: Json
+        }
+        Update: {
+          file_format?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          filters_used?: Json | null
+          generated_at?: string | null
+          generated_by?: string | null
+          id?: string
+          report_id?: string
+          schedule_id?: string | null
+          snapshot_data?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_snapshots_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "report_snapshots_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "report_snapshots_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "report_snapshots_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "report_snapshots_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "report_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "report_snapshots_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "report_schedules"
             referencedColumns: ["id"]
           },
         ]
@@ -38308,6 +38642,31 @@ export type Database = {
         Args: { p_release_id: string }
         Returns: Json
       }
+      get_report_coverage_metrics: { Args: never; Returns: Json }
+      get_report_execution_metrics: {
+        Args: {
+          p_cycle_id?: string
+          p_end_date?: string
+          p_start_date?: string
+        }
+        Returns: Json
+      }
+      get_report_execution_trend: {
+        Args: {
+          p_end_date?: string
+          p_interval?: string
+          p_start_date?: string
+        }
+        Returns: Json
+      }
+      get_report_results_by_folder: {
+        Args: { p_end_date?: string; p_start_date?: string }
+        Returns: Json
+      }
+      get_report_results_by_priority: {
+        Args: { p_end_date?: string; p_start_date?: string }
+        Returns: Json
+      }
       get_report_stats: {
         Args: never
         Returns: {
@@ -38315,6 +38674,10 @@ export type Database = {
           this_month: number
           total_reports: number
         }[]
+      }
+      get_report_tester_performance: {
+        Args: { p_end_date?: string; p_start_date?: string }
+        Returns: Json
       }
       get_requirement_tests: {
         Args: { p_requirement_id: string }
@@ -39999,6 +40362,7 @@ export type Database = {
         | "archived"
       release_vehicle_type: "program" | "team" | "portfolio"
       report_format: "pdf" | "xlsx" | "csv" | "json"
+      report_frequency: "daily" | "weekly" | "monthly"
       report_type:
         | "execution_summary"
         | "coverage_report"
@@ -40690,6 +41054,7 @@ export const Constants = {
       ],
       release_vehicle_type: ["program", "team", "portfolio"],
       report_format: ["pdf", "xlsx", "csv", "json"],
+      report_frequency: ["daily", "weekly", "monthly"],
       report_type: [
         "execution_summary",
         "coverage_report",
