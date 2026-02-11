@@ -98,3 +98,6 @@ verify_jwt = false
 
 [functions.testhub-qa-ai]
 verify_jwt = false
+
+[functions.generate-test-plan]
+verify_jwt = false
