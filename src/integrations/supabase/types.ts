@@ -30401,14 +30401,22 @@ export type Database = {
             referencedRelation: "v_tm_test_cases_full"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "tm_set_cases_test_set_id_fkey"
-            columns: ["test_set_id"]
-            isOneToOne: false
-            referencedRelation: "tm_test_sets"
-            referencedColumns: ["id"]
-          },
         ]
+      }
+      tm_set_key_sequence: {
+        Row: {
+          id: number
+          last_number: number | null
+        }
+        Insert: {
+          id?: number
+          last_number?: number | null
+        }
+        Update: {
+          id?: number
+          last_number?: number | null
+        }
+        Relationships: []
       }
       tm_signoff_templates: {
         Row: {
@@ -31794,38 +31802,130 @@ export type Database = {
           },
         ]
       }
+      tm_test_set_cases: {
+        Row: {
+          added_at: string | null
+          added_by: string | null
+          id: string
+          sort_order: number | null
+          test_case_id: string
+          test_set_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          added_by?: string | null
+          id?: string
+          sort_order?: number | null
+          test_case_id: string
+          test_set_id: string
+        }
+        Update: {
+          added_at?: string | null
+          added_by?: string | null
+          id?: string
+          sort_order?: number | null
+          test_case_id?: string
+          test_set_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_test_set_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_test_set_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_set_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_set_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_set_cases_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_set_cases_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_set_cases_test_set_id_fkey"
+            columns: ["test_set_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_sets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tm_test_sets: {
         Row: {
           created_at: string | null
           created_by: string | null
           description: string | null
+          dynamic_criteria: Json | null
           id: string
-          is_smart: boolean | null
+          is_active: boolean | null
+          membership_type: Database["public"]["Enums"]["test_set_membership_enum"]
           name: string
+          owner_id: string | null
           project_id: string
-          smart_query: Json | null
+          set_key: string
+          set_type: Database["public"]["Enums"]["test_set_type_enum"]
+          test_count: number | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           created_by?: string | null
           description?: string | null
+          dynamic_criteria?: Json | null
           id?: string
-          is_smart?: boolean | null
+          is_active?: boolean | null
+          membership_type?: Database["public"]["Enums"]["test_set_membership_enum"]
           name: string
+          owner_id?: string | null
           project_id: string
-          smart_query?: Json | null
+          set_key: string
+          set_type?: Database["public"]["Enums"]["test_set_type_enum"]
+          test_count?: number | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           created_by?: string | null
           description?: string | null
+          dynamic_criteria?: Json | null
           id?: string
-          is_smart?: boolean | null
+          is_active?: boolean | null
+          membership_type?: Database["public"]["Enums"]["test_set_membership_enum"]
           name?: string
+          owner_id?: string | null
           project_id?: string
-          smart_query?: Json | null
+          set_key?: string
+          set_type?: Database["public"]["Enums"]["test_set_type_enum"]
+          test_count?: number | null
           updated_at?: string | null
         }
         Relationships: [
@@ -31858,18 +31958,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "tm_test_sets_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: "tm_test_sets_owner_id_fkey"
+            columns: ["owner_id"]
             isOneToOne: false
-            referencedRelation: "tm_projects"
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_test_sets_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_sets_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_sets_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "tm_test_sets_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
-            referencedRelation: "v_tm_traceability_summary"
-            referencedColumns: ["project_id"]
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -38223,6 +38344,7 @@ export type Database = {
         }
         Returns: Json
       }
+      refresh_dynamic_test_set: { Args: { p_set_id: string }; Returns: Json }
       refresh_home_user_summary: {
         Args: { p_user_id: string }
         Returns: undefined
@@ -39579,6 +39701,17 @@ export type Database = {
         | "blocked"
         | "skipped"
       test_priority: "critical" | "high" | "medium" | "low"
+      test_set_membership_enum: "static" | "dynamic"
+      test_set_type_enum:
+        | "smoke"
+        | "regression"
+        | "sanity"
+        | "integration"
+        | "e2e"
+        | "performance"
+        | "security"
+        | "accessibility"
+        | "custom"
       test_status: "never_tested" | "success" | "fail"
       test_step_status: "passed" | "failed" | "blocked" | "skipped"
       test_type: "manual" | "automated" | "bdd"
@@ -40258,6 +40391,18 @@ export const Constants = {
         "skipped",
       ],
       test_priority: ["critical", "high", "medium", "low"],
+      test_set_membership_enum: ["static", "dynamic"],
+      test_set_type_enum: [
+        "smoke",
+        "regression",
+        "sanity",
+        "integration",
+        "e2e",
+        "performance",
+        "security",
+        "accessibility",
+        "custom",
+      ],
       test_status: ["never_tested", "success", "fail"],
       test_step_status: ["passed", "failed", "blocked", "skipped"],
       test_type: ["manual", "automated", "bdd"],
