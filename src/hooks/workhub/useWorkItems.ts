@@ -164,18 +164,31 @@ export function useWorkItems(
       // When fix_version_names filter is active, we need to fetch more and filter client-side
       // because PostgREST doesn't support filtering inside JSONB array elements easily
       if (hasVersionFilter) {
-        // Fetch all matching items (without pagination), filter, then paginate client-side
-        let q = supabase
-          .from('wh_issues')
-          .select('*', { count: 'exact' })
-          .order('jira_updated_at', { ascending: false });
+        // Paginated scan to collect ALL matching items, then filter by version client-side
+        const allItems: JiraIssue[] = [];
+        const batchSize = 1000;
+        let batchPage = 0;
+        let hasMore = true;
 
-        q = buildFilteredQuery(q, filters);
+        while (hasMore) {
+          const from = batchPage * batchSize;
+          const to = from + batchSize - 1;
+          let q = supabase
+            .from('wh_issues')
+            .select('*')
+            .order('jira_updated_at', { ascending: false })
+            .range(from, to);
 
-        const { data, error } = await q;
-        if (error) throw new Error(error.message);
+          q = buildFilteredQuery(q, filters);
 
-        const allItems = (data ?? []) as unknown as JiraIssue[];
+          const { data, error } = await q;
+          if (error) throw new Error(error.message);
+          if (!data || data.length === 0) break;
+          allItems.push(...(data as unknown as JiraIssue[]));
+          hasMore = data.length === batchSize;
+          batchPage++;
+        }
+
         const versionNames = new Set(filters!.fix_version_names!);
         const filtered = allItems.filter(item => {
           if (!Array.isArray(item.fix_versions) || item.fix_versions.length === 0) return false;
