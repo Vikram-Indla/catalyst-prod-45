@@ -37,6 +37,22 @@ export default function CatyAIPage() {
     if (action === 'generate') setShowGenerateModal(true);
     else if (action === 'coverage') setActiveTab('coverage');
     else if (action === 'query') setActiveTab('query');
+    else if (action === 'prioritize' && activeConvId) {
+      setActiveTab('chat');
+      sendPrioritizeMessage(activeConvId);
+    }
+  };
+
+  const sendPrioritizeMessage = async (convId: string) => {
+    // Trigger a prioritize question in the current chat
+    const sendMsg = document.querySelector<HTMLTextAreaElement>('[data-caty-input]');
+    if (sendMsg) {
+      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value')?.set;
+      nativeInputValueSetter?.call(sendMsg, 'Prioritize my test cases by risk. Which tests should I run first?');
+      sendMsg.dispatchEvent(new Event('input', { bubbles: true }));
+      // Auto-submit after a tick
+      setTimeout(() => sendMsg.form?.requestSubmit(), 100);
+    }
   };
 
   return (

@@ -49,6 +49,16 @@ export function useCreateCatyConversation() {
         .select()
         .single();
       if (error) throw new Error(error.message);
+
+      // Log conversation_started analytics
+      await (supabase as any).from('caty_analytics').insert({
+        project_id: projectId,
+        user_id: userId,
+        conversation_id: data.id,
+        event_type: 'conversation_started',
+        event_data: { conversation_type: type },
+      });
+
       return data as CatyConversation;
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['caty-conversations'] }); },

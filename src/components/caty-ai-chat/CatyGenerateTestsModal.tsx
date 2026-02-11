@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Loader2, Sparkles, FileText } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -21,6 +22,7 @@ export function CatyGenerateTestsModal({ open, onClose, projectId }: Props) {
   const { user } = useAuth();
   const { data: folders } = useFolders(projectId);
   const [inputText, setInputText] = useState('');
+  const [inputTab, setInputTab] = useState('paste');
   const [options, setOptions] = useState({ count: 5, includeNegative: true, includeEdgeCases: true, priorityFocus: 'all', folderId: '' });
   const [generatedTests, setGeneratedTests] = useState<GeneratedTestCase[] | null>(null);
   const [suggestionIds, setSuggestionIds] = useState<string[]>([]);
@@ -58,11 +60,24 @@ export function CatyGenerateTestsModal({ open, onClose, projectId }: Props) {
 
         {!generatedTests ? (
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Requirement / User Story</Label>
-              <Textarea value={inputText} onChange={(e) => setInputText(e.target.value)}
-                placeholder="Paste your requirement here...&#10;&#10;Example: As a user, I want to login with email and password..." rows={8} />
-            </div>
+            <Tabs value={inputTab} onValueChange={setInputTab} className="w-full">
+              <TabsList className="w-fit">
+                <TabsTrigger value="paste">Paste Text</TabsTrigger>
+                <TabsTrigger value="upload" disabled>Upload File</TabsTrigger>
+                <TabsTrigger value="url" disabled>From URL</TabsTrigger>
+              </TabsList>
+              <TabsContent value="paste" className="space-y-2 mt-3">
+                <Label>Requirement / User Story</Label>
+                <Textarea value={inputText} onChange={(e) => setInputText(e.target.value)}
+                  placeholder="Paste your requirement here...&#10;&#10;Example: As a user, I want to login with email and password..." rows={8} />
+              </TabsContent>
+              <TabsContent value="upload" className="mt-3">
+                <p className="text-sm text-muted-foreground">File upload coming soon.</p>
+              </TabsContent>
+              <TabsContent value="url" className="mt-3">
+                <p className="text-sm text-muted-foreground">URL import coming soon.</p>
+              </TabsContent>
+            </Tabs>
             <div className="space-y-4 pt-4 border-t border-border">
               <h3 className="font-medium text-sm">Generation Options</h3>
               <div className="grid grid-cols-2 gap-4">
@@ -103,7 +118,7 @@ export function CatyGenerateTestsModal({ open, onClose, projectId }: Props) {
             <div className="flex justify-end gap-2 pt-4">
               <Button variant="outline" onClick={handleClose}>Cancel</Button>
               <Button onClick={handleGenerate} disabled={!inputText.trim() || generateMutation.isPending}>
-                {generateMutation.isPending ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Generating...</> : <><Sparkles className="h-4 w-4 mr-2" />Generate</>}
+                {generateMutation.isPending ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Generating...</> : <><Sparkles className="h-4 w-4 mr-2" />Generate with CATY</>}
               </Button>
             </div>
           </div>
