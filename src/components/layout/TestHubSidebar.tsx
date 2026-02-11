@@ -29,6 +29,7 @@ import {
   Activity,
   Database,
   Package,
+  Shield,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
@@ -73,6 +74,7 @@ const testHubSidebarConfig: SidebarConfig = {
       items: [
         { id: 'defects', title: 'Defects', path: '/testhub/defects', icon: Bug, exact: false },
         { id: 'requirements', title: 'Requirements', path: '/testhub/requirements', icon: Target, exact: false },
+        { id: 'quality-gates', title: 'Quality Gates', path: '/testhub/releases/quality-gates', icon: Shield, exact: false },
         { id: 'coverage-matrix', title: 'Coverage Matrix', path: '/testhub/coverage-matrix', icon: LayoutGrid, exact: false },
         { id: 'traceability', title: 'Traceability', path: '/testhub/traceability', icon: GitBranch, exact: false },
       ],
