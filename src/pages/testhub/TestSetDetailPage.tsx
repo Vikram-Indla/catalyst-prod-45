@@ -5,7 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit, Plus, RefreshCw, Zap, Layers, Users, Calendar, ExternalLink, X, GripVertical, Zap as ZapIcon } from 'lucide-react';
+import { ArrowLeft, Edit, Plus, RefreshCw, Zap, Layers, Users, Calendar, ExternalLink, X, GripVertical, Clock } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useSortable } from '@dnd-kit/sortable';
@@ -158,7 +158,11 @@ export default function TestSetDetailPage() {
         </CardContent></Card>
         <Card><CardContent className="p-4 flex items-center gap-3">
           <div className="p-2 bg-muted rounded-lg"><Calendar className="h-5 w-5 text-muted-foreground" /></div>
-          <div><p className="text-lg font-medium text-foreground">{formatDistanceToNow(new Date(testSet.updated_at), { addSuffix: true })}</p><p className="text-sm text-muted-foreground">Last Updated</p></div>
+          <div>
+            <p className="text-lg font-medium text-foreground">{formatDistanceToNow(new Date(testSet.updated_at), { addSuffix: true })}</p>
+            <p className="text-sm text-muted-foreground">{testSet.membership_type === 'dynamic' ? 'Last Updated' : 'Created'}</p>
+            {testSet.membership_type === 'dynamic' && <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1"><Clock className="h-3 w-3" />Refresh anytime</p>}
+          </div>
         </CardContent></Card>
       </div>
 

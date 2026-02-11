@@ -310,3 +310,63 @@ export function useAvailableTestCases(projectId: string, excludeIds: string[], f
     enabled: !!projectId,
   });
 }
+
+export function useCreateTestCycleFromSet() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ setId, projectId }: { setId: string; projectId: string }) => {
+      // Get the test set with its cases
+      const { data: testSet, error: setError } = await supabase
+        .from('tm_test_sets' as any)
+        .select('id, name, description, set_type, test_count')
+        .eq('id', setId)
+        .single();
+      if (setError) throw new Error(setError.message);
+
+      // Get all test cases in the set
+      const { data: setCases, error: casesError } = await supabase
+        .from('tm_test_set_cases' as any)
+        .select('test_case_id')
+        .eq('test_set_id', setId)
+        .order('sort_order', { ascending: true });
+      if (casesError) throw new Error(casesError.message);
+
+      // Create a new test cycle
+      const { data: newCycle, error: cycleError } = await supabase
+        .from('th_test_cycles' as any)
+        .insert({
+          project_id: projectId,
+          name: `${(testSet as any).name} - Execution`,
+          description: (testSet as any).description,
+          status: 'draft',
+        })
+        .select()
+        .single();
+      if (cycleError) throw new Error(cycleError.message);
+
+      // Add test cases to the cycle
+      if ((setCases as any[]).length > 0) {
+        const { error: addError } = await supabase
+          .from('th_cycle_test_cases' as any)
+          .insert(
+            (setCases as any[]).map((sc, idx) => ({
+              cycle_id: (newCycle as any).id,
+              test_case_id: sc.test_case_id,
+              sort_order: idx,
+              status: 'not_executed',
+            }))
+          );
+        if (addError) throw new Error(addError.message);
+      }
+
+      return newCycle;
+    },
+    onSuccess: (cycle) => {
+      queryClient.invalidateQueries({ queryKey: ['test-sets'] });
+      toast.success(`Created cycle: ${(cycle as any).name}`);
+      // Navigate to the new cycle after a brief delay
+      setTimeout(() => window.location.href = `/testhub/cycles/${(cycle as any).id}`, 500);
+    },
+    onError: (e) => { toast.error('Failed to create cycle'); console.error(e); },
+  });
+}
