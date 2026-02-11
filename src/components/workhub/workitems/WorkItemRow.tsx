@@ -1,9 +1,16 @@
 /**
  * WorkItemRow — Single table row for a Jira issue from wh_issues
- * Supports hierarchy indent and Jira type icons
+ * Supports hierarchy indent, Lucide type icons, and mapped profile avatars
  */
 
-import { ChevronRight, ChevronDown } from 'lucide-react';
+import { useState } from 'react';
+import {
+  ChevronRight, ChevronDown,
+  Bookmark, BookOpen, Bug, CheckCircle2, Layers,
+  FileText, Settings, AlertTriangle, ListTodo, Wrench,
+  SquareCode, Zap, Shield, Plug, Milestone, CircleDot,
+  LucideIcon,
+} from 'lucide-react';
 import type { JiraIssue } from '@/hooks/workhub/useWorkItems';
 import { format } from 'date-fns';
 
@@ -13,6 +20,7 @@ interface WorkItemRowProps {
   hasChildren: boolean;
   isExpanded: boolean;
   isSelected: boolean;
+  avatarUrl?: string | null;
   onToggleExpand: () => void;
   onToggleSelect: () => void;
   onOpenDrawer: () => void;
@@ -20,9 +28,12 @@ interface WorkItemRowProps {
 
 const STATUS_COLORS: Record<string, { bg: string; fg: string }> = {
   'To Do': { bg: '#f1f5f9', fg: '#475569' },
+  'ToDo': { bg: '#f1f5f9', fg: '#475569' },
   'In Progress': { bg: '#dbeafe', fg: '#2563eb' },
+  'In Development': { bg: '#dbeafe', fg: '#2563eb' },
   'In BETA': { bg: '#e0f2fe', fg: '#0284c7' },
   'In Review': { bg: '#fef3c7', fg: '#d97706' },
+  'Technical validation': { bg: '#fef3c7', fg: '#d97706' },
   Done: { bg: '#dcfce7', fg: '#16a34a' },
   Closed: { bg: '#f0fdf4', fg: '#15803d' },
   Blocked: { bg: '#fef2f2', fg: '#dc2626' },
@@ -40,6 +51,58 @@ const PRIORITY_COLORS: Record<string, string> = {
   Lowest: '#64748b',
 };
 
+/**
+ * Map Jira issue type names to appropriate Lucide icons + colors.
+ * Covers standard Jira types + custom types found in the project.
+ */
+const TYPE_ICON_MAP: Record<string, { icon: LucideIcon; color: string }> = {
+  // Standard Jira
+  'Epic':           { icon: Bookmark,      color: '#7c3aed' },
+  'Story':          { icon: BookOpen,      color: '#16a34a' },
+  'Task':           { icon: CheckCircle2,  color: '#2563eb' },
+  'Sub-task':       { icon: ListTodo,      color: '#2563eb' },
+  'Subtask':        { icon: ListTodo,      color: '#2563eb' },
+  'Bug':            { icon: Bug,           color: '#dc2626' },
+  
+  // Custom types from this project
+  'QA Bug':         { icon: Bug,           color: '#dc2626' },
+  'Production Incident': { icon: AlertTriangle, color: '#dc2626' },
+  'Defect':         { icon: Bug,           color: '#ea580c' },
+  'BRD Task':       { icon: FileText,      color: '#0284c7' },
+  'Backend':        { icon: SquareCode,    color: '#7c3aed' },
+  'Frontend':       { icon: Layers,        color: '#2563eb' },
+  'DevOps':         { icon: Settings,      color: '#475569' },
+  'Infrastructure': { icon: Wrench,        color: '#475569' },
+  'Security':       { icon: Shield,        color: '#dc2626' },
+  'Integration':    { icon: Plug,          color: '#0d9488' },
+  'Enhancement':    { icon: Zap,           color: '#d97706' },
+  'Improvement':    { icon: Zap,           color: '#d97706' },
+  'Change Request': { icon: FileText,      color: '#6366f1' },
+  'Spike':          { icon: Zap,           color: '#8b5cf6' },
+  'Release':        { icon: Milestone,     color: '#059669' },
+};
+
+function getTypeIcon(issueType: string): { icon: LucideIcon; color: string } {
+  // Exact match first
+  if (TYPE_ICON_MAP[issueType]) return TYPE_ICON_MAP[issueType];
+  
+  // Case-insensitive match
+  const lower = issueType.toLowerCase();
+  for (const [key, val] of Object.entries(TYPE_ICON_MAP)) {
+    if (key.toLowerCase() === lower) return val;
+  }
+  
+  // Partial match for common patterns
+  if (lower.includes('bug') || lower.includes('defect')) return { icon: Bug, color: '#dc2626' };
+  if (lower.includes('epic')) return { icon: Bookmark, color: '#7c3aed' };
+  if (lower.includes('story')) return { icon: BookOpen, color: '#16a34a' };
+  if (lower.includes('task')) return { icon: CheckCircle2, color: '#2563eb' };
+  if (lower.includes('sub')) return { icon: ListTodo, color: '#2563eb' };
+  
+  // Default
+  return { icon: CircleDot, color: '#64748b' };
+}
+
 function formatDate(d: string | null) {
   if (!d) return '—';
   try { return format(new Date(d), 'dd MMM yyyy'); } catch { return '—'; }
@@ -47,11 +110,15 @@ function formatDate(d: string | null) {
 
 export function WorkItemRow({
   item, depth, hasChildren, isExpanded, isSelected,
+  avatarUrl,
   onToggleExpand, onToggleSelect, onOpenDrawer,
 }: WorkItemRowProps) {
   const statusStyle = STATUS_COLORS[item.status] || { bg: '#f1f5f9', fg: '#475569' };
   const priorityColor = PRIORITY_COLORS[item.priority] || '#64748b';
   const indentPx = depth * 24;
+  const typeIcon = getTypeIcon(item.issue_type);
+  const TypeIconComponent = typeIcon.icon;
+  const [imgError, setImgError] = useState(false);
 
   return (
     <div
@@ -95,23 +162,12 @@ export function WorkItemRow({
           <span className="w-4 shrink-0" />
         )}
 
-        {/* Jira type icon */}
-        {item.type_icon_url ? (
-          <img
-            src={item.type_icon_url}
-            alt={item.issue_type}
-            className="w-4 h-4 shrink-0"
-            title={item.issue_type}
-          />
-        ) : (
-          <span
-            className="w-4 h-4 rounded-sm shrink-0 flex items-center justify-center text-[8px] font-bold"
-            style={{ backgroundColor: '#e2e8f0', color: '#475569' }}
-            title={item.issue_type}
-          >
-            {item.issue_type[0]}
-          </span>
-        )}
+        {/* Lucide type icon */}
+        <TypeIconComponent
+          className="w-4 h-4 shrink-0"
+          style={{ color: typeIcon.color }}
+          strokeWidth={1.8}
+        />
 
         {/* Issue key */}
         <span
@@ -143,16 +199,25 @@ export function WorkItemRow({
         </span>
       </div>
 
-      {/* 5. Assignee */}
+      {/* 5. Assignee — mapped profile avatar with fallback */}
       <div className="flex items-center gap-1 min-w-0">
         {item.assignee_display_name ? (
           <>
-            <span
-              className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0"
-              style={{ backgroundColor: '#6366f1' }}
-            >
-              {item.assignee_display_name[0]?.toUpperCase()}
-            </span>
+            {avatarUrl && !imgError ? (
+              <img
+                src={avatarUrl}
+                alt={item.assignee_display_name}
+                className="w-5 h-5 rounded-full shrink-0 object-cover"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <span
+                className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0"
+                style={{ backgroundColor: '#6366f1' }}
+              >
+                {item.assignee_display_name[0]?.toUpperCase()}
+              </span>
+            )}
             <span className="text-[11px] truncate" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>
               {item.assignee_display_name.split(' ').slice(0, 2).join(' ')}
             </span>
