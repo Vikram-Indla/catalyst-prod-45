@@ -1,7 +1,9 @@
 /**
  * useCommandCenter — Data hooks for TestHub Command Center (Group 16)
+ * Migrated to TanStack React Query for caching, auto-refresh, and error handling.
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 // ── KPIs ──────────────────────────────────────────────────
@@ -16,28 +18,70 @@ export interface CommandCenterKPIs {
   active_testers: number;
 }
 
+export interface KPITrend {
+  direction: 'up' | 'down' | 'flat';
+  delta: number;
+}
+
+export interface KPIsWithTrends {
+  current: CommandCenterKPIs;
+  trends: {
+    active_releases: KPITrend;
+    pass_rate: KPITrend;
+    exec_rate: KPITrend;
+    open_defects: KPITrend;
+    critical_defects: KPITrend;
+    active_testers: KPITrend;
+  };
+}
+
+function calcTrend(current: number, previous: number): KPITrend {
+  const delta = current - previous;
+  return {
+    direction: delta > 0 ? 'up' : delta < 0 ? 'down' : 'flat',
+    delta: Math.abs(delta),
+  };
+}
+
+function calcRateTrend(curNum: number, curDen: number, prevNum: number, prevDen: number): KPITrend {
+  const curRate = curDen > 0 ? Math.round((curNum / curDen) * 100) : 0;
+  const prevRate = prevDen > 0 ? Math.round((prevNum / prevDen) * 100) : 0;
+  const delta = curRate - prevRate;
+  return {
+    direction: delta > 0 ? 'up' : delta < 0 ? 'down' : 'flat',
+    delta: Math.abs(delta),
+  };
+}
+
 export function useCommandCenterKPIs(projectId: string) {
-  const [data, setData] = useState<CommandCenterKPIs | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  return useQuery<KPIsWithTrends | null>({
+    queryKey: ['command-center-kpis', projectId],
+    queryFn: async () => {
+      const [currentRes, prevRes] = await Promise.all([
+        supabase.rpc('get_command_center_kpis', { p_project_id: projectId }),
+        supabase.rpc('get_command_center_kpis_previous', { p_project_id: projectId }),
+      ]);
+      if (currentRes.error) throw new Error(currentRes.error.message);
+      if (prevRes.error) throw new Error(prevRes.error.message);
 
-  const fetch = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const { data: result, error } = await supabase.rpc('get_command_center_kpis', {
-        p_project_id: projectId,
-      });
-      if (error) throw new Error(error.message);
-      setData(result as any);
-    } catch (err) {
-      console.error('KPI fetch error:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [projectId]);
+      const current = currentRes.data as unknown as CommandCenterKPIs;
+      const prev = prevRes.data as unknown as CommandCenterKPIs;
 
-  useEffect(() => { fetch(); }, [fetch]);
-
-  return { data, isLoading, refetch: fetch };
+      return {
+        current,
+        trends: {
+          active_releases: calcTrend(current.active_releases, prev.active_releases),
+          pass_rate: calcRateTrend(current.passed_test_cases, current.executed_test_cases, prev.passed_test_cases, prev.executed_test_cases),
+          exec_rate: calcRateTrend(current.executed_test_cases, current.total_test_cases, prev.executed_test_cases, prev.total_test_cases),
+          open_defects: calcTrend(current.open_defects, prev.open_defects),
+          critical_defects: calcTrend(current.critical_defects, prev.critical_defects),
+          active_testers: calcTrend(current.active_testers, prev.active_testers),
+        },
+      };
+    },
+    refetchInterval: 30000, // Auto-refresh every 30s
+    staleTime: 15000,
+  });
 }
 
 // ── Release Health Grid ───────────────────────────────────
@@ -59,31 +103,23 @@ export interface ReleaseHealthItem {
 }
 
 export function useReleaseHealthGrid(projectId: string) {
-  const [releases, setReleases] = useState<ReleaseHealthItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const query = useQuery<ReleaseHealthItem[]>({
+    queryKey: ['release-health-grid', projectId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('releases')
+        .select('id, name, version, status, health, test_cases_total, test_cases_passed, test_cases_executed, test_cases_failed, defects_open, critical_defects, target_date, progress, vehicle:release_vehicles(name)')
+        .eq('project_id', projectId)
+        .not('status', 'in', '("released","archived")')
+        .order('health', { ascending: true });
+      if (error) throw new Error(error.message);
+      return (data as any[]) || [];
+    },
+    refetchInterval: 30000,
+    staleTime: 15000,
+  });
 
-  useEffect(() => {
-    const fetch = async () => {
-      setIsLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('releases')
-          .select('id, name, version, status, health, test_cases_total, test_cases_passed, test_cases_executed, test_cases_failed, defects_open, critical_defects, target_date, progress, vehicle:release_vehicles(name)')
-          .eq('project_id', projectId)
-          .not('status', 'in', '("released","archived")')
-          .order('health', { ascending: true });
-        if (error) throw new Error(error.message);
-        setReleases((data as any[]) || []);
-      } catch (err) {
-        console.error('Health grid error:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetch();
-  }, [projectId]);
-
-  return { releases, isLoading };
+  return { releases: query.data || [], isLoading: query.isLoading, error: query.error };
 }
 
 // ── Defect Trends ─────────────────────────────────────────
@@ -94,29 +130,19 @@ export interface DefectTrendPoint {
 }
 
 export function useDefectTrends(projectId: string, days: number = 7) {
-  const [data, setData] = useState<DefectTrendPoint[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetch = async () => {
-      setIsLoading(true);
-      try {
-        const { data: result, error } = await supabase.rpc('get_cc_defect_trends', {
-          p_project_id: projectId,
-          p_days: days,
-        });
-        if (error) throw new Error(error.message);
-        setData((result as any[]) || []);
-      } catch (err) {
-        console.error('Defect trends error:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetch();
-  }, [projectId, days]);
-
-  return { data, isLoading };
+  return useQuery<DefectTrendPoint[]>({
+    queryKey: ['defect-trends', projectId, days],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_cc_defect_trends', {
+        p_project_id: projectId,
+        p_days: days,
+      });
+      if (error) throw new Error(error.message);
+      return (data as any[]) || [];
+    },
+    refetchInterval: 60000,
+    staleTime: 30000,
+  });
 }
 
 // ── Team Performance ──────────────────────────────────────
@@ -130,28 +156,18 @@ export interface TeamMember {
 }
 
 export function useTeamPerformance(projectId: string) {
-  const [data, setData] = useState<TeamMember[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetch = async () => {
-      setIsLoading(true);
-      try {
-        const { data: result, error } = await supabase.rpc('get_cc_team_performance', {
-          p_project_id: projectId,
-        });
-        if (error) throw new Error(error.message);
-        setData((result as any[]) || []);
-      } catch (err) {
-        console.error('Team performance error:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetch();
-  }, [projectId]);
-
-  return { data, isLoading };
+  return useQuery<TeamMember[]>({
+    queryKey: ['team-performance', projectId],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_cc_team_performance', {
+        p_project_id: projectId,
+      });
+      if (error) throw new Error(error.message);
+      return (data as any[]) || [];
+    },
+    refetchInterval: 60000,
+    staleTime: 30000,
+  });
 }
 
 // ── Upcoming Milestones ───────────────────────────────────
@@ -166,42 +182,30 @@ export interface UpcomingMilestone {
 }
 
 export function useUpcomingMilestones(projectId: string) {
-  const [data, setData] = useState<UpcomingMilestone[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetch = async () => {
-      setIsLoading(true);
-      try {
-        const { data: milestones, error } = await supabase
-          .from('milestones')
-          .select('id, title, milestone_type, end_date, state, release:releases(name, version)')
-          .not('release_id', 'is', null)
-          .not('state', 'eq', 'completed')
-          .order('end_date', { ascending: true })
-          .limit(10);
-        if (error) throw new Error(error.message);
-        setData(
-          (milestones as any[] || []).map((m: any) => ({
-            id: m.id,
-            title: m.title,
-            milestone_type: m.milestone_type,
-            target_date: m.end_date,
-            state: m.state || 'pending',
-            release_name: m.release?.name || null,
-            release_version: m.release?.version || null,
-          }))
-        );
-      } catch (err) {
-        console.error('Milestones error:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetch();
-  }, [projectId]);
-
-  return { data, isLoading };
+  return useQuery<UpcomingMilestone[]>({
+    queryKey: ['upcoming-milestones', projectId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('milestones')
+        .select('id, title, milestone_type, end_date, state, release:releases(name, version)')
+        .not('release_id', 'is', null)
+        .not('state', 'eq', 'completed')
+        .order('end_date', { ascending: true })
+        .limit(10);
+      if (error) throw new Error(error.message);
+      return (data as any[] || []).map((m: any) => ({
+        id: m.id,
+        title: m.title,
+        milestone_type: m.milestone_type,
+        target_date: m.end_date,
+        state: m.state || 'pending',
+        release_name: m.release?.name || null,
+        release_version: m.release?.version || null,
+      }));
+    },
+    refetchInterval: 60000,
+    staleTime: 30000,
+  });
 }
 
 // ── Activity Feed (Realtime) ──────────────────────────────

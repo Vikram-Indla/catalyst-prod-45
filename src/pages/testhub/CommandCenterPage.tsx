@@ -8,7 +8,7 @@ import {
   Activity, BarChart3, Package, CheckCircle2, XCircle,
   AlertTriangle, Users, TrendingUp, TrendingDown, Minus,
   Calendar, Clock, Pause, Play, Shield, Bug, Target,
-  Flag, Zap, ChevronRight,
+  Flag, Zap, ChevronRight, RefreshCw,
 } from 'lucide-react';
 import {
   useCommandCenterKPIs,
@@ -17,6 +17,7 @@ import {
   useTeamPerformance,
   useUpcomingMilestones,
   useActivityFeed,
+  type KPITrend,
   type DefectTrendPoint,
 } from '@/hooks/testhub/useCommandCenter';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -32,14 +33,17 @@ export default function CommandCenterPage() {
   const [searchParams] = useSearchParams();
   const projectId = searchParams.get('projectId') || PROJECT_ID;
 
-  const { data: kpis, isLoading: kpisLoading } = useCommandCenterKPIs(projectId);
-  const { releases, isLoading: healthLoading } = useReleaseHealthGrid(projectId);
+  const { data: kpiData, isLoading: kpisLoading, error: kpisError } = useCommandCenterKPIs(projectId);
+  const { releases, isLoading: healthLoading, error: healthError } = useReleaseHealthGrid(projectId);
   const [trendDays, setTrendDays] = useState(7);
-  const { data: trends, isLoading: trendsLoading } = useDefectTrends(projectId, trendDays);
-  const { data: team, isLoading: teamLoading } = useTeamPerformance(projectId);
-  const { data: milestones, isLoading: milestonesLoading } = useUpcomingMilestones(projectId);
+  const { data: trends, isLoading: trendsLoading, error: trendsError } = useDefectTrends(projectId, trendDays);
+  const { data: team, isLoading: teamLoading, error: teamError } = useTeamPerformance(projectId);
+  const { data: milestones, isLoading: milestonesLoading, error: milestonesError } = useUpcomingMilestones(projectId);
   const [feedPaused, setFeedPaused] = useState(false);
   const { items: activityItems, isLoading: activityLoading } = useActivityFeed(projectId, feedPaused);
+
+  const kpis = kpiData?.current ?? null;
+  const trends_ = kpiData?.trends;
 
   const execRate = kpis && kpis.total_test_cases > 0
     ? Math.round((kpis.executed_test_cases / kpis.total_test_cases) * 100)
@@ -80,8 +84,11 @@ export default function CommandCenterPage() {
           </p>
         </div>
         <span className="text-xs text-muted-foreground flex items-center gap-1.5">
-          <Activity className="w-3 h-3" />
-          Live
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-chart-2 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-chart-2" />
+          </span>
+          Live · Auto-refresh 30s
         </span>
       </div>
 
@@ -92,42 +99,68 @@ export default function CommandCenterPage() {
           value={kpis?.active_releases ?? 0}
           icon={Package}
           loading={kpisLoading}
+          error={!!kpisError}
           color="primary"
+          trend={trends_?.active_releases}
+          trendSuffix=""
+          onClick={() => navigate('/testhub/releases')}
         />
         <KPICard
           label="Pass Rate"
           value={`${passRate}%`}
           icon={CheckCircle2}
           loading={kpisLoading}
+          error={!!kpisError}
           color={passRate >= 80 ? 'success' : passRate >= 60 ? 'warning' : 'danger'}
+          trend={trends_?.pass_rate}
+          trendSuffix="%"
+          onClick={() => navigate('/testhub/releases')}
         />
         <KPICard
           label="Execution Rate"
           value={`${execRate}%`}
           icon={Target}
           loading={kpisLoading}
+          error={!!kpisError}
           color={execRate >= 70 ? 'success' : 'warning'}
+          trend={trends_?.exec_rate}
+          trendSuffix="%"
+          onClick={() => navigate('/testhub/execution-hub')}
         />
         <KPICard
           label="Open Defects"
           value={kpis?.open_defects ?? 0}
           icon={Bug}
           loading={kpisLoading}
+          error={!!kpisError}
           color={(kpis?.open_defects ?? 0) > 20 ? 'danger' : 'muted'}
+          trend={trends_?.open_defects}
+          trendSuffix=""
+          invertTrend
+          onClick={() => navigate('/testhub/defects')}
         />
         <KPICard
           label="Critical Blockers"
           value={kpis?.critical_defects ?? 0}
           icon={AlertTriangle}
           loading={kpisLoading}
+          error={!!kpisError}
           color={(kpis?.critical_defects ?? 0) > 0 ? 'danger' : 'success'}
+          trend={trends_?.critical_defects}
+          trendSuffix=""
+          invertTrend
+          onClick={() => navigate('/testhub/defects')}
         />
         <KPICard
           label="Active Testers"
           value={kpis?.active_testers ?? 0}
           icon={Users}
           loading={kpisLoading}
+          error={!!kpisError}
           color="primary"
+          trend={trends_?.active_testers}
+          trendSuffix=""
+          onClick={() => navigate('/testhub/releases/command-center')}
         />
       </div>
 
@@ -136,7 +169,9 @@ export default function CommandCenterPage() {
         {/* Health Donut */}
         <div className="bg-card border border-border rounded-xl p-5">
           <h3 className="text-sm font-semibold text-foreground mb-4">Release Health</h3>
-          {healthLoading ? (
+          {healthError ? (
+            <ErrorPanel message="Failed to load release health" />
+          ) : healthLoading ? (
             <div className="h-48 flex items-center justify-center text-muted-foreground text-sm">Loading...</div>
           ) : releases.length === 0 ? (
             <div className="h-48 flex items-center justify-center text-muted-foreground text-sm">No active releases</div>
@@ -191,7 +226,9 @@ export default function CommandCenterPage() {
               ))}
             </div>
           </div>
-          {trendsLoading ? (
+          {trendsError ? (
+            <ErrorPanel message="Failed to load defect trends" />
+          ) : trendsLoading ? (
             <div className="h-48 flex items-center justify-center text-muted-foreground text-sm">Loading...</div>
           ) : (
             <div className="h-48">
@@ -301,35 +338,40 @@ export default function CommandCenterPage() {
             <Users className="w-4 h-4 text-primary" />
             Team Performance
           </h3>
-          {teamLoading ? (
+          {teamError ? (
+            <ErrorPanel message="Failed to load team data" />
+          ) : teamLoading ? (
             <div className="text-sm text-muted-foreground">Loading...</div>
-          ) : team.length === 0 ? (
+          ) : (team ?? []).length === 0 ? (
             <div className="text-center py-8 text-muted-foreground text-sm">
               <Users className="w-8 h-8 mx-auto mb-2 opacity-30" />
               No team data for this period
             </div>
           ) : (
             <div className="space-y-3 max-h-72 overflow-y-auto">
-              {team.map((member, idx) => (
-                <div key={member.id} className="flex items-center gap-3">
-                  <span className="w-5 text-xs font-bold text-muted-foreground text-right">
-                    {idx + 1}.
-                  </span>
-                  {member.avatar_url ? (
-                    <img src={member.avatar_url} alt="" className="w-7 h-7 rounded-full object-cover" />
-                  ) : (
-                    <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-xs font-semibold text-muted-foreground">
-                      {member.name?.charAt(0) || '?'}
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-foreground truncate">{member.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {member.tests_executed} tests · {member.pass_rate}% pass rate
+              {(team ?? []).map((member, idx) => {
+                const medalColors = ['text-chart-4', 'text-muted-foreground', 'text-chart-4/60'];
+                return (
+                  <div key={member.id} className="flex items-center gap-3">
+                    <span className={`w-5 text-xs font-bold text-right ${idx < 3 ? medalColors[idx] || '' : 'text-muted-foreground'}`}>
+                      {idx + 1}.
+                    </span>
+                    {member.avatar_url ? (
+                      <img src={member.avatar_url} alt="" className="w-7 h-7 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-xs font-semibold text-muted-foreground">
+                        {member.name?.charAt(0) || '?'}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-foreground truncate">{member.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {member.tests_executed} tests · {member.pass_rate}% pass rate
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -340,16 +382,18 @@ export default function CommandCenterPage() {
             <Flag className="w-4 h-4 text-primary" />
             Upcoming Milestones
           </h3>
-          {milestonesLoading ? (
+          {milestonesError ? (
+            <ErrorPanel message="Failed to load milestones" />
+          ) : milestonesLoading ? (
             <div className="text-sm text-muted-foreground">Loading...</div>
-          ) : milestones.length === 0 ? (
+          ) : (milestones ?? []).length === 0 ? (
             <div className="text-center py-8 text-muted-foreground text-sm">
               <Flag className="w-8 h-8 mx-auto mb-2 opacity-30" />
               No upcoming milestones
             </div>
           ) : (
             <div className="space-y-3 max-h-72 overflow-y-auto">
-              {milestones.map(ms => {
+              {(milestones ?? []).map(ms => {
                 const daysLeft = ms.target_date
                   ? Math.ceil((new Date(ms.target_date).getTime() - Date.now()) / 86400000)
                   : null;
@@ -396,22 +440,76 @@ const COLOR_MAP: Record<string, string> = {
   muted: 'text-foreground',
 };
 
-function KPICard({ label, value, icon: Icon, loading, color }: {
+const TREND_COLORS = {
+  positive: 'text-chart-2',
+  negative: 'text-destructive',
+  flat: 'text-muted-foreground',
+};
+
+function KPICard({ label, value, icon: Icon, loading, error, color, trend, trendSuffix = '', invertTrend = false, onClick }: {
   label: string;
   value: number | string;
   icon: any;
   loading: boolean;
+  error: boolean;
   color: string;
+  trend?: KPITrend;
+  trendSuffix?: string;
+  invertTrend?: boolean;
+  onClick?: () => void;
 }) {
+  const getTrendColor = () => {
+    if (!trend || trend.direction === 'flat') return TREND_COLORS.flat;
+    const isPositive = invertTrend
+      ? trend.direction === 'down'
+      : trend.direction === 'up';
+    return isPositive ? TREND_COLORS.positive : TREND_COLORS.negative;
+  };
+
+  const TrendIcon = !trend || trend.direction === 'flat'
+    ? Minus
+    : trend.direction === 'up'
+    ? TrendingUp
+    : TrendingDown;
+
   return (
-    <div className="bg-card border border-border rounded-xl p-4">
+    <div
+      onClick={onClick}
+      className={`bg-card border border-border rounded-xl p-4 transition-all ${
+        onClick ? 'cursor-pointer hover:shadow-md hover:border-primary/30' : ''
+      }`}
+    >
       <div className="flex items-center gap-2 mb-2">
         <Icon className={`w-4 h-4 ${COLOR_MAP[color] || 'text-muted-foreground'}`} />
         <span className="text-xs font-medium text-muted-foreground">{label}</span>
       </div>
-      <div className={`text-2xl font-bold tabular-nums ${COLOR_MAP[color] || ''}`}>
-        {loading ? '—' : value}
-      </div>
+      {error ? (
+        <div className="text-sm text-destructive font-medium">Error</div>
+      ) : (
+        <>
+          <div className={`text-2xl font-bold tabular-nums ${COLOR_MAP[color] || ''}`}>
+            {loading ? '—' : value}
+          </div>
+          {trend && !loading && (
+            <div className={`flex items-center gap-1 mt-1 text-xs font-medium ${getTrendColor()}`}>
+              <TrendIcon className="w-3 h-3" />
+              <span>
+                {trend.direction === 'flat' ? 'No change' : `${trend.delta}${trendSuffix}`}
+              </span>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function ErrorPanel({ message }: { message: string }) {
+  return (
+    <div className="h-48 flex flex-col items-center justify-center gap-2">
+      <AlertTriangle className="w-8 h-8 text-destructive opacity-40" />
+      <p className="text-sm text-destructive">{message}</p>
+      <p className="text-xs text-muted-foreground">Data will retry automatically</p>
     </div>
   );
 }
