@@ -211,21 +211,20 @@ export function Toolbar({
       </DropdownMenu>
 
       {/* View Toggle */}
-      <div className="inline-flex items-center bg-slate-100 rounded-md p-0.5">
+      <div className="flex border border-slate-200 rounded-md overflow-hidden">
         {views.map(({ mode, icon, label }) => (
           <button
             key={mode}
             onClick={() => onViewModeChange(mode)}
             className={cn(
-              "flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-medium transition-all",
+              "w-[34px] h-[34px] flex items-center justify-center border-r border-slate-200 last:border-r-0 transition-colors",
               viewMode === mode
-                ? "bg-blue-50 text-blue-600 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
+                ? "bg-blue-50 text-blue-600"
+                : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"
             )}
             title={label}
           >
             {icon}
-            <span className="hidden lg:inline">{label}</span>
           </button>
         ))}
       </div>

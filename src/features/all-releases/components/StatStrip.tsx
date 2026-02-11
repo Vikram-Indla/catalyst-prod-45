@@ -58,7 +58,7 @@ export function StatStrip({ summary, activeFilter, onFilterClick, aiInsightCount
   ];
 
   return (
-    <div className="flex items-center bg-white border border-slate-200 rounded-lg overflow-hidden mb-4" style={{ height: '44px' }}>
+    <div className="flex items-center bg-white border border-slate-200 rounded-lg overflow-hidden mb-4 h-[44px]">
       {items.map((item) => (
         <StatItem
           key={item.key}
@@ -74,11 +74,11 @@ export function StatStrip({ summary, activeFilter, onFilterClick, aiInsightCount
       {aiInsightCount > 0 && (
         <button
           onClick={onAIInsightClick}
-          className="ml-auto flex items-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 transition-colors"
+          className="ml-auto flex items-center gap-1.5 px-3.5 py-1.5 bg-red-50 hover:bg-red-100 border-l border-slate-200 transition-colors h-full"
         >
           <AlertCircle className="w-3.5 h-3.5 text-red-500" strokeWidth={2} />
-          <span className="text-xs font-medium text-red-600">AI Insights</span>
-          <span className="px-1.5 py-0.5 text-[10px] font-bold text-red-600 bg-white border border-red-200 rounded-full min-w-[20px] text-center">
+          <span className="text-xs font-medium text-red-500">AI Insights</span>
+          <span className="px-1.5 py-0.5 text-[10px] font-bold text-red-500 bg-white border border-red-200 rounded-full min-w-[18px] text-center">
             {aiInsightCount}
           </span>
         </button>

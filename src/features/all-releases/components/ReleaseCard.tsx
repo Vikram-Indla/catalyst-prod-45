@@ -1,11 +1,6 @@
 /**
  * ReleaseCard — Enterprise Redesign
  * 5-row compressed layout (~148px height)
- * Row 1: Identity + Badge
- * Row 2: Proportional Health Bar + Score
- * Row 3: Status + Date + Days Left + Owner
- * Row 4: Environment Progression
- * Row 5: Gates + Tests + Defects
  */
 
 import { Calendar, User2, Shield, TestTube2, Bug } from 'lucide-react';
@@ -21,7 +16,6 @@ interface ReleaseCardProps {
   onClick?: () => void;
 }
 
-// Derive release type from version string
 function inferReleaseType(version: string): 'major' | 'minor' | 'patch' | 'hotfix' {
   const parts = version.replace('v', '').split('.');
   if (parts.length < 3) return 'major';
@@ -32,7 +26,6 @@ function inferReleaseType(version: string): 'major' | 'minor' | 'patch' | 'hotfi
   return 'major';
 }
 
-// Derive environment progression from status
 function getEnvProgression(status: string): boolean[] {
   switch (status) {
     case 'released': return [true, true, true, true];
@@ -89,11 +82,8 @@ export function ReleaseCard({ release, isSelected = false, onSelect, onClick }: 
     if (e.key === ' ') { e.preventDefault(); onSelect?.(release.id); }
   };
 
-  // Gate color
   const gateRatio = release.metrics.totalGates > 0 ? release.metrics.passingGates / release.metrics.totalGates : 1;
   const gateDotColor = gateRatio < 0.5 ? 'bg-red-500' : gateRatio < 0.8 ? 'bg-yellow-500' : 'bg-emerald-500';
-
-  // Days left badge color
   const daysColor = daysRemaining < 0 ? 'bg-red-100 text-red-700' : daysRemaining <= 14 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500';
 
   return (
@@ -112,14 +102,14 @@ export function ReleaseCard({ release, isSelected = false, onSelect, onClick }: 
           : "border-slate-200"
       )}
     >
-      <div className="p-3 space-y-2">
-        {/* Row 1: Identity + Badge */}
-        <div className="flex items-center gap-2 h-7">
-          {/* Checkbox */}
+      {/* Rows 1-4: 16px padding, 8px gaps */}
+      <div className="px-4 pt-4 pb-3 flex flex-col gap-2">
+        {/* Row 1: Identity + Badge — 28px */}
+        <div className="flex items-center gap-1.5 h-7">
           <div
             onClick={handleCheckbox}
             className={cn(
-              "w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-opacity cursor-pointer",
+              "w-5 h-5 rounded border-[1.5px] flex items-center justify-center flex-shrink-0 transition-opacity cursor-pointer",
               isSelected
                 ? "border-blue-600 bg-blue-600 opacity-100"
                 : "border-slate-300 opacity-0 group-hover:opacity-100"
@@ -131,18 +121,17 @@ export function ReleaseCard({ release, isSelected = false, onSelect, onClick }: 
               </svg>
             )}
           </div>
-          
           <span className="text-sm font-bold text-slate-900">{release.version}</span>
-          <span className={cn("px-1.5 py-0.5 text-[10px] font-semibold uppercase rounded", TYPE_STYLES[type])}>
+          <span className={cn("px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide rounded-sm leading-none", TYPE_STYLES[type])}>
             {type}
           </span>
           <span className="text-[13px] text-slate-500 truncate flex-1">{release.name}</span>
-          <span className={cn("px-2 py-0.5 text-[11px] font-medium rounded-full flex-shrink-0", HEALTH_BADGE_STYLES[release.healthLevel])}>
+          <span className={cn("px-2 py-0.5 text-[11px] font-semibold rounded-full flex-shrink-0 leading-none", HEALTH_BADGE_STYLES[release.healthLevel])}>
             {healthLabel}
           </span>
         </div>
 
-        {/* Row 2: Health Bar */}
+        {/* Row 2: Health Bar — 22px */}
         <div className="flex items-center gap-2 h-[22px]">
           <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
             <div
@@ -155,9 +144,9 @@ export function ReleaseCard({ release, isSelected = false, onSelect, onClick }: 
           </span>
         </div>
 
-        {/* Row 3: Status + Date + DaysLeft + Owner */}
-        <div className="flex items-center gap-2 h-6 text-[11px]">
-          <span className={cn("inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium", statusCfg.bg)}>
+        {/* Row 3: Status + Date + DaysLeft + Owner — 24px, with bottom border */}
+        <div className="flex items-center gap-2 h-6 text-[11px] pb-2 border-b border-slate-100">
+          <span className={cn("inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium leading-none", statusCfg.bg)}>
             <span className={cn("w-1.5 h-1.5 rounded-full", statusCfg.dot)} />
             {statusCfg.label}
           </span>
@@ -166,25 +155,23 @@ export function ReleaseCard({ release, isSelected = false, onSelect, onClick }: 
             <span>{format(new Date(release.plannedDate), 'MMM d, yyyy')}</span>
           </div>
           {release.status !== 'released' && release.status !== 'cancelled' && (
-            <span className={cn("px-1.5 py-0.5 rounded text-[10px] font-medium", daysColor)}>
+            <span className={cn("px-1.5 py-0.5 rounded text-[10px] font-medium leading-none", daysColor)}>
               {daysRemaining < 0 ? `${Math.abs(daysRemaining)}d overdue` : `${daysRemaining}d`}
             </span>
           )}
           <div className="ml-auto flex items-center gap-1">
             {release.releaseManager ? (
-              <>
-                <div className="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-semibold text-slate-600">
-                  {release.releaseManager.full_name.charAt(0)}
-                </div>
-              </>
+              <div className="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-semibold text-slate-600">
+                {release.releaseManager.full_name.charAt(0)}
+              </div>
             ) : (
               <span className="text-[11px] italic text-amber-600">Unassigned</span>
             )}
           </div>
         </div>
 
-        {/* Row 4: Environment Progression */}
-        <div className="flex items-center gap-0 h-5">
+        {/* Row 4: Environment Progression — 20px */}
+        <div className="flex items-center gap-1 h-5">
           {ENV_LABELS.map((label, idx) => {
             const isComplete = envProgress[idx];
             const isCurrent = envProgress[idx] && (idx === ENV_LABELS.length - 1 || !envProgress[idx + 1]);
@@ -192,18 +179,18 @@ export function ReleaseCard({ release, isSelected = false, onSelect, onClick }: 
               <div key={label} className="flex items-center">
                 {idx > 0 && (
                   <div className={cn(
-                    "w-3 h-px",
+                    "w-3 h-[1.5px]",
                     envProgress[idx - 1] && envProgress[idx] ? "bg-emerald-500" : "bg-slate-300"
                   )} />
                 )}
                 <div className="flex items-center gap-1">
                   <div className={cn(
-                    "w-2 h-2 rounded-full border",
+                    "w-[7px] h-[7px] rounded-full",
                     isComplete
                       ? isCurrent
-                        ? "bg-blue-600 border-blue-600"
-                        : "bg-emerald-500 border-emerald-500"
-                      : "bg-white border-slate-300"
+                        ? "bg-blue-600 border border-blue-600"
+                        : "bg-emerald-500 border border-emerald-500"
+                      : "border-[1.5px] border-slate-300 bg-white"
                   )} />
                   <span className={cn(
                     "text-[10px] font-medium",
@@ -220,45 +207,34 @@ export function ReleaseCard({ release, isSelected = false, onSelect, onClick }: 
         </div>
       </div>
 
-      {/* Row 5: Metrics */}
-      <div className="border-t border-slate-100 px-3 py-2 grid grid-cols-3 gap-0">
+      {/* Row 5: Metrics — 28px, flush bottom */}
+      <div className="border-t border-slate-100 px-4 py-1.5 grid grid-cols-3 gap-0">
         <div className="text-center border-r border-slate-100">
-          <div className="flex items-center justify-center gap-1">
-            <span className={cn("w-1.5 h-1.5 rounded-full", gateDotColor)} />
-            <span className="text-xs font-semibold text-slate-700">
+          <div className="flex items-center justify-center gap-0.5">
+            <span className={cn("w-1.5 h-1.5 rounded-full inline-block", gateDotColor)} />
+            <span className="text-[13px] font-semibold text-slate-700">
               {release.metrics.passingGates}/{release.metrics.totalGates}
             </span>
           </div>
-          <div className="flex items-center justify-center gap-1 mt-0.5">
-            <Shield className="w-3 h-3 text-slate-400" />
-            <span className="text-[10px] text-slate-400">Gates</span>
-          </div>
+          <div className="text-[10px] text-slate-400 mt-0.5">Gates</div>
         </div>
-        
         <div className="text-center border-r border-slate-100">
           <span className={cn(
-            "text-xs font-semibold",
+            "text-[13px] font-semibold",
             release.metrics.totalTests === 0 ? "text-slate-400" : release.metrics.passRate < 90 ? "text-amber-600" : "text-emerald-600"
           )}>
             {release.metrics.totalTests === 0 ? 'No runs' : `${Math.round(release.metrics.passRate)}%`}
           </span>
-          <div className="flex items-center justify-center gap-1 mt-0.5">
-            <TestTube2 className="w-3 h-3 text-slate-400" />
-            <span className="text-[10px] text-slate-400">Tests</span>
-          </div>
+          <div className="text-[10px] text-slate-400 mt-0.5">Tests</div>
         </div>
-        
         <div className="text-center">
           <span className={cn(
-            "text-xs font-semibold",
+            "text-[13px] font-semibold",
             release.metrics.openDefects > 0 ? "text-red-600" : "text-slate-600"
           )}>
             {release.metrics.openDefects}
           </span>
-          <div className="flex items-center justify-center gap-1 mt-0.5">
-            <Bug className="w-3 h-3 text-slate-400" />
-            <span className="text-[10px] text-slate-400">Defects</span>
-          </div>
+          <div className="text-[10px] text-slate-400 mt-0.5">Defects</div>
         </div>
       </div>
     </div>
