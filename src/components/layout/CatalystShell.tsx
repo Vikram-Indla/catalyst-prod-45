@@ -87,6 +87,9 @@ function CatalystShellContent() {
   // Check if on TestHub route
   const isTestHubRoute = location.pathname.startsWith('/testhub');
 
+  // Check if on WorkHub route (v4.5)
+  const isWorkHubRoute = location.pathname.startsWith('/workhub');
+
   // Prevent full document reloads caused by accidental <a href="/..."> navigation.
   // IMPORTANT: In Preview, the URL contains special query params (e.g. __lovable_token).
   // If we drop them during navigation, the iframe may force a hard reload.
@@ -127,8 +130,8 @@ function CatalystShellContent() {
 
   // Determine sidebar based on workspaceType (single source of truth)
   const renderSidebar = () => {
-    // No sidebar for Home or Admin routes
-    if (location.pathname === '/for-you' || location.pathname.startsWith('/admin')) {
+    // No sidebar for Home, Admin, or WorkHub routes (WorkHub has built-in sidebar)
+    if (location.pathname === '/for-you' || location.pathname.startsWith('/admin') || isWorkHubRoute) {
       return null;
     }
 

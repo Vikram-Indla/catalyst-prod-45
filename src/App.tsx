@@ -300,9 +300,22 @@ import {
 import ProjectSummaryPage from "./pages/projects/ProjectSummaryPage";
 import ProjectComingSoonPage from "./pages/projects/ProjectComingSoonPage";
 import ProjectBacklogPage from "./pages/projects/ProjectBacklogPage";
-import { WorkHubLayout } from "./modules/work-hub/WorkHubLayout";
+import { WorkHubLayout as OldWorkHubLayout } from "./modules/work-hub/WorkHubLayout";
 import { SummaryView } from "./modules/work-hub/views/SummaryView";
 import { ListView, AllWorkView, ReleasesView, ReleaseDetailsView } from "./modules/work-hub/views";
+import { WorkHubLayout } from "./components/workhub/layout/WorkHubLayout";
+import { WorkHubDashboard } from "./components/workhub/dashboard/WorkHubDashboard";
+import { WorkItemsPage } from "./components/workhub/workitems/WorkItemsPage";
+import { ReleasesPage as WorkHubReleasesPage } from "./components/workhub/releases/ReleasesPage";
+import { ReleaseDetail as WorkHubReleaseDetail } from "./components/workhub/releases/ReleaseDetail";
+import { ThemesPage as WorkHubThemesPage } from "./components/workhub/themes/ThemesPage";
+import { ThemeDetail as WorkHubThemeDetail } from "./components/workhub/themes/ThemeDetail";
+import { Resource360Page as WorkHubResource360Page } from "./components/workhub/resource360/Resource360Page";
+import { ResourceDetail as WorkHubResourceDetail } from "./components/workhub/resource360/ResourceDetail";
+import { CalendarPage as WorkHubCalendarPage } from "./components/workhub/calendar/CalendarPage";
+import { CapacityPage as WorkHubCapacityPage } from "./components/workhub/capacity/CapacityPage";
+import { AnalyticsPage as WorkHubAnalyticsPage } from "./components/workhub/analytics/AnalyticsPage";
+import { CatyPage as WorkHubCatyPage } from "./components/workhub/caty/CatyPage";
 import { AdminGuard } from "./components/admin/AdminGuard";
 import OKRTree from "./pages/enterprise/OKRTree";
 import OKRHub from "./pages/enterprise/OKRHub";
@@ -740,6 +753,24 @@ const App = () => (
               <Route path="/projects" element={<ProjectDirectory />} />
               <Route path="/projects/:projectKey" element={<Navigate to={`/projects`} replace />} />
               <Route path="/projects/:projectKey/summary" element={<Navigate to={`/projects`} replace />} />
+
+              {/* ═══════════════════════════════════════════════════════════════ */}
+              {/* WORKHUB V4.5 — PHASE 1 ROUTING ═══════════════════════════════ */}
+              {/* ═══════════════════════════════════════════════════════════════ */}
+              <Route path="/workhub" element={<WorkHubLayout />}>
+                <Route index element={<WorkHubDashboard />} />
+                <Route path="workitems" element={<WorkItemsPage />} />
+                <Route path="releases" element={<WorkHubReleasesPage />} />
+                <Route path="releases/:id" element={<WorkHubReleaseDetail />} />
+                <Route path="themes" element={<WorkHubThemesPage />} />
+                <Route path="themes/:id" element={<WorkHubThemeDetail />} />
+                <Route path="resource360" element={<WorkHubResource360Page />} />
+                <Route path="resource360/:id" element={<WorkHubResourceDetail />} />
+                <Route path="calendar" element={<WorkHubCalendarPage />} />
+                <Route path="capacity" element={<WorkHubCapacityPage />} />
+                <Route path="analytics" element={<WorkHubAnalyticsPage />} />
+                <Route path="caty" element={<WorkHubCatyPage />} />
+              </Route>
               <Route path="/projects/:projectKey/settings" element={<ProjectSettingsPage />} />
               <Route path="/projects/:projectId/features" element={<FeaturesPage />} />
               <Route path="/projects/:projectId/features/:featureId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><FeatureDetailPage /></Suspense>} />
