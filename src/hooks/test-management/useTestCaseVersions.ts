@@ -36,6 +36,8 @@ export interface TestCaseVersion {
     avatar_url: string | null;
   } | null;
   created_at: string;
+  steps?: any[];
+  changed_fields?: string[];
 }
 
 /**
@@ -57,6 +59,8 @@ export function useTestCaseVersions(testCaseId: string | undefined) {
           change_summary,
           changed_by,
           created_at,
+          steps,
+          changed_fields,
           changed_by_profile:profiles!tm_test_case_versions_changed_by_fkey(id, full_name, avatar_url)
         `)
         .eq('test_case_id', testCaseId)
@@ -87,6 +91,8 @@ export function useTestCaseVersions(testCaseId: string | undefined) {
         changed_by: v.changed_by,
         changed_by_profile: v.changed_by_profile,
         created_at: v.created_at,
+        steps: v.steps || [],
+        changed_fields: v.changed_fields || [],
       }));
     },
     enabled: !!testCaseId,

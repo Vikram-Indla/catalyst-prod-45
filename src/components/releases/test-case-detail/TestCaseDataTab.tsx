@@ -13,6 +13,7 @@ import {
   Upload, 
   Download, 
   Sparkles, 
+  ScanSearch,
   Grid3X3,
   Loader2,
   Check,
@@ -46,6 +47,8 @@ import {
   type TestDataRow,
 } from '@/hooks/test-management/useTestData';
 import { formatDistanceToNow } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
+import { extractVariablesFromSteps } from '@/lib/variable-substitution';
 
 interface TestCaseDataTabProps {
   testCaseId: string;
@@ -472,10 +475,54 @@ export function TestCaseDataTab({ testCaseId }: TestCaseDataTabProps) {
               </p>
             </div>
             <div className="flex items-center gap-2">
-              {/* AI Generate Button (UI only for Phase 2) */}
-              <Button variant="outline" size="sm" disabled>
-                <Sparkles className="w-4 h-4 mr-2 text-purple-500" />
-                AI Generate Data
+              {/* Auto-detect variables from test steps */}
+              <Button variant="outline" size="sm" onClick={async () => {
+                try {
+                  const { data: steps } = await supabase
+                    .from('tm_test_steps')
+                    .select('action, expected_result, test_data')
+                    .eq('test_case_id', testCaseId)
+                    .order('step_number');
+                  
+                  if (!steps || steps.length === 0) {
+                    toast.info('No steps found for this test case');
+                    return;
+                  }
+
+                  const detected = extractVariablesFromSteps(steps);
+                  if (detected.length === 0) {
+                    toast.info('No {{variables}} found in steps');
+                    return;
+                  }
+
+                  const newVars = detected.filter(v => !headers.includes(v));
+                  if (newVars.length === 0) {
+                    toast.info('All variables already have columns');
+                    return;
+                  }
+
+                  const newHeaders = [...headers, ...newVars];
+                  const newRows = rows.map(row => ({
+                    ...row,
+                    values: { ...row.values, ...Object.fromEntries(newVars.map(v => [v, ''])) },
+                  }));
+
+                  await saveTestData.mutateAsync({
+                    testCaseId,
+                    parameterHeaders: newHeaders,
+                    rows: newRows,
+                  });
+
+                  setHeaders(newHeaders);
+                  setRows(newRows);
+                  setLastUpdated(new Date());
+                  toast.success(`Added ${newVars.length} variable column${newVars.length !== 1 ? 's' : ''}: ${newVars.join(', ')}`);
+                } catch (error) {
+                  toast.error('Failed to detect variables');
+                }
+              }}>
+                <ScanSearch className="w-4 h-4 mr-2" />
+                Auto-Detect Variables
               </Button>
               
               <Button variant="outline" size="sm" onClick={() => setShowAddColumnDialog(true)}>
