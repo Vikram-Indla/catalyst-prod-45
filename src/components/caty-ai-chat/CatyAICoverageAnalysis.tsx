@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { RefreshCw, AlertTriangle, CheckCircle, TrendingUp, Sparkles, Info, AlertCircle } from 'lucide-react';
+import { RefreshCw, AlertTriangle, CheckCircle, TrendingUp, Sparkles, Info, AlertCircle, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAnalyzeCatyCoverage } from '@/hooks/useCatyAI';
+import { useFolders } from '@/hooks/test-management/useFolders';
 import { useAuth } from '@/lib/auth';
 import { CatyAIAvatar } from './CatyAIAvatar';
 import { cn } from '@/lib/utils';
@@ -19,12 +21,24 @@ export function CatyAICoverageAnalysis({ projectId, onGenerateFromGap }: Props) 
   const { user } = useAuth();
   const [result, setResult] = useState<any>(null);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+  const [selectedFolder, setSelectedFolder] = useState<string>('');
   const analyzeMutation = useAnalyzeCatyCoverage();
+  const { data: folders } = useFolders(projectId);
 
   const handleAnalyze = async () => {
     if (!user) return;
-    const data = await analyzeMutation.mutateAsync({ projectId, userId: user.id });
+    const scope = selectedFolder ? { folderId: selectedFolder } : undefined;
+    const data = await analyzeMutation.mutateAsync({ projectId, userId: user.id, scope });
     setResult(data);
+  };
+
+  const handleExport = () => {
+    if (!result) return;
+    const blob = new Blob([JSON.stringify(result, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `caty-coverage-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click(); URL.revokeObjectURL(url);
   };
 
   const gaps = (result?.gaps || []).filter((g: any) => !dismissed.has(g.area));
@@ -42,9 +56,21 @@ export function CatyAICoverageAnalysis({ projectId, onGenerateFromGap }: Props) 
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3"><CatyAIAvatar /><div><h2 className="text-lg font-semibold text-foreground">Coverage Analysis</h2><p className="text-sm text-muted-foreground">AI-powered gap detection</p></div></div>
-        <Button onClick={handleAnalyze} disabled={analyzeMutation.isPending}>
-          <RefreshCw className={cn("h-4 w-4 mr-2", analyzeMutation.isPending && "animate-spin")} />Analyze
-        </Button>
+        <div className="flex items-center gap-2">
+          <Select value={selectedFolder} onValueChange={setSelectedFolder}>
+            <SelectTrigger className="w-[180px]"><SelectValue placeholder="All folders" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">All Folders</SelectItem>
+              {folders?.map((f: any) => <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Button onClick={handleAnalyze} disabled={analyzeMutation.isPending}>
+            <RefreshCw className={cn("h-4 w-4 mr-2", analyzeMutation.isPending && "animate-spin")} />Analyze
+          </Button>
+          <Button variant="outline" onClick={handleExport} disabled={!result}>
+            <Download className="h-4 w-4 mr-2" />Export
+          </Button>
+        </div>
       </div>
 
       {analyzeMutation.isPending ? (

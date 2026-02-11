@@ -74,6 +74,7 @@ export function CatyGenerateTestsModal({ open, onClose, projectId }: Props) {
                       <SelectItem value="3">3-5 tests</SelectItem>
                       <SelectItem value="5">5-8 tests</SelectItem>
                       <SelectItem value="10">8-12 tests</SelectItem>
+                      <SelectItem value="15">12-15 tests</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -110,7 +111,11 @@ export function CatyGenerateTestsModal({ open, onClose, projectId }: Props) {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <Button variant="ghost" size="sm" onClick={() => setGeneratedTests(null)}><ArrowLeft className="h-4 w-4 mr-1" />Back</Button>
-              <span className="text-sm text-muted-foreground">{selectedIndexes.size} of {generatedTests.length} selected</span>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => setSelectedIndexes(new Set(generatedTests.map((_, i) => i)))}>Select All</Button>
+                <Button variant="outline" size="sm" onClick={() => setSelectedIndexes(new Set())}>Deselect All</Button>
+                <span className="text-sm text-muted-foreground">{selectedIndexes.size} of {generatedTests.length} selected</span>
+              </div>
             </div>
             <div className="space-y-2 max-h-[400px] overflow-y-auto">
               {generatedTests.map((tc, i) => (

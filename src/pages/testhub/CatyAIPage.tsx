@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, History, Brain } from 'lucide-react';
+import { Plus, History, Brain, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CatyAIChat } from '@/components/caty-ai-chat/CatyAIChat';
@@ -54,6 +54,7 @@ export default function CatyAIPage() {
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={handleNewChat}><Plus className="h-4 w-4 mr-1" />New Chat</Button>
             <Button variant="ghost" size="sm" onClick={() => setShowHistory(!showHistory)}><History className="h-4 w-4" /></Button>
+            <Button variant="ghost" size="sm" title="Settings"><Settings className="h-4 w-4" /></Button>
           </div>
         </div>
 
