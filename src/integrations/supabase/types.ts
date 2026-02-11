@@ -25066,6 +25066,98 @@ export type Database = {
           },
         ]
       }
+      th_export_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          download_url: string | null
+          expires_at: string | null
+          export_format: string
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
+          filters: Json | null
+          id: string
+          job_key: string | null
+          name: string
+          processed_items: number | null
+          started_at: string | null
+          status: string | null
+          total_items: number | null
+          type: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          download_url?: string | null
+          expires_at?: string | null
+          export_format: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          filters?: Json | null
+          id?: string
+          job_key?: string | null
+          name: string
+          processed_items?: number | null
+          started_at?: string | null
+          status?: string | null
+          total_items?: number | null
+          type: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          download_url?: string | null
+          expires_at?: string | null
+          export_format?: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          filters?: Json | null
+          id?: string
+          job_key?: string | null
+          name?: string
+          processed_items?: number | null
+          started_at?: string | null
+          status?: string | null
+          total_items?: number | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_export_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_export_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_export_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_export_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       th_folders: {
         Row: {
           created_at: string | null
@@ -25100,6 +25192,169 @@ export type Database = {
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "th_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_import_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          error_count: number | null
+          errors: Json | null
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
+          id: string
+          job_key: string | null
+          name: string
+          options: Json | null
+          processed_rows: number | null
+          skip_count: number | null
+          source_format: string
+          started_at: string | null
+          status: string | null
+          success_count: number | null
+          summary: Json | null
+          total_rows: number | null
+          type: string
+          warnings: Json | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          error_count?: number | null
+          errors?: Json | null
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          job_key?: string | null
+          name: string
+          options?: Json | null
+          processed_rows?: number | null
+          skip_count?: number | null
+          source_format: string
+          started_at?: string | null
+          status?: string | null
+          success_count?: number | null
+          summary?: Json | null
+          total_rows?: number | null
+          type: string
+          warnings?: Json | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          error_count?: number | null
+          errors?: Json | null
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          job_key?: string | null
+          name?: string
+          options?: Json | null
+          processed_rows?: number | null
+          skip_count?: number | null
+          source_format?: string
+          started_at?: string | null
+          status?: string | null
+          success_count?: number | null
+          summary?: Json | null
+          total_rows?: number | null
+          type?: string
+          warnings?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_import_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_import_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_import_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_import_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_import_mappings: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_default: boolean | null
+          mappings: Json
+          name: string
+          type: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_default?: boolean | null
+          mappings: Json
+          name: string
+          type: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_default?: boolean | null
+          mappings?: Json
+          name?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_import_mappings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_import_mappings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_import_mappings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_import_mappings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
         ]
@@ -36974,6 +37229,18 @@ export type Database = {
         Returns: string[]
       }
       get_folder_tree: { Args: { p_project_id: string }; Returns: Json }
+      get_import_export_stats: {
+        Args: never
+        Returns: {
+          failed_imports: number
+          records_exported: number
+          records_imported: number
+          successful_exports: number
+          successful_imports: number
+          total_exports: number
+          total_imports: number
+        }[]
+      }
       get_import_history: {
         Args: { p_connector_id: string; p_limit?: number }
         Returns: Json
@@ -37304,6 +37571,10 @@ export type Database = {
           p_source_file_name?: string
           p_source_format?: string
         }
+        Returns: Json
+      }
+      import_test_cases_from_json: {
+        Args: { p_data: Json; p_job_id: string }
         Returns: Json
       }
       invite_project_member: {
