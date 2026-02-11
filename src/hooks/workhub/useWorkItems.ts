@@ -1,21 +1,45 @@
 /**
  * WorkHub Work Items — TanStack Query Hooks
- * Server-side pagination + count query for performance
+ * Reads from wh_issues (real Jira-synced data) with server-side pagination
  */
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import type { WorkItemFull } from '@/types/workhub.types';
+
+/** Shape matching wh_issues table columns */
+export interface JiraIssue {
+  issue_key: string;
+  project_key: string;
+  issue_type: string;
+  summary: string;
+  status: string;
+  status_category: string;
+  assignee_account_id: string | null;
+  assignee_display_name: string | null;
+  parent_key: string | null;
+  hierarchy_level: number;
+  fix_versions: any[];
+  due_date: string | null;
+  effective_due_date: string | null;
+  effective_due_source: string | null;
+  labels: string[];
+  components: string[];
+  priority: string;
+  story_points: number | null;
+  sprint_name: string | null;
+  resolution: string | null;
+  jira_created_at: string | null;
+  jira_updated_at: string | null;
+  synced_at: string | null;
+}
 
 export interface WorkItemFilterConfig {
   types?: string[];
   statuses?: string[];
-  release_ids?: string[];
-  theme_ids?: string[];
-  project_ids?: string[];
-  assignee_ids?: string[];
+  project_keys?: string[];
   search_query?: string;
+  priorities?: string[];
 }
 
 export interface PaginationConfig {
@@ -31,22 +55,19 @@ function buildFilteredQuery(
   filters?: Partial<WorkItemFilterConfig>,
 ) {
   let q = baseQuery;
-  if (filters?.types?.length) q = q.in('item_type', filters.types);
+  if (filters?.types?.length) q = q.in('issue_type', filters.types);
   if (filters?.statuses?.length) q = q.in('status', filters.statuses);
-  if (filters?.release_ids?.length) q = q.in('release_id', filters.release_ids);
-  if (filters?.theme_ids?.length) q = q.in('theme_id', filters.theme_ids);
-  if (filters?.project_ids?.length) q = q.in('jira_project_id', filters.project_ids);
-  if (filters?.assignee_ids?.length) q = q.in('assignee_user_id', filters.assignee_ids);
+  if (filters?.project_keys?.length) q = q.in('project_key', filters.project_keys);
+  if (filters?.priorities?.length) q = q.in('priority', filters.priorities);
   if (filters?.search_query) {
     const s = filters.search_query;
-    q = q.or(`summary.ilike.%${s}%,item_key.ilike.%${s}%`);
+    q = q.or(`summary.ilike.%${s}%,issue_key.ilike.%${s}%`);
   }
   return q;
 }
 
 /**
- * Paginated work items with server-side count.
- * Uses keepPreviousData for smooth pagination transitions.
+ * Paginated work items from wh_issues with server-side count.
  */
 export function useWorkItems(
   filters?: Partial<WorkItemFilterConfig>,
@@ -58,24 +79,23 @@ export function useWorkItems(
   return useQuery({
     queryKey: ['workhub', 'work-items', filters, page, pageSize],
     queryFn: async () => {
-      // Data query with range
       const from = page * pageSize;
       const to = from + pageSize - 1;
 
       let q = supabase
-        .from('vw_wh_work_items_full')
+        .from('wh_issues')
         .select('*', { count: 'exact' })
-        .order('depth')
-        .order('item_key')
+        .order('project_key')
+        .order('issue_key')
         .range(from, to);
 
       q = buildFilteredQuery(q, filters);
 
       const { data, error, count } = await q;
-      if (error) throw error;
+      if (error) throw new Error(error.message);
 
       return {
-        items: (data ?? []) as unknown as WorkItemFull[],
+        items: (data ?? []) as JiraIssue[],
         totalCount: count ?? 0,
         page,
         pageSize,
@@ -87,68 +107,73 @@ export function useWorkItems(
   });
 }
 
-/** Total count only — lightweight query for KPIs */
-export function useWorkItemCount(filters?: Partial<WorkItemFilterConfig>) {
+/** Distinct project keys from wh_issues for filter dropdown */
+export function useIssueProjectKeys() {
   return useQuery({
-    queryKey: ['workhub', 'work-items-count', filters],
+    queryKey: ['workhub', 'issue-project-keys'],
     queryFn: async () => {
-      let q = supabase
-        .from('vw_wh_work_items_full')
-        .select('*', { count: 'exact', head: true });
+      const { data, error } = await supabase
+        .from('wh_issues')
+        .select('project_key')
+        .order('project_key');
 
-      q = buildFilteredQuery(q, filters);
+      if (error) throw new Error(error.message);
 
-      const { count, error } = await q;
-      if (error) throw error;
-      return count ?? 0;
+      // Deduplicate
+      const keys = [...new Set((data ?? []).map(d => d.project_key))];
+      return keys;
     },
-    ...QUERY_OPTIONS,
+    staleTime: 60_000,
   });
 }
 
-export function useWorkItem(id: string) {
+/** Distinct issue types from wh_issues for filter pills */
+export function useIssueTypes() {
   return useQuery({
-    queryKey: ['workhub', 'work-item', id],
+    queryKey: ['workhub', 'issue-types'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('vw_wh_work_items_full')
-        .select('*')
-        .eq('id', id)
-        .single();
-      if (error) throw error;
-      return data as unknown as WorkItemFull;
+        .from('wh_issues')
+        .select('issue_type')
+        .order('issue_type');
+
+      if (error) throw new Error(error.message);
+
+      const types = [...new Set((data ?? []).map(d => d.issue_type))];
+      return types;
     },
-    enabled: !!id,
-    ...QUERY_OPTIONS,
+    staleTime: 60_000,
   });
 }
 
-export function useWorkItemChildren(parentId: string) {
+/** Distinct statuses from wh_issues */
+export function useIssueStatuses() {
   return useQuery({
-    queryKey: ['workhub', 'work-item-children', parentId],
+    queryKey: ['workhub', 'issue-statuses'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('vw_wh_work_items_full')
-        .select('*')
-        .eq('parent_id', parentId)
-        .order('item_key');
-      if (error) throw error;
-      return (data ?? []) as unknown as WorkItemFull[];
+        .from('wh_issues')
+        .select('status')
+        .order('status');
+
+      if (error) throw new Error(error.message);
+
+      const statuses = [...new Set((data ?? []).map(d => d.status))];
+      return statuses;
     },
-    enabled: !!parentId,
-    ...QUERY_OPTIONS,
+    staleTime: 60_000,
   });
 }
 
 export function useUpdateWorkItem() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, field, value }: { id: string; field: string; value: any }) => {
+    mutationFn: async ({ issueKey, field, value }: { issueKey: string; field: string; value: any }) => {
       const { error } = await supabase
-        .from('wh_work_items')
-        .update({ [field]: value, updated_at: new Date().toISOString() })
-        .eq('id', id);
-      if (error) throw error;
+        .from('wh_issues')
+        .update({ [field]: value })
+        .eq('issue_key', issueKey);
+      if (error) throw new Error(error.message);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['workhub'] });
@@ -162,18 +187,16 @@ export function useUpdateWorkItem() {
 export function useBulkUpdateWorkItems() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ itemIds, field, value }: { itemIds: string[]; field: string; value: string }) => {
-      const { error } = await supabase.rpc('fn_wh_bulk_update', {
-        p_item_ids: itemIds,
-        p_field: field,
-        p_value: value,
-        p_user_id: null,
-      });
-      if (error) throw error;
+    mutationFn: async ({ issueKeys, field, value }: { issueKeys: string[]; field: string; value: string }) => {
+      const { error } = await supabase
+        .from('wh_issues')
+        .update({ [field]: value })
+        .in('issue_key', issueKeys);
+      if (error) throw new Error(error.message);
     },
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: ['workhub'] });
-      toast.success(`Updated ${vars.itemIds.length} items`);
+      toast.success(`Updated ${vars.issueKeys.length} items`);
     },
     onError: (err: Error) => {
       toast.error(`Bulk update failed: ${err.message}`);

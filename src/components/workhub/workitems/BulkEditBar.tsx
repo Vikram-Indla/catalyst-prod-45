@@ -59,7 +59,7 @@ export function BulkEditBar({ selectedCount, selectedIds, onClear }: BulkEditBar
   const bulkUpdate = useBulkUpdateWorkItems();
 
   const handleBulk = (field: string, value: string) => {
-    bulkUpdate.mutate({ itemIds: selectedIds, field, value }, {
+    bulkUpdate.mutate({ issueKeys: selectedIds, field, value }, {
       onSuccess: () => onClear(),
     });
   };
