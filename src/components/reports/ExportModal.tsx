@@ -67,6 +67,15 @@ export function ExportModal({ open, onClose, data }: ExportModalProps) {
             </div>
           </div>
           {format === 'pdf' && (
+            <div className="space-y-3"><Label>Page Size</Label>
+              <RadioGroup value={options.pageSize || 'a4'} onValueChange={v => setOptions({...options, pageSize: v as any})} className="flex gap-4">
+                <div className="flex items-center gap-2"><RadioGroupItem value="a4" id="a4" /><Label htmlFor="a4" className="font-normal">A4</Label></div>
+                <div className="flex items-center gap-2"><RadioGroupItem value="letter" id="letter" /><Label htmlFor="letter" className="font-normal">Letter</Label></div>
+                <div className="flex items-center gap-2"><RadioGroupItem value="legal" id="legal" /><Label htmlFor="legal" className="font-normal">Legal</Label></div>
+              </RadioGroup>
+            </div>
+          )}
+          {format === 'pdf' && (
             <div className="space-y-3"><Label>Orientation</Label>
               <RadioGroup value={options.orientation} onValueChange={v => setOptions({...options, orientation: v as any})} className="flex gap-4">
                 <div className="flex items-center gap-2"><RadioGroupItem value="portrait" id="portrait" /><Label htmlFor="portrait" className="font-normal">Portrait</Label></div>

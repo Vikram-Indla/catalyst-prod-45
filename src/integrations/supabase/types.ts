@@ -38385,6 +38385,10 @@ export type Database = {
           title: string
         }[]
       }
+      get_defect_metrics: {
+        Args: { p_end_date?: string; p_start_date?: string }
+        Returns: Json
+      }
       get_defect_stats: {
         Args: never
         Returns: {
