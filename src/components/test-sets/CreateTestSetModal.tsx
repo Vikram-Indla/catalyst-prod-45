@@ -16,6 +16,8 @@ import { TestSet, TEST_SET_TYPE_CONFIG, TestSetType, TestSetMembership, DynamicC
 import { useCreateTestSet, useUpdateTestSet } from '@/hooks/useTestSets';
 import { useFolders } from '@/hooks/test-management/useFolders';
 import { useAuth } from '@/lib/auth';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
 interface Props {
   open: boolean;
@@ -33,6 +35,14 @@ export function CreateTestSetModal({ open, onClose, editingSet, projectId }: Pro
   const isEditing = !!editingSet;
 
   const { data: folders } = useFolders(projectId);
+  const { data: allTags } = useQuery({
+    queryKey: ['th-tags-all'],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any).from('th_tags').select('id, name, slug, color, category').order('name');
+      if (error) throw new Error(error.message);
+      return data as { id: string; name: string; slug: string; color: string; category: string | null }[];
+    },
+  });
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -60,6 +70,15 @@ export function CreateTestSetModal({ open, onClose, editingSet, projectId }: Pro
   };
   const removePriority = (p: string) => {
     setCriteria({ ...criteria, priority: (criteria.priority || []).filter(x => x !== p) });
+  };
+
+  const addTag = (tag: string) => {
+    if (!(criteria.tags || []).includes(tag)) {
+      setCriteria({ ...criteria, tags: [...(criteria.tags || []), tag] });
+    }
+  };
+  const removeTag = (tag: string) => {
+    setCriteria({ ...criteria, tags: (criteria.tags || []).filter(t => t !== tag) });
   };
 
   const setFolder = (folderId: string) => {
@@ -161,6 +180,29 @@ export function CreateTestSetModal({ open, onClose, editingSet, projectId }: Pro
                   <SelectContent>
                     {PRIORITIES.filter(p => !(criteria.priority || []).includes(p)).map(p => (
                       <SelectItem key={p} value={p} className="capitalize">{p}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Tags selector */}
+              <div>
+                <Label className="text-sm mb-1.5 block">Tags</Label>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {(criteria.tags || []).map(tag => (
+                    <Badge key={tag} variant="secondary" className="capitalize">
+                      {tag}
+                      <button type="button" onClick={() => removeTag(tag)} className="ml-1 hover:text-destructive">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+                <Select onValueChange={addTag}>
+                  <SelectTrigger className="w-48"><SelectValue placeholder="Add tag..." /></SelectTrigger>
+                  <SelectContent>
+                    {(allTags || []).filter(t => !(criteria.tags || []).includes(t.name)).map(t => (
+                      <SelectItem key={t.id} value={t.name}>{t.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
