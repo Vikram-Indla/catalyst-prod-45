@@ -1,9 +1,11 @@
 /**
  * WorkItemsPage — Full page orchestration (Tasks 2 + 8)
+ * Phase 3: Re-sync Jira enabled + Jira Projects link
  */
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { FileStack, RefreshCw } from 'lucide-react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { FileStack, RefreshCw, Loader2, ExternalLink } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useWorkItems } from '@/hooks/workhub/useWorkItems';
 import type { WorkItemFilterConfig } from '@/hooks/workhub/useWorkItems';
 import type { WorkItemFull } from '@/types/workhub.types';
@@ -12,15 +14,39 @@ import { WorkItemsTable } from './WorkItemsTable';
 import { BulkEditBar } from './BulkEditBar';
 import { WorkItemDrawer } from './WorkItemDrawer';
 import { InlineThemeEditor } from './InlineThemeEditor';
+import { useJiraProjects } from '@/hooks/workhub/useJiraProjects';
+import { useTriggerSync } from '@/hooks/workhub/useSyncLog';
+import { SyncBadge } from '../shared/SyncBadge';
+import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 
 export function WorkItemsPage() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const projectFilter = searchParams.get('project');
+
   const [filters, setFilters] = useState<Partial<WorkItemFilterConfig>>({});
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [drawerItemId, setDrawerItemId] = useState<string | null>(null);
   const [themeEditorTarget, setThemeEditorTarget] = useState<{ itemId: string; anchorEl: HTMLElement } | null>(null);
   const [initExpanded, setInitExpanded] = useState(false);
+
+  // Sync state
+  const [showSyncPicker, setShowSyncPicker] = useState(false);
+  const [syncSelectedProjects, setSyncSelectedProjects] = useState<Set<string>>(new Set());
+  const [syncRunning, setSyncRunning] = useState(false);
+  const syncBtnRef = useRef<HTMLButtonElement>(null);
+
+  const { data: jiraProjects = [] } = useJiraProjects();
+  const triggerSync = useTriggerSync();
+
+  // Apply project filter from URL
+  useEffect(() => {
+    if (projectFilter) {
+      setFilters(prev => ({ ...prev, jira_project_id: projectFilter }));
+    }
+  }, [projectFilter]);
 
   const { data: items, isLoading, error, refetch } = useWorkItems(filters);
 
@@ -31,6 +57,13 @@ export function WorkItemsPage() {
       setInitExpanded(true);
     }
   }, [items, initExpanded]);
+
+  // Init sync picker with all projects selected
+  useEffect(() => {
+    if (jiraProjects.length > 0 && syncSelectedProjects.size === 0) {
+      setSyncSelectedProjects(new Set(jiraProjects.map(p => p.id)));
+    }
+  }, [jiraProjects]);
 
   const uniqueProjects = useMemo(() => {
     if (!items) return 0;
@@ -77,6 +110,33 @@ export function WorkItemsPage() {
     }
   }, [items, selectAllState]);
 
+  const handleSyncSelected = async () => {
+    setSyncRunning(true);
+    const selected = Array.from(syncSelectedProjects);
+    let totalUpdated = 0;
+    try {
+      for (const projectId of selected) {
+        const project = jiraProjects.find(p => p.id === projectId);
+        await triggerSync.mutateAsync({ projectId, syncType: 'manual' });
+      }
+      toast.success(`Sync complete — ${selected.length} project(s) refreshed`);
+    } catch (err: any) {
+      toast.error(`Sync failed: ${err.message}`);
+    } finally {
+      setSyncRunning(false);
+      setShowSyncPicker(false);
+    }
+  };
+
+  const toggleSyncProject = (id: string) => {
+    setSyncSelectedProjects(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
   // Get current theme_id for inline editor
   const themeEditorItem = useMemo(() => {
     if (!themeEditorTarget || !items) return null;
@@ -85,7 +145,7 @@ export function WorkItemsPage() {
 
   return (
     <div style={{ fontFamily: 'var(--wh-font-sans)' }}>
-      {/* Page Header (Task 2) */}
+      {/* Page Header */}
       <header className="flex items-start justify-between mb-6" data-print-hide="true">
         <div className="flex items-start gap-4">
           <div
@@ -109,27 +169,92 @@ export function WorkItemsPage() {
 
         <div className="flex items-center gap-3">
           {lastSync && (
-            <span className="flex items-center gap-1.5 text-[12px]" style={{ color: 'var(--wh-text-tertiary)' }}>
-              <RefreshCw className="w-3.5 h-3.5" />
-              Last sync: {formatDistanceToNow(lastSync, { addSuffix: true })}
-            </span>
+            <SyncBadge lastSyncedAt={lastSync.toISOString()} />
           )}
           <button
-            disabled
-            className="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors disabled:opacity-40"
-            style={{ borderColor: 'var(--wh-border)', color: 'var(--wh-text-secondary)' }}
+            onClick={() => navigate('/workhub/jira-projects')}
+            className="text-xs font-medium flex items-center gap-1 hover:underline"
+            style={{ color: 'var(--wh-primary)' }}
           >
-            Re-sync Jira
+            View Jira Projects <ExternalLink className="w-3 h-3" />
           </button>
+          <div className="relative">
+            <button
+              ref={syncBtnRef}
+              onClick={() => setShowSyncPicker(!showSyncPicker)}
+              className="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors flex items-center gap-1.5"
+              style={{ borderColor: 'var(--wh-primary)', color: 'var(--wh-primary)' }}
+            >
+              {syncRunning ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <RefreshCw className="w-3.5 h-3.5" />
+              )}
+              Re-sync Jira
+            </button>
+
+            {/* Project Picker Dropdown */}
+            {showSyncPicker && (
+              <div
+                className="absolute right-0 top-full mt-1 w-64 rounded-lg border shadow-lg z-50 p-3"
+                style={{ background: 'var(--wh-surface)', borderColor: 'var(--wh-border)' }}
+              >
+                <div className="text-xs font-semibold mb-2" style={{ color: 'var(--wh-text-primary)' }}>
+                  Select projects to sync
+                </div>
+                <div className="space-y-1.5 mb-3">
+                  {jiraProjects.map(p => (
+                    <label
+                      key={p.id}
+                      className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-blue-50/50 cursor-pointer text-xs"
+                      style={{ color: 'var(--wh-text-secondary)' }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={syncSelectedProjects.has(p.id)}
+                        onChange={() => toggleSyncProject(p.id)}
+                        className="rounded border-gray-300"
+                      />
+                      <span
+                        className="w-2 h-2 rounded-full shrink-0"
+                        style={{ backgroundColor: p.color }}
+                      />
+                      <span className="font-medium" style={{ color: 'var(--wh-text-primary)' }}>
+                        {p.project_key}
+                      </span>
+                      <span>{p.name}</span>
+                    </label>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleSyncSelected}
+                    disabled={syncRunning || syncSelectedProjects.size === 0}
+                    className="flex-1 px-3 py-1.5 text-xs font-medium rounded-md text-white disabled:opacity-50"
+                    style={{ backgroundColor: 'var(--wh-primary)' }}
+                  >
+                    {syncRunning ? 'Syncing...' : `Sync Selected (${syncSelectedProjects.size})`}
+                  </button>
+                  <button
+                    onClick={() => setShowSyncPicker(false)}
+                    className="px-3 py-1.5 text-xs font-medium rounded-md"
+                    style={{ color: 'var(--wh-text-secondary)' }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
-      {/* Filters (Task 3) */}
+      {/* Filters */}
       <div className="mb-4">
         <WorkItemFilters filters={filters} onChange={setFilters} />
       </div>
 
-      {/* Bulk Edit Bar (Task 5) */}
+      {/* Bulk Edit Bar */}
       {selectedIds.size > 0 && (
         <div className="mb-3">
           <BulkEditBar
@@ -140,7 +265,7 @@ export function WorkItemsPage() {
         </div>
       )}
 
-      {/* Table (Task 4) */}
+      {/* Table */}
       <WorkItemsTable
         items={items ?? []}
         isLoading={isLoading}
@@ -156,7 +281,7 @@ export function WorkItemsPage() {
         onRetry={() => refetch()}
       />
 
-      {/* Inline Theme Editor (Task 7) */}
+      {/* Inline Theme Editor */}
       {themeEditorTarget && themeEditorItem && (
         <InlineThemeEditor
           itemId={themeEditorTarget.itemId}
@@ -166,7 +291,7 @@ export function WorkItemsPage() {
         />
       )}
 
-      {/* Drawer (Task 6) */}
+      {/* Drawer */}
       <WorkItemDrawer
         itemId={drawerItemId}
         onClose={() => setDrawerItemId(null)}

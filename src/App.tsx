@@ -306,6 +306,7 @@ import { ListView, AllWorkView, ReleasesView, ReleaseDetailsView } from "./modul
 import { WorkHubLayout } from "./components/workhub/layout/WorkHubLayout";
 import { WorkHubDashboard } from "./components/workhub/dashboard/WorkHubDashboard";
 import { WorkItemsPage } from "./components/workhub/workitems/WorkItemsPage";
+import { JiraProjectsPage } from "./components/workhub/jira/JiraProjectsPage";
 import { ReleasesPage as WorkHubReleasesPage } from "./components/workhub/releases/ReleasesPage";
 import { ReleaseDetail as WorkHubReleaseDetail } from "./components/workhub/releases/ReleaseDetail";
 import { ThemesPage as WorkHubThemesPage } from "./components/workhub/themes/ThemesPage";
@@ -774,6 +775,7 @@ const App = () => (
               <Route path="/workhub" element={<WorkHubLayout />}>
                 <Route index element={<WorkHubDashboard />} />
                 <Route path="workitems" element={<WorkItemsPage />} />
+                <Route path="jira-projects" element={<JiraProjectsPage />} />
                 <Route path="releases" element={<WorkHubReleasesPage />} />
                 <Route path="releases/:id" element={<WorkHubReleaseDetail />} />
                 <Route path="themes" element={<WorkHubThemesPage />} />
