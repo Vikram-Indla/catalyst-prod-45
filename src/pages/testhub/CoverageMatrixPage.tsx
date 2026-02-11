@@ -113,6 +113,8 @@ export default function CoverageMatrixPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [moduleFilter, setModuleFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
+  const [releaseFilter, setReleaseFilter] = useState('all');
+  const [releases, setReleases] = useState<{ id: string; name: string }[]>([]);
 
   // Matrix expansion
   const [expandedReqs, setExpandedReqs] = useState<Set<string>>(new Set());
@@ -121,16 +123,29 @@ export default function CoverageMatrixPage() {
 
   useEffect(() => {
     fetchData();
+    fetchReleases();
   }, []);
+
+  const fetchReleases = async () => {
+    try {
+      const { data } = await supabase
+        .from('releases')
+        .select('id, name')
+        .neq('status', 'archived')
+        .order('name');
+      setReleases((data || []) as any[]);
+    } catch { /* ignore */ }
+  };
 
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('th_requirements' as any)
-        .select('id, req_key, title, type, priority, status, coverage_percent, total_linked_tests, passed_tests, failed_tests, not_run_tests')
+        .select('id, req_key, title, type, priority, status, coverage_percent, total_linked_tests, passed_tests, failed_tests, not_run_tests, release_version')
         .neq('status', 'deprecated')
         .order('req_key');
+      const { data, error } = await query;
       if (error) throw error;
       setRequirements((data as any[]) || []);
     } catch (err) {
@@ -152,13 +167,14 @@ export default function CoverageMatrixPage() {
     return requirements.filter(r => {
       if (moduleFilter !== 'all' && r.type !== moduleFilter) return false;
       if (priorityFilter !== 'all' && r.priority !== priorityFilter) return false;
+      if (releaseFilter !== 'all' && (r as any).release_version !== releaseFilter) return false;
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         if (!r.title.toLowerCase().includes(q) && !r.req_key.toLowerCase().includes(q)) return false;
       }
       return true;
     });
-  }, [requirements, moduleFilter, priorityFilter, searchQuery]);
+  }, [requirements, moduleFilter, priorityFilter, releaseFilter, searchQuery]);
 
   // Summary stats
   const summary = useMemo(() => {
@@ -214,7 +230,9 @@ export default function CoverageMatrixPage() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-foreground">Traceability Matrix</h1>
-            <p className="text-sm text-muted-foreground">Requirements to test cases coverage</p>
+            <p className="text-sm text-muted-foreground">
+              {summary.pct}% coverage ({summary.full}/{summary.total} requirements) · {summary.none} gap{summary.none !== 1 ? 's' : ''}{summary.critGaps > 0 ? ` (${summary.critGaps} critical)` : ''}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -255,6 +273,15 @@ export default function CoverageMatrixPage() {
             className="pl-9 h-9"
           />
         </div>
+        <Select value={releaseFilter} onValueChange={setReleaseFilter}>
+          <SelectTrigger className="w-[180px] h-9"><SelectValue placeholder="Release" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Releases</SelectItem>
+            {releases.map(r => (
+              <SelectItem key={r.id} value={r.name}>{r.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Select value={moduleFilter} onValueChange={setModuleFilter}>
           <SelectTrigger className="w-[160px] h-9"><SelectValue placeholder="Module" /></SelectTrigger>
           <SelectContent>
@@ -274,6 +301,16 @@ export default function CoverageMatrixPage() {
             <SelectItem value="low">Low</SelectItem>
           </SelectContent>
         </Select>
+        {(searchQuery || moduleFilter !== 'all' || priorityFilter !== 'all' || releaseFilter !== 'all') && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-9 text-xs"
+            onClick={() => { setSearchQuery(''); setModuleFilter('all'); setPriorityFilter('all'); setReleaseFilter('all'); }}
+          >
+            <XCircle className="h-3.5 w-3.5 mr-1" /> Clear
+          </Button>
+        )}
       </div>
 
       {/* Tab Views */}
@@ -321,7 +358,11 @@ export default function CoverageMatrixPage() {
                   <div key={req.id}>
                     <button
                       onClick={() => toggleExpand(req.id)}
-                      className="w-full grid grid-cols-[32px_100px_1fr_100px_60px_60px_60px_90px] px-4 py-3 items-center border-b border-border hover:bg-muted/30 transition-colors text-left"
+                      className={cn(
+                        "w-full grid grid-cols-[32px_100px_1fr_100px_60px_60px_60px_90px] px-4 py-3 items-center border-b border-border hover:bg-muted/30 transition-colors text-left",
+                        req.coverage_percent === 0 && 'bg-destructive/5',
+                        req.coverage_percent === 100 && req.failed_tests === 0 && 'bg-emerald-500/5',
+                      )}
                     >
                       {isExpanded ? (
                         <ChevronDown className="h-4 w-4 text-muted-foreground" />
