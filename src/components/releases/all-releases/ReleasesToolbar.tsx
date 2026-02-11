@@ -25,7 +25,7 @@ interface Props {
 }
 
 const ALL_STATUSES: ReleaseStatus[] = ['planning', 'active', 'uat', 'released', 'archived'];
-const ALL_HEALTH: ReleaseHealth[] = ['good', 'warning', 'critical', 'none'];
+const ALL_HEALTH: ReleaseHealth[] = ['healthy', 'at_risk', 'critical'];
 
 export function ReleasesToolbar({
   viewMode,
@@ -106,7 +106,7 @@ export function ReleasesToolbar({
             <div>
               <div className="text-xs font-semibold uppercase text-slate-500 mb-2">Health</div>
               <div className="flex flex-wrap gap-2">
-                {ALL_HEALTH.filter(h => h !== 'none').map(health => {
+                {ALL_HEALTH.map(health => {
                   const config = HEALTH_CONFIG[health];
                   const isSelected = filter.health.includes(health);
                   return (

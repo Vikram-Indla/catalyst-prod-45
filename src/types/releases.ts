@@ -4,7 +4,7 @@
 // =====================================================
 
 export type ReleaseStatus = 'planning' | 'active' | 'uat' | 'released' | 'archived';
-export type ReleaseHealth = 'none' | 'good' | 'warning' | 'critical';
+export type ReleaseHealth = 'healthy' | 'at_risk' | 'critical';
 
 export interface Release {
   id: string;
@@ -71,8 +71,7 @@ export const STATUS_CONFIG: Record<ReleaseStatus, { label: string; className: st
 
 // Health display configuration
 export const HEALTH_CONFIG: Record<ReleaseHealth, { label: string; dotClass: string; textClass: string }> = {
-  good: { label: 'Good', dotClass: 'bg-teal-500', textClass: 'text-slate-600' },
-  warning: { label: 'At Risk', dotClass: 'bg-amber-500', textClass: 'text-amber-600' },
+  healthy: { label: 'Healthy', dotClass: 'bg-teal-500', textClass: 'text-slate-600' },
+  at_risk: { label: 'At Risk', dotClass: 'bg-amber-500', textClass: 'text-amber-600' },
   critical: { label: 'Critical', dotClass: 'bg-red-500 animate-pulse', textClass: 'text-red-600 font-semibold' },
-  none: { label: '—', dotClass: 'bg-slate-300', textClass: 'text-slate-400' },
 };
