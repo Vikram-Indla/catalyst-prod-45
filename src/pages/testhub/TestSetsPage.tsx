@@ -44,6 +44,7 @@ export default function TestSetsPage() {
   const [membershipWarningSet, setMembershipWarningSet] = useState<TestSet | null>(null);
   const [refreshingSet, setRefreshingSet] = useState<TestSet | null>(null);
   const [addToCycleSet, setAddToCycleSet] = useState<TestSet | null>(null);
+  const [deletingSet, setDeletingSet] = useState<TestSet | null>(null);
 
   const { data: testSets, isLoading } = useTestSets(projectId, filters);
   const deleteMutation = useDeleteTestSet();
@@ -176,7 +177,7 @@ export default function TestSetsPage() {
                         {set.is_active ? 'Archive' : 'Restore'}
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem className="text-destructive" onClick={() => deleteMutation.mutate(set.id)}>Delete</DropdownMenuItem>
+                      <DropdownMenuItem className="text-destructive" onClick={() => setDeletingSet(set)}>Delete</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -211,6 +212,22 @@ export default function TestSetsPage() {
         />
       )}
       
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deletingSet} onOpenChange={() => setDeletingSet(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2"><AlertCircle className="h-5 w-5 text-destructive" />Delete Test Set?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete <strong>{deletingSet?.name}</strong>? This will remove the set and all {deletingSet?.test_count || 0} test case associations. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex gap-2 justify-end">
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { if (deletingSet) { deleteMutation.mutate(deletingSet.id); setDeletingSet(null); } }}>Delete</AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Membership Type Warning Dialog */}
       <AlertDialog open={!!membershipWarningSet} onOpenChange={() => setMembershipWarningSet(null)}>
         <AlertDialogContent>
