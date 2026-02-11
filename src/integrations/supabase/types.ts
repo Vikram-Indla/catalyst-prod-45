@@ -35725,17 +35725,31 @@ export type Database = {
         }
         Returns: Json
       }
-      get_unassigned_cycles: {
-        Args: never
-        Returns: {
-          cycle_key: string
-          id: string
-          name: string
-          progress_percent: number
-          status: string
-          total_cases: number
-        }[]
-      }
+      get_unassigned_cycles:
+        | {
+            Args: never
+            Returns: {
+              cycle_key: string
+              id: string
+              name: string
+              progress_percent: number
+              status: string
+              total_cases: number
+            }[]
+          }
+        | {
+            Args: { p_plan_id: string; p_project_id: string }
+            Returns: {
+              blocked_count: number
+              cycle_key: string
+              failed_count: number
+              id: string
+              name: string
+              passed_count: number
+              status: string
+              total_cases: number
+            }[]
+          }
       get_unassigned_task_count: { Args: never; Returns: number }
       get_unmapped_tests: { Args: { p_connector_id: string }; Returns: Json }
       get_user_role: {
