@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { Plus, Layers, MoreHorizontal, Play, RefreshCw, Zap, Zap as ZapIcon, TestTubes, ChevronRight, AlertCircle } from 'lucide-react';
+import { Plus, Layers, MoreHorizontal, Play, RefreshCw, Zap, TestTubes, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +27,8 @@ import { useProjectContext } from '@/hooks/useProjectContext';
 const DEFAULT_PROJECT_ID = '40000000-0001-0001-0001-000000000001';
 import { SetTypeBadge } from '@/components/test-sets/SetTypeBadge';
 import { CreateTestSetModal } from '@/components/test-sets/CreateTestSetModal';
+import { RefreshConfirmDialog } from '@/components/test-sets/RefreshConfirmDialog';
+import { AddToCycleModal } from '@/components/test-sets/AddToCycleModal';
 import { TestSet, TestSetFilters, TEST_SET_TYPE_CONFIG } from '@/types/test-sets';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -40,6 +42,8 @@ export default function TestSetsPage() {
   const [editingSet, setEditingSet] = useState<TestSet | null>(null);
   const [sortBy, setSortBy] = useState<'created' | 'updated' | 'name' | 'count'>('updated');
   const [membershipWarningSet, setMembershipWarningSet] = useState<TestSet | null>(null);
+  const [refreshingSet, setRefreshingSet] = useState<TestSet | null>(null);
+  const [addToCycleSet, setAddToCycleSet] = useState<TestSet | null>(null);
 
   const { data: testSets, isLoading } = useTestSets(projectId, filters);
   const deleteMutation = useDeleteTestSet();
@@ -152,15 +156,14 @@ export default function TestSetsPage() {
                   <button onClick={() => navigate(`/testhub/test-sets/${set.id}`)} className="flex-1 h-9 px-3 rounded-md border border-border hover:bg-muted transition-colors flex items-center justify-center gap-1 text-sm">
                     <Play className="h-4 w-4" />View
                   </button>
-                   <button onClick={() => createCycleMutation.mutate({ setId: set.id, projectId })} 
-                    className="h-9 px-3 rounded-md border border-border hover:bg-muted transition-colors flex items-center justify-center gap-1 text-sm disabled:opacity-50 disabled:cursor-not-allowed" 
-                    title="Create test cycle from this set"
-                    disabled={createCycleMutation.isPending}>
+                  <button onClick={() => setAddToCycleSet(set)} 
+                    className="h-9 px-3 rounded-md border border-border hover:bg-muted transition-colors flex items-center justify-center gap-1 text-sm" 
+                    title="Add to existing cycle">
                     <TestTubes className="h-4 w-4" />
                   </button>
                   {set.membership_type === 'dynamic' && (
-                    <button onClick={() => refreshMutation.mutate(set.id)} className="h-9 px-3 rounded-md border border-border hover:bg-muted transition-colors flex items-center justify-center" disabled={refreshMutation.isPending}>
-                      <RefreshCw className={cn('h-4 w-4', refreshMutation.isPending && 'animate-spin')} />
+                    <button onClick={() => setRefreshingSet(set)} className="h-9 px-3 rounded-md border border-border hover:bg-muted transition-colors flex items-center justify-center">
+                      <RefreshCw className="h-4 w-4" />
                     </button>
                   )}
                   <DropdownMenu>
@@ -168,6 +171,7 @@ export default function TestSetsPage() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => handleEdit(set)}>Edit</DropdownMenuItem>
                       <DropdownMenuItem onClick={() => cloneMutation.mutate({ setId: set.id })}>Clone</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => createCycleMutation.mutate({ setId: set.id, projectId })}>Create New Cycle</DropdownMenuItem>
                       <DropdownMenuItem onClick={() => archiveMutation.mutate({ setId: set.id, archive: set.is_active })}>
                         {set.is_active ? 'Archive' : 'Restore'}
                       </DropdownMenuItem>
@@ -183,6 +187,29 @@ export default function TestSetsPage() {
       )}
 
       <CreateTestSetModal open={isCreateOpen} onClose={handleClose} editingSet={editingSet} projectId={projectId} />
+      
+      {/* Refresh Confirmation Dialog */}
+      {refreshingSet && (
+        <RefreshConfirmDialog
+          open={!!refreshingSet}
+          onClose={() => setRefreshingSet(null)}
+          onConfirm={() => {
+            refreshMutation.mutate(refreshingSet.id);
+            setRefreshingSet(null);
+          }}
+          testSet={refreshingSet}
+          isLoading={refreshMutation.isPending}
+        />
+      )}
+
+      {/* Add to Cycle Modal */}
+      {addToCycleSet && (
+        <AddToCycleModal
+          open={!!addToCycleSet}
+          onClose={() => setAddToCycleSet(null)}
+          testSet={addToCycleSet}
+        />
+      )}
       
       {/* Membership Type Warning Dialog */}
       <AlertDialog open={!!membershipWarningSet} onOpenChange={() => setMembershipWarningSet(null)}>

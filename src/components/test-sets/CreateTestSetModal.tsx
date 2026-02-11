@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { X } from 'lucide-react';
 import { TestSet, TEST_SET_TYPE_CONFIG, TestSetType, TestSetMembership, DynamicCriteria } from '@/types/test-sets';
 import { useCreateTestSet, useUpdateTestSet } from '@/hooks/useTestSets';
+import { useFolders } from '@/hooks/test-management/useFolders';
 import { useAuth } from '@/lib/auth';
 
 interface Props {
@@ -30,6 +31,8 @@ export function CreateTestSetModal({ open, onClose, editingSet, projectId }: Pro
   const createMutation = useCreateTestSet();
   const updateMutation = useUpdateTestSet();
   const isEditing = !!editingSet;
+
+  const { data: folders } = useFolders(projectId);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -57,6 +60,10 @@ export function CreateTestSetModal({ open, onClose, editingSet, projectId }: Pro
   };
   const removePriority = (p: string) => {
     setCriteria({ ...criteria, priority: (criteria.priority || []).filter(x => x !== p) });
+  };
+
+  const setFolder = (folderId: string) => {
+    setCriteria({ ...criteria, folder_id: folderId === 'none' ? undefined : folderId });
   };
 
   const handleSubmit = async () => {
@@ -130,9 +137,13 @@ export function CreateTestSetModal({ open, onClose, editingSet, projectId }: Pro
           </div>
 
           {membershipType === 'dynamic' && (
-            <div className="p-4 bg-muted/50 rounded-lg border border-border space-y-3">
-              <p className="text-sm font-medium text-foreground">Dynamic Criteria</p>
-              <p className="text-xs text-muted-foreground">Test cases matching these criteria will be included</p>
+            <div className="p-4 bg-muted/50 rounded-lg border border-border space-y-4">
+              <div>
+                <p className="text-sm font-medium text-foreground">Dynamic Criteria</p>
+                <p className="text-xs text-muted-foreground">Test cases matching these criteria will be included</p>
+              </div>
+
+              {/* Priority selector */}
               <div>
                 <Label className="text-sm mb-1.5 block">Priority</Label>
                 <div className="flex flex-wrap gap-1.5 mb-2">
@@ -154,6 +165,24 @@ export function CreateTestSetModal({ open, onClose, editingSet, projectId }: Pro
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Folder selector */}
+              <div>
+                <Label className="text-sm mb-1.5 block">Folder</Label>
+                <Select value={criteria.folder_id || 'none'} onValueChange={setFolder}>
+                  <SelectTrigger className="w-full"><SelectValue placeholder="Any folder" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Any folder</SelectItem>
+                    {folders?.map((f: any) => (
+                      <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <p className="text-xs text-muted-foreground pt-2 border-t border-border">
+                Test cases will be refreshed when you click the Refresh button on the test set.
+              </p>
             </div>
           )}
         </div>
