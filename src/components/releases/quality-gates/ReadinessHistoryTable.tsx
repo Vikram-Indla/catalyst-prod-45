@@ -15,7 +15,7 @@ import {
   Clock,
   History
 } from 'lucide-react';
-import { useReleaseReadinessHistory } from '@/hooks/releases/useReleaseReadiness';
+import { useReleaseReadinessHistory } from '@/lib/shared-quality/hooks/useReadiness';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 

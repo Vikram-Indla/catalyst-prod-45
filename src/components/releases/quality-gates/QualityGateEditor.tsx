@@ -17,8 +17,8 @@ import {
   useCreateQualityGate,
   useUpdateQualityGate,
   useDeleteQualityGate,
-  QualityGate,
-} from '@/hooks/releases/useReleaseQualityGates';
+} from '@/lib/shared-quality/hooks/useQualityGates';
+import type { QualityGate } from '@/lib/shared-quality/hooks/useQualityGates';
 
 interface QualityGateEditorProps {
   releaseId: string;

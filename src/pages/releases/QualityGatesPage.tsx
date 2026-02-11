@@ -34,9 +34,8 @@ import {
   useEvaluateQualityGates,
   useWaiveQualityGate,
   useGateHistory,
-  QualityGate,
-  GateHistoryEntry,
-} from '@/hooks/releases/useReleaseQualityGates';
+} from '@/lib/shared-quality/hooks/useQualityGates';
+import type { QualityGate, GateHistoryEntry } from '@/lib/shared-quality/hooks/useQualityGates';
 import { useReleases } from '@/hooks/testhub/useReleases';
 
 // ── Config ──
