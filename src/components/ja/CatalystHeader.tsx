@@ -144,8 +144,8 @@ export function CatalystHeader() {
   // Define nav items with their module keys (must match admin_nav_modules.module_key)
   const allNavItems = [
     { label: "Home", path: "/for-you", moduleKey: "home", visibleToProductOwner: true },
-    { label: "Enterprise", path: "/enterprise/strategy-room", moduleKey: "enterprise", requiresEnterpriseAccess: true, visibleToProductOwner: true },
-    { label: "Product", hasDropdown: true, moduleKey: "product", visibleToProductOwner: true },
+    { label: "Strategy Hub", path: "/enterprise/strategy-room", moduleKey: "enterprise", requiresEnterpriseAccess: true, visibleToProductOwner: true },
+    { label: "Product Hub", hasDropdown: true, moduleKey: "product", visibleToProductOwner: true },
     { label: "Project", isLabel: true, moduleKey: "project", visibleToProductOwner: true },
     { label: "ReleaseHub", path: "/releasehub/command-center", moduleKey: "releases", visibleToProductOwner: false },
     { label: "TestHub", path: "/testhub/dashboard", moduleKey: "testhub", visibleToProductOwner: false },
