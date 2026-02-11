@@ -332,7 +332,7 @@ export function QAAssistantWidget({ onClose }: QAAssistantWidgetProps) {
                       )}
                       <div className="caty-msg-body">
                         {msg.type === 'assistant' ? (
-                          <div className="caty-bubble prose prose-sm max-w-none prose-headings:text-[#0f172a] prose-headings:font-semibold prose-headings:mt-3 prose-headings:mb-1 prose-p:my-1 prose-ul:my-1 prose-li:my-0.5 prose-strong:text-[#0f172a] text-[#334155] text-[13px] leading-relaxed">
+                          <div className="caty-bubble caty-enterprise-prose">
                             <ReactMarkdown>{msg.content}</ReactMarkdown>
                           </div>
                         ) : (
