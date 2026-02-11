@@ -29,10 +29,12 @@ export function ExecutionTrendChart({ data, isLoading, fullWidth }: ExecutionTre
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="date" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} />
+                <YAxis yAxisId="right" orientation="right" domain={[0, 100]} tick={{ fontSize: 12 }} tickFormatter={(v) => `${v}%`} />
                 <Tooltip contentStyle={{ backgroundColor: 'white', border: '1px solid hsl(var(--border))', borderRadius: '8px', fontSize: '12px' }} />
                 <Legend />
                 <Line type="monotone" dataKey="passed" name="Passed" stroke="#10b981" strokeWidth={2} dot={false} />
                 <Line type="monotone" dataKey="failed" name="Failed" stroke="#ef4444" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="pass_rate" name="Pass Rate %" stroke="#8b5cf6" strokeWidth={2} strokeDasharray="5 5" dot={false} yAxisId="right" />
               </LineChart>
             </ResponsiveContainer>
           </div>

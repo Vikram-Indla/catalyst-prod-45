@@ -26,6 +26,7 @@ export default function ReportsPage() {
   });
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showExport, setShowExport] = useState(false);
+  const [selectedRelease, setSelectedRelease] = useState('');
 
   const { data: execMetrics, isLoading: loadingExec, refetch: refetchExec } = useExecutionMetrics(dateRange.start, dateRange.end);
   const { data: trendData, isLoading: loadingTrend } = useExecutionTrend(dateRange.start, dateRange.end);
@@ -56,7 +57,7 @@ export default function ReportsPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <ReportFilters dateRange={dateRange} onDateRangeChange={setDateRange} onRefresh={() => refetchExec()} isLoading={isLoading} />
+          <ReportFilters dateRange={dateRange} onDateRangeChange={setDateRange} onRefresh={() => refetchExec()} isLoading={isLoading} selectedRelease={selectedRelease} onReleaseChange={setSelectedRelease} />
           <Button variant="outline" onClick={() => setShowExport(true)}><Download className="h-4 w-4 mr-2" />Export</Button>
         </div>
       </div>

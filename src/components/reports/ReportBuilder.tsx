@@ -46,6 +46,7 @@ const METRICS: Record<string, { key: string; label: string }[]> = {
 const GROUP_BY = [
   { value: 'none', label: 'No Grouping' }, { value: 'folder', label: 'By Folder/Module' },
   { value: 'priority', label: 'By Priority' }, { value: 'tester', label: 'By Tester' },
+  { value: 'day', label: 'By Day' }, { value: 'week', label: 'By Week' },
 ];
 
 const CHART_TYPES = [
@@ -130,6 +131,22 @@ export function ReportBuilder({ onClose, existingReport }: ReportBuilderProps) {
                   </div>
                 ))}
               </RadioGroup>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle className="text-base">Filters</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2"><Label>Date Range</Label>
+              <Select value={config.filters.dateRange} onValueChange={v => setConfig({...config, filters: { ...config.filters, dateRange: v }})}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="7">Last 7 days</SelectItem>
+                  <SelectItem value="14">Last 14 days</SelectItem>
+                  <SelectItem value="30">Last 30 days</SelectItem>
+                  <SelectItem value="90">Last 90 days</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>

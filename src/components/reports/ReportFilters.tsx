@@ -2,15 +2,20 @@ import { useState } from 'react';
 import { Calendar, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { subDays, startOfWeek, startOfMonth, startOfQuarter } from 'date-fns';
 import { DateRange } from '@/types/reports';
 import { cn } from '@/lib/utils';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ReportFiltersProps {
   dateRange: DateRange;
   onDateRangeChange: (range: DateRange) => void;
   onRefresh?: () => void;
   isLoading?: boolean;
+  selectedRelease?: string;
+  onReleaseChange?: (releaseId: string) => void;
 }
 
 const presetRanges = [
@@ -23,8 +28,20 @@ const presetRanges = [
   { label: 'This quarter', preset: 'quarter' as const },
 ];
 
-export function ReportFilters({ dateRange, onDateRangeChange, onRefresh, isLoading }: ReportFiltersProps) {
+export function ReportFilters({ dateRange, onDateRangeChange, onRefresh, isLoading, selectedRelease, onReleaseChange }: ReportFiltersProps) {
   const [open, setOpen] = useState(false);
+
+  const { data: releases } = useQuery({
+    queryKey: ['report-releases'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('releases')
+        .select('id, name')
+        .order('name');
+      if (error) throw new Error(error.message);
+      return data || [];
+    },
+  });
 
   const handlePresetSelect = (preset: typeof presetRanges[0]) => {
     const end = new Date();
@@ -57,6 +74,15 @@ export function ReportFilters({ dateRange, onDateRangeChange, onRefresh, isLoadi
           </div>
         </PopoverContent>
       </Popover>
+      {onReleaseChange && (
+        <Select value={selectedRelease || 'all'} onValueChange={v => onReleaseChange(v === 'all' ? '' : v)}>
+          <SelectTrigger className="w-[180px]"><SelectValue placeholder="All Releases" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Releases</SelectItem>
+            {releases?.map(r => <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      )}
       {onRefresh && (
         <Button variant="outline" size="icon" onClick={onRefresh} disabled={isLoading}>
           <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />

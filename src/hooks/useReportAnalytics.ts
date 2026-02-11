@@ -96,6 +96,21 @@ export function useTesterPerformance(startDate: Date, endDate: Date) {
   });
 }
 
+// ─── Defect Metrics ──────────────────────────────────────────────
+export function useDefectMetrics(startDate?: Date, endDate?: Date) {
+  return useQuery({
+    queryKey: ['report-defect-metrics', startDate?.toISOString(), endDate?.toISOString()],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_defect_metrics', {
+        p_start_date: startDate?.toISOString() || null,
+        p_end_date: endDate?.toISOString() || null,
+      });
+      if (error) throw new Error(error.message);
+      return data as unknown as import('@/types/reports').DefectMetrics;
+    },
+  });
+}
+
 // ─── Report Definitions CRUD ─────────────────────────────────────
 export function useReportDefinitions() {
   return useQuery({
