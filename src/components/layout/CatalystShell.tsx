@@ -10,6 +10,7 @@ import { ProjectSidebar } from './ProjectSidebar';
 import { ReleaseRoomSidebar } from './OperationsSidebar';
 import { TestManagementSidebar } from './TestManagementSidebar';
 import { ReleasesManagementSidebar } from './ReleasesManagementSidebar';
+import { ReleaseHubSidebar } from './ReleaseHubSidebar';
 import { PlanHubSidebar } from './PlanHubSidebar';
 import { TaskHubSidebar } from './TaskHubSidebar';
 import { TestHubSidebar } from './TestHubSidebar';
@@ -72,8 +73,11 @@ function CatalystShellContent() {
   // Check if on release route (Operations/Incidents)
   const isReleaseRoute = location.pathname.startsWith('/release');
   
-  // Check if on releases route (Release & Test Management module)
+  // Check if on releases route (Release & Test Management module - legacy)
   const isReleasesRoute = location.pathname.startsWith('/releases');
+  
+  // Check on releasehub route (new Release Management module)
+  const isReleaseHubRoute = location.pathname.startsWith('/releasehub');
   
   // Check if on test management route
   const isTestsRoute = location.pathname.startsWith('/tests');
@@ -135,7 +139,17 @@ function CatalystShellContent() {
       return null;
     }
 
-    // Release & Test Management sidebar (new module)
+    // ReleaseHub sidebar (new Release Management module)
+    if (isReleaseHubRoute) {
+      return (
+        <ReleaseHubSidebar
+          expanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+      );
+    }
+
+    // Release & Test Management sidebar (legacy - being retired)
     if (isReleasesRoute) {
       return (
         <ReleasesManagementSidebar

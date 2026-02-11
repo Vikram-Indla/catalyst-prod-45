@@ -581,6 +581,7 @@ const App = () => (
                 <Route path="tags" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TagsListPage /></Suspense>} />
                 <Route path="settings" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubSettingsPage /></Suspense>} />
                 <Route path="activity" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ActivityFeedPage /></Suspense>} />
+                <Route path="my-scope" element={<Suspense fallback={<div className="p-8">Loading...</div>}><MyTestScopePage /></Suspense>} />
                 <Route path="import-export" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ImportExportPage /></Suspense>} />
                 <Route path="test-plans" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestPlansListPage /></Suspense>} />
                 <Route path="test-plans/:planId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><PlanDetailPage /></Suspense>} />
@@ -591,7 +592,20 @@ const App = () => (
                 <Route path="caty" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CatyAIPage /></Suspense>} />
               </Route>
               
-              {/* Priorities Module (formerly Task10) */}
+              {/* ReleaseHub Module — Release Management (NEW) */}
+              <Route path="/releasehub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><Navigate to="/releasehub/command-center" replace /></Suspense>} />
+              <Route path="/releasehub/command-center" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleasesCommandCenter /></Suspense>} />
+              <Route path="/releasehub/dashboard" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleaseDashboardOverviewPage /></Suspense>} />
+              <Route path="/releasehub/all" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllReleasesPage /></Suspense>} />
+              <Route path="/releasehub/calendar" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CalendarPage /></Suspense>} />
+              <Route path="/releasehub/compare" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ComparePage /></Suspense>} />
+              <Route path="/releasehub/ask-ai" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AskAIPage /></Suspense>} />
+              <Route path="/releasehub/coverage" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CoverageReportsPage /></Suspense>} />
+              <Route path="/releasehub/quality-gates" element={<Suspense fallback={<div className="p-8">Loading...</div>}><QualityGatesPage /></Suspense>} />
+              <Route path="/releasehub/rtm" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RTMPage /></Suspense>} />
+              <Route path="/releasehub/:releaseId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleaseDashboardV5Page /></Suspense>} />
+              
+              {/* Legacy /releases routes — REDIRECT TO /releasehub (PHASE 3) */}
               <Route path="/priorities" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10LandingPage /></Suspense>} />
               <Route path="/priorities/completed" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10CompletedPage /></Suspense>} />
               <Route path="/priorities/list/:listId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10WeekPage /></Suspense>} />
@@ -948,34 +962,33 @@ const App = () => (
               <Route path="/stories" element={<Stories />} />
               <Route path="/work-items/stories" element={<Stories />} />
               <Route path="/work-items/subtasks" element={<Subtasks />} />
-              <Route path="/releases" element={<Navigate to="/releases/command-center" replace />} />
-              <Route path="/releases/command-center" element={<ReleasesCommandCenter />} />
-              <Route path="/releases/dashboard" element={<ReleaseDashboardOverviewPage />} />
-              <Route path="/releases/my-scope" element={<MyTestScopePage />} />
-              <Route path="/releases/all" element={<AllReleasesPage />} />
-              <Route path="/releases/calendar" element={<CalendarPage />} />
-              <Route path="/releases/compare" element={<ComparePage />} />
-              <Route path="/releases/test-plans" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleasesTestPlansPage /></Suspense>} />
-              <Route path="/releases/test-plans/:planId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleasesTestPlanDetailPage /></Suspense>} />
-              <Route path="/releases/test-cases" element={<ReleasesTestCasesPage />} />
-              <Route path="/releases/test-cases/:id" element={<ReleasesTestCaseDetailPage />} />
-              {/* Removed duplicate /releases/tests routes - use /releases/test-cases only */}
-              <Route path="/releases/test-sets" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestSetsPage /></Suspense>} />
-              <Route path="/releases/test-sets/:setId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestSetDetailPage /></Suspense>} />
-              <Route path="/releases/test-cycles" element={<ReleasesTestCyclesPage />} />
-              <Route path="/releases/test-cycles/:cycleId" element={<ReleasesCycleCommandCenter />} />
-              <Route path="/releases/templates" element={<ReleasesCycleTemplatesPage />} />
-              <Route path="/releases/workload" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkloadDashboard /></Suspense>} />
-              <Route path="/releases/execution" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ExecutionPage /></Suspense>} />
-              <Route path="/releases/execution/:cycleId/:testCaseId" element={<ReleasesTestExecutionPage />} />
-              <Route path="/releases/execute/:cycleId/:testCaseId" element={<ProtectedRoute><TestExecutionFocusPage /></ProtectedRoute>} />
-              <Route path="/releases/ask-ai" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AskAIPage /></Suspense>} />
-              <Route path="/releases/coverage" element={<CoverageReportsPage />} />
-              <Route path="/releases/quality-gates" element={<Suspense fallback={<div className="p-8">Loading...</div>}><QualityGatesPage /></Suspense>} />
-              <Route path="/releases/rtm" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RTMPage /></Suspense>} />
-              <Route path="/releases/defects" element={<ReleasesDefectsPage />} />
-              <Route path="/releases/defects/:id" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleasesDefectDetailPage /></Suspense>} />
-              <Route path="/releases/:releaseId" element={<ReleaseDashboardV5Page />} />
+              <Route path="/releases" element={<Navigate to="/releasehub/command-center" replace />} />
+              <Route path="/releases/command-center" element={<Navigate to="/releasehub/command-center" replace />} />
+              <Route path="/releases/dashboard" element={<Navigate to="/releasehub/dashboard" replace />} />
+              <Route path="/releases/my-scope" element={<Navigate to="/testhub/my-scope" replace />} />
+              <Route path="/releases/all" element={<Navigate to="/releasehub/all" replace />} />
+              <Route path="/releases/calendar" element={<Navigate to="/releasehub/calendar" replace />} />
+              <Route path="/releases/compare" element={<Navigate to="/releasehub/compare" replace />} />
+              <Route path="/releases/test-plans" element={<Navigate to="/releasehub/all" replace />} />
+              <Route path="/releases/test-plans/:planId" element={<Navigate to="/releasehub/all" replace />} />
+              <Route path="/releases/test-cases" element={<Navigate to="/releasehub/all" replace />} />
+              <Route path="/releases/test-cases/:id" element={<Navigate to="/releasehub/all" replace />} />
+              <Route path="/releases/test-sets" element={<Navigate to="/releasehub/all" replace />} />
+              <Route path="/releases/test-sets/:setId" element={<Navigate to="/releasehub/all" replace />} />
+              <Route path="/releases/test-cycles" element={<Navigate to="/releasehub/all" replace />} />
+              <Route path="/releases/test-cycles/:cycleId" element={<Navigate to="/releasehub/all" replace />} />
+              <Route path="/releases/templates" element={<Navigate to="/releasehub/all" replace />} />
+              <Route path="/releases/workload" element={<Navigate to="/releasehub/all" replace />} />
+              <Route path="/releases/execution" element={<Navigate to="/releasehub/all" replace />} />
+              <Route path="/releases/execution/:cycleId/:testCaseId" element={<Navigate to="/releasehub/all" replace />} />
+              <Route path="/releases/execute/:cycleId/:testCaseId" element={<Navigate to="/releasehub/all" replace />} />
+              <Route path="/releases/ask-ai" element={<Navigate to="/releasehub/ask-ai" replace />} />
+              <Route path="/releases/coverage" element={<Navigate to="/releasehub/coverage" replace />} />
+              <Route path="/releases/quality-gates" element={<Navigate to="/releasehub/quality-gates" replace />} />
+              <Route path="/releases/rtm" element={<Navigate to="/releasehub/rtm" replace />} />
+              <Route path="/releases/defects" element={<Navigate to="/testhub/defects" replace />} />
+              <Route path="/releases/defects/:id" element={<Navigate to="/testhub/defects/:defectId" replace />} />
+              <Route path="/releases/:releaseId" element={<Navigate to="/releasehub/:releaseId" replace />} />
               
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               
