@@ -30544,36 +30544,42 @@ export type Database = {
       tm_step_results: {
         Row: {
           actual_result: string | null
+          comment: string | null
           created_at: string | null
           duration_seconds: number | null
           executed_at: string | null
           executed_by: string | null
           id: string
           status: Database["public"]["Enums"]["tm_execution_status"] | null
+          step_number: number | null
           test_run_id: string
           test_step_id: string
           updated_at: string | null
         }
         Insert: {
           actual_result?: string | null
+          comment?: string | null
           created_at?: string | null
           duration_seconds?: number | null
           executed_at?: string | null
           executed_by?: string | null
           id?: string
           status?: Database["public"]["Enums"]["tm_execution_status"] | null
+          step_number?: number | null
           test_run_id: string
           test_step_id: string
           updated_at?: string | null
         }
         Update: {
           actual_result?: string | null
+          comment?: string | null
           created_at?: string | null
           duration_seconds?: number | null
           executed_at?: string | null
           executed_by?: string | null
           id?: string
           status?: Database["public"]["Enums"]["tm_execution_status"] | null
+          step_number?: number | null
           test_run_id?: string
           test_step_id?: string
           updated_at?: string | null
@@ -31656,6 +31662,7 @@ export type Database = {
           duration_seconds: number | null
           environment_snapshot: Json | null
           executed_by: string | null
+          execution_mode: string | null
           id: string
           notes: string | null
           run_number: number | null
@@ -31674,6 +31681,7 @@ export type Database = {
           duration_seconds?: number | null
           environment_snapshot?: Json | null
           executed_by?: string | null
+          execution_mode?: string | null
           id?: string
           notes?: string | null
           run_number?: number | null
@@ -31692,6 +31700,7 @@ export type Database = {
           duration_seconds?: number | null
           environment_snapshot?: Json | null
           executed_by?: string | null
+          execution_mode?: string | null
           id?: string
           notes?: string | null
           run_number?: number | null

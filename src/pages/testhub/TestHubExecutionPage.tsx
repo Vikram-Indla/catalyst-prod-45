@@ -294,9 +294,9 @@ export default function TestHubExecutionPage() {
   const handleFail = () => setIsFailureModalOpen(true);
   const handleBlocked = () => {
     if (fastTrackMode || steps.length === 0) {
-      updateExecutionStatus('blocked');
+      setIsFailureModalOpen(true); // Use failure modal for reason
     } else {
-      updateStepStatus('blocked');
+      setIsFailureModalOpen(true); // Use failure modal for block reason
     }
   };
   const handleSkip = () => {
@@ -313,32 +313,49 @@ export default function TestHubExecutionPage() {
     if (fastTrackMode || steps.length === 0) {
       await updateExecutionStatus('failed', failureReason, failureNotes, defectId);
     } else {
-      updateStepStatus('failed');
+      await updateStepStatus('failed', failureReason);
     }
   };
 
-  // Step-level status tracking (local state for step progress)
-  const updateStepStatus = (status: 'passed' | 'failed' | 'blocked' | 'skipped') => {
-    const key = selectedTestCaseId || '';
-    const current = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
-    const updated = current.map((s, i) => i === currentStepIndex ? { ...s, status } : s);
-    setStepStatuses(new Map(stepStatuses).set(key, updated));
+  // Step-level status tracking + DB persistence
+  const updateStepStatus = useCallback((status: 'passed' | 'failed' | 'blocked' | 'skipped', comment?: string) => {
+    const step = steps[currentStepIndex];
+    if (!step || !selectedTestCaseId) return;
 
-    // Auto-advance to next step
+    // Persist step result asynchronously
+    (async () => {
+      try {
+        await supabase.from('tm_step_results').insert({
+          test_run_id: selectedTestCaseId,
+          test_step_id: step.id,
+          status: status as any,
+          comment: comment || null,
+          executed_at: new Date().toISOString(),
+          executed_by: currentUserId,
+        });
+      } catch (e) {
+        console.error('Step save error:', e);
+      }
+    })();
+
+    setStepStatuses(prev => {
+      const key = selectedTestCaseId;
+      const current = prev.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
+      const updated = current.map((s, i) => i === currentStepIndex ? { ...s, status } : s);
+      return new Map(prev).set(key, updated);
+    });
+
+    const element = document.getElementById(`step-card-${currentStepIndex}`);
+    if (element) {
+      const colors: Record<string, string> = { passed: '#ECFDF5', failed: '#FEF2F2', blocked: '#FFFBEB', skipped: '#F8FAFC' };
+      element.style.backgroundColor = colors[status] || 'hsl(var(--card))';
+      setTimeout(() => { element.style.backgroundColor = 'hsl(var(--card))'; }, 200);
+    }
+
     if (currentStepIndex < steps.length - 1) {
       setCurrentStepIndex(prev => prev + 1);
-    } else {
-      // All steps done - determine overall result
-      const allStatuses = updated.map(s => s.status);
-      if (allStatuses.some(s => s === 'failed')) {
-        updateExecutionStatus('failed');
-      } else if (allStatuses.some(s => s === 'blocked')) {
-        updateExecutionStatus('blocked');
-      } else if (allStatuses.every(s => s === 'passed' || s === 'skipped')) {
-        updateExecutionStatus('passed');
-      }
     }
-  };
+  }, [currentStepIndex, selectedTestCaseId, steps, currentUserId]);
 
   // Pass All Remaining
   const handlePassAllRemaining = () => {
@@ -379,6 +396,7 @@ export default function TestHubExecutionPage() {
       if (e.ctrlKey || e.metaKey) {
         if (key === 'enter') { e.preventDefault(); handlePassAllRemaining(); return; }
         if (key === 'p') { e.preventDefault(); handlePassAllRemaining(); return; }
+        if (key === 's') { e.preventDefault(); catalystToast.success('Progress saved'); return; }
         return;
       }
 
@@ -389,6 +407,10 @@ export default function TestHubExecutionPage() {
         case 'f': handleFail(); break;
         case 'b': handleBlocked(); break;
         case 's': e.preventDefault(); handleSkip(); break;
+        case 'r': e.preventDefault(); handleReset(); break;
+        case 'd': e.preventDefault(); setIsFailureModalOpen(true); break;
+        case 'a': e.preventDefault(); document.getElementById('attachment-input')?.click(); break;
+        case 'c': e.preventDefault(); document.getElementById('notes-textarea')?.focus(); break;
         case '?': setShowShortcuts(true); break;
         case 'arrowleft': handlePrevStep(); break;
         case 'arrowright': case 'n': handleNextStep(); break;
@@ -694,59 +716,60 @@ export default function TestHubExecutionPage() {
                           </div>
                         )}
                       </div>
-                    ) : currentStep ? (
-                      /* Step-by-step mode: show current step */
-                      <div style={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 10, overflow: 'hidden' }}>
-                        <div style={{ padding: '12px 16px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderBottom: '1px solid hsl(var(--border))', display: 'flex', alignItems: 'center', gap: 10 }}>
-                          <span style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            {currentStep.step_number || currentStepIndex + 1}
-                          </span>
-                          <span style={{ fontSize: 14, fontWeight: 600, color: 'hsl(var(--foreground))' }}>
-                            Step {currentStep.step_number || currentStepIndex + 1}
-                          </span>
-                          {currentStepStatuses[currentStepIndex]?.status !== 'not_run' && (
-                            <span style={{
-                              fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
-                              color: statusConfig[currentStepStatuses[currentStepIndex].status]?.color,
-                              backgroundColor: statusConfig[currentStepStatuses[currentStepIndex].status]?.bg,
-                            }}>
-                              {statusConfig[currentStepStatuses[currentStepIndex].status]?.label}
-                            </span>
-                          )}
-                        </div>
-                        <div style={{ padding: 20 }}>
-                          <div style={{ marginBottom: 4 }}>
-                            <span style={{ fontSize: 10, fontWeight: 700, color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>ACTION</span>
-                          </div>
-                          <p style={{ fontSize: 15, color: 'hsl(var(--foreground))', margin: '6px 0 0', lineHeight: 1.6 }}>
-                            {highlightVariables(currentStep.action)}
-                          </p>
+                     ) : currentStep ? (
+                       /* Step-by-step mode: show current step */
+                       <div id={`step-card-${currentStepIndex}`} style={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 10, overflow: 'hidden', transition: 'background-color 0.2s' }}>
+                         <div style={{ padding: '12px 16px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderBottom: '1px solid hsl(var(--border))', display: 'flex', alignItems: 'center', gap: 10 }}>
+                           <span style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                             {currentStep.step_number || currentStepIndex + 1}
+                           </span>
+                           <span style={{ fontSize: 14, fontWeight: 600, color: 'hsl(var(--foreground))' }}>
+                             Step {currentStep.step_number || currentStepIndex + 1}
+                           </span>
+                           {currentStepStatuses[currentStepIndex]?.status !== 'not_run' && (
+                             <span style={{
+                               fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
+                               color: statusConfig[currentStepStatuses[currentStepIndex].status]?.color,
+                               backgroundColor: statusConfig[currentStepStatuses[currentStepIndex].status]?.bg,
+                             }}>
+                               {statusConfig[currentStepStatuses[currentStepIndex].status]?.label}
+                             </span>
+                           )}
+                         </div>
+                         <div style={{ padding: 20 }}>
+                           <div style={{ marginBottom: 4 }}>
+                             <span style={{ fontSize: 10, fontWeight: 700, color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>ACTION</span>
+                           </div>
+                           <p style={{ fontSize: 15, color: 'hsl(var(--foreground))', margin: '6px 0 0', lineHeight: 1.6 }}>
+                             {highlightVariables(currentStep.action)}
+                           </p>
 
-                          {currentStep.expected_result && (
-                            <div style={{ marginTop: 16, padding: 14, backgroundColor: '#ECFDF5', borderRadius: 8, borderLeft: '3px solid #10B981' }}>
-                              <span style={{ fontSize: 10, fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.06em' }}>EXPECTED</span>
-                              <p style={{ fontSize: 14, color: '#065F46', margin: '4px 0 0', lineHeight: 1.5 }}>
-                                {highlightVariables(currentStep.expected_result)}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                           {currentStep.expected_result && (
+                             <div style={{ marginTop: 16, padding: 14, backgroundColor: '#ECFDF5', borderRadius: 8, borderLeft: '3px solid #10B981' }}>
+                               <span style={{ fontSize: 10, fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.06em' }}>EXPECTED</span>
+                               <p style={{ fontSize: 14, color: '#065F46', margin: '4px 0 0', lineHeight: 1.5 }}>
+                                 {highlightVariables(currentStep.expected_result)}
+                               </p>
+                             </div>
+                           )}
+                         </div>
+                       </div>
                     ) : null}
 
                     {/* Notes */}
-                    <div style={{ marginTop: 20 }}>
-                      <textarea
-                        value={notes}
-                        onChange={e => setNotes(e.target.value)}
-                        placeholder="Add execution notes..."
-                        style={{
-                          width: '100%', minHeight: 80, padding: 12, border: '1px solid hsl(var(--border))',
-                          borderRadius: 8, fontSize: 13, color: 'hsl(var(--foreground))',
-                          backgroundColor: 'hsl(var(--background))', resize: 'vertical', fontFamily: 'inherit',
-                        }}
-                      />
-                    </div>
+                     <div style={{ marginTop: 20 }}>
+                       <textarea
+                         id="notes-textarea"
+                         value={notes}
+                         onChange={e => setNotes(e.target.value)}
+                         placeholder="Add execution notes... (C to focus)"
+                         style={{
+                           width: '100%', minHeight: 80, padding: 12, border: '1px solid hsl(var(--border))',
+                           borderRadius: 8, fontSize: 13, color: 'hsl(var(--foreground))',
+                           backgroundColor: 'hsl(var(--background))', resize: 'vertical', fontFamily: 'inherit',
+                         }}
+                       />
+                     </div>
                   </div>
                 </div>
 
