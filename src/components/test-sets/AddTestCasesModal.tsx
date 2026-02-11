@@ -130,7 +130,7 @@ export function AddTestCasesModal({ open, onClose, testSetId, projectId, existin
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
                       <span className="text-sm font-mono text-primary">{tc.case_key}</span>
-                      <Badge variant="outline" className={cn('capitalize text-[10px]', priorityColors[tc.priority])}>{tc.priority}</Badge>
+                      <Badge variant="outline" className={cn('capitalize text-[10px]', priorityColors[(tc.priority?.name || '').toLowerCase()])}>{tc.priority?.name || '-'}</Badge>
                     </div>
                     <p className="text-sm text-foreground truncate">{tc.title}</p>
                     {tc.folder && <p className="text-xs text-muted-foreground mt-0.5"><Folder className="h-3 w-3 inline mr-1" />{tc.folder.name}</p>}

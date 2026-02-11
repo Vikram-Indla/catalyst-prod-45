@@ -20,6 +20,8 @@ import {
 import { Search } from 'lucide-react';
 import { useTestSets, useDeleteTestSet, useRefreshDynamicSet, useCloneTestSet, useArchiveTestSet } from '@/hooks/useTestSets';
 import { useProjectContext } from '@/hooks/useProjectContext';
+
+const DEFAULT_PROJECT_ID = '40000000-0001-0001-0001-000000000001';
 import { SetTypeBadge } from '@/components/test-sets/SetTypeBadge';
 import { CreateTestSetModal } from '@/components/test-sets/CreateTestSetModal';
 import { TestSet, TestSetFilters, TEST_SET_TYPE_CONFIG } from '@/types/test-sets';
@@ -27,13 +29,14 @@ import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 export default function TestSetsPage() {
-  const { projectId } = useProjectContext();
+  const { projectId: ctxProjectId } = useProjectContext();
+  const projectId = ctxProjectId || DEFAULT_PROJECT_ID;
   const navigate = useNavigate();
   const [filters, setFilters] = useState<TestSetFilters>({ search: '', type: 'all', status: 'active' });
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingSet, setEditingSet] = useState<TestSet | null>(null);
 
-  const { data: testSets, isLoading } = useTestSets(projectId || '', filters);
+  const { data: testSets, isLoading } = useTestSets(projectId, filters);
   const deleteMutation = useDeleteTestSet();
   const refreshMutation = useRefreshDynamicSet();
   const cloneMutation = useCloneTestSet();
@@ -149,7 +152,7 @@ export default function TestSetsPage() {
         </div>
       )}
 
-      <CreateTestSetModal open={isCreateOpen} onClose={handleClose} editingSet={editingSet} projectId={projectId || ''} />
+      <CreateTestSetModal open={isCreateOpen} onClose={handleClose} editingSet={editingSet} projectId={projectId} />
     </div>
   );
 }

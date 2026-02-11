@@ -55,7 +55,7 @@ export function useTestSetCases(setId: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tm_test_set_cases' as any)
-        .select('id, sort_order, added_at, test_case:tm_test_cases(id, case_key, title, priority, status)')
+        .select('id, sort_order, added_at, test_case:tm_test_cases(id, case_key, title, status, priority:tm_case_priorities(id, name))')
         .eq('test_set_id', setId)
         .order('sort_order', { ascending: true });
       if (error) throw new Error(error.message);
@@ -288,9 +288,9 @@ export function useAvailableTestCases(projectId: string, excludeIds: string[], f
     queryFn: async () => {
       let query = supabase
         .from('tm_test_cases' as any)
-        .select('id, case_key, title, priority, status, folder_id, folder:tm_folders(id, name)')
+        .select('id, case_key, title, status, priority:tm_case_priorities(id, name), folder_id, folder:tm_folders(id, name)')
         .eq('project_id', projectId)
-        .eq('is_active', true)
+        .neq('status', 'deprecated')
         .order('case_key', { ascending: true });
 
       if (excludeIds.length > 0) {
@@ -301,9 +301,6 @@ export function useAvailableTestCases(projectId: string, excludeIds: string[], f
       }
       if (filters?.folderId && filters.folderId !== 'all') {
         query = query.eq('folder_id', filters.folderId);
-      }
-      if (filters?.priority && filters.priority !== 'all') {
-        query = query.eq('priority', filters.priority);
       }
 
       const { data, error } = await query.limit(100);

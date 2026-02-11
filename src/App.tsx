@@ -63,6 +63,7 @@ const TestRepositoryPage = lazy(() => import("./pages/testhub/TestRepositoryPage
 const TestHubDashboardPage = lazy(() => import("./pages/testhub/TestHubDashboardPage"));
 const SharedStepsPage = lazy(() => import("./pages/testhub/SharedStepsPage"));
 const TestSetsPage = lazy(() => import("./pages/testhub/TestSetsPage"));
+const TestSetDetailPage = lazy(() => import("./pages/testhub/TestSetDetailPage"));
 const TestCyclesPage = lazy(() => import("./pages/testhub/TestCyclesPage"));
 const TestCycleDetailPage = lazy(() => import("./pages/testhub/TestCycleDetailPage"));
 const CycleReportPage = lazy(() => import("./pages/testhub/CycleReportPage"));
@@ -546,6 +547,7 @@ const App = () => (
                 <Route path="dashboard" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubDashboardPage /></Suspense>} />
                 <Route path="shared-steps" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SharedStepsPage /></Suspense>} />
                 <Route path="test-sets" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestSetsPage /></Suspense>} />
+                <Route path="test-sets/:setId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestSetDetailPage /></Suspense>} />
                 <Route path="cycles" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestCyclesPage /></Suspense>} />
                 <Route path="cycles/:cycleId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestCycleDetailPage /></Suspense>} />
                 <Route path="cycles/:cycleId/report" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CycleReportPage /></Suspense>} />
