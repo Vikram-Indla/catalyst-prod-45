@@ -190,15 +190,16 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
   );
 }
 
-function AvatarChip({ assignee, index }: { assignee: { displayName: string; avatarUrl: string | null }; index: number }) {
+function AvatarChip({ assignee, index }: { assignee: { displayName: string; avatarUrl: string | null; roleName?: string | null }; index: number }) {
   const [imgError, setImgError] = useState(false);
   const initials = assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   const colors = ['#6366f1', '#0d9488', '#d97706', '#ef4444', '#2563eb', '#7c3aed', '#16a34a', '#0891b2'];
   const bg = colors[index % colors.length];
+  const tooltip = assignee.roleName ? `${assignee.displayName} · ${assignee.roleName}` : assignee.displayName;
 
   return (
     <div
-      title={assignee.displayName}
+      title={tooltip}
       style={{
         width: 28, height: 28, borderRadius: '50%',
         border: '2px solid white',

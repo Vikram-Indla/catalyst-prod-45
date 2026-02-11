@@ -24,6 +24,7 @@ export interface JiraReleaseAssignee {
   accountId: string;
   displayName: string;
   avatarUrl: string | null;
+  roleName: string | null;
 }
 
 /**
@@ -108,6 +109,7 @@ export function useJiraReleases() {
       releaseMap.forEach(r => r.assigneeMap.forEach((_, id) => allAccountIds.add(id)));
 
       const avatarMap = new Map<string, string>();
+      const profileIdMap = new Map<string, string>();
       if (allAccountIds.size > 0) {
         const ids = Array.from(allAccountIds);
         // Batch fetch
@@ -137,6 +139,26 @@ export function useJiraReleases() {
             const profileAvatar = m.catalyst_profile_id ? profileAvatars.get(m.catalyst_profile_id) : null;
             const url = profileAvatar || m.jira_avatar_url;
             if (url) avatarMap.set(m.jira_account_id, url);
+            // Map profile_id for role lookup
+            if (m.catalyst_profile_id) {
+              profileIdMap.set(m.jira_account_id, m.catalyst_profile_id);
+            }
+          });
+        }
+      }
+
+      // Step 2b: Fetch roles from resource_inventory via profile_id
+      const roleMap = new Map<string, string>();
+      const allProfileIds = Array.from(profileIdMap.values()).filter(Boolean);
+      if (allProfileIds.length > 0) {
+        for (let i = 0; i < allProfileIds.length; i += 500) {
+          const batch = allProfileIds.slice(i, i + 500);
+          const { data: resources } = await supabase
+            .from('resource_inventory')
+            .select('profile_id, role_name')
+            .in('profile_id', batch);
+          (resources ?? []).forEach((r: any) => {
+            if (r.role_name && r.profile_id) roleMap.set(r.profile_id, r.role_name);
           });
         }
       }
@@ -146,10 +168,12 @@ export function useJiraReleases() {
       releaseMap.forEach((r, name) => {
         const assignees: JiraReleaseAssignee[] = [];
         r.assigneeMap.forEach(a => {
+          const pid = profileIdMap.get(a.accountId);
           assignees.push({
             accountId: a.accountId,
             displayName: a.displayName,
             avatarUrl: avatarMap.get(a.accountId) || null,
+            roleName: pid ? (roleMap.get(pid) || null) : null,
           });
         });
 
