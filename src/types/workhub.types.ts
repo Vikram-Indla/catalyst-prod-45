@@ -66,6 +66,7 @@ export interface WorkItem {
   due_date?: string;
   start_date?: string;
   last_synced_at?: string;
+  jira_url?: string;
   sync_source: SyncSource;
   is_jira_locked: boolean;
   story_points?: number;
