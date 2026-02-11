@@ -42,7 +42,7 @@ export function CatyGenerateTestsModal({ open, onClose, projectId }: Props) {
   const handleSave = async () => {
     const selected = (generatedTests || []).filter((_, i) => selectedIndexes.has(i));
     const selSuggIds = suggestionIds.filter((_, i) => selectedIndexes.has(i));
-    await saveMutation.mutateAsync({ projectId, folderId: options.folderId || undefined, testCases: selected, suggestionIds: selSuggIds });
+    await saveMutation.mutateAsync({ projectId, folderId: options.folderId === 'root' ? undefined : options.folderId || undefined, testCases: selected, suggestionIds: selSuggIds });
     handleClose();
   };
 
@@ -98,7 +98,7 @@ export function CatyGenerateTestsModal({ open, onClose, projectId }: Props) {
                   <Select value={options.folderId} onValueChange={(v) => setOptions({ ...options, folderId: v })}>
                     <SelectTrigger><SelectValue placeholder="Select folder..." /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Root</SelectItem>
+                      <SelectItem value="root">Root</SelectItem>
                       {folders?.map((f: any) => <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
