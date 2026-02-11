@@ -34859,6 +34859,90 @@ export type Database = {
           },
         ]
       }
+      wh_bulk_ops_log: {
+        Row: {
+          affected_item_ids: string[]
+          field_changed: string | null
+          id: string
+          item_count: number | null
+          new_values: Json | null
+          old_values: Json | null
+          operation: string
+          performed_at: string | null
+          performed_by: string | null
+          reverted_at: string | null
+          reverted_by: string | null
+        }
+        Insert: {
+          affected_item_ids: string[]
+          field_changed?: string | null
+          id?: string
+          item_count?: number | null
+          new_values?: Json | null
+          old_values?: Json | null
+          operation: string
+          performed_at?: string | null
+          performed_by?: string | null
+          reverted_at?: string | null
+          reverted_by?: string | null
+        }
+        Update: {
+          affected_item_ids?: string[]
+          field_changed?: string | null
+          id?: string
+          item_count?: number | null
+          new_values?: Json | null
+          old_values?: Json | null
+          operation?: string
+          performed_at?: string | null
+          performed_by?: string | null
+          reverted_at?: string | null
+          reverted_by?: string | null
+        }
+        Relationships: []
+      }
+      wh_comments: {
+        Row: {
+          body: string
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          user_id: string | null
+          work_item_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+          work_item_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wh_comments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_wh_work_items_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_comments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "wh_work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wh_config: {
         Row: {
           description: string | null
@@ -35036,6 +35120,289 @@ export type Database = {
         }
         Relationships: []
       }
+      wh_jira_projects: {
+        Row: {
+          avatar_url: string | null
+          color: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          jira_project_id: string
+          last_synced_at: string | null
+          name: string
+          project_key: string
+          sync_config: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          jira_project_id: string
+          last_synced_at?: string | null
+          name: string
+          project_key: string
+          sync_config?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          jira_project_id?: string
+          last_synced_at?: string | null
+          name?: string
+          project_key?: string
+          sync_config?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      wh_jira_sync_log: {
+        Row: {
+          completed_at: string | null
+          duration_ms: number | null
+          errors: Json | null
+          id: string
+          items_created: number | null
+          items_unchanged: number | null
+          items_updated: number | null
+          jira_project_id: string | null
+          started_at: string | null
+          status: string | null
+          sync_type: string | null
+          triggered_by: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          duration_ms?: number | null
+          errors?: Json | null
+          id?: string
+          items_created?: number | null
+          items_unchanged?: number | null
+          items_updated?: number | null
+          jira_project_id?: string | null
+          started_at?: string | null
+          status?: string | null
+          sync_type?: string | null
+          triggered_by?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          duration_ms?: number | null
+          errors?: Json | null
+          id?: string
+          items_created?: number | null
+          items_unchanged?: number | null
+          items_updated?: number | null
+          jira_project_id?: string | null
+          started_at?: string | null
+          status?: string | null
+          sync_type?: string | null
+          triggered_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wh_jira_sync_log_jira_project_id_fkey"
+            columns: ["jira_project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_jira_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wh_releases: {
+        Row: {
+          actual_date: string | null
+          color: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          owner_user_id: string | null
+          sort_order: number | null
+          start_date: string | null
+          status: string
+          target_date: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          actual_date?: string | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          owner_user_id?: string | null
+          sort_order?: number | null
+          start_date?: string | null
+          status?: string
+          target_date: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          actual_date?: string | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          owner_user_id?: string | null
+          sort_order?: number | null
+          start_date?: string | null
+          status?: string
+          target_date?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      wh_resource_assignments: {
+        Row: {
+          assigned_at: string | null
+          id: string
+          resource_id: string
+          role: string | null
+          work_item_id: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          id?: string
+          resource_id: string
+          role?: string | null
+          work_item_id: string
+        }
+        Update: {
+          assigned_at?: string | null
+          id?: string
+          resource_id?: string
+          role?: string | null
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wh_resource_assignments_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "vw_wh_resource_utilization"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_resource_assignments_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "wh_resources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_resource_assignments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_wh_work_items_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_resource_assignments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "wh_work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wh_resources: {
+        Row: {
+          avatar_url: string | null
+          capacity_hours_per_week: number | null
+          color: string | null
+          created_at: string | null
+          department: string | null
+          email: string | null
+          id: string
+          is_active: boolean | null
+          jira_account_id: string | null
+          name: string
+          role: string | null
+          skills: string[] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          capacity_hours_per_week?: number | null
+          color?: string | null
+          created_at?: string | null
+          department?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          jira_account_id?: string | null
+          name: string
+          role?: string | null
+          skills?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          capacity_hours_per_week?: number | null
+          color?: string | null
+          created_at?: string | null
+          department?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          jira_account_id?: string | null
+          name?: string
+          role?: string | null
+          skills?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      wh_saved_filters: {
+        Row: {
+          created_at: string | null
+          filter_config: Json
+          id: string
+          is_shared: boolean | null
+          name: string
+          page: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          filter_config: Json
+          id?: string
+          is_shared?: boolean | null
+          name: string
+          page?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          filter_config?: Json
+          id?: string
+          is_shared?: boolean | null
+          name?: string
+          page?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       wh_sync_log: {
         Row: {
           completed_at: string | null
@@ -35114,6 +35481,13 @@ export type Database = {
             foreignKeyName: "wh_theme_items_theme_id_fkey"
             columns: ["theme_id"]
             isOneToOne: false
+            referencedRelation: "vw_wh_theme_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_theme_items_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
             referencedRelation: "wh_themes"
             referencedColumns: ["id"]
           },
@@ -35125,9 +35499,14 @@ export type Database = {
           created_at: string | null
           created_by: string | null
           description: string | null
+          end_date: string | null
           id: string
           name: string
           owner_id: string | null
+          owner_user_id: string | null
+          progress: number | null
+          sort_order: number | null
+          start_date: string | null
           status: string | null
           target_date: string | null
           updated_at: string | null
@@ -35137,9 +35516,14 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           description?: string | null
+          end_date?: string | null
           id?: string
           name: string
           owner_id?: string | null
+          owner_user_id?: string | null
+          progress?: number | null
+          sort_order?: number | null
+          start_date?: string | null
           status?: string | null
           target_date?: string | null
           updated_at?: string | null
@@ -35149,9 +35533,14 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           description?: string | null
+          end_date?: string | null
           id?: string
           name?: string
           owner_id?: string | null
+          owner_user_id?: string | null
+          progress?: number | null
+          sort_order?: number | null
+          start_date?: string | null
           status?: string | null
           target_date?: string | null
           updated_at?: string | null
@@ -35235,6 +35624,164 @@ export type Database = {
           synced_at?: string | null
         }
         Relationships: []
+      }
+      wh_work_items: {
+        Row: {
+          actual_hours: number | null
+          assignee_user_id: string | null
+          completed_at: string | null
+          created_at: string | null
+          depth: number | null
+          description: string | null
+          due_date: string | null
+          estimated_hours: number | null
+          hierarchy_path: string[] | null
+          id: string
+          is_jira_locked: boolean | null
+          item_key: string
+          item_type: string
+          jira_issue_id: string | null
+          jira_labels: string[] | null
+          jira_priority: string | null
+          jira_project_id: string | null
+          jira_sprint: string | null
+          jira_status: string | null
+          jira_story_points: number | null
+          jira_url: string | null
+          last_synced_at: string | null
+          parent_id: string | null
+          priority: string | null
+          release_id: string | null
+          start_date: string | null
+          status: string
+          story_points: number | null
+          summary: string
+          sync_source: string | null
+          team_id: string | null
+          theme_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          actual_hours?: number | null
+          assignee_user_id?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          depth?: number | null
+          description?: string | null
+          due_date?: string | null
+          estimated_hours?: number | null
+          hierarchy_path?: string[] | null
+          id?: string
+          is_jira_locked?: boolean | null
+          item_key: string
+          item_type: string
+          jira_issue_id?: string | null
+          jira_labels?: string[] | null
+          jira_priority?: string | null
+          jira_project_id?: string | null
+          jira_sprint?: string | null
+          jira_status?: string | null
+          jira_story_points?: number | null
+          jira_url?: string | null
+          last_synced_at?: string | null
+          parent_id?: string | null
+          priority?: string | null
+          release_id?: string | null
+          start_date?: string | null
+          status?: string
+          story_points?: number | null
+          summary: string
+          sync_source?: string | null
+          team_id?: string | null
+          theme_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          actual_hours?: number | null
+          assignee_user_id?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          depth?: number | null
+          description?: string | null
+          due_date?: string | null
+          estimated_hours?: number | null
+          hierarchy_path?: string[] | null
+          id?: string
+          is_jira_locked?: boolean | null
+          item_key?: string
+          item_type?: string
+          jira_issue_id?: string | null
+          jira_labels?: string[] | null
+          jira_priority?: string | null
+          jira_project_id?: string | null
+          jira_sprint?: string | null
+          jira_status?: string | null
+          jira_story_points?: number | null
+          jira_url?: string | null
+          last_synced_at?: string | null
+          parent_id?: string | null
+          priority?: string | null
+          release_id?: string | null
+          start_date?: string | null
+          status?: string
+          story_points?: number | null
+          summary?: string
+          sync_source?: string | null
+          team_id?: string | null
+          theme_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wh_work_items_jira_project_id_fkey"
+            columns: ["jira_project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_jira_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "vw_wh_work_items_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "wh_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_wh_release_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "wh_releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_wh_theme_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "wh_themes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       work_item_activity: {
         Row: {
@@ -38319,6 +38866,213 @@ export type Database = {
         }
         Relationships: []
       }
+      vw_wh_calendar_events: {
+        Row: {
+          assignee_name: string | null
+          assignee_user_id: string | null
+          entity_id: string | null
+          event_color: string | null
+          event_date: string | null
+          event_end: string | null
+          event_start: string | null
+          event_status: string | null
+          event_title: string | null
+          event_type: string | null
+        }
+        Relationships: []
+      }
+      vw_wh_dashboard_kpis: {
+        Row: {
+          active_releases: number | null
+          active_themes: number | null
+          at_risk_releases: number | null
+          blocked_items: number | null
+          done_work_items: number | null
+          due_this_week: number | null
+          overall_completion_percent: number | null
+          overdue_items: number | null
+          total_resources: number | null
+          total_work_items: number | null
+        }
+        Relationships: []
+      }
+      vw_wh_release_progress: {
+        Row: {
+          actual_date: string | null
+          blocked_items: number | null
+          color: string | null
+          completion_percent: number | null
+          description: string | null
+          done_items: number | null
+          earliest_due: string | null
+          id: string | null
+          in_progress_items: number | null
+          in_review_items: number | null
+          latest_due: string | null
+          name: string | null
+          owner_user_id: string | null
+          project_count: number | null
+          start_date: string | null
+          status: string | null
+          target_date: string | null
+          title: string | null
+          todo_items: number | null
+          total_items: number | null
+          unique_assignees: number | null
+        }
+        Relationships: []
+      }
+      vw_wh_resource_utilization: {
+        Row: {
+          active_items: number | null
+          blocked_items: number | null
+          capacity_hours_per_week: number | null
+          color: string | null
+          completed_items: number | null
+          department: string | null
+          email: string | null
+          id: string | null
+          in_progress_items: number | null
+          is_active: boolean | null
+          name: string | null
+          next_due_date: string | null
+          release_count: number | null
+          role: string | null
+          skills: string[] | null
+          theme_count: number | null
+          total_actual_hours: number | null
+          total_estimated_hours: number | null
+          total_items: number | null
+          user_id: string | null
+          utilization_percent: number | null
+        }
+        Relationships: []
+      }
+      vw_wh_theme_progress: {
+        Row: {
+          color: string | null
+          completion_percent: number | null
+          description: string | null
+          done_items: number | null
+          end_date: string | null
+          epic_count: number | null
+          id: string | null
+          name: string | null
+          owner_user_id: string | null
+          progress: number | null
+          start_date: string | null
+          status: string | null
+          story_count: number | null
+          subtask_count: number | null
+          total_items: number | null
+        }
+        Relationships: []
+      }
+      vw_wh_work_items_full: {
+        Row: {
+          actual_hours: number | null
+          assignee_color: string | null
+          assignee_department: string | null
+          assignee_name: string | null
+          assignee_role: string | null
+          assignee_user_id: string | null
+          children_count: number | null
+          comment_count: number | null
+          completed_at: string | null
+          created_at: string | null
+          depth: number | null
+          description: string | null
+          due_date: string | null
+          estimated_hours: number | null
+          hierarchy_path: string[] | null
+          id: string | null
+          is_jira_locked: boolean | null
+          item_key: string | null
+          item_type: string | null
+          jira_issue_id: string | null
+          jira_labels: string[] | null
+          jira_priority: string | null
+          jira_project_id: string | null
+          jira_sprint: string | null
+          jira_status: string | null
+          jira_story_points: number | null
+          jira_url: string | null
+          last_synced_at: string | null
+          parent_id: string | null
+          parent_key: string | null
+          parent_summary: string | null
+          priority: string | null
+          project_color: string | null
+          project_key: string | null
+          project_name: string | null
+          release_color: string | null
+          release_id: string | null
+          release_name: string | null
+          release_status: string | null
+          release_title: string | null
+          start_date: string | null
+          status: string | null
+          story_points: number | null
+          summary: string | null
+          sync_source: string | null
+          team_id: string | null
+          theme_color: string | null
+          theme_id: string | null
+          theme_name: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wh_work_items_jira_project_id_fkey"
+            columns: ["jira_project_id"]
+            isOneToOne: false
+            referencedRelation: "wh_jira_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "vw_wh_work_items_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "wh_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_wh_release_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "wh_releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_wh_theme_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "wh_themes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wh_at_risk_items: {
         Row: {
           assignee_display_name: string | null
@@ -38718,6 +39472,32 @@ export type Database = {
         Returns: {
           id: string
           story_key: string
+        }[]
+      }
+      fn_wh_bulk_update: {
+        Args: {
+          p_field: string
+          p_item_ids: string[]
+          p_user_id: string
+          p_value: string
+        }
+        Returns: number
+      }
+      fn_wh_get_item_tree: {
+        Args: { p_parent_id?: string }
+        Returns: {
+          assignee_user_id: string
+          children_count: number
+          depth: number
+          due_date: string
+          id: string
+          item_key: string
+          item_type: string
+          parent_id: string
+          release_id: string
+          status: string
+          summary: string
+          theme_id: string
         }[]
       }
       generate_change_number: { Args: never; Returns: string }
