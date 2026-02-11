@@ -21,8 +21,8 @@ import {
   useLatestReadiness, 
   useCreateReadinessSnapshot,
   useApproveReadiness 
-} from '@/hooks/releases/useReleaseReadiness';
-import { useEvaluateQualityGates } from '@/hooks/releases/useReleaseQualityGates';
+} from '@/lib/shared-quality/hooks/useReadiness';
+import { useEvaluateQualityGates } from '@/lib/shared-quality/hooks/useQualityGates';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 

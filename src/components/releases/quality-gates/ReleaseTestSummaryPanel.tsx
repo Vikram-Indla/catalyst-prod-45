@@ -16,7 +16,7 @@ import {
   TestTube2,
   TrendingUp
 } from 'lucide-react';
-import { useReleaseTestSummary } from '@/hooks/releases/useReleaseQualityGates';
+import { useReleaseTestSummary } from '@/lib/shared-quality/hooks/useQualityGates';
 import { cn } from '@/lib/utils';
 
 interface ReleaseTestSummaryPanelProps {
