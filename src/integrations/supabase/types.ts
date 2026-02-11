@@ -30167,6 +30167,370 @@ export type Database = {
           },
         ]
       }
+      tm_plan_approvals: {
+        Row: {
+          approver_id: string
+          comments: string | null
+          decided_at: string | null
+          id: string
+          plan_id: string
+          requested_at: string | null
+          requested_by: string | null
+          status: Database["public"]["Enums"]["approval_status"]
+        }
+        Insert: {
+          approver_id: string
+          comments?: string | null
+          decided_at?: string | null
+          id?: string
+          plan_id: string
+          requested_at?: string | null
+          requested_by?: string | null
+          status?: Database["public"]["Enums"]["approval_status"]
+        }
+        Update: {
+          approver_id?: string
+          comments?: string | null
+          decided_at?: string | null
+          id?: string
+          plan_id?: string
+          requested_at?: string | null
+          requested_by?: string | null
+          status?: Database["public"]["Enums"]["approval_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_plan_approvals_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_plan_milestones: {
+        Row: {
+          completed_date: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_completed: boolean | null
+          name: string
+          plan_id: string
+          sort_order: number | null
+          target_date: string
+        }
+        Insert: {
+          completed_date?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_completed?: boolean | null
+          name: string
+          plan_id: string
+          sort_order?: number | null
+          target_date: string
+        }
+        Update: {
+          completed_date?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_completed?: boolean | null
+          name?: string
+          plan_id?: string
+          sort_order?: number | null
+          target_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_plan_milestones_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_plan_scope: {
+        Row: {
+          action: Database["public"]["Enums"]["scope_action"]
+          added_at: string | null
+          added_by: string | null
+          entity_id: string
+          id: string
+          plan_id: string
+          scope_type: Database["public"]["Enums"]["scope_type"]
+        }
+        Insert: {
+          action?: Database["public"]["Enums"]["scope_action"]
+          added_at?: string | null
+          added_by?: string | null
+          entity_id: string
+          id?: string
+          plan_id: string
+          scope_type: Database["public"]["Enums"]["scope_type"]
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["scope_action"]
+          added_at?: string | null
+          added_by?: string | null
+          entity_id?: string
+          id?: string
+          plan_id?: string
+          scope_type?: Database["public"]["Enums"]["scope_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_plan_scope_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_scope_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_plan_scope_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_scope_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_plan_scope_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_plan_team: {
+        Row: {
+          assigned_at: string | null
+          assigned_by: string | null
+          id: string
+          plan_id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          id?: string
+          plan_id: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          id?: string
+          plan_id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_plan_team_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_plan_versions: {
+        Row: {
+          change_summary: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          plan_id: string
+          snapshot: Json
+          version: number
+        }
+        Insert: {
+          change_summary?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          plan_id: string
+          snapshot: Json
+          version: number
+        }
+        Update: {
+          change_summary?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          plan_id?: string
+          snapshot?: Json
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_plan_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_plan_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_plan_versions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tm_projects: {
         Row: {
           created_at: string | null
@@ -32337,15 +32701,21 @@ export type Database = {
       }
       tm_test_plans: {
         Row: {
+          actual_end_date: string | null
+          actual_start_date: string | null
           blocked_count: number | null
           created_at: string | null
           created_by: string | null
           description: string | null
           end_date: string | null
+          entry_criteria: string | null
           environment_requirements: string | null
+          environments: Json | null
+          exit_criteria: string | null
           failed_count: number | null
           id: string
           in_scope: string | null
+          is_template: boolean | null
           name: string
           not_run_count: number | null
           objectives: string | null
@@ -32353,26 +32723,39 @@ export type Database = {
           owner_id: string | null
           passed_count: number | null
           plan_key: string
+          planned_end_date: string | null
+          planned_start_date: string | null
           project_id: string
           release_id: string | null
+          risks_assumptions: string | null
+          scope_description: string | null
           skipped_count: number | null
           start_date: string | null
           status: Database["public"]["Enums"]["tm_test_plan_status"] | null
           team_members: string[] | null
+          template_id: string | null
+          template_name: string | null
           test_strategy: string | null
           total_tests: number | null
           updated_at: string | null
+          version: number | null
         }
         Insert: {
+          actual_end_date?: string | null
+          actual_start_date?: string | null
           blocked_count?: number | null
           created_at?: string | null
           created_by?: string | null
           description?: string | null
           end_date?: string | null
+          entry_criteria?: string | null
           environment_requirements?: string | null
+          environments?: Json | null
+          exit_criteria?: string | null
           failed_count?: number | null
           id?: string
           in_scope?: string | null
+          is_template?: boolean | null
           name: string
           not_run_count?: number | null
           objectives?: string | null
@@ -32380,26 +32763,39 @@ export type Database = {
           owner_id?: string | null
           passed_count?: number | null
           plan_key: string
+          planned_end_date?: string | null
+          planned_start_date?: string | null
           project_id: string
           release_id?: string | null
+          risks_assumptions?: string | null
+          scope_description?: string | null
           skipped_count?: number | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["tm_test_plan_status"] | null
           team_members?: string[] | null
+          template_id?: string | null
+          template_name?: string | null
           test_strategy?: string | null
           total_tests?: number | null
           updated_at?: string | null
+          version?: number | null
         }
         Update: {
+          actual_end_date?: string | null
+          actual_start_date?: string | null
           blocked_count?: number | null
           created_at?: string | null
           created_by?: string | null
           description?: string | null
           end_date?: string | null
+          entry_criteria?: string | null
           environment_requirements?: string | null
+          environments?: Json | null
+          exit_criteria?: string | null
           failed_count?: number | null
           id?: string
           in_scope?: string | null
+          is_template?: boolean | null
           name?: string
           not_run_count?: number | null
           objectives?: string | null
@@ -32407,15 +32803,22 @@ export type Database = {
           owner_id?: string | null
           passed_count?: number | null
           plan_key?: string
+          planned_end_date?: string | null
+          planned_start_date?: string | null
           project_id?: string
           release_id?: string | null
+          risks_assumptions?: string | null
+          scope_description?: string | null
           skipped_count?: number | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["tm_test_plan_status"] | null
           team_members?: string[] | null
+          template_id?: string | null
+          template_name?: string | null
           test_strategy?: string | null
           total_tests?: number | null
           updated_at?: string | null
+          version?: number | null
         }
         Relationships: [
           {
@@ -32493,6 +32896,13 @@ export type Database = {
             columns: ["release_id"]
             isOneToOne: false
             referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_plans"
             referencedColumns: ["id"]
           },
         ]
@@ -38334,6 +38744,7 @@ export type Database = {
         Args: { p_program_id: string }
         Returns: string
       }
+      generate_plan_key: { Args: { p_project_id: string }; Returns: string }
       generate_planner_task_key: { Args: never; Returns: string }
       generate_t10_key: { Args: never; Returns: string }
       generate_work_item_display_id: {
@@ -38709,6 +39120,7 @@ export type Database = {
       }
       get_parallel_run_progress: { Args: { p_run_id: string }; Returns: Json }
       get_permission_stats: { Args: { p_role_code?: string }; Returns: Json }
+      get_plan_progress: { Args: { p_plan_id: string }; Returns: Json }
       get_plan_stats: {
         Args: never
         Returns: {
@@ -40131,6 +40543,7 @@ export type Database = {
     Enums: {
       alignment_type: "direct" | "inherited"
       app_role: "admin" | "program_manager" | "team_lead" | "user"
+      approval_status: "pending" | "approved" | "rejected"
       audit_action:
         | "create"
         | "update"
@@ -40513,6 +40926,8 @@ export type Database = {
         | "objective"
         | "roadmap"
         | "product"
+      scope_action: "include" | "exclude"
+      scope_type: "folder" | "test_case"
       severity_level: "SEV1" | "SEV2" | "SEV3" | "SEV4"
       skill_category:
         | "technical"
@@ -40789,6 +41204,7 @@ export const Constants = {
     Enums: {
       alignment_type: ["direct", "inherited"],
       app_role: ["admin", "program_manager", "team_lead", "user"],
+      approval_status: ["pending", "approved", "rejected"],
       audit_action: [
         "create",
         "update",
@@ -41209,6 +41625,8 @@ export const Constants = {
         "roadmap",
         "product",
       ],
+      scope_action: ["include", "exclude"],
+      scope_type: ["folder", "test_case"],
       severity_level: ["SEV1", "SEV2", "SEV3", "SEV4"],
       skill_category: [
         "technical",
