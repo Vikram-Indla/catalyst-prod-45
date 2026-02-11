@@ -24326,6 +24326,73 @@ export type Database = {
           },
         ]
       }
+      th_defect_tags: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          defect_id: string
+          id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          defect_id: string
+          id?: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          defect_id?: string
+          id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_defect_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_defect_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_defect_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_defect_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_defect_tags_defect_id_fkey"
+            columns: ["defect_id"]
+            isOneToOne: false
+            referencedRelation: "th_defects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_defect_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "th_tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       th_defects: {
         Row: {
           actual_result: string | null
@@ -25022,6 +25089,73 @@ export type Database = {
           },
         ]
       }
+      th_requirement_tags: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          requirement_id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          requirement_id: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          requirement_id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_requirement_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tags_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "th_requirements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "th_tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       th_requirement_tests: {
         Row: {
           created_at: string | null
@@ -25604,6 +25738,71 @@ export type Database = {
           },
         ]
       }
+      th_tags: {
+        Row: {
+          category: string | null
+          color: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          name: string
+          slug: string
+          usage_count: number | null
+        }
+        Insert: {
+          category?: string | null
+          color?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          slug: string
+          usage_count?: number | null
+        }
+        Update: {
+          category?: string | null
+          color?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          usage_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       th_test_case_attachments: {
         Row: {
           file_name: string
@@ -25680,6 +25879,73 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "th_test_case_links_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_test_case_tags: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          tag_id: string
+          test_case_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          tag_id: string
+          test_case_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          tag_id?: string
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_test_case_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_test_case_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_test_case_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_test_case_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_test_case_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "th_tags"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_test_case_tags_test_case_id_fkey"
             columns: ["test_case_id"]
             isOneToOne: false
             referencedRelation: "th_test_cases"
@@ -36372,6 +36638,15 @@ export type Database = {
       get_status_breakdown: { Args: { p_run_id: string }; Returns: Json }
       get_step_evidence: { Args: { p_step_result_id: string }; Returns: Json }
       get_step_metrics: { Args: { p_execution_id: string }; Returns: Json }
+      get_tag_stats: {
+        Args: never
+        Returns: {
+          categories: number
+          most_used_tag: string
+          total_tags: number
+          used_tags: number
+        }[]
+      }
       get_test_automation_history: {
         Args: { p_limit?: number; p_test_case_id: string }
         Returns: Json
@@ -36379,6 +36654,16 @@ export type Database = {
       get_test_case_for_execution_v2: {
         Args: { p_run_id: string; p_test_case_id: string }
         Returns: Json
+      }
+      get_test_case_tags: {
+        Args: { p_test_case_id: string }
+        Returns: {
+          category: string
+          color: string
+          name: string
+          slug: string
+          tag_id: string
+        }[]
       }
       get_test_requirements: {
         Args: { p_test_case_id: string }
@@ -36722,6 +37007,16 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      search_test_cases_by_tags: {
+        Args: { p_tag_ids: string[] }
+        Returns: {
+          case_key: string
+          matching_tags: number
+          priority: string
+          test_case_id: string
+          title: string
+        }[]
       }
       search_tm_defects: {
         Args: {
