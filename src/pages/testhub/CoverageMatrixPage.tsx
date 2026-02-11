@@ -1,22 +1,41 @@
 /**
- * G8-06: Coverage Matrix Page
+ * G21: Traceability Matrix Page
  * Route: /testhub/coverage-matrix
+ * 3 views: Matrix Table, Coverage Heatmap, Gap Analysis
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  LayoutGrid, ChevronDown, ChevronRight, Link2, CheckCircle2, XCircle, 
-  AlertTriangle, Clock, RefreshCw, FileCheck
+import {
+  LayoutGrid, ChevronDown, ChevronRight, CheckCircle2, XCircle,
+  AlertTriangle, Clock, RefreshCw, FileText, Target, Download,
+  Flame, Search, Filter, Plus, ArrowRight, ExternalLink,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
+import {
+  Tooltip, TooltipContent, TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// ── Types ──
 
 interface Requirement {
   id: string;
   req_key: string;
   title: string;
   type: string;
+  priority: string;
+  status: string;
   coverage_percent: number;
   total_linked_tests: number;
   passed_tests: number;
@@ -34,191 +53,566 @@ interface LinkedTest {
   last_executed: string | null;
 }
 
+type ViewTab = 'matrix' | 'heatmap' | 'gaps';
+
+// ── Helpers ──
+
 const EXEC_ICONS: Record<string, { icon: any; color: string; label: string }> = {
-  passed: { icon: CheckCircle2, color: '#059669', label: 'Passed' },
-  failed: { icon: XCircle, color: '#DC2626', label: 'Failed' },
-  blocked: { icon: AlertTriangle, color: '#D97706', label: 'Blocked' },
-  skipped: { icon: Clock, color: '#64748B', label: 'Skipped' },
-  not_run: { icon: Clock, color: '#94A3B8', label: 'Not Run' },
+  passed: { icon: CheckCircle2, color: 'text-emerald-600', label: 'Passed' },
+  failed: { icon: XCircle, color: 'text-destructive', label: 'Failed' },
+  blocked: { icon: AlertTriangle, color: 'text-amber-600', label: 'Blocked' },
+  skipped: { icon: Clock, color: 'text-muted-foreground', label: 'Skipped' },
+  not_run: { icon: Clock, color: 'text-muted-foreground/60', label: 'Not Run' },
 };
 
-const getCoverageColor = (percent: number) => {
-  if (percent === 100) return '#059669';
-  if (percent >= 50) return '#D97706';
-  return '#DC2626';
-};
+function getCoverageLevel(pct: number) {
+  if (pct === 100) return { label: 'Full', className: 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800' };
+  if (pct >= 50) return { label: 'Partial', className: 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800' };
+  if (pct > 0) return { label: 'Low', className: 'bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800' };
+  return { label: 'None', className: 'bg-red-100 text-destructive border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800' };
+}
+
+function getHeatmapColor(pct: number): string {
+  if (pct === 100) return 'bg-emerald-500 dark:bg-emerald-600';
+  if (pct >= 75) return 'bg-emerald-300 dark:bg-emerald-700';
+  if (pct >= 50) return 'bg-amber-400 dark:bg-amber-600';
+  if (pct > 0) return 'bg-orange-400 dark:bg-orange-600';
+  return 'bg-red-200 dark:bg-red-800';
+}
+
+function priorityOrder(p: string) {
+  const order: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3 };
+  return order[p] ?? 4;
+}
+
+function exportCSV(requirements: Requirement[]) {
+  const headers = ['Key', 'Title', 'Type', 'Priority', 'Coverage %', 'Linked Tests', 'Passed', 'Failed', 'Not Run'];
+  const rows = requirements.map(r => [
+    r.req_key, `"${r.title}"`, r.type, r.priority, r.coverage_percent,
+    r.total_linked_tests, r.passed_tests, r.failed_tests, r.not_run_tests,
+  ]);
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `traceability-matrix-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── Main Page ──
 
 export default function CoverageMatrixPage() {
   const navigate = useNavigate();
   const [requirements, setRequirements] = useState<Requirement[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<ViewTab>('matrix');
+
+  // Filters
+  const [searchQuery, setSearchQuery] = useState('');
+  const [moduleFilter, setModuleFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
+
+  // Matrix expansion
   const [expandedReqs, setExpandedReqs] = useState<Set<string>>(new Set());
   const [linkedTestsMap, setLinkedTestsMap] = useState<Record<string, LinkedTest[]>>({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [summary, setSummary] = useState<any>(null);
+  const [loadingTests, setLoadingTests] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('th_requirements' as any)
-          .select('id, req_key, title, type, coverage_percent, total_linked_tests, passed_tests, failed_tests, not_run_tests')
-          .neq('status', 'deprecated')
-          .order('req_key');
-        if (error) throw error;
-        setRequirements((data as any[]) || []);
-
-        const { data: summaryData } = await supabase.rpc('get_requirements_coverage_summary' as any);
-        if (summaryData && Array.isArray(summaryData) && summaryData.length > 0) {
-          setSummary(summaryData[0]);
-        }
-      } catch (err) {
-        console.error('Fetch coverage data error:', err);
-        catalystToast.error('Failed to load coverage data');
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchData();
   }, []);
 
-  const toggleExpand = async (reqId: string) => {
-    const next = new Set(expandedReqs);
-    if (next.has(reqId)) {
-      next.delete(reqId);
-    } else {
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('th_requirements' as any)
+        .select('id, req_key, title, type, priority, status, coverage_percent, total_linked_tests, passed_tests, failed_tests, not_run_tests')
+        .neq('status', 'deprecated')
+        .order('req_key');
+      if (error) throw error;
+      setRequirements((data as any[]) || []);
+    } catch (err) {
+      console.error('Fetch error:', err);
+      catalystToast.error('Failed to load coverage data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Unique modules for filter
+  const modules = useMemo(() => {
+    const types = new Set(requirements.map(r => r.type).filter(Boolean));
+    return Array.from(types).sort();
+  }, [requirements]);
+
+  // Filtered requirements
+  const filtered = useMemo(() => {
+    return requirements.filter(r => {
+      if (moduleFilter !== 'all' && r.type !== moduleFilter) return false;
+      if (priorityFilter !== 'all' && r.priority !== priorityFilter) return false;
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        if (!r.title.toLowerCase().includes(q) && !r.req_key.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+  }, [requirements, moduleFilter, priorityFilter, searchQuery]);
+
+  // Summary stats
+  const summary = useMemo(() => {
+    const total = filtered.length;
+    const full = filtered.filter(r => r.coverage_percent === 100).length;
+    const partial = filtered.filter(r => r.coverage_percent > 0 && r.coverage_percent < 100).length;
+    const none = filtered.filter(r => r.coverage_percent === 0).length;
+    const pct = total > 0 ? Math.round((full / total) * 100) : 0;
+    const critGaps = filtered.filter(r => r.coverage_percent === 0 && (r.priority === 'critical' || r.priority === 'high')).length;
+    return { total, full, partial, none, pct, critGaps };
+  }, [filtered]);
+
+  // Toggle expand a requirement
+  const toggleExpand = useCallback(async (reqId: string) => {
+    setExpandedReqs(prev => {
+      const next = new Set(prev);
+      if (next.has(reqId)) {
+        next.delete(reqId);
+        return next;
+      }
       next.add(reqId);
-      if (!linkedTestsMap[reqId]) {
-        try {
-          const { data } = await supabase.rpc('get_requirement_tests' as any, { p_requirement_id: reqId });
-          setLinkedTestsMap(prev => ({ ...prev, [reqId]: (data as any[]) || [] }));
-        } catch { /* ignore */ }
+      return next;
+    });
+
+    if (!linkedTestsMap[reqId]) {
+      setLoadingTests(prev => new Set(prev).add(reqId));
+      try {
+        const { data } = await supabase.rpc('get_requirement_tests' as any, { p_requirement_id: reqId });
+        setLinkedTestsMap(prev => ({ ...prev, [reqId]: (data as any[]) || [] }));
+      } catch {
+        setLinkedTestsMap(prev => ({ ...prev, [reqId]: [] }));
+      } finally {
+        setLoadingTests(prev => { const n = new Set(prev); n.delete(reqId); return n; });
       }
     }
-    setExpandedReqs(next);
-  };
+  }, [linkedTestsMap]);
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: '#F8FAFC' }}>
-        <RefreshCw size={32} style={{ animation: 'spin 1s linear infinite', color: '#0891B2' }} />
-        <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      <div className="flex items-center justify-center h-full">
+        <RefreshCw className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div style={{ padding: 24, backgroundColor: '#F8FAFC', minHeight: '100vh' }}>
+    <div className="flex-1 p-6 overflow-auto">
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-        <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, #0891B2 0%, #0E7490 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <LayoutGrid size={24} style={{ color: '#FFFFFF' }} />
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+            <LayoutGrid className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Traceability Matrix</h1>
+            <p className="text-sm text-muted-foreground">Requirements to test cases coverage</p>
+          </div>
         </div>
-        <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: '#0F172A', margin: 0 }}>Coverage Matrix</h1>
-          <p style={{ fontSize: 14, color: '#64748B', margin: '4px 0 0' }}>Requirements traceability and test coverage overview</p>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => exportCSV(filtered)}>
+            <Download className="w-4 h-4 mr-2" />
+            Export CSV
+          </Button>
         </div>
       </div>
 
-      {/* Summary */}
-      {summary && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
-          <div style={{ backgroundColor: '#FFF', borderRadius: 12, padding: 20, border: '1px solid #E2E8F0' }}>
-            <p style={{ fontSize: 12, color: '#64748B', margin: 0, textTransform: 'uppercase' }}>Total</p>
-            <p style={{ fontSize: 28, fontWeight: 700, color: '#0F172A', margin: '8px 0 0' }}>{summary.total_requirements}</p>
+      {/* Coverage Summary Bar */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+        {[
+          { label: 'Total', value: summary.total, icon: Target, color: 'text-foreground' },
+          { label: 'Fully Covered', value: summary.full, icon: CheckCircle2, color: 'text-emerald-600' },
+          { label: 'Partial', value: summary.partial, icon: AlertTriangle, color: 'text-amber-600' },
+          { label: 'No Coverage', value: summary.none, icon: XCircle, color: 'text-destructive' },
+          { label: 'Critical Gaps', value: summary.critGaps, icon: Flame, color: 'text-red-500' },
+        ].map(s => (
+          <div key={s.label} className="bg-card border border-border rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-1">
+              <s.icon className={cn('h-4 w-4', s.color)} />
+              <span className="text-xs text-muted-foreground">{s.label}</span>
+            </div>
+            <p className={cn('text-2xl font-bold', s.color)}>{s.value}</p>
           </div>
-          <div style={{ backgroundColor: '#ECFDF5', borderRadius: 12, padding: 20, border: '1px solid #A7F3D0' }}>
-            <p style={{ fontSize: 12, color: '#059669', margin: 0, textTransform: 'uppercase' }}>Fully Covered</p>
-            <p style={{ fontSize: 28, fontWeight: 700, color: '#059669', margin: '8px 0 0' }}>{summary.fully_covered}</p>
-          </div>
-          <div style={{ backgroundColor: '#FFFBEB', borderRadius: 12, padding: 20, border: '1px solid #FDE68A' }}>
-            <p style={{ fontSize: 12, color: '#D97706', margin: 0, textTransform: 'uppercase' }}>Partial</p>
-            <p style={{ fontSize: 28, fontWeight: 700, color: '#D97706', margin: '8px 0 0' }}>{summary.partially_covered}</p>
-          </div>
-          <div style={{ backgroundColor: '#FEF2F2', borderRadius: 12, padding: 20, border: '1px solid #FECACA' }}>
-            <p style={{ fontSize: 12, color: '#DC2626', margin: 0, textTransform: 'uppercase' }}>No Coverage</p>
-            <p style={{ fontSize: 28, fontWeight: 700, color: '#DC2626', margin: '8px 0 0' }}>{summary.not_covered}</p>
-          </div>
+        ))}
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap gap-3 mb-4">
+        <div className="relative flex-1 min-w-[200px] max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search requirements..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            className="pl-9 h-9"
+          />
         </div>
-      )}
+        <Select value={moduleFilter} onValueChange={setModuleFilter}>
+          <SelectTrigger className="w-[160px] h-9"><SelectValue placeholder="Module" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Modules</SelectItem>
+            {modules.map(m => (
+              <SelectItem key={m} value={m}>{m.charAt(0).toUpperCase() + m.slice(1)}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+          <SelectTrigger className="w-[140px] h-9"><SelectValue placeholder="Priority" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Priorities</SelectItem>
+            <SelectItem value="critical">Critical</SelectItem>
+            <SelectItem value="high">High</SelectItem>
+            <SelectItem value="medium">Medium</SelectItem>
+            <SelectItem value="low">Low</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-      {/* Requirements List with Expandable Tests */}
-      {requirements.length === 0 ? (
-        <div style={{ backgroundColor: '#FFFFFF', borderRadius: 12, padding: 60, textAlign: 'center', border: '1px solid #E2E8F0' }}>
-          <FileCheck size={48} style={{ color: '#CBD5E1', marginBottom: 16 }} />
-          <p style={{ fontSize: 16, color: '#64748B', margin: 0 }}>No requirements found</p>
-        </div>
-      ) : (
-        <div style={{ backgroundColor: '#FFFFFF', borderRadius: 12, border: '1px solid #E2E8F0', overflow: 'hidden' }}>
-          {/* Table Header */}
-          <div style={{ display: 'grid', gridTemplateColumns: '40px 120px 1fr 120px 80px 80px 80px', padding: '12px 16px', backgroundColor: '#F8FAFC', borderBottom: '1px solid #E2E8F0', fontSize: 12, fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>
-            <span></span>
-            <span>Key</span>
-            <span>Title</span>
-            <span>Coverage</span>
-            <span>Passed</span>
-            <span>Failed</span>
-            <span>Not Run</span>
-          </div>
+      {/* Tab Views */}
+      <Tabs value={activeTab} onValueChange={v => setActiveTab(v as ViewTab)}>
+        <TabsList className="mb-4">
+          <TabsTrigger value="matrix" className="gap-1.5">
+            <LayoutGrid className="h-3.5 w-3.5" />Matrix
+          </TabsTrigger>
+          <TabsTrigger value="heatmap" className="gap-1.5">
+            <Flame className="h-3.5 w-3.5" />Heatmap
+          </TabsTrigger>
+          <TabsTrigger value="gaps" className="gap-1.5">
+            <AlertTriangle className="h-3.5 w-3.5" />Gap Analysis
+          </TabsTrigger>
+        </TabsList>
 
-          {requirements.map(req => {
-            const isExpanded = expandedReqs.has(req.id);
-            const coverageColor = getCoverageColor(req.coverage_percent);
-            const tests = linkedTestsMap[req.id] || [];
-
-            return (
-              <div key={req.id}>
-                <div
-                  onClick={() => toggleExpand(req.id)}
-                  style={{ display: 'grid', gridTemplateColumns: '40px 120px 1fr 120px 80px 80px 80px', padding: '14px 16px', borderBottom: '1px solid #F1F5F9', cursor: 'pointer', alignItems: 'center', transition: 'background 0.1s' }}
-                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#F8FAFC'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}>
-                  <span style={{ color: '#94A3B8' }}>
-                    {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                  </span>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: '#0891B2' }}>{req.req_key}</span>
-                  <span style={{ fontSize: 14, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{req.title}</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{ width: 60, height: 6, backgroundColor: '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${req.coverage_percent}%`, backgroundColor: coverageColor, borderRadius: 3 }} />
-                    </div>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: coverageColor }}>{req.coverage_percent}%</span>
-                  </div>
-                  <span style={{ fontSize: 13, color: '#059669', fontWeight: 500 }}>{req.passed_tests}</span>
-                  <span style={{ fontSize: 13, color: '#DC2626', fontWeight: 500 }}>{req.failed_tests}</span>
-                  <span style={{ fontSize: 13, color: '#94A3B8', fontWeight: 500 }}>{req.not_run_tests}</span>
-                </div>
-
-                {isExpanded && (
-                  <div style={{ backgroundColor: '#FAFBFC', borderBottom: '1px solid #E2E8F0' }}>
-                    {tests.length === 0 ? (
-                      <div style={{ padding: '16px 16px 16px 56px', fontSize: 13, color: '#94A3B8' }}>No linked test cases</div>
-                    ) : (
-                      tests.map(test => {
-                        const execConfig = EXEC_ICONS[test.latest_status || 'not_run'];
-                        const StatusIcon = execConfig.icon;
-                        return (
-                          <div key={test.link_id}
-                            onClick={(e) => { e.stopPropagation(); navigate(`/testhub/requirements/${req.id}`); }}
-                            style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 16px 10px 56px', borderBottom: '1px solid #F1F5F9', cursor: 'pointer' }}
-                            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#F0FDFA'; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '2px 8px', borderRadius: 4 }}>{test.case_key}</span>
-                            <span style={{ flex: 1, fontSize: 13, color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{test.title}</span>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, color: execConfig.color }}>
-                              <StatusIcon size={14} /> {execConfig.label}
-                            </span>
-                          </div>
-                        );
-                      })
-                    )}
-                  </div>
-                )}
+        {/* ── MATRIX VIEW ── */}
+        <TabsContent value="matrix">
+          {filtered.length === 0 ? (
+            <div className="text-center py-16 bg-card border border-border rounded-lg">
+              <Target className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+              <p className="text-muted-foreground">No requirements match the current filters.</p>
+            </div>
+          ) : (
+            <div className="bg-card border border-border rounded-lg overflow-hidden">
+              {/* Table Header */}
+              <div className="grid grid-cols-[32px_100px_1fr_100px_60px_60px_60px_90px] px-4 py-3 bg-muted/50 border-b border-border text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                <span></span>
+                <span>Key</span>
+                <span>Title</span>
+                <span>Priority</span>
+                <span>Pass</span>
+                <span>Fail</span>
+                <span>N/R</span>
+                <span>Coverage</span>
               </div>
-            );
-          })}
+
+              {filtered.map(req => {
+                const isExpanded = expandedReqs.has(req.id);
+                const level = getCoverageLevel(req.coverage_percent);
+                const tests = linkedTestsMap[req.id] || [];
+                const isLoadingReq = loadingTests.has(req.id);
+
+                return (
+                  <div key={req.id}>
+                    <button
+                      onClick={() => toggleExpand(req.id)}
+                      className="w-full grid grid-cols-[32px_100px_1fr_100px_60px_60px_60px_90px] px-4 py-3 items-center border-b border-border hover:bg-muted/30 transition-colors text-left"
+                    >
+                      {isExpanded ? (
+                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                      )}
+                      <span className="text-xs font-semibold text-primary">{req.req_key}</span>
+                      <span className="text-sm text-foreground truncate pr-2">{req.title}</span>
+                      <Badge variant="outline" className="text-[10px] capitalize w-fit">{req.priority}</Badge>
+                      <span className="text-xs font-medium text-emerald-600">{req.passed_tests}</span>
+                      <span className="text-xs font-medium text-destructive">{req.failed_tests}</span>
+                      <span className="text-xs font-medium text-muted-foreground">{req.not_run_tests}</span>
+                      <Badge variant="outline" className={cn('text-[10px] w-fit', level.className)}>
+                        {req.coverage_percent}%
+                      </Badge>
+                    </button>
+
+                    <AnimatePresence>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="bg-muted/20 border-b border-border px-6 py-3">
+                            {isLoadingReq ? (
+                              <div className="flex items-center gap-2 py-3 justify-center text-sm text-muted-foreground">
+                                <RefreshCw className="h-4 w-4 animate-spin" /> Loading...
+                              </div>
+                            ) : tests.length === 0 ? (
+                              <div className="flex items-center gap-3 py-3">
+                                <span className="text-sm text-muted-foreground">No linked test cases</span>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={(e) => { e.stopPropagation(); navigate(`/testhub/requirements/${req.id}`); }}
+                                >
+                                  <Plus className="h-3.5 w-3.5 mr-1" /> Link Test Case
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <ArrowRight className="h-3 w-3 text-muted-foreground" />
+                                  <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                                    Linked Test Cases ({tests.length})
+                                  </span>
+                                </div>
+                                {tests.map(tc => {
+                                  const exec = EXEC_ICONS[tc.latest_status || 'not_run'] || EXEC_ICONS.not_run;
+                                  const StatusIcon = exec.icon;
+                                  return (
+                                    <button
+                                      key={tc.link_id || tc.test_case_id}
+                                      onClick={(e) => { e.stopPropagation(); navigate(`/testhub/repository?view=${tc.test_case_id}`); }}
+                                      className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-muted/40 transition-colors text-left"
+                                    >
+                                      <FileText className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                                      <span className="text-xs font-semibold text-primary">{tc.case_key}</span>
+                                      <span className="text-sm text-foreground flex-1 truncate">{tc.title}</span>
+                                      <span className={cn('flex items-center gap-1 text-xs font-medium', exec.color)}>
+                                        <StatusIcon className="h-3.5 w-3.5" />
+                                        {exec.label}
+                                      </span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
+                            <button
+                              onClick={(e) => { e.stopPropagation(); navigate(`/testhub/requirements/${req.id}`); }}
+                              className="mt-2 inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                            >
+                              View Requirement <ExternalLink className="h-3 w-3" />
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* ── HEATMAP VIEW ── */}
+        <TabsContent value="heatmap">
+          <HeatmapView requirements={filtered} onClickReq={(id) => navigate(`/testhub/requirements/${id}`)} />
+        </TabsContent>
+
+        {/* ── GAP ANALYSIS ── */}
+        <TabsContent value="gaps">
+          <GapAnalysisView
+            requirements={filtered.filter(r => r.coverage_percent === 0)}
+            onNavigateReq={(id) => navigate(`/testhub/requirements/${id}`)}
+          />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+// ── Heatmap Sub-Component ──
+
+function HeatmapView({ requirements, onClickReq }: { requirements: Requirement[]; onClickReq: (id: string) => void }) {
+  // Group by module (type)
+  const grouped = useMemo(() => {
+    const map = new Map<string, Requirement[]>();
+    for (const req of requirements) {
+      const key = req.type || 'Uncategorized';
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(req);
+    }
+    return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+  }, [requirements]);
+
+  if (requirements.length === 0) {
+    return (
+      <div className="text-center py-16 bg-card border border-border rounded-lg">
+        <Flame className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+        <p className="text-muted-foreground">No requirements to display.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Legend */}
+      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+        <span className="font-medium">Legend:</span>
+        {[
+          { label: 'No Tests', cls: 'bg-red-200 dark:bg-red-800' },
+          { label: 'Failing', cls: 'bg-orange-400 dark:bg-orange-600' },
+          { label: 'Partial', cls: 'bg-amber-400 dark:bg-amber-600' },
+          { label: '75%+', cls: 'bg-emerald-300 dark:bg-emerald-700' },
+          { label: '100%', cls: 'bg-emerald-500 dark:bg-emerald-600' },
+        ].map(l => (
+          <div key={l.label} className="flex items-center gap-1.5">
+            <div className={cn('w-4 h-4 rounded', l.cls)} />
+            <span>{l.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {grouped.map(([module, reqs]) => (
+        <div key={module} className="bg-card border border-border rounded-lg p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-foreground capitalize">{module}</h3>
+            <span className="text-xs text-muted-foreground">{reqs.length} requirement{reqs.length !== 1 ? 's' : ''}</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {reqs.map(req => (
+              <Tooltip key={req.id}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => onClickReq(req.id)}
+                    className={cn(
+                      'w-10 h-10 rounded-md transition-transform hover:scale-110 cursor-pointer flex items-center justify-center text-[10px] font-bold text-white',
+                      getHeatmapColor(req.coverage_percent),
+                    )}
+                  >
+                    {req.coverage_percent}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-[240px]">
+                  <p className="font-semibold text-sm">{req.req_key}: {req.title}</p>
+                  <p className="text-xs mt-1">
+                    Coverage: {req.coverage_percent}% · {req.total_linked_tests} test{req.total_linked_tests !== 1 ? 's' : ''}
+                  </p>
+                  <p className="text-xs">
+                    ✓ {req.passed_tests} · ✗ {req.failed_tests} · ○ {req.not_run_tests}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </div>
         </div>
-      )}
+      ))}
+    </div>
+  );
+}
+
+// ── Gap Analysis Sub-Component ──
+
+function GapAnalysisView({
+  requirements,
+  onNavigateReq,
+}: {
+  requirements: Requirement[];
+  onNavigateReq: (id: string) => void;
+}) {
+  const sorted = useMemo(() =>
+    [...requirements].sort((a, b) => priorityOrder(a.priority) - priorityOrder(b.priority)),
+    [requirements]
+  );
+
+  const criticalHighCount = sorted.filter(r => r.priority === 'critical' || r.priority === 'high').length;
+
+  // Group by priority
+  const groups = useMemo(() => {
+    const map = new Map<string, Requirement[]>();
+    for (const req of sorted) {
+      const key = req.priority || 'unknown';
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(req);
+    }
+    return Array.from(map.entries());
+  }, [sorted]);
+
+  if (requirements.length === 0) {
+    return (
+      <div className="text-center py-16 bg-card border border-border rounded-lg">
+        <CheckCircle2 className="h-10 w-10 mx-auto text-emerald-500 mb-3" />
+        <p className="text-lg font-semibold text-foreground mb-1">All Requirements Covered!</p>
+        <p className="text-sm text-muted-foreground">Every requirement has at least one linked test case.</p>
+      </div>
+    );
+  }
+
+  const priorityColors: Record<string, string> = {
+    critical: 'text-red-600 dark:text-red-400',
+    high: 'text-orange-600 dark:text-orange-400',
+    medium: 'text-amber-600 dark:text-amber-400',
+    low: 'text-muted-foreground',
+  };
+
+  const priorityBg: Record<string, string> = {
+    critical: 'bg-red-50 border-red-200 dark:bg-red-950/30 dark:border-red-800',
+    high: 'bg-orange-50 border-orange-200 dark:bg-orange-950/30 dark:border-orange-800',
+    medium: 'bg-amber-50 border-amber-200 dark:bg-amber-950/30 dark:border-amber-800',
+    low: 'bg-muted/30 border-border',
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Warning banner */}
+      <div className="flex items-center gap-3 bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+        <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0" />
+        <div>
+          <p className="text-sm font-semibold text-foreground">
+            {requirements.length} Uncovered Requirement{requirements.length !== 1 ? 's' : ''}
+          </p>
+          {criticalHighCount > 0 && (
+            <p className="text-xs text-muted-foreground">
+              {criticalHighCount} Critical/High priority gap{criticalHighCount !== 1 ? 's' : ''} require immediate attention
+            </p>
+          )}
+        </div>
+      </div>
+
+      {groups.map(([priority, reqs]) => (
+        <div key={priority}>
+          <div className="flex items-center gap-2 mb-3">
+            <span className={cn('text-sm font-semibold uppercase', priorityColors[priority] || 'text-foreground')}>
+              {priority} Priority
+            </span>
+            <Badge variant="outline" className="text-[10px]">{reqs.length}</Badge>
+          </div>
+          <div className="space-y-2">
+            {reqs.map(req => (
+              <div
+                key={req.id}
+                className={cn('flex items-center justify-between p-4 rounded-lg border', priorityBg[priority] || 'bg-card border-border')}
+              >
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded flex-shrink-0">
+                    {req.req_key}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{req.title}</p>
+                    <p className="text-xs text-muted-foreground capitalize">{req.type} requirement</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onNavigateReq(req.id)}
+                  >
+                    <Plus className="h-3.5 w-3.5 mr-1" />
+                    Link Test
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
