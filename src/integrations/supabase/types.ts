@@ -24443,6 +24443,202 @@ export type Database = {
           },
         ]
       }
+      th_environment_history: {
+        Row: {
+          action: string
+          changed_at: string | null
+          changed_by: string | null
+          environment_id: string
+          field_changed: string | null
+          id: string
+          new_value: string | null
+          old_value: string | null
+        }
+        Insert: {
+          action: string
+          changed_at?: string | null
+          changed_by?: string | null
+          environment_id: string
+          field_changed?: string | null
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Update: {
+          action?: string
+          changed_at?: string | null
+          changed_by?: string | null
+          environment_id?: string
+          field_changed?: string | null
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_environment_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_environment_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_environment_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_environment_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_environment_history_environment_id_fkey"
+            columns: ["environment_id"]
+            isOneToOne: false
+            referencedRelation: "th_environments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_environment_variables: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          environment_id: string
+          id: string
+          is_secret: boolean | null
+          key: string
+          updated_at: string | null
+          value: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          environment_id: string
+          id?: string
+          is_secret?: boolean | null
+          key: string
+          updated_at?: string | null
+          value?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          environment_id?: string
+          id?: string
+          is_secret?: boolean | null
+          key?: string
+          updated_at?: string | null
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_environment_variables_environment_id_fkey"
+            columns: ["environment_id"]
+            isOneToOne: false
+            referencedRelation: "th_environments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_environments: {
+        Row: {
+          api_url: string | null
+          config: Json | null
+          created_at: string | null
+          credentials_note: string | null
+          database_info: string | null
+          description: string | null
+          env_key: string
+          health_status: string | null
+          id: string
+          last_health_check: string | null
+          name: string
+          owner_id: string | null
+          status: string | null
+          type: string | null
+          updated_at: string | null
+          url: string | null
+        }
+        Insert: {
+          api_url?: string | null
+          config?: Json | null
+          created_at?: string | null
+          credentials_note?: string | null
+          database_info?: string | null
+          description?: string | null
+          env_key?: string
+          health_status?: string | null
+          id?: string
+          last_health_check?: string | null
+          name: string
+          owner_id?: string | null
+          status?: string | null
+          type?: string | null
+          updated_at?: string | null
+          url?: string | null
+        }
+        Update: {
+          api_url?: string | null
+          config?: Json | null
+          created_at?: string | null
+          credentials_note?: string | null
+          database_info?: string | null
+          description?: string | null
+          env_key?: string
+          health_status?: string | null
+          id?: string
+          last_health_check?: string | null
+          name?: string
+          owner_id?: string | null
+          status?: string | null
+          type?: string | null
+          updated_at?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       th_execution_attachments: {
         Row: {
           cycle_test_case_id: string
@@ -25347,6 +25543,7 @@ export type Database = {
           cycle_key: string
           description: string | null
           end_date: string | null
+          environment_id: string | null
           failed_count: number | null
           id: string
           name: string
@@ -25367,6 +25564,7 @@ export type Database = {
           cycle_key: string
           description?: string | null
           end_date?: string | null
+          environment_id?: string | null
           failed_count?: number | null
           id?: string
           name: string
@@ -25387,6 +25585,7 @@ export type Database = {
           cycle_key?: string
           description?: string | null
           end_date?: string | null
+          environment_id?: string | null
           failed_count?: number | null
           id?: string
           name?: string
@@ -25427,6 +25626,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_environment_id_fkey"
+            columns: ["environment_id"]
+            isOneToOne: false
+            referencedRelation: "th_environments"
             referencedColumns: ["id"]
           },
           {
@@ -35689,6 +35895,28 @@ export type Database = {
         Returns: {
           blocked_by_count: number
           blocks_count: number
+        }[]
+      }
+      get_environment_cycles: {
+        Args: { p_environment_id: string }
+        Returns: {
+          cycle_id: string
+          cycle_key: string
+          name: string
+          progress_percent: number
+          status: string
+          total_cases: number
+        }[]
+      }
+      get_environment_summary: {
+        Args: never
+        Returns: {
+          active_count: number
+          degraded_count: number
+          down_count: number
+          healthy_count: number
+          maintenance_count: number
+          total_environments: number
         }[]
       }
       get_environments: { Args: { p_project_id: string }; Returns: Json }
