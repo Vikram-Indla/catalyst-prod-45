@@ -27,7 +27,7 @@ export function CatyAICoverageAnalysis({ projectId, onGenerateFromGap }: Props) 
 
   const handleAnalyze = async () => {
     if (!user) return;
-    const scope = selectedFolder ? { folderId: selectedFolder } : undefined;
+    const scope = selectedFolder && selectedFolder !== 'all' ? { folderId: selectedFolder } : undefined;
     const data = await analyzeMutation.mutateAsync({ projectId, userId: user.id, scope });
     setResult(data);
   };
@@ -60,7 +60,7 @@ export function CatyAICoverageAnalysis({ projectId, onGenerateFromGap }: Props) 
           <Select value={selectedFolder} onValueChange={setSelectedFolder}>
             <SelectTrigger className="w-[180px]"><SelectValue placeholder="All folders" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Folders</SelectItem>
+              <SelectItem value="all">All Folders</SelectItem>
               {folders?.map((f: any) => <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>)}
             </SelectContent>
           </Select>
