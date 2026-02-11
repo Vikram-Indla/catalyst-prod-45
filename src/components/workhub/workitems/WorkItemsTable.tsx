@@ -1,6 +1,7 @@
 /**
  * WorkItemsTable — Virtualized table with hierarchy tree for wh_issues
  * Resolves assignee avatars via wh_user_mapping → profiles
+ * Resolves theme names via wh_issues.theme_id → wh_themes
  */
 
 import { useRef, useState, useMemo, useCallback } from 'react';
@@ -9,6 +10,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { WorkItemRow } from './WorkItemRow';
 import type { JiraIssue } from '@/hooks/workhub/useWorkItems';
 import { buildTree, flattenTree } from '@/hooks/workhub/useWorkItems';
+import { useWHThemes } from '@/hooks/workhub/useThemes';
 import { AlertCircle, FileStack } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -25,12 +27,11 @@ interface WorkItemsTableProps {
 }
 
 const ROW_HEIGHT = 44;
-const GRID_COLS = '36px minmax(140px, auto) 1fr 120px 100px 100px 130px 90px 90px';
-const HEADER_COLS = ['Key', 'Summary', 'Status', 'Theme', 'Assignee', 'Priority', 'Updated', 'Created'];
+const GRID_COLS = '36px 36px minmax(140px, auto) 1fr 120px 120px 130px 90px 90px 90px';
+const HEADER_COLS = ['Type', 'Key', 'Summary', 'Status', 'Theme', 'Assignee', 'Priority', 'Updated', 'Created'];
 
 /**
  * Fetch avatar mapping: jira_account_id → avatar_url from wh_user_mapping joined with profiles.
- * Returns a Map<jiraAccountId, avatarUrl>.
  */
 function useAssigneeAvatars() {
   return useQuery({
@@ -43,7 +44,6 @@ function useAssigneeAvatars() {
 
       if (error) throw new Error(error.message);
 
-      // Also fetch profile avatar_url for mapped users (may be more up to date)
       const profileIds = (data ?? [])
         .map((d: any) => d.catalyst_profile_id)
         .filter(Boolean);
@@ -59,8 +59,6 @@ function useAssigneeAvatars() {
         });
       }
 
-      // Build jira_account_id → avatar_url map
-      // Prefer profile avatar (propagated), fallback to jira_avatar_url
       const avatarMap = new Map<string, string>();
       (data ?? []).forEach((m: any) => {
         const profileAvatar = m.catalyst_profile_id ? profileAvatars.get(m.catalyst_profile_id) : null;
@@ -73,6 +71,36 @@ function useAssigneeAvatars() {
       return avatarMap;
     },
     staleTime: 120_000,
+  });
+}
+
+/**
+ * Fetch theme_id mapping for work items: issue_key → theme_id
+ */
+function useIssueThemeMap(issueKeys: string[]) {
+  return useQuery({
+    queryKey: ['workhub', 'issue-theme-map', issueKeys.length],
+    queryFn: async () => {
+      if (issueKeys.length === 0) return new Map<string, string>();
+
+      // Fetch in batches of 500
+      const map = new Map<string, string>();
+      for (let i = 0; i < issueKeys.length; i += 500) {
+        const batch = issueKeys.slice(i, i + 500);
+        const { data } = await (supabase as any)
+          .from('wh_issues')
+          .select('issue_key, theme_id')
+          .in('issue_key', batch)
+          .not('theme_id', 'is', null);
+
+        (data ?? []).forEach((row: any) => {
+          if (row.theme_id) map.set(row.issue_key, row.theme_id);
+        });
+      }
+      return map;
+    },
+    staleTime: 30_000,
+    enabled: issueKeys.length > 0,
   });
 }
 
@@ -89,7 +117,6 @@ export function WorkItemsTable({
     return keys;
   });
 
-  // All hooks must be called before early returns
   const tree = useMemo(() => buildTree(items), [items]);
   const flatNodes = useMemo(() => flattenTree(tree, expandedKeys), [tree, expandedKeys]);
 
@@ -115,8 +142,19 @@ export function WorkItemsTable({
     overscan: 15,
   });
 
-  // Fetch avatar mapping (jira_account_id → avatar_url) — MUST be before early returns
   const { data: avatarMap } = useAssigneeAvatars();
+
+  // Theme resolution
+  const issueKeys = useMemo(() => items.map(i => i.issue_key), [items]);
+  const { data: themeIdMap } = useIssueThemeMap(issueKeys);
+  const { data: themes } = useWHThemes();
+
+  const themeMap = useMemo(() => {
+    if (!themes) return new Map<string, { name: string; color: string }>();
+    const m = new Map<string, { name: string; color: string }>();
+    themes.forEach(t => m.set(t.id, { name: t.name, color: t.color || '#94a3b8' }));
+    return m;
+  }, [themes]);
 
   if (isLoading) {
     return (
@@ -125,13 +163,9 @@ export function WorkItemsTable({
           <div
             key={i}
             className="grid items-center px-4 border-b animate-pulse"
-            style={{
-              gridTemplateColumns: GRID_COLS,
-              height: ROW_HEIGHT,
-              borderColor: '#f1f5f9',
-            }}
+            style={{ gridTemplateColumns: GRID_COLS, height: ROW_HEIGHT, borderColor: '#f1f5f9' }}
           >
-            {Array.from({ length: 8 }).map((_, j) => (
+            {Array.from({ length: 9 }).map((_, j) => (
               <div key={j} className="h-3 bg-slate-100 rounded" style={{ width: `${40 + Math.random() * 50}%` }} />
             ))}
           </div>
@@ -201,10 +235,14 @@ export function WorkItemsTable({
           {virtualizer.getVirtualItems().map(virtualRow => {
             const node = flatNodes[virtualRow.index];
             if (!node) return null;
-            // Resolve avatar from mapping
             const assigneeAvatar = node.item.assignee_account_id
               ? avatarMap?.get(node.item.assignee_account_id) ?? null
               : null;
+
+            // Resolve theme
+            const issueThemeId = themeIdMap?.get(node.item.issue_key) ?? null;
+            const theme = issueThemeId ? themeMap.get(issueThemeId) : null;
+
             return (
               <div
                 key={node.item.issue_key}
@@ -224,6 +262,8 @@ export function WorkItemsTable({
                   isExpanded={expandedKeys.has(node.item.issue_key)}
                   isSelected={selectedIds.has(node.item.issue_key)}
                   avatarUrl={assigneeAvatar}
+                  themeName={theme?.name ?? null}
+                  themeColor={theme?.color ?? null}
                   onToggleExpand={() => toggleExpand(node.item.issue_key)}
                   onToggleSelect={() => onToggleSelect(node.item.issue_key)}
                   onOpenDrawer={() => onOpenDrawer(node.item.issue_key)}

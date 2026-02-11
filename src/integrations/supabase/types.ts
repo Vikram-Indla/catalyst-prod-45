@@ -34998,6 +34998,7 @@ export type Database = {
           story_points: number | null
           summary: string
           synced_at: string | null
+          theme_id: string | null
           type_icon_url: string | null
         }
         Insert: {
@@ -35030,6 +35031,7 @@ export type Database = {
           story_points?: number | null
           summary?: string
           synced_at?: string | null
+          theme_id?: string | null
           type_icon_url?: string | null
         }
         Update: {
@@ -35062,9 +35064,25 @@ export type Database = {
           story_points?: number | null
           summary?: string
           synced_at?: string | null
+          theme_id?: string | null
           type_icon_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "wh_issues_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_wh_theme_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_issues_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "wh_themes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       wh_jira_connection: {
         Row: {
