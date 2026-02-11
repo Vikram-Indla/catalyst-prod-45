@@ -24,6 +24,7 @@ import {
   FolderTree,
   ClipboardList,
   Beaker,
+  Server,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
@@ -58,6 +59,7 @@ const testHubSidebarConfig: SidebarConfig = {
         { id: 'test-plans', title: 'Test Plans', path: '/testhub/test-plans', icon: ClipboardList, exact: false },
         { id: 'execution', title: 'Execution Hub', path: '/testhub/execution', icon: Play, exact: false },
         { id: 'runs', title: 'Test Runs', path: '/testhub/runs', icon: Beaker, exact: false },
+        { id: 'environments', title: 'Environments', path: '/testhub/environments', icon: Server, exact: false },
       ],
     },
     {
