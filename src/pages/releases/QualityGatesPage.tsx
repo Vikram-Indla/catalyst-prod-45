@@ -1,963 +1,839 @@
+// =====================================================
+// QUALITY GATES PAGE (G17) — Full Implementation
+// Live data from tm_release_quality_gates + RPCs
+// =====================================================
+
 import React, { useState, useMemo } from 'react';
-import { 
+import {
   CheckCircle, XCircle, Clock, AlertTriangle, ChevronDown, ChevronRight,
-  Play, RefreshCw, Settings, Plus, Shield, Activity, TrendingUp, TrendingDown,
-  Minus, Filter, MoreVertical, Eye, Edit, Trash2, History, Download, Search,
-  AlertCircle, ArrowUpRight, Target, Gauge, BarChart3, Bell
+  RefreshCw, Plus, Shield, TrendingUp, TrendingDown, Minus,
+  MoreVertical, Edit, Trash2, History, Search, AlertCircle, ShieldCheck,
+  ShieldAlert, ShieldOff, Calendar
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
+import { Switch } from '@/components/ui/switch';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { GateHistoryPanel, EditQualityGateDialog, DeleteGateConfirmationDialog } from '@/components/releases/quality-gates';
+import { format } from 'date-fns';
+import {
+  useReleaseQualityGates,
+  useCreateQualityGate,
+  useUpdateQualityGate,
+  useDeleteQualityGate,
+  useEvaluateQualityGates,
+  useWaiveQualityGate,
+  useGateHistory,
+  QualityGate,
+  GateHistoryEntry,
+} from '@/hooks/releases/useReleaseQualityGates';
+import { useReleases } from '@/hooks/testhub/useReleases';
 
-// Types
-type GateStatus = 'passing' | 'failing' | 'warning' | 'not_evaluated' | 'error';
-type GateType = 'execution' | 'coverage' | 'defect' | 'performance' | 'security' | 'documentation' | 'compliance' | 'custom';
-type GateCategory = 'blocking' | 'warning' | 'informational';
-type RuleStatus = 'pass' | 'fail' | 'warn' | 'error' | 'not_evaluated';
+// ── Config ──
 
-interface GateRule {
-  id: string;
-  name: string;
-  description?: string;
-  metric: string;
-  operator: string;
-  threshold: number;
-  warningThreshold?: number;
-  currentValue: number;
-  status: RuleStatus;
-  weight: number;
-  isRequired: boolean;
-}
+const GATE_TYPES = [
+  { value: 'pass_rate', label: 'Pass Rate %', icon: ShieldCheck },
+  { value: 'execution_rate', label: 'Execution Rate %', icon: Shield },
+  { value: 'defect_count', label: 'Open Defects', icon: ShieldAlert },
+  { value: 'blocker_count', label: 'Open Blockers', icon: ShieldAlert },
+  { value: 'coverage', label: 'Test Coverage', icon: Shield },
+  { value: 'custom', label: 'Custom', icon: Shield },
+];
 
-interface QualityGate {
-  id: string;
-  name: string;
-  description?: string;
-  type: GateType;
-  category: GateCategory;
-  status: GateStatus;
-  score: number;
-  rules: GateRule[];
-  lastEvaluatedAt?: string;
-  isActive: boolean;
-  hasOverride: boolean;
-  trend: 'improving' | 'stable' | 'degrading';
-}
+const OPERATORS = [
+  { value: '>=', label: '≥ (at least)' },
+  { value: '<=', label: '≤ (at most)' },
+  { value: '>', label: '> (more than)' },
+  { value: '<', label: '< (less than)' },
+  { value: '=', label: '= (exactly)' },
+];
 
-interface BlockingIssue {
-  gateId: string;
-  gateName: string;
-  ruleId: string;
-  ruleName: string;
-  message: string;
-  suggestedAction: string;
-  estimatedEffort: 'low' | 'medium' | 'high';
-}
-
-interface TrendData {
-  date: string;
-  passing: number;
-  failing: number;
-  score: number;
-}
-
-// Empty data arrays - no mock data, use database hooks
-const mockReleases: { id: string; name: string; status: string; targetDate: string }[] = [];
-
-const mockGates: QualityGate[] = [];
-
-const mockBlockingIssues: BlockingIssue[] = [];
-
-const mockTrendData: TrendData[] = [];
-
-// Status configuration
-const statusConfig = {
-  passing: { icon: CheckCircle, color: 'text-teal-600', bg: 'bg-teal-50', border: 'border-teal-200', label: 'Passing' },
-  failing: { icon: XCircle, color: 'text-destructive', bg: 'bg-red-50', border: 'border-red-200', label: 'Failing' },
-  warning: { icon: AlertTriangle, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200', label: 'Warning' },
-  not_evaluated: { icon: Clock, color: 'text-muted-foreground', bg: 'bg-muted/30', border: 'border-border', label: 'Not Evaluated' },
-  error: { icon: AlertCircle, color: 'text-destructive', bg: 'bg-red-50', border: 'border-red-200', label: 'Error' },
+const STATUS_CONFIG: Record<string, { icon: React.ElementType; color: string; bg: string; label: string }> = {
+  passed: { icon: CheckCircle, color: 'text-teal-600', bg: 'bg-teal-50 dark:bg-teal-950/30', label: 'Passed' },
+  failed: { icon: XCircle, color: 'text-destructive', bg: 'bg-red-50 dark:bg-red-950/30', label: 'Failed' },
+  waived: { icon: ShieldOff, color: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-950/30', label: 'Waived' },
+  pending: { icon: Clock, color: 'text-muted-foreground', bg: 'bg-muted/30', label: 'Pending' },
 };
 
-const ruleStatusConfig = {
-  pass: { icon: CheckCircle, color: 'text-teal-600' },
-  fail: { icon: XCircle, color: 'text-destructive' },
-  warn: { icon: AlertTriangle, color: 'text-amber-600' },
-  error: { icon: AlertCircle, color: 'text-destructive' },
-  not_evaluated: { icon: Clock, color: 'text-muted-foreground' },
+const HISTORY_STATUS_CONFIG: Record<string, { icon: React.ElementType; color: string }> = {
+  passed: { icon: CheckCircle, color: 'text-teal-600' },
+  failed: { icon: XCircle, color: 'text-destructive' },
+  waived: { icon: ShieldOff, color: 'text-purple-600' },
+  pending: { icon: Clock, color: 'text-muted-foreground' },
 };
 
-const categoryConfig = {
-  blocking: { label: 'Blocking', color: 'bg-destructive/10 text-destructive border-destructive/20' },
-  warning: { label: 'Warning', color: 'bg-amber-500/10 text-amber-700 border-amber-500/20' },
-  informational: { label: 'Info', color: 'bg-blue-500/10 text-blue-700 border-blue-500/20' },
-};
-
-const typeIcons: Record<GateType, React.ElementType> = {
-  execution: Activity,
-  coverage: Target,
-  defect: AlertCircle,
-  performance: Gauge,
-  security: Shield,
-  documentation: BarChart3,
-  compliance: Shield,
-  custom: Settings,
-};
-
-// Components
-function ReadinessGauge({ score, status }: { score: number; status: string }) {
-  const circumference = 2 * Math.PI * 45;
-  const offset = circumference - (score / 100) * circumference;
-  
-  const getColor = () => {
-    if (score >= 85) return '#0d9488'; // teal
-    if (score >= 70) return '#d97706'; // amber
-    return '#ef4444'; // red
-  };
-
-  return (
-    <div className="relative w-32 h-32">
-      <svg className="w-full h-full transform -rotate-90">
-        <circle
-          cx="64"
-          cy="64"
-          r="45"
-          fill="none"
-          stroke="hsl(var(--muted))"
-          strokeWidth="10"
-        />
-        <circle
-          cx="64"
-          cy="64"
-          r="45"
-          fill="none"
-          stroke={getColor()}
-          strokeWidth="10"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          strokeLinecap="round"
-          className="transition-all duration-500"
-        />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-2xl font-bold text-foreground">{score}%</span>
-        <span className="text-xs text-muted-foreground capitalize">{status.replace('_', ' ')}</span>
-      </div>
-    </div>
-  );
+// ── Helper ──
+function getProgressPercent(gate: QualityGate): number {
+  if (gate.current_value == null) return 0;
+  const isPercentMetric = gate.gate_type === 'pass_rate' || gate.gate_type === 'execution_rate' || gate.gate_type === 'coverage';
+  if (isPercentMetric) return Math.min(100, Math.max(0, gate.current_value));
+  // For count-based: show inverse progress (lower is better for <= gates)
+  if (gate.threshold_operator === '<=' || gate.threshold_operator === '<') {
+    if (gate.threshold_value === 0) return gate.current_value === 0 ? 100 : 0;
+    return Math.min(100, Math.max(0, (1 - gate.current_value / Math.max(gate.threshold_value * 2, 1)) * 100));
+  }
+  return Math.min(100, Math.max(0, (gate.current_value / Math.max(gate.threshold_value, 1)) * 100));
 }
 
-function GateCard({ 
-  gate, 
-  expanded, 
-  onToggle, 
+function getProgressColor(gate: QualityGate): string {
+  const s = gate.status;
+  if (s === 'passed') return 'bg-teal-500';
+  if (s === 'failed') return 'bg-destructive';
+  if (s === 'waived') return 'bg-purple-500';
+  return 'bg-muted-foreground';
+}
+
+function formatMetricValue(gate: QualityGate): string {
+  const val = gate.current_value;
+  if (val == null) return 'N/A';
+  const isPercent = gate.gate_type === 'pass_rate' || gate.gate_type === 'execution_rate' || gate.gate_type === 'coverage';
+  return isPercent ? `${val}%` : `${val}`;
+}
+
+// ── Gate Card Component ──
+
+function GateCard({
+  gate,
+  expanded,
+  onToggle,
   onEvaluate,
-  onRequestOverride,
+  onWaive,
   onViewHistory,
-  onEditGate,
-  onDeleteGate
-}: { 
-  gate: QualityGate; 
-  expanded: boolean; 
+  onEdit,
+  onDelete,
+}: {
+  gate: QualityGate;
+  expanded: boolean;
   onToggle: () => void;
   onEvaluate: () => void;
-  onRequestOverride: () => void;
+  onWaive: () => void;
   onViewHistory: () => void;
-  onEditGate: () => void;
-  onDeleteGate: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
 }) {
-  const config = statusConfig[gate.status];
+  const status = gate.status || 'pending';
+  const config = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
   const StatusIcon = config.icon;
-  const TypeIcon = typeIcons[gate.type];
-  const TrendIcon = gate.trend === 'improving' ? TrendingUp : gate.trend === 'degrading' ? TrendingDown : Minus;
-  const trendColor = gate.trend === 'improving' ? 'text-teal-600' : gate.trend === 'degrading' ? 'text-destructive' : 'text-muted-foreground';
-
-  const passingRules = gate.rules.filter(r => r.status === 'pass').length;
-  const failingRules = gate.rules.filter(r => r.status === 'fail').length;
-  const warningRules = gate.rules.filter(r => r.status === 'warn').length;
+  const gateTypeInfo = GATE_TYPES.find(t => t.value === gate.gate_type);
+  const TypeIcon = gateTypeInfo?.icon || Shield;
 
   return (
-    <Card className={cn("transition-all", config.border, expanded && "ring-2 ring-primary/20")}>
-      <CardHeader className="py-3 px-4">
+    <Card className={cn(
+      'transition-all border',
+      status === 'failed' && gate.is_blocking && 'border-destructive/50',
+      status === 'passed' && 'border-teal-200 dark:border-teal-900',
+      status === 'waived' && 'border-purple-200 dark:border-purple-900',
+      expanded && 'ring-2 ring-primary/20'
+    )}>
+      <div className="p-4">
         <div className="flex items-center gap-3">
-          <button
-            onClick={onToggle}
-            className="p-1 hover:bg-muted rounded"
-          >
+          <button onClick={onToggle} className="p-1 hover:bg-muted rounded">
             {expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
           </button>
-          
-          <div className={cn("p-2 rounded-lg", config.bg)}>
-            <StatusIcon className={cn("w-5 h-5", config.color)} />
+
+          <div className={cn('p-2 rounded-lg', config.bg)}>
+            <StatusIcon className={cn('w-5 h-5', config.color)} />
           </div>
-          
+
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-foreground truncate">{gate.name}</h3>
-              <Badge variant="outline" className={categoryConfig[gate.category].color}>
-                {categoryConfig[gate.category].label}
+              <h3 className="font-semibold text-foreground truncate">{gate.gate_name}</h3>
+              <Badge variant={gate.is_blocking ? 'destructive' : 'secondary'} className="text-xs">
+                {gate.is_blocking ? 'Blocking' : 'Warning'}
               </Badge>
-              {gate.hasOverride && (
-                <Badge variant="outline" className="bg-purple-500/10 text-purple-700 border-purple-500/20">
-                  Override Active
+              {status === 'waived' && (
+                <Badge variant="outline" className="bg-purple-500/10 text-purple-700 border-purple-500/20 text-xs">
+                  Waived
                 </Badge>
               )}
             </div>
             <div className="flex items-center gap-3 mt-0.5 text-xs text-muted-foreground">
-              <div className="flex items-center gap-1">
+              <span className="flex items-center gap-1">
                 <TypeIcon className="w-3 h-3" />
-                <span className="capitalize">{gate.type}</span>
-              </div>
-              {gate.lastEvaluatedAt && (
-                <span>Last: {new Date(gate.lastEvaluatedAt).toLocaleTimeString()}</span>
+                {gateTypeInfo?.label || gate.gate_type}
+              </span>
+              <span>
+                {gate.threshold_operator} {gate.threshold_value}{(gate.gate_type === 'pass_rate' || gate.gate_type === 'execution_rate' || gate.gate_type === 'coverage') ? '%' : ''}
+              </span>
+              {gate.last_evaluated_at && (
+                <span>Last: {format(new Date(gate.last_evaluated_at), 'MMM d, h:mm a')}</span>
               )}
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Rules Summary */}
-            <div className="flex items-center gap-2 text-xs">
-              <span className="flex items-center gap-1 text-teal-600">
-                <CheckCircle className="w-3.5 h-3.5" /> {passingRules}
-              </span>
-              {warningRules > 0 && (
-                <span className="flex items-center gap-1 text-amber-600">
-                  <AlertTriangle className="w-3.5 h-3.5" /> {warningRules}
-                </span>
+          {/* Current value + status */}
+          <div className="text-right mr-2">
+            <div className={cn('text-lg font-bold', config.color)}>
+              {formatMetricValue(gate)}
+            </div>
+            <div className="text-xs text-muted-foreground capitalize">{config.label}</div>
+          </div>
+
+          {/* Actions */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreVertical className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={onEvaluate}>
+                <RefreshCw className="w-4 h-4 mr-2" /> Re-evaluate
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onViewHistory}>
+                <History className="w-4 h-4 mr-2" /> View History
+              </DropdownMenuItem>
+              {status === 'failed' && (
+                <DropdownMenuItem onClick={onWaive}>
+                  <ShieldOff className="w-4 h-4 mr-2" /> Request Waiver
+                </DropdownMenuItem>
               )}
-              {failingRules > 0 && (
-                <span className="flex items-center gap-1 text-destructive">
-                  <XCircle className="w-3.5 h-3.5" /> {failingRules}
-                </span>
-              )}
-            </div>
+              <DropdownMenuItem onClick={onEdit}>
+                <Edit className="w-4 h-4 mr-2" /> Edit Gate
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="text-destructive" onClick={onDelete}>
+                <Trash2 className="w-4 h-4 mr-2" /> Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
-            {/* Score */}
-            <div className="text-right">
-              <div className="text-lg font-bold text-foreground">{gate.score}%</div>
-              <div className={cn("flex items-center gap-1 text-xs", trendColor)}>
-                <TrendIcon className="w-3 h-3" />
-                <span className="capitalize">{gate.trend}</span>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center gap-1">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onEvaluate}>
-                      <Play className="w-4 h-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Run Evaluation</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <MoreVertical className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={onViewHistory}>
-                    <Eye className="w-4 h-4 mr-2" /> View History
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={onEditGate}>
-                    <Edit className="w-4 h-4 mr-2" /> Edit Gate
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={onRequestOverride}>
-                    <Shield className="w-4 h-4 mr-2" /> Request Override
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-destructive" onClick={onDeleteGate}>
-                    <Trash2 className="w-4 h-4 mr-2" /> Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+        {/* Progress bar */}
+        <div className="mt-3 ml-12">
+          <div className="h-2 bg-muted rounded-full overflow-hidden">
+            <div
+              className={cn('h-full rounded-full transition-all duration-500', getProgressColor(gate))}
+              style={{ width: `${getProgressPercent(gate)}%` }}
+            />
+          </div>
+          <div className="flex justify-between text-xs text-muted-foreground mt-1">
+            <span>Current: {formatMetricValue(gate)}</span>
+            <span>Threshold: {gate.threshold_operator} {gate.threshold_value}{(gate.gate_type === 'pass_rate' || gate.gate_type === 'execution_rate' || gate.gate_type === 'coverage') ? '%' : ''}</span>
           </div>
         </div>
-      </CardHeader>
 
-      {expanded && (
-        <CardContent className="pt-0 pb-4 px-4">
-          <div className="ml-8 space-y-2">
+        {/* Expanded details */}
+        {expanded && (
+          <div className="mt-4 ml-12 space-y-3">
             {gate.description && (
-              <p className="text-sm text-muted-foreground mb-3">{gate.description}</p>
+              <p className="text-sm text-muted-foreground">{gate.description}</p>
             )}
-            <div className="border rounded-lg overflow-hidden">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-muted/50">
-                    <th className="text-left px-3 py-2 font-medium text-muted-foreground">Rule</th>
-                    <th className="text-center px-3 py-2 font-medium text-muted-foreground">Threshold</th>
-                    <th className="text-center px-3 py-2 font-medium text-muted-foreground">Current</th>
-                    <th className="text-center px-3 py-2 font-medium text-muted-foreground">Status</th>
-                    <th className="text-center px-3 py-2 font-medium text-muted-foreground">Weight</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {gate.rules.map((rule) => {
-                    const ruleConfig = ruleStatusConfig[rule.status];
-                    const RuleIcon = ruleConfig.icon;
-                    return (
-                      <tr key={rule.id} className="hover:bg-muted/30">
-                        <td className="px-3 py-2">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium text-foreground">{rule.name}</span>
-                            {rule.isRequired && (
-                              <Badge variant="outline" className="text-[10px] h-4 px-1">Required</Badge>
-                            )}
-                          </div>
-                        </td>
-                        <td className="text-center px-3 py-2 text-muted-foreground">
-                          {rule.operator} {rule.threshold}
-                          {rule.metric.includes('rate') || rule.metric.includes('coverage') ? '%' : ''}
-                        </td>
-                        <td className="text-center px-3 py-2 font-medium text-foreground">
-                          {rule.currentValue}
-                          {rule.metric.includes('rate') || rule.metric.includes('coverage') ? '%' : ''}
-                        </td>
-                        <td className="text-center px-3 py-2">
-                          <div className="flex items-center justify-center gap-1.5">
-                            <RuleIcon className={cn("w-4 h-4", ruleConfig.color)} />
-                            <span className={cn("text-xs font-medium capitalize", ruleConfig.color)}>
-                              {rule.status.replace('_', ' ')}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="text-center px-3 py-2 text-muted-foreground">{rule.weight}x</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            {status === 'waived' && gate.waiver_reason && (
+              <div className="p-3 bg-purple-50 dark:bg-purple-950/20 rounded-lg border border-purple-200 dark:border-purple-900">
+                <div className="text-sm font-medium text-purple-700 dark:text-purple-400 mb-1">Waiver Reason</div>
+                <p className="text-sm text-foreground">{gate.waiver_reason}</p>
+                {gate.waiver_expires_at && (
+                  <div className="flex items-center gap-1 mt-2 text-xs text-purple-600">
+                    <Calendar className="w-3 h-3" />
+                    Expires: {format(new Date(gate.waiver_expires_at), 'MMM d, yyyy')}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-        </CardContent>
-      )}
+        )}
+      </div>
     </Card>
   );
 }
 
-function BlockingIssueCard({ issue }: { issue: BlockingIssue }) {
-  const effortColors = {
-    low: 'bg-teal-500/10 text-teal-700',
-    medium: 'bg-amber-500/10 text-amber-700',
-    high: 'bg-destructive/10 text-destructive',
+// ── Create/Edit Gate Dialog ──
+
+function CreateEditGateDialog({
+  open,
+  gate,
+  releaseId,
+  onOpenChange,
+}: {
+  open: boolean;
+  gate: QualityGate | null;
+  releaseId: string;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const createGate = useCreateQualityGate();
+  const updateGate = useUpdateQualityGate();
+  const isEditing = !!gate;
+
+  const [name, setName] = useState(gate?.gate_name || '');
+  const [description, setDescription] = useState(gate?.description || '');
+  const [gateType, setGateType] = useState<string>(gate?.gate_type || 'pass_rate');
+  const [operator, setOperator] = useState<string>(gate?.threshold_operator || '>=');
+  const [threshold, setThreshold] = useState(gate?.threshold_value || 80);
+  const [isBlocking, setIsBlocking] = useState(gate?.is_blocking ?? true);
+
+  React.useEffect(() => {
+    if (open) {
+      setName(gate?.gate_name || '');
+      setDescription(gate?.description || '');
+      setGateType(gate?.gate_type || 'pass_rate');
+      setOperator(gate?.threshold_operator || '>=');
+      setThreshold(gate?.threshold_value || 80);
+      setIsBlocking(gate?.is_blocking ?? true);
+    }
+  }, [open, gate]);
+
+  const handleSubmit = () => {
+    if (!name.trim()) {
+      toast.error('Gate name is required');
+      return;
+    }
+
+    if (isEditing && gate) {
+      updateGate.mutate({
+        id: gate.id,
+        gate_name: name,
+        description: description || null,
+        gate_type: gateType as any,
+        threshold_operator: operator as any,
+        threshold_value: threshold,
+        is_blocking: isBlocking,
+      }, { onSuccess: () => onOpenChange(false) });
+    } else {
+      createGate.mutate({
+        release_id: releaseId,
+        gate_name: name,
+        description: description || null,
+        gate_type: gateType as any,
+        threshold_operator: operator as any,
+        threshold_value: threshold,
+        is_blocking: isBlocking,
+        sort_order: 0,
+      }, { onSuccess: () => onOpenChange(false) });
+    }
   };
 
-  return (
-    <div className="p-3 border border-destructive/20 rounded-lg bg-destructive/5">
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 text-sm">
-            <XCircle className="w-4 h-4 text-destructive shrink-0" />
-            <span className="font-medium text-foreground truncate">{issue.gateName}: {issue.ruleName}</span>
-          </div>
-          <p className="text-sm text-muted-foreground mt-1 ml-6">{issue.message}</p>
-          <div className="flex items-center gap-2 mt-2 ml-6">
-            <ArrowUpRight className="w-3.5 h-3.5 text-primary" />
-            <span className="text-xs text-primary">{issue.suggestedAction}</span>
-          </div>
-        </div>
-        <Badge variant="secondary" className={cn("shrink-0", effortColors[issue.estimatedEffort])}>
-          {issue.estimatedEffort} effort
-        </Badge>
-      </div>
-    </div>
-  );
-}
+  const isPending = createGate.isPending || updateGate.isPending;
 
-function OverrideRequestDialog({ 
-  open, 
-  onOpenChange, 
-  gateName 
-}: { 
-  open: boolean; 
-  onOpenChange: (open: boolean) => void;
-  gateName: string;
-}) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Request Override: {gateName}</DialogTitle>
+          <DialogTitle>{isEditing ? 'Edit Quality Gate' : 'Create Quality Gate'}</DialogTitle>
           <DialogDescription>
-            Override requests require justification and approval from release managers.
+            {isEditing ? 'Modify gate parameters' : 'Define a new quality gate for release readiness'}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label>Override Type</Label>
-            <Select defaultValue="temporary">
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="temporary">Temporary (until next evaluation)</SelectItem>
-                <SelectItem value="one_time">One-time (single release)</SelectItem>
-                <SelectItem value="permanent">Permanent (requires executive approval)</SelectItem>
-              </SelectContent>
-            </Select>
+          <div>
+            <Label>Gate Name *</Label>
+            <Input value={name} onChange={e => setName(e.target.value)} placeholder="e.g., Minimum Pass Rate" className="mt-1" />
           </div>
-          <div className="space-y-2">
-            <Label>Risk Level</Label>
-            <Select defaultValue="medium">
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="low">Low</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="critical">Critical</SelectItem>
-              </SelectContent>
-            </Select>
+          <div>
+            <Label>Description</Label>
+            <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Describe what this gate validates" className="mt-1" rows={2} />
           </div>
-          <div className="space-y-2">
-            <Label>Justification *</Label>
-            <Textarea 
-              placeholder="Explain why this override is necessary..."
-              rows={3}
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Metric Type</Label>
+              <Select value={gateType} onValueChange={setGateType}>
+                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {GATE_TYPES.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <Label>Operator</Label>
+                <Select value={operator} onValueChange={setOperator}>
+                  <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {OPERATORS.map(op => <SelectItem key={op.value} value={op.value}>{op.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="w-24">
+                <Label>Value</Label>
+                <Input type="number" value={threshold} onChange={e => setThreshold(Number(e.target.value))} className="mt-1" />
+              </div>
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label>Mitigation Plan</Label>
-            <Textarea 
-              placeholder="Describe how risks will be mitigated..."
-              rows={2}
-            />
+          <div className="flex items-center gap-2 p-3 border rounded-lg">
+            <Switch id="blocking" checked={isBlocking} onCheckedChange={setIsBlocking} />
+            <Label htmlFor="blocking">Blocking gate (must pass for release approval)</Label>
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button>Submit Request</Button>
+          <Button onClick={handleSubmit} disabled={isPending}>
+            {isPending ? 'Saving...' : isEditing ? 'Save Changes' : 'Create Gate'}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
 
+// ── Waiver Dialog ──
+
+function WaiverDialog({
+  open,
+  gate,
+  releaseId,
+  onOpenChange,
+}: {
+  open: boolean;
+  gate: QualityGate | null;
+  releaseId: string;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const waiveGate = useWaiveQualityGate();
+  const [reason, setReason] = useState('');
+  const [expiresAt, setExpiresAt] = useState('');
+
+  React.useEffect(() => {
+    if (open) { setReason(''); setExpiresAt(''); }
+  }, [open]);
+
+  const handleSubmit = () => {
+    if (!reason.trim()) {
+      toast.error('Waiver reason is required');
+      return;
+    }
+    if (!gate) return;
+
+    waiveGate.mutate({
+      gateId: gate.id,
+      userId: '00000000-0000-0000-0000-000000000001', // Current user placeholder
+      reason,
+      expiresAt: expiresAt || undefined,
+      releaseId,
+    }, { onSuccess: () => onOpenChange(false) });
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <ShieldOff className="w-5 h-5 text-purple-600" />
+            Request Waiver: {gate?.gate_name}
+          </DialogTitle>
+          <DialogDescription>
+            Waivers document exceptions when business decisions override technical criteria.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          {gate && (
+            <div className="p-3 bg-muted/50 rounded-lg text-sm">
+              <div className="font-medium">Current: {formatMetricValue(gate)} | Threshold: {gate.threshold_operator} {gate.threshold_value}</div>
+            </div>
+          )}
+          <div>
+            <Label>Justification *</Label>
+            <Textarea value={reason} onChange={e => setReason(e.target.value)} placeholder="Explain why this waiver is necessary..." rows={3} className="mt-1" />
+          </div>
+          <div>
+            <Label>Waiver Expiry (optional)</Label>
+            <Input type="date" value={expiresAt} onChange={e => setExpiresAt(e.target.value)} className="mt-1" />
+            <p className="text-xs text-muted-foreground mt-1">If set, the waiver will expire and the gate will be re-evaluated.</p>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button onClick={handleSubmit} disabled={waiveGate.isPending} className="bg-purple-600 hover:bg-purple-700 text-white">
+            {waiveGate.isPending ? 'Submitting...' : 'Submit Waiver'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ── Gate History Sheet ──
+
+function GateHistorySheet({
+  open,
+  gateId,
+  gateName,
+  onClose,
+}: {
+  open: boolean;
+  gateId: string | null;
+  gateName: string;
+  onClose: () => void;
+}) {
+  const { data: history = [], isLoading } = useGateHistory(gateId);
+
+  return (
+    <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <SheetContent className="w-full sm:max-w-xl">
+        <SheetHeader>
+          <SheetTitle className="flex items-center gap-2">
+            <History className="w-5 h-5" />
+            Evaluation History
+          </SheetTitle>
+          <SheetDescription>{gateName}</SheetDescription>
+        </SheetHeader>
+        <div className="mt-6">
+          {isLoading ? (
+            <div className="space-y-3">
+              {[...Array(5)].map((_, i) => <div key={i} className="h-16 bg-muted animate-pulse rounded-lg" />)}
+            </div>
+          ) : history.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <p>No evaluation history yet</p>
+            </div>
+          ) : (
+            <ScrollArea className="h-[calc(100vh-200px)]">
+              <div className="space-y-3 pr-4">
+                {history.map((entry: GateHistoryEntry) => {
+                  const statusCfg = HISTORY_STATUS_CONFIG[entry.new_status] || HISTORY_STATUS_CONFIG.pending;
+                  const Icon = statusCfg.icon;
+                  return (
+                    <div key={entry.id} className="flex items-start gap-3 p-3 border rounded-lg hover:bg-muted/30 transition-colors">
+                      <div className={cn('p-2 rounded-lg', entry.new_status === 'passed' ? 'bg-teal-50 dark:bg-teal-950/30' : entry.new_status === 'failed' ? 'bg-red-50 dark:bg-red-950/30' : 'bg-purple-50 dark:bg-purple-950/30')}>
+                        <Icon className={cn('w-4 h-4', statusCfg.color)} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <span className={cn('font-medium text-sm capitalize', statusCfg.color)}>
+                            {entry.new_status}
+                          </span>
+                          <span className="text-lg font-bold">{entry.metric_value}</span>
+                        </div>
+                        <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                          <span>{format(new Date(entry.created_at), 'MMM d, yyyy h:mm a')}</span>
+                          {entry.evaluated_by_name && <span>by {entry.evaluated_by_name}</span>}
+                          <Badge variant="outline" className="text-xs">{entry.evaluation_type}</Badge>
+                        </div>
+                        {entry.previous_status && (
+                          <div className="text-xs text-muted-foreground mt-1">
+                            {entry.previous_status} → {entry.new_status} (threshold: {entry.threshold_value})
+                          </div>
+                        )}
+                        {entry.notes && (
+                          <p className="text-sm text-muted-foreground mt-2 italic">"{entry.notes}"</p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </ScrollArea>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+// ── Delete Confirmation Dialog ──
+
+function DeleteGateDialog({
+  open,
+  gate,
+  releaseId,
+  onOpenChange,
+}: {
+  open: boolean;
+  gate: QualityGate | null;
+  releaseId: string;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const deleteGate = useDeleteQualityGate();
+
+  const handleDelete = () => {
+    if (!gate) return;
+    deleteGate.mutate({ id: gate.id, releaseId }, {
+      onSuccess: () => onOpenChange(false),
+    });
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Trash2 className="w-5 h-5 text-destructive" />
+            Delete Quality Gate
+          </DialogTitle>
+          <DialogDescription>
+            This will permanently delete "{gate?.gate_name}" and all its evaluation history. This cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button variant="destructive" onClick={handleDelete} disabled={deleteGate.isPending}>
+            {deleteGate.isPending ? 'Deleting...' : 'Delete Gate'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ── Main Page ──
+
 export default function QualityGatesPage() {
-  const [selectedRelease, setSelectedRelease] = useState(mockReleases[0].id);
-  const [expandedGates, setExpandedGates] = useState<Set<string>>(new Set(['gate-2']));
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  // Release selector
+  const { releases, isLoading: releasesLoading } = useReleases({ status: 'all', health: 'all', search: '' });
+  const [selectedReleaseId, setSelectedReleaseId] = useState<string>('');
+
+  // Auto-select first release
+  React.useEffect(() => {
+    if (releases.length > 0 && !selectedReleaseId) {
+      setSelectedReleaseId(releases[0].id);
+    }
+  }, [releases, selectedReleaseId]);
+
+  // Gates data
+  const { data: gates = [], isLoading: gatesLoading } = useReleaseQualityGates(selectedReleaseId);
+  const evaluateGates = useEvaluateQualityGates();
+
+  // UI state
+  const [expandedGates, setExpandedGates] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
-  const [isEvaluating, setIsEvaluating] = useState(false);
-  const [overrideDialog, setOverrideDialog] = useState<{ open: boolean; gateName: string }>({ open: false, gateName: '' });
-  const [selectedGateForHistory, setSelectedGateForHistory] = useState<QualityGate | null>(null);
+  const [statusFilter, setStatusFilter] = useState('all');
+
+  // Dialogs
+  const [createEditOpen, setCreateEditOpen] = useState(false);
   const [editingGate, setEditingGate] = useState<QualityGate | null>(null);
+  const [waiverGate, setWaiverGate] = useState<QualityGate | null>(null);
+  const [historyGate, setHistoryGate] = useState<{ id: string; name: string } | null>(null);
   const [deletingGate, setDeletingGate] = useState<QualityGate | null>(null);
-  const [isCreatingGate, setIsCreatingGate] = useState(false);
-  const [evaluatingGateId, setEvaluatingGateId] = useState<string | null>(null);
 
-  const handleEvaluateGate = (gate: QualityGate) => {
-    setEvaluatingGateId(gate.id);
-    toast.info(`Evaluating ${gate.name}...`);
-    setTimeout(() => {
-      setEvaluatingGateId(null);
-      toast.success(`${gate.name} evaluation complete`);
-    }, 1500);
-  };
-
-  const handleExportGateReport = () => {
-    toast.success('Gate report exported successfully');
-  };
-
-  const handleConfigureNotifications = () => {
-    toast.info('Notification settings coming soon');
-  };
-
+  // Filtered gates
   const filteredGates = useMemo(() => {
-    return mockGates.filter(gate => {
-      if (statusFilter !== 'all' && gate.status !== statusFilter) return false;
-      if (categoryFilter !== 'all' && gate.category !== categoryFilter) return false;
-      if (searchQuery && !gate.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    return gates.filter(gate => {
+      if (statusFilter !== 'all' && (gate.status || 'pending') !== statusFilter) return false;
+      if (searchQuery && !gate.gate_name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
       return true;
     });
-  }, [statusFilter, categoryFilter, searchQuery]);
+  }, [gates, statusFilter, searchQuery]);
 
+  // Summary
   const summary = useMemo(() => {
-    const total = mockGates.length;
-    const passing = mockGates.filter(g => g.status === 'passing').length;
-    const failing = mockGates.filter(g => g.status === 'failing').length;
-    const warning = mockGates.filter(g => g.status === 'warning').length;
-    const notEvaluated = mockGates.filter(g => g.status === 'not_evaluated').length;
-    
-    const totalScore = mockGates.reduce((sum, g) => sum + g.score, 0);
-    const readinessScore = Math.round(totalScore / total);
-    
-    const overallStatus = failing > 0 ? 'not_ready' : warning > 0 ? 'at_risk' : 'ready';
-    
-    return { total, passing, failing, warning, notEvaluated, readinessScore, overallStatus };
-  }, []);
+    const total = gates.length;
+    const passed = gates.filter(g => g.status === 'passed').length;
+    const failed = gates.filter(g => g.status === 'failed').length;
+    const waived = gates.filter(g => g.status === 'waived').length;
+    const pending = gates.filter(g => !g.status || g.status === 'pending').length;
+    const blockingFailed = gates.filter(g => g.is_blocking && g.status === 'failed').length;
+    const blockingTotal = gates.filter(g => g.is_blocking).length;
+    const blockingPassed = gates.filter(g => g.is_blocking && (g.status === 'passed' || g.status === 'waived')).length;
+    return { total, passed, failed, waived, pending, blockingFailed, blockingTotal, blockingPassed };
+  }, [gates]);
 
-  const toggleGate = (gateId: string) => {
+  const toggleGate = (id: string) => {
     setExpandedGates(prev => {
       const next = new Set(prev);
-      if (next.has(gateId)) {
-        next.delete(gateId);
-      } else {
-        next.add(gateId);
-      }
+      next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
   };
 
   const handleEvaluateAll = () => {
-    setIsEvaluating(true);
-    setTimeout(() => setIsEvaluating(false), 2000);
+    if (!selectedReleaseId) return;
+    evaluateGates.mutate({ releaseId: selectedReleaseId });
+  };
+
+  const handleEditGate = (gate: QualityGate) => {
+    setEditingGate(gate);
+    setCreateEditOpen(true);
+  };
+
+  const handleCreateGate = () => {
+    setEditingGate(null);
+    setCreateEditOpen(true);
   };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Page Header */}
+      {/* Header */}
       <div className="border-b border-border bg-card">
         <div className="max-w-[1600px] mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-foreground">Quality Gates</h1>
-              <p className="text-sm text-muted-foreground">Automated quality checkpoints for release readiness</p>
+              <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
+                <Shield className="w-6 h-6 text-primary" />
+                Quality Gates
+              </h1>
+              <p className="text-sm text-muted-foreground">Release readiness criteria and automated evaluation</p>
             </div>
             <div className="flex items-center gap-3">
-              <Select value={selectedRelease} onValueChange={setSelectedRelease}>
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue />
+              <Select value={selectedReleaseId} onValueChange={setSelectedReleaseId}>
+                <SelectTrigger className="w-[220px]">
+                  <SelectValue placeholder="Select release..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {mockReleases.map(r => (
-                    <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
+                  {releases.map(r => (
+                    <SelectItem key={r.id} value={r.id}>{r.name} ({r.version})</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <Button variant="outline" onClick={handleEvaluateAll} disabled={isEvaluating}>
-                <RefreshCw className={cn("w-4 h-4 mr-2", isEvaluating && "animate-spin")} />
-                Evaluate All
+              <Button variant="outline" onClick={handleEvaluateAll} disabled={evaluateGates.isPending || !selectedReleaseId}>
+                <RefreshCw className={cn('w-4 h-4 mr-2', evaluateGates.isPending && 'animate-spin')} />
+                Re-evaluate All
               </Button>
-              <Button onClick={() => setIsCreatingGate(true)}>
+              <Button onClick={handleCreateGate} disabled={!selectedReleaseId}>
                 <Plus className="w-4 h-4 mr-2" />
-                New Gate
+                Add Gate
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-[1600px] mx-auto px-6 py-6">
-        <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-            <TabsTrigger value="gates">All Gates</TabsTrigger>
-            <TabsTrigger value="trends">Trends</TabsTrigger>
-            <TabsTrigger value="overrides">Overrides</TabsTrigger>
-          </TabsList>
-
-          {/* Dashboard Tab */}
-          <TabsContent value="dashboard" className="space-y-6">
-            {/* Summary Cards */}
-            <div className="grid grid-cols-12 gap-6">
-              {/* Readiness Gauge */}
-              <Card className="col-span-3">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Release Readiness</CardTitle>
-                </CardHeader>
-                <CardContent className="flex justify-center">
-                  <ReadinessGauge score={summary.readinessScore} status={summary.overallStatus} />
-                </CardContent>
-              </Card>
-
-              {/* Stats Grid */}
-              <Card className="col-span-5">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Gate Status</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-4 gap-4">
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-teal-600">{summary.passing}</div>
-                      <div className="text-xs text-muted-foreground">Passing</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-destructive">{summary.failing}</div>
-                      <div className="text-xs text-muted-foreground">Failing</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-amber-600">{summary.warning}</div>
-                      <div className="text-xs text-muted-foreground">Warning</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-muted-foreground">{summary.notEvaluated}</div>
-                      <div className="text-xs text-muted-foreground">Pending</div>
-                    </div>
-                  </div>
-                  <Progress 
-                    value={(summary.passing / summary.total) * 100} 
-                    className="mt-4 h-2"
-                  />
-                  <div className="text-xs text-muted-foreground text-center mt-1">
-                    {summary.passing} of {summary.total} gates passing
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Quick Actions */}
-              <Card className="col-span-4">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start" size="sm" onClick={handleExportGateReport}>
-                    <Download className="w-4 h-4 mr-2" />
-                    Export Gate Report
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start" size="sm" onClick={handleConfigureNotifications}>
-                    <Bell className="w-4 h-4 mr-2" />
-                    Configure Notifications
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start" size="sm" onClick={() => setSelectedGateForHistory(mockGates[0])}>
-                    <History className="w-4 h-4 mr-2" />
-                    View Evaluation History
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Blocking Issues */}
-            {mockBlockingIssues.length > 0 && (
-              <Card>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-base font-semibold flex items-center gap-2">
-                      <AlertCircle className="w-5 h-5 text-destructive" />
-                      Blocking Issues ({mockBlockingIssues.length})
-                    </CardTitle>
-                    <Badge variant="destructive">Action Required</Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {mockBlockingIssues.map((issue, i) => (
-                    <BlockingIssueCard key={i} issue={issue} />
-                  ))}
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Gates Overview */}
+      <div className="max-w-[1600px] mx-auto px-6 py-6 space-y-6">
+        {/* Summary Bar */}
+        {selectedReleaseId && gates.length > 0 && (
+          <div className="grid grid-cols-5 gap-4">
             <Card>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base font-semibold">Quality Gates</CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Select value={statusFilter} onValueChange={setStatusFilter}>
-                      <SelectTrigger className="w-[130px] h-8 text-xs">
-                        <SelectValue placeholder="All Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Status</SelectItem>
-                        <SelectItem value="passing">Passing</SelectItem>
-                        <SelectItem value="failing">Failing</SelectItem>
-                        <SelectItem value="warning">Warning</SelectItem>
-                        <SelectItem value="not_evaluated">Not Evaluated</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                      <SelectTrigger className="w-[130px] h-8 text-xs">
-                        <SelectValue placeholder="All Categories" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Categories</SelectItem>
-                        <SelectItem value="blocking">Blocking</SelectItem>
-                        <SelectItem value="warning">Warning</SelectItem>
-                        <SelectItem value="informational">Informational</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {filteredGates.map(gate => (
-                  <GateCard
-                    key={gate.id}
-                    gate={gate}
-                    expanded={expandedGates.has(gate.id)}
-                    onToggle={() => toggleGate(gate.id)}
-                    onEvaluate={() => handleEvaluateGate(gate)}
-                    onRequestOverride={() => setOverrideDialog({ open: true, gateName: gate.name })}
-                    onViewHistory={() => setSelectedGateForHistory(gate)}
-                    onEditGate={() => setEditingGate(gate)}
-                    onDeleteGate={() => setDeletingGate(gate)}
-                  />
-                ))}
+              <CardContent className="p-4 text-center">
+                <div className="text-3xl font-bold text-foreground">{summary.total}</div>
+                <div className="text-xs text-muted-foreground">Total Gates</div>
               </CardContent>
             </Card>
-          </TabsContent>
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="text-3xl font-bold text-teal-600">{summary.passed}</div>
+                <div className="text-xs text-muted-foreground">Passed</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="text-3xl font-bold text-destructive">{summary.failed}</div>
+                <div className="text-xs text-muted-foreground">Failed</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="text-3xl font-bold text-purple-600">{summary.waived}</div>
+                <div className="text-xs text-muted-foreground">Waived</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 text-center">
+                <div className="text-3xl font-bold text-muted-foreground">{summary.pending}</div>
+                <div className="text-xs text-muted-foreground">Pending</div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
-          {/* All Gates Tab */}
-          <TabsContent value="gates" className="space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search gates..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-9"
-                />
+        {/* Blocking alert */}
+        {summary.blockingFailed > 0 && (
+          <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-lg flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-destructive shrink-0" />
+            <div>
+              <div className="font-semibold text-destructive">
+                {summary.blockingFailed} blocking gate{summary.blockingFailed > 1 ? 's' : ''} failed
               </div>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[150px]">
-                  <SelectValue placeholder="All Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="passing">Passing</SelectItem>
-                  <SelectItem value="failing">Failing</SelectItem>
-                  <SelectItem value="warning">Warning</SelectItem>
-                  <SelectItem value="not_evaluated">Not Evaluated</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-[150px]">
-                  <SelectValue placeholder="All Categories" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="blocking">Blocking</SelectItem>
-                  <SelectItem value="warning">Warning</SelectItem>
-                  <SelectItem value="informational">Informational</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="text-sm text-muted-foreground">
+                Release cannot proceed until all blocking gates pass or are waived. ({summary.blockingPassed}/{summary.blockingTotal} blocking gates met)
+              </div>
             </div>
+          </div>
+        )}
 
-            <div className="space-y-3">
-              {filteredGates.map(gate => (
-                <GateCard
-                  key={gate.id}
-                  gate={gate}
-                  expanded={expandedGates.has(gate.id)}
-                  onToggle={() => toggleGate(gate.id)}
-                  onEvaluate={() => handleEvaluateGate(gate)}
-                  onRequestOverride={() => setOverrideDialog({ open: true, gateName: gate.name })}
-                  onViewHistory={() => setSelectedGateForHistory(gate)}
-                  onEditGate={() => setEditingGate(gate)}
-                  onDeleteGate={() => setDeletingGate(gate)}
-                />
-              ))}
-              {filteredGates.length === 0 && (
-                <div className="text-center py-12 text-muted-foreground">
-                  No gates match your filters
-                </div>
-              )}
-            </div>
-          </TabsContent>
+        {/* Filters */}
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input placeholder="Search gates..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-9" />
+          </div>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="passed">Passed</SelectItem>
+              <SelectItem value="failed">Failed</SelectItem>
+              <SelectItem value="waived">Waived</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-          {/* Trends Tab */}
-          <TabsContent value="trends" className="space-y-6">
-            <div className="grid grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Readiness Score Trend</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={mockTrendData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                        <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
-                        <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
-                        <Line 
-                          type="monotone" 
-                          dataKey="score" 
-                          stroke="#0d9488" 
-                          strokeWidth={2}
-                          dot={{ fill: '#0d9488', strokeWidth: 0, r: 4 }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Gate Status Distribution</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-[300px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={mockTrendData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                        <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
-                        <YAxis tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
-                        <Bar dataKey="passing" stackId="a" fill="#0d9488" />
-                        <Bar dataKey="failing" stackId="a" fill="#ef4444" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Gate Performance Over Time</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className="text-left py-2 px-3 font-medium text-muted-foreground">Gate</th>
-                        {mockTrendData.slice(-7).map(d => (
-                          <th key={d.date} className="text-center py-2 px-3 font-medium text-muted-foreground">{d.date}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {mockGates.slice(0, 5).map(gate => (
-                        <tr key={gate.id} className="border-b border-border">
-                          <td className="py-2 px-3 font-medium text-foreground">{gate.name}</td>
-                          {mockTrendData.slice(-7).map((d, i) => {
-                            const status = i % 3 === 0 ? 'pass' : i % 5 === 0 ? 'fail' : 'pass';
-                            const config = ruleStatusConfig[status];
-                            const Icon = config.icon;
-                            return (
-                              <td key={d.date} className="text-center py-2 px-3">
-                                <Icon className={cn("w-4 h-4 mx-auto", config.color)} />
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Overrides Tab */}
-          <TabsContent value="overrides" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">Active Overrides</CardTitle>
-                  <Badge variant="secondary">0 Active</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12 text-muted-foreground">
-                  <Shield className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p>No active overrides</p>
-                  <p className="text-sm">Override requests will appear here when gates are bypassed</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Override History</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className="text-left py-2 px-3 font-medium text-muted-foreground">Gate</th>
-                        <th className="text-left py-2 px-3 font-medium text-muted-foreground">Type</th>
-                        <th className="text-left py-2 px-3 font-medium text-muted-foreground">Requested By</th>
-                        <th className="text-left py-2 px-3 font-medium text-muted-foreground">Status</th>
-                        <th className="text-left py-2 px-3 font-medium text-muted-foreground">Date</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="border-b border-border">
-                        <td className="py-3 px-3 font-medium text-foreground">Coverage Gate</td>
-                        <td className="py-3 px-3 text-muted-foreground">Temporary</td>
-                        <td className="py-3 px-3 text-muted-foreground">John Smith</td>
-                        <td className="py-3 px-3">
-                          <Badge variant="secondary" className="bg-teal-500/10 text-teal-700">Approved</Badge>
-                        </td>
-                        <td className="py-3 px-3 text-muted-foreground">Jan 10, 2026</td>
-                      </tr>
-                      <tr className="border-b border-border">
-                        <td className="py-3 px-3 font-medium text-foreground">Performance Gate</td>
-                        <td className="py-3 px-3 text-muted-foreground">One-time</td>
-                        <td className="py-3 px-3 text-muted-foreground">Sarah Johnson</td>
-                        <td className="py-3 px-3">
-                          <Badge variant="secondary" className="bg-amber-500/10 text-amber-700">Expired</Badge>
-                        </td>
-                        <td className="py-3 px-3 text-muted-foreground">Jan 5, 2026</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        {/* Gates List */}
+        {gatesLoading ? (
+          <div className="space-y-3">
+            {[...Array(3)].map((_, i) => <div key={i} className="h-24 bg-muted animate-pulse rounded-lg" />)}
+          </div>
+        ) : !selectedReleaseId ? (
+          <Card>
+            <CardContent className="py-16 text-center text-muted-foreground">
+              <Shield className="w-16 h-16 mx-auto mb-4 opacity-30" />
+              <p className="text-lg font-medium">Select a Release</p>
+              <p className="text-sm">Choose a release to view and manage its quality gates</p>
+            </CardContent>
+          </Card>
+        ) : filteredGates.length === 0 && gates.length === 0 ? (
+          <Card>
+            <CardContent className="py-16 text-center text-muted-foreground">
+              <Shield className="w-16 h-16 mx-auto mb-4 opacity-30" />
+              <p className="text-lg font-medium">No Quality Gates</p>
+              <p className="text-sm mb-4">Define quality gates to enforce release readiness criteria</p>
+              <Button onClick={handleCreateGate}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add First Gate
+              </Button>
+            </CardContent>
+          </Card>
+        ) : filteredGates.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">
+            No gates match your filters
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredGates.map(gate => (
+              <GateCard
+                key={gate.id}
+                gate={gate}
+                expanded={expandedGates.has(gate.id)}
+                onToggle={() => toggleGate(gate.id)}
+                onEvaluate={() => evaluateGates.mutate({ releaseId: selectedReleaseId })}
+                onWaive={() => setWaiverGate(gate)}
+                onViewHistory={() => setHistoryGate({ id: gate.id, name: gate.gate_name })}
+                onEdit={() => handleEditGate(gate)}
+                onDelete={() => setDeletingGate(gate)}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Override Request Dialog */}
-      <OverrideRequestDialog
-        open={overrideDialog.open}
-        onOpenChange={(open) => setOverrideDialog({ ...overrideDialog, open })}
-        gateName={overrideDialog.gateName}
-      />
-
-      {/* Gate History Panel */}
-      <GateHistoryPanel
-        open={!!selectedGateForHistory}
-        gate={selectedGateForHistory}
-        onClose={() => setSelectedGateForHistory(null)}
-      />
-
-      {/* Edit Quality Gate Dialog */}
-      <EditQualityGateDialog
-        open={!!editingGate}
+      {/* Dialogs */}
+      <CreateEditGateDialog
+        open={createEditOpen}
         gate={editingGate}
-        onOpenChange={(open) => !open && setEditingGate(null)}
-        onSuccess={() => toast.success('Gate updated')}
+        releaseId={selectedReleaseId}
+        onOpenChange={setCreateEditOpen}
       />
 
-      {/* Delete Gate Confirmation Dialog */}
-      <DeleteGateConfirmationDialog
+      <WaiverDialog
+        open={!!waiverGate}
+        gate={waiverGate}
+        releaseId={selectedReleaseId}
+        onOpenChange={(open) => !open && setWaiverGate(null)}
+      />
+
+      <GateHistorySheet
+        open={!!historyGate}
+        gateId={historyGate?.id || null}
+        gateName={historyGate?.name || ''}
+        onClose={() => setHistoryGate(null)}
+      />
+
+      <DeleteGateDialog
         open={!!deletingGate}
         gate={deletingGate}
+        releaseId={selectedReleaseId}
         onOpenChange={(open) => !open && setDeletingGate(null)}
-        onConfirm={async () => {
-          await new Promise(resolve => setTimeout(resolve, 500));
-          toast.success('Quality gate deleted');
-          setDeletingGate(null);
-        }}
-      />
-
-      {/* Create New Gate Dialog - reuses EditQualityGateDialog */}
-      <EditQualityGateDialog
-        open={isCreatingGate}
-        gate={null}
-        onOpenChange={(open) => !open && setIsCreatingGate(false)}
-        onSuccess={() => {
-          toast.success('New quality gate created');
-          setIsCreatingGate(false);
-        }}
       />
     </div>
   );

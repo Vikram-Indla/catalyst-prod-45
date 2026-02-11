@@ -60,6 +60,7 @@ export function QualityGateEditor({ releaseId }: QualityGateEditorProps) {
       {
         release_id: releaseId,
         ...newGate,
+        description: null,
         sort_order: gates.length,
       },
       {

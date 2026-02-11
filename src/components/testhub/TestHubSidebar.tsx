@@ -1,5 +1,5 @@
 import { useLocation, Link } from 'react-router-dom';
-import { FileText, List, Clock, Folder } from 'lucide-react';
+import { FileText, List, Clock, Folder, Shield } from 'lucide-react';
 
 interface NavItem {
   label: string;
@@ -50,6 +50,11 @@ export function TestHubSidebar({
       href: '/testhub/releases',
       icon: <Folder style={{ width: 16, height: 16 }} />,
       count: releaseCount,
+    },
+    {
+      label: 'Quality Gates',
+      href: '/testhub/releases/quality-gates',
+      icon: <Shield style={{ width: 16, height: 16 }} />,
     },
   ];
 

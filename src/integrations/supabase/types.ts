@@ -29000,6 +29000,100 @@ export type Database = {
           },
         ]
       }
+      tm_gate_evaluation_history: {
+        Row: {
+          created_at: string | null
+          evaluated_by: string | null
+          evaluation_type: string
+          gate_id: string
+          id: string
+          metric_value: number
+          new_status: string
+          notes: string | null
+          previous_status: string | null
+          threshold_value: number
+        }
+        Insert: {
+          created_at?: string | null
+          evaluated_by?: string | null
+          evaluation_type?: string
+          gate_id: string
+          id?: string
+          metric_value: number
+          new_status: string
+          notes?: string | null
+          previous_status?: string | null
+          threshold_value: number
+        }
+        Update: {
+          created_at?: string | null
+          evaluated_by?: string | null
+          evaluation_type?: string
+          gate_id?: string
+          id?: string
+          metric_value?: number
+          new_status?: string
+          notes?: string | null
+          previous_status?: string | null
+          threshold_value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_gate_evaluation_history_gate_id_fkey"
+            columns: ["gate_id"]
+            isOneToOne: false
+            referencedRelation: "tm_release_quality_gates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tm_gate_templates: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          gate_type: string
+          id: string
+          is_blocking: boolean | null
+          name: string
+          project_id: string | null
+          threshold_operator: string
+          threshold_value: number
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          gate_type: string
+          id?: string
+          is_blocking?: boolean | null
+          name: string
+          project_id?: string | null
+          threshold_operator: string
+          threshold_value: number
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          gate_type?: string
+          id?: string
+          is_blocking?: boolean | null
+          name?: string
+          project_id?: string | null
+          threshold_operator?: string
+          threshold_value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tm_gate_templates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tm_gherkin_steps: {
         Row: {
           created_at: string | null
@@ -29419,38 +29513,62 @@ export type Database = {
         Row: {
           created_at: string | null
           created_by: string | null
+          current_value: number | null
+          description: string | null
           gate_name: string
           gate_type: string
           id: string
           is_blocking: boolean | null
+          last_evaluated_at: string | null
           release_id: string
           sort_order: number | null
+          status: string | null
           threshold_operator: string
           threshold_value: number
+          waived_at: string | null
+          waived_by: string | null
+          waiver_expires_at: string | null
+          waiver_reason: string | null
         }
         Insert: {
           created_at?: string | null
           created_by?: string | null
+          current_value?: number | null
+          description?: string | null
           gate_name: string
           gate_type: string
           id?: string
           is_blocking?: boolean | null
+          last_evaluated_at?: string | null
           release_id: string
           sort_order?: number | null
+          status?: string | null
           threshold_operator: string
           threshold_value: number
+          waived_at?: string | null
+          waived_by?: string | null
+          waiver_expires_at?: string | null
+          waiver_reason?: string | null
         }
         Update: {
           created_at?: string | null
           created_by?: string | null
+          current_value?: number | null
+          description?: string | null
           gate_name?: string
           gate_type?: string
           id?: string
           is_blocking?: boolean | null
+          last_evaluated_at?: string | null
           release_id?: string
           sort_order?: number | null
+          status?: string | null
           threshold_operator?: string
           threshold_value?: number
+          waived_at?: string | null
+          waived_by?: string | null
+          waiver_expires_at?: string | null
+          waiver_reason?: string | null
         }
         Relationships: [
           {
@@ -38348,6 +38466,10 @@ export type Database = {
         Returns: Json
       }
       tm_delete_step: { Args: { p_step_id: string }; Returns: boolean }
+      tm_evaluate_quality_gates: {
+        Args: { p_release_id: string }
+        Returns: Json
+      }
       tm_evaluate_release_gates: {
         Args: { p_release_id: string; p_user_id?: string }
         Returns: Json
@@ -38509,6 +38631,7 @@ export type Database = {
           opened: number
         }[]
       }
+      tm_get_gate_history: { Args: { p_gate_id: string }; Returns: Json }
       tm_get_gherkin_scenario: { Args: { p_case_id: string }; Returns: Json }
       tm_get_plan_analytics: {
         Args: { p_plan_id: string }
@@ -38775,6 +38898,15 @@ export type Database = {
       }
       tm_user_has_access: {
         Args: { p_project_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      tm_waive_quality_gate: {
+        Args: {
+          p_expires_at?: string
+          p_gate_id: string
+          p_reason: string
+          p_user_id: string
+        }
         Returns: boolean
       }
       track_room_access: {

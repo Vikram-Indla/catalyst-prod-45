@@ -570,6 +570,7 @@ const App = () => (
                 <Route path="test-plans/:planId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><PlanDetailPage /></Suspense>} />
                 <Route path="releases" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleasesListPage /></Suspense>} />
                 <Route path="releases/command-center" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CommandCenterPage /></Suspense>} />
+                <Route path="releases/quality-gates" element={<Suspense fallback={<div className="p-8">Loading...</div>}><QualityGatesPage /></Suspense>} />
                 <Route path="releases/:releaseId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleaseDetailPage /></Suspense>} />
               </Route>
               
