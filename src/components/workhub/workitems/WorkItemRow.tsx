@@ -1,37 +1,22 @@
 /**
  * WorkItemRow — Single table row for a Jira issue from wh_issues
+ * Supports hierarchy indent and Jira type icons
  */
 
-import { Clock, ExternalLink } from 'lucide-react';
+import { ChevronRight, ChevronDown } from 'lucide-react';
 import type { JiraIssue } from '@/hooks/workhub/useWorkItems';
-import { formatDistanceToNow } from 'date-fns';
+import { format } from 'date-fns';
 
 interface WorkItemRowProps {
   item: JiraIssue;
+  depth: number;
+  hasChildren: boolean;
+  isExpanded: boolean;
   isSelected: boolean;
+  onToggleExpand: () => void;
   onToggleSelect: () => void;
   onOpenDrawer: () => void;
 }
-
-const TYPE_COLORS: Record<string, { bg: string; fg: string }> = {
-  Epic: { bg: '#dbeafe', fg: '#1d4ed8' },
-  Story: { bg: '#dcfce7', fg: '#15803d' },
-  Bug: { bg: '#fef2f2', fg: '#dc2626' },
-  'QA Bug': { bg: '#fef2f2', fg: '#dc2626' },
-  Task: { bg: '#fefce8', fg: '#a16207' },
-  'Sub-task': { bg: '#f3f4f6', fg: '#4b5563' },
-  Defect: { bg: '#fce7f3', fg: '#be185d' },
-  'Production Incident': { bg: '#fef2f2', fg: '#b91c1c' },
-  'Change Request': { bg: '#ede9fe', fg: '#6d28d9' },
-  Backend: { bg: '#e0f2fe', fg: '#0369a1' },
-  Frontend: { bg: '#fef3c7', fg: '#92400e' },
-  Figma: { bg: '#fce7f3', fg: '#a21caf' },
-  'Business Request': { bg: '#f0fdf4', fg: '#166534' },
-  'BRD Task': { bg: '#ecfdf5', fg: '#047857' },
-  'Business Gap': { bg: '#fff7ed', fg: '#c2410c' },
-  Integration: { bg: '#e0e7ff', fg: '#4338ca' },
-  'API Requirement': { bg: '#dbeafe', fg: '#2563eb' },
-};
 
 const STATUS_COLORS: Record<string, { bg: string; fg: string }> = {
   'To Do': { bg: '#f1f5f9', fg: '#475569' },
@@ -44,6 +29,7 @@ const STATUS_COLORS: Record<string, { bg: string; fg: string }> = {
   'Ready for QA': { bg: '#fdf4ff', fg: '#a21caf' },
   'Ready for UAT': { bg: '#fdf4ff', fg: '#7c3aed' },
   Cancelled: { bg: '#f3f4f6', fg: '#6b7280' },
+  Backlog: { bg: '#f1f5f9', fg: '#64748b' },
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -54,19 +40,24 @@ const PRIORITY_COLORS: Record<string, string> = {
   Lowest: '#64748b',
 };
 
-export function WorkItemRow({ item, isSelected, onToggleSelect, onOpenDrawer }: WorkItemRowProps) {
-  const typeStyle = TYPE_COLORS[item.issue_type] || { bg: '#f1f5f9', fg: '#475569' };
+function formatDate(d: string | null) {
+  if (!d) return '—';
+  try { return format(new Date(d), 'dd MMM yyyy'); } catch { return '—'; }
+}
+
+export function WorkItemRow({
+  item, depth, hasChildren, isExpanded, isSelected,
+  onToggleExpand, onToggleSelect, onOpenDrawer,
+}: WorkItemRowProps) {
   const statusStyle = STATUS_COLORS[item.status] || { bg: '#f1f5f9', fg: '#475569' };
   const priorityColor = PRIORITY_COLORS[item.priority] || '#64748b';
-  const synced = item.synced_at
-    ? formatDistanceToNow(new Date(item.synced_at), { addSuffix: true })
-    : '—';
+  const indentPx = depth * 24;
 
   return (
     <div
       className="group grid items-center border-b hover:bg-[#f8fafc] cursor-pointer transition-colors"
       style={{
-        gridTemplateColumns: '36px 100px 90px 1fr 120px 100px 120px 80px 90px',
+        gridTemplateColumns: '36px minmax(140px, auto) 1fr 120px 100px 130px 90px 90px',
         height: 'var(--wh-row-height, 44px)',
         borderColor: '#f1f5f9',
         fontFamily: 'var(--wh-font-sans)',
@@ -84,36 +75,65 @@ export function WorkItemRow({ item, isSelected, onToggleSelect, onOpenDrawer }: 
         />
       </div>
 
-      {/* 2. Issue Key */}
-      <span
-        className="text-[12px] font-semibold truncate hover:text-[var(--wh-primary)]"
-        style={{ fontFamily: 'var(--wh-font-mono, monospace)', color: 'var(--wh-primary, #2563eb)' }}
+      {/* 2. Issue Key + Type Icon + Expand */}
+      <div
+        className="flex items-center gap-1.5 min-w-0"
+        style={{ paddingLeft: `${indentPx}px` }}
       >
-        {item.issue_key}
-      </span>
+        {/* Expand/collapse */}
+        {hasChildren ? (
+          <button
+            onClick={e => { e.stopPropagation(); onToggleExpand(); }}
+            className="w-4 h-4 flex items-center justify-center shrink-0 rounded hover:bg-slate-200 transition-colors"
+          >
+            {isExpanded
+              ? <ChevronDown className="w-3.5 h-3.5" style={{ color: '#64748b' }} />
+              : <ChevronRight className="w-3.5 h-3.5" style={{ color: '#94a3b8' }} />
+            }
+          </button>
+        ) : (
+          <span className="w-4 shrink-0" />
+        )}
 
-      {/* 3. Type */}
-      <div>
+        {/* Jira type icon */}
+        {item.type_icon_url ? (
+          <img
+            src={item.type_icon_url}
+            alt={item.issue_type}
+            className="w-4 h-4 shrink-0"
+            title={item.issue_type}
+          />
+        ) : (
+          <span
+            className="w-4 h-4 rounded-sm shrink-0 flex items-center justify-center text-[8px] font-bold"
+            style={{ backgroundColor: '#e2e8f0', color: '#475569' }}
+            title={item.issue_type}
+          >
+            {item.issue_type[0]}
+          </span>
+        )}
+
+        {/* Issue key */}
         <span
-          className="inline-flex px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider"
-          style={{ backgroundColor: typeStyle.bg, color: typeStyle.fg }}
+          className="text-[12px] font-semibold truncate"
+          style={{ fontFamily: 'var(--wh-font-mono, monospace)', color: 'var(--wh-primary, #2563eb)' }}
         >
-          {item.issue_type}
+          {item.issue_key}
         </span>
       </div>
 
-      {/* 4. Summary */}
+      {/* 3. Summary */}
       <span
         className="text-[13px] truncate pr-2"
         style={{
-          fontWeight: item.hierarchy_level === 0 ? 700 : item.hierarchy_level === 1 ? 500 : 400,
+          fontWeight: depth === 0 ? 700 : depth === 1 ? 500 : 400,
           color: 'var(--wh-text-primary, #0f172a)',
         }}
       >
         {item.summary}
       </span>
 
-      {/* 5. Status */}
+      {/* 4. Status */}
       <div>
         <span
           className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold"
@@ -123,15 +143,7 @@ export function WorkItemRow({ item, isSelected, onToggleSelect, onOpenDrawer }: 
         </span>
       </div>
 
-      {/* 6. Project */}
-      <span
-        className="inline-flex px-1.5 py-0.5 rounded text-[10.5px] font-semibold"
-        style={{ backgroundColor: '#f1f5f9', color: '#334155' }}
-      >
-        {item.project_key}
-      </span>
-
-      {/* 7. Assignee */}
+      {/* 5. Assignee */}
       <div className="flex items-center gap-1 min-w-0">
         {item.assignee_display_name ? (
           <>
@@ -150,7 +162,7 @@ export function WorkItemRow({ item, isSelected, onToggleSelect, onOpenDrawer }: 
         )}
       </div>
 
-      {/* 8. Priority */}
+      {/* 6. Priority */}
       <div className="flex items-center gap-1">
         <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: priorityColor }} />
         <span className="text-[11px] font-medium" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>
@@ -158,11 +170,15 @@ export function WorkItemRow({ item, isSelected, onToggleSelect, onOpenDrawer }: 
         </span>
       </div>
 
-      {/* 9. Synced */}
-      <div className="flex items-center gap-1 text-[10px]" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
-        <Clock className="w-3 h-3" />
-        <span className="truncate">{synced}</span>
-      </div>
+      {/* 7. Updated */}
+      <span className="text-[10.5px] truncate" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+        {formatDate(item.jira_updated_at)}
+      </span>
+
+      {/* 8. Created */}
+      <span className="text-[10.5px] truncate" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+        {formatDate(item.jira_created_at)}
+      </span>
     </div>
   );
 }
