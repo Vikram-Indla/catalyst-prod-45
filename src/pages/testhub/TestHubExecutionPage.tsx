@@ -1,20 +1,27 @@
 /**
- * TestHub Test Execution Page
+ * G19: Three-Pane Execution Page
  * Route: /testhub/cycles/:cycleId/execute
- * Full-screen split layout for executing test cases in a cycle.
+ * 
+ * Three-pane layout: Test List | Step Runner | Sidebar (Attachments/Defects)
+ * Features: Step-level execution, keyboard shortcuts (P/F/B/S/1-9/?),
+ * resizable panels, FastTrack mode, Pass All Remaining, session timer.
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { 
-  ArrowLeft, Play, Clock, CheckCircle2, XCircle, 
-  AlertTriangle, SkipForward, User, Timer
+import {
+  ArrowLeft, Play, Clock, CheckCircle2, XCircle,
+  AlertTriangle, SkipForward, User, Timer, Keyboard, Zap,
+  ChevronLeft, ChevronRight, RotateCcw, PanelRightClose, PanelRightOpen,
 } from 'lucide-react';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
-import { ExecutionTestCaseView } from '@/components/testhub/ExecutionTestCaseView';
-import { ExecutionActionBar } from '@/components/testhub/ExecutionActionBar';
 import { FailureReasonModal } from '@/components/testhub/FailureReasonModal';
+import { KeyboardShortcutsGuide } from '@/components/testhub/execution/KeyboardShortcutsGuide';
+import { StepProgressIndicator } from '@/components/testhub/execution/StepProgressIndicator';
+import { ExecutionSidebar } from '@/components/testhub/execution/ExecutionSidebar';
 
+// ── Types ──────────────────────────────────────────────────────────────────
 interface TestCycle {
   id: string;
   cycle_key: string;
@@ -27,6 +34,15 @@ interface TestCycle {
   blocked_count: number;
   skipped_count: number;
   not_run_count: number;
+}
+
+interface TestStep {
+  id: string;
+  step_number: number;
+  action: string;
+  expected_result?: string;
+  shared_step_id?: string;
+  test_case_id: string;
 }
 
 interface CycleTestCase {
@@ -50,16 +66,51 @@ interface CycleTestCase {
     preconditions: string | null;
     priority: string;
     type: string;
-    steps?: any[];
+    steps?: TestStep[];
   } | null;
   assignee?: { id: string; full_name: string } | null;
 }
 
+interface StepStatus {
+  stepIndex: number;
+  status: 'not_run' | 'passed' | 'failed' | 'blocked' | 'skipped';
+}
+
+// ── Status helpers ─────────────────────────────────────────────────────────
+const statusConfig: Record<string, { icon: any; color: string; bg: string; label: string }> = {
+  not_run: { icon: Clock, color: '#64748B', bg: '#F1F5F9', label: 'Not Run' },
+  passed: { icon: CheckCircle2, color: '#059669', bg: '#ECFDF5', label: 'Passed' },
+  failed: { icon: XCircle, color: '#DC2626', bg: '#FEF2F2', label: 'Failed' },
+  blocked: { icon: AlertTriangle, color: '#D97706', bg: '#FFFBEB', label: 'Blocked' },
+  skipped: { icon: SkipForward, color: '#94A3B8', bg: '#F8FAFC', label: 'Skipped' },
+};
+
+const formatTime = (seconds: number) => {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  if (h > 0) return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+};
+
+const highlightVariables = (text: string) => {
+  if (!text) return null;
+  const parts = text.split(/(\{\{[^}]+\}\})/g);
+  return parts.map((part, i) => {
+    if (part.match(/^\{\{[^}]+\}\}$/)) {
+      return <span key={i} style={{ backgroundColor: '#DBEAFE', color: '#1D4ED8', padding: '2px 6px', borderRadius: 4, fontFamily: 'monospace', fontSize: '0.9em' }}>{part}</span>;
+    }
+    return part;
+  });
+};
+
+// ── Main Component ─────────────────────────────────────────────────────────
 export default function TestHubExecutionPage() {
   const { cycleId } = useParams<{ cycleId: string }>();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  // Core state
   const [cycle, setCycle] = useState<TestCycle | null>(null);
   const [testCases, setTestCases] = useState<CycleTestCase[]>([]);
   const [selectedTestCaseId, setSelectedTestCaseId] = useState<string | null>(null);
@@ -67,93 +118,97 @@ export default function TestHubExecutionPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showMyTestsOnly, setShowMyTestsOnly] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [elapsedTime, setElapsedTime] = useState(0);
+
+  // Session timer (overall)
+  const [sessionElapsed, setSessionElapsed] = useState(0);
+  const sessionStartRef = useRef(Date.now());
+
+  // Step-level execution state
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [stepStatuses, setStepStatuses] = useState<Map<string, StepStatus[]>>(new Map());
+
+  // UI state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isFailureModalOpen, setIsFailureModalOpen] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(true);
+  const [fastTrackMode, setFastTrackMode] = useState(false);
   const [attachments, setAttachments] = useState<any[]>([]);
+  const [notes, setNotes] = useState('');
 
+  // Refs for keyboard handler
+  const stateRef = useRef({ isSubmitting: false, isFailureModalOpen: false, showShortcuts: false, currentStepIndex: 0, fastTrackMode: false });
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) setCurrentUserId(user.id);
-    };
-    getUser();
+    stateRef.current = { isSubmitting, isFailureModalOpen, showShortcuts, currentStepIndex, fastTrackMode };
+  });
+
+  // ── Data fetching ──────────────────────────────────────────────────────
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => { if (user) setCurrentUserId(user.id); });
   }, []);
 
-  const fetchCycle = async () => {
+  const fetchCycle = useCallback(async () => {
     if (!cycleId) return;
-    try {
-      const { data, error } = await supabase.from('th_test_cycles').select('*').eq('id', cycleId).single();
-      if (error) throw error;
-      // @ts-ignore - steps added dynamically
-      setCycle(data);
-    } catch { catalystToast.error('Failed to load cycle'); }
-  };
+    const { data, error } = await supabase.from('th_test_cycles').select('*').eq('id', cycleId).single();
+    if (!error && data) setCycle(data as any);
+  }, [cycleId]);
 
-  const fetchTestCases = async () => {
+  const fetchTestCases = useCallback(async () => {
     if (!cycleId) return;
-    try {
-      const { data, error } = await supabase
-        .from('th_cycle_test_cases')
-        .select(`*, test_case:th_test_cases ( id, case_key, title, objective, preconditions, priority, type ), assignee:profiles!th_cycle_test_cases_assigned_to_fkey ( id, full_name )`)
-        .eq('cycle_id', cycleId)
-        .order('created_at');
-      
-      // Fetch steps for all test cases
-      if (data && data.length > 0) {
-        const testCaseIds = data.map(tc => tc.test_case?.id).filter(Boolean);
-        const { data: stepsData } = await supabase
-          .from('th_test_steps')
-          .select('*')
-          .in('test_case_id', testCaseIds)
-          .order('step_number');
-        
-        // Attach steps to test cases
-        if (stepsData) {
-          const stepsMap = new Map<string, any[]>();
-          stepsData.forEach(s => {
-            if (!stepsMap.has(s.test_case_id)) stepsMap.set(s.test_case_id, []);
-            stepsMap.get(s.test_case_id)!.push(s);
-          });
-          data.forEach(tc => {
-            if (tc.test_case) {
-              (tc.test_case as any).steps = stepsMap.get(tc.test_case.id) || [];
-              (tc.test_case as any).description = tc.test_case.objective;
-            }
-          });
-        }
-      }
-      if (error) throw error;
-      setTestCases(data || []);
-      if (data && data.length > 0 && !selectedTestCaseId) {
-        const testIdFromUrl = searchParams.get('testId');
-        const matchFromUrl = testIdFromUrl ? data.find(tc => tc.id === testIdFromUrl) : null;
-        setSelectedTestCaseId(matchFromUrl ? matchFromUrl.id : data[0].id);
-      }
-    } catch { /* ignore */ }
-    finally { setIsLoading(false); }
-  };
+    const { data, error } = await supabase
+      .from('th_cycle_test_cases')
+      .select(`*, test_case:th_test_cases ( id, case_key, title, objective, preconditions, priority, type ), assignee:profiles!th_cycle_test_cases_assigned_to_fkey ( id, full_name )`)
+      .eq('cycle_id', cycleId)
+      .order('created_at');
 
-  const fetchAttachments = async () => {
+    if (data && data.length > 0) {
+      const testCaseIds = data.map(tc => tc.test_case?.id).filter(Boolean);
+      const { data: stepsData } = await supabase.from('th_test_steps').select('*').in('test_case_id', testCaseIds).order('step_number');
+      if (stepsData) {
+        const stepsMap = new Map<string, any[]>();
+        stepsData.forEach(s => {
+          if (!stepsMap.has(s.test_case_id)) stepsMap.set(s.test_case_id, []);
+          stepsMap.get(s.test_case_id)!.push(s);
+        });
+        data.forEach(tc => {
+          if (tc.test_case) {
+            (tc.test_case as any).steps = stepsMap.get(tc.test_case.id) || [];
+          }
+        });
+      }
+    }
+    if (!error) setTestCases(data || []);
+    if (data && data.length > 0 && !selectedTestCaseId) {
+      const testIdFromUrl = searchParams.get('testId');
+      const match = testIdFromUrl ? data.find(tc => tc.id === testIdFromUrl) : null;
+      setSelectedTestCaseId(match ? match.id : data[0].id);
+    }
+    setIsLoading(false);
+  }, [cycleId, selectedTestCaseId, searchParams]);
+
+  const fetchAttachments = useCallback(async () => {
     if (!selectedTestCaseId) return;
-    try {
-      const { data, error } = await supabase.from('th_execution_attachments').select('*').eq('cycle_test_case_id', selectedTestCaseId).order('uploaded_at', { ascending: false });
-      if (!error) setAttachments(data || []);
-    } catch { /* ignore */ }
-  };
+    const { data } = await supabase.from('th_execution_attachments').select('*').eq('cycle_test_case_id', selectedTestCaseId).order('uploaded_at', { ascending: false });
+    setAttachments(data || []);
+  }, [selectedTestCaseId]);
 
   useEffect(() => { fetchCycle(); fetchTestCases(); }, [cycleId]);
   useEffect(() => { if (selectedTestCaseId) fetchAttachments(); }, [selectedTestCaseId]);
 
-  // Timer
+  // Session timer
   useEffect(() => {
-    if (!selectedTestCaseId) return;
-    const currentTC = testCases.find(tc => tc.id === selectedTestCaseId);
-    setElapsedTime(currentTC?.execution_time_seconds || 0);
-    const interval = setInterval(() => setElapsedTime(prev => prev + 1), 1000);
+    const interval = setInterval(() => setSessionElapsed(Math.floor((Date.now() - sessionStartRef.current) / 1000)), 1000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Reset step index on test case change
+  useEffect(() => {
+    setCurrentStepIndex(0);
+    const currentTC = testCases.find(tc => tc.id === selectedTestCaseId);
+    setNotes(currentTC?.notes || '');
   }, [selectedTestCaseId]);
 
+  // ── Derived state ──────────────────────────────────────────────────────
   const filteredTestCases = testCases.filter(tc => {
     if (statusFilter !== 'all' && tc.execution_status !== statusFilter) return false;
     if (showMyTestsOnly && tc.assigned_to !== currentUserId) return false;
@@ -162,25 +217,24 @@ export default function TestHubExecutionPage() {
 
   const currentTestCase = testCases.find(tc => tc.id === selectedTestCaseId);
   const currentIndex = filteredTestCases.findIndex(tc => tc.id === selectedTestCaseId);
+  const steps = currentTestCase?.test_case?.steps || [];
+  const currentStep = steps[currentStepIndex];
 
-  const statusConfig: Record<string, { icon: any; color: string; bg: string; label: string }> = {
-    not_run: { icon: Clock, color: '#64748B', bg: '#F1F5F9', label: 'Not Run' },
-    passed: { icon: CheckCircle2, color: '#059669', bg: '#ECFDF5', label: 'Passed' },
-    failed: { icon: XCircle, color: '#DC2626', bg: '#FEF2F2', label: 'Failed' },
-    blocked: { icon: AlertTriangle, color: '#D97706', bg: '#FFFBEB', label: 'Blocked' },
-    skipped: { icon: SkipForward, color: '#94A3B8', bg: '#F8FAFC', label: 'Skipped' },
-  };
+  // Step statuses for the current test case
+  const currentStepStatuses = stepStatuses.get(selectedTestCaseId || '') || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
 
+  const canGoPrev = currentIndex > 0;
+  const canGoNext = currentIndex < filteredTestCases.length - 1;
+  const canGoPrevStep = currentStepIndex > 0;
+  const canGoNextStep = currentStepIndex < steps.length - 1;
+
+  // ── Actions ────────────────────────────────────────────────────────────
+  const selectTest = (id: string) => setSelectedTestCaseId(id);
   const handleExit = () => navigate(`/testhub/cycles/${cycleId}`);
+  const handlePrevious = () => { if (canGoPrev) setSelectedTestCaseId(filteredTestCases[currentIndex - 1].id); };
+  const handleNext = () => { if (canGoNext) setSelectedTestCaseId(filteredTestCases[currentIndex + 1].id); };
 
-  const handlePrevious = () => {
-    if (currentIndex > 0) setSelectedTestCaseId(filteredTestCases[currentIndex - 1].id);
-  };
-  const handleNext = () => {
-    if (currentIndex < filteredTestCases.length - 1) setSelectedTestCaseId(filteredTestCases[currentIndex + 1].id);
-  };
-
-  const updateExecutionStatus = async (status: string, failureReason?: string, failureNotes?: string, defectId?: string | null) => {
+  const updateExecutionStatus = useCallback(async (status: string, failureReason?: string, failureNotes?: string, defectId?: string | null) => {
     if (!selectedTestCaseId || !currentUserId) return;
     setIsSubmitting(true);
     try {
@@ -188,7 +242,7 @@ export default function TestHubExecutionPage() {
         execution_status: status,
         executed_at: new Date().toISOString(),
         executed_by: currentUserId,
-        execution_time_seconds: elapsedTime,
+        execution_time_seconds: Math.floor((Date.now() - sessionStartRef.current) / 1000),
         updated_at: new Date().toISOString(),
       };
       if (failureReason) updateData.failure_reason = failureReason;
@@ -201,12 +255,9 @@ export default function TestHubExecutionPage() {
         updateData.defect_ids = [...existing, defectId];
       }
       if (status === 'not_run') {
-        updateData.executed_at = null;
-        updateData.executed_by = null;
-        updateData.failure_reason = null;
-        updateData.execution_time_seconds = 0;
+        updateData.executed_at = null; updateData.executed_by = null;
+        updateData.failure_reason = null; updateData.execution_time_seconds = 0;
       }
-
       const { error } = await supabase.from('th_cycle_test_cases').update(updateData).eq('id', selectedTestCaseId);
       if (error) { catalystToast.error('Failed to update test result'); return; }
 
@@ -221,184 +272,622 @@ export default function TestHubExecutionPage() {
 
       await fetchTestCases();
       await fetchCycle();
-      setElapsedTime(0);
 
-      if (status !== 'not_run' && currentIndex < filteredTestCases.length - 1) {
-        setTimeout(() => handleNext(), 300);
+      // Auto-advance in FastTrack mode or after completing
+      if (status !== 'not_run' && canGoNext) {
+        if (fastTrackMode || status === 'passed') {
+          setTimeout(() => handleNext(), 300);
+        }
       }
     } catch (err: any) { catalystToast.error(err.message || 'Failed to update test result'); }
     finally { setIsSubmitting(false); }
-  };
+  }, [selectedTestCaseId, currentUserId, currentTestCase, canGoNext, fastTrackMode, fetchTestCases, fetchCycle]);
 
-  const handlePass = () => updateExecutionStatus('passed');
+  const handlePass = () => {
+    if (fastTrackMode || steps.length === 0) {
+      updateExecutionStatus('passed');
+    } else {
+      // Mark current step passed
+      updateStepStatus('passed');
+    }
+  };
   const handleFail = () => setIsFailureModalOpen(true);
-  const handleBlocked = () => updateExecutionStatus('blocked');
-  const handleSkip = () => updateExecutionStatus('skipped');
+  const handleBlocked = () => {
+    if (fastTrackMode || steps.length === 0) {
+      updateExecutionStatus('blocked');
+    } else {
+      updateStepStatus('blocked');
+    }
+  };
+  const handleSkip = () => {
+    if (fastTrackMode || steps.length === 0) {
+      updateExecutionStatus('skipped');
+    } else {
+      updateStepStatus('skipped');
+    }
+  };
   const handleReset = () => updateExecutionStatus('not_run');
 
   const handleFailureConfirm = async (failureReason: string, defectId: string | null, failureNotes: string) => {
     setIsFailureModalOpen(false);
-    await updateExecutionStatus('failed', failureReason, failureNotes, defectId);
+    if (fastTrackMode || steps.length === 0) {
+      await updateExecutionStatus('failed', failureReason, failureNotes, defectId);
+    } else {
+      updateStepStatus('failed');
+    }
   };
 
-  const handleNotesChange = async (notes: string) => {
+  // Step-level status tracking (local state for step progress)
+  const updateStepStatus = (status: 'passed' | 'failed' | 'blocked' | 'skipped') => {
+    const key = selectedTestCaseId || '';
+    const current = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
+    const updated = current.map((s, i) => i === currentStepIndex ? { ...s, status } : s);
+    setStepStatuses(new Map(stepStatuses).set(key, updated));
+
+    // Auto-advance to next step
+    if (currentStepIndex < steps.length - 1) {
+      setCurrentStepIndex(prev => prev + 1);
+    } else {
+      // All steps done - determine overall result
+      const allStatuses = updated.map(s => s.status);
+      if (allStatuses.some(s => s === 'failed')) {
+        updateExecutionStatus('failed');
+      } else if (allStatuses.some(s => s === 'blocked')) {
+        updateExecutionStatus('blocked');
+      } else if (allStatuses.every(s => s === 'passed' || s === 'skipped')) {
+        updateExecutionStatus('passed');
+      }
+    }
+  };
+
+  // Pass All Remaining
+  const handlePassAllRemaining = () => {
+    if (steps.length === 0) {
+      updateExecutionStatus('passed');
+      return;
+    }
+    const key = selectedTestCaseId || '';
+    const current = stepStatuses.get(key) || steps.map((_, i) => ({ stepIndex: i, status: 'not_run' as const }));
+    const updated = current.map(s => s.status === 'not_run' ? { ...s, status: 'passed' as const } : s);
+    setStepStatuses(new Map(stepStatuses).set(key, updated));
+    updateExecutionStatus('passed');
+  };
+
+  // Notes auto-save
+  useEffect(() => {
     if (!selectedTestCaseId) return;
-    try { await supabase.from('th_cycle_test_cases').update({ notes, updated_at: new Date().toISOString() }).eq('id', selectedTestCaseId); }
-    catch { /* ignore */ }
-  };
+    const timer = setTimeout(async () => {
+      const currentTC = testCases.find(tc => tc.id === selectedTestCaseId);
+      if (notes !== (currentTC?.notes || '')) {
+        await supabase.from('th_cycle_test_cases').update({ notes, updated_at: new Date().toISOString() }).eq('id', selectedTestCaseId);
+      }
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [notes, selectedTestCaseId]);
 
+  // ── Keyboard Shortcuts ─────────────────────────────────────────────────
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const s = stateRef.current;
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) return;
+      if (s.showShortcuts && e.key === 'Escape') { setShowShortcuts(false); e.preventDefault(); return; }
+      if (s.isFailureModalOpen || s.showShortcuts) return;
+
+      const key = e.key.toLowerCase();
+
+      // Ctrl combos
+      if (e.ctrlKey || e.metaKey) {
+        if (key === 'enter') { e.preventDefault(); handlePassAllRemaining(); return; }
+        if (key === 'p') { e.preventDefault(); handlePassAllRemaining(); return; }
+        return;
+      }
+
+      if (s.isSubmitting) return;
+
+      switch (key) {
+        case 'p': handlePass(); break;
+        case 'f': handleFail(); break;
+        case 'b': handleBlocked(); break;
+        case 's': e.preventDefault(); handleSkip(); break;
+        case '?': setShowShortcuts(true); break;
+        case 'arrowleft': handlePrevStep(); break;
+        case 'arrowright': case 'n': handleNextStep(); break;
+        case 'home': setCurrentStepIndex(0); break;
+        case 'end': setCurrentStepIndex(Math.max(0, steps.length - 1)); break;
+        default:
+          // Number keys 1-9 jump to step
+          const num = parseInt(key);
+          if (num >= 1 && num <= 9 && num <= steps.length) {
+            setCurrentStepIndex(num - 1);
+          }
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [steps.length, isSubmitting, isFailureModalOpen, showShortcuts, currentStepIndex, selectedTestCaseId, fastTrackMode, currentUserId, canGoPrev, canGoNext]);
+
+  const handlePrevStep = () => { if (canGoPrevStep) setCurrentStepIndex(prev => prev - 1); };
+  const handleNextStep = () => { if (canGoNextStep) setCurrentStepIndex(prev => prev + 1); };
+
+  // ── Render ─────────────────────────────────────────────────────────────
   if (isLoading || !cycle) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: '#F8FAFC' }}>
-        <div style={{ textAlign: 'center', color: '#64748B' }}>
-          <div style={{ width: 40, height: 40, border: '3px solid #E2E8F0', borderTopColor: '#2563EB', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }} />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: 'hsl(var(--background))' }}>
+        <div style={{ textAlign: 'center', color: 'hsl(var(--muted-foreground))' }}>
+          <div style={{ width: 40, height: 40, border: '3px solid hsl(var(--border))', borderTopColor: 'hsl(var(--primary))', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }} />
           Loading execution mode...
         </div>
       </div>
     );
   }
 
+  const testCase = currentTestCase?.test_case;
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: '#F8FAFC' }}>
-      {/* Header */}
-      <div style={{ height: 60, padding: '0 24px', backgroundColor: '#FFFFFF', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <button onClick={handleExit} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', border: '1px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#64748B', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: 'hsl(var(--background))' }}>
+      {/* ── Header ────────────────────────────────────────────────────── */}
+      <div style={{
+        height: 56, padding: '0 20px', backgroundColor: 'hsl(var(--card))',
+        borderBottom: '1px solid hsl(var(--border))', display: 'flex',
+        alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button onClick={handleExit} style={{
+            display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px',
+            border: '1px solid hsl(var(--border))', borderRadius: 6,
+            backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--muted-foreground))',
+            fontSize: 13, fontWeight: 500, cursor: 'pointer',
+          }}>
             <ArrowLeft size={16} /> Exit
           </button>
-          <div style={{ height: 24, width: 1, backgroundColor: '#E2E8F0' }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Play size={20} style={{ color: '#10B981' }} />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB', backgroundColor: '#EFF6FF', padding: '2px 8px', borderRadius: 4 }}>{cycle.cycle_key}</span>
-              <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{cycle.name}</span>
-            </div>
-          </div>
+          <div style={{ height: 20, width: 1, backgroundColor: 'hsl(var(--border))' }} />
+          <Play size={18} style={{ color: '#10B981' }} />
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'hsl(var(--primary))', backgroundColor: 'hsl(var(--primary) / 0.1)', padding: '2px 8px', borderRadius: 4 }}>
+            {cycle.cycle_key}
+          </span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'hsl(var(--foreground))' }}>{cycle.name}</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ display: 'flex', gap: 8 }}>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* FastTrack toggle */}
+          <button
+            onClick={() => setFastTrackMode(!fastTrackMode)}
+            title={fastTrackMode ? 'FastTrack ON: Simple pass/fail, auto-advance' : 'Enable FastTrack mode'}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px',
+              border: fastTrackMode ? 'none' : '1px solid hsl(var(--border))',
+              borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+              backgroundColor: fastTrackMode ? '#FEF3C7' : 'hsl(var(--card))',
+              color: fastTrackMode ? '#D97706' : 'hsl(var(--muted-foreground))',
+            }}
+          >
+            <Zap size={14} /> {fastTrackMode ? 'FastTrack ON' : 'FastTrack'}
+          </button>
+
+          {/* Stats badges */}
+          <div style={{ display: 'flex', gap: 6 }}>
             {[
               { count: cycle.passed_count, color: '#059669', bg: '#ECFDF5', Icon: CheckCircle2 },
               { count: cycle.failed_count, color: '#DC2626', bg: '#FEF2F2', Icon: XCircle },
               { count: cycle.blocked_count, color: '#D97706', bg: '#FFFBEB', Icon: AlertTriangle },
             ].map((s, i) => (
-              <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px', backgroundColor: s.bg, borderRadius: 6, fontSize: 12, fontWeight: 600, color: s.color }}>
-                <s.Icon size={14} /> {s.count}
+              <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '4px 8px', backgroundColor: s.bg, borderRadius: 5, fontSize: 11, fontWeight: 600, color: s.color }}>
+                <s.Icon size={12} /> {s.count}
               </span>
             ))}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 120, height: 8, backgroundColor: '#E2E8F0', borderRadius: 4, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${cycle.progress_percent}%`, background: 'linear-gradient(90deg, #10B981 0%, #059669 100%)', borderRadius: 4, transition: 'width 0.3s ease' }} />
-            </div>
-            <span style={{ fontSize: 14, fontWeight: 700, color: '#059669' }}>{cycle.progress_percent}%</span>
+
+          {/* Session timer */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 5, padding: '5px 10px',
+            backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: 6,
+          }}>
+            <Timer size={14} style={{ color: 'hsl(var(--muted-foreground))' }} />
+            <span style={{ fontSize: 13, fontWeight: 600, fontFamily: 'monospace', color: 'hsl(var(--foreground))' }}>
+              {formatTime(sessionElapsed)}
+            </span>
           </div>
+
+          {/* Progress */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 100, height: 6, backgroundColor: 'hsl(var(--muted))', borderRadius: 3, overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${cycle.progress_percent}%`, background: 'linear-gradient(90deg, #10B981 0%, #059669 100%)', borderRadius: 3, transition: 'width 0.3s' }} />
+            </div>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#059669' }}>{cycle.progress_percent}%</span>
+          </div>
+
+          {/* Sidebar toggle */}
+          <button onClick={() => setShowSidebar(!showSidebar)} title="Toggle sidebar" style={{
+            padding: 6, border: '1px solid hsl(var(--border))', borderRadius: 6,
+            backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--muted-foreground))', cursor: 'pointer',
+            display: 'flex', alignItems: 'center',
+          }}>
+            {showSidebar ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}
+          </button>
+
+          {/* Shortcuts help */}
+          <button onClick={() => setShowShortcuts(true)} title="Keyboard shortcuts (?)" style={{
+            padding: 6, border: '1px solid hsl(var(--border))', borderRadius: 6,
+            backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--muted-foreground))', cursor: 'pointer',
+            display: 'flex', alignItems: 'center',
+          }}>
+            <Keyboard size={16} />
+          </button>
         </div>
       </div>
 
-      {/* Main Content - Split */}
-      <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        {/* Left Sidebar */}
-        <div style={{ width: 320, backgroundColor: '#FFFFFF', borderRight: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-          <div style={{ padding: 16, borderBottom: '1px solid #E2E8F0' }}>
-            <h3 style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', margin: '0 0 12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Test Queue</h3>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-                style={{ flex: 1, height: 32, padding: '0 8px', border: '1px solid #E2E8F0', borderRadius: 6, fontSize: 12, color: '#334155', backgroundColor: '#FFFFFF' }}>
-                <option value="all">All Status</option>
-                <option value="not_run">Not Run</option>
-                <option value="passed">Passed</option>
-                <option value="failed">Failed</option>
-                <option value="blocked">Blocked</option>
-                <option value="skipped">Skipped</option>
-              </select>
-              <button onClick={() => setShowMyTestsOnly(!showMyTestsOnly)}
-                style={{ height: 32, padding: '0 10px', border: `1px solid ${showMyTestsOnly ? '#2563EB' : '#E2E8F0'}`, borderRadius: 6, backgroundColor: showMyTestsOnly ? '#EFF6FF' : '#FFFFFF', color: showMyTestsOnly ? '#2563EB' : '#64748B', fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
-                <User size={14} /> My Tests
-              </button>
-            </div>
-          </div>
-
-          <div style={{ flex: 1, overflowY: 'auto', padding: 8 }}>
-            {filteredTestCases.length === 0 ? (
-              <div style={{ padding: 24, textAlign: 'center', color: '#94A3B8', fontSize: 13 }}>No test cases match the filter</div>
-            ) : (
-              filteredTestCases.map(tc => {
-                const st = statusConfig[tc.execution_status];
-                const StatusIcon = st.icon;
-                const isSelected = tc.id === selectedTestCaseId;
-                return (
-                  <button key={tc.id} onClick={() => setSelectedTestCaseId(tc.id)}
-                    style={{ width: '100%', padding: 12, marginBottom: 4, border: isSelected ? '2px solid #2563EB' : '1px solid transparent', borderRadius: 8, backgroundColor: isSelected ? '#EFF6FF' : 'transparent', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: 6, backgroundColor: st.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        <StatusIcon size={16} style={{ color: st.color }} />
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                          <span style={{ fontSize: 11, fontWeight: 600, color: '#2563EB' }}>{tc.test_case?.case_key}</span>
-                          {tc.assignee && <span style={{ fontSize: 10, color: '#94A3B8' }}>• {tc.assignee.full_name}</span>}
-                        </div>
-                        <p style={{ fontSize: 13, fontWeight: isSelected ? 600 : 400, color: isSelected ? '#1E40AF' : '#334155', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {tc.test_case?.title}
-                        </p>
-                      </div>
-                    </div>
+      {/* ── Three-Pane Body ───────────────────────────────────────────── */}
+      <div style={{ flex: 1, overflow: 'hidden' }}>
+        <ResizablePanelGroup direction="horizontal">
+          {/* ── Panel 1: Test List ──────────────────────────────────────── */}
+          <ResizablePanel defaultSize={22} minSize={15} maxSize={35}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'hsl(var(--card))', borderRight: '1px solid hsl(var(--border))' }}>
+              <div style={{ padding: 12, borderBottom: '1px solid hsl(var(--border))' }}>
+                <h3 style={{ fontSize: 11, fontWeight: 700, color: 'hsl(var(--muted-foreground))', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Test Queue ({filteredTestCases.length})
+                </h3>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
+                    style={{ flex: 1, height: 30, padding: '0 6px', border: '1px solid hsl(var(--border))', borderRadius: 5, fontSize: 11, color: 'hsl(var(--foreground))', backgroundColor: 'hsl(var(--background))' }}>
+                    <option value="all">All</option>
+                    <option value="not_run">Not Run</option>
+                    <option value="passed">Passed</option>
+                    <option value="failed">Failed</option>
+                    <option value="blocked">Blocked</option>
+                    <option value="skipped">Skipped</option>
+                  </select>
+                  <button onClick={() => setShowMyTestsOnly(!showMyTestsOnly)}
+                    style={{
+                      height: 30, padding: '0 8px', border: `1px solid ${showMyTestsOnly ? 'hsl(var(--primary))' : 'hsl(var(--border))'}`,
+                      borderRadius: 5, backgroundColor: showMyTestsOnly ? 'hsl(var(--primary) / 0.1)' : 'hsl(var(--background))',
+                      color: showMyTestsOnly ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))', fontSize: 11, cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: 3,
+                    }}>
+                    <User size={12} /> Mine
                   </button>
-                );
-              })
-            )}
-          </div>
+                </div>
+              </div>
 
-          <div style={{ padding: 16, borderTop: '1px solid #E2E8F0', backgroundColor: '#F8FAFC' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <span style={{ fontSize: 12, color: '#64748B' }}>Progress</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#334155' }}>{cycle.total_cases - cycle.not_run_count}/{cycle.total_cases}</span>
-            </div>
-            <div style={{ height: 6, backgroundColor: '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${cycle.progress_percent}%`, background: 'linear-gradient(90deg, #10B981 0%, #059669 100%)', borderRadius: 3 }} />
-            </div>
-          </div>
-        </div>
+              <div style={{ flex: 1, overflowY: 'auto', padding: 6 }}>
+                {filteredTestCases.length === 0 ? (
+                  <div style={{ padding: 20, textAlign: 'center', color: 'hsl(var(--muted-foreground))', fontSize: 12 }}>No tests match filter</div>
+                ) : (
+                  filteredTestCases.map(tc => {
+                    const st = statusConfig[tc.execution_status] || statusConfig.not_run;
+                    const StatusIcon = st.icon;
+                    const isSelected = tc.id === selectedTestCaseId;
+                    return (
+                      <button key={tc.id} onClick={() => selectTest(tc.id)}
+                        style={{
+                          width: '100%', padding: '10px 10px', marginBottom: 2, border: isSelected ? '2px solid hsl(var(--primary))' : '1px solid transparent',
+                          borderRadius: 6, backgroundColor: isSelected ? 'hsl(var(--primary) / 0.05)' : 'transparent',
+                          cursor: 'pointer', textAlign: 'left', transition: 'all 0.1s',
+                        }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+                          <div style={{
+                            width: 24, height: 24, borderRadius: 5, backgroundColor: st.bg,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1,
+                          }}>
+                            <StatusIcon size={13} style={{ color: st.color }} />
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 2 }}>
+                              <span style={{ fontSize: 10, fontWeight: 600, color: 'hsl(var(--primary))' }}>{tc.test_case?.case_key}</span>
+                            </div>
+                            <p style={{
+                              fontSize: 12, fontWeight: isSelected ? 600 : 400,
+                              color: isSelected ? 'hsl(var(--primary))' : 'hsl(var(--foreground))',
+                              margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                            }}>
+                              {tc.test_case?.title}
+                            </p>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
 
-        {/* Right Main */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          {currentTestCase ? (
-            <>
-              <ExecutionTestCaseView
-                cycleTestCase={currentTestCase as any}
-                attachments={attachments}
-                elapsedTime={elapsedTime}
-                onNotesChange={handleNotesChange}
-                onAttachmentsChange={fetchAttachments}
-              />
-              <ExecutionActionBar
-                currentIndex={currentIndex}
-                totalCount={filteredTestCases.length}
-                currentStatus={currentTestCase.execution_status}
-                onPrevious={handlePrevious}
-                onNext={handleNext}
-                onPass={handlePass}
-                onFail={handleFail}
-                onBlocked={handleBlocked}
-                onSkip={handleSkip}
-                onReset={handleReset}
-                isSubmitting={isSubmitting}
-                canGoPrevious={currentIndex > 0}
-                canGoNext={currentIndex < filteredTestCases.length - 1}
-              />
-            </>
-          ) : (
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8' }}>
-              <div style={{ textAlign: 'center' }}>
-                <Clock size={48} style={{ marginBottom: 16, opacity: 0.5 }} />
-                <p style={{ fontSize: 16, margin: 0 }}>Select a test case from the queue to begin execution</p>
+              {/* Bottom progress */}
+              <div style={{ padding: 12, borderTop: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--muted) / 0.2)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))' }}>Progress</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: 'hsl(var(--foreground))' }}>
+                    {cycle.total_cases - cycle.not_run_count}/{cycle.total_cases}
+                  </span>
+                </div>
+                <div style={{ height: 5, backgroundColor: 'hsl(var(--muted))', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${cycle.progress_percent}%`, background: 'linear-gradient(90deg, #10B981 0%, #059669 100%)', borderRadius: 3 }} />
+                </div>
               </div>
             </div>
+          </ResizablePanel>
+
+          <ResizableHandle withHandle />
+
+          {/* ── Panel 2: Step Runner ────────────────────────────────────── */}
+          <ResizablePanel defaultSize={showSidebar ? 56 : 78} minSize={40}>
+            {currentTestCase && testCase ? (
+              <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                {/* Test case header */}
+                <div style={{ padding: '16px 24px', borderBottom: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'hsl(var(--primary))', backgroundColor: 'hsl(var(--primary) / 0.1)', padding: '3px 10px', borderRadius: 5 }}>
+                      {testCase.case_key}
+                    </span>
+                    <span style={{
+                      fontSize: 11, fontWeight: 500, padding: '3px 8px', borderRadius: 5,
+                      color: statusConfig[currentTestCase.execution_status]?.color,
+                      backgroundColor: statusConfig[currentTestCase.execution_status]?.bg,
+                    }}>
+                      {statusConfig[currentTestCase.execution_status]?.label}
+                    </span>
+                    <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))', padding: '3px 8px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderRadius: 5, textTransform: 'capitalize' }}>
+                      {testCase.priority}
+                    </span>
+                    {fastTrackMode && (
+                      <span style={{ fontSize: 10, fontWeight: 700, color: '#D97706', backgroundColor: '#FEF3C7', padding: '3px 8px', borderRadius: 5, display: 'flex', alignItems: 'center', gap: 3 }}>
+                        <Zap size={10} /> FAST TRACK
+                      </span>
+                    )}
+                  </div>
+                  <h2 style={{ fontSize: 18, fontWeight: 700, color: 'hsl(var(--foreground))', margin: 0, lineHeight: 1.3 }}>{testCase.title}</h2>
+                  {testCase.objective && <p style={{ fontSize: 13, color: 'hsl(var(--muted-foreground))', margin: '6px 0 0', lineHeight: 1.4 }}>{testCase.objective}</p>}
+                </div>
+
+                {/* Step progress indicator */}
+                {steps.length > 0 && !fastTrackMode && (
+                  <div style={{ padding: '10px 24px', borderBottom: '1px solid hsl(var(--border))', backgroundColor: 'hsl(var(--card))' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: 'hsl(var(--muted-foreground))' }}>
+                        Step {currentStepIndex + 1} of {steps.length}
+                      </span>
+                    </div>
+                    <StepProgressIndicator
+                      steps={currentStepStatuses.map((s, i) => ({ step_number: i + 1, status: s.status }))}
+                      currentIndex={currentStepIndex}
+                      onStepClick={setCurrentStepIndex}
+                    />
+                  </div>
+                )}
+
+                {/* Step content area */}
+                <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
+                  <div style={{ maxWidth: 720, margin: '0 auto' }}>
+                    {/* Preconditions */}
+                    {testCase.preconditions && (
+                      <div style={{ marginBottom: 20, padding: 14, backgroundColor: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                          <AlertTriangle size={14} style={{ color: '#D97706' }} />
+                          <span style={{ fontSize: 12, fontWeight: 600, color: '#92400E' }}>Preconditions</span>
+                        </div>
+                        <p style={{ fontSize: 13, color: '#92400E', margin: 0, lineHeight: 1.4 }}>{highlightVariables(testCase.preconditions)}</p>
+                      </div>
+                    )}
+
+                    {/* Current step card or FastTrack view */}
+                    {fastTrackMode || steps.length === 0 ? (
+                      /* FastTrack: show all steps as read-only, whole-test P/F */
+                      <div>
+                        {steps.length > 0 ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                            {steps.map((step, i) => (
+                              <div key={i} style={{ padding: '10px 14px', backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 8 }}>
+                                <div style={{ display: 'flex', gap: 10 }}>
+                                  <span style={{ width: 22, height: 22, borderRadius: '50%', backgroundColor: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))', fontSize: 11, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    {step.step_number || i + 1}
+                                  </span>
+                                  <div style={{ flex: 1 }}>
+                                    <p style={{ fontSize: 13, color: 'hsl(var(--foreground))', margin: 0 }}>{highlightVariables(step.action)}</p>
+                                    {step.expected_result && (
+                                      <p style={{ fontSize: 12, color: '#059669', margin: '6px 0 0', paddingLeft: 10, borderLeft: '2px solid #A7F3D0' }}>{highlightVariables(step.expected_result)}</p>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div style={{ padding: 32, textAlign: 'center', color: 'hsl(var(--muted-foreground))' }}>
+                            No steps defined — mark test result directly.
+                          </div>
+                        )}
+                      </div>
+                    ) : currentStep ? (
+                      /* Step-by-step mode: show current step */
+                      <div style={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 10, overflow: 'hidden' }}>
+                        <div style={{ padding: '12px 16px', backgroundColor: 'hsl(var(--muted) / 0.3)', borderBottom: '1px solid hsl(var(--border))', display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <span style={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: 'hsl(var(--primary))', color: 'hsl(var(--primary-foreground))', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {currentStep.step_number || currentStepIndex + 1}
+                          </span>
+                          <span style={{ fontSize: 14, fontWeight: 600, color: 'hsl(var(--foreground))' }}>
+                            Step {currentStep.step_number || currentStepIndex + 1}
+                          </span>
+                          {currentStepStatuses[currentStepIndex]?.status !== 'not_run' && (
+                            <span style={{
+                              fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 4,
+                              color: statusConfig[currentStepStatuses[currentStepIndex].status]?.color,
+                              backgroundColor: statusConfig[currentStepStatuses[currentStepIndex].status]?.bg,
+                            }}>
+                              {statusConfig[currentStepStatuses[currentStepIndex].status]?.label}
+                            </span>
+                          )}
+                        </div>
+                        <div style={{ padding: 20 }}>
+                          <div style={{ marginBottom: 4 }}>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: 'hsl(var(--muted-foreground))', textTransform: 'uppercase', letterSpacing: '0.06em' }}>ACTION</span>
+                          </div>
+                          <p style={{ fontSize: 15, color: 'hsl(var(--foreground))', margin: '6px 0 0', lineHeight: 1.6 }}>
+                            {highlightVariables(currentStep.action)}
+                          </p>
+
+                          {currentStep.expected_result && (
+                            <div style={{ marginTop: 16, padding: 14, backgroundColor: '#ECFDF5', borderRadius: 8, borderLeft: '3px solid #10B981' }}>
+                              <span style={{ fontSize: 10, fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.06em' }}>EXPECTED</span>
+                              <p style={{ fontSize: 14, color: '#065F46', margin: '4px 0 0', lineHeight: 1.5 }}>
+                                {highlightVariables(currentStep.expected_result)}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {/* Notes */}
+                    <div style={{ marginTop: 20 }}>
+                      <textarea
+                        value={notes}
+                        onChange={e => setNotes(e.target.value)}
+                        placeholder="Add execution notes..."
+                        style={{
+                          width: '100%', minHeight: 80, padding: 12, border: '1px solid hsl(var(--border))',
+                          borderRadius: 8, fontSize: 13, color: 'hsl(var(--foreground))',
+                          backgroundColor: 'hsl(var(--background))', resize: 'vertical', fontFamily: 'inherit',
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── Action bar ───────────────────────────────────────────── */}
+                <div style={{
+                  padding: '12px 20px', backgroundColor: 'hsl(var(--card))',
+                  borderTop: '1px solid hsl(var(--border))', display: 'flex',
+                  alignItems: 'center', justifyContent: 'center', gap: 8, position: 'relative',
+                }}>
+                  <div style={{ position: 'absolute', left: 20, fontSize: 12, color: 'hsl(var(--muted-foreground))' }}>
+                    Test {currentIndex + 1} of {filteredTestCases.length}
+                  </div>
+
+                  {/* Navigation */}
+                  <button onClick={handlePrevious} disabled={!canGoPrev || isSubmitting} style={{
+                    height: 38, padding: '0 12px', border: '1px solid hsl(var(--border))', borderRadius: 6,
+                    backgroundColor: 'hsl(var(--card))', color: canGoPrev ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))',
+                    fontSize: 12, fontWeight: 500, cursor: canGoPrev ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 4, opacity: canGoPrev ? 1 : 0.5,
+                  }}>
+                    <ChevronLeft size={16} /> Prev
+                  </button>
+
+                  {/* Status buttons */}
+                  {[
+                    { key: 'passed', label: 'Pass', shortcut: 'P', icon: CheckCircle2, onClick: handlePass, color: '#059669', bg: '#ECFDF5', activeBg: 'linear-gradient(135deg, #10B981, #059669)' },
+                    { key: 'failed', label: 'Fail', shortcut: 'F', icon: XCircle, onClick: handleFail, color: '#DC2626', bg: '#FEF2F2', activeBg: 'linear-gradient(135deg, #EF4444, #DC2626)' },
+                    { key: 'blocked', label: 'Block', shortcut: 'B', icon: AlertTriangle, onClick: handleBlocked, color: '#D97706', bg: '#FFFBEB', activeBg: 'linear-gradient(135deg, #F59E0B, #D97706)' },
+                    { key: 'skipped', label: 'Skip', shortcut: 'S', icon: SkipForward, onClick: handleSkip, color: '#64748B', bg: 'hsl(var(--muted) / 0.3)', activeBg: 'linear-gradient(135deg, #64748B, #475569)' },
+                  ].map(btn => {
+                    const Icon = btn.icon;
+                    const isActive = currentTestCase.execution_status === btn.key;
+                    return (
+                      <button key={btn.key} onClick={btn.onClick} disabled={isSubmitting} title={`${btn.label} (${btn.shortcut})`} style={{
+                        height: 38, padding: '0 16px', border: isActive ? 'none' : `1px solid ${btn.color}30`,
+                        borderRadius: 6, background: isActive ? btn.activeBg : btn.bg,
+                        color: isActive ? '#FFFFFF' : btn.color, fontSize: 13, fontWeight: 600,
+                        cursor: isSubmitting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                        opacity: isSubmitting ? 0.7 : 1, boxShadow: isActive ? `0 2px 8px ${btn.color}40` : 'none',
+                      }}>
+                        <Icon size={15} /> {btn.label}
+                        <kbd style={{ fontSize: 10, opacity: 0.7, padding: '1px 5px', backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : `${btn.color}10`, borderRadius: 3, fontFamily: 'monospace' }}>
+                          {btn.shortcut}
+                        </kbd>
+                      </button>
+                    );
+                  })}
+
+                  {/* Reset */}
+                  {currentTestCase.execution_status !== 'not_run' && (
+                    <button onClick={handleReset} disabled={isSubmitting} title="Reset (Ctrl+R)" style={{
+                      height: 38, padding: '0 10px', border: '1px solid hsl(var(--border))', borderRadius: 6,
+                      backgroundColor: 'hsl(var(--card))', color: 'hsl(var(--muted-foreground))',
+                      cursor: isSubmitting ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center',
+                    }}>
+                      <RotateCcw size={14} />
+                    </button>
+                  )}
+
+                  <button onClick={handleNext} disabled={!canGoNext || isSubmitting} style={{
+                    height: 38, padding: '0 12px', border: '1px solid hsl(var(--border))', borderRadius: 6,
+                    backgroundColor: 'hsl(var(--card))', color: canGoNext ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))',
+                    fontSize: 12, fontWeight: 500, cursor: canGoNext ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', gap: 4, opacity: canGoNext ? 1 : 0.5,
+                  }}>
+                    Next <ChevronRight size={16} />
+                  </button>
+
+                  <div style={{ position: 'absolute', right: 20, display: 'flex', gap: 8 }}>
+                    {steps.length > 0 && !fastTrackMode && (
+                      <button onClick={handlePassAllRemaining} disabled={isSubmitting} title="Pass All Remaining (Ctrl+P)" style={{
+                        height: 32, padding: '0 10px', border: '1px solid #A7F3D0', borderRadius: 5,
+                        backgroundColor: '#ECFDF5', color: '#059669', fontSize: 11, fontWeight: 600,
+                        cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+                      }}>
+                        <CheckCircle2 size={12} /> Pass All
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Step navigation (only in step mode) */}
+                {steps.length > 1 && !fastTrackMode && (
+                  <div style={{
+                    padding: '8px 20px', backgroundColor: 'hsl(var(--muted) / 0.15)',
+                    borderTop: '1px solid hsl(var(--border))', display: 'flex',
+                    alignItems: 'center', justifyContent: 'center', gap: 16,
+                  }}>
+                    <button onClick={handlePrevStep} disabled={!canGoPrevStep} style={{
+                      fontSize: 12, color: canGoPrevStep ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))',
+                      border: 'none', backgroundColor: 'transparent', cursor: canGoPrevStep ? 'pointer' : 'default',
+                      display: 'flex', alignItems: 'center', gap: 4, opacity: canGoPrevStep ? 1 : 0.4,
+                    }}>
+                      ← Prev Step
+                    </button>
+                    <span style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))' }}>
+                      Step {currentStepIndex + 1} / {steps.length}
+                    </span>
+                    <button onClick={handleNextStep} disabled={!canGoNextStep} style={{
+                      fontSize: 12, color: canGoNextStep ? 'hsl(var(--foreground))' : 'hsl(var(--muted-foreground))',
+                      border: 'none', backgroundColor: 'transparent', cursor: canGoNextStep ? 'pointer' : 'default',
+                      display: 'flex', alignItems: 'center', gap: 4, opacity: canGoNextStep ? 1 : 0.4,
+                    }}>
+                      Next Step →
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'hsl(var(--muted-foreground))' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <Clock size={48} style={{ marginBottom: 16, opacity: 0.3 }} />
+                  <p style={{ fontSize: 15, margin: 0 }}>Select a test case from the queue</p>
+                </div>
+              </div>
+            )}
+          </ResizablePanel>
+
+          {/* ── Panel 3: Sidebar ────────────────────────────────────────── */}
+          {showSidebar && (
+            <>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={22} minSize={15} maxSize={35}>
+                {currentTestCase ? (
+                  <ExecutionSidebar
+                    cycleTestCaseId={currentTestCase.id}
+                    attachments={attachments}
+                    onAttachmentsChange={fetchAttachments}
+                    defectIds={currentTestCase.defect_ids || []}
+                    onCreateDefect={handleFail}
+                  />
+                ) : (
+                  <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'hsl(var(--muted-foreground))', fontSize: 13 }}>
+                    Select a test to view details
+                  </div>
+                )}
+              </ResizablePanel>
+            </>
           )}
-        </div>
+        </ResizablePanelGroup>
       </div>
 
+      {/* ── Modals ────────────────────────────────────────────────────── */}
       <FailureReasonModal
         isOpen={isFailureModalOpen}
         testCaseKey={currentTestCase?.test_case?.case_key || ''}
@@ -409,6 +898,8 @@ export default function TestHubExecutionPage() {
         onClose={() => setIsFailureModalOpen(false)}
         onConfirm={handleFailureConfirm}
       />
+
+      <KeyboardShortcutsGuide isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
     </div>
   );
 }
