@@ -1,13 +1,13 @@
 /**
  * Tests Table Component
- * Sortable, filterable table of assigned test cases with quick actions
+ * Sortable, filterable table of assigned test cases with quick actions + pagination
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { Play, RotateCcw, ExternalLink, ArrowUpDown, Check, X, Ban, Unlock } from 'lucide-react';
+import { Play, RotateCcw, ExternalLink, ArrowUpDown, Check, X, Ban, Unlock, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PriorityScoreBadge } from './PriorityScoreBadge';
 import { formatDueDate } from '../utils/priorityScore';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -20,6 +20,8 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import type { TestAssignment, TestScopeFilters } from '../types';
+
+const PAGE_SIZE = 25;
 
 interface TestsTableProps {
   tests: TestAssignment[];
@@ -50,6 +52,7 @@ const URGENCY_CONFIG = {
 export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewDetails, onQuickPass, onQuickFail, onQuickBlock, onUnblock }: TestsTableProps) {
   const [reasonModal, setReasonModal] = useState<{ scopeId: string; type: 'fail' | 'block' } | null>(null);
   const [reason, setReason] = useState('');
+  const [page, setPage] = useState(0);
 
   const handleSort = (field: TestScopeFilters['sortBy']) => {
     onFiltersChange({
@@ -57,6 +60,7 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
       sortBy: field,
       sortOrder: filters.sortBy === field && filters.sortOrder === 'desc' ? 'asc' : 'desc',
     });
+    setPage(0);
   };
 
   const handleReasonSubmit = () => {
@@ -71,7 +75,7 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
   };
 
   // Apply sorting
-  const sortedTests = [...tests].sort((a, b) => {
+  const sortedTests = useMemo(() => [...tests].sort((a, b) => {
     const order = filters.sortOrder === 'asc' ? 1 : -1;
     switch (filters.sortBy) {
       case 'score':
@@ -82,27 +86,33 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
         return (new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()) * order;
       case 'status':
         return a.status.localeCompare(b.status) * order;
-      case 'priority':
+      case 'priority': {
         const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
         return (priorityOrder[a.priority] - priorityOrder[b.priority]) * order;
+      }
       default:
         return 0;
     }
-  });
+  }), [tests, filters.sortBy, filters.sortOrder]);
 
   // Apply filters
-  const filteredTests = sortedTests.filter(test => {
+  const filteredTests = useMemo(() => sortedTests.filter(test => {
     if (filters.status.length > 0 && !filters.status.includes(test.status)) return false;
     if (filters.priority.length > 0 && !filters.priority.includes(test.priority)) return false;
     if (filters.urgency.length > 0 && !filters.urgency.includes(test.urgency)) return false;
     if (filters.cycleId && filters.cycleId !== 'all' && test.cycleId !== filters.cycleId) return false;
+    if (filters.releaseId && filters.releaseId !== 'all' && test.releaseId !== filters.releaseId) return false;
     if (filters.search) {
       const search = filters.search.toLowerCase();
       return test.title.toLowerCase().includes(search) || 
              test.key.toLowerCase().includes(search);
     }
     return true;
-  });
+  }), [sortedTests, filters]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredTests.length / PAGE_SIZE);
+  const paginatedTests = filteredTests.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   if (filteredTests.length === 0) {
     return (
@@ -151,6 +161,9 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
                   <ArrowUpDown className="h-3 w-3" />
                 </button>
               </th>
+              <th className="text-left py-3 px-4">
+                <span className="text-xs font-medium text-muted-foreground">Est.</span>
+              </th>
               <th className="text-center py-3 px-4">
                 <span className="text-xs font-medium text-muted-foreground">Quick</span>
               </th>
@@ -160,7 +173,7 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
             </tr>
           </thead>
           <tbody>
-            {filteredTests.map((test) => {
+            {paginatedTests.map((test) => {
               const statusConfig = STATUS_CONFIG[test.status];
               const urgencyConfig = URGENCY_CONFIG[test.urgency];
               
@@ -190,6 +203,12 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
                     <span className={cn('text-sm', urgencyConfig.className)}>
                       {formatDueDate(test.dueDate)}
                     </span>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      <span className="text-xs">{test.estimatedMinutes}m</span>
+                    </div>
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center justify-center gap-0.5">
@@ -290,6 +309,36 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-4 py-3 border-t border-border">
+          <span className="text-sm text-muted-foreground">
+            Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filteredTests.length)} of {filteredTests.length}
+          </span>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page === 0}
+              onClick={() => setPage(p => p - 1)}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-sm text-muted-foreground px-2">
+              {page + 1} / {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page >= totalPages - 1}
+              onClick={() => setPage(p => p + 1)}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Reason Modal for Fail/Block */}
       <Dialog open={!!reasonModal} onOpenChange={() => { setReasonModal(null); setReason(''); }}>

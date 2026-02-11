@@ -61,7 +61,7 @@ async function fetchMyTestScopeData(): Promise<MyTestScopeData> {
         ? priorityName 
         : 'medium') as 'critical' | 'high' | 'medium' | 'low';
       
-      const dueDate = row.end_date || row.release_date || null;
+      const dueDate = row.cycle_end_date || row.end_date || row.release_date || null;
       const priorityScore = calculatePriorityScore({
         dueDate,
         riskImpact,
@@ -82,6 +82,9 @@ async function fetchMyTestScopeData(): Promise<MyTestScopeData> {
         urgency: getUrgencyFromDueDate(dueDate),
         cycleId: row.cycle_id || '',
         cycleName: row.cycle_name || '',
+        releaseId: row.release_id || undefined,
+        releaseName: row.release_name || undefined,
+        releaseVersion: row.release_version || undefined,
         linkedStories: [],
         linkedDefects: [],
         linkedIncidents: [],
