@@ -24619,6 +24619,45 @@ export type Database = {
           },
         ]
       }
+      th_plan_cycles: {
+        Row: {
+          created_at: string | null
+          cycle_id: string
+          id: string
+          plan_id: string
+          sequence: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          cycle_id: string
+          id?: string
+          plan_id: string
+          sequence?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          cycle_id?: string
+          id?: string
+          plan_id?: string
+          sequence?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_plan_cycles_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_plan_cycles_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       th_shared_step_categories: {
         Row: {
           color: string | null
@@ -25298,6 +25337,110 @@ export type Database = {
             columns: ["test_case_id"]
             isOneToOne: false
             referencedRelation: "th_test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_test_plans: {
+        Row: {
+          blocked_count: number | null
+          created_at: string | null
+          description: string | null
+          end_date: string | null
+          executed_count: number | null
+          failed_count: number | null
+          id: string
+          name: string
+          not_run_count: number | null
+          objectives: string | null
+          owner_id: string | null
+          passed_count: number | null
+          plan_key: string
+          progress_percent: number | null
+          release_version: string | null
+          scope: string | null
+          skipped_count: number | null
+          start_date: string | null
+          status: string | null
+          total_cycles: number | null
+          total_test_cases: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          blocked_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          executed_count?: number | null
+          failed_count?: number | null
+          id?: string
+          name: string
+          not_run_count?: number | null
+          objectives?: string | null
+          owner_id?: string | null
+          passed_count?: number | null
+          plan_key?: string
+          progress_percent?: number | null
+          release_version?: string | null
+          scope?: string | null
+          skipped_count?: number | null
+          start_date?: string | null
+          status?: string | null
+          total_cycles?: number | null
+          total_test_cases?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          blocked_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          executed_count?: number | null
+          failed_count?: number | null
+          id?: string
+          name?: string
+          not_run_count?: number | null
+          objectives?: string | null
+          owner_id?: string | null
+          passed_count?: number | null
+          plan_key?: string
+          progress_percent?: number | null
+          release_version?: string | null
+          scope?: string | null
+          skipped_count?: number | null
+          start_date?: string | null
+          status?: string | null
+          total_cycles?: number | null
+          total_test_cases?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
         ]
@@ -35477,6 +35620,15 @@ export type Database = {
       }
       get_parallel_run_progress: { Args: { p_run_id: string }; Returns: Json }
       get_permission_stats: { Args: { p_role_code?: string }; Returns: Json }
+      get_plan_stats: {
+        Args: never
+        Returns: {
+          active_plans: number
+          completed_plans: number
+          draft_plans: number
+          total_plans: number
+        }[]
+      }
       get_queue_items: {
         Args: {
           p_limit?: number
@@ -35572,6 +35724,17 @@ export type Database = {
           p_run_id: string
         }
         Returns: Json
+      }
+      get_unassigned_cycles: {
+        Args: never
+        Returns: {
+          cycle_key: string
+          id: string
+          name: string
+          progress_percent: number
+          status: string
+          total_cases: number
+        }[]
       }
       get_unassigned_task_count: { Args: never; Returns: number }
       get_unmapped_tests: { Args: { p_connector_id: string }; Returns: Json }
@@ -36549,6 +36712,7 @@ export type Database = {
         }
         Returns: Json
       }
+      update_plan_stats: { Args: { p_plan_id: string }; Returns: undefined }
       update_recent_project: {
         Args: { p_project_id: string }
         Returns: undefined
