@@ -76,7 +76,7 @@ const RequirementDetailPage = lazy(() => import("./pages/testhub/RequirementDeta
 const CoverageMatrixPage = lazy(() => import("./pages/testhub/CoverageMatrixPage"));
 const EnvironmentsListPage = lazy(() => import("./pages/testhub/EnvironmentsListPage"));
 const EnvironmentDetailPage = lazy(() => import("./pages/testhub/EnvironmentDetailPage"));
-// TraceabilityPage removed — redirects to coverage-matrix
+const TraceabilityPage = lazy(() => import("./pages/testhub/TraceabilityPage"));
 const TestHubReportsPage = lazy(() => import("./pages/testhub/ReportsListPage"));
 const ReportDetailPage = lazy(() => import("./pages/testhub/ReportDetailPage"));
 const TagsListPage = lazy(() => import("./pages/testhub/TagsListPage"));
@@ -544,7 +544,7 @@ const App = () => (
                 <Route path="requirements" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubRequirementsPage /></Suspense>} />
                 <Route path="requirements/:requirementId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementDetailPage /></Suspense>} />
                 <Route path="coverage-matrix" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CoverageMatrixPage /></Suspense>} />
-                <Route path="traceability" element={<Navigate to="/testhub/coverage-matrix" replace />} />
+                <Route path="traceability" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TraceabilityPage /></Suspense>} />
                 <Route path="environments" element={<Suspense fallback={<div className="p-8">Loading...</div>}><EnvironmentsListPage /></Suspense>} />
                 <Route path="environments/:environmentId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><EnvironmentDetailPage /></Suspense>} />
                 <Route path="reports" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubReportsPage /></Suspense>} />
