@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { Plus, Layers, MoreHorizontal, Play, RefreshCw, Zap, Zap as ZapIcon, TestTubes, ChevronRight } from 'lucide-react';
+import { Plus, Layers, MoreHorizontal, Play, RefreshCw, Zap, Zap as ZapIcon, TestTubes, ChevronRight, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,8 +17,11 @@ import {
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Search } from 'lucide-react';
-import { useTestSets, useDeleteTestSet, useRefreshDynamicSet, useCloneTestSet, useArchiveTestSet } from '@/hooks/useTestSets';
+import { useTestSets, useDeleteTestSet, useRefreshDynamicSet, useCloneTestSet, useArchiveTestSet, useCreateTestCycleFromSet } from '@/hooks/useTestSets';
 import { useProjectContext } from '@/hooks/useProjectContext';
 
 const DEFAULT_PROJECT_ID = '40000000-0001-0001-0001-000000000001';
@@ -36,12 +39,14 @@ export default function TestSetsPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingSet, setEditingSet] = useState<TestSet | null>(null);
   const [sortBy, setSortBy] = useState<'created' | 'updated' | 'name' | 'count'>('updated');
+  const [membershipWarningSet, setMembershipWarningSet] = useState<TestSet | null>(null);
 
   const { data: testSets, isLoading } = useTestSets(projectId, filters);
   const deleteMutation = useDeleteTestSet();
   const refreshMutation = useRefreshDynamicSet();
   const cloneMutation = useCloneTestSet();
   const archiveMutation = useArchiveTestSet();
+  const createCycleMutation = useCreateTestCycleFromSet();
 
   const handleEdit = (set: TestSet) => { setEditingSet(set); setIsCreateOpen(true); };
   const handleClose = () => { setIsCreateOpen(false); setEditingSet(null); };
@@ -147,10 +152,10 @@ export default function TestSetsPage() {
                   <button onClick={() => navigate(`/testhub/test-sets/${set.id}`)} className="flex-1 h-9 px-3 rounded-md border border-border hover:bg-muted transition-colors flex items-center justify-center gap-1 text-sm">
                     <Play className="h-4 w-4" />View
                   </button>
-                  <button onClick={() => {
-                    // TODO: Create cycle from test set logic
-                    console.log('Creating cycle from:', set.id);
-                  }} className="h-9 px-3 rounded-md border border-border hover:bg-muted transition-colors flex items-center justify-center gap-1 text-sm" title="Create test cycle from this set">
+                   <button onClick={() => createCycleMutation.mutate({ setId: set.id, projectId })} 
+                    className="h-9 px-3 rounded-md border border-border hover:bg-muted transition-colors flex items-center justify-center gap-1 text-sm disabled:opacity-50 disabled:cursor-not-allowed" 
+                    title="Create test cycle from this set"
+                    disabled={createCycleMutation.isPending}>
                     <TestTubes className="h-4 w-4" />
                   </button>
                   {set.membership_type === 'dynamic' && (
@@ -178,6 +183,23 @@ export default function TestSetsPage() {
       )}
 
       <CreateTestSetModal open={isCreateOpen} onClose={handleClose} editingSet={editingSet} projectId={projectId} />
+      
+      {/* Membership Type Warning Dialog */}
+      <AlertDialog open={!!membershipWarningSet} onOpenChange={() => setMembershipWarningSet(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2"><AlertCircle className="h-5 w-5 text-destructive" />Change Membership Type?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Changing from {membershipWarningSet?.membership_type === 'static' ? 'static to dynamic' : 'dynamic to static'} will affect how test cases are managed. 
+              {membershipWarningSet?.membership_type === 'dynamic' && ' Existing cases will remain, but dynamic criteria will be lost.'}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex gap-2 justify-end">
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => { membershipWarningSet && handleEdit(membershipWarningSet); setMembershipWarningSet(null); }}>Continue</AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
