@@ -35,7 +35,7 @@ export function InlineThemeEditor({ itemId, currentThemeId, anchorEl, onClose }:
 
   const handleSelect = (themeId: string | null) => {
     updateItem.mutate(
-      { id: itemId, field: 'theme_id', value: themeId },
+      { issueKey: itemId, field: 'theme_id', value: themeId },
       {
         onSuccess: () => {
           toast.success(themeId ? 'Theme assigned' : 'Theme removed');
