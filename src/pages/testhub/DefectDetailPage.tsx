@@ -18,6 +18,8 @@ import { StatusChangeModal } from '@/components/defects/g25/StatusChangeModal';
 import { DefectComments } from '@/components/defects/g25/DefectComments';
 import { DefectHistory } from '@/components/defects/g25/DefectHistory';
 import { DefectLinks } from '@/components/defects/g25/DefectLinks';
+import { DefectAttachments } from '@/components/defects/g25/DefectAttachments';
+import { AddLinkModal } from '@/components/defects/g25/AddLinkModal';
 import { EditDefectModalG25 } from '@/components/defects/g25/EditDefectModal';
 import { useDefectG25, useDeleteDefectG25 } from '@/hooks/useDefectsG25';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -29,6 +31,7 @@ export default function DefectDetailPage() {
   const deleteDefect = useDeleteDefectG25();
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddLink, setShowAddLink] = useState(false);
 
   const handleDelete = async () => {
     if (!defect || !confirm(`Delete ${defect.defect_key}?`)) return;
@@ -122,17 +125,26 @@ export default function DefectDetailPage() {
         </Card>
       </div>
 
-      {/* Description + Steps */}
-      {defect.description && (
-        <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Description</CardTitle></CardHeader>
-          <CardContent><p className="text-sm whitespace-pre-wrap">{defect.description}</p></CardContent>
-        </Card>
-      )}
+      {/* Description */}
+      <Card>
+        <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Description</CardTitle></CardHeader>
+        <CardContent>
+          {defect.description ? (
+            <p className="text-sm whitespace-pre-wrap">{defect.description}</p>
+          ) : (
+            <p className="text-sm text-muted-foreground italic">No description provided</p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Steps to Reproduce */}
       {defect.steps_to_reproduce && (
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Steps to Reproduce</CardTitle></CardHeader>
           <CardContent><pre className="text-sm whitespace-pre-wrap font-mono bg-muted p-4 rounded-lg">{defect.steps_to_reproduce}</pre></CardContent>
         </Card>
       )}
+
+      {/* Expected / Actual */}
       {(defect.expected_result || defect.actual_result) && (
         <div className="grid grid-cols-2 gap-4">
           {defect.expected_result && (
@@ -152,17 +164,20 @@ export default function DefectDetailPage() {
       <Tabs defaultValue="comments">
         <TabsList>
           <TabsTrigger value="comments">Comments</TabsTrigger>
-          <TabsTrigger value="links">Links</TabsTrigger>
+          <TabsTrigger value="attachments">Attachments</TabsTrigger>
+          <TabsTrigger value="links">Linked Items</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
         <TabsContent value="comments" className="mt-4"><DefectComments defectId={defect.id} /></TabsContent>
-        <TabsContent value="links" className="mt-4"><DefectLinks defectId={defect.id} /></TabsContent>
+        <TabsContent value="attachments" className="mt-4"><DefectAttachments defectId={defect.id} /></TabsContent>
+        <TabsContent value="links" className="mt-4"><DefectLinks defectId={defect.id} onAddLink={() => setShowAddLink(true)} /></TabsContent>
         <TabsContent value="history" className="mt-4"><DefectHistory defectId={defect.id} /></TabsContent>
       </Tabs>
 
       {/* Modals */}
       <StatusChangeModal open={showStatusModal} onClose={() => setShowStatusModal(false)} defectId={defect.id} currentStatus={defect.status} />
       {showEditModal && <EditDefectModalG25 open={showEditModal} onClose={() => setShowEditModal(false)} defect={defect} />}
+      {showAddLink && <AddLinkModal open={showAddLink} onClose={() => setShowAddLink(false)} defectId={defect.id} />}
     </div>
   );
 }

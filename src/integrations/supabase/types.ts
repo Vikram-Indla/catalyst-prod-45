@@ -25269,6 +25269,75 @@ export type Database = {
           },
         ]
       }
+      th_defect_attachments: {
+        Row: {
+          created_at: string
+          defect_id: string
+          file_name: string
+          file_size: number
+          file_type: string
+          file_url: string
+          id: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          defect_id: string
+          file_name: string
+          file_size?: number
+          file_type?: string
+          file_url: string
+          id?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          defect_id?: string
+          file_name?: string
+          file_size?: number
+          file_type?: string
+          file_url?: string
+          id?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_defect_attachments_defect_id_fkey"
+            columns: ["defect_id"]
+            isOneToOne: false
+            referencedRelation: "th_defects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_defect_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_defect_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_defect_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_defect_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       th_defect_comments: {
         Row: {
           comment: string
