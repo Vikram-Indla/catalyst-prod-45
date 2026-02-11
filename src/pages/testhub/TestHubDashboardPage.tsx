@@ -1,13 +1,7 @@
 /**
- * TestHub Dashboard Page — Enterprise Redesign v1
+ * TestHub Dashboard Page — CATALYST10 Redesign
  * Route: /testhub/dashboard
- * Design: CATALYST10 — Single viewport 1920×1080, density 9/10
- * 
- * Integration contracts preserved:
- * - All data hooks identical
- * - Navigation contracts preserved
- * - Sidebar untouched
- * - No new API calls
+ * Viewport-locked layout, CATALYST10 typography tokens
  */
 
 import { useState, useEffect, useMemo } from 'react';
@@ -29,10 +23,10 @@ function Sparkline({ data, color }: { data: number[]; color: string }) {
   const max = Math.max(...data, 1);
   const min = Math.min(...data, 0);
   const range = max - min || 1;
-  const w = 120, h = 24;
+  const w = 120, h = 28;
   const pts = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - ((v - min) / range) * h}`).join(' ');
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', height: 24, marginTop: 6 }}>
+    <svg viewBox={`0 0 ${w} ${h}`} style={{ width: '100%', height: 28, marginTop: 6 }}>
       <polyline points={pts} fill="none" stroke={color} strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" />
       <polyline points={`0,${h} ${pts} ${w},${h}`} fill={color} fillOpacity={0.07} stroke="none" />
     </svg>
@@ -109,7 +103,6 @@ export default function TestHubDashboardPage() {
   const passRate = stats?.overall_pass_rate ?? 0;
   const passRateColor = passRate < 60 ? '#DC2626' : passRate < 80 ? '#D97706' : '#059669';
 
-  // Execution bar segments
   const execSegments = useMemo(() => {
     if (!stats || totalAll === 0) return [];
     return [
@@ -120,7 +113,6 @@ export default function TestHubDashboardPage() {
     ];
   }, [stats, totalAll]);
 
-  // Needs attention items
   const attentionItems = useMemo(() => {
     const items: { title: string; meta: string; danger: boolean }[] = [];
     if (stats && stats.total_blocked > 0) items.push({ title: `${stats.total_blocked} blocked tests`, meta: 'Require unblocking', danger: true });
@@ -132,14 +124,14 @@ export default function TestHubDashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="h-[calc(100vh-44px)] flex flex-col overflow-hidden" style={{ background: '#F8FAFC', padding: '14px 24px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10, flexShrink: 0, marginBottom: 12 }}>
+      <div style={{ height: 'calc(100vh - 44px)', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#F8FAFC', padding: '12px 16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, flexShrink: 0, marginBottom: 12 }}>
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="animate-pulse" style={{ height: 110, background: '#E2E8F0', borderRadius: 8 }} />
+            <div key={i} className="animate-pulse" style={{ height: 130, background: '#E2E8F0', borderRadius: 8 }} />
           ))}
         </div>
-        <div className="animate-pulse" style={{ height: 40, background: '#E2E8F0', borderRadius: 8, marginBottom: 12, flexShrink: 0 }} />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 320px', gap: 10, flex: 1, minHeight: 0 }}>
+        <div className="animate-pulse" style={{ height: 48, background: '#E2E8F0', borderRadius: 8, marginBottom: 12, flexShrink: 0 }} />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 320px', gap: 12, flex: 1, minHeight: 0 }}>
           {[...Array(3)].map((_, i) => (
             <div key={i} className="animate-pulse" style={{ height: '100%', background: '#E2E8F0', borderRadius: 8 }} />
           ))}
@@ -149,191 +141,143 @@ export default function TestHubDashboardPage() {
   }
 
   return (
-    <div className="h-[calc(100vh-44px)] flex flex-col overflow-hidden" style={{ background: '#F8FAFC', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{
+      height: 'calc(100vh - 44px)',
+      display: 'flex', flexDirection: 'column', overflow: 'hidden',
+      background: '#F8FAFC', fontFamily: 'Inter, system-ui, sans-serif',
+    }}>
 
-      {/* ═══ PAGE HEADER — 56px ═══ */}
-      <header
-        style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '14px 24px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
-          height: 56, boxSizing: 'border-box', flexShrink: 0,
-        }}
-      >
+      {/* ═══ PAGE HEADER — 48px ═══ */}
+      <header style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        padding: '0 24px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
+        height: 48, boxSizing: 'border-box', flexShrink: 0,
+      }}>
         <div>
-          <h1 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.02em' }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
             TestHub Dashboard
           </h1>
-          <p style={{ fontSize: 12, fontWeight: 400, color: '#64748B', margin: 0 }}>
+          <p style={{ fontSize: 16, fontWeight: 400, color: '#64748B', margin: 0, lineHeight: 1.2 }}>
             Test execution metrics and activity
           </p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 11, fontWeight: 400, color: '#64748B' }}>
+          <span style={{ fontSize: 12, fontWeight: 400, color: '#64748B' }}>
             Updated {formatLastUpdated()}
           </span>
-          <button
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 4,
-              height: 28, padding: '0 10px', fontSize: 11, fontWeight: 500,
-              color: '#2563EB', background: '#EFF6FF', border: '1px solid #2563EB',
-              borderRadius: 14, cursor: 'pointer',
-            }}
-          >
+          <button style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            height: 32, padding: '0 12px', fontSize: 13, fontWeight: 500,
+            color: '#2563EB', background: '#EFF6FF', border: 'none',
+            borderRadius: 16, cursor: 'pointer',
+          }}>
             Last 30 days
           </button>
-          <button
-            onClick={fetchDashboardData}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 4,
-              height: 30, padding: '0 10px', fontSize: 11, fontWeight: 500,
-              color: '#0F172A', background: '#FFFFFF', border: '1px solid #E2E8F0',
-              borderRadius: 6, cursor: 'pointer',
-            }}
-          >
-            <RefreshCw size={12} /> Refresh
+          <button onClick={fetchDashboardData} style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            height: 32, padding: '0 12px', fontSize: 13, fontWeight: 500,
+            color: '#0F172A', background: '#FFFFFF', border: '1px solid #E2E8F0',
+            borderRadius: 6, cursor: 'pointer',
+          }}>
+            <RefreshCw size={13} /> Refresh
           </button>
-          <button
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 4,
-              height: 30, padding: '0 10px', fontSize: 11, fontWeight: 500,
-              color: '#0F172A', background: '#FFFFFF', border: '1px solid #E2E8F0',
-              borderRadius: 6, cursor: 'pointer',
-            }}
-          >
-            <Download size={12} /> Export
+          <button style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            height: 32, padding: '0 12px', fontSize: 13, fontWeight: 500,
+            color: '#0F172A', background: '#FFFFFF', border: '1px solid #E2E8F0',
+            borderRadius: 6, cursor: 'pointer',
+          }}>
+            <Download size={13} /> Export
           </button>
         </div>
       </header>
 
       {/* ═══ BODY ═══ */}
-      <div style={{ flex: 1, minHeight: 0, padding: '12px 24px 12px', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ flex: 1, minHeight: 0, padding: '12px 16px', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
         {/* ── KPI STRIP — 5 cards ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10, flexShrink: 0 }}>
-          {/* Card 1: Total test cases */}
-          <KPICard
-            label="Total test cases"
-            value={stats?.total_test_cases ?? 0}
-            accent="#2563EB"
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, flexShrink: 0 }}>
+          <KPICard label="Total test cases" value={stats?.total_test_cases ?? 0} accent="#2563EB"
             trend={{ direction: 'up', value: '+3', color: '#059669' }}
-            subtitle={`${stats?.total_cycles ?? 0} cycles total`}
-            sparkData={[4, 6, 5, 8, 10, 9, 12, 14]}
-          />
-          {/* Card 2: Pass rate */}
-          <KPICard
-            label="Overall pass rate"
-            value={`${passRate}%`}
-            accent="#EF4444"
+            subtitle={`${stats?.total_cycles ?? 0} cycles total`} sparkData={[4, 6, 5, 8, 10, 9, 12, 14]} />
+          <KPICard label="Overall pass rate" value={`${passRate}%`} accent="#EF4444"
             trend={{ direction: 'down', value: '−12%', color: '#DC2626' }}
-            subtitle={`${totalExecuted} of ${totalAll} executed`}
-            sparkData={[80, 72, 65, 58, 52, 48, 46, 47]}
-            valueColor={passRateColor}
-          />
-          {/* Card 3: Active cycles */}
-          <KPICard
-            label="Active cycles"
-            value={stats?.active_cycles ?? 0}
-            accent="#3B82F6"
+            subtitle={`${totalExecuted} of ${totalAll} executed`} sparkData={[80, 72, 65, 58, 52, 48, 46, 47]}
+            valueColor={passRateColor} />
+          <KPICard label="Active cycles" value={stats?.active_cycles ?? 0} accent="#3B82F6"
             trend={{ direction: 'flat', value: '—', color: '#94A3B8' }}
-            subtitle={`${stats?.completed_cycles ?? 0} completed`}
-            sparkData={[3, 4, 5, 5, 5, 5, 5, 5]}
-          />
-          {/* Card 4: Blocked tests */}
-          <KPICard
-            label="Blocked tests"
-            value={stats?.total_blocked ?? 0}
-            accent="#EF4444"
+            subtitle={`${stats?.completed_cycles ?? 0} completed`} sparkData={[3, 4, 5, 5, 5, 5, 5, 5]} />
+          <KPICard label="Blocked tests" value={stats?.total_blocked ?? 0} accent="#EF4444"
             trend={{ direction: 'up', value: '+2', color: '#DC2626' }}
-            subtitle={`${stats?.total_failed ?? 0} failed tests`}
-            sparkData={[0, 1, 1, 2, 2, 3, 3, 3]}
-            valueColor={(stats?.total_blocked ?? 0) > 0 ? '#DC2626' : undefined}
-          />
-          {/* Card 5: Automation coverage */}
-          <KPICard
-            label="Automation coverage"
-            value="0%"
-            accent="#10B981"
+            subtitle={`${stats?.total_failed ?? 0} failed tests`} sparkData={[0, 1, 1, 2, 2, 3, 3, 3]}
+            valueColor={(stats?.total_blocked ?? 0) > 0 ? '#DC2626' : undefined} />
+          <KPICard label="Automation coverage" value="0%" accent="#10B981"
             trend={{ direction: 'flat', value: '—', color: '#94A3B8' }}
-            subtitle={`0 of ${stats?.total_test_cases ?? 0} automated`}
-            sparkData={[0, 0, 0, 0, 0, 0, 0, 0]}
-          />
+            subtitle={`0 of ${stats?.total_test_cases ?? 0} automated`} sparkData={[0, 0, 0, 0, 0, 0, 0, 0]} />
         </div>
 
-        {/* ── EXECUTION STATUS BAR ── */}
-        <div
-          style={{
-            background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
-            padding: '10px 16px', flexShrink: 0,
-          }}
-        >
+        {/* ── EXECUTION STATUS BAR — 48px ── */}
+        <div style={{
+          background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
+          padding: '10px 16px', flexShrink: 0,
+        }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-            <span style={{ fontSize: 11, fontWeight: 500, color: '#334155' }}>Execution status</span>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#0F172A' }}>{totalAll} total</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>Execution status</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#0F172A' }}>{totalAll} total</span>
           </div>
-          <div style={{ display: 'flex', height: 7, borderRadius: 4, background: '#F1F5F9', gap: 1, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', height: 8, borderRadius: 4, background: '#F1F5F9', gap: 1, overflow: 'hidden' }}>
             {execSegments.map(seg => (
               seg.pct > 0 && (
-                <div
-                  key={seg.label}
-                  style={{
-                    width: `${seg.pct}%`, background: seg.color, borderRadius: 2,
-                    transition: 'width 500ms ease-out',
-                  }}
-                />
+                <div key={seg.label} style={{
+                  width: `${seg.pct}%`, background: seg.color, borderRadius: 2,
+                  transition: 'width 500ms ease-out', minWidth: 3,
+                }} />
               )
             ))}
           </div>
-          <div style={{ display: 'flex', gap: 14, marginTop: 6 }}>
+          <div style={{ display: 'flex', gap: 16, marginTop: 6 }}>
             {execSegments.map(seg => (
-              <span key={seg.label} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: seg.color, display: 'inline-block' }} />
-                <span style={{ fontWeight: 500, color: '#334155' }}>{seg.label}</span>
-                <span style={{ fontWeight: 700, color: '#0F172A' }}>{seg.count}</span>
+              <span key={seg.label} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', background: seg.color, display: 'inline-block' }} />
+                <span style={{ fontSize: 13, fontWeight: 500, color: '#334155' }}>{seg.label}</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>{seg.count}</span>
               </span>
             ))}
           </div>
         </div>
 
-        {/* ── CONTENT GRID — 3 columns ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 320px', gap: 10, flex: 1, minHeight: 0 }}>
+        {/* ── CONTENT GRID ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 320px', gap: 12, flex: 1, minHeight: 0 }}>
 
           {/* ═ LEFT: Active Cycles ═ */}
-          <Card
-            title="Active Cycles"
-            badge={String(activeCycles.length)}
-            badgeColor="#2563EB"
-            onViewAll={() => navigate('/testhub/cycles')}
-          >
+          <Card title="Active Cycles" badge={String(activeCycles.length)} onViewAll={() => navigate('/testhub/cycles')}>
             {activeCycles.length === 0 ? (
               <EmptyMini icon={<Play size={24} color="#94A3B8" />} text="No active cycles" />
             ) : (
-              activeCycles.slice(0, 5).map(cycle => {
+              activeCycles.slice(0, 20).map(cycle => {
                 const pct = cycle.progress_percent ?? 0;
                 const barColor = pct === 0 ? '#CBD5E1' : pct <= 30 ? '#EF4444' : pct <= 70 ? '#F59E0B' : '#10B981';
                 return (
-                  <div
-                    key={cycle.id}
-                    onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
+                  <div key={cycle.id} onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
                     className="c10-row"
                     style={{
-                      display: 'grid', gridTemplateColumns: '78px 1fr 88px 120px',
-                      alignItems: 'center', height: 40, padding: '0 14px',
+                      display: 'grid', gridTemplateColumns: '90px 1fr 100px 130px',
+                      alignItems: 'center', height: 36, padding: '0 16px',
                       cursor: 'pointer', borderBottom: '1px solid #F1F5F9',
-                    }}
-                  >
-                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, color: '#2563EB' }}>
+                    }}>
+                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
                       {cycle.cycle_key}
                     </span>
-                    <span style={{ fontSize: 12, fontWeight: 500, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: 14, fontWeight: 500, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {cycle.name}
                     </span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <div style={{ flex: 1, height: 3, borderRadius: 2, background: '#F1F5F9', overflow: 'hidden' }}>
+                      <div style={{ flex: 1, height: 4, borderRadius: 2, background: '#F1F5F9', overflow: 'hidden' }}>
                         <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 2, transition: 'width 400ms ease-out' }} />
                       </div>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: '#0F172A', minWidth: 28, textAlign: 'right' }}>{pct}%</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', minWidth: 32, textAlign: 'right' }}>{pct}%</span>
                     </div>
-                    <div style={{ display: 'flex', gap: 6, fontSize: 10, fontWeight: 600, justifyContent: 'flex-end' }}>
+                    <div style={{ display: 'flex', gap: 6, fontSize: 12, fontWeight: 600, justifyContent: 'flex-end' }}>
                       <span style={{ color: '#059669' }}>{cycle.passed_count ?? 0}P</span>
                       <span style={{ color: '#64748B' }}>·</span>
                       <span style={{ color: '#DC2626' }}>{cycle.failed_count ?? 0}F</span>
@@ -347,50 +291,41 @@ export default function TestHubDashboardPage() {
           </Card>
 
           {/* ═ MIDDLE: Failing Tests + Defects Mini ═ */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minHeight: 0 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0 }}>
             {/* Top Failing Tests */}
-            <Card
-              title="Top Failing Tests"
-              badge={String(failingTests.length)}
-              badgeDanger
+            <Card title="Top Failing Tests" badge={String(failingTests.length)} badgeDanger
               onViewAll={() => navigate('/testhub/repository')}
-              style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}
-            >
+              style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
               {failingTests.length === 0 ? (
                 <EmptyMini icon={<AlertTriangle size={24} color="#94A3B8" />} text="No failing tests" />
               ) : (
-                failingTests.slice(0, 4).map(test => {
+                failingTests.slice(0, 10).map(test => {
                   const sevColor = test.priority?.toLowerCase() === 'high' || test.priority?.toLowerCase() === 'critical'
                     ? { bg: '#FEF2F2', color: '#DC2626' }
                     : { bg: '#FFFBEB', color: '#D97706' };
                   return (
-                    <div
-                      key={test.test_case_id}
-                      onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
+                    <div key={test.test_case_id} onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
                       className="c10-row-danger"
                       style={{
-                        display: 'grid', gridTemplateColumns: '60px 1fr 50px 48px',
-                        alignItems: 'center', height: 38, padding: '0 14px',
+                        display: 'grid', gridTemplateColumns: '72px 1fr 60px 64px',
+                        alignItems: 'center', height: 36, padding: '0 16px',
                         cursor: 'pointer', borderBottom: '1px solid #F1F5F9',
-                      }}
-                    >
-                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, color: '#2563EB' }}>
+                      }}>
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
                         {test.case_key}
                       </span>
-                      <span style={{ fontSize: 11, fontWeight: 500, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: 14, fontWeight: 500, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {test.title}
                       </span>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: '#DC2626' }}>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#DC2626' }}>
                         {test.failure_count} fail{test.failure_count !== 1 ? 's' : ''}
                       </span>
-                      <span
-                        style={{
-                          fontSize: 9, fontWeight: 600, textTransform: 'uppercase',
-                          background: sevColor.bg, color: sevColor.color,
-                          padding: '2px 6px', borderRadius: 4, textAlign: 'center',
-                        }}
-                      >
-                        {test.priority || 'MED'}
+                      <span style={{
+                        fontSize: 11, fontWeight: 600, letterSpacing: '0.03em',
+                        background: sevColor.bg, color: sevColor.color,
+                        padding: '2px 8px', borderRadius: 4, textAlign: 'center',
+                      }}>
+                        {test.priority || 'Med'}
                       </span>
                     </div>
                   );
@@ -398,22 +333,23 @@ export default function TestHubDashboardPage() {
               )}
             </Card>
 
-            {/* Defects Mini */}
-            <Card
-              title="Defects"
-              badge={String(defectStats?.total_defects ?? 0)}
+            {/* Defects Mini — pinned bottom */}
+            <Card title="Defects" badge={String(defectStats?.total_defects ?? 0)}
               onViewAll={() => navigate('/testhub/defects')}
-            >
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, padding: '8px 14px' }}>
+              style={{ flexShrink: 0 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)' }}>
                 {[
                   { label: 'Open', value: defectStats?.open_defects ?? 0 },
-                  { label: 'In Progress', value: defectStats?.in_progress_defects ?? 0 },
+                  { label: 'In progress', value: defectStats?.in_progress_defects ?? 0 },
                   { label: 'Fixed', value: defectStats?.fixed_defects ?? 0 },
                   { label: 'Closed', value: defectStats?.closed_defects ?? 0 },
-                ].map(d => (
-                  <div key={d.label} style={{ textAlign: 'center', padding: 8 }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#0F172A' }}>{d.value}</div>
-                    <div style={{ fontSize: 9, fontWeight: 500, color: '#64748B' }}>{d.label}</div>
+                ].map((d, i) => (
+                  <div key={d.label} style={{
+                    textAlign: 'center', padding: '12px 8px',
+                    borderRight: i < 3 ? '1px solid #F1F5F9' : 'none',
+                  }}>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', lineHeight: 1 }}>{d.value}</div>
+                    <div style={{ fontSize: 12, fontWeight: 500, color: '#64748B', marginTop: 4 }}>{d.label}</div>
                   </div>
                 ))}
               </div>
@@ -421,94 +357,88 @@ export default function TestHubDashboardPage() {
           </div>
 
           {/* ═ RIGHT: Needs Attention + Activity + Quick Actions ═ */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minHeight: 0 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0 }}>
             {/* Needs Attention */}
-            <div
-              style={{
-                background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
-                borderLeft: '3px solid #EF4444', overflow: 'hidden',
-              }}
-            >
-              <div style={{ padding: '10px 14px 7px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#0F172A' }}>Needs attention</span>
+            <div style={{
+              background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
+              borderLeft: '3px solid #EF4444', overflow: 'hidden', flexShrink: 0,
+            }}>
+              <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>Needs attention</span>
                 <span style={{
-                  fontSize: 10, fontWeight: 700, color: '#DC2626', background: '#FEF2F2',
+                  fontSize: 12, fontWeight: 600, color: '#DC2626', background: '#FEF2F2',
                   padding: '2px 8px', borderRadius: 10,
                 }}>
                   {attentionItems.length}
                 </span>
               </div>
               {attentionItems.length === 0 ? (
-                <div style={{ padding: '16px 14px', textAlign: 'center', fontSize: 11, color: '#64748B' }}>
+                <div style={{ padding: '16px', textAlign: 'center', fontSize: 13, color: '#64748B' }}>
                   All clear — no issues
                 </div>
               ) : (
                 attentionItems.map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '7px 14px', borderTop: i > 0 ? '1px solid #F1F5F9' : 'none' }}>
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', borderTop: i > 0 ? '1px solid #F1F5F9' : 'none' }}>
                     <div style={{
-                      width: 22, height: 22, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      width: 24, height: 24, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       background: item.danger ? '#FEF2F2' : '#FFFBEB',
                     }}>
-                      <AlertTriangle size={11} color={item.danger ? '#DC2626' : '#D97706'} />
+                      <AlertTriangle size={12} color={item.danger ? '#DC2626' : '#D97706'} />
                     </div>
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: 11, fontWeight: 500, color: '#0F172A' }}>{item.title}</div>
-                      <div style={{ fontSize: 9, fontWeight: 400, color: '#64748B' }}>{item.meta}</div>
+                      <div style={{ fontSize: 14, fontWeight: 500, color: '#0F172A' }}>{item.title}</div>
+                      <div style={{ fontSize: 12, fontWeight: 400, color: '#64748B' }}>{item.meta}</div>
                     </div>
                   </div>
                 ))
               )}
             </div>
 
-            {/* Activity Feed */}
-            <div
-              style={{
-                background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
-                flex: 1, overflow: 'hidden',
-              }}
-            >
-              <div style={{ padding: '10px 14px 7px' }}>
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#0F172A' }}>Activity</span>
+            {/* Activity Feed + Quick Actions */}
+            <div style={{
+              background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
+              flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+            }}>
+              <div style={{ padding: '12px 16px', borderBottom: '1px solid #F1F5F9', flexShrink: 0 }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>Activity</span>
               </div>
-              {recentActivity.length === 0 ? (
-                <div style={{ padding: '16px 14px', textAlign: 'center', fontSize: 11, color: '#64748B' }}>
-                  No recent activity
-                </div>
-              ) : (
-                recentActivity.slice(0, 4).map((a, i) => {
-                  const dotColor = a.execution_status === 'passed' ? '#10B981'
-                    : a.execution_status === 'failed' ? '#EF4444'
-                    : a.execution_status === 'blocked' ? '#F59E0B'
-                    : '#3B82F6';
-                  const verb = a.execution_status === 'passed' ? 'passed'
-                    : a.execution_status === 'failed' ? 'failed'
-                    : a.execution_status === 'blocked' ? 'blocked'
-                    : 'created';
-                  return (
-                    <div
-                      key={a.id}
-                      style={{
+              <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+                {recentActivity.length === 0 ? (
+                  <div style={{ padding: '24px 16px', textAlign: 'center', fontSize: 13, color: '#64748B' }}>
+                    No recent activity
+                  </div>
+                ) : (
+                  recentActivity.slice(0, 8).map((a, i) => {
+                    const dotColor = a.execution_status === 'passed' ? '#10B981'
+                      : a.execution_status === 'failed' ? '#EF4444'
+                      : a.execution_status === 'blocked' ? '#F59E0B'
+                      : '#3B82F6';
+                    const verb = a.execution_status === 'passed' ? 'passed'
+                      : a.execution_status === 'failed' ? 'failed'
+                      : a.execution_status === 'blocked' ? 'blocked'
+                      : 'created';
+                    return (
+                      <div key={a.id} style={{
                         display: 'flex', alignItems: 'flex-start', gap: 8,
-                        padding: '6px 14px', borderTop: i > 0 ? '1px solid #F1F5F9' : 'none',
-                      }}
-                    >
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: dotColor, marginTop: 5, flexShrink: 0 }} />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 11, fontWeight: 400, color: '#0F172A', lineHeight: 1.4 }}>
-                          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600, color: '#2563EB' }}>{a.case_key}</span>
-                          {' '}<b>{verb}</b> in {a.cycle_key}
-                        </div>
-                        <div style={{ fontSize: 9, fontWeight: 400, color: '#64748B' }}>
-                          {a.executed_by_name} · {formatTimeAgo(a.executed_at)}
+                        padding: '8px 16px', borderTop: i > 0 ? '1px solid #F1F5F9' : 'none',
+                      }}>
+                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: dotColor, marginTop: 6, flexShrink: 0 }} />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 13, fontWeight: 400, color: '#0F172A', lineHeight: 1.43 }}>
+                            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>{a.case_key}</span>
+                            {' '}<span style={{ fontWeight: 600 }}>{verb}</span> in {a.cycle_key}
+                          </div>
+                          <div style={{ fontSize: 11, fontWeight: 400, color: '#64748B' }}>
+                            {a.executed_by_name} · {formatTimeAgo(a.executed_at)}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })
-              )}
-
-              {/* Quick Actions */}
-              <div style={{ display: 'flex', gap: 6, padding: '8px 14px', borderTop: '1px solid #F1F5F9' }}>
+                    );
+                  })
+                )}
+              </div>
+              {/* Quick Actions — pinned bottom */}
+              <div style={{ display: 'flex', gap: 8, padding: '10px 16px', borderTop: '1px solid #F1F5F9', flexShrink: 0 }}>
                 <QuickBtn label="New case" onClick={() => navigate('/testhub/repository')} />
                 <QuickBtn label="Start cycle" onClick={() => navigate('/testhub/cycles')} />
                 <QuickBtn label="Report" onClick={() => navigate('/testhub/reports')} />
@@ -542,26 +472,23 @@ function KPICard({ label, value, accent, trend, subtitle, sparkData, valueColor 
   valueColor?: string;
 }) {
   return (
-    <div
-      className="c10-kpi"
-      style={{
-        background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
-        borderLeft: `3px solid ${accent}`,
-        padding: '12px 14px 10px', cursor: 'pointer',
-        transition: 'border-color 150ms, box-shadow 150ms',
-      }}
-    >
-      <div style={{ fontSize: 11, fontWeight: 500, color: '#334155', marginBottom: 4 }}>{label}</div>
+    <div className="c10-kpi" style={{
+      background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
+      borderLeft: `3px solid ${accent}`,
+      padding: 16, cursor: 'pointer',
+      transition: 'border-color 150ms, box-shadow 150ms',
+    }}>
+      <div style={{ fontSize: 13, fontWeight: 500, color: '#334155', marginBottom: 4 }}>{label}</div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <span style={{ fontSize: 22, fontWeight: 700, color: valueColor || '#0F172A', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
+        <span style={{ fontSize: 36, fontWeight: 700, color: valueColor || '#0F172A', letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
           {value}
         </span>
-        <span style={{ fontSize: 10, fontWeight: 600, color: trend.color }}>
+        <span style={{ fontSize: 12, fontWeight: 600, color: trend.color }}>
           {trend.direction === 'up' ? '▲' : trend.direction === 'down' ? '▼' : ''} {trend.value}
         </span>
       </div>
       <Sparkline data={sparkData} color={accent} />
-      <div style={{ fontSize: 10, fontWeight: 400, color: '#64748B', marginTop: 4 }}>{subtitle}</div>
+      <div style={{ fontSize: 12, fontWeight: 400, color: '#64748B', marginTop: 4 }}>{subtitle}</div>
     </div>
   );
 }
@@ -575,29 +502,28 @@ function Card({ title, badge, badgeDanger, badgeColor, onViewAll, children, styl
   children: React.ReactNode;
   style?: React.CSSProperties;
 }) {
-  const bg = badgeDanger ? '#FEF2F2' : '#EFF6FF';
-  const color = badgeDanger ? '#DC2626' : badgeColor || '#2563EB';
+  const bg = badgeDanger ? '#FEF2F2' : '#F1F5F9';
+  const color = badgeDanger ? '#DC2626' : badgeColor || '#64748B';
   return (
-    <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden', ...style }}>
-      <div style={{ padding: '10px 14px 7px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden', display: 'flex', flexDirection: 'column', minHeight: 0, ...style }}>
+      <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #F1F5F9', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#0F172A' }}>{title}</span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{title}</span>
           {badge && (
-            <span style={{ fontSize: 10, fontWeight: 700, color, background: bg, padding: '2px 8px', borderRadius: 10 }}>
+            <span style={{ fontSize: 12, fontWeight: 600, color, background: bg, padding: '2px 8px', borderRadius: 10 }}>
               {badge}
             </span>
           )}
         </div>
         {onViewAll && (
-          <button
-            onClick={onViewAll}
-            style={{ fontSize: 10, fontWeight: 500, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}
-          >
-            View all <ChevronRight size={10} />
+          <button onClick={onViewAll} style={{ fontSize: 13, fontWeight: 500, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
+            View all <ChevronRight size={12} />
           </button>
         )}
       </div>
-      {children}
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+        {children}
+      </div>
     </div>
   );
 }
@@ -606,22 +532,18 @@ function EmptyMini({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px 0', gap: 6 }}>
       {icon}
-      <span style={{ fontSize: 11, color: '#64748B' }}>{text}</span>
+      <span style={{ fontSize: 13, color: '#64748B' }}>{text}</span>
     </div>
   );
 }
 
 function QuickBtn({ label, onClick }: { label: string; onClick: () => void }) {
   return (
-    <button
-      className="c10-qbtn"
-      onClick={onClick}
-      style={{
-        flex: 1, height: 28, fontSize: 10, fontWeight: 500,
-        color: '#0F172A', background: '#FFFFFF', border: '1px solid #E2E8F0',
-        borderRadius: 4, cursor: 'pointer', transition: 'all 150ms',
-      }}
-    >
+    <button className="c10-qbtn" onClick={onClick} style={{
+      flex: 1, height: 32, fontSize: 13, fontWeight: 500,
+      color: '#334155', background: '#FFFFFF', border: '1px solid #E2E8F0',
+      borderRadius: 6, cursor: 'pointer', transition: 'all 150ms',
+    }}>
       {label}
     </button>
   );
