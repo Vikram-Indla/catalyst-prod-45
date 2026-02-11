@@ -368,6 +368,383 @@ export type Database = {
         }
         Relationships: []
       }
+      caty_analytics: {
+        Row: {
+          conversation_id: string | null
+          created_at: string | null
+          event_data: Json | null
+          event_type: string
+          id: string
+          project_id: string
+          user_id: string | null
+        }
+        Insert: {
+          conversation_id?: string | null
+          created_at?: string | null
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          project_id: string
+          user_id?: string | null
+        }
+        Update: {
+          conversation_id?: string | null
+          created_at?: string | null
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          project_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "caty_analytics_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "caty_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "caty_analytics_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "caty_analytics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "caty_analytics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "caty_analytics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "caty_analytics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      caty_conversations: {
+        Row: {
+          context_id: string | null
+          context_type: string | null
+          conversation_type:
+            | Database["public"]["Enums"]["caty_conversation_type"]
+            | null
+          created_at: string | null
+          id: string
+          is_archived: boolean | null
+          is_pinned: boolean | null
+          message_count: number | null
+          project_id: string
+          title: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          context_id?: string | null
+          context_type?: string | null
+          conversation_type?:
+            | Database["public"]["Enums"]["caty_conversation_type"]
+            | null
+          created_at?: string | null
+          id?: string
+          is_archived?: boolean | null
+          is_pinned?: boolean | null
+          message_count?: number | null
+          project_id: string
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          context_id?: string | null
+          context_type?: string | null
+          conversation_type?:
+            | Database["public"]["Enums"]["caty_conversation_type"]
+            | null
+          created_at?: string | null
+          id?: string
+          is_archived?: boolean | null
+          is_pinned?: boolean | null
+          message_count?: number | null
+          project_id?: string
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "caty_conversations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "caty_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "caty_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "caty_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "caty_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      caty_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string | null
+          error_message: string | null
+          feedback_at: string | null
+          feedback_comment: string | null
+          feedback_rating: number | null
+          id: string
+          model_used: string | null
+          response_time_ms: number | null
+          role: Database["public"]["Enums"]["caty_message_role"]
+          sequence_number: number
+          status: Database["public"]["Enums"]["caty_message_status"] | null
+          structured_content: Json | null
+          tokens_input: number | null
+          tokens_output: number | null
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string | null
+          error_message?: string | null
+          feedback_at?: string | null
+          feedback_comment?: string | null
+          feedback_rating?: number | null
+          id?: string
+          model_used?: string | null
+          response_time_ms?: number | null
+          role: Database["public"]["Enums"]["caty_message_role"]
+          sequence_number: number
+          status?: Database["public"]["Enums"]["caty_message_status"] | null
+          structured_content?: Json | null
+          tokens_input?: number | null
+          tokens_output?: number | null
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string | null
+          error_message?: string | null
+          feedback_at?: string | null
+          feedback_comment?: string | null
+          feedback_rating?: number | null
+          id?: string
+          model_used?: string | null
+          response_time_ms?: number | null
+          role?: Database["public"]["Enums"]["caty_message_role"]
+          sequence_number?: number
+          status?: Database["public"]["Enums"]["caty_message_status"] | null
+          structured_content?: Json | null
+          tokens_input?: number | null
+          tokens_output?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "caty_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "caty_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      caty_prompt_templates: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_default: boolean | null
+          max_tokens: number | null
+          model: string | null
+          name: string
+          system_prompt: string
+          temperature: number | null
+          template_key: string
+          updated_at: string | null
+          user_prompt_template: string | null
+          version: number | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          max_tokens?: number | null
+          model?: string | null
+          name: string
+          system_prompt: string
+          temperature?: number | null
+          template_key: string
+          updated_at?: string | null
+          user_prompt_template?: string | null
+          version?: number | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          max_tokens?: number | null
+          model?: string | null
+          name?: string
+          system_prompt?: string
+          temperature?: number | null
+          template_key?: string
+          updated_at?: string | null
+          user_prompt_template?: string | null
+          version?: number | null
+        }
+        Relationships: []
+      }
+      caty_suggestions: {
+        Row: {
+          content: Json
+          conversation_id: string
+          created_at: string | null
+          created_entity_id: string | null
+          created_entity_type: string | null
+          display_order: number | null
+          id: string
+          message_id: string | null
+          processed_at: string | null
+          processed_by: string | null
+          project_id: string
+          status: Database["public"]["Enums"]["caty_suggestion_status"] | null
+          suggestion_type: Database["public"]["Enums"]["caty_suggestion_type"]
+        }
+        Insert: {
+          content: Json
+          conversation_id: string
+          created_at?: string | null
+          created_entity_id?: string | null
+          created_entity_type?: string | null
+          display_order?: number | null
+          id?: string
+          message_id?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          project_id: string
+          status?: Database["public"]["Enums"]["caty_suggestion_status"] | null
+          suggestion_type: Database["public"]["Enums"]["caty_suggestion_type"]
+        }
+        Update: {
+          content?: Json
+          conversation_id?: string
+          created_at?: string | null
+          created_entity_id?: string | null
+          created_entity_type?: string | null
+          display_order?: number | null
+          id?: string
+          message_id?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          project_id?: string
+          status?: Database["public"]["Enums"]["caty_suggestion_status"] | null
+          suggestion_type?: Database["public"]["Enums"]["caty_suggestion_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "caty_suggestions_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "caty_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "caty_suggestions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "caty_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "caty_suggestions_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "caty_suggestions_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "caty_suggestions_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "caty_suggestions_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "caty_suggestions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cc_activity_log: {
         Row: {
           created_at: string | null
@@ -37872,6 +38249,10 @@ export type Database = {
             }[]
           }
       get_my_stats: { Args: { p_user_id: string }; Returns: Json }
+      get_next_caty_message_sequence: {
+        Args: { p_conversation_id: string }
+        Returns: number
+      }
       get_next_test_in_cycle: {
         Args: { p_current_run_id?: string; p_cycle_id: string }
         Returns: Json
@@ -39313,6 +39694,17 @@ export type Database = {
         | "in_progress"
         | "done"
         | "cancelled"
+      caty_conversation_type: "chat" | "generation" | "analysis" | "query"
+      caty_message_role: "user" | "assistant" | "system"
+      caty_message_status: "pending" | "streaming" | "complete" | "error"
+      caty_suggestion_status: "pending" | "accepted" | "rejected" | "modified"
+      caty_suggestion_type:
+        | "test_case"
+        | "test_step"
+        | "test_data"
+        | "coverage_gap"
+        | "risk_area"
+        | "query_result"
       change_audit_event_type:
         | "created"
         | "updated"
@@ -39963,6 +40355,18 @@ export const Constants = {
         "in_progress",
         "done",
         "cancelled",
+      ],
+      caty_conversation_type: ["chat", "generation", "analysis", "query"],
+      caty_message_role: ["user", "assistant", "system"],
+      caty_message_status: ["pending", "streaming", "complete", "error"],
+      caty_suggestion_status: ["pending", "accepted", "rejected", "modified"],
+      caty_suggestion_type: [
+        "test_case",
+        "test_step",
+        "test_data",
+        "coverage_gap",
+        "risk_area",
+        "query_result",
       ],
       change_audit_event_type: [
         "created",
