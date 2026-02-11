@@ -927,6 +927,8 @@ const App = () => (
               <Route path="/releases/test-cases" element={<ReleasesTestCasesPage />} />
               <Route path="/releases/test-cases/:id" element={<ReleasesTestCaseDetailPage />} />
               {/* Removed duplicate /releases/tests routes - use /releases/test-cases only */}
+              <Route path="/releases/test-sets" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestSetsPage /></Suspense>} />
+              <Route path="/releases/test-sets/:setId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestSetDetailPage /></Suspense>} />
               <Route path="/releases/test-cycles" element={<ReleasesTestCyclesPage />} />
               <Route path="/releases/test-cycles/:cycleId" element={<ReleasesCycleCommandCenter />} />
               <Route path="/releases/templates" element={<ReleasesCycleTemplatesPage />} />
