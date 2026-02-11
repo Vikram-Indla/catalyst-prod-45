@@ -79,6 +79,7 @@ const EnvironmentDetailPage = lazy(() => import("./pages/testhub/EnvironmentDeta
 // TraceabilityPage removed — redirects to coverage-matrix
 const TestHubReportsPage = lazy(() => import("./pages/testhub/ReportsListPage"));
 const ReportDetailPage = lazy(() => import("./pages/testhub/ReportDetailPage"));
+const TagsListPage = lazy(() => import("./pages/testhub/TagsListPage"));
 const TestHubSettingsPage = lazy(() => import("./pages/testhub/SettingsPage"));
 // Task10 pages
 const T10LandingPage = lazy(() => import("./modules/task10/pages/T10LandingPage").then(m => ({ default: m.T10LandingPage })));
@@ -546,6 +547,7 @@ const App = () => (
                 <Route path="environments/:environmentId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><EnvironmentDetailPage /></Suspense>} />
                 <Route path="reports" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubReportsPage /></Suspense>} />
                 <Route path="reports/:reportId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReportDetailPage /></Suspense>} />
+                <Route path="tags" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TagsListPage /></Suspense>} />
                 <Route path="settings" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubSettingsPage /></Suspense>} />
                 <Route path="test-plans" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestPlansListPage /></Suspense>} />
                 <Route path="test-plans/:planId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><PlanDetailPage /></Suspense>} />
