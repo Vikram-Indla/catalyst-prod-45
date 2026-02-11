@@ -36,7 +36,7 @@ export function AddCycleToPlanModal({ isOpen, onClose, planId, onAdded }: AddCyc
   const fetchUnassignedCycles = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.rpc('get_unassigned_cycles');
+      const { data, error } = await supabase.rpc('get_unassigned_cycles' as any, { p_project_id: '00000000-0000-0000-0000-000000000000', p_plan_id: planId });
       if (error) throw error;
       setCycles((data as any[]) || []);
     } catch (err) {
