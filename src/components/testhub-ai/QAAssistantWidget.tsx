@@ -273,13 +273,14 @@ export function QAAssistantWidget({ onClose }: QAAssistantWidgetProps) {
                     QA Assistant
                   </h3>
                   <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.5, maxWidth: 280, margin: '0 auto 24px' }}>
-                    Ask me anything about test cases, cycles, defects, coverage, or QA best practices.
+                    Ask me about test cases, cycles, defects, execution status, and coverage — all grounded in your TestHub data.
                   </p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {[
-                      'How do I create effective test cases?',
-                      'What are common regression testing strategies?',
-                      'Help me plan a test cycle',
+                      'How many test cases are unassigned?',
+                      'What is the current cycle status?',
+                      'Show me a weekly execution summary',
+                      'Which defects are still open?',
                     ].map((suggestion) => (
                       <button
                         key={suggestion}
