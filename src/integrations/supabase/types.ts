@@ -24854,6 +24854,174 @@ export type Database = {
           },
         ]
       }
+      th_report_templates: {
+        Row: {
+          config: Json | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          type: string
+        }
+        Insert: {
+          config?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          type: string
+        }
+        Update: {
+          config?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_report_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_report_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_report_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_report_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_reports: {
+        Row: {
+          created_at: string | null
+          cycle_id: string | null
+          date_from: string | null
+          date_to: string | null
+          description: string | null
+          export_format: string | null
+          file_path: string | null
+          file_size: number | null
+          generated_at: string | null
+          generated_by: string | null
+          id: string
+          name: string
+          plan_id: string | null
+          report_data: Json | null
+          report_key: string
+          status: string | null
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          cycle_id?: string | null
+          date_from?: string | null
+          date_to?: string | null
+          description?: string | null
+          export_format?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          generated_at?: string | null
+          generated_by?: string | null
+          id?: string
+          name: string
+          plan_id?: string | null
+          report_data?: Json | null
+          report_key?: string
+          status?: string | null
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          cycle_id?: string | null
+          date_from?: string | null
+          date_to?: string | null
+          description?: string | null
+          export_format?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          generated_at?: string | null
+          generated_by?: string | null
+          id?: string
+          name?: string
+          plan_id?: string | null
+          report_data?: Json | null
+          report_key?: string
+          status?: string | null
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_reports_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_reports_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_reports_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_reports_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_reports_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_reports_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       th_requirement_tests: {
         Row: {
           created_at: string | null
@@ -25009,6 +25177,87 @@ export type Database = {
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_scheduled_reports: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_active: boolean | null
+          last_run: string | null
+          name: string
+          next_run: string | null
+          recipients: string[] | null
+          schedule_day: number | null
+          schedule_time: string | null
+          schedule_type: string | null
+          template_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_run?: string | null
+          name: string
+          next_run?: string | null
+          recipients?: string[] | null
+          schedule_day?: number | null
+          schedule_time?: string | null
+          schedule_type?: string | null
+          template_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_run?: string | null
+          name?: string
+          next_run?: string | null
+          recipients?: string[] | null
+          schedule_day?: number | null
+          schedule_time?: string | null
+          schedule_type?: string | null
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_scheduled_reports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_scheduled_reports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_scheduled_reports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_scheduled_reports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_scheduled_reports_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "th_report_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -35716,6 +35965,14 @@ export type Database = {
       }
       generate_change_number: { Args: never; Returns: string }
       generate_cycle_key: { Args: never; Returns: string }
+      generate_cycle_report_data: {
+        Args: { p_cycle_id: string }
+        Returns: Json
+      }
+      generate_defect_report_data: {
+        Args: { p_date_from?: string; p_date_to?: string }
+        Returns: Json
+      }
       generate_evidence_path: {
         Args: {
           p_execution_id: string
@@ -36043,6 +36300,14 @@ export type Database = {
       get_release_quality_metrics: {
         Args: { p_release_id: string }
         Returns: Json
+      }
+      get_report_stats: {
+        Args: never
+        Returns: {
+          ready_reports: number
+          this_month: number
+          total_reports: number
+        }[]
       }
       get_requirement_tests: {
         Args: { p_requirement_id: string }
