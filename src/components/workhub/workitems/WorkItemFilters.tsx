@@ -1,10 +1,10 @@
 /**
- * WorkItemFilters — Filter dropdowns for Projects, Types, Statuses, Releases + search
- * Reads distinct values from wh_issues (real synced data)
+ * WorkItemFilters — Jira-style smart multi-select filter dropdowns
+ * Features: inline search, select all/none, selected chips, badge counts
  */
 
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, ChevronDown, Check, FolderGit2, X, Milestone } from 'lucide-react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { Search, ChevronDown, Check, X, Milestone, FolderGit2, Layers, Activity, Filter } from 'lucide-react';
 import { useIssueProjectKeys, useIssueTypes, useIssueStatuses, useIssueFixVersions } from '@/hooks/workhub/useWorkItems';
 import type { WorkItemFilterConfig } from '@/hooks/workhub/useWorkItems';
 
@@ -13,68 +13,216 @@ interface WorkItemFiltersProps {
   onChange: (filters: Partial<WorkItemFilterConfig>) => void;
 }
 
-function FilterDropdown({
-  label,
-  badge,
-  children,
-  isActive,
-}: {
+/* ─── Jira-style Smart Multi-Select Dropdown ──────────────────────── */
+
+interface SmartFilterDropdownProps {
   label: string;
-  badge?: number;
-  children: React.ReactNode;
-  isActive: boolean;
-}) {
+  icon: React.ReactNode;
+  options: { value: string; label: string; meta?: string }[];
+  selected: string[];
+  onSelectionChange: (selected: string[]) => void;
+  emptyMessage?: string;
+}
+
+function SmartFilterDropdown({ label, icon, options, selected, onSelectionChange, emptyMessage }: SmartFilterDropdownProps) {
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
   const ref = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+        setSearch('');
+      }
     };
     if (open) document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
+  useEffect(() => {
+    if (open && searchRef.current) {
+      setTimeout(() => searchRef.current?.focus(), 50);
+    }
+  }, [open]);
+
+  const filtered = useMemo(() => {
+    if (!search.trim()) return options;
+    const q = search.toLowerCase();
+    return options.filter(o => o.label.toLowerCase().includes(q) || o.value.toLowerCase().includes(q));
+  }, [options, search]);
+
+  const toggle = (val: string) => {
+    const next = selected.includes(val) ? selected.filter(v => v !== val) : [...selected, val];
+    onSelectionChange(next);
+  };
+
+  const selectAll = () => onSelectionChange(filtered.map(o => o.value));
+  const selectNone = () => {
+    const filteredValues = new Set(filtered.map(o => o.value));
+    onSelectionChange(selected.filter(s => !filteredValues.has(s)));
+  };
+
+  const isActive = selected.length > 0;
+  const allFilteredSelected = filtered.length > 0 && filtered.every(o => selected.includes(o.value));
+
   return (
     <div ref={ref} className="relative">
+      {/* Trigger Button */}
       <button
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-full border transition-colors"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[13px] font-medium rounded-md border transition-all"
         style={{
           borderColor: isActive ? 'var(--wh-primary, #2563eb)' : 'var(--wh-border, #e2e8f0)',
           backgroundColor: isActive ? '#eff6ff' : 'var(--wh-surface, #fff)',
           color: isActive ? 'var(--wh-primary, #2563eb)' : 'var(--wh-text-secondary, #64748b)',
         }}
       >
-        {label}
-        {badge != null && badge > 0 && (
+        <span className="w-3.5 h-3.5 shrink-0 flex items-center justify-center">{icon}</span>
+        <span>{isActive ? `${label}` : `All ${label}`}</span>
+        {isActive && (
           <span
-            className="ml-0.5 inline-flex items-center justify-center rounded-full text-[10px] font-bold min-w-[18px] h-[18px] px-1"
-            style={{
-              backgroundColor: isActive ? 'var(--wh-primary, #2563eb)' : '#94a3b8',
-              color: '#fff',
-            }}
+            className="inline-flex items-center justify-center rounded text-[10px] font-bold min-w-[18px] h-[18px] px-1"
+            style={{ backgroundColor: 'var(--wh-primary, #2563eb)', color: '#fff' }}
           >
-            {badge}
+            {selected.length}
           </span>
         )}
-        <ChevronDown className="w-3 h-3" />
+        <ChevronDown className="w-3 h-3 ml-0.5" style={{ transform: open ? 'rotate(180deg)' : undefined, transition: 'transform 150ms' }} />
       </button>
+
+      {/* Dropdown Panel */}
       {open && (
         <div
-          className="absolute top-full left-0 mt-1 min-w-[260px] max-h-[300px] overflow-y-auto rounded-lg border bg-white"
+          className="absolute top-full left-0 mt-1 w-[300px] rounded-lg border bg-white flex flex-col"
           style={{
             zIndex: 9999,
-            boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+            boxShadow: '0 10px 40px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08)',
             borderColor: 'var(--wh-border, #e2e8f0)',
+            maxHeight: '380px',
           }}
         >
-          {children}
+          {/* Search Input */}
+          <div className="p-2 border-b" style={{ borderColor: 'var(--wh-border, #e2e8f0)' }}>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: '#94a3b8' }} />
+              <input
+                ref={searchRef}
+                type="text"
+                placeholder={`Search ${label.toLowerCase()}...`}
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-md border outline-none transition-colors"
+                style={{
+                  borderColor: 'var(--wh-border, #e2e8f0)',
+                  color: 'var(--wh-text-primary, #0f172a)',
+                  backgroundColor: '#f8fafc',
+                }}
+                onFocus={e => (e.target.style.borderColor = 'var(--wh-primary, #2563eb)')}
+                onBlur={e => (e.target.style.borderColor = 'var(--wh-border, #e2e8f0)')}
+              />
+            </div>
+          </div>
+
+          {/* Select All / None */}
+          {options.length > 0 && (
+            <div className="flex items-center justify-between px-3 py-1.5 border-b" style={{ borderColor: 'var(--wh-border, #e2e8f0)' }}>
+              <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#94a3b8' }}>
+                {filtered.length} option{filtered.length !== 1 ? 's' : ''}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={selectAll}
+                  className="text-[11px] font-medium hover:underline"
+                  style={{ color: 'var(--wh-primary, #2563eb)' }}
+                >
+                  Select all
+                </button>
+                <span style={{ color: '#cbd5e1' }}>|</span>
+                <button
+                  onClick={selectNone}
+                  className="text-[11px] font-medium hover:underline"
+                  style={{ color: '#64748b' }}
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Options List */}
+          <div className="overflow-y-auto flex-1" style={{ maxHeight: '260px' }}>
+            {filtered.length === 0 ? (
+              <div className="px-3 py-4 text-xs text-center" style={{ color: '#94a3b8' }}>
+                {emptyMessage || 'No options found'}
+              </div>
+            ) : (
+              filtered.map(opt => {
+                const isSelected = selected.includes(opt.value);
+                return (
+                  <button
+                    key={opt.value}
+                    onClick={() => toggle(opt.value)}
+                    className="flex items-center w-full px-3 py-2 text-xs transition-colors group"
+                    style={{
+                      backgroundColor: isSelected ? '#f0f7ff' : 'transparent',
+                      color: 'var(--wh-text-primary, #0f172a)',
+                    }}
+                    onMouseEnter={e => {
+                      if (!isSelected) (e.currentTarget.style.backgroundColor = '#f8fafc');
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.backgroundColor = isSelected ? '#f0f7ff' : 'transparent';
+                    }}
+                  >
+                    {/* Checkbox */}
+                    <div
+                      className="w-4 h-4 rounded border flex items-center justify-center shrink-0 mr-2.5 transition-colors"
+                      style={{
+                        borderColor: isSelected ? 'var(--wh-primary, #2563eb)' : '#cbd5e1',
+                        backgroundColor: isSelected ? 'var(--wh-primary, #2563eb)' : 'transparent',
+                      }}
+                    >
+                      {isSelected && <Check className="w-2.5 h-2.5" style={{ color: '#fff' }} />}
+                    </div>
+                    <span className="truncate flex-1 text-left font-medium">{opt.label}</span>
+                    {opt.meta && (
+                      <span className="text-[10px] shrink-0 ml-2" style={{ color: '#94a3b8' }}>
+                        {opt.meta}
+                      </span>
+                    )}
+                  </button>
+                );
+              })
+            )}
+          </div>
+
+          {/* Footer showing selected count */}
+          {selected.length > 0 && (
+            <div
+              className="px-3 py-2 border-t flex items-center justify-between"
+              style={{ borderColor: 'var(--wh-border, #e2e8f0)', backgroundColor: '#f8fafc' }}
+            >
+              <span className="text-[11px] font-medium" style={{ color: '#64748b' }}>
+                {selected.length} selected
+              </span>
+              <button
+                onClick={() => { onSelectionChange([]); setSearch(''); }}
+                className="text-[11px] font-medium hover:underline"
+                style={{ color: '#dc2626' }}
+              >
+                Clear all
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 }
+
+/* ─── Main Filters Component ──────────────────────────────────────── */
 
 export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
   const [searchInput, setSearchInput] = useState(filters.search_query || '');
@@ -85,10 +233,13 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
   const { data: statuses = [] } = useIssueStatuses();
   const { data: fixVersions = [] } = useIssueFixVersions();
 
-  const selectedTypeCount = filters.types?.length ?? 0;
-  const selectedProjectCount = filters.project_keys?.length ?? 0;
-  const selectedStatusCount = filters.statuses?.length ?? 0;
-  const selectedReleaseCount = filters.fix_version_names?.length ?? 0;
+  const projectOptions = useMemo(() => projectKeys.map(pk => ({ value: pk, label: pk })), [projectKeys]);
+  const typeOptions = useMemo(() => issueTypes.map(t => ({ value: t, label: t })), [issueTypes]);
+  const statusOptions = useMemo(() => statuses.map(s => ({ value: s, label: s })), [statuses]);
+  const releaseOptions = useMemo(
+    () => fixVersions.map(v => ({ value: v.name, label: v.name, meta: v.releaseDate || undefined })),
+    [fixVersions]
+  );
 
   const handleSearch = (val: string) => {
     setSearchInput(val);
@@ -98,169 +249,107 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
     }, 300);
   };
 
-  const toggleArrayFilter = (key: keyof WorkItemFilterConfig, val: string) => {
+  const updateFilter = useCallback((key: keyof WorkItemFilterConfig, values: string[]) => {
+    onChange({ ...filters, [key]: values.length ? values : undefined });
+  }, [filters, onChange]);
+
+  const selectedProjects = filters.project_keys || [];
+  const selectedTypes = filters.types || [];
+  const selectedStatuses = filters.statuses || [];
+  const selectedReleases = filters.fix_version_names || [];
+
+  const hasAnyFilter = selectedProjects.length > 0 || selectedTypes.length > 0 || selectedStatuses.length > 0 || selectedReleases.length > 0 || !!filters.search_query;
+
+  const totalActive = selectedProjects.length + selectedTypes.length + selectedStatuses.length + selectedReleases.length;
+
+  const removeChip = (key: keyof WorkItemFilterConfig, val: string) => {
     const current = (filters[key] as string[]) || [];
-    const next = current.includes(val) ? current.filter(v => v !== val) : [...current, val];
+    const next = current.filter(v => v !== val);
     onChange({ ...filters, [key]: next.length ? next : undefined });
   };
 
-  const hasAnyFilter = selectedTypeCount > 0 || selectedProjectCount > 0 || selectedStatusCount > 0 || selectedReleaseCount > 0 || !!filters.search_query;
-
   return (
-    <div className="space-y-3">
-      {/* Row 1: Filter dropdowns */}
+    <div className="space-y-2">
+      {/* Row 1: Filter dropdowns + search */}
       <div className="flex items-center gap-2 flex-wrap">
-        {/* Projects */}
-        <FilterDropdown
-          label={selectedProjectCount > 0 ? `${selectedProjectCount} Project${selectedProjectCount !== 1 ? 's' : ''}` : 'All Projects'}
-          badge={selectedProjectCount > 0 ? selectedProjectCount : undefined}
-          isActive={selectedProjectCount > 0}
-        >
-          {projectKeys.map(pk => (
-            <button
-              key={pk}
-              onClick={() => toggleArrayFilter('project_keys', pk)}
-              className="flex items-center justify-between w-full px-3 py-2 text-xs hover:bg-slate-50 transition-colors"
-              style={{ color: 'var(--wh-text-primary, #0f172a)' }}
-            >
-              <span className="font-semibold">{pk}</span>
-              {filters.project_keys?.includes(pk) && <Check className="w-3.5 h-3.5" style={{ color: 'var(--wh-primary, #2563eb)' }} />}
-            </button>
-          ))}
-        </FilterDropdown>
-
-        {/* Issue Types */}
-        <FilterDropdown
-          label={selectedTypeCount > 0 ? `${selectedTypeCount} Type${selectedTypeCount !== 1 ? 's' : ''}` : 'All Types'}
-          badge={selectedTypeCount > 0 ? selectedTypeCount : undefined}
-          isActive={selectedTypeCount > 0}
-        >
-          {issueTypes.map(t => (
-            <button
-              key={t}
-              onClick={() => toggleArrayFilter('types', t)}
-              className="flex items-center justify-between w-full px-3 py-2 text-xs hover:bg-slate-50 transition-colors"
-              style={{ color: 'var(--wh-text-primary, #0f172a)' }}
-            >
-              <span>{t}</span>
-              {filters.types?.includes(t) && <Check className="w-3.5 h-3.5" style={{ color: 'var(--wh-primary, #2563eb)' }} />}
-            </button>
-          ))}
-        </FilterDropdown>
-
-        {/* Statuses */}
-        <FilterDropdown
-          label={selectedStatusCount > 0 ? `${selectedStatusCount} Status${selectedStatusCount !== 1 ? 'es' : ''}` : 'All Statuses'}
-          badge={selectedStatusCount > 0 ? selectedStatusCount : undefined}
-          isActive={selectedStatusCount > 0}
-        >
-          {statuses.map(s => (
-            <button
-              key={s}
-              onClick={() => toggleArrayFilter('statuses', s)}
-              className="flex items-center justify-between w-full px-3 py-2 text-xs hover:bg-slate-50 transition-colors"
-              style={{ color: 'var(--wh-text-primary, #0f172a)' }}
-            >
-              <span>{s}</span>
-              {filters.statuses?.includes(s) && <Check className="w-3.5 h-3.5" style={{ color: 'var(--wh-primary, #2563eb)' }} />}
-            </button>
-          ))}
-        </FilterDropdown>
-
-        {/* Releases (Fix Versions) */}
-        <FilterDropdown
-          label={selectedReleaseCount > 0 ? `${selectedReleaseCount} Release${selectedReleaseCount !== 1 ? 's' : ''}` : 'All Releases'}
-          badge={selectedReleaseCount > 0 ? selectedReleaseCount : undefined}
-          isActive={selectedReleaseCount > 0}
-        >
-          {fixVersions.length === 0 ? (
-            <div className="px-3 py-3 text-xs italic" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
-              No fix versions found in synced data
-            </div>
-          ) : (
-            fixVersions.map(v => (
-              <button
-                key={v.name}
-                onClick={() => toggleArrayFilter('fix_version_names', v.name)}
-                className="flex items-center justify-between w-full px-3 py-2 text-xs hover:bg-slate-50 transition-colors"
-                style={{ color: 'var(--wh-text-primary, #0f172a)' }}
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <Milestone className="w-3.5 h-3.5 shrink-0" style={{ color: '#059669' }} />
-                  <span className="truncate">{v.name}</span>
-                  {v.releaseDate && (
-                    <span className="text-[10px] shrink-0" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
-                      {v.releaseDate}
-                    </span>
-                  )}
-                </div>
-                {filters.fix_version_names?.includes(v.name) && <Check className="w-3.5 h-3.5 shrink-0 ml-1" style={{ color: 'var(--wh-primary, #2563eb)' }} />}
-              </button>
-            ))
+        {/* Filter icon */}
+        <div className="flex items-center gap-1.5 mr-1">
+          <Filter className="w-4 h-4" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }} />
+          {totalActive > 0 && (
+            <span className="text-[11px] font-semibold" style={{ color: 'var(--wh-primary, #2563eb)' }}>
+              {totalActive}
+            </span>
           )}
-        </FilterDropdown>
+        </div>
+
+        <SmartFilterDropdown
+          label="Projects"
+          icon={<FolderGit2 className="w-3.5 h-3.5" />}
+          options={projectOptions}
+          selected={selectedProjects}
+          onSelectionChange={vals => updateFilter('project_keys', vals)}
+          emptyMessage="No projects found in synced data"
+        />
+
+        <SmartFilterDropdown
+          label="Types"
+          icon={<Layers className="w-3.5 h-3.5" />}
+          options={typeOptions}
+          selected={selectedTypes}
+          onSelectionChange={vals => updateFilter('types', vals)}
+          emptyMessage="No issue types found"
+        />
+
+        <SmartFilterDropdown
+          label="Statuses"
+          icon={<Activity className="w-3.5 h-3.5" />}
+          options={statusOptions}
+          selected={selectedStatuses}
+          onSelectionChange={vals => updateFilter('statuses', vals)}
+          emptyMessage="No statuses found"
+        />
+
+        <SmartFilterDropdown
+          label="Releases"
+          icon={<Milestone className="w-3.5 h-3.5" />}
+          options={releaseOptions}
+          selected={selectedReleases}
+          onSelectionChange={vals => updateFilter('fix_version_names', vals)}
+          emptyMessage="No fix versions found in synced data"
+        />
 
         <div className="flex-1" />
 
         {hasAnyFilter && (
           <button
-            onClick={() => {
-              onChange({});
-              setSearchInput('');
-            }}
-            className="flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-full hover:bg-red-50 transition-colors"
-            style={{ color: '#dc2626' }}
+            onClick={() => { onChange({}); setSearchInput(''); }}
+            className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-md border transition-colors"
+            style={{ borderColor: '#fecaca', color: '#dc2626', backgroundColor: '#fef2f2' }}
           >
             <X className="w-3 h-3" /> Clear all
           </button>
         )}
       </div>
 
-      {/* Selected project chips */}
-      {selectedProjectCount > 0 && (
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <FolderGit2 className="w-3.5 h-3.5" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }} />
-          <span className="text-[11px] font-medium" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
-            Projects:
-          </span>
-          {filters.project_keys!.map(pk => (
-            <span
-              key={pk}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold"
-              style={{ backgroundColor: '#eff6ff', color: '#2563eb', border: '1px solid #bfdbfe' }}
-            >
-              {pk}
-              <button onClick={() => toggleArrayFilter('project_keys', pk)} className="hover:text-red-500">
-                <X className="w-2.5 h-2.5" />
-              </button>
-            </span>
+      {/* Row 2: Selected filter chips */}
+      {totalActive > 0 && (
+        <div className="flex items-center gap-1.5 flex-wrap pl-7">
+          {selectedProjects.map(pk => (
+            <FilterChip key={`p-${pk}`} label={pk} color="#2563eb" bgColor="#eff6ff" borderColor="#bfdbfe" onRemove={() => removeChip('project_keys', pk)} />
+          ))}
+          {selectedTypes.map(t => (
+            <FilterChip key={`t-${t}`} label={t} color="#7c3aed" bgColor="#f5f3ff" borderColor="#ddd6fe" onRemove={() => removeChip('types', t)} />
+          ))}
+          {selectedStatuses.map(s => (
+            <FilterChip key={`s-${s}`} label={s} color="#0891b2" bgColor="#ecfeff" borderColor="#a5f3fc" onRemove={() => removeChip('statuses', s)} />
+          ))}
+          {selectedReleases.map(r => (
+            <FilterChip key={`r-${r}`} label={r} color="#059669" bgColor="#ecfdf5" borderColor="#a7f3d0" onRemove={() => removeChip('fix_version_names', r)} />
           ))}
         </div>
       )}
 
-      {/* Selected release chips */}
-      {selectedReleaseCount > 0 && (
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <Milestone className="w-3.5 h-3.5" style={{ color: '#059669' }} />
-          <span className="text-[11px] font-medium" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
-            Releases:
-          </span>
-          {filters.fix_version_names!.map(name => (
-            <span
-              key={name}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold"
-              style={{ backgroundColor: '#ecfdf5', color: '#059669', border: '1px solid #a7f3d0' }}
-            >
-              {name}
-              <button onClick={() => toggleArrayFilter('fix_version_names', name)} className="hover:text-red-500">
-                <X className="w-2.5 h-2.5" />
-              </button>
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Search */}
+      {/* Row 3: Search */}
       <div className="relative">
         <Search
           className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
@@ -283,5 +372,23 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
         />
       </div>
     </div>
+  );
+}
+
+/* ─── Filter Chip ─────────────────────────────────────────────────── */
+
+function FilterChip({ label, color, bgColor, borderColor, onRemove }: {
+  label: string; color: string; bgColor: string; borderColor: string; onRemove: () => void;
+}) {
+  return (
+    <span
+      className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold transition-colors"
+      style={{ backgroundColor: bgColor, color, border: `1px solid ${borderColor}` }}
+    >
+      {label}
+      <button onClick={onRemove} className="hover:opacity-70 transition-opacity">
+        <X className="w-2.5 h-2.5" />
+      </button>
+    </span>
   );
 }
