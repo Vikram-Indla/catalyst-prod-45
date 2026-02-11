@@ -181,7 +181,7 @@ export default function TestSetDetailPage() {
                   <Checkbox checked={selectedIds.has(tc.id)} onCheckedChange={ch => toggle(tc.id, ch as boolean)} />
                   <span className="text-sm font-mono text-primary">{tc.case_key}</span>
                   <span className="text-sm text-foreground truncate">{tc.title}</span>
-                  <Badge variant="outline" className={cn('text-[10px] capitalize w-fit', priorityColors[tc.priority])}>{tc.priority}</Badge>
+                  <Badge variant="outline" className={cn('text-[10px] capitalize w-fit', priorityColors[(tc.priority?.name || '').toLowerCase()])}>{tc.priority?.name || '-'}</Badge>
                   <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => navigate(`/testhub/repository?view=${tc.id}`)}>
                     <ExternalLink className="h-4 w-4" />
                   </Button>
