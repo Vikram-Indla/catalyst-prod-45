@@ -1,6 +1,7 @@
 /**
  * WorkHub Work Items — TanStack Query Hooks
  * Reads from wh_issues (real Jira-synced data) with server-side pagination
+ * Supports hierarchy tree view (Epic → Story → Sub-task)
  */
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
@@ -18,6 +19,7 @@ export interface JiraIssue {
   assignee_account_id: string | null;
   assignee_display_name: string | null;
   parent_key: string | null;
+  parent_summary: string | null;
   hierarchy_level: number;
   fix_versions: any[];
   due_date: string | null;
@@ -32,6 +34,20 @@ export interface JiraIssue {
   jira_created_at: string | null;
   jira_updated_at: string | null;
   synced_at: string | null;
+  type_icon_url: string | null;
+  description_adf: any | null;
+  description_text: string | null;
+  comments: JiraComment[];
+  changelog: any[];
+}
+
+export interface JiraComment {
+  id: string;
+  author: string;
+  authorAvatar: string | null;
+  body: string;
+  created: string;
+  updated: string;
 }
 
 export interface WorkItemFilterConfig {
@@ -45,6 +61,14 @@ export interface WorkItemFilterConfig {
 export interface PaginationConfig {
   page: number;
   pageSize: number;
+}
+
+/** A tree node wrapping a JiraIssue */
+export interface WorkItemTreeNode {
+  item: JiraIssue;
+  children: WorkItemTreeNode[];
+  depth: number;
+  isExpanded?: boolean;
 }
 
 const QUERY_OPTIONS = { staleTime: 30_000, refetchInterval: 60_000 };
@@ -67,7 +91,61 @@ function buildFilteredQuery(
 }
 
 /**
- * Paginated work items from wh_issues with server-side count.
+ * Build a hierarchy tree from flat items.
+ * Items are sorted by jira_updated_at DESC.
+ */
+export function buildTree(items: JiraIssue[]): WorkItemTreeNode[] {
+  const map = new Map<string, WorkItemTreeNode>();
+  const roots: WorkItemTreeNode[] = [];
+
+  // Create nodes
+  items.forEach(item => {
+    map.set(item.issue_key, { item, children: [], depth: 0 });
+  });
+
+  // Link children to parents
+  items.forEach(item => {
+    const node = map.get(item.issue_key)!;
+    if (item.parent_key && map.has(item.parent_key)) {
+      const parent = map.get(item.parent_key)!;
+      node.depth = parent.depth + 1;
+      parent.children.push(node);
+    } else {
+      roots.push(node);
+    }
+  });
+
+  // Sort children by updated date desc
+  const sortChildren = (nodes: WorkItemTreeNode[]) => {
+    nodes.sort((a, b) => {
+      const aDate = a.item.jira_updated_at || '';
+      const bDate = b.item.jira_updated_at || '';
+      return bDate.localeCompare(aDate);
+    });
+    nodes.forEach(n => sortChildren(n.children));
+  };
+
+  sortChildren(roots);
+  return roots;
+}
+
+/** Flatten tree into display order */
+export function flattenTree(nodes: WorkItemTreeNode[], expandedKeys: Set<string>): WorkItemTreeNode[] {
+  const result: WorkItemTreeNode[] = [];
+  const walk = (list: WorkItemTreeNode[]) => {
+    list.forEach(node => {
+      result.push(node);
+      if (node.children.length > 0 && expandedKeys.has(node.item.issue_key)) {
+        walk(node.children);
+      }
+    });
+  };
+  walk(nodes);
+  return result;
+}
+
+/**
+ * Paginated work items from wh_issues sorted by jira_updated_at DESC.
  */
 export function useWorkItems(
   filters?: Partial<WorkItemFilterConfig>,
@@ -85,8 +163,7 @@ export function useWorkItems(
       let q = supabase
         .from('wh_issues')
         .select('*', { count: 'exact' })
-        .order('project_key')
-        .order('issue_key')
+        .order('jira_updated_at', { ascending: false })
         .range(from, to);
 
       q = buildFilteredQuery(q, filters);
@@ -95,7 +172,7 @@ export function useWorkItems(
       if (error) throw new Error(error.message);
 
       return {
-        items: (data ?? []) as JiraIssue[],
+        items: (data ?? []) as unknown as JiraIssue[],
         totalCount: count ?? 0,
         page,
         pageSize,
@@ -118,8 +195,6 @@ export function useIssueProjectKeys() {
         .order('project_key');
 
       if (error) throw new Error(error.message);
-
-      // Deduplicate
       const keys = [...new Set((data ?? []).map(d => d.project_key))];
       return keys;
     },
@@ -138,7 +213,6 @@ export function useIssueTypes() {
         .order('issue_type');
 
       if (error) throw new Error(error.message);
-
       const types = [...new Set((data ?? []).map(d => d.issue_type))];
       return types;
     },
@@ -157,7 +231,6 @@ export function useIssueStatuses() {
         .order('status');
 
       if (error) throw new Error(error.message);
-
       const statuses = [...new Set((data ?? []).map(d => d.status))];
       return statuses;
     },

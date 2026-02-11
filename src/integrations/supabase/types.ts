@@ -34971,7 +34971,11 @@ export type Database = {
         Row: {
           assignee_account_id: string | null
           assignee_display_name: string | null
+          changelog: Json | null
+          comments: Json | null
           components: Json | null
+          description_adf: Json | null
+          description_text: string | null
           due_date: string | null
           effective_due_date: string | null
           effective_due_source: string | null
@@ -34983,6 +34987,7 @@ export type Database = {
           jira_updated_at: string | null
           labels: Json | null
           parent_key: string | null
+          parent_summary: string | null
           priority: string | null
           project_key: string
           raw_json: Json | null
@@ -34993,11 +34998,16 @@ export type Database = {
           story_points: number | null
           summary: string
           synced_at: string | null
+          type_icon_url: string | null
         }
         Insert: {
           assignee_account_id?: string | null
           assignee_display_name?: string | null
+          changelog?: Json | null
+          comments?: Json | null
           components?: Json | null
+          description_adf?: Json | null
+          description_text?: string | null
           due_date?: string | null
           effective_due_date?: string | null
           effective_due_source?: string | null
@@ -35009,6 +35019,7 @@ export type Database = {
           jira_updated_at?: string | null
           labels?: Json | null
           parent_key?: string | null
+          parent_summary?: string | null
           priority?: string | null
           project_key: string
           raw_json?: Json | null
@@ -35019,11 +35030,16 @@ export type Database = {
           story_points?: number | null
           summary?: string
           synced_at?: string | null
+          type_icon_url?: string | null
         }
         Update: {
           assignee_account_id?: string | null
           assignee_display_name?: string | null
+          changelog?: Json | null
+          comments?: Json | null
           components?: Json | null
+          description_adf?: Json | null
+          description_text?: string | null
           due_date?: string | null
           effective_due_date?: string | null
           effective_due_source?: string | null
@@ -35035,6 +35051,7 @@ export type Database = {
           jira_updated_at?: string | null
           labels?: Json | null
           parent_key?: string | null
+          parent_summary?: string | null
           priority?: string | null
           project_key?: string
           raw_json?: Json | null
@@ -35045,6 +35062,7 @@ export type Database = {
           story_points?: number | null
           summary?: string
           synced_at?: string | null
+          type_icon_url?: string | null
         }
         Relationships: []
       }

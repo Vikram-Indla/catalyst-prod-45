@@ -92,7 +92,7 @@ serve(async (req) => {
     // 4. Fetch issues with pagination using /search/jql (new Jira Cloud endpoint)
     let allIssues: any[] = []
     const maxResults = 100
-    const fields = ['summary','status','assignee','issuetype','parent','fixVersions','duedate','labels','components','priority','created','updated','resolution','customfield_10016']
+    const fields = ['summary','status','assignee','issuetype','parent','fixVersions','duedate','labels','components','priority','created','updated','resolution','customfield_10016','description','comment']
 
     console.log(`[sync] JQL: ${jql}`)
     console.log(`[sync] Projects: ${includedProjects.join(', ')}`)
@@ -145,33 +145,64 @@ serve(async (req) => {
       return 2
     }
 
+    // Helper: convert Jira ADF (Atlassian Document Format) to plain text
+    function adfToPlainText(node: any): string {
+      if (!node) return ''
+      if (typeof node === 'string') return node
+      if (node.type === 'text') return node.text || ''
+      if (node.content && Array.isArray(node.content)) {
+        return node.content.map(adfToPlainText).join(node.type === 'paragraph' ? '\n' : '')
+      }
+      return ''
+    }
+
     // 7. Transform and upsert issues
-    const rows = allIssues.map((issue: any) => ({
-      issue_key: issue.key,
-      project_key: issue.key.split('-')[0],
-      issue_type: issue.fields.issuetype?.name || 'Task',
-      summary: issue.fields.summary || '',
-      status: issue.fields.status?.name || 'To Do',
-      status_category: mapStatusCategory(issue.fields.status?.name || 'To Do'),
-      assignee_account_id: issue.fields.assignee?.accountId || null,
-      assignee_display_name: issue.fields.assignee?.displayName || null,
-      parent_key: issue.fields.parent?.key || null,
-      hierarchy_level: getHierarchyLevel(issue.fields.issuetype?.name || 'Task'),
-      fix_versions: (issue.fields.fixVersions || []).map((v: any) => ({
-        id: v.id, name: v.name, releaseDate: v.releaseDate
-      })),
-      due_date: issue.fields.duedate || null,
-      labels: issue.fields.labels || [],
-      components: (issue.fields.components || []).map((c: any) => c.name),
-      priority: issue.fields.priority?.name || 'Medium',
-      story_points: issue.fields.customfield_10016 || null,
-      sprint_name: null,
-      resolution: issue.fields.resolution?.name || null,
-      jira_created_at: issue.fields.created,
-      jira_updated_at: issue.fields.updated,
-      synced_at: new Date().toISOString(),
-      raw_json: issue,
-    }))
+    const rows = allIssues.map((issue: any) => {
+      const descAdf = issue.fields.description || null
+      const descText = descAdf ? adfToPlainText(descAdf) : null
+      const rawComments = issue.fields.comment?.comments || []
+      const comments = rawComments.slice(-20).map((c: any) => ({
+        id: c.id,
+        author: c.author?.displayName || 'Unknown',
+        authorAvatar: c.author?.avatarUrls?.['24x24'] || null,
+        body: c.body ? adfToPlainText(c.body) : '',
+        created: c.created,
+        updated: c.updated,
+      }))
+
+      return {
+        issue_key: issue.key,
+        project_key: issue.key.split('-')[0],
+        issue_type: issue.fields.issuetype?.name || 'Task',
+        summary: issue.fields.summary || '',
+        status: issue.fields.status?.name || 'To Do',
+        status_category: mapStatusCategory(issue.fields.status?.name || 'To Do'),
+        assignee_account_id: issue.fields.assignee?.accountId || null,
+        assignee_display_name: issue.fields.assignee?.displayName || null,
+        parent_key: issue.fields.parent?.key || null,
+        parent_summary: issue.fields.parent?.fields?.summary || null,
+        hierarchy_level: getHierarchyLevel(issue.fields.issuetype?.name || 'Task'),
+        fix_versions: (issue.fields.fixVersions || []).map((v: any) => ({
+          id: v.id, name: v.name, releaseDate: v.releaseDate
+        })),
+        due_date: issue.fields.duedate || null,
+        labels: issue.fields.labels || [],
+        components: (issue.fields.components || []).map((c: any) => c.name),
+        priority: issue.fields.priority?.name || 'Medium',
+        story_points: issue.fields.customfield_10016 || null,
+        sprint_name: null,
+        resolution: issue.fields.resolution?.name || null,
+        jira_created_at: issue.fields.created,
+        jira_updated_at: issue.fields.updated,
+        synced_at: new Date().toISOString(),
+        type_icon_url: issue.fields.issuetype?.iconUrl || null,
+        description_adf: descAdf,
+        description_text: descText,
+        comments,
+        changelog: [],
+        raw_json: issue,
+      }
+    })
 
     // Batch upsert (chunks of 500)
     let upsertedCount = 0
