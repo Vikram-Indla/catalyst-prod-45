@@ -15,6 +15,8 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { CatalystLoginPage } from "./components/auth/login";
 // Caty AI chatbot - FAB icon only, functionality unhooked
 import { CatyFabPlaceholder } from "./components/caty/CatyFabPlaceholder";
+// QA Assistant - TestHub AI FAB
+import { QAAssistantFab } from "./components/testhub-ai";
 // Jira test pages removed - AtlasKit migration complete
 import SlackOAuthCallback from "./pages/SlackOAuthCallback";
 import BrowsePage from "./pages/BrowsePage";
@@ -386,6 +388,14 @@ function CatyWidgetRouteGuard() {
   const isCapacityPlannerRoute = location.pathname.startsWith('/enterprise/capacity');
   if (!isCapacityPlannerRoute) return null;
   return <CatyFabPlaceholder />;
+}
+
+// QA Assistant FAB on TestHub routes
+function QAAssistantRouteGuard() {
+  const location = useLocation();
+  const isTestHubRoute = location.pathname.startsWith('/testhub');
+  if (!isTestHubRoute) return null;
+  return <QAAssistantFab />;
 }
 
 const App = () => (
@@ -1098,6 +1108,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
             </Routes>
               <CatyWidgetRouteGuard />
+              <QAAssistantRouteGuard />
           </BrowserRouter>
         </TooltipProvider>
       </CatalystToastProvider>
