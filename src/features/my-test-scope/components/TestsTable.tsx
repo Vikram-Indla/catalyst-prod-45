@@ -1,15 +1,24 @@
 /**
  * Tests Table Component
- * Sortable, filterable table of assigned test cases
+ * Sortable, filterable table of assigned test cases with quick actions
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { Play, RotateCcw, ExternalLink, ArrowUpDown } from 'lucide-react';
+import { Play, RotateCcw, ExternalLink, ArrowUpDown, Check, X, Ban, Unlock } from 'lucide-react';
 import { PriorityScoreBadge } from './PriorityScoreBadge';
 import { formatDueDate } from '../utils/priorityScore';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import type { TestAssignment, TestScopeFilters } from '../types';
 
 interface TestsTableProps {
@@ -18,6 +27,10 @@ interface TestsTableProps {
   onFiltersChange: (filters: TestScopeFilters) => void;
   onExecute: (scopeId: string) => void;
   onViewDetails: (testId: string) => void;
+  onQuickPass?: (scopeId: string) => void;
+  onQuickFail?: (scopeId: string, reason: string) => void;
+  onQuickBlock?: (scopeId: string, reason: string) => void;
+  onUnblock?: (scopeId: string) => void;
 }
 
 const STATUS_CONFIG = {
@@ -34,13 +47,27 @@ const URGENCY_CONFIG = {
   on_track: { className: 'text-muted-foreground' },
 };
 
-export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewDetails }: TestsTableProps) {
+export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewDetails, onQuickPass, onQuickFail, onQuickBlock, onUnblock }: TestsTableProps) {
+  const [reasonModal, setReasonModal] = useState<{ scopeId: string; type: 'fail' | 'block' } | null>(null);
+  const [reason, setReason] = useState('');
+
   const handleSort = (field: TestScopeFilters['sortBy']) => {
     onFiltersChange({
       ...filters,
       sortBy: field,
       sortOrder: filters.sortBy === field && filters.sortOrder === 'desc' ? 'asc' : 'desc',
     });
+  };
+
+  const handleReasonSubmit = () => {
+    if (!reasonModal || !reason.trim()) return;
+    if (reasonModal.type === 'fail') {
+      onQuickFail?.(reasonModal.scopeId, reason.trim());
+    } else {
+      onQuickBlock?.(reasonModal.scopeId, reason.trim());
+    }
+    setReasonModal(null);
+    setReason('');
   };
 
   // Apply sorting
@@ -85,113 +112,212 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead>
-          <tr className="border-b border-border">
-            <th className="text-left py-3 px-4">
-              <button 
-                className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
-                onClick={() => handleSort('score')}
-              >
-                Score
-                <ArrowUpDown className="h-3 w-3" />
-              </button>
-            </th>
-            <th className="text-left py-3 px-4">
-              <button 
-                className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
-                onClick={() => handleSort('status')}
-              >
-                Status
-                <ArrowUpDown className="h-3 w-3" />
-              </button>
-            </th>
-            <th className="text-left py-3 px-4 min-w-[300px]">
-              <span className="text-xs font-medium text-muted-foreground">Test Case</span>
-            </th>
-            <th className="text-left py-3 px-4">
-              <span className="text-xs font-medium text-muted-foreground">Cycle</span>
-            </th>
-            <th className="text-left py-3 px-4">
-              <button 
-                className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
-                onClick={() => handleSort('dueDate')}
-              >
-                Due
-                <ArrowUpDown className="h-3 w-3" />
-              </button>
-            </th>
-            <th className="text-right py-3 px-4">
-              <span className="text-xs font-medium text-muted-foreground">Action</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredTests.map((test) => {
-            const statusConfig = STATUS_CONFIG[test.status];
-            const urgencyConfig = URGENCY_CONFIG[test.urgency];
-            
-            return (
-              <tr 
-                key={test.scopeId} 
-                className="border-b border-border hover:bg-muted/50 transition-colors"
-              >
-                <td className="py-3 px-4">
-                  <PriorityScoreBadge score={test.priorityScore} />
-                </td>
-                <td className="py-3 px-4">
-                  <Badge variant="secondary" className={cn('text-xs', statusConfig.className)}>
-                    {statusConfig.label}
-                  </Badge>
-                </td>
-                <td className="py-3 px-4">
-                  <div className="flex flex-col">
-                    <span className="font-medium text-foreground">{test.key}</span>
-                    <span className="text-sm text-muted-foreground line-clamp-1">{test.title}</span>
-                  </div>
-                </td>
-                <td className="py-3 px-4">
-                  <span className="text-sm text-muted-foreground">{test.cycleName}</span>
-                </td>
-                <td className="py-3 px-4">
-                  <span className={cn('text-sm', urgencyConfig.className)}>
-                    {formatDueDate(test.dueDate)}
-                  </span>
-                </td>
-                <td className="py-3 px-4 text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onViewDetails(test.id)}
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={() => onExecute(test.scopeId)}
-                    >
-                      {test.status === 'failed' ? (
-                        <>
-                          <RotateCcw className="h-4 w-4 mr-1" />
-                          Re-run
-                        </>
+    <>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-border">
+              <th className="text-left py-3 px-4">
+                <button 
+                  className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+                  onClick={() => handleSort('score')}
+                >
+                  Score
+                  <ArrowUpDown className="h-3 w-3" />
+                </button>
+              </th>
+              <th className="text-left py-3 px-4">
+                <button 
+                  className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+                  onClick={() => handleSort('status')}
+                >
+                  Status
+                  <ArrowUpDown className="h-3 w-3" />
+                </button>
+              </th>
+              <th className="text-left py-3 px-4 min-w-[300px]">
+                <span className="text-xs font-medium text-muted-foreground">Test Case</span>
+              </th>
+              <th className="text-left py-3 px-4">
+                <span className="text-xs font-medium text-muted-foreground">Cycle</span>
+              </th>
+              <th className="text-left py-3 px-4">
+                <button 
+                  className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+                  onClick={() => handleSort('dueDate')}
+                >
+                  Due
+                  <ArrowUpDown className="h-3 w-3" />
+                </button>
+              </th>
+              <th className="text-center py-3 px-4">
+                <span className="text-xs font-medium text-muted-foreground">Quick</span>
+              </th>
+              <th className="text-right py-3 px-4">
+                <span className="text-xs font-medium text-muted-foreground">Action</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredTests.map((test) => {
+              const statusConfig = STATUS_CONFIG[test.status];
+              const urgencyConfig = URGENCY_CONFIG[test.urgency];
+              
+              return (
+                <tr 
+                  key={test.scopeId} 
+                  className="border-b border-border hover:bg-muted/50 transition-colors"
+                >
+                  <td className="py-3 px-4">
+                    <PriorityScoreBadge score={test.priorityScore} />
+                  </td>
+                  <td className="py-3 px-4">
+                    <Badge variant="secondary" className={cn('text-xs', statusConfig.className)}>
+                      {statusConfig.label}
+                    </Badge>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="flex flex-col">
+                      <span className="font-medium text-foreground">{test.key}</span>
+                      <span className="text-sm text-muted-foreground line-clamp-1">{test.title}</span>
+                    </div>
+                  </td>
+                  <td className="py-3 px-4">
+                    <span className="text-sm text-muted-foreground">{test.cycleName}</span>
+                  </td>
+                  <td className="py-3 px-4">
+                    <span className={cn('text-sm', urgencyConfig.className)}>
+                      {formatDueDate(test.dueDate)}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="flex items-center justify-center gap-0.5">
+                      {test.status === 'blocked' ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                              onClick={() => onUnblock?.(test.scopeId)}
+                            >
+                              <Unlock className="h-3.5 w-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Unblock</TooltipContent>
+                        </Tooltip>
                       ) : (
                         <>
-                          <Play className="h-4 w-4 mr-1" />
-                          Execute
+                          {test.status !== 'passed' && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-success hover:text-success hover:bg-success/10"
+                                  onClick={() => onQuickPass?.(test.scopeId)}
+                                >
+                                  <Check className="h-3.5 w-3.5" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Quick Pass</TooltipContent>
+                            </Tooltip>
+                          )}
+                          {test.status !== 'failed' && (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                  onClick={() => setReasonModal({ scopeId: test.scopeId, type: 'fail' })}
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Quick Fail</TooltipContent>
+                            </Tooltip>
+                          )}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-warning hover:text-warning hover:bg-warning/10"
+                                onClick={() => setReasonModal({ scopeId: test.scopeId, type: 'block' })}
+                              >
+                                <Ban className="h-3.5 w-3.5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Block</TooltipContent>
+                          </Tooltip>
                         </>
                       )}
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+                    </div>
+                  </td>
+                  <td className="py-3 px-4 text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onViewDetails(test.id)}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => onExecute(test.scopeId)}
+                      >
+                        {test.status === 'failed' ? (
+                          <>
+                            <RotateCcw className="h-4 w-4 mr-1" />
+                            Re-run
+                          </>
+                        ) : (
+                          <>
+                            <Play className="h-4 w-4 mr-1" />
+                            Execute
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Reason Modal for Fail/Block */}
+      <Dialog open={!!reasonModal} onOpenChange={() => { setReasonModal(null); setReason(''); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {reasonModal?.type === 'fail' ? 'Fail Reason' : 'Block Reason'}
+            </DialogTitle>
+          </DialogHeader>
+          <Textarea
+            placeholder={reasonModal?.type === 'fail' ? 'Describe why this test failed...' : 'Describe what is blocking this test...'}
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            rows={4}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setReasonModal(null); setReason(''); }}>
+              Cancel
+            </Button>
+            <Button
+              variant={reasonModal?.type === 'fail' ? 'destructive' : 'default'}
+              onClick={handleReasonSubmit}
+              disabled={!reason.trim()}
+            >
+              {reasonModal?.type === 'fail' ? 'Mark as Failed' : 'Mark as Blocked'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
