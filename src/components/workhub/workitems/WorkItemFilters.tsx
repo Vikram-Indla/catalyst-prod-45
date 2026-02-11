@@ -53,7 +53,7 @@ function FilterDropdown({ label, children, isActive }: { label: string; children
         <div
           className="absolute top-full left-0 mt-1 min-w-[200px] max-h-[240px] overflow-y-auto rounded-lg border bg-white"
           style={{
-            zIndex: 'var(--wh-z-dropdown)',
+            zIndex: 9999,
             boxShadow: 'var(--wh-shadow-lg)',
             borderColor: 'var(--wh-border)',
           }}
