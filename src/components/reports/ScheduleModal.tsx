@@ -26,8 +26,16 @@ const TIMEZONES = [
 export function ScheduleModal({ open, onClose, reportId, reportName, existingSchedule }: ScheduleModalProps) {
   const createSchedule = useCreateSchedule();
   const updateSchedule = useUpdateSchedule();
-  const [config, setConfig] = useState({
-    frequency: existingSchedule?.frequency || 'weekly',
+  const [config, setConfig] = useState<{
+    frequency: 'daily' | 'weekly' | 'monthly';
+    day_of_week: number;
+    day_of_month: number;
+    time_of_day: string;
+    timezone: string;
+    export_format: string;
+    recipients: Array<{ email: string; name?: string }>;
+  }>({
+    frequency: (existingSchedule?.frequency || 'weekly') as 'daily' | 'weekly' | 'monthly',
     day_of_week: existingSchedule?.day_of_week ?? 1,
     day_of_month: existingSchedule?.day_of_month ?? 1,
     time_of_day: existingSchedule?.time_of_day || '09:00',
@@ -71,7 +79,7 @@ export function ScheduleModal({ open, onClose, reportId, reportName, existingSch
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">Automatically generate and email "{reportName}"</p>
           <div className="space-y-2"><Label>Frequency</Label>
-            <Select value={config.frequency} onValueChange={v => setConfig({...config, frequency: v})}>
+            <Select value={config.frequency} onValueChange={v => setConfig({...config, frequency: v as 'daily' | 'weekly' | 'monthly'})}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent><SelectItem value="daily">Daily</SelectItem><SelectItem value="weekly">Weekly</SelectItem><SelectItem value="monthly">Monthly</SelectItem></SelectContent>
             </Select>
