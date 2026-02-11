@@ -23997,6 +23997,71 @@ export type Database = {
           },
         ]
       }
+      th_app_settings: {
+        Row: {
+          category: string | null
+          description: string | null
+          id: string
+          is_public: boolean | null
+          key: string
+          updated_at: string | null
+          updated_by: string | null
+          value: string | null
+          value_type: string | null
+        }
+        Insert: {
+          category?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          key: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value?: string | null
+          value_type?: string | null
+        }
+        Update: {
+          category?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          key?: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value?: string | null
+          value_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_app_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_app_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_app_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_app_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       th_cycle_key_sequence: {
         Row: {
           id: number
@@ -25315,6 +25380,65 @@ export type Database = {
           },
         ]
       }
+      th_saved_filters: {
+        Row: {
+          created_at: string | null
+          entity_type: string
+          filter_config: Json
+          id: string
+          is_default: boolean | null
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          entity_type: string
+          filter_config?: Json
+          id?: string
+          is_default?: boolean | null
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          entity_type?: string
+          filter_config?: Json
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       th_scheduled_reports: {
         Row: {
           created_at: string | null
@@ -26362,6 +26486,184 @@ export type Database = {
             columns: ["test_case_id"]
             isOneToOne: false
             referencedRelation: "th_test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_user_activity: {
+        Row: {
+          action: string
+          created_at: string | null
+          details: Json | null
+          entity_id: string | null
+          entity_name: string | null
+          entity_type: string | null
+          id: string
+          ip_address: unknown
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          details?: Json | null
+          entity_id?: string | null
+          entity_name?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          details?: Json | null
+          entity_id?: string | null
+          entity_name?: string | null
+          entity_type?: string | null
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_user_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_user_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_user_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_user_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_user_preferences: {
+        Row: {
+          auto_advance_on_status: boolean | null
+          confirm_status_change: boolean | null
+          created_at: string | null
+          date_format: string | null
+          default_cycle_view: string | null
+          default_landing_page: string | null
+          default_page_size: number | null
+          density: string | null
+          email_digest_frequency: string | null
+          email_on_assignment: boolean | null
+          email_on_cycle_complete: boolean | null
+          email_on_defect_update: boolean | null
+          favorite_filters: Json | null
+          id: string
+          recent_cycles: string[] | null
+          recent_test_cases: string[] | null
+          show_archived: boolean | null
+          sidebar_collapsed: boolean | null
+          theme: string | null
+          time_format: string | null
+          timezone: string | null
+          updated_at: string | null
+          user_id: string
+          week_starts_on: number | null
+        }
+        Insert: {
+          auto_advance_on_status?: boolean | null
+          confirm_status_change?: boolean | null
+          created_at?: string | null
+          date_format?: string | null
+          default_cycle_view?: string | null
+          default_landing_page?: string | null
+          default_page_size?: number | null
+          density?: string | null
+          email_digest_frequency?: string | null
+          email_on_assignment?: boolean | null
+          email_on_cycle_complete?: boolean | null
+          email_on_defect_update?: boolean | null
+          favorite_filters?: Json | null
+          id?: string
+          recent_cycles?: string[] | null
+          recent_test_cases?: string[] | null
+          show_archived?: boolean | null
+          sidebar_collapsed?: boolean | null
+          theme?: string | null
+          time_format?: string | null
+          timezone?: string | null
+          updated_at?: string | null
+          user_id: string
+          week_starts_on?: number | null
+        }
+        Update: {
+          auto_advance_on_status?: boolean | null
+          confirm_status_change?: boolean | null
+          created_at?: string | null
+          date_format?: string | null
+          default_cycle_view?: string | null
+          default_landing_page?: string | null
+          default_page_size?: number | null
+          density?: string | null
+          email_digest_frequency?: string | null
+          email_on_assignment?: boolean | null
+          email_on_cycle_complete?: boolean | null
+          email_on_defect_update?: boolean | null
+          favorite_filters?: Json | null
+          id?: string
+          recent_cycles?: string[] | null
+          recent_test_cases?: string[] | null
+          show_archived?: boolean | null
+          sidebar_collapsed?: boolean | null
+          theme?: string | null
+          time_format?: string | null
+          timezone?: string | null
+          updated_at?: string | null
+          user_id?: string
+          week_starts_on?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
         ]
@@ -36732,6 +37034,53 @@ export type Database = {
         }[]
       }
       get_unmapped_tests: { Args: { p_connector_id: string }; Returns: Json }
+      get_user_preferences: {
+        Args: { p_user_id: string }
+        Returns: {
+          auto_advance_on_status: boolean | null
+          confirm_status_change: boolean | null
+          created_at: string | null
+          date_format: string | null
+          default_cycle_view: string | null
+          default_landing_page: string | null
+          default_page_size: number | null
+          density: string | null
+          email_digest_frequency: string | null
+          email_on_assignment: boolean | null
+          email_on_cycle_complete: boolean | null
+          email_on_defect_update: boolean | null
+          favorite_filters: Json | null
+          id: string
+          recent_cycles: string[] | null
+          recent_test_cases: string[] | null
+          show_archived: boolean | null
+          sidebar_collapsed: boolean | null
+          theme: string | null
+          time_format: string | null
+          timezone: string | null
+          updated_at: string | null
+          user_id: string
+          week_starts_on: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "th_user_preferences"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      get_user_recent_activity: {
+        Args: { p_limit?: number; p_user_id: string }
+        Returns: {
+          action: string
+          created_at: string
+          details: Json
+          entity_id: string
+          entity_name: string
+          entity_type: string
+          id: string
+        }[]
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
@@ -36813,6 +37162,17 @@ export type Database = {
           p_description: string
           p_metadata?: Json
           p_test_case_id: string
+        }
+        Returns: string
+      }
+      log_user_activity: {
+        Args: {
+          p_action: string
+          p_details?: Json
+          p_entity_id?: string
+          p_entity_name?: string
+          p_entity_type?: string
+          p_user_id: string
         }
         Returns: string
       }
@@ -37735,6 +38095,41 @@ export type Database = {
           p_step_id: string
         }
         Returns: Json
+      }
+      update_user_preferences: {
+        Args: { p_updates: Json; p_user_id: string }
+        Returns: {
+          auto_advance_on_status: boolean | null
+          confirm_status_change: boolean | null
+          created_at: string | null
+          date_format: string | null
+          default_cycle_view: string | null
+          default_landing_page: string | null
+          default_page_size: number | null
+          density: string | null
+          email_digest_frequency: string | null
+          email_on_assignment: boolean | null
+          email_on_cycle_complete: boolean | null
+          email_on_defect_update: boolean | null
+          favorite_filters: Json | null
+          id: string
+          recent_cycles: string[] | null
+          recent_test_cases: string[] | null
+          show_archived: boolean | null
+          sidebar_collapsed: boolean | null
+          theme: string | null
+          time_format: string | null
+          timezone: string | null
+          updated_at: string | null
+          user_id: string
+          week_starts_on: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "th_user_preferences"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       upload_evidence: {
         Args: {
