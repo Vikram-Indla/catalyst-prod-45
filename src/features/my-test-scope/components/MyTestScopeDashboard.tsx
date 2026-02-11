@@ -7,6 +7,7 @@ import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useMyTestScope } from '../hooks/useMyTestScope';
+import { useQuickExecute } from '../hooks/useQuickExecute';
 import { ScopeHeader } from './ScopeHeader';
 import { ProgressGauge } from './ProgressGauge';
 import { AIStartMyDay } from './AIStartMyDay';
@@ -27,6 +28,7 @@ interface MyTestScopeDashboardProps {
 export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboardProps) {
   const navigate = useNavigate();
   const { data, isLoading, error } = useMyTestScope();
+  const quickExecute = useQuickExecute();
   const [activeTab, setActiveTab] = useState<TestScopeTab>('tests');
   const [filters, setFilters] = useState<TestScopeFilters>({
     status: [],
@@ -79,6 +81,22 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
   const handleViewTestDetails = useCallback((testId: string) => {
     navigate(`/releases/test-cases/${testId}`);
   }, [navigate]);
+
+  const handleQuickPass = useCallback((scopeId: string) => {
+    quickExecute.mutate({ cycleTestCaseId: scopeId, action: 'passed' });
+  }, [quickExecute]);
+
+  const handleQuickFail = useCallback((scopeId: string, reason: string) => {
+    quickExecute.mutate({ cycleTestCaseId: scopeId, action: 'failed', reason });
+  }, [quickExecute]);
+
+  const handleQuickBlock = useCallback((scopeId: string, reason: string) => {
+    quickExecute.mutate({ cycleTestCaseId: scopeId, action: 'blocked', reason });
+  }, [quickExecute]);
+
+  const handleUnblock = useCallback((scopeId: string) => {
+    quickExecute.mutate({ cycleTestCaseId: scopeId, action: 'not_run' });
+  }, [quickExecute]);
 
   if (isLoading) {
     return (
@@ -142,6 +160,10 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
                 onFiltersChange={setFilters}
                 onExecute={handleStartTest}
                 onViewDetails={handleViewTestDetails}
+                onQuickPass={handleQuickPass}
+                onQuickFail={handleQuickFail}
+                onQuickBlock={handleQuickBlock}
+                onUnblock={handleUnblock}
               />
             </div>
           </>
