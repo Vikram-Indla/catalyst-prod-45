@@ -10680,7 +10680,8 @@ export type Database = {
           end_date: string
           epic_id: string | null
           id: string
-          milestone_type: string | null
+          milestone_type: Database["public"]["Enums"]["milestone_type"] | null
+          release_id: string | null
           start_date: string | null
           state: string | null
           title: string
@@ -10697,7 +10698,8 @@ export type Database = {
           end_date: string
           epic_id?: string | null
           id?: string
-          milestone_type?: string | null
+          milestone_type?: Database["public"]["Enums"]["milestone_type"] | null
+          release_id?: string | null
           start_date?: string | null
           state?: string | null
           title: string
@@ -10714,7 +10716,8 @@ export type Database = {
           end_date?: string
           epic_id?: string | null
           id?: string
-          milestone_type?: string | null
+          milestone_type?: Database["public"]["Enums"]["milestone_type"] | null
+          release_id?: string | null
           start_date?: string | null
           state?: string | null
           title?: string
@@ -10734,6 +10737,13 @@ export type Database = {
             columns: ["epic_id"]
             isOneToOne: false
             referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "milestones_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
             referencedColumns: ["id"]
           },
           {
@@ -17094,7 +17104,7 @@ export type Database = {
           critical_defects: number | null
           defects_open: number | null
           description: string | null
-          health: string | null
+          health: Database["public"]["Enums"]["release_health"] | null
           id: string
           is_blocked: boolean | null
           name: string
@@ -17127,7 +17137,7 @@ export type Database = {
           critical_defects?: number | null
           defects_open?: number | null
           description?: string | null
-          health?: string | null
+          health?: Database["public"]["Enums"]["release_health"] | null
           id?: string
           is_blocked?: boolean | null
           name: string
@@ -17160,7 +17170,7 @@ export type Database = {
           critical_defects?: number | null
           defects_open?: number | null
           description?: string | null
-          health?: string | null
+          health?: Database["public"]["Enums"]["release_health"] | null
           id?: string
           is_blocked?: boolean | null
           name?: string
@@ -39034,6 +39044,15 @@ export type Database = {
         | "webhook"
       member_role: "administrator" | "member" | "viewer"
       metric_type: "count" | "currency" | "percentage" | "decimal_score" | "nps"
+      milestone_type:
+        | "code_freeze"
+        | "feature_complete"
+        | "qa_start"
+        | "qa_complete"
+        | "uat_start"
+        | "uat_complete"
+        | "go_live"
+        | "custom"
       objective_category: "critical_path" | "stretch_goal"
       objective_health: "good" | "fair" | "poor" | "at_risk"
       objective_scope_type: "company" | "portfolio" | "program"
@@ -39084,6 +39103,7 @@ export type Database = {
       ra_item_type: "prd" | "epic" | "feature" | "story"
       ra_template_type: "prd" | "epic" | "feature" | "story"
       ra_user_role: "admin" | "manager" | "user" | "viewer"
+      release_health: "healthy" | "at_risk" | "critical"
       release_status:
         | "planned"
         | "ready"
@@ -39686,6 +39706,16 @@ export const Constants = {
       ],
       member_role: ["administrator", "member", "viewer"],
       metric_type: ["count", "currency", "percentage", "decimal_score", "nps"],
+      milestone_type: [
+        "code_freeze",
+        "feature_complete",
+        "qa_start",
+        "qa_complete",
+        "uat_start",
+        "uat_complete",
+        "go_live",
+        "custom",
+      ],
       objective_category: ["critical_path", "stretch_goal"],
       objective_health: ["good", "fair", "poor", "at_risk"],
       objective_scope_type: ["company", "portfolio", "program"],
@@ -39740,6 +39770,7 @@ export const Constants = {
       ra_item_type: ["prd", "epic", "feature", "story"],
       ra_template_type: ["prd", "epic", "feature", "story"],
       ra_user_role: ["admin", "manager", "user", "viewer"],
+      release_health: ["healthy", "at_risk", "critical"],
       release_status: [
         "planned",
         "ready",

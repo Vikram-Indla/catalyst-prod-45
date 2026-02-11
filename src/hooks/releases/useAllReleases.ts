@@ -45,10 +45,10 @@ export function useAllReleases({ filter, sort, page, pageSize, projectId }: UseA
         query = query.in('status', dbStatuses as any);
       }
       
-      // Apply health filter
-      if (filter.health.length > 0) {
-        query = query.in('health', filter.health);
-      }
+       // Apply health filter
+       if (filter.health.length > 0) {
+         query = query.in('health', filter.health);
+       }
       
       // Apply search
       if (filter.search) {
@@ -78,7 +78,7 @@ export function useAllReleases({ filter, sort, page, pageSize, projectId }: UseA
         target_date: r.target_date,
         release_date: r.release_date,
         progress: r.progress ?? r.readiness_pct ?? 0,
-        health: (r.health as ReleaseHealth) || 'none',
+        health: (r.health as ReleaseHealth) || 'healthy',
         is_blocked: r.is_blocked ?? false,
         blocked_reason: r.blocked_reason,
         owner_id: r.owner_id,

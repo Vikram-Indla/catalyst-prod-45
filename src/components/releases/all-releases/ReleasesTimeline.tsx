@@ -64,7 +64,7 @@ export function ReleasesTimeline({ releases }: Props) {
       {/* Rows */}
       {releases.map((release) => {
         const statusConfig = STATUS_CONFIG[release.status] || STATUS_CONFIG.planning;
-        const healthConfig = HEALTH_CONFIG[release.health] || HEALTH_CONFIG.none;
+        const healthConfig = HEALTH_CONFIG[release.health];
         const position = getBarPosition(release);
 
         return (
