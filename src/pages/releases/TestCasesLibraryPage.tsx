@@ -488,8 +488,8 @@ function TestCaseRow({ testCase, isSelected, onSelect }: TestCaseRowProps) {
       tabIndex={0}
       role="row"
       aria-selected={isSelected}
-      onClick={() => navigate(`/releases/tests/${testCase.id}`)}
-      onKeyDown={(e) => e.key === 'Enter' && navigate(`/releases/tests/${testCase.id}`)}
+      onClick={() => navigate(`/testhub/repository?view=${testCase.id}`)}
+      onKeyDown={(e) => e.key === 'Enter' && navigate(`/testhub/repository?view=${testCase.id}`)}
       className={cn(
         'cursor-pointer transition-all duration-150 group',
         'hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500',

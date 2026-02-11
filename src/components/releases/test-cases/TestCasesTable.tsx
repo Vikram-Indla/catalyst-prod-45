@@ -108,13 +108,13 @@ export function TestCasesTable({
     
     switch (action) {
       case 'view':
-        navigate(`/releases/test-cases/${caseId}`);
+        navigate(`/testhub/repository?view=${caseId}`);
         break;
       case 'edit':
         if (onEdit) {
           onEdit(tc);
         } else {
-          navigate(`/releases/test-cases/${caseId}?edit=true`);
+          navigate(`/testhub/repository?view=${caseId}&edit=true`);
         }
         break;
       case 'duplicate':

@@ -129,7 +129,7 @@ export default function TestCaseDetailPage() {
       });
 
       // Navigate to the working execution route with the actual runId
-      navigate(`/releases/execute/${cycle.cycleId}/${result.first_run_id}`);
+      navigate(`/testhub/cycles/${cycle.cycleId}/execute?testId=${result.first_run_id}`);
     } catch (error) {
       console.error('Failed to start execution:', error);
       toast.error('Failed to start execution');
@@ -208,7 +208,7 @@ export default function TestCaseDetailPage() {
         project_id: testCase.project_id,
       });
       toast.success(`Test case duplicated as ${clonedCase.key}`);
-      navigate(`/releases/test-cases/${clonedCase.id}`);
+      navigate(`/testhub/repository?view=${clonedCase.id}`);
     } catch (error) {
       toast.error('Failed to duplicate test case');
     }

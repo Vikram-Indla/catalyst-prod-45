@@ -145,7 +145,7 @@ export function TestCaseExecutionHistory({ history }: TestCaseExecutionHistoryPr
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <Link
-                      to={`/releases/execution/${exec.cycleId}`}
+                      to={`/testhub/cycles/${exec.cycleId}/execute`}
                       className="font-medium text-primary hover:underline"
                     >
                       {exec.cycleId}

@@ -605,19 +605,19 @@ const App = () => (
               <Route path="/releasehub/rtm" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RTMPage /></Suspense>} />
               <Route path="/releasehub/:releaseId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleaseDashboardV5Page /></Suspense>} />
               
-              {/* Legacy /releases routes — REDIRECT TO /releasehub (PHASE 3) */}
-              <Route path="/priorities" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10LandingPage /></Suspense>} />
-              <Route path="/priorities/completed" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10CompletedPage /></Suspense>} />
-              <Route path="/priorities/list/:listId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10WeekPage /></Suspense>} />
-              <Route path="/priorities/list/:listId/week/:weekId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10WeekPageV3 /></Suspense>} />
-              
-              {/* Legacy task10 routes - redirect to priorities */}
-              <Route path="/taskhub/task10" element={<Navigate to="/priorities" replace />} />
-              <Route path="/taskhub/task10/*" element={<Navigate to="/priorities" replace />} />
-              
-              {/* Legacy planner routes - redirect to taskhub */}
-              <Route path="/planner" element={<Navigate to="/taskhub/boards" replace />} />
-              <Route path="/planner/*" element={<Navigate to="/taskhub/boards" replace />} />
+               {/* Priorities Module */}
+               <Route path="/priorities" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10LandingPage /></Suspense>} />
+               <Route path="/priorities/completed" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10CompletedPage /></Suspense>} />
+               <Route path="/priorities/list/:listId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10WeekPage /></Suspense>} />
+               <Route path="/priorities/list/:listId/week/:weekId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><T10WeekPageV3 /></Suspense>} />
+               
+               {/* Legacy task10 routes - redirect to priorities */}
+               <Route path="/taskhub/task10" element={<Navigate to="/priorities" replace />} />
+               <Route path="/taskhub/task10/*" element={<Navigate to="/priorities" replace />} />
+               
+               {/* Legacy planner routes - redirect to taskhub */}
+               <Route path="/planner" element={<Navigate to="/taskhub/boards" replace />} />
+               <Route path="/planner/*" element={<Navigate to="/taskhub/boards" replace />} />
               
               {/* PlanHub Module */}
               <Route path="/planhub" element={<PlanLibraryPage />} />
@@ -962,33 +962,8 @@ const App = () => (
               <Route path="/stories" element={<Stories />} />
               <Route path="/work-items/stories" element={<Stories />} />
               <Route path="/work-items/subtasks" element={<Subtasks />} />
-              <Route path="/releases" element={<Navigate to="/releasehub/command-center" replace />} />
-              <Route path="/releases/command-center" element={<Navigate to="/releasehub/command-center" replace />} />
-              <Route path="/releases/dashboard" element={<Navigate to="/releasehub/dashboard" replace />} />
-              <Route path="/releases/my-scope" element={<Navigate to="/testhub/my-scope" replace />} />
-              <Route path="/releases/all" element={<Navigate to="/releasehub/all" replace />} />
-              <Route path="/releases/calendar" element={<Navigate to="/releasehub/calendar" replace />} />
-              <Route path="/releases/compare" element={<Navigate to="/releasehub/compare" replace />} />
-              <Route path="/releases/test-plans" element={<Navigate to="/releasehub/all" replace />} />
-              <Route path="/releases/test-plans/:planId" element={<Navigate to="/releasehub/all" replace />} />
-              <Route path="/releases/test-cases" element={<Navigate to="/releasehub/all" replace />} />
-              <Route path="/releases/test-cases/:id" element={<Navigate to="/releasehub/all" replace />} />
-              <Route path="/releases/test-sets" element={<Navigate to="/releasehub/all" replace />} />
-              <Route path="/releases/test-sets/:setId" element={<Navigate to="/releasehub/all" replace />} />
-              <Route path="/releases/test-cycles" element={<Navigate to="/releasehub/all" replace />} />
-              <Route path="/releases/test-cycles/:cycleId" element={<Navigate to="/releasehub/all" replace />} />
-              <Route path="/releases/templates" element={<Navigate to="/releasehub/all" replace />} />
-              <Route path="/releases/workload" element={<Navigate to="/releasehub/all" replace />} />
-              <Route path="/releases/execution" element={<Navigate to="/releasehub/all" replace />} />
-              <Route path="/releases/execution/:cycleId/:testCaseId" element={<Navigate to="/releasehub/all" replace />} />
-              <Route path="/releases/execute/:cycleId/:testCaseId" element={<Navigate to="/releasehub/all" replace />} />
-              <Route path="/releases/ask-ai" element={<Navigate to="/releasehub/ask-ai" replace />} />
-              <Route path="/releases/coverage" element={<Navigate to="/releasehub/coverage" replace />} />
-              <Route path="/releases/quality-gates" element={<Navigate to="/releasehub/quality-gates" replace />} />
-              <Route path="/releases/rtm" element={<Navigate to="/releasehub/rtm" replace />} />
-              <Route path="/releases/defects" element={<Navigate to="/testhub/defects" replace />} />
-              <Route path="/releases/defects/:id" element={<Navigate to="/testhub/defects/:defectId" replace />} />
-              <Route path="/releases/:releaseId" element={<Navigate to="/releasehub/:releaseId" replace />} />
+               {/* Catch-all redirect for any remaining /releases routes to ReleaseHub */}
+               <Route path="/releases/*" element={<Navigate to="/releasehub/command-center" replace />} />
               
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               
