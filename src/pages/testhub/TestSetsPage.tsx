@@ -24,7 +24,7 @@ import { Search } from 'lucide-react';
 import { useTestSets, useDeleteTestSet, useRefreshDynamicSet, useCloneTestSet, useArchiveTestSet, useCreateTestCycleFromSet } from '@/hooks/useTestSets';
 import { useProjectContext } from '@/hooks/useProjectContext';
 
-const DEFAULT_PROJECT_ID = '40000000-0001-0001-0001-000000000001';
+const DEFAULT_PROJECT_ID = '00000000-0000-0000-0000-000000000001';
 import { SetTypeBadge } from '@/components/test-sets/SetTypeBadge';
 import { CreateTestSetModal } from '@/components/test-sets/CreateTestSetModal';
 import { RefreshConfirmDialog } from '@/components/test-sets/RefreshConfirmDialog';
