@@ -26,6 +26,59 @@
   --app-safe-top: env(safe-area-inset-top, 0px);
   --app-header-h: 56px;
   --app-top-offset: calc(var(--app-safe-top) + var(--app-header-h));
+
+  /* ═══ CATALYST10 Typography Tokens ═══ */
+  /* UI Scale */
+  --c10-text-ui-2xs: 10px;
+  --c10-text-ui-xs: 11px;
+  --c10-text-ui-sm: 12px;
+  --c10-text-ui-md: 13px;
+  --c10-text-ui-lg: 14px;
+  /* Body Scale */
+  --c10-text-body-xs: 12px;
+  --c10-text-body-sm: 13px;
+  --c10-text-body-md: 14px;
+  --c10-text-body-lg: 16px;
+  /* Heading Scale */
+  --c10-text-heading-xs: 12px;
+  --c10-text-heading-sm: 14px;
+  --c10-text-heading-md: 16px;
+  --c10-text-heading-lg: 20px;
+  --c10-text-heading-xl: 24px;
+  /* Metric Scale */
+  --c10-text-metric-sm: 24px;
+  --c10-text-metric-md: 36px;
+  --c10-text-metric-lg: 48px;
+  /* Code Scale */
+  --c10-text-code-xs: 11px;
+  --c10-text-code-sm: 12px;
+  --c10-text-code-md: 13px;
+  /* Font Weights */
+  --c10-font-regular: 400;
+  --c10-font-medium: 500;
+  --c10-font-semibold: 600;
+  --c10-font-bold: 700;
+  /* Spacing */
+  --c10-space-1: 4px;
+  --c10-space-2: 8px;
+  --c10-space-3: 12px;
+  --c10-space-4: 16px;
+  --c10-space-5: 20px;
+  --c10-space-6: 24px;
+  /* Gaps */
+  --c10-gap-sm: 8px;
+  --c10-gap-md: 12px;
+  --c10-gap-lg: 16px;
+  /* Radii */
+  --c10-radius-sm: 4px;
+  --c10-radius-md: 6px;
+  --c10-radius-lg: 8px;
+  /* Table */
+  --c10-table-row-md: 36px;
+  /* Input */
+  --c10-input-height-sm: 28px;
+  /* Header */
+  --c10-header-height: 56px;
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
