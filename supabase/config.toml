@@ -95,3 +95,6 @@ verify_jwt = false
 
 [functions.ai-generate-test-cases]
 verify_jwt = false
+
+[functions.testhub-qa-ai]
+verify_jwt = false
