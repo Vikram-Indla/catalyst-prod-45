@@ -68,6 +68,7 @@ export interface CreateCycleInput {
   description?: string;
   release_id?: string;
   environment: string;
+  environment_id?: string;
   assigned_to?: string;
   planned_start?: string;
   planned_end?: string;
@@ -288,6 +289,7 @@ export function useCreateCycleEnhanced() {
           description: input.description || null,
           status: 'draft' as any, // Default to draft per lifecycle spec
           environment: input.environment || 'staging',
+          environment_id: input.environment_id || null,
           release_id: input.release_id || null,
           assigned_to: input.assigned_to || null,
           planned_start: input.planned_start || null,
