@@ -1,9 +1,9 @@
 /**
  * WorkHub Work Items — TanStack Query Hooks
- * Queries vw_wh_work_items_full view, mutations on wh_work_items table
+ * Server-side pagination + count query for performance
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { WorkItemFull } from '@/types/workhub.types';
@@ -18,30 +18,89 @@ export interface WorkItemFilterConfig {
   search_query?: string;
 }
 
+export interface PaginationConfig {
+  page: number;
+  pageSize: number;
+}
+
 const QUERY_OPTIONS = { staleTime: 30_000, refetchInterval: 60_000 };
 
-export function useWorkItems(filters?: Partial<WorkItemFilterConfig>) {
+/** Build a filtered query (reusable for both data + count) */
+function buildFilteredQuery(
+  baseQuery: any,
+  filters?: Partial<WorkItemFilterConfig>,
+) {
+  let q = baseQuery;
+  if (filters?.types?.length) q = q.in('item_type', filters.types);
+  if (filters?.statuses?.length) q = q.in('status', filters.statuses);
+  if (filters?.release_ids?.length) q = q.in('release_id', filters.release_ids);
+  if (filters?.theme_ids?.length) q = q.in('theme_id', filters.theme_ids);
+  if (filters?.project_ids?.length) q = q.in('jira_project_id', filters.project_ids);
+  if (filters?.assignee_ids?.length) q = q.in('assignee_user_id', filters.assignee_ids);
+  if (filters?.search_query) {
+    const s = filters.search_query;
+    q = q.or(`summary.ilike.%${s}%,item_key.ilike.%${s}%`);
+  }
+  return q;
+}
+
+/**
+ * Paginated work items with server-side count.
+ * Uses keepPreviousData for smooth pagination transitions.
+ */
+export function useWorkItems(
+  filters?: Partial<WorkItemFilterConfig>,
+  pagination?: PaginationConfig,
+) {
+  const page = pagination?.page ?? 0;
+  const pageSize = pagination?.pageSize ?? 50;
+
   return useQuery({
-    queryKey: ['workhub', 'work-items', filters],
+    queryKey: ['workhub', 'work-items', filters, page, pageSize],
     queryFn: async () => {
-      let q = supabase.from('vw_wh_work_items_full').select('*')
+      // Data query with range
+      const from = page * pageSize;
+      const to = from + pageSize - 1;
+
+      let q = supabase
+        .from('vw_wh_work_items_full')
+        .select('*', { count: 'exact' })
         .order('depth')
-        .order('item_key');
+        .order('item_key')
+        .range(from, to);
 
-      if (filters?.types?.length) q = q.in('item_type', filters.types);
-      if (filters?.statuses?.length) q = q.in('status', filters.statuses);
-      if (filters?.release_ids?.length) q = q.in('release_id', filters.release_ids);
-      if (filters?.theme_ids?.length) q = q.in('theme_id', filters.theme_ids);
-      if (filters?.project_ids?.length) q = q.in('jira_project_id', filters.project_ids);
-      if (filters?.assignee_ids?.length) q = q.in('assignee_user_id', filters.assignee_ids);
-      if (filters?.search_query) {
-        const s = filters.search_query;
-        q = q.or(`summary.ilike.%${s}%,item_key.ilike.%${s}%`);
-      }
+      q = buildFilteredQuery(q, filters);
 
-      const { data, error } = await q;
+      const { data, error, count } = await q;
       if (error) throw error;
-      return (data ?? []) as unknown as WorkItemFull[];
+
+      return {
+        items: (data ?? []) as unknown as WorkItemFull[],
+        totalCount: count ?? 0,
+        page,
+        pageSize,
+        totalPages: Math.ceil((count ?? 0) / pageSize),
+      };
+    },
+    placeholderData: keepPreviousData,
+    ...QUERY_OPTIONS,
+  });
+}
+
+/** Total count only — lightweight query for KPIs */
+export function useWorkItemCount(filters?: Partial<WorkItemFilterConfig>) {
+  return useQuery({
+    queryKey: ['workhub', 'work-items-count', filters],
+    queryFn: async () => {
+      let q = supabase
+        .from('vw_wh_work_items_full')
+        .select('*', { count: 'exact', head: true });
+
+      q = buildFilteredQuery(q, filters);
+
+      const { count, error } = await q;
+      if (error) throw error;
+      return count ?? 0;
     },
     ...QUERY_OPTIONS,
   });

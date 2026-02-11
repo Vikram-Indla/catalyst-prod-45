@@ -1,8 +1,10 @@
 /**
- * WorkItemsTable — Hierarchy table with 11 columns
+ * WorkItemsTable — Virtualized hierarchy table with row virtualization
+ * Uses @tanstack/react-virtual for smooth scrolling with large datasets
  */
 
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { WorkItemRow } from './WorkItemRow';
 import type { WorkItemFull } from '@/types/workhub.types';
 import { Loader2, AlertCircle, FileStack } from 'lucide-react';
@@ -22,6 +24,8 @@ interface WorkItemsTableProps {
   onRetry?: () => void;
 }
 
+const ROW_HEIGHT = 44; // matches --wh-row-height
+
 export function WorkItemsTable({
   items,
   isLoading,
@@ -36,41 +40,47 @@ export function WorkItemsTable({
   onOpenThemeEditor,
   onRetry,
 }: WorkItemsTableProps) {
+  const parentRef = useRef<HTMLDivElement>(null);
+
   // Build visible items based on expanded ancestry
   const visibleItems = useMemo(() => {
     if (!items.length) return [];
     const result: WorkItemFull[] = [];
-    const parentExpanded = new Map<string | undefined, boolean>();
-    // Root items are always visible
-    parentExpanded.set(undefined, true);
 
     for (const item of items) {
-      // An item is visible if its parent is expanded (or it's root)
-      const parentVisible = !item.parent_id || expandedIds.has(item.parent_id);
-      // Also check that all ancestors are expanded
       if (item.depth === 0) {
         result.push(item);
-      } else if (parentVisible) {
-        // Check parent is in visible list
-        const parentInList = result.some(r => r.id === item.parent_id);
-        if (parentInList) {
-          result.push(item);
+      } else {
+        const parentVisible = item.parent_id && expandedIds.has(item.parent_id);
+        if (parentVisible) {
+          const parentInList = result.some(r => r.id === item.parent_id);
+          if (parentInList) {
+            result.push(item);
+          }
         }
       }
     }
     return result;
   }, [items, expandedIds]);
 
+  // Virtual row rendering
+  const virtualizer = useVirtualizer({
+    count: visibleItems.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => ROW_HEIGHT,
+    overscan: 10, // Render 10 extra rows above/below for smooth scrolling
+  });
+
   if (isLoading) {
     return (
       <div className="rounded-xl border overflow-hidden" style={{ borderColor: 'var(--wh-border)', backgroundColor: 'var(--wh-surface)' }}>
-        {Array.from({ length: 6 }).map((_, i) => (
+        {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
             className="grid items-center px-4 border-b animate-pulse"
             style={{
               gridTemplateColumns: '36px 28px 110px 70px 1fr 100px 140px 130px 100px 80px 100px',
-              height: 'var(--wh-row-height)',
+              height: ROW_HEIGHT,
               borderColor: '#f1f5f9',
             }}
           >
@@ -113,7 +123,7 @@ export function WorkItemsTable({
       >
         <FileStack className="w-8 h-8 mx-auto mb-3" style={{ color: 'var(--wh-text-tertiary)' }} />
         <p className="text-sm font-medium mb-1" style={{ color: 'var(--wh-text-primary)' }}>No work items found</p>
-        <p className="text-xs" style={{ color: 'var(--wh-text-tertiary)' }}>Try adjusting your filters</p>
+        <p className="text-xs" style={{ color: 'var(--wh-text-tertiary)' }}>Try adjusting your filters or run a Jira sync</p>
       </div>
     );
   }
@@ -157,19 +167,46 @@ export function WorkItemsTable({
         ))}
       </div>
 
-      {/* Rows */}
-      {visibleItems.map(item => (
-        <WorkItemRow
-          key={item.id}
-          item={item}
-          isExpanded={expandedIds.has(item.id)}
-          isSelected={selectedIds.has(item.id)}
-          onToggleExpand={() => onToggleExpand(item.id)}
-          onToggleSelect={() => onToggleSelect(item.id)}
-          onOpenDrawer={() => onOpenDrawer(item.id)}
-          onOpenThemeEditor={onOpenThemeEditor}
-        />
-      ))}
+      {/* Virtualized rows */}
+      <div
+        ref={parentRef}
+        style={{ height: Math.min(visibleItems.length * ROW_HEIGHT, 600), overflow: 'auto' }}
+      >
+        <div
+          style={{
+            height: `${virtualizer.getTotalSize()}px`,
+            width: '100%',
+            position: 'relative',
+          }}
+        >
+          {virtualizer.getVirtualItems().map(virtualRow => {
+            const item = visibleItems[virtualRow.index];
+            return (
+              <div
+                key={item.id}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: `${virtualRow.size}px`,
+                  transform: `translateY(${virtualRow.start}px)`,
+                }}
+              >
+                <WorkItemRow
+                  item={item}
+                  isExpanded={expandedIds.has(item.id)}
+                  isSelected={selectedIds.has(item.id)}
+                  onToggleExpand={() => onToggleExpand(item.id)}
+                  onToggleSelect={() => onToggleSelect(item.id)}
+                  onOpenDrawer={() => onOpenDrawer(item.id)}
+                  onOpenThemeEditor={onOpenThemeEditor}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,9 +1,9 @@
 /**
- * WorkItemFilters — Type pills, dropdown filters, search
+ * WorkItemFilters — Type pills with project badges, dropdown filters, search
  */
 
-import { useState, useEffect, useRef } from 'react';
-import { Search, ChevronDown, Check } from 'lucide-react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { Search, ChevronDown, Check, FolderGit2 } from 'lucide-react';
 import { useWHJiraProjects } from '@/hooks/workhub/useJiraProjects';
 import { useWHThemes } from '@/hooks/workhub/useThemes';
 import { useWHReleases } from '@/hooks/workhub/useReleases';
@@ -21,9 +21,11 @@ const TYPE_PILLS: TypePill[] = [
   { label: 'Epics', value: ['Epic'] },
   { label: 'Stories', value: ['Story'] },
   { label: 'Bugs', value: ['Bug'] },
+  { label: 'Tasks', value: ['Task'] },
+  { label: 'Subtasks', value: ['Subtask'] },
 ];
 
-function FilterDropdown({ label, children, isActive }: { label: string; children: React.ReactNode; isActive: boolean }) {
+function FilterDropdown({ label, badge, children, isActive }: { label: string; badge?: number; children: React.ReactNode; isActive: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -47,6 +49,17 @@ function FilterDropdown({ label, children, isActive }: { label: string; children
         }}
       >
         {label}
+        {badge != null && badge > 0 && (
+          <span
+            className="ml-0.5 inline-flex items-center justify-center rounded-full text-[10px] font-bold min-w-[18px] h-[18px] px-1"
+            style={{
+              backgroundColor: isActive ? 'var(--wh-primary)' : '#94a3b8',
+              color: '#fff',
+            }}
+          >
+            {badge}
+          </span>
+        )}
         <ChevronDown className="w-3 h-3" />
       </button>
       {open && (
@@ -78,6 +91,8 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
     ? TYPE_PILLS.find(p => JSON.stringify(p.value) === JSON.stringify(filters.types))?.label || 'All Types'
     : 'All Types';
 
+  const selectedProjectCount = filters.project_ids?.length ?? 0;
+
   const handleSearch = (val: string) => {
     setSearchInput(val);
     clearTimeout(debounceRef.current);
@@ -91,6 +106,15 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
     const next = current.includes(id) ? current.filter(v => v !== id) : [...current, id];
     onChange({ ...filters, [key]: next.length ? next : undefined });
   };
+
+  // Selected project keys for display
+  const selectedProjectKeys = useMemo(() => {
+    if (!filters.project_ids?.length || !projects) return [];
+    return filters.project_ids.map(id => {
+      const p = projects.find(proj => proj.id === id);
+      return p ? { key: p.project_key, color: p.color } : null;
+    }).filter(Boolean) as { key: string; color: string }[];
+  }, [filters.project_ids, projects]);
 
   return (
     <div className="space-y-3">
@@ -113,8 +137,12 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
 
         <div className="flex-1" />
 
-        {/* Projects */}
-        <FilterDropdown label={`All Projects`} isActive={!!filters.project_ids?.length}>
+        {/* Projects with badge */}
+        <FilterDropdown
+          label={selectedProjectCount > 0 ? `${selectedProjectCount} Project${selectedProjectCount !== 1 ? 's' : ''}` : 'All Projects'}
+          badge={selectedProjectCount > 0 ? selectedProjectCount : undefined}
+          isActive={selectedProjectCount > 0}
+        >
           {(projects ?? []).map(p => (
             <button
               key={p.id}
@@ -122,7 +150,11 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
               className="flex items-center justify-between w-full px-3 py-2 text-xs hover:bg-slate-50 transition-colors"
               style={{ color: 'var(--wh-text-primary)' }}
             >
-              <span>{p.project_key} — {p.name}</span>
+              <span className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: p.color }} />
+                <span className="font-semibold">{p.project_key}</span>
+                <span style={{ color: 'var(--wh-text-tertiary)' }}>{p.name}</span>
+              </span>
               {filters.project_ids?.includes(p.id) && <Check className="w-3.5 h-3.5" style={{ color: 'var(--wh-primary)' }} />}
             </button>
           ))}
@@ -184,6 +216,35 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
           ))}
         </FilterDropdown>
       </div>
+
+      {/* Selected project chips row */}
+      {selectedProjectKeys.length > 0 && (
+        <div className="flex items-center gap-1.5 flex-wrap" data-print-hide="true">
+          <FolderGit2 className="w-3.5 h-3.5" style={{ color: 'var(--wh-text-tertiary)' }} />
+          <span className="text-[11px] font-medium" style={{ color: 'var(--wh-text-tertiary)' }}>Filtered:</span>
+          {selectedProjectKeys.map(p => (
+            <span
+              key={p.key}
+              className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-semibold"
+              style={{
+                backgroundColor: `${p.color}15`,
+                color: p.color,
+                border: `1px solid ${p.color}30`,
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: p.color }} />
+              {p.key}
+            </span>
+          ))}
+          <button
+            onClick={() => onChange({ ...filters, project_ids: undefined })}
+            className="text-[10px] font-medium ml-1 hover:underline"
+            style={{ color: 'var(--wh-primary)' }}
+          >
+            Clear
+          </button>
+        </div>
+      )}
 
       {/* Row 2: Search */}
       <div className="relative" data-print-hide="true">
