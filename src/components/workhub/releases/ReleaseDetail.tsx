@@ -259,7 +259,7 @@ export function ReleaseDetail() {
   );
 }
 
-function AssigneeChip({ assignee }: { assignee: { displayName: string; avatarUrl: string | null } }) {
+function AssigneeChip({ assignee }: { assignee: { displayName: string; avatarUrl: string | null; roleName?: string | null } }) {
   const [imgError, setImgError] = useState(false);
   const initials = assignee.displayName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 
@@ -274,12 +274,12 @@ function AssigneeChip({ assignee }: { assignee: { displayName: string; avatarUrl
         <img
           src={assignee.avatarUrl}
           alt={assignee.displayName}
-          style={{ width: 22, height: 22, borderRadius: '50%', objectFit: 'cover' }}
+          style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover' }}
           onError={() => setImgError(true)}
         />
       ) : (
         <div style={{
-          width: 22, height: 22, borderRadius: '50%',
+          width: 24, height: 24, borderRadius: '50%',
           background: '#6366f1', color: '#fff',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 9, fontWeight: 700,
@@ -287,9 +287,16 @@ function AssigneeChip({ assignee }: { assignee: { displayName: string; avatarUrl
           {initials}
         </div>
       )}
-      <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--wh-text-secondary, #64748b)' }}>
-        {assignee.displayName}
-      </span>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--wh-text-primary, #0f172a)', lineHeight: 1.2 }}>
+          {assignee.displayName}
+        </span>
+        {assignee.roleName && (
+          <span style={{ fontSize: 10, fontWeight: 400, color: 'var(--wh-text-tertiary, #94a3b8)', lineHeight: 1.2 }}>
+            {assignee.roleName}
+          </span>
+        )}
+      </div>
     </div>
   );
 }
