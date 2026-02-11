@@ -9,6 +9,8 @@ export { CardGridView } from './components/CardGridView';
 export { Toolbar } from './components/Toolbar';
 export { BulkActionBar } from './components/BulkActionBar';
 export { Pagination } from './components/Pagination';
+export { TimelineView } from './components/TimelineView';
+export { EnterpriseTableView } from './components/EnterpriseTableView';
 export type { SortOption } from './components/Toolbar';
 
 // Legacy exports kept for backward compat
