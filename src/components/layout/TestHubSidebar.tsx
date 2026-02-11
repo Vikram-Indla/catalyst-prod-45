@@ -48,8 +48,7 @@ const testHubSidebarConfig: SidebarConfig = {
       title: 'Overview',
       items: [
         { id: 'dashboard', title: 'Dashboard', path: '/testhub/dashboard', icon: BarChart3, exact: true },
-        { id: 'command-center', title: 'Command Center', path: '/testhub/releases/command-center', icon: Activity, exact: true },
-        { id: 'my-scope', title: 'My Scope', path: '/releases/my-scope', icon: UserCheck, exact: true },
+        { id: 'my-scope', title: 'My Scope', path: '/testhub/my-scope', icon: UserCheck, exact: true },
       ],
     },
     {
@@ -65,7 +64,6 @@ const testHubSidebarConfig: SidebarConfig = {
       items: [
         { id: 'cycles', title: 'Test Cycles', path: '/testhub/cycles', icon: RefreshCw, exact: false },
         { id: 'test-plans', title: 'Test Plans', path: '/testhub/test-plans', icon: ClipboardList, exact: false },
-        { id: 'releases', title: 'Releases', path: '/testhub/releases', icon: Package, exact: false },
         { id: 'execution', title: 'Execution Hub', path: '/testhub/execution', icon: Play, exact: false },
         { id: 'runs', title: 'Test Runs', path: '/testhub/runs', icon: Beaker, exact: false },
         { id: 'environments', title: 'Environments', path: '/testhub/environments', icon: Server, exact: false },
@@ -76,7 +74,6 @@ const testHubSidebarConfig: SidebarConfig = {
       items: [
         { id: 'defects', title: 'Defects', path: '/testhub/defects', icon: Bug, exact: false },
         { id: 'requirements', title: 'Requirements', path: '/testhub/requirements', icon: Target, exact: false },
-        { id: 'quality-gates', title: 'Quality Gates', path: '/testhub/releases/quality-gates', icon: Shield, exact: false },
         { id: 'coverage-matrix', title: 'Coverage Matrix', path: '/testhub/coverage-matrix', icon: LayoutGrid, exact: false },
         { id: 'traceability', title: 'Traceability', path: '/testhub/traceability', icon: GitBranch, exact: false },
       ],
