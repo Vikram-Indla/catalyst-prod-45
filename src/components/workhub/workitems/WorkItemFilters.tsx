@@ -1,11 +1,11 @@
 /**
- * WorkItemFilters — Type pills with project badges, search
+ * WorkItemFilters — Filter dropdowns for Projects, Types, Statuses, Releases + search
  * Reads distinct values from wh_issues (real synced data)
  */
 
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { Search, ChevronDown, Check, FolderGit2, X } from 'lucide-react';
-import { useIssueProjectKeys, useIssueTypes, useIssueStatuses } from '@/hooks/workhub/useWorkItems';
+import { Search, ChevronDown, Check, FolderGit2, X, Milestone } from 'lucide-react';
+import { useIssueProjectKeys, useIssueTypes, useIssueStatuses, useIssueFixVersions } from '@/hooks/workhub/useWorkItems';
 import type { WorkItemFilterConfig } from '@/hooks/workhub/useWorkItems';
 
 interface WorkItemFiltersProps {
@@ -62,7 +62,7 @@ function FilterDropdown({
       </button>
       {open && (
         <div
-          className="absolute top-full left-0 mt-1 min-w-[220px] max-h-[300px] overflow-y-auto rounded-lg border bg-white"
+          className="absolute top-full left-0 mt-1 min-w-[260px] max-h-[300px] overflow-y-auto rounded-lg border bg-white"
           style={{
             zIndex: 9999,
             boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
@@ -83,10 +83,12 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
   const { data: projectKeys = [] } = useIssueProjectKeys();
   const { data: issueTypes = [] } = useIssueTypes();
   const { data: statuses = [] } = useIssueStatuses();
+  const { data: fixVersions = [] } = useIssueFixVersions();
 
   const selectedTypeCount = filters.types?.length ?? 0;
   const selectedProjectCount = filters.project_keys?.length ?? 0;
   const selectedStatusCount = filters.statuses?.length ?? 0;
+  const selectedReleaseCount = filters.fix_version_names?.length ?? 0;
 
   const handleSearch = (val: string) => {
     setSearchInput(val);
@@ -102,7 +104,7 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
     onChange({ ...filters, [key]: next.length ? next : undefined });
   };
 
-  const hasAnyFilter = selectedTypeCount > 0 || selectedProjectCount > 0 || selectedStatusCount > 0 || !!filters.search_query;
+  const hasAnyFilter = selectedTypeCount > 0 || selectedProjectCount > 0 || selectedStatusCount > 0 || selectedReleaseCount > 0 || !!filters.search_query;
 
   return (
     <div className="space-y-3">
@@ -165,6 +167,39 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
           ))}
         </FilterDropdown>
 
+        {/* Releases (Fix Versions) */}
+        <FilterDropdown
+          label={selectedReleaseCount > 0 ? `${selectedReleaseCount} Release${selectedReleaseCount !== 1 ? 's' : ''}` : 'All Releases'}
+          badge={selectedReleaseCount > 0 ? selectedReleaseCount : undefined}
+          isActive={selectedReleaseCount > 0}
+        >
+          {fixVersions.length === 0 ? (
+            <div className="px-3 py-3 text-xs italic" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+              No fix versions found in synced data
+            </div>
+          ) : (
+            fixVersions.map(v => (
+              <button
+                key={v.name}
+                onClick={() => toggleArrayFilter('fix_version_names', v.name)}
+                className="flex items-center justify-between w-full px-3 py-2 text-xs hover:bg-slate-50 transition-colors"
+                style={{ color: 'var(--wh-text-primary, #0f172a)' }}
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <Milestone className="w-3.5 h-3.5 shrink-0" style={{ color: '#059669' }} />
+                  <span className="truncate">{v.name}</span>
+                  {v.releaseDate && (
+                    <span className="text-[10px] shrink-0" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+                      {v.releaseDate}
+                    </span>
+                  )}
+                </div>
+                {filters.fix_version_names?.includes(v.name) && <Check className="w-3.5 h-3.5 shrink-0 ml-1" style={{ color: 'var(--wh-primary, #2563eb)' }} />}
+              </button>
+            ))
+          )}
+        </FilterDropdown>
+
         <div className="flex-1" />
 
         {hasAnyFilter && (
@@ -196,6 +231,28 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
             >
               {pk}
               <button onClick={() => toggleArrayFilter('project_keys', pk)} className="hover:text-red-500">
+                <X className="w-2.5 h-2.5" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Selected release chips */}
+      {selectedReleaseCount > 0 && (
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <Milestone className="w-3.5 h-3.5" style={{ color: '#059669' }} />
+          <span className="text-[11px] font-medium" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+            Releases:
+          </span>
+          {filters.fix_version_names!.map(name => (
+            <span
+              key={name}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold"
+              style={{ backgroundColor: '#ecfdf5', color: '#059669', border: '1px solid #a7f3d0' }}
+            >
+              {name}
+              <button onClick={() => toggleArrayFilter('fix_version_names', name)} className="hover:text-red-500">
                 <X className="w-2.5 h-2.5" />
               </button>
             </span>

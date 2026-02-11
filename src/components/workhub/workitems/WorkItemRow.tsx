@@ -124,7 +124,7 @@ export function WorkItemRow({
     <div
       className="group grid items-center border-b hover:bg-[#f8fafc] cursor-pointer transition-colors"
       style={{
-        gridTemplateColumns: '36px minmax(140px, auto) 1fr 120px 100px 130px 90px 90px',
+        gridTemplateColumns: '36px minmax(140px, auto) 1fr 120px 100px 100px 130px 90px 90px',
         height: 'var(--wh-row-height, 44px)',
         borderColor: '#f1f5f9',
         fontFamily: 'var(--wh-font-sans)',
@@ -199,7 +199,17 @@ export function WorkItemRow({
         </span>
       </div>
 
-      {/* 5. Assignee — mapped profile avatar with fallback */}
+      {/* 5. Theme (placeholder — will be populated when themes are created in Catalyst) */}
+      <div>
+        <span
+          className="text-[10.5px] italic"
+          style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}
+        >
+          —
+        </span>
+      </div>
+
+      {/* 6. Assignee — mapped profile avatar with fallback */}
       <div className="flex items-center gap-1 min-w-0">
         {item.assignee_display_name ? (
           <>

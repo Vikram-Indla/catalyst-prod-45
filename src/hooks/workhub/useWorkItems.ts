@@ -56,6 +56,7 @@ export interface WorkItemFilterConfig {
   project_keys?: string[];
   search_query?: string;
   priorities?: string[];
+  fix_version_names?: string[];
 }
 
 export interface PaginationConfig {
@@ -87,6 +88,8 @@ function buildFilteredQuery(
     const s = filters.search_query;
     q = q.or(`summary.ilike.%${s}%,issue_key.ilike.%${s}%`);
   }
+  // fix_version_names filter: use containedBy on jsonb array elements
+  // We filter client-side after fetch since JSONB array element filtering is complex in PostgREST
   return q;
 }
 
@@ -153,10 +156,44 @@ export function useWorkItems(
 ) {
   const page = pagination?.page ?? 0;
   const pageSize = pagination?.pageSize ?? 50;
+  const hasVersionFilter = (filters?.fix_version_names?.length ?? 0) > 0;
 
   return useQuery({
     queryKey: ['workhub', 'work-items', filters, page, pageSize],
     queryFn: async () => {
+      // When fix_version_names filter is active, we need to fetch more and filter client-side
+      // because PostgREST doesn't support filtering inside JSONB array elements easily
+      if (hasVersionFilter) {
+        // Fetch all matching items (without pagination), filter, then paginate client-side
+        let q = supabase
+          .from('wh_issues')
+          .select('*', { count: 'exact' })
+          .order('jira_updated_at', { ascending: false });
+
+        q = buildFilteredQuery(q, filters);
+
+        const { data, error } = await q;
+        if (error) throw new Error(error.message);
+
+        const allItems = (data ?? []) as unknown as JiraIssue[];
+        const versionNames = new Set(filters!.fix_version_names!);
+        const filtered = allItems.filter(item => {
+          if (!Array.isArray(item.fix_versions) || item.fix_versions.length === 0) return false;
+          return item.fix_versions.some((v: any) => versionNames.has(v.name));
+        });
+
+        const from = page * pageSize;
+        const paged = filtered.slice(from, from + pageSize);
+
+        return {
+          items: paged,
+          totalCount: filtered.length,
+          page,
+          pageSize,
+          totalPages: Math.ceil(filtered.length / pageSize),
+        };
+      }
+
       const from = page * pageSize;
       const to = from + pageSize - 1;
 
@@ -181,6 +218,49 @@ export function useWorkItems(
     },
     placeholderData: keepPreviousData,
     ...QUERY_OPTIONS,
+  });
+}
+
+/** Distinct fix version names from wh_issues for filter dropdown */
+export function useIssueFixVersions() {
+  return useQuery({
+    queryKey: ['workhub', 'issue-fix-versions'],
+    queryFn: async () => {
+      // Paginated scan to extract all unique version names from JSONB
+      const allVersions = new Map<string, { name: string; releaseDate?: string }>();
+      let page = 0;
+      const batchSize = 1000;
+      let hasMore = true;
+
+      while (hasMore) {
+        const { data, error } = await supabase
+          .from('wh_issues')
+          .select('fix_versions')
+          .not('fix_versions', 'eq', '[]')
+          .range(page * batchSize, (page + 1) * batchSize - 1);
+
+        if (error) throw new Error(error.message);
+        if (!data || data.length === 0) break;
+
+        data.forEach((row: any) => {
+          if (Array.isArray(row.fix_versions)) {
+            row.fix_versions.forEach((v: any) => {
+              if (v?.name && !allVersions.has(v.name)) {
+                allVersions.set(v.name, { name: v.name, releaseDate: v.releaseDate });
+              }
+            });
+          }
+        });
+
+        hasMore = data.length === batchSize;
+        page++;
+      }
+
+      // Sort by releaseDate desc, then name
+      return Array.from(allVersions.values())
+        .sort((a, b) => (b.releaseDate || '').localeCompare(a.releaseDate || '') || a.name.localeCompare(b.name));
+    },
+    staleTime: 120_000,
   });
 }
 
