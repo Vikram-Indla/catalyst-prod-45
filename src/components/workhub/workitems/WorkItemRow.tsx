@@ -115,7 +115,7 @@ export function WorkItemRow({
     <div
       className="group grid items-center border-b hover:bg-[#f8fafc] cursor-pointer transition-colors"
       style={{
-        gridTemplateColumns: '36px 36px minmax(140px, auto) 1fr 120px 120px 130px 90px 90px 90px',
+        gridTemplateColumns: '36px 36px minmax(140px, auto) 1fr 120px 140px 120px 130px 90px 90px 90px',
         height: 'var(--wh-row-height, 44px)',
         borderColor: '#f1f5f9',
         fontFamily: 'var(--wh-font-sans)',
@@ -134,12 +134,18 @@ export function WorkItemRow({
       </div>
 
       {/* 2. Type Icon with tooltip */}
-      <div className="flex justify-center" title={item.issue_type}>
+      <div className="flex justify-center relative group/type">
         <TypeIconComponent
           className="w-4 h-4 shrink-0"
           style={{ color: typeIcon.color }}
           strokeWidth={1.8}
         />
+        <div
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 rounded text-[10px] font-semibold whitespace-nowrap opacity-0 group-hover/type:opacity-100 pointer-events-none transition-opacity z-50"
+          style={{ backgroundColor: '#1e293b', color: '#fff' }}
+        >
+          {item.issue_type}
+        </div>
       </div>
 
       {/* 3. Issue Key + Expand */}
@@ -188,6 +194,22 @@ export function WorkItemRow({
         >
           {item.status}
         </span>
+      </div>
+
+      {/* 5b. Fix Version */}
+      <div className="flex items-center min-w-0">
+        {Array.isArray(item.fix_versions) && item.fix_versions.length > 0 ? (
+          <span
+            className="inline-flex px-2 py-0.5 rounded text-[10px] font-medium truncate max-w-full"
+            style={{ backgroundColor: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0' }}
+            title={item.fix_versions.map((v: any) => v.name).join(', ')}
+          >
+            {item.fix_versions[0]?.name}
+            {item.fix_versions.length > 1 && ` +${item.fix_versions.length - 1}`}
+          </span>
+        ) : (
+          <span className="text-[10.5px] italic" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>—</span>
+        )}
       </div>
 
       {/* 6. Theme */}

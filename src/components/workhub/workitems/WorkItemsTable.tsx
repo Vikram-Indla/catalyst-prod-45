@@ -27,8 +27,8 @@ interface WorkItemsTableProps {
 }
 
 const ROW_HEIGHT = 44;
-const GRID_COLS = '36px 36px minmax(140px, auto) 1fr 120px 120px 130px 90px 90px 90px';
-const HEADER_COLS = ['Type', 'Key', 'Summary', 'Status', 'Theme', 'Assignee', 'Priority', 'Updated', 'Created'];
+const GRID_COLS = '36px 36px minmax(140px, auto) 1fr 120px 140px 120px 130px 90px 90px 90px';
+const HEADER_COLS = ['Type', 'Key', 'Summary', 'Status', 'Fix Version', 'Theme', 'Assignee', 'Priority', 'Updated', 'Created'];
 
 /**
  * Fetch avatar mapping: jira_account_id → avatar_url from wh_user_mapping joined with profiles.
