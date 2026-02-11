@@ -89,6 +89,7 @@ export function useForceSync() {
       issue_types?: string[]
       fix_versions?: string[]
       projects?: string[]
+      project_configs?: Record<string, { lookback_months: number; statuses: string[] }>
     } = {}) => {
       const { data, error } = await supabase.functions.invoke('wh-jira-sync', {
         body: {
@@ -97,6 +98,7 @@ export function useForceSync() {
           issue_types: params.issue_types?.length ? params.issue_types : undefined,
           fix_versions: params.fix_versions?.length ? params.fix_versions : undefined,
           projects: params.projects?.length ? params.projects : undefined,
+          project_configs: params.project_configs || undefined,
         },
       })
       if (error) throw new Error(error.message)
@@ -116,7 +118,7 @@ export function useSyncConfig() {
       const { data, error } = await (supabase as any)
         .from('wh_config')
         .select('key, value')
-        .in('key', ['sync_interval_minutes', 'sync_full_time_utc', 'sync_max_months', 'sync_lookback_months', 'sync_issue_types', 'sync_fix_versions', 'sync_projects'])
+        .in('key', ['sync_interval_minutes', 'sync_full_time_utc', 'sync_max_months', 'sync_lookback_months', 'sync_issue_types', 'sync_fix_versions', 'sync_projects', 'sync_project_config'])
       if (error) throw new Error(error.message)
       const cfg: Record<string, any> = {}
       data?.forEach((c: any) => {
@@ -237,6 +239,7 @@ export function useSaveFilterSettings() {
       sync_issue_types?: string[]
       sync_fix_versions?: string[]
       sync_lookback_months?: number
+      sync_project_config?: Record<string, { lookback_months: number; statuses: string[] }>
     }) => {
       const updates = []
       if (input.sync_projects !== undefined) {
@@ -257,6 +260,11 @@ export function useSaveFilterSettings() {
       if (input.sync_lookback_months !== undefined) {
         updates.push(
           (supabase as any).from('wh_config').upsert({ key: 'sync_lookback_months', value: input.sync_lookback_months }, { onConflict: 'key' })
+        )
+      }
+      if (input.sync_project_config !== undefined) {
+        updates.push(
+          (supabase as any).from('wh_config').upsert({ key: 'sync_project_config', value: JSON.stringify(input.sync_project_config) }, { onConflict: 'key' })
         )
       }
       await Promise.all(updates)

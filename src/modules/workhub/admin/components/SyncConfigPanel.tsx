@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Download, Clock, Loader2, CheckCircle2, AlertCircle, BarChart3, Filter, FolderGit2 } from 'lucide-react';
+import { Download, Clock, Loader2, CheckCircle2, AlertCircle, BarChart3, Filter, FolderGit2, ChevronDown, ChevronRight, Settings2 } from 'lucide-react';
 import { MultiSelectDropdown, type MultiSelectOption } from './MultiSelectDropdown';
 import {
   useAvailableProjects, useForceSync, useSyncConfig,
@@ -9,13 +9,19 @@ import {
 import toast from 'react-hot-toast';
 
 const LOOKBACK_OPTIONS = [
-  { value: 1, label: 'Last 1 month' },
-  { value: 2, label: 'Last 2 months' },
-  { value: 3, label: 'Last 3 months' },
-  { value: 4, label: 'Last 4 months' },
-  { value: 5, label: 'Last 5 months' },
-  { value: 6, label: 'Last 6 months' },
+  { value: 1, label: '1 month' },
+  { value: 2, label: '2 months' },
+  { value: 3, label: '3 months' },
+  { value: 4, label: '4 months' },
+  { value: 5, label: '5 months' },
+  { value: 6, label: '6 months' },
 ];
+
+/** Per-project sync configuration */
+export interface ProjectSyncConfig {
+  lookback_months: number;
+  statuses: string[];
+}
 
 /** Sync progress phases per project */
 interface SyncProjectProgress {
@@ -24,6 +30,22 @@ interface SyncProjectProgress {
   startedAt?: number;
   durationMs?: number;
 }
+
+/** All known Jira statuses from synced data */
+const ALL_KNOWN_STATUSES = [
+  'Analysis', 'Awaiting Info', 'Backlog', 'BETA READY', 'Blocked',
+  'BRD Backlog', 'BRD Preparation', 'BRD Sign Off', 'BRD Under Review',
+  'Canceled', 'Closed', 'Deferred for INT', 'Done', 'Entity Input',
+  'Figma Design', 'hold', 'Implementation Review', 'In BETA', 'In Design',
+  'In Development', 'In Integration', 'In Production', 'In Progress', 'In QA',
+  'In Requirements', 'In Review', 'IN RFP', 'In UAT', 'In-Progress',
+  'Internal QA', 'Monitor', 'New', 'On Hold', 'On Track', 'Portfolio Review',
+  'Production Ready', 'QA Fail', 'Re-Open', 'Ready for Development',
+  'Ready for Entity', 'Ready for implementation', 'ready for production',
+  'Ready for QA', 'Rejected', 'Req Submitted', 'Resolved', 'Retest',
+  'Review', 'Selected for Development', 'Staging/QA', 'To Do', 'ToDo',
+  'Technical validation', 'Ready for UAT',
+];
 
 export function SyncConfigPanel() {
   const { data: availableProjects = [], isLoading: projectsLoading } = useAvailableProjects();
@@ -35,8 +57,11 @@ export function SyncConfigPanel() {
 
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [selectedIssueTypes, setSelectedIssueTypes] = useState<string[]>([]);
-  const [lookbackMonths, setLookbackMonths] = useState<number>(3);
   const [hasChanges, setHasChanges] = useState(false);
+
+  // Per-project config: { [projectKey]: { lookback_months, statuses[] } }
+  const [projectConfigs, setProjectConfigs] = useState<Record<string, ProjectSyncConfig>>({});
+  const [expandedProject, setExpandedProject] = useState<string | null>(null);
 
   // Progress tracking
   const [syncProgress, setSyncProgress] = useState<SyncProjectProgress[]>([]);
@@ -50,16 +75,39 @@ export function SyncConfigPanel() {
       if (Array.isArray(savedProjects) && savedProjects.length > 0) {
         setSelectedProjects(savedProjects);
       }
-      const savedLookback = syncConfig.sync_lookback_months;
-      if (savedLookback && typeof savedLookback === 'number') {
-        setLookbackMonths(savedLookback);
-      }
       const savedTypes = syncConfig.sync_issue_types;
       if (Array.isArray(savedTypes) && savedTypes.length > 0) {
         setSelectedIssueTypes(savedTypes);
       }
+      // Load per-project configs
+      const savedProjectConfigs = syncConfig.sync_project_config;
+      if (savedProjectConfigs && typeof savedProjectConfigs === 'object') {
+        setProjectConfigs(savedProjectConfigs as Record<string, ProjectSyncConfig>);
+      }
     }
   }, [syncConfig]);
+
+  // Ensure every selected project has a config entry
+  useEffect(() => {
+    setProjectConfigs(prev => {
+      const next = { ...prev };
+      let changed = false;
+      selectedProjects.forEach(pk => {
+        if (!next[pk]) {
+          next[pk] = { lookback_months: 3, statuses: [] };
+          changed = true;
+        }
+      });
+      // Remove configs for deselected projects
+      Object.keys(next).forEach(pk => {
+        if (!selectedProjects.includes(pk)) {
+          delete next[pk];
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
+  }, [selectedProjects]);
 
   const projectOptions: MultiSelectOption[] = availableProjects.map(p => ({
     value: p.key,
@@ -72,6 +120,10 @@ export function SyncConfigPanel() {
     label: t,
   }));
 
+  const statusOptions: MultiSelectOption[] = ALL_KNOWN_STATUSES
+    .sort((a, b) => a.localeCompare(b))
+    .map(s => ({ value: s, label: s }));
+
   const handleProjectChange = (newSelected: string[]) => {
     setSelectedProjects(newSelected);
     setHasChanges(true);
@@ -82,8 +134,11 @@ export function SyncConfigPanel() {
     setHasChanges(true);
   };
 
-  const handleLookbackChange = (months: number) => {
-    setLookbackMonths(months);
+  const updateProjectConfig = (projectKey: string, update: Partial<ProjectSyncConfig>) => {
+    setProjectConfigs(prev => ({
+      ...prev,
+      [projectKey]: { ...prev[projectKey], ...update },
+    }));
     setHasChanges(true);
   };
 
@@ -92,7 +147,7 @@ export function SyncConfigPanel() {
       await saveFilters.mutateAsync({
         sync_projects: selectedProjects,
         sync_issue_types: selectedIssueTypes,
-        sync_lookback_months: lookbackMonths,
+        sync_project_config: projectConfigs,
       });
       setHasChanges(false);
       toast.success('Sync settings saved');
@@ -107,38 +162,25 @@ export function SyncConfigPanel() {
       return;
     }
 
-    // Initialize progress tracking
-    const projectList = selectedProjects.length > 0
-      ? selectedProjects
-      : availableProjects.map(p => p.key);
-
+    const projectList = selectedProjects;
     const initialProgress: SyncProjectProgress[] = projectList.map(key => ({
-      key,
-      status: 'pending',
+      key, status: 'pending',
     }));
     setSyncProgress(initialProgress);
     setSyncOverallPhase('syncing');
 
-    // Simulate per-project progress animation
     let currentIndex = 0;
     progressTimerRef.current = setInterval(() => {
       setSyncProgress(prev => {
         const next = [...prev];
-        // Mark previous as done
         if (currentIndex > 0 && next[currentIndex - 1]?.status === 'syncing') {
           next[currentIndex - 1] = {
-            ...next[currentIndex - 1],
-            status: 'done',
+            ...next[currentIndex - 1], status: 'done',
             durationMs: Date.now() - (next[currentIndex - 1].startedAt ?? Date.now()),
           };
         }
-        // Start current
         if (currentIndex < next.length) {
-          next[currentIndex] = {
-            ...next[currentIndex],
-            status: 'syncing',
-            startedAt: Date.now(),
-          };
+          next[currentIndex] = { ...next[currentIndex], status: 'syncing', startedAt: Date.now() };
           currentIndex++;
         }
         return next;
@@ -152,18 +194,17 @@ export function SyncConfigPanel() {
       await saveFilters.mutateAsync({
         sync_projects: selectedProjects,
         sync_issue_types: selectedIssueTypes,
-        sync_lookback_months: lookbackMonths,
+        sync_project_config: projectConfigs,
       });
       setHasChanges(false);
 
       await forceSync.mutateAsync({
         sync_type: 'full',
-        lookback_months: lookbackMonths,
         issue_types: selectedIssueTypes,
         projects: selectedProjects,
+        project_configs: projectConfigs,
       });
 
-      // Mark all done
       if (progressTimerRef.current) clearInterval(progressTimerRef.current);
       setSyncProgress(prev => prev.map(p => ({
         ...p,
@@ -183,16 +224,12 @@ export function SyncConfigPanel() {
     }
   };
 
-  // Cleanup timer
   useEffect(() => {
-    return () => {
-      if (progressTimerRef.current) clearInterval(progressTimerRef.current);
-    };
+    return () => { if (progressTimerRef.current) clearInterval(progressTimerRef.current); };
   }, []);
 
   const isLoading = projectsLoading || configLoading;
   const isSyncing = forceSync.isPending || syncOverallPhase === 'syncing';
-
   const lastSync = syncHealth?.lastSync;
 
   return (
@@ -205,7 +242,7 @@ export function SyncConfigPanel() {
           Sync Configuration
         </h3>
         <p style={{ fontSize: 12, color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)', margin: 0 }}>
-          Choose which projects, work item types, and how much history to sync from Jira.
+          Choose which projects, work item types, statuses, and timeline per project to sync from Jira.
         </p>
       </div>
 
@@ -229,10 +266,131 @@ export function SyncConfigPanel() {
             />
             <p style={{ fontSize: 11, color: 'var(--wh-tx4)', marginTop: 6, fontFamily: 'var(--wh-fn)' }}>
               {selectedProjects.length === 0
-                ? 'No projects selected — sync will use all accessible projects.'
-                : `${selectedProjects.length} of ${availableProjects.length} projects selected.`}
+                ? 'No projects selected — select projects to configure sync criteria.'
+                : `${selectedProjects.length} of ${availableProjects.length} projects selected. Expand each to set timeline & statuses.`}
             </p>
           </div>
+
+          {/* Per-Project Configuration Cards */}
+          {selectedProjects.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <label style={{
+                fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase' as const,
+                letterSpacing: '.4px', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: 6,
+              }}>
+                <Settings2 size={12} />
+                Per-Project Sync Criteria
+              </label>
+
+              {selectedProjects.map(pk => {
+                const config = projectConfigs[pk] || { lookback_months: 3, statuses: [] };
+                const isExpanded = expandedProject === pk;
+                const projectInfo = availableProjects.find(p => p.key === pk);
+
+                return (
+                  <div
+                    key={pk}
+                    style={{
+                      border: '1px solid var(--wh-bdr)',
+                      borderRadius: 8,
+                      background: isExpanded ? '#FAFBFC' : 'var(--wh-sf)',
+                      overflow: 'visible',
+                    }}
+                  >
+                    {/* Project header row */}
+                    <button
+                      onClick={() => setExpandedProject(isExpanded ? null : pk)}
+                      style={{
+                        width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                        padding: '10px 14px', border: 'none', background: 'none', cursor: 'pointer',
+                        textAlign: 'left',
+                      }}
+                    >
+                      {isExpanded
+                        ? <ChevronDown size={14} style={{ color: '#2563EB', flexShrink: 0 }} />
+                        : <ChevronRight size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />
+                      }
+                      <span style={{
+                        fontFamily: 'var(--wh-mo)', fontSize: 12, fontWeight: 700,
+                        color: '#2563EB', minWidth: 50,
+                      }}>
+                        {pk}
+                      </span>
+                      <span style={{ fontSize: 11, color: 'var(--wh-tx3)', flex: 1, fontFamily: 'var(--wh-fn)' }}>
+                        {projectInfo?.name || pk}
+                      </span>
+                      <span style={{
+                        fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-fn)',
+                        display: 'flex', gap: 8,
+                      }}>
+                        <span>📅 {config.lookback_months}mo</span>
+                        <span>🔖 {config.statuses.length === 0 ? 'All statuses' : `${config.statuses.length} statuses`}</span>
+                      </span>
+                    </button>
+
+                    {/* Expanded config body */}
+                    {isExpanded && (
+                      <div style={{
+                        padding: '0 14px 14px 38px',
+                        display: 'flex', flexDirection: 'column', gap: 14,
+                      }}>
+                        {/* Timeline for this project */}
+                        <div>
+                          <label style={{
+                            fontSize: 10, fontWeight: 600, color: '#64748B',
+                            textTransform: 'uppercase' as const, letterSpacing: '.4px',
+                            fontFamily: 'Inter, sans-serif', display: 'block', marginBottom: 6,
+                          }}>
+                            Timeline Lookback
+                          </label>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                            {LOOKBACK_OPTIONS.map(opt => {
+                              const isActive = config.lookback_months === opt.value;
+                              return (
+                                <button
+                                  key={opt.value}
+                                  onClick={() => updateProjectConfig(pk, { lookback_months: opt.value })}
+                                  style={{
+                                    padding: '5px 10px', borderRadius: 5,
+                                    border: isActive ? '2px solid #2563EB' : '1px solid var(--wh-bdr)',
+                                    background: isActive ? '#EFF6FF' : '#fff',
+                                    color: isActive ? '#2563EB' : 'var(--wh-tx2)',
+                                    fontSize: 11, fontWeight: isActive ? 600 : 400,
+                                    fontFamily: 'var(--wh-fn)', cursor: 'pointer', transition: 'all .15s',
+                                  }}
+                                >
+                                  <Clock size={10} style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }} />
+                                  {opt.label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Statuses for this project */}
+                        <div style={{ overflow: 'visible' }}>
+                          <MultiSelectDropdown
+                            label={`Statuses for ${pk}`}
+                            options={statusOptions}
+                            selected={config.statuses}
+                            onChange={(newStatuses) => updateProjectConfig(pk, { statuses: newStatuses })}
+                            placeholder="All statuses (no filter)"
+                            emptyMessage="No statuses available."
+                            accentColor="#7C3AED"
+                          />
+                          <p style={{ fontSize: 10, color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
+                            {config.statuses.length === 0
+                              ? 'No filter — all statuses will be synced for this project.'
+                              : `Only ${config.statuses.length} status(es) will be synced. Non-matching items will be removed.`}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {/* Work Item Type Filter */}
           <div style={{ maxWidth: 480, overflow: 'visible' }}>
@@ -252,45 +410,6 @@ export function SyncConfigPanel() {
             </p>
           </div>
 
-          {/* Timeline Lookback */}
-          <div style={{ maxWidth: 480 }}>
-            <label style={{
-              fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase' as const,
-              letterSpacing: '.4px', fontFamily: 'Inter, sans-serif', display: 'block', marginBottom: 8,
-            }}>
-              Sync Timeline
-            </label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {LOOKBACK_OPTIONS.map(opt => {
-                const isActive = lookbackMonths === opt.value;
-                return (
-                  <button
-                    key={opt.value}
-                    onClick={() => handleLookbackChange(opt.value)}
-                    style={{
-                      padding: '7px 14px',
-                      borderRadius: 6,
-                      border: isActive ? '2px solid #2563EB' : '1px solid var(--wh-bdr)',
-                      background: isActive ? '#EFF6FF' : 'var(--wh-sf)',
-                      color: isActive ? '#2563EB' : 'var(--wh-tx2)',
-                      fontSize: 12,
-                      fontWeight: isActive ? 600 : 400,
-                      fontFamily: 'var(--wh-fn)',
-                      cursor: 'pointer',
-                      transition: 'all .15s',
-                    }}
-                  >
-                    <Clock size={12} style={{ display: 'inline', verticalAlign: '-1px', marginRight: 4 }} />
-                    {opt.label}
-                  </button>
-                );
-              })}
-            </div>
-            <p style={{ fontSize: 11, color: 'var(--wh-tx4)', marginTop: 6, fontFamily: 'var(--wh-fn)' }}>
-              Only issues updated within this window will be fetched from Jira.
-            </p>
-          </div>
-
           {/* Actions row */}
           <div style={{
             display: 'flex', alignItems: 'center', gap: 8,
@@ -299,7 +418,7 @@ export function SyncConfigPanel() {
             <button
               className="wh-btn-primary"
               onClick={handleSyncNow}
-              disabled={isSyncing}
+              disabled={isSyncing || selectedProjects.length === 0}
               style={{ display: 'flex', alignItems: 'center', gap: 6 }}
             >
               {isSyncing ? (
@@ -319,17 +438,20 @@ export function SyncConfigPanel() {
                 {saveFilters.isPending ? 'Saving...' : 'Save Settings'}
               </button>
             )}
+
+            {selectedProjects.length === 0 && (
+              <span style={{ fontSize: 11, color: '#D97706', fontFamily: 'var(--wh-fn)' }}>
+                Select at least one project to enable sync
+              </span>
+            )}
           </div>
 
-          {/* ═══ SYNC PROGRESS PANEL ═══ */}
+          {/* SYNC PROGRESS */}
           {syncProgress.length > 0 && syncOverallPhase !== 'idle' && (
-            <SyncProgressPanel
-              projects={syncProgress}
-              phase={syncOverallPhase}
-            />
+            <SyncProgressPanel projects={syncProgress} phase={syncOverallPhase} />
           )}
 
-          {/* ═══ LAST SYNC STATISTICS ═══ */}
+          {/* LAST SYNC STATS */}
           {lastSync && syncOverallPhase !== 'syncing' && (
             <SyncStatisticsBoard syncEntry={lastSync} />
           )}
@@ -341,8 +463,7 @@ export function SyncConfigPanel() {
 
 /* ── Sync Progress Panel ── */
 function SyncProgressPanel({
-  projects,
-  phase,
+  projects, phase,
 }: {
   projects: SyncProjectProgress[];
   phase: 'idle' | 'syncing' | 'done' | 'error';
@@ -356,7 +477,6 @@ function SyncProgressPanel({
       background: 'var(--wh-sf)', borderRadius: 'var(--wh-rad)',
       border: '1px solid var(--wh-bdr)', padding: 16,
     }}>
-      {/* Overall progress header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {phase === 'syncing' && <Loader2 size={14} style={{ color: '#2563EB', animation: 'spin 1s linear infinite' }} />}
@@ -370,8 +490,6 @@ function SyncProgressPanel({
           {completedCount} / {totalCount} projects
         </span>
       </div>
-
-      {/* Overall progress bar */}
       <div style={{ height: 6, borderRadius: 3, background: '#E2E8F0', overflow: 'hidden', marginBottom: 12 }}>
         <div style={{
           height: '100%', borderRadius: 3, transition: 'width 0.4s ease',
@@ -379,25 +497,19 @@ function SyncProgressPanel({
           background: phase === 'error' ? '#EF4444' : phase === 'done' ? '#10B981' : '#2563EB',
         }} />
       </div>
-
-      {/* Per-project progress rows */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {projects.map(p => (
           <div key={p.key} style={{
-            display: 'flex', alignItems: 'center', gap: 10, padding: '5px 8px',
-            borderRadius: 4,
+            display: 'flex', alignItems: 'center', gap: 10, padding: '5px 8px', borderRadius: 4,
             background: p.status === 'syncing' ? '#EFF6FF' : p.status === 'done' ? '#F0FDF4' : p.status === 'error' ? '#FEF2F2' : 'transparent',
             transition: 'background 0.2s',
           }}>
-            {/* Status icon */}
             <div style={{ width: 16, display: 'flex', justifyContent: 'center' }}>
               {p.status === 'pending' && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#CBD5E1' }} />}
               {p.status === 'syncing' && <Loader2 size={12} style={{ color: '#2563EB', animation: 'spin 1s linear infinite' }} />}
               {p.status === 'done' && <CheckCircle2 size={12} style={{ color: '#10B981' }} />}
               {p.status === 'error' && <AlertCircle size={12} style={{ color: '#EF4444' }} />}
             </div>
-
-            {/* Project key */}
             <span style={{
               fontFamily: 'var(--wh-mo)', fontSize: 11, fontWeight: 600,
               color: p.status === 'syncing' ? '#2563EB' : p.status === 'done' ? '#059669' : p.status === 'error' ? '#DC2626' : 'var(--wh-tx3)',
@@ -405,8 +517,6 @@ function SyncProgressPanel({
             }}>
               {p.key}
             </span>
-
-            {/* Per-project mini bar */}
             <div style={{ flex: 1, height: 3, borderRadius: 2, background: '#E2E8F0', overflow: 'hidden' }}>
               <div style={{
                 height: '100%', borderRadius: 2, transition: 'width 0.4s ease',
@@ -414,9 +524,7 @@ function SyncProgressPanel({
                 background: p.status === 'done' ? '#10B981' : p.status === 'syncing' ? '#2563EB' : p.status === 'error' ? '#EF4444' : '#CBD5E1',
               }} />
             </div>
-
-            {/* Duration */}
-            <span style={{ fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', minWidth: 40, textAlign: 'right' }}>
+            <span style={{ fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', minWidth: 40, textAlign: 'right' as const }}>
               {p.status === 'done' && p.durationMs != null ? `${(p.durationMs / 1000).toFixed(1)}s` : ''}
               {p.status === 'syncing' ? 'syncing...' : ''}
             </span>
@@ -442,19 +550,17 @@ function SyncStatisticsBoard({ syncEntry }: { syncEntry: SyncLogEntry }) {
 
   const statusColor = syncEntry.status === 'success' ? '#10B981'
     : syncEntry.status === 'warning' ? '#F59E0B'
-    : syncEntry.status === 'error' ? '#EF4444'
-    : '#2563EB';
+    : syncEntry.status === 'error' ? '#EF4444' : '#2563EB';
 
   const statusLabel = syncEntry.status === 'success' ? 'Completed'
     : syncEntry.status === 'warning' ? 'Completed with warnings'
-    : syncEntry.status === 'error' ? 'Failed'
-    : 'Running';
+    : syncEntry.status === 'error' ? 'Failed' : 'Running';
 
   const stats = [
-    { label: 'Issues Fetched', value: syncEntry.issues_fetched ?? 0, icon: '↓' },
-    { label: 'Issues Upserted', value: syncEntry.issues_upserted ?? 0, icon: '↻' },
-    { label: 'Issues Pruned', value: syncEntry.issues_pruned ?? 0, icon: '✕' },
-    { label: 'Versions Synced', value: syncEntry.versions_fetched ?? 0, icon: '⊟' },
+    { label: 'Issues Fetched', value: syncEntry.issues_fetched ?? 0 },
+    { label: 'Issues Upserted', value: syncEntry.issues_upserted ?? 0 },
+    { label: 'Issues Pruned', value: syncEntry.issues_pruned ?? 0 },
+    { label: 'Versions Synced', value: syncEntry.versions_fetched ?? 0 },
   ];
 
   return (
@@ -462,7 +568,6 @@ function SyncStatisticsBoard({ syncEntry }: { syncEntry: SyncLogEntry }) {
       background: 'var(--wh-sf)', borderRadius: 'var(--wh-rad)',
       border: '1px solid var(--wh-bdr)', padding: 16,
     }}>
-      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <BarChart3 size={14} style={{ color: 'var(--wh-tx3)' }} />
@@ -485,89 +590,58 @@ function SyncStatisticsBoard({ syncEntry }: { syncEntry: SyncLogEntry }) {
         </div>
       </div>
 
-      {/* Stats grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 12 }}>
         {stats.map(s => (
           <div key={s.label} style={{
             background: '#fff', borderRadius: 6, padding: '10px 12px',
-            border: '1px solid var(--wh-bdr)', textAlign: 'center',
+            border: '1px solid var(--wh-bdr)', textAlign: 'center' as const,
           }}>
-            <div style={{
-              fontFamily: 'var(--wh-fh)', fontSize: 20, fontWeight: 700,
-              color: 'var(--wh-tx)', marginBottom: 2,
-            }}>
+            <div style={{ fontFamily: 'var(--wh-fh)', fontSize: 20, fontWeight: 700, color: 'var(--wh-tx)', marginBottom: 2 }}>
               {s.value}
             </div>
-            <div style={{
-              fontSize: 10, fontWeight: 500, color: 'var(--wh-tx4)',
-              fontFamily: 'var(--wh-fn)', textTransform: 'uppercase', letterSpacing: '.3px',
-            }}>
+            <div style={{ fontSize: 10, fontWeight: 500, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-fn)', textTransform: 'uppercase' as const, letterSpacing: '.3px' }}>
               {s.label}
             </div>
           </div>
         ))}
       </div>
 
-      {/* Meta row: duration, lookback, projects synced */}
       <div style={{
         display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 11, color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)',
         paddingTop: 10, borderTop: '1px solid var(--wh-bdr)',
       }}>
         {syncEntry.duration_ms != null && (
-          <span>
-            <Clock size={10} style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }} />
-            Duration: <b style={{ color: 'var(--wh-tx2)' }}>{(syncEntry.duration_ms / 1000).toFixed(1)}s</b>
-          </span>
-        )}
-        {syncEntry.lookback_months != null && (
-          <span>
-            Lookback: <b style={{ color: 'var(--wh-tx2)' }}>{syncEntry.lookback_months} months</b>
-          </span>
+          <span><Clock size={10} style={{ display: 'inline', verticalAlign: '-1px', marginRight: 3 }} />
+            Duration: <b style={{ color: 'var(--wh-tx2)' }}>{(syncEntry.duration_ms / 1000).toFixed(1)}s</b></span>
         )}
         {syncEntry.projects_synced && syncEntry.projects_synced.length > 0 && (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-            <FolderGit2 size={10} style={{ verticalAlign: '-1px' }} />
-            Projects:
+            <FolderGit2 size={10} style={{ verticalAlign: '-1px' }} /> Projects:
             <span style={{ display: 'inline-flex', gap: 3, flexWrap: 'wrap' }}>
               {syncEntry.projects_synced.map(pk => (
                 <span key={pk} style={{
                   padding: '1px 6px', borderRadius: 4, fontSize: 10, fontWeight: 600,
                   background: '#EFF6FF', color: '#2563EB', fontFamily: 'var(--wh-mo)',
-                }}>
-                  {pk}
-                </span>
+                }}>{pk}</span>
               ))}
             </span>
           </span>
         )}
       </div>
 
-      {/* Warnings */}
       {syncEntry.warnings && syncEntry.warnings.length > 0 && (
-        <div style={{
-          marginTop: 10, padding: '8px 10px',
-          background: '#FFFBEB', borderRadius: 6, border: '1px solid #FDE68A',
-        }}>
+        <div style={{ marginTop: 10, padding: '8px 10px', background: '#FFFBEB', borderRadius: 6, border: '1px solid #FDE68A' }}>
           <div style={{ fontSize: 11, fontWeight: 600, color: '#D97706', marginBottom: 4 }}>
             {syncEntry.warnings.length} warning{syncEntry.warnings.length !== 1 ? 's' : ''}
           </div>
           {syncEntry.warnings.slice(0, 3).map((w, i) => (
             <div key={i} style={{ fontSize: 10, color: '#92400E', lineHeight: 1.4 }}>• {w}</div>
           ))}
-          {syncEntry.warnings.length > 3 && (
-            <div style={{ fontSize: 10, color: '#B45309', marginTop: 2 }}>
-              +{syncEntry.warnings.length - 3} more
-            </div>
-          )}
         </div>
       )}
 
-      {/* Error */}
       {syncEntry.error_message && (
-        <div style={{
-          marginTop: 10, padding: '8px 10px',
-          background: '#FEF2F2', borderRadius: 6, border: '1px solid #FECACA',
-        }}>
+        <div style={{ marginTop: 10, padding: '8px 10px', background: '#FEF2F2', borderRadius: 6, border: '1px solid #FECACA' }}>
           <div style={{ fontSize: 11, fontWeight: 600, color: '#DC2626', marginBottom: 2 }}>Error</div>
           <div style={{ fontSize: 10, color: '#991B1B', lineHeight: 1.4 }}>{syncEntry.error_message}</div>
         </div>
