@@ -67,6 +67,8 @@ const CycleReportPage = lazy(() => import("./pages/testhub/CycleReportPage"));
 const ExecutionHubPage = lazy(() => import("./pages/testhub/ExecutionHubPage"));
 const TestHubExecutionPage = lazy(() => import("./pages/testhub/TestHubExecutionPage"));
 const TestRunsPage = lazy(() => import("./pages/testhub/TestRunsPage"));
+const TestPlansListPage = lazy(() => import("./pages/testhub/TestPlansListPage"));
+const PlanDetailPage = lazy(() => import("./pages/testhub/PlanDetailPage"));
 const TestHubDefectsPage = lazy(() => import("./pages/testhub/DefectsPage"));
 const DefectDetailPage = lazy(() => import("./pages/testhub/DefectDetailPage"));
 const TestHubRequirementsPage = lazy(() => import("./pages/testhub/RequirementsPage"));
@@ -535,6 +537,8 @@ const App = () => (
                 <Route path="traceability" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubTraceabilityPage /></Suspense>} />
                 <Route path="reports" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubReportsPage /></Suspense>} />
                 <Route path="settings" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubSettingsPage /></Suspense>} />
+                <Route path="test-plans" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestPlansListPage /></Suspense>} />
+                <Route path="test-plans/:planId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><PlanDetailPage /></Suspense>} />
               </Route>
               
               {/* Priorities Module (formerly Task10) */}
