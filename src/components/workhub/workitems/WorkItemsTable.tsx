@@ -25,7 +25,8 @@ interface WorkItemsTableProps {
 }
 
 const ROW_HEIGHT = 44;
-const HEADER_COLS = ['Key', 'Summary', 'Status', 'Assignee', 'Priority', 'Updated', 'Created'];
+const GRID_COLS = '36px minmax(140px, auto) 1fr 120px 100px 100px 130px 90px 90px';
+const HEADER_COLS = ['Key', 'Summary', 'Status', 'Theme', 'Assignee', 'Priority', 'Updated', 'Created'];
 
 /**
  * Fetch avatar mapping: jira_account_id → avatar_url from wh_user_mapping joined with profiles.
@@ -125,7 +126,7 @@ export function WorkItemsTable({
             key={i}
             className="grid items-center px-4 border-b animate-pulse"
             style={{
-              gridTemplateColumns: '36px minmax(140px, auto) 1fr 120px 100px 130px 90px 90px',
+              gridTemplateColumns: GRID_COLS,
               height: ROW_HEIGHT,
               borderColor: '#f1f5f9',
             }}
@@ -170,7 +171,7 @@ export function WorkItemsTable({
       <div
         className="grid items-center border-b sticky top-0"
         style={{
-          gridTemplateColumns: '36px minmax(140px, auto) 1fr 120px 100px 130px 90px 90px',
+          gridTemplateColumns: GRID_COLS,
           height: '36px',
           backgroundColor: '#f8fafc',
           borderColor: 'var(--wh-border, #e2e8f0)',
