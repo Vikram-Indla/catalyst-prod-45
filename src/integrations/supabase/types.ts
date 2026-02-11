@@ -24062,6 +24062,101 @@ export type Database = {
           },
         ]
       }
+      th_audit_log: {
+        Row: {
+          action: string
+          changed_fields: string[] | null
+          created_at: string | null
+          entity_id: string | null
+          entity_key: string | null
+          entity_name: string | null
+          entity_type: string
+          id: string
+          ip_address: string | null
+          new_values: Json | null
+          notes: string | null
+          old_values: Json | null
+          parent_entity_id: string | null
+          parent_entity_type: string | null
+          session_id: string | null
+          user_agent: string | null
+          user_email: string | null
+          user_id: string | null
+          user_name: string | null
+        }
+        Insert: {
+          action: string
+          changed_fields?: string[] | null
+          created_at?: string | null
+          entity_id?: string | null
+          entity_key?: string | null
+          entity_name?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: string | null
+          new_values?: Json | null
+          notes?: string | null
+          old_values?: Json | null
+          parent_entity_id?: string | null
+          parent_entity_type?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Update: {
+          action?: string
+          changed_fields?: string[] | null
+          created_at?: string | null
+          entity_id?: string | null
+          entity_key?: string | null
+          entity_name?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: string | null
+          new_values?: Json | null
+          notes?: string | null
+          old_values?: Json | null
+          parent_entity_id?: string | null
+          parent_entity_type?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+          user_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       th_cycle_key_sequence: {
         Row: {
           id: number
@@ -24569,6 +24664,68 @@ export type Database = {
           {
             foreignKeyName: "th_defects_reported_by_fkey"
             columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_entity_history: {
+        Row: {
+          change_reason: string | null
+          changed_at: string | null
+          changed_by: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          snapshot: Json
+          version: number
+        }
+        Insert: {
+          change_reason?: string | null
+          changed_at?: string | null
+          changed_by?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          snapshot: Json
+          version?: number
+        }
+        Update: {
+          change_reason?: string | null
+          changed_at?: string | null
+          changed_by?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          snapshot?: Json
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_entity_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_entity_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_entity_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_entity_history_changed_by_fkey"
+            columns: ["changed_by"]
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
@@ -36585,6 +36742,17 @@ export type Database = {
           depth: number
         }[]
       }
+      get_audit_stats: {
+        Args: { p_days?: number }
+        Returns: {
+          active_users: number
+          creates: number
+          deletes: number
+          most_active_entity: string
+          total_events: number
+          updates: number
+        }[]
+      }
       get_automation_sync_status: {
         Args: { p_project_id?: string }
         Returns: Json
@@ -36722,6 +36890,19 @@ export type Database = {
           blocks_count: number
         }[]
       }
+      get_entity_audit_history: {
+        Args: { p_entity_id: string; p_entity_type: string; p_limit?: number }
+        Returns: {
+          action: string
+          changed_fields: string[]
+          created_at: string
+          id: string
+          new_values: Json
+          notes: string
+          old_values: Json
+          user_name: string
+        }[]
+      }
       get_environment_cycles: {
         Args: { p_environment_id: string }
         Returns: {
@@ -36856,6 +37037,18 @@ export type Database = {
       get_ra_user_role: {
         Args: never
         Returns: Database["public"]["Enums"]["ra_user_role"]
+      }
+      get_recent_activity: {
+        Args: { p_entity_type?: string; p_limit?: number; p_user_id?: string }
+        Returns: {
+          action: string
+          created_at: string
+          entity_key: string
+          entity_name: string
+          entity_type: string
+          id: string
+          user_name: string
+        }[]
       }
       get_recent_results: {
         Args: { p_limit?: number; p_run_id: string }
@@ -37145,6 +37338,22 @@ export type Database = {
         }
         Returns: Json
       }
+      log_audit_event: {
+        Args: {
+          p_action: string
+          p_changed_fields?: string[]
+          p_entity_id?: string
+          p_entity_key?: string
+          p_entity_name?: string
+          p_entity_type: string
+          p_new_values?: Json
+          p_notes?: string
+          p_old_values?: Json
+          p_parent_id?: string
+          p_parent_type?: string
+        }
+        Returns: string
+      }
       log_slack_audit: {
         Args: {
           p_action: string
@@ -37314,6 +37523,15 @@ export type Database = {
       resume_step_timer: {
         Args: { p_execution_id: string; p_step_id: string }
         Returns: Json
+      }
+      save_entity_snapshot: {
+        Args: {
+          p_change_reason?: string
+          p_entity_id: string
+          p_entity_type: string
+          p_snapshot: Json
+        }
+        Returns: number
       }
       save_step_notes_v2: {
         Args: { p_actual_result: string; p_run_id: string; p_step_id: string }

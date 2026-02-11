@@ -81,6 +81,7 @@ const TestHubReportsPage = lazy(() => import("./pages/testhub/ReportsListPage"))
 const ReportDetailPage = lazy(() => import("./pages/testhub/ReportDetailPage"));
 const TagsListPage = lazy(() => import("./pages/testhub/TagsListPage"));
 const TestHubSettingsPage = lazy(() => import("./pages/testhub/SettingsPage"));
+const ActivityFeedPage = lazy(() => import("./pages/testhub/ActivityFeedPage"));
 // Task10 pages
 const T10LandingPage = lazy(() => import("./modules/task10/pages/T10LandingPage").then(m => ({ default: m.T10LandingPage })));
 const T10WeekPage = lazy(() => import("./modules/task10/pages/T10WeekPage").then(m => ({ default: m.T10WeekPage })));
@@ -549,6 +550,7 @@ const App = () => (
                 <Route path="reports/:reportId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReportDetailPage /></Suspense>} />
                 <Route path="tags" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TagsListPage /></Suspense>} />
                 <Route path="settings" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubSettingsPage /></Suspense>} />
+                <Route path="activity" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ActivityFeedPage /></Suspense>} />
                 <Route path="test-plans" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestPlansListPage /></Suspense>} />
                 <Route path="test-plans/:planId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><PlanDetailPage /></Suspense>} />
               </Route>

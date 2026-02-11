@@ -26,6 +26,7 @@ import {
   Beaker,
   Server,
   Tags,
+  Activity,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
@@ -77,6 +78,7 @@ const testHubSidebarConfig: SidebarConfig = {
       items: [
         { id: 'reports', title: 'Reports', path: '/testhub/reports', icon: BarChart3, exact: false },
         { id: 'tags', title: 'Tags', path: '/testhub/tags', icon: Tags, exact: false },
+        { id: 'activity', title: 'Activity', path: '/testhub/activity', icon: Activity, exact: false },
       ],
     },
   ],
