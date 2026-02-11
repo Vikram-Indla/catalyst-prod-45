@@ -30,6 +30,7 @@ import {
   Database,
   Package,
   Shield,
+  UserCheck,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 
@@ -48,6 +49,7 @@ const testHubSidebarConfig: SidebarConfig = {
       items: [
         { id: 'dashboard', title: 'Dashboard', path: '/testhub/dashboard', icon: BarChart3, exact: true },
         { id: 'command-center', title: 'Command Center', path: '/testhub/releases/command-center', icon: Activity, exact: true },
+        { id: 'my-scope', title: 'My Scope', path: '/releases/my-scope', icon: UserCheck, exact: true },
       ],
     },
     {
