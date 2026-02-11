@@ -1,40 +1,45 @@
 /**
- * ReleasesPage — Release management with tabbed filtering
+ * ReleasesPage — Releases derived from real Jira fix_versions in wh_issues
  * Route: /workhub/releases
  */
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Rocket, Plus, Loader2 } from 'lucide-react';
-import { useReleaseProgress } from '@/hooks/workhub/useReleases';
-import type { ReleaseStatus } from '@/types/workhub.types';
+import { Rocket, Loader2 } from 'lucide-react';
+import { useJiraReleases } from '@/hooks/workhub/useJiraReleases';
+import type { JiraRelease } from '@/hooks/workhub/useJiraReleases';
 import { ReleaseCard } from './ReleaseCard';
-import { ReleaseModal } from './ReleaseModal';
 
-type TabKey = 'All' | ReleaseStatus;
+type TabKey = 'All' | 'Active' | 'At Risk' | 'Planned' | 'Completed';
 
 const TABS: TabKey[] = ['All', 'Active', 'At Risk', 'Planned', 'Completed'];
 
+function deriveStatus(r: JiraRelease): string {
+  if (r.totalItems > 0 && r.doneItems === r.totalItems) return 'Completed';
+  if (r.blockedItems > 0) return 'At Risk';
+  if (r.inProgressItems > 0 || r.inReviewItems > 0) return 'Active';
+  return 'Planned';
+}
+
 export function ReleasesPage() {
   const navigate = useNavigate();
-  const { data: releases, isLoading, error, refetch } = useReleaseProgress();
+  const { data: releases, isLoading, error, refetch } = useJiraReleases();
   const [activeTab, setActiveTab] = useState<TabKey>('All');
-  const [showModal, setShowModal] = useState(false);
 
   const tabCounts = useMemo(() => {
     const all = releases ?? [];
     return {
       All: all.length,
-      Active: all.filter(r => r.status === 'Active').length,
-      'At Risk': all.filter(r => r.status === 'At Risk').length,
-      Planned: all.filter(r => r.status === 'Planned').length,
-      Completed: all.filter(r => r.status === 'Completed').length,
+      Active: all.filter(r => deriveStatus(r) === 'Active').length,
+      'At Risk': all.filter(r => deriveStatus(r) === 'At Risk').length,
+      Planned: all.filter(r => deriveStatus(r) === 'Planned').length,
+      Completed: all.filter(r => deriveStatus(r) === 'Completed').length,
     };
   }, [releases]);
 
   const filtered = useMemo(() => {
     if (!releases) return [];
     if (activeTab === 'All') return releases;
-    return releases.filter(r => r.status === activeTab);
+    return releases.filter(r => deriveStatus(r) === activeTab);
   }, [releases, activeTab]);
 
   if (isLoading) {
@@ -89,19 +94,10 @@ export function ReleasesPage() {
               fontSize: 14, color: 'var(--wh-text-secondary, #64748b)',
               margin: '2px 0 0',
             }}>
-              Deployment timelines & health — {releases?.length ?? 0} releases
+              Jira fix versions — {releases?.length ?? 0} releases
             </p>
           </div>
         </div>
-
-        <button onClick={() => setShowModal(true)} style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          height: 36, padding: '0 16px', borderRadius: 'var(--wh-radius-md, 6px)',
-          border: 'none', background: 'var(--wh-primary, #2563eb)', color: '#fff',
-          fontSize: 13, fontWeight: 600, cursor: 'pointer',
-        }}>
-          <Plus size={16} /> New Release
-        </button>
       </div>
 
       {/* Status Tabs */}
@@ -133,15 +129,12 @@ export function ReleasesPage() {
       ) : (
         filtered.map(rel => (
           <ReleaseCard
-            key={rel.id}
+            key={rel.versionName}
             release={rel}
-            onClick={() => navigate(`/workhub/releases/${rel.id}`)}
+            onClick={() => navigate(`/workhub/releases/${encodeURIComponent(rel.versionName)}`)}
           />
         ))
       )}
-
-      {/* Create Modal */}
-      <ReleaseModal isOpen={showModal} onClose={() => setShowModal(false)} />
 
       <style>{`
         .wh-release-card:hover {
