@@ -37286,6 +37286,10 @@ export type Database = {
       }
       get_cc_team_performance: { Args: { p_project_id: string }; Returns: Json }
       get_command_center_kpis: { Args: { p_project_id: string }; Returns: Json }
+      get_command_center_kpis_previous: {
+        Args: { p_project_id: string }
+        Returns: Json
+      }
       get_connectors: { Args: { p_include_inactive?: boolean }; Returns: Json }
       get_coverage_stats: {
         Args: { p_cycle_id?: string; p_project_id: string }
