@@ -87,6 +87,7 @@ const ActivityFeedPage = lazy(() => import("./pages/testhub/ActivityFeedPage"));
 const ImportExportPage = lazy(() => import("./pages/testhub/ImportExportPage"));
 const ReleasesListPage = lazy(() => import("./pages/testhub/ReleasesListPage"));
 const ReleaseDetailPage = lazy(() => import("./pages/testhub/ReleaseDetailPage"));
+const CommandCenterPage = lazy(() => import("./pages/testhub/CommandCenterPage"));
 // Task10 pages
 const T10LandingPage = lazy(() => import("./modules/task10/pages/T10LandingPage").then(m => ({ default: m.T10LandingPage })));
 const T10WeekPage = lazy(() => import("./modules/task10/pages/T10WeekPage").then(m => ({ default: m.T10WeekPage })));
@@ -568,6 +569,7 @@ const App = () => (
                 <Route path="test-plans" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestPlansListPage /></Suspense>} />
                 <Route path="test-plans/:planId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><PlanDetailPage /></Suspense>} />
                 <Route path="releases" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleasesListPage /></Suspense>} />
+                <Route path="releases/command-center" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CommandCenterPage /></Suspense>} />
                 <Route path="releases/:releaseId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleaseDetailPage /></Suspense>} />
               </Route>
               

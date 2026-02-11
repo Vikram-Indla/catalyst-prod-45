@@ -368,6 +368,147 @@ export type Database = {
         }
         Relationships: []
       }
+      cc_activity_log: {
+        Row: {
+          created_at: string | null
+          cycle_id: string | null
+          defect_id: string | null
+          id: string
+          message: string
+          metadata: Json | null
+          project_id: string
+          release_id: string | null
+          test_case_id: string | null
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          cycle_id?: string | null
+          defect_id?: string | null
+          id?: string
+          message: string
+          metadata?: Json | null
+          project_id: string
+          release_id?: string | null
+          test_case_id?: string | null
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          cycle_id?: string | null
+          defect_id?: string | null
+          id?: string
+          message?: string
+          metadata?: Json | null
+          project_id?: string
+          release_id?: string | null
+          test_case_id?: string | null
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cc_activity_log_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_cycle_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_execution_by_assignee"
+            referencedColumns: ["cycle_id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_my_work"
+            referencedColumns: ["context_id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cycle_list_metrics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_defect_id_fkey"
+            columns: ["defect_id"]
+            isOneToOne: false
+            referencedRelation: "tm_defects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "tm_test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "v_tm_test_cases_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       change_conflicts: {
         Row: {
           change_card_id: string
@@ -37139,6 +37280,12 @@ export type Database = {
       get_batch_update_preview: { Args: { p_job_id: string }; Returns: Json }
       get_batch_update_status: { Args: { p_job_id: string }; Returns: Json }
       get_case_metrics: { Args: { p_execution_id: string }; Returns: Json }
+      get_cc_defect_trends: {
+        Args: { p_days?: number; p_project_id: string }
+        Returns: Json
+      }
+      get_cc_team_performance: { Args: { p_project_id: string }; Returns: Json }
+      get_command_center_kpis: { Args: { p_project_id: string }; Returns: Json }
       get_connectors: { Args: { p_include_inactive?: boolean }; Returns: Json }
       get_coverage_stats: {
         Args: { p_cycle_id?: string; p_project_id: string }

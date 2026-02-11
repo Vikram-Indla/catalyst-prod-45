@@ -46,6 +46,7 @@ const testHubSidebarConfig: SidebarConfig = {
       title: 'Overview',
       items: [
         { id: 'dashboard', title: 'Dashboard', path: '/testhub/dashboard', icon: BarChart3, exact: true },
+        { id: 'command-center', title: 'Command Center', path: '/testhub/releases/command-center', icon: Activity, exact: true },
       ],
     },
     {
