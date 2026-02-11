@@ -39,6 +39,9 @@ export function DefectComments({ defectId }: { defectId: string }) {
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-sm">{c.creator?.full_name || 'Unknown'}</span>
                     <span className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(c.created_at), { addSuffix: true })}</span>
+                    {c.updated_at && new Date(c.updated_at).getTime() - new Date(c.created_at).getTime() > 1000 && (
+                      <span className="text-xs text-muted-foreground italic">(edited)</span>
+                    )}
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild><Button variant="ghost" size="sm" className="h-6 w-6 p-0"><MoreVertical className="h-3 w-3" /></Button></DropdownMenuTrigger>
