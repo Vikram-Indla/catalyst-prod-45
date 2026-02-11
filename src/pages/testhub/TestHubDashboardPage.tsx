@@ -130,19 +130,18 @@ export default function TestHubDashboardPage() {
     return items.slice(0, 4);
   }, [stats, failingTests, defectStats]);
 
-  // ── Loading state ──
   if (isLoading) {
     return (
-      <div className="flex-1 overflow-hidden" style={{ background: '#F8FAFC', padding: '14px 24px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10, marginBottom: 12 }}>
+      <div className="h-[calc(100vh-44px)] flex flex-col overflow-hidden" style={{ background: '#F8FAFC', padding: '14px 24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10, flexShrink: 0, marginBottom: 12 }}>
           {[...Array(5)].map((_, i) => (
             <div key={i} className="animate-pulse" style={{ height: 110, background: '#E2E8F0', borderRadius: 8 }} />
           ))}
         </div>
-        <div className="animate-pulse" style={{ height: 40, background: '#E2E8F0', borderRadius: 8, marginBottom: 12 }} />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 320px', gap: 10 }}>
+        <div className="animate-pulse" style={{ height: 40, background: '#E2E8F0', borderRadius: 8, marginBottom: 12, flexShrink: 0 }} />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 320px', gap: 10, flex: 1, minHeight: 0 }}>
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="animate-pulse" style={{ height: 300, background: '#E2E8F0', borderRadius: 8 }} />
+            <div key={i} className="animate-pulse" style={{ height: '100%', background: '#E2E8F0', borderRadius: 8 }} />
           ))}
         </div>
       </div>
@@ -150,14 +149,14 @@ export default function TestHubDashboardPage() {
   }
 
   return (
-    <div className="flex-1 overflow-hidden" style={{ background: '#F8FAFC', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div className="h-[calc(100vh-44px)] flex flex-col overflow-hidden" style={{ background: '#F8FAFC', fontFamily: 'Inter, system-ui, sans-serif' }}>
 
       {/* ═══ PAGE HEADER — 56px ═══ */}
       <header
         style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           padding: '14px 24px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
-          height: 56, boxSizing: 'border-box',
+          height: 56, boxSizing: 'border-box', flexShrink: 0,
         }}
       >
         <div>
@@ -207,10 +206,10 @@ export default function TestHubDashboardPage() {
       </header>
 
       {/* ═══ BODY ═══ */}
-      <div style={{ padding: '12px 24px 12px', overflow: 'hidden' }}>
+      <div style={{ flex: 1, minHeight: 0, padding: '12px 24px 12px', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
         {/* ── KPI STRIP — 5 cards ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10, marginBottom: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10, flexShrink: 0 }}>
           {/* Card 1: Total test cases */}
           <KPICard
             label="Total test cases"
@@ -264,7 +263,7 @@ export default function TestHubDashboardPage() {
         <div
           style={{
             background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
-            padding: '10px 16px', marginBottom: 12,
+            padding: '10px 16px', flexShrink: 0,
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
@@ -296,7 +295,7 @@ export default function TestHubDashboardPage() {
         </div>
 
         {/* ── CONTENT GRID — 3 columns ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 320px', gap: 10 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 320px', gap: 10, flex: 1, minHeight: 0 }}>
 
           {/* ═ LEFT: Active Cycles ═ */}
           <Card
@@ -348,14 +347,14 @@ export default function TestHubDashboardPage() {
           </Card>
 
           {/* ═ MIDDLE: Failing Tests + Defects Mini ═ */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minHeight: 0 }}>
             {/* Top Failing Tests */}
             <Card
               title="Top Failing Tests"
               badge={String(failingTests.length)}
               badgeDanger
               onViewAll={() => navigate('/testhub/repository')}
-              style={{ flex: 1 }}
+              style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}
             >
               {failingTests.length === 0 ? (
                 <EmptyMini icon={<AlertTriangle size={24} color="#94A3B8" />} text="No failing tests" />
@@ -422,7 +421,7 @@ export default function TestHubDashboardPage() {
           </div>
 
           {/* ═ RIGHT: Needs Attention + Activity + Quick Actions ═ */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minHeight: 0 }}>
             {/* Needs Attention */}
             <div
               style={{
