@@ -36,7 +36,18 @@ export default function ReleaseDashboardV5Page() {
 
         {/* Two Column Layout */}
         <div className="grid grid-cols-2 gap-4">
-          <AISummaryCard insights={data.aiInsights} />
+          <AISummaryCard insights={data.aiInsights} releaseData={{
+            name: data.release.name,
+            version: data.release.version,
+            status: data.release.status,
+            target_date: data.release.targetDate,
+            daysRemaining: data.release.daysRemaining,
+            healthScore: data.healthScore.score,
+            healthLevel: data.healthScore.level,
+            qualityGates: data.qualityGates.map(g => ({ name: g.name, status: g.status, current: g.currentValue, threshold: g.threshold })),
+            metrics: data.metrics,
+            defectSummary: data.defectSummary,
+          }} />
           <DefectSummaryCard defects={data.defectSummary} />
         </div>
 
