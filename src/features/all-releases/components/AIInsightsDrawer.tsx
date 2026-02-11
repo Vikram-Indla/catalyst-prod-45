@@ -83,10 +83,11 @@ export function AIInsightsDrawer({ isOpen, onClose, insights, onActionClick }: A
         aria-label="AI Insights Panel"
         aria-modal="true"
         className={cn(
-          "fixed top-0 right-0 h-full w-[400px] bg-white border-l border-slate-200 z-50",
+          "fixed right-0 w-[400px] bg-white border-l border-slate-200 z-[500]",
           "shadow-2xl transition-transform duration-250 ease-out",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
+        style={{ top: 'var(--app-top-offset, 56px)', height: 'calc(100dvh - var(--app-top-offset, 56px))' }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
