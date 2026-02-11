@@ -200,10 +200,10 @@ export default function TestHubDashboardPage() {
           <KPICard label="Total test cases" value={stats?.total_test_cases ?? 0} accent="#2563EB"
             trend={{ direction: 'up', value: '+3', color: '#059669' }}
             subtitle={`${stats?.total_cycles ?? 0} cycles total`} sparkData={[4, 6, 5, 8, 10, 9, 12, 14]} />
-          <KPICard label="Overall pass rate" value={`${passRate}%`} accent="#EF4444"
-            trend={{ direction: 'down', value: '−12%', color: '#DC2626' }}
-            subtitle={`${totalExecuted} of ${totalAll} executed`} sparkData={[80, 72, 65, 58, 52, 48, 46, 47]}
-            valueColor={passRateColor} />
+       <KPICard label="Overall pass rate" value={`${passRate}%`} accent={passRate < 60 ? "#EF4444" : "#D97706"}
+             trend={{ direction: 'down', value: '−12%', color: '#DC2626' }}
+             subtitle={`${totalExecuted} of ${totalAll} executed`} sparkData={[80, 72, 65, 58, 52, 48, 46, 47]}
+             valueColor={passRateColor} isDanger={passRate < 60} />
           <KPICard label="Active cycles" value={stats?.active_cycles ?? 0} accent="#3B82F6"
             trend={{ direction: 'flat', value: '—', color: '#94A3B8' }}
             subtitle={`${stats?.completed_cycles ?? 0} completed`} sparkData={[3, 4, 5, 5, 5, 5, 5, 5]} />
@@ -251,110 +251,156 @@ export default function TestHubDashboardPage() {
 
           {/* ═ LEFT: Active Cycles ═ */}
           <Card title="Active Cycles" badge={String(activeCycles.length)} onViewAll={() => navigate('/testhub/cycles')}>
-            {activeCycles.length === 0 ? (
-              <EmptyMini icon={<Play size={24} color="#94A3B8" />} text="No active cycles" />
-            ) : (
-              activeCycles.slice(0, 20).map(cycle => {
-                const pct = cycle.progress_percent ?? 0;
-                const barColor = pct === 0 ? '#CBD5E1' : pct <= 30 ? '#EF4444' : pct <= 70 ? '#F59E0B' : '#10B981';
-                return (
-                  <div key={cycle.id} onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
-                    className="c10-row"
-                    style={{
-                      display: 'grid', gridTemplateColumns: '90px 1fr 100px 130px',
-                      alignItems: 'center', height: 36, padding: '0 16px',
-                      cursor: 'pointer', borderBottom: '1px solid #F1F5F9',
-                    }}>
-                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
-                      {cycle.cycle_key}
-                    </span>
-                    <span style={{ fontSize: 14, fontWeight: 500, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {cycle.name}
-                    </span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <div style={{ flex: 1, height: 4, borderRadius: 2, background: '#F1F5F9', overflow: 'hidden' }}>
-                        <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 2, transition: 'width 400ms ease-out' }} />
-                      </div>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', minWidth: 32, textAlign: 'right' }}>{pct}%</span>
-                    </div>
-                    <div style={{ display: 'flex', gap: 6, fontSize: 12, fontWeight: 600, justifyContent: 'flex-end' }}>
-                      <span style={{ color: '#059669' }}>{cycle.passed_count ?? 0}P</span>
-                      <span style={{ color: '#64748B' }}>·</span>
-                      <span style={{ color: '#DC2626' }}>{cycle.failed_count ?? 0}F</span>
-                      <span style={{ color: '#64748B' }}>·</span>
-                      <span style={{ color: '#64748B' }}>{cycle.not_run_count ?? 0}NR</span>
-                    </div>
-                  </div>
-                );
-              })
-            )}
+             {activeCycles.length === 0 ? (
+               <EmptyMini icon={<Play size={24} color="#94A3B8" />} text="No active cycles" />
+             ) : (
+               <>
+                 {activeCycles.slice(0, 20).map(cycle => {
+                   const pct = cycle.progress_percent ?? 0;
+                   const barColor = pct === 0 ? '#CBD5E1' : pct <= 30 ? '#EF4444' : pct <= 70 ? '#F59E0B' : '#10B981';
+                   return (
+                     <div key={cycle.id} onClick={() => navigate(`/testhub/cycles/${cycle.id}`)}
+                       className="c10-row"
+                       style={{
+                         display: 'grid', gridTemplateColumns: '90px 1fr 100px 130px',
+                         alignItems: 'center', height: 36, padding: '0 16px',
+                         cursor: 'pointer', borderBottom: '1px solid #F1F5F9',
+                       }}>
+                       <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
+                         {cycle.cycle_key}
+                       </span>
+                       <span style={{ fontSize: 14, fontWeight: 500, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                         {cycle.name}
+                       </span>
+                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                         <div style={{ flex: 1, height: 4, borderRadius: 2, background: '#F1F5F9', overflow: 'hidden' }}>
+                           <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 2, transition: 'width 400ms ease-out' }} />
+                         </div>
+                         <span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', minWidth: 32, textAlign: 'right' }}>{pct}%</span>
+                       </div>
+                       <div style={{ display: 'flex', gap: 6, fontSize: 12, fontWeight: 600, justifyContent: 'flex-end' }}>
+                         <span style={{ color: '#059669' }}>{cycle.passed_count ?? 0}P</span>
+                         <span style={{ color: '#64748B' }}>·</span>
+                         <span style={{ color: '#DC2626' }}>{cycle.failed_count ?? 0}F</span>
+                         <span style={{ color: '#64748B' }}>·</span>
+                         <span style={{ color: '#64748B' }}>{cycle.not_run_count ?? 0}NR</span>
+                       </div>
+                     </div>
+                   );
+                 })}
+                 {activeCycles.length === activeCycles.length && (
+                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, gap: 4, padding: '32px 16px' }}>
+                     <span style={{ fontSize: 12, fontWeight: 400, color: '#94A3B8' }}>
+                       All {activeCycles.length} active cycle{activeCycles.length !== 1 ? 's' : ''} shown
+                     </span>
+                     <a href="/testhub/cycles" style={{ fontSize: 12, fontWeight: 500, color: '#2563EB', textDecoration: 'none', cursor: 'pointer' }}>
+                       View completed cycles →
+                     </a>
+                   </div>
+                 )}
+               </>
+             )}
           </Card>
 
-          {/* ═ MIDDLE: Failing Tests + Defects Mini ═ */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0 }}>
-            {/* Top Failing Tests */}
-            <Card title="Top Failing Tests" badge={String(failingTests.length)} badgeDanger
-              onViewAll={() => navigate('/testhub/repository')}
-              style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-              {failingTests.length === 0 ? (
-                <EmptyMini icon={<AlertTriangle size={24} color="#94A3B8" />} text="No failing tests" />
-              ) : (
-                failingTests.slice(0, 10).map(test => {
-                  const sevColor = test.priority?.toLowerCase() === 'high' || test.priority?.toLowerCase() === 'critical'
-                    ? { bg: '#FEF2F2', color: '#DC2626' }
-                    : { bg: '#FFFBEB', color: '#D97706' };
-                  return (
-                    <div key={test.test_case_id} onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
-                      className="c10-row-danger"
-                      style={{
-                        display: 'grid', gridTemplateColumns: '72px 1fr 60px 64px',
-                        alignItems: 'center', height: 36, padding: '0 16px',
-                        cursor: 'pointer', borderBottom: '1px solid #F1F5F9',
-                      }}>
-                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
-                        {test.case_key}
-                      </span>
-                      <span style={{ fontSize: 14, fontWeight: 500, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {test.title}
-                      </span>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#DC2626' }}>
-                        {test.failure_count} fail{test.failure_count !== 1 ? 's' : ''}
-                      </span>
-                      <span style={{
-                        fontSize: 11, fontWeight: 600, letterSpacing: '0.03em',
-                        background: sevColor.bg, color: sevColor.color,
-                        padding: '2px 8px', borderRadius: 4, textAlign: 'center',
-                      }}>
-                        {test.priority || 'Med'}
-                      </span>
-                    </div>
-                  );
-                })
-              )}
-            </Card>
+           {/* ═ MIDDLE: Failing Tests + Defects (Merged) ═ */}
+           <div style={{
+             display: 'flex', flexDirection: 'column', minHeight: 0,
+             background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden',
+           }}>
+             {/* Header: Top Failing Tests */}
+             <div style={{
+               padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+               borderBottom: '1px solid #F1F5F9', flexShrink: 0,
+             }}>
+               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                 <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>Top Failing Tests</span>
+                 <span style={{ fontSize: 12, fontWeight: 600, color: '#DC2626', background: '#FEF2F2', padding: '2px 8px', borderRadius: 10 }}>
+                   {failingTests.length}
+                 </span>
+               </div>
+               <button onClick={() => navigate('/testhub/repository')} style={{ fontSize: 13, fontWeight: 500, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
+                 View all <ChevronRight size={12} />
+               </button>
+             </div>
 
-            {/* Defects Mini — pinned bottom */}
-            <Card title="Defects" badge={String(defectStats?.total_defects ?? 0)}
-              onViewAll={() => navigate('/testhub/defects')}
-              style={{ flexShrink: 0 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)' }}>
-                {[
-                  { label: 'Open', value: defectStats?.open_defects ?? 0 },
-                  { label: 'In progress', value: defectStats?.in_progress_defects ?? 0 },
-                  { label: 'Fixed', value: defectStats?.fixed_defects ?? 0 },
-                  { label: 'Closed', value: defectStats?.closed_defects ?? 0 },
-                ].map((d, i) => (
-                  <div key={d.label} style={{
-                    textAlign: 'center', padding: '12px 8px',
-                    borderRight: i < 3 ? '1px solid #F1F5F9' : 'none',
-                  }}>
-                    <div style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', lineHeight: 1 }}>{d.value}</div>
-                    <div style={{ fontSize: 12, fontWeight: 500, color: '#64748B', marginTop: 4 }}>{d.label}</div>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </div>
+             {/* Body: Failing Tests rows */}
+             <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+               {failingTests.length === 0 ? (
+                 <EmptyMini icon={<AlertTriangle size={24} color="#94A3B8" />} text="No failing tests" />
+               ) : (
+                 <>
+                   {failingTests.slice(0, 10).map(test => {
+                     const sevColor = test.priority?.toLowerCase() === 'high' || test.priority?.toLowerCase() === 'critical'
+                       ? { bg: '#FEF2F2', color: '#DC2626' }
+                       : { bg: '#FFFBEB', color: '#D97706' };
+                     return (
+                       <div key={test.test_case_id} onClick={() => navigate(`/testhub/repository?view=${test.test_case_id}`)}
+                         className="c10-row-danger"
+                         style={{
+                           display: 'grid', gridTemplateColumns: '72px 1fr 60px 64px',
+                           alignItems: 'center', height: 36, padding: '0 16px',
+                           cursor: 'pointer', borderBottom: '1px solid #F1F5F9',
+                         }}>
+                         <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
+                           {test.case_key}
+                         </span>
+                         <span style={{ fontSize: 14, fontWeight: 500, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                           {test.title}
+                         </span>
+                         <span style={{ fontSize: 13, fontWeight: 700, color: '#DC2626' }}>
+                           {test.failure_count} fail{test.failure_count !== 1 ? 's' : ''}
+                         </span>
+                         <span style={{
+                           fontSize: 11, fontWeight: 600, letterSpacing: '0.03em',
+                           background: sevColor.bg, color: sevColor.color,
+                           padding: '2px 8px', borderRadius: 4, textAlign: 'center',
+                         }}>
+                           {test.priority || 'Med'}
+                         </span>
+                       </div>
+                     );
+                   })}
+                 </>
+               )}
+             </div>
+
+             {/* Divider: dashed border */}
+             <div style={{ borderTop: '1px dashed #E2E8F0', flexShrink: 0 }} />
+
+             {/* Defects Section: Sub-header + Grid */}
+             <div style={{ flexShrink: 0 }}>
+               <div style={{
+                 padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                 flexShrink: 0,
+               }}>
+                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                   <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>Defects</span>
+                   <span style={{ fontSize: 12, fontWeight: 600, color: '#64748B', background: '#F1F5F9', padding: '2px 8px', borderRadius: 10 }}>
+                     {defectStats?.total_defects ?? 0}
+                   </span>
+                 </div>
+                 <button onClick={() => navigate('/testhub/defects')} style={{ fontSize: 13, fontWeight: 500, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 2 }}>
+                   View all <ChevronRight size={12} />
+                 </button>
+               </div>
+               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)' }}>
+                 {[
+                   { label: 'Open', value: defectStats?.open_defects ?? 0 },
+                   { label: 'In progress', value: defectStats?.in_progress_defects ?? 0 },
+                   { label: 'Fixed', value: defectStats?.fixed_defects ?? 0 },
+                   { label: 'Closed', value: defectStats?.closed_defects ?? 0 },
+                 ].map((d, i) => (
+                   <div key={d.label} style={{
+                     textAlign: 'center', padding: '12px 8px',
+                     borderRight: i < 3 ? '1px solid #F1F5F9' : 'none',
+                   }}>
+                     <div style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', lineHeight: 1 }}>{d.value}</div>
+                     <div style={{ fontSize: 12, fontWeight: 500, color: '#64748B', marginTop: 4 }}>{d.label}</div>
+                   </div>
+                 ))}
+               </div>
+             </div>
+           </div>
 
           {/* ═ RIGHT: Needs Attention + Activity + Quick Actions ═ */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 0 }}>
@@ -402,47 +448,54 @@ export default function TestHubDashboardPage() {
               <div style={{ padding: '12px 16px', borderBottom: '1px solid #F1F5F9', flexShrink: 0 }}>
                 <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>Activity</span>
               </div>
-              <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
-                {recentActivity.length === 0 ? (
-                  <div style={{ padding: '24px 16px', textAlign: 'center', fontSize: 13, color: '#64748B' }}>
-                    No recent activity
-                  </div>
-                ) : (
-                  recentActivity.slice(0, 8).map((a, i) => {
-                    const dotColor = a.execution_status === 'passed' ? '#10B981'
-                      : a.execution_status === 'failed' ? '#EF4444'
-                      : a.execution_status === 'blocked' ? '#F59E0B'
-                      : '#3B82F6';
-                    const verb = a.execution_status === 'passed' ? 'passed'
-                      : a.execution_status === 'failed' ? 'failed'
-                      : a.execution_status === 'blocked' ? 'blocked'
-                      : 'created';
-                    return (
-                      <div key={a.id} style={{
-                        display: 'flex', alignItems: 'flex-start', gap: 8,
-                        padding: '8px 16px', borderTop: i > 0 ? '1px solid #F1F5F9' : 'none',
-                      }}>
-                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: dotColor, marginTop: 6, flexShrink: 0 }} />
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 13, fontWeight: 400, color: '#0F172A', lineHeight: 1.43 }}>
-                            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>{a.case_key}</span>
-                            {' '}<span style={{ fontWeight: 600 }}>{verb}</span> in {a.cycle_key}
-                          </div>
-                          <div style={{ fontSize: 11, fontWeight: 400, color: '#64748B' }}>
-                            {a.executed_by_name} · {formatTimeAgo(a.executed_at)}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-              {/* Quick Actions — pinned bottom */}
-              <div style={{ display: 'flex', gap: 8, padding: '10px 16px', borderTop: '1px solid #F1F5F9', flexShrink: 0 }}>
-                <QuickBtn label="New case" onClick={() => navigate('/testhub/repository')} />
-                <QuickBtn label="Start cycle" onClick={() => navigate('/testhub/cycles')} />
-                <QuickBtn label="Report" onClick={() => navigate('/testhub/reports')} />
-              </div>
+               <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+                 {recentActivity.length === 0 ? (
+                   <div style={{ padding: '24px 16px', textAlign: 'center', fontSize: 13, color: '#64748B' }}>
+                     No recent activity
+                   </div>
+                 ) : (
+                   <>
+                     {recentActivity.slice(0, 10).map((a, i) => {
+                       const dotColor = a.execution_status === 'passed' ? '#10B981'
+                         : a.execution_status === 'failed' ? '#EF4444'
+                         : a.execution_status === 'blocked' ? '#F59E0B'
+                         : '#3B82F6';
+                       const verb = a.execution_status === 'passed' ? 'passed'
+                         : a.execution_status === 'failed' ? 'failed'
+                         : a.execution_status === 'blocked' ? 'blocked'
+                         : 'created';
+                       return (
+                         <div key={a.id} style={{
+                           display: 'flex', alignItems: 'flex-start', gap: 8,
+                           padding: '8px 16px', borderTop: i > 0 ? '1px solid #F1F5F9' : 'none',
+                         }}>
+                           <span style={{ width: 7, height: 7, borderRadius: '50%', background: dotColor, marginTop: 6, flexShrink: 0 }} />
+                           <div style={{ flex: 1, minWidth: 0 }}>
+                             <div style={{ fontSize: 13, fontWeight: 400, color: '#0F172A', lineHeight: 1.43 }}>
+                               <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>{a.case_key}</span>
+                               {' '}<span style={{ fontWeight: 600 }}>{verb}</span> in {a.cycle_key}
+                             </div>
+                             <div style={{ fontSize: 11, fontWeight: 400, color: '#64748B' }}>
+                               {a.executed_by_name} · {formatTimeAgo(a.executed_at)}
+                             </div>
+                           </div>
+                         </div>
+                       );
+                     })}
+                     {recentActivity.length < 3 && (
+                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px', fontSize: 12, fontWeight: 400, color: '#94A3B8' }}>
+                         No more recent activity
+                       </div>
+                     )}
+                   </>
+                 )}
+               </div>
+               {/* Quick Actions — pinned bottom */}
+               <div style={{ display: 'flex', gap: 8, padding: '10px 16px', paddingRight: '80px', borderTop: '1px solid #F1F5F9', flexShrink: 0 }}>
+                 <QuickBtn label="New case" onClick={() => navigate('/testhub/repository')} />
+                 <QuickBtn label="Start cycle" onClick={() => navigate('/testhub/cycles')} />
+                 <QuickBtn label="Report" onClick={() => navigate('/testhub/reports')} />
+               </div>
             </div>
           </div>
 
@@ -462,7 +515,7 @@ export default function TestHubDashboardPage() {
 
 // ── Sub-components ──
 
-function KPICard({ label, value, accent, trend, subtitle, sparkData, valueColor }: {
+function KPICard({ label, value, accent, trend, subtitle, sparkData, valueColor, isDanger }: {
   label: string;
   value: string | number;
   accent: string;
@@ -470,10 +523,13 @@ function KPICard({ label, value, accent, trend, subtitle, sparkData, valueColor 
   subtitle: string;
   sparkData: number[];
   valueColor?: string;
+  isDanger?: boolean;
 }) {
   return (
     <div className="c10-kpi" style={{
-      background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
+      background: isDanger ? 'rgba(254, 242, 242, 0.6)' : '#FFFFFF',
+      border: isDanger ? '1px solid #FECACA' : '1px solid #E2E8F0',
+      borderRadius: 8,
       borderLeft: `3px solid ${accent}`,
       padding: 16, cursor: 'pointer',
       transition: 'border-color 150ms, box-shadow 150ms',
