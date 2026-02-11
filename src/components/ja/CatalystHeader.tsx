@@ -147,7 +147,7 @@ export function CatalystHeader() {
     { label: "Enterprise", path: "/enterprise/strategy-room", moduleKey: "enterprise", requiresEnterpriseAccess: true, visibleToProductOwner: true },
     { label: "Product", hasDropdown: true, moduleKey: "product", visibleToProductOwner: true },
     { label: "Project", isLabel: true, moduleKey: "project", visibleToProductOwner: true },
-    // { label: "Releases", path: "/releases/command-center", moduleKey: "releases", visibleToProductOwner: false }, // Hidden per user request
+    { label: "ReleaseHub", path: "/releasehub/command-center", moduleKey: "releases", visibleToProductOwner: false },
     { label: "TestHub", path: "/testhub/dashboard", moduleKey: "testhub", visibleToProductOwner: false },
     { label: "IncidentHub", hasDropdown: true, path: "/release", moduleKey: "operations", visibleToProductOwner: false },
     { label: "TaskHub", path: "/taskhub/boards", moduleKey: "planner", visibleToProductOwner: true },
