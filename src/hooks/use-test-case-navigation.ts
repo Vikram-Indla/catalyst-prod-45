@@ -31,18 +31,18 @@ export function useTestCaseNavigation({
 
   const goToPrev = useCallback(() => {
     if (prevId) {
-      navigate(`/releases/test-cases/${prevId}`);
+      navigate(`/testhub/repository?view=${prevId}`);
     }
   }, [prevId, navigate]);
 
   const goToNext = useCallback(() => {
     if (nextId) {
-      navigate(`/releases/test-cases/${nextId}`);
+      navigate(`/testhub/repository?view=${nextId}`);
     }
   }, [nextId, navigate]);
 
   const goToList = useCallback(() => {
-    navigate('/releases/test-cases');
+    navigate('/testhub/repository');
   }, [navigate]);
 
   useEffect(() => {

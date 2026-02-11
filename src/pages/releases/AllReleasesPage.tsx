@@ -212,7 +212,7 @@ export default function AllReleasesPage() {
   };
 
   const handleReleaseClick = (release: EnhancedRelease) => {
-    navigate(`/releases/dashboard/${release.id}`);
+    navigate(`/releasehub/${release.id}`);
   };
   
   const handleBulkStatusChange = async (newStatus: string) => {

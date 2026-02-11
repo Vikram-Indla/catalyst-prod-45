@@ -193,11 +193,11 @@ ${mockReleases.map(r => `- ${r.name} (${r.status}): ${r.health}% health`).join('
 
   const handleReleaseClick = (id: string) => {
     toast.success(`Opening release ${id}...`);
-    navigate(`/releases/${id}/dashboard`);
+    navigate(`/releasehub/${id}`);
   };
 
   const handleCycleClick = (releaseId: string, cycleId: string) => {
-    navigate(`/releases/${releaseId}/cycles/${cycleId}`);
+    navigate(`/testhub/cycles/${cycleId}`);
   };
 
   return (

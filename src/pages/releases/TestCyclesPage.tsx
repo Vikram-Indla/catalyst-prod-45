@@ -535,7 +535,7 @@ export default function TestCyclesPage() {
             updatedAt: c.updatedAtEffective,
             _originalId: c.id,
           }))}
-          onEdit={(cycle) => navigate(`/releases/test-cycles/${cycle._originalId || cycle.id}`)}
+          onEdit={(cycle) => navigate(`/testhub/cycles/${cycle._originalId || cycle.id}`)}
           onDuplicate={(cycle) => {
             if (!projectId) return;
             cloneCycleMutation.mutate({ cycleId: cycle._originalId || cycle.id, projectId }, {

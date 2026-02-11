@@ -33,7 +33,7 @@ export function ReleasesTableRow({ release, index, isSelected, onToggleSelect }:
         (e.target as HTMLElement).closest('[role="checkbox"]')) {
       return;
     }
-    navigate(`/releases/${release.id}/dashboard`);
+    navigate(`/releasehub/${release.id}`);
   };
   
   const handleCheckboxClick = (e: React.MouseEvent) => {
