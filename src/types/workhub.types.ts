@@ -171,3 +171,18 @@ export interface DashboardKPIs {
   overdue_items: number;
   due_this_week: number;
 }
+
+export interface SyncLogEntry {
+  id: string;
+  jira_project_id?: string;
+  sync_type: 'full' | 'incremental' | 'manual';
+  status: 'running' | 'completed' | 'failed';
+  items_created: number;
+  items_updated: number;
+  items_unchanged: number;
+  errors: any[];
+  started_at: string;
+  completed_at?: string;
+  duration_ms?: number;
+  triggered_by?: string;
+}
