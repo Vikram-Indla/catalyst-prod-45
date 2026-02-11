@@ -3,6 +3,7 @@ import { Eye, EyeOff, Globe, Mail, Key, RefreshCw, Pencil } from 'lucide-react';
 import { ReadOnlyBanner } from './ReadOnlyBanner';
 import { ConnectionStatusBadge } from './ConnectionStatusBadge';
 import { TestConnectionModal } from './TestConnectionModal';
+import { SyncConfigPanel } from './SyncConfigPanel';
 
 import { useJiraConnection, useUpdateJiraConnection, useTestConnection } from '../hooks/useJiraConnection';
 
@@ -295,6 +296,9 @@ export function JiraConnection() {
             </div>
           </div>
         )}
+
+        {/* Sync Configuration — shown when connected */}
+        {status === 'connected' && <SyncConfigPanel />}
 
         {/* Credentials form */}
         {showForm && (
