@@ -1,7 +1,14 @@
 import { useState, useEffect } from 'react';
-import { X, Calendar, User, AlertCircle } from 'lucide-react';
+import { X, Calendar, User, AlertCircle, Server } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
+
+interface EnvironmentOption {
+  id: string;
+  name: string;
+  type: string;
+  health_status: string;
+}
 
 interface Profile {
   id: string;
@@ -16,6 +23,7 @@ interface TestCycleData {
   start_date: string | null;
   end_date: string | null;
   owner_id?: string | null;
+  environment_id?: string | null;
   status: string;
 }
 
@@ -33,14 +41,19 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [ownerId, setOwnerId] = useState('');
+  const [environmentId, setEnvironmentId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [environments, setEnvironments] = useState<EnvironmentOption[]>([]);
 
   useEffect(() => {
     if (isOpen) {
       supabase.from('profiles').select('id, full_name').order('full_name').then(({ data }) => {
         if (data) setProfiles(data);
+      });
+      (supabase as any).from('th_environments').select('id, name, type, health_status').eq('status', 'active').order('name').then(({ data }: any) => {
+        if (data) setEnvironments(data);
       });
 
       if (mode === 'edit' && cycle) {
@@ -49,12 +62,14 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
         setStartDate(cycle.start_date || '');
         setEndDate(cycle.end_date || '');
         setOwnerId(cycle.owner_id || '');
+        setEnvironmentId(cycle.environment_id || '');
       } else {
         setName('');
         setDescription('');
         setStartDate('');
         setEndDate('');
         setOwnerId('');
+        setEnvironmentId('');
       }
       setErrors({});
     }
@@ -90,12 +105,13 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
 
     try {
       if (mode === 'edit' && cycle) {
-        const updateData = {
+        const updateData: any = {
           name: name.trim(),
           description: description.trim() || null,
           start_date: startDate || null,
           end_date: endDate || null,
           owner_id: ownerId || null,
+          environment_id: environmentId || null,
           updated_at: new Date().toISOString(),
         };
 
@@ -112,17 +128,19 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
         catalystToast.success('Test cycle updated successfully', { title: 'Cycle Updated' });
       } else {
         const cycleKey = await generateCycleKey();
-        const { error } = await supabase.from('th_test_cycles').insert({
+        const insertData: any = {
           cycle_key: cycleKey,
           name: name.trim(),
           description: description.trim() || null,
           start_date: startDate || null,
           end_date: endDate || null,
           owner_id: ownerId || null,
+          environment_id: environmentId || null,
           status: 'draft',
           progress_percent: 0, total_cases: 0, passed_count: 0, failed_count: 0,
           blocked_count: 0, skipped_count: 0, not_run_count: 0,
-        }).select().single();
+        };
+        const { error } = await supabase.from('th_test_cycles').insert(insertData).select().single();
 
         if (error) {
           catalystToast.error(error.message || 'Failed to create test cycle', { title: 'Creation Failed' });
@@ -204,6 +222,23 @@ export function CreateTestCycleModal({ isOpen, onClose, onSuccess, mode = 'creat
               />
               {errors.endDate && <p style={{ fontSize: 12, color: '#EF4444', margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}><AlertCircle size={12} />{errors.endDate}</p>}
             </div>
+          </div>
+
+          {/* Environment */}
+          <div style={{ marginBottom: 20 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
+              <Server size={14} style={{ color: '#64748B' }} /> Environment
+            </label>
+            <select value={environmentId} onChange={(e) => setEnvironmentId(e.target.value)}
+              style={{ width: '100%', height: 40, padding: '0 12px', border: '1.5px solid #E2E8F0', borderRadius: 8, fontSize: 14, color: '#0F172A', backgroundColor: '#FFFFFF' }}
+            >
+              <option value="">Select environment (optional)</option>
+              {environments.map(env => (
+                <option key={env.id} value={env.id}>
+                  {env.name} ({env.type}) {env.health_status === 'healthy' ? '🟢' : env.health_status === 'degraded' ? '🟡' : env.health_status === 'down' ? '🔴' : '⚪'}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Owner */}

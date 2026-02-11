@@ -1,9 +1,9 @@
 /**
  * CreateCycleModalEnhanced - Create cycle modal with real data
- * Uses releases from DB, profiles for assignees
+ * Uses releases from DB, profiles for assignees, environments from th_environments
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/select';
 import { useReleases } from '@/hooks/test-management/useReleases';
 import { useTeamMembers } from '@/hooks/test-management';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CreateCycleModalEnhancedProps {
   open: boolean;
@@ -38,18 +39,18 @@ export interface CreateCycleFormData {
   description?: string;
   release_id?: string;
   environment: string;
+  environment_id?: string;
   assigned_to?: string;
   planned_start?: string;
   planned_end?: string;
 }
 
-const ENVIRONMENT_OPTIONS = [
-  { value: 'dev', label: 'Development' },
-  { value: 'qa', label: 'QA' },
-  { value: 'staging', label: 'Staging' },
-  { value: 'uat', label: 'UAT' },
-  { value: 'prod', label: 'Production' },
-];
+interface EnvironmentOption {
+  id: string;
+  name: string;
+  type: string;
+  health_status: string;
+}
 
 export function CreateCycleModalEnhanced({ 
   open, 
@@ -60,15 +61,24 @@ export function CreateCycleModalEnhanced({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [releaseId, setReleaseId] = useState('');
-  const [environment, setEnvironment] = useState('staging');
+  const [environment, setEnvironment] = useState('');
+  const [environmentId, setEnvironmentId] = useState('');
   const [assignedTo, setAssignedTo] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [environments, setEnvironments] = useState<EnvironmentOption[]>([]);
 
   // Fetch releases and team members
   const { data: releases, isLoading: releasesLoading } = useReleases();
-  // Use null for projectId since we want all QA testers across the system
   const { data: teamMembers, isLoading: membersLoading } = useTeamMembers(null);
+
+  useEffect(() => {
+    if (open) {
+      (supabase as any).from('th_environments').select('id, name, type, health_status').eq('status', 'active').order('name').then(({ data }: any) => {
+        if (data) setEnvironments(data);
+      });
+    }
+  }, [open]);
 
   const handleSubmit = () => {
     if (!name.trim() || !environment) return;
@@ -77,7 +87,8 @@ export function CreateCycleModalEnhanced({
       name: name.trim(),
       description: description.trim() || undefined,
       release_id: releaseId && releaseId !== 'none' ? releaseId : undefined,
-      environment,
+      environment: environment || 'staging',
+      environment_id: environmentId && environmentId !== 'none' ? environmentId : undefined,
       assigned_to: assignedTo && assignedTo !== 'none' ? assignedTo : undefined,
       planned_start: startDate || undefined,
       planned_end: endDate || undefined,
@@ -85,18 +96,18 @@ export function CreateCycleModalEnhanced({
   };
 
   const handleClose = () => {
-    // Reset form
     setName('');
     setDescription('');
     setReleaseId('');
-    setEnvironment('staging');
+    setEnvironment('');
+    setEnvironmentId('');
     setAssignedTo('');
     setStartDate('');
     setEndDate('');
     onOpenChange(false);
   };
 
-  const isValid = name.trim().length > 0 && environment;
+  const isValid = name.trim().length > 0;
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -142,17 +153,22 @@ export function CreateCycleModalEnhanced({
           
           {/* Environment */}
           <div>
-            <label className="text-sm font-medium text-gray-700">
-              Environment <span className="text-red-500">*</span>
+            <label className="text-sm font-medium text-foreground">
+              Environment
             </label>
-            <Select value={environment} onValueChange={setEnvironment}>
+            <Select value={environmentId} onValueChange={(val) => {
+              setEnvironmentId(val);
+              const env = environments.find(e => e.id === val);
+              setEnvironment(env?.type || '');
+            }}>
               <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Select environment" />
+                <SelectValue placeholder={environments.length === 0 ? 'Loading...' : 'Select environment'} />
               </SelectTrigger>
               <SelectContent>
-                {ENVIRONMENT_OPTIONS.map(opt => (
-                  <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
+                <SelectItem value="none">No environment</SelectItem>
+                {environments.map(env => (
+                  <SelectItem key={env.id} value={env.id}>
+                    {env.name} ({env.type}) {env.health_status === 'healthy' ? '🟢' : env.health_status === 'degraded' ? '🟡' : env.health_status === 'down' ? '🔴' : '⚪'}
                   </SelectItem>
                 ))}
               </SelectContent>

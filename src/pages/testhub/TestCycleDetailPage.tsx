@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, Pencil, Play, CheckCircle2, XCircle, AlertTriangle,
-  Clock, Plus, User, Calendar, RefreshCw, Trash2, Download, Users, BarChart3
+  Clock, Plus, User, Calendar, RefreshCw, Trash2, Download, Users, BarChart3, Server
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
@@ -30,7 +30,9 @@ interface TestCycle {
   blocked_count: number;
   skipped_count: number;
   not_run_count: number;
+  environment_id?: string | null;
   owner?: { id: string; full_name: string };
+  environment?: { id: string; name: string; type: string; health_status: string } | null;
 }
 
 interface CycleTestCase {
@@ -87,8 +89,8 @@ export default function TestCycleDetailPage() {
   const fetchCycle = async () => {
     if (!cycleId) return;
     try {
-      const { data, error } = await supabase.from('th_test_cycles')
-        .select(`*, owner:profiles!th_test_cycles_owner_id_fkey ( id, full_name )`)
+      const { data, error } = await (supabase as any).from('th_test_cycles')
+        .select(`*, owner:profiles!th_test_cycles_owner_id_fkey ( id, full_name ), environment:th_environments!th_test_cycles_environment_id_fkey ( id, name, type, health_status )`)
         .eq('id', cycleId).single();
       if (error) throw error;
       setCycle(data);
@@ -234,6 +236,17 @@ export default function TestCycleDetailPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 13, color: '#64748B' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Calendar size={14} />{formatDate(cycle.start_date)} — {formatDate(cycle.end_date)}</span>
               {cycle.owner && <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><User size={14} />{cycle.owner.full_name}</span>}
+              {cycle.environment && (
+                <span
+                  onClick={() => navigate(`/testhub/environments/${cycle.environment!.id}`)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', padding: '2px 8px', backgroundColor: '#EFF6FF', borderRadius: 6, color: '#2563EB', fontWeight: 500 }}
+                  title={`Health: ${cycle.environment.health_status}`}
+                >
+                  <Server size={14} />
+                  {cycle.environment.name}
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: cycle.environment.health_status === 'healthy' ? '#10B981' : cycle.environment.health_status === 'degraded' ? '#F59E0B' : cycle.environment.health_status === 'down' ? '#EF4444' : '#94A3B8' }} />
+                </span>
+              )}
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>

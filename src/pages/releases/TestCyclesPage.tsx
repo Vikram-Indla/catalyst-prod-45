@@ -135,6 +135,7 @@ export default function TestCyclesPage() {
         description: data.description,
         release_id: data.release_id,
         environment: data.environment,
+        environment_id: data.environment_id,
         assigned_to: data.assigned_to,
         planned_start: data.planned_start,
         planned_end: data.planned_end,
