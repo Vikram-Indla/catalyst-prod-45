@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
-import { Download, Clock, Loader2, CheckCircle2, AlertCircle, BarChart3, Filter, FolderGit2, ChevronDown, ChevronRight, Settings2 } from 'lucide-react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { Download, Clock, Loader2, CheckCircle2, AlertCircle, BarChart3, FolderGit2, ChevronDown, ChevronRight, Settings2 } from 'lucide-react';
 import { MultiSelectDropdown, type MultiSelectOption } from './MultiSelectDropdown';
 import {
   useAvailableProjects, useForceSync, useSyncConfig,
   useSaveFilterSettings, useAvailableIssueTypes, useSyncHealth,
+  useAvailableFixVersions,
   type SyncLogEntry,
 } from '../hooks/useSyncEngine';
 import toast from 'react-hot-toast';
@@ -17,10 +18,19 @@ const LOOKBACK_OPTIONS = [
   { value: 6, label: '6 months' },
 ];
 
+/** Jira status categories — from Jira API statusCategory.name */
+const JIRA_STATUS_CATEGORIES: MultiSelectOption[] = [
+  { value: 'To Do', label: 'To Do', sublabel: 'New, Backlog, Open' },
+  { value: 'In Progress', label: 'In Progress', sublabel: 'Active, Development, Review' },
+  { value: 'Done', label: 'Done', sublabel: 'Closed, Resolved, Complete' },
+];
+
 /** Per-project sync configuration */
 export interface ProjectSyncConfig {
   lookback_months: number;
-  statuses: string[];
+  status_categories: string[];
+  issue_types: string[];
+  fix_versions: string[];
 }
 
 /** Sync progress phases per project */
@@ -31,35 +41,19 @@ interface SyncProjectProgress {
   durationMs?: number;
 }
 
-/** All known Jira statuses from synced data */
-const ALL_KNOWN_STATUSES = [
-  'Analysis', 'Awaiting Info', 'Backlog', 'BETA READY', 'Blocked',
-  'BRD Backlog', 'BRD Preparation', 'BRD Sign Off', 'BRD Under Review',
-  'Canceled', 'Closed', 'Deferred for INT', 'Done', 'Entity Input',
-  'Figma Design', 'hold', 'Implementation Review', 'In BETA', 'In Design',
-  'In Development', 'In Integration', 'In Production', 'In Progress', 'In QA',
-  'In Requirements', 'In Review', 'IN RFP', 'In UAT', 'In-Progress',
-  'Internal QA', 'Monitor', 'New', 'On Hold', 'On Track', 'Portfolio Review',
-  'Production Ready', 'QA Fail', 'Re-Open', 'Ready for Development',
-  'Ready for Entity', 'Ready for implementation', 'ready for production',
-  'Ready for QA', 'Rejected', 'Req Submitted', 'Resolved', 'Retest',
-  'Review', 'Selected for Development', 'Staging/QA', 'To Do', 'ToDo',
-  'Technical validation', 'Ready for UAT',
-];
-
 export function SyncConfigPanel() {
   const { data: availableProjects = [], isLoading: projectsLoading } = useAvailableProjects();
   const { data: syncConfig, isLoading: configLoading } = useSyncConfig();
   const { data: syncHealth } = useSyncHealth();
   const { data: issueTypes = [], isLoading: typesLoading } = useAvailableIssueTypes();
+  const { data: fixVersionsRaw = [] } = useAvailableFixVersions();
   const forceSync = useForceSync();
   const saveFilters = useSaveFilterSettings();
 
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
-  const [selectedIssueTypes, setSelectedIssueTypes] = useState<string[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
 
-  // Per-project config: { [projectKey]: { lookback_months, statuses[] } }
+  // Per-project config
   const [projectConfigs, setProjectConfigs] = useState<Record<string, ProjectSyncConfig>>({});
   const [expandedProject, setExpandedProject] = useState<string | null>(null);
 
@@ -75,14 +69,19 @@ export function SyncConfigPanel() {
       if (Array.isArray(savedProjects) && savedProjects.length > 0) {
         setSelectedProjects(savedProjects);
       }
-      const savedTypes = syncConfig.sync_issue_types;
-      if (Array.isArray(savedTypes) && savedTypes.length > 0) {
-        setSelectedIssueTypes(savedTypes);
-      }
-      // Load per-project configs
       const savedProjectConfigs = syncConfig.sync_project_config;
       if (savedProjectConfigs && typeof savedProjectConfigs === 'object') {
-        setProjectConfigs(savedProjectConfigs as Record<string, ProjectSyncConfig>);
+        // Migrate old format: statuses -> status_categories
+        const migrated: Record<string, ProjectSyncConfig> = {};
+        Object.entries(savedProjectConfigs as Record<string, any>).forEach(([key, val]) => {
+          migrated[key] = {
+            lookback_months: val.lookback_months || 3,
+            status_categories: val.status_categories || [],
+            issue_types: val.issue_types || [],
+            fix_versions: val.fix_versions || [],
+          };
+        });
+        setProjectConfigs(migrated);
       }
     }
   }, [syncConfig]);
@@ -94,11 +93,10 @@ export function SyncConfigPanel() {
       let changed = false;
       selectedProjects.forEach(pk => {
         if (!next[pk]) {
-          next[pk] = { lookback_months: 3, statuses: [] };
+          next[pk] = { lookback_months: 3, status_categories: [], issue_types: [], fix_versions: [] };
           changed = true;
         }
       });
-      // Remove configs for deselected projects
       Object.keys(next).forEach(pk => {
         if (!selectedProjects.includes(pk)) {
           delete next[pk];
@@ -110,27 +108,27 @@ export function SyncConfigPanel() {
   }, [selectedProjects]);
 
   const projectOptions: MultiSelectOption[] = availableProjects.map(p => ({
-    value: p.key,
-    label: p.key,
-    sublabel: p.name,
+    value: p.key, label: p.key, sublabel: p.name,
   }));
 
-  const issueTypeOptions: MultiSelectOption[] = issueTypes.map(t => ({
-    value: t,
-    label: t,
-  }));
+  const issueTypeOptions: MultiSelectOption[] = issueTypes.map(t => ({ value: t, label: t }));
 
-  const statusOptions: MultiSelectOption[] = ALL_KNOWN_STATUSES
-    .sort((a, b) => a.localeCompare(b))
-    .map(s => ({ value: s, label: s }));
+  // Fix versions grouped by project
+  const fixVersionsByProject = useMemo(() => {
+    const map: Record<string, MultiSelectOption[]> = {};
+    fixVersionsRaw.forEach(v => {
+      if (!map[v.project_key]) map[v.project_key] = [];
+      map[v.project_key].push({
+        value: v.name,
+        label: v.name,
+        sublabel: v.released ? 'Released' : undefined,
+      });
+    });
+    return map;
+  }, [fixVersionsRaw]);
 
   const handleProjectChange = (newSelected: string[]) => {
     setSelectedProjects(newSelected);
-    setHasChanges(true);
-  };
-
-  const handleIssueTypeChange = (newSelected: string[]) => {
-    setSelectedIssueTypes(newSelected);
     setHasChanges(true);
   };
 
@@ -146,7 +144,6 @@ export function SyncConfigPanel() {
     try {
       await saveFilters.mutateAsync({
         sync_projects: selectedProjects,
-        sync_issue_types: selectedIssueTypes,
         sync_project_config: projectConfigs,
       });
       setHasChanges(false);
@@ -163,9 +160,7 @@ export function SyncConfigPanel() {
     }
 
     const projectList = selectedProjects;
-    const initialProgress: SyncProjectProgress[] = projectList.map(key => ({
-      key, status: 'pending',
-    }));
+    const initialProgress: SyncProjectProgress[] = projectList.map(key => ({ key, status: 'pending' }));
     setSyncProgress(initialProgress);
     setSyncOverallPhase('syncing');
 
@@ -193,14 +188,12 @@ export function SyncConfigPanel() {
     try {
       await saveFilters.mutateAsync({
         sync_projects: selectedProjects,
-        sync_issue_types: selectedIssueTypes,
         sync_project_config: projectConfigs,
       });
       setHasChanges(false);
 
       await forceSync.mutateAsync({
         sync_type: 'full',
-        issue_types: selectedIssueTypes,
         projects: selectedProjects,
         project_configs: projectConfigs,
       });
@@ -232,6 +225,16 @@ export function SyncConfigPanel() {
   const isSyncing = forceSync.isPending || syncOverallPhase === 'syncing';
   const lastSync = syncHealth?.lastSync;
 
+  /** Summary badge for a project config */
+  const configSummary = (config: ProjectSyncConfig) => {
+    const parts: string[] = [];
+    parts.push(`${config.lookback_months}mo`);
+    parts.push(config.status_categories.length === 0 ? 'All categories' : `${config.status_categories.length} cat.`);
+    parts.push(config.issue_types.length === 0 ? 'All types' : `${config.issue_types.length} types`);
+    parts.push(config.fix_versions.length === 0 ? 'All releases' : `${config.fix_versions.length} rel.`);
+    return parts.join(' · ');
+  };
+
   return (
     <div className="wh-card" style={{ padding: 24 }}>
       <div style={{ marginBottom: 20 }}>
@@ -242,7 +245,7 @@ export function SyncConfigPanel() {
           Sync Configuration
         </h3>
         <p style={{ fontSize: 12, color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)', margin: 0 }}>
-          Choose which projects, work item types, statuses, and timeline per project to sync from Jira.
+          Choose projects and configure per-project sync criteria: timeline, status categories, work types, and releases.
         </p>
       </div>
 
@@ -267,7 +270,7 @@ export function SyncConfigPanel() {
             <p style={{ fontSize: 11, color: 'var(--wh-tx4)', marginTop: 6, fontFamily: 'var(--wh-fn)' }}>
               {selectedProjects.length === 0
                 ? 'No projects selected — select projects to configure sync criteria.'
-                : `${selectedProjects.length} of ${availableProjects.length} projects selected. Expand each to set timeline & statuses.`}
+                : `${selectedProjects.length} of ${availableProjects.length} projects selected. Expand each to configure filters.`}
             </p>
           </div>
 
@@ -283,9 +286,10 @@ export function SyncConfigPanel() {
               </label>
 
               {selectedProjects.map(pk => {
-                const config = projectConfigs[pk] || { lookback_months: 3, statuses: [] };
+                const config = projectConfigs[pk] || { lookback_months: 3, status_categories: [], issue_types: [], fix_versions: [] };
                 const isExpanded = expandedProject === pk;
                 const projectInfo = availableProjects.find(p => p.key === pk);
+                const projectVersions = fixVersionsByProject[pk] || [];
 
                 return (
                   <div
@@ -321,10 +325,8 @@ export function SyncConfigPanel() {
                       </span>
                       <span style={{
                         fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-fn)',
-                        display: 'flex', gap: 8,
                       }}>
-                        <span>📅 {config.lookback_months}mo</span>
-                        <span>🔖 {config.statuses.length === 0 ? 'All statuses' : `${config.statuses.length} statuses`}</span>
+                        {configSummary(config)}
                       </span>
                     </button>
 
@@ -332,9 +334,9 @@ export function SyncConfigPanel() {
                     {isExpanded && (
                       <div style={{
                         padding: '0 14px 14px 38px',
-                        display: 'flex', flexDirection: 'column', gap: 14,
+                        display: 'flex', flexDirection: 'column', gap: 16,
                       }}>
-                        {/* Timeline for this project */}
+                        {/* Timeline Lookback */}
                         <div>
                           <label style={{
                             fontSize: 10, fontWeight: 600, color: '#64748B',
@@ -367,21 +369,57 @@ export function SyncConfigPanel() {
                           </div>
                         </div>
 
-                        {/* Statuses for this project */}
+                        {/* Status Categories */}
                         <div style={{ overflow: 'visible' }}>
                           <MultiSelectDropdown
-                            label={`Statuses for ${pk}`}
-                            options={statusOptions}
-                            selected={config.statuses}
-                            onChange={(newStatuses) => updateProjectConfig(pk, { statuses: newStatuses })}
-                            placeholder="All statuses (no filter)"
-                            emptyMessage="No statuses available."
+                            label={`Status Categories for ${pk}`}
+                            options={JIRA_STATUS_CATEGORIES}
+                            selected={config.status_categories}
+                            onChange={(vals) => updateProjectConfig(pk, { status_categories: vals })}
+                            placeholder="All categories (no filter)"
+                            emptyMessage="No categories available."
                             accentColor="#7C3AED"
                           />
                           <p style={{ fontSize: 10, color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
-                            {config.statuses.length === 0
-                              ? 'No filter — all statuses will be synced for this project.'
-                              : `Only ${config.statuses.length} status(es) will be synced. Non-matching items will be removed.`}
+                            {config.status_categories.length === 0
+                              ? 'No filter — all Jira status categories will be synced.'
+                              : `Only issues in ${config.status_categories.join(', ')} category will be synced.`}
+                          </p>
+                        </div>
+
+                        {/* Issue Types */}
+                        <div style={{ overflow: 'visible' }}>
+                          <MultiSelectDropdown
+                            label={`Work Types for ${pk}`}
+                            options={issueTypeOptions}
+                            selected={config.issue_types}
+                            onChange={(vals) => updateProjectConfig(pk, { issue_types: vals })}
+                            placeholder={typesLoading ? 'Loading types...' : 'All types (no filter)'}
+                            emptyMessage="No issue types found. Run a sync first."
+                            accentColor="#0891B2"
+                          />
+                          <p style={{ fontSize: 10, color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
+                            {config.issue_types.length === 0
+                              ? 'No filter — all work types will be synced.'
+                              : `Only ${config.issue_types.length} type(s) will be synced for ${pk}.`}
+                          </p>
+                        </div>
+
+                        {/* Fix Versions / Releases */}
+                        <div style={{ overflow: 'visible' }}>
+                          <MultiSelectDropdown
+                            label={`Releases for ${pk}`}
+                            options={projectVersions}
+                            selected={config.fix_versions}
+                            onChange={(vals) => updateProjectConfig(pk, { fix_versions: vals })}
+                            placeholder="All releases (no filter)"
+                            emptyMessage={`No versions found for ${pk}. Sync first to discover releases.`}
+                            accentColor="#059669"
+                          />
+                          <p style={{ fontSize: 10, color: 'var(--wh-tx4)', marginTop: 4, fontFamily: 'var(--wh-fn)' }}>
+                            {config.fix_versions.length === 0
+                              ? 'No filter — all releases will be synced.'
+                              : `Only ${config.fix_versions.length} release(s) will be synced for ${pk}.`}
                           </p>
                         </div>
                       </div>
@@ -391,24 +429,6 @@ export function SyncConfigPanel() {
               })}
             </div>
           )}
-
-          {/* Work Item Type Filter */}
-          <div style={{ maxWidth: 480, overflow: 'visible' }}>
-            <MultiSelectDropdown
-              label="Work Item Types"
-              options={issueTypeOptions}
-              selected={selectedIssueTypes}
-              onChange={handleIssueTypeChange}
-              placeholder={typesLoading ? 'Loading types...' : 'All types (no filter)'}
-              emptyMessage="No issue types found. Run a sync first to discover types."
-              accentColor="#7C3AED"
-            />
-            <p style={{ fontSize: 11, color: 'var(--wh-tx4)', marginTop: 6, fontFamily: 'var(--wh-fn)' }}>
-              {selectedIssueTypes.length === 0
-                ? 'No filter — all work item types will be synced.'
-                : `${selectedIssueTypes.length} type${selectedIssueTypes.length !== 1 ? 's' : ''} selected for sync.`}
-            </p>
-          </div>
 
           {/* Actions row */}
           <div style={{

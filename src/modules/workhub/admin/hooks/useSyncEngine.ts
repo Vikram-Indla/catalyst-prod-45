@@ -89,7 +89,7 @@ export function useForceSync() {
       issue_types?: string[]
       fix_versions?: string[]
       projects?: string[]
-      project_configs?: Record<string, { lookback_months: number; statuses: string[] }>
+      project_configs?: Record<string, { lookback_months: number; status_categories?: string[]; statuses?: string[]; issue_types?: string[]; fix_versions?: string[] }>
     } = {}) => {
       const { data, error } = await supabase.functions.invoke('wh-jira-sync', {
         body: {
@@ -239,7 +239,7 @@ export function useSaveFilterSettings() {
       sync_issue_types?: string[]
       sync_fix_versions?: string[]
       sync_lookback_months?: number
-      sync_project_config?: Record<string, { lookback_months: number; statuses: string[] }>
+      sync_project_config?: Record<string, { lookback_months: number; status_categories?: string[]; statuses?: string[]; issue_types?: string[]; fix_versions?: string[] }>
     }) => {
       const updates = []
       if (input.sync_projects !== undefined) {
