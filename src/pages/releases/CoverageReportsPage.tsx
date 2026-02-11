@@ -310,12 +310,13 @@ function ByRequirementTab({
 }
 
 function ByModuleTab({ modules }: { modules: typeof mockModules }) {
-  const chartData = modules.map(m => ({
+  const safeModules = modules || [];
+  const chartData = safeModules.map(m => ({
     name: m.name.length > 15 ? m.name.substring(0, 15) + '...' : m.name,
     fullName: m.name,
-    covered: Math.round((m.covered / m.requirements) * 100),
-    partial: Math.round((m.partial / m.requirements) * 100),
-    uncovered: Math.round((m.uncovered / m.requirements) * 100),
+    covered: m.requirements > 0 ? Math.round((m.covered / m.requirements) * 100) : 0,
+    partial: m.requirements > 0 ? Math.round((m.partial / m.requirements) * 100) : 0,
+    uncovered: m.requirements > 0 ? Math.round((m.uncovered / m.requirements) * 100) : 0,
     passRate: m.passRate,
   }));
 
@@ -323,8 +324,8 @@ function ByModuleTab({ modules }: { modules: typeof mockModules }) {
     <div className="grid grid-cols-3 gap-6">
       {/* Module Coverage Cards */}
       <div className="col-span-2 space-y-4">
-        {modules.map(mod => {
-          const coveragePercent = Math.round((mod.covered / mod.requirements) * 100);
+        {safeModules.map(mod => {
+          const coveragePercent = mod.requirements > 0 ? Math.round((mod.covered / mod.requirements) * 100) : 0;
           return (
             <Card key={mod.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-4">
@@ -406,9 +407,10 @@ function ByModuleTab({ modules }: { modules: typeof mockModules }) {
 }
 
 function GapAnalysisTab({ gaps, onAddTests }: { gaps: typeof mockGaps; onAddTests: (gap: typeof mockGaps[0]) => void }) {
-  const criticalCount = gaps.filter(g => g.severity === 'critical').length;
-  const highCount = gaps.filter(g => g.severity === 'high').length;
-  const totalEffort = gaps.reduce((sum, g) => sum + g.effort, 0);
+  const safeGaps = gaps || [];
+  const criticalCount = safeGaps.filter(g => g.severity === 'critical').length;
+  const highCount = safeGaps.filter(g => g.severity === 'high').length;
+  const totalEffort = safeGaps.reduce((sum, g) => sum + g.effort, 0);
 
   return (
     <div className="space-y-6">
@@ -435,7 +437,7 @@ function GapAnalysisTab({ gaps, onAddTests }: { gaps: typeof mockGaps; onAddTest
         <StatCard
           icon={<Sparkles className="h-6 w-6" />}
           label="Risk Score"
-          value={Math.round(gaps.reduce((s, g) => s + g.riskScore, 0) / gaps.length)}
+          value={safeGaps.length > 0 ? Math.round(safeGaps.reduce((s, g) => s + g.riskScore, 0) / safeGaps.length) : 0}
           subValue="Average risk level"
         />
       </div>
@@ -463,7 +465,7 @@ function GapAnalysisTab({ gaps, onAddTests }: { gaps: typeof mockGaps; onAddTest
               </TableRow>
             </TableHeader>
             <TableBody>
-              {gaps.map(gap => (
+              {safeGaps.map(gap => (
                 <TableRow key={gap.id} className={cn(
                   'hover:bg-muted/30',
                   gap.severity === 'critical' && 'bg-red-50 dark:bg-red-950/20'
@@ -501,10 +503,24 @@ function GapAnalysisTab({ gaps, onAddTests }: { gaps: typeof mockGaps; onAddTest
 }
 
 function TrendsTab({ trendData, sprintData }: { trendData: typeof mockTrendData; sprintData: typeof mockSprintCoverage }) {
-  const latestCoverage = trendData[trendData.length - 1]?.coverage || 0;
-  const previousCoverage = trendData[trendData.length - 2]?.coverage || 0;
+  const safeTrendData = trendData || [];
+  const safeSprintData = sprintData || [];
+  const latestCoverage = safeTrendData.length > 0 ? (safeTrendData[safeTrendData.length - 1]?.coverage ?? 0) : 0;
+  const previousCoverage = safeTrendData.length > 1 ? (safeTrendData[safeTrendData.length - 2]?.coverage ?? 0) : 0;
   const trendDelta = latestCoverage - previousCoverage;
   const overallTrend = trendDelta > 0 ? 'improving' : trendDelta < 0 ? 'declining' : 'stable';
+  const firstCoverage = safeTrendData.length > 0 ? (safeTrendData[0]?.coverage ?? 0) : 0;
+  const avgWeeklyChange = safeTrendData.length > 1 ? Math.round((latestCoverage - firstCoverage) / safeTrendData.length) : 0;
+
+  if (safeTrendData.length === 0 && safeSprintData.length === 0) {
+    return (
+      <div className="py-16 text-center text-muted-foreground">
+        <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-30" />
+        <p className="text-lg font-medium">No trend data available</p>
+        <p className="text-sm">Coverage trends will appear once requirements and test executions are recorded.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -532,7 +548,7 @@ function TrendsTab({ trendData, sprintData }: { trendData: typeof mockTrendData;
         <StatCard
           icon={<BarChart3 className="h-6 w-6" />}
           label="Avg. Weekly Change"
-          value={`+${Math.round((latestCoverage - trendData[0].coverage) / trendData.length)}%`}
+          value={`+${avgWeeklyChange}%`}
           subValue="Per week"
         />
       </div>
@@ -546,7 +562,7 @@ function TrendsTab({ trendData, sprintData }: { trendData: typeof mockTrendData;
           <CardContent>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={trendData}>
+                <AreaChart data={safeTrendData}>
                   <defs>
                     <linearGradient id="coverageGradient" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
@@ -594,7 +610,7 @@ function TrendsTab({ trendData, sprintData }: { trendData: typeof mockTrendData;
           <CardContent>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={sprintData}>
+                <BarChart data={safeSprintData}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                   <XAxis dataKey="sprint" className="text-xs" />
                   <YAxis className="text-xs" />
