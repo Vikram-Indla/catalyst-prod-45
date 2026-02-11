@@ -3,7 +3,7 @@
  * Single source of truth for context-aware navigation
  */
 
-export type WorkspaceType = 'home' | 'enterprise' | 'product' | 'program' | 'project' | 'tests' | 'releases' | 'operations' | 'taskhub' | 'testhub';
+export type WorkspaceType = 'home' | 'enterprise' | 'product' | 'program' | 'project' | 'tests' | 'releases' | 'operations' | 'taskhub' | 'testhub' | 'workhub';
 
 export interface WorkspaceContext {
   type: WorkspaceType;
@@ -20,6 +20,11 @@ export interface WorkspaceContext {
  * This is the SINGLE SOURCE OF TRUTH for workspace type
  */
 export function deriveWorkspaceType(pathname: string): WorkspaceType {
+  
+  // WorkHub module - Jira integration & portfolio management
+  if (pathname.startsWith('/workhub')) {
+    return 'workhub';
+  }
   
   // TestHub module - Test Case Repository & Execution
   if (pathname.startsWith('/testhub')) {
@@ -117,6 +122,8 @@ export function getActiveNavItem(workspaceType: WorkspaceType): string {
       return 'Taskhub';
     case 'testhub':
       return 'TestHub';
+    case 'workhub':
+      return 'WorkHub';
     default:
       return '';
   }
