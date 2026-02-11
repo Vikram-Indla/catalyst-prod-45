@@ -74,8 +74,8 @@ const SORT_LABELS: Record<SortOption, string> = {
 
 const views: { mode: ViewMode; icon: React.ReactNode; label: string }[] = [
   { mode: 'cards', icon: <LayoutGrid className="w-3.5 h-3.5" />, label: 'Cards' },
-  { mode: 'table', icon: <Table2 className="w-3.5 h-3.5" />, label: 'Table' },
   { mode: 'timeline', icon: <GanttChartSquare className="w-3.5 h-3.5" />, label: 'Timeline' },
+  { mode: 'table', icon: <Table2 className="w-3.5 h-3.5" />, label: 'Table' },
 ];
 
 function FilterButton({ label, count, isActive, children }: { label: string; count: number; isActive: boolean; children: React.ReactNode }) {
@@ -217,14 +217,14 @@ export function Toolbar({
             key={mode}
             onClick={() => onViewModeChange(mode)}
             className={cn(
-              "w-[34px] h-[34px] flex items-center justify-center border-r border-slate-200 last:border-r-0 transition-colors",
+              "h-[34px] flex items-center gap-1.5 px-3 border-r border-slate-200 last:border-r-0 transition-colors text-xs font-medium",
               viewMode === mode
                 ? "bg-blue-50 text-blue-600"
                 : "text-slate-400 hover:text-slate-600 hover:bg-slate-50"
             )}
-            title={label}
           >
             {icon}
+            <span className="hidden sm:inline">{label}</span>
           </button>
         ))}
       </div>

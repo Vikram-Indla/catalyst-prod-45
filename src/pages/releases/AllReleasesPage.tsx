@@ -10,8 +10,6 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useAllReleases } from '@/hooks/releases/useAllReleases';
 import {
-  ReleasesTable,
-  ReleasesTimeline,
   ReleasesBulkActionBar,
   ReleasesEmptyState,
   ExportReleasesDropdown,
@@ -27,6 +25,8 @@ import {
   AIInsightsDrawer,
   CardGridView,
   Toolbar,
+  TimelineView,
+  EnterpriseTableView,
   ViewMode,
   ReleaseSummary,
   AIReleaseInsight,
@@ -388,17 +388,22 @@ export default function AllReleasesPage() {
             onReleaseClick={handleReleaseClick}
           />
         ) : viewMode === 'table' ? (
-          <ReleasesTable
-            releases={releases}
-            sort={sort}
-            onSort={setSort}
-            selected={selected}
-            onToggleSelect={toggle}
-            onToggleSelectAll={toggleAll}
+          <EnterpriseTableView
+            releases={paginatedReleases}
+            selectedIds={selected}
+            onSelect={(id) => {
+              const idx = releases.findIndex(r => r.id === id);
+              toggle(id, idx, false);
+            }}
+            onSelectAll={toggleAll}
             selectAllState={selectAllState}
+            onReleaseClick={handleReleaseClick}
           />
         ) : (
-          <ReleasesTimeline releases={releases} />
+          <TimelineView
+            releases={paginatedReleases}
+            onReleaseClick={handleReleaseClick}
+          />
         )}
         
         {/* Pagination */}
