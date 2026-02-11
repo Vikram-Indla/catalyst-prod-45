@@ -245,11 +245,12 @@ function ByRequirementTab({
   onViewRequirement: (reqId: string) => void;
 }) {
   const filtered = useMemo(() => {
-    return requirements.filter(r => {
-      const matchesSearch = r.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                           r.id.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCoverage = filters.coverage === 'all' || r.coverage === filters.coverage;
-      const matchesPriority = filters.priority === 'all' || r.priority === filters.priority;
+    return (requirements || []).filter(r => {
+      if (!r) return false;
+      const matchesSearch = (r.title || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
+                           (r.id || '').toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCoverage = !filters.coverage || filters.coverage === 'all' || r.coverage === filters.coverage;
+      const matchesPriority = !filters.priority || filters.priority === 'all' || r.priority === filters.priority;
       return matchesSearch && matchesCoverage && matchesPriority;
     });
   }, [requirements, searchQuery, filters]);
