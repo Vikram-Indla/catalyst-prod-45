@@ -1,6 +1,6 @@
 /**
  * WorkItemRow — Single table row for a Jira issue from wh_issues
- * Supports hierarchy indent, Lucide type icons, and mapped profile avatars
+ * Supports hierarchy indent, Lucide type icons with tooltips, mapped profile avatars, and theme display
  */
 
 import { useState } from 'react';
@@ -21,6 +21,8 @@ interface WorkItemRowProps {
   isExpanded: boolean;
   isSelected: boolean;
   avatarUrl?: string | null;
+  themeName?: string | null;
+  themeColor?: string | null;
   onToggleExpand: () => void;
   onToggleSelect: () => void;
   onOpenDrawer: () => void;
@@ -53,18 +55,14 @@ const PRIORITY_COLORS: Record<string, string> = {
 
 /**
  * Map Jira issue type names to appropriate Lucide icons + colors.
- * Covers standard Jira types + custom types found in the project.
  */
 const TYPE_ICON_MAP: Record<string, { icon: LucideIcon; color: string }> = {
-  // Standard Jira
   'Epic':           { icon: Bookmark,      color: '#7c3aed' },
   'Story':          { icon: BookOpen,      color: '#16a34a' },
   'Task':           { icon: CheckCircle2,  color: '#2563eb' },
   'Sub-task':       { icon: ListTodo,      color: '#2563eb' },
   'Subtask':        { icon: ListTodo,      color: '#2563eb' },
   'Bug':            { icon: Bug,           color: '#dc2626' },
-  
-  // Custom types from this project
   'QA Bug':         { icon: Bug,           color: '#dc2626' },
   'Production Incident': { icon: AlertTriangle, color: '#dc2626' },
   'Defect':         { icon: Bug,           color: '#ea580c' },
@@ -83,23 +81,16 @@ const TYPE_ICON_MAP: Record<string, { icon: LucideIcon; color: string }> = {
 };
 
 function getTypeIcon(issueType: string): { icon: LucideIcon; color: string } {
-  // Exact match first
   if (TYPE_ICON_MAP[issueType]) return TYPE_ICON_MAP[issueType];
-  
-  // Case-insensitive match
   const lower = issueType.toLowerCase();
   for (const [key, val] of Object.entries(TYPE_ICON_MAP)) {
     if (key.toLowerCase() === lower) return val;
   }
-  
-  // Partial match for common patterns
   if (lower.includes('bug') || lower.includes('defect')) return { icon: Bug, color: '#dc2626' };
   if (lower.includes('epic')) return { icon: Bookmark, color: '#7c3aed' };
   if (lower.includes('story')) return { icon: BookOpen, color: '#16a34a' };
   if (lower.includes('task')) return { icon: CheckCircle2, color: '#2563eb' };
   if (lower.includes('sub')) return { icon: ListTodo, color: '#2563eb' };
-  
-  // Default
   return { icon: CircleDot, color: '#64748b' };
 }
 
@@ -110,7 +101,7 @@ function formatDate(d: string | null) {
 
 export function WorkItemRow({
   item, depth, hasChildren, isExpanded, isSelected,
-  avatarUrl,
+  avatarUrl, themeName, themeColor,
   onToggleExpand, onToggleSelect, onOpenDrawer,
 }: WorkItemRowProps) {
   const statusStyle = STATUS_COLORS[item.status] || { bg: '#f1f5f9', fg: '#475569' };
@@ -124,7 +115,7 @@ export function WorkItemRow({
     <div
       className="group grid items-center border-b hover:bg-[#f8fafc] cursor-pointer transition-colors"
       style={{
-        gridTemplateColumns: '36px minmax(140px, auto) 1fr 120px 100px 100px 130px 90px 90px',
+        gridTemplateColumns: '36px 36px minmax(140px, auto) 1fr 120px 120px 130px 90px 90px 90px',
         height: 'var(--wh-row-height, 44px)',
         borderColor: '#f1f5f9',
         fontFamily: 'var(--wh-font-sans)',
@@ -142,12 +133,20 @@ export function WorkItemRow({
         />
       </div>
 
-      {/* 2. Issue Key + Type Icon + Expand */}
+      {/* 2. Type Icon with tooltip */}
+      <div className="flex justify-center" title={item.issue_type}>
+        <TypeIconComponent
+          className="w-4 h-4 shrink-0"
+          style={{ color: typeIcon.color }}
+          strokeWidth={1.8}
+        />
+      </div>
+
+      {/* 3. Issue Key + Expand */}
       <div
         className="flex items-center gap-1.5 min-w-0"
         style={{ paddingLeft: `${indentPx}px` }}
       >
-        {/* Expand/collapse */}
         {hasChildren ? (
           <button
             onClick={e => { e.stopPropagation(); onToggleExpand(); }}
@@ -162,14 +161,6 @@ export function WorkItemRow({
           <span className="w-4 shrink-0" />
         )}
 
-        {/* Lucide type icon */}
-        <TypeIconComponent
-          className="w-4 h-4 shrink-0"
-          style={{ color: typeIcon.color }}
-          strokeWidth={1.8}
-        />
-
-        {/* Issue key */}
         <span
           className="text-[12px] font-semibold truncate"
           style={{ fontFamily: 'var(--wh-font-mono, monospace)', color: 'var(--wh-primary, #2563eb)' }}
@@ -178,7 +169,7 @@ export function WorkItemRow({
         </span>
       </div>
 
-      {/* 3. Summary */}
+      {/* 4. Summary */}
       <span
         className="text-[13px] truncate pr-2"
         style={{
@@ -189,7 +180,7 @@ export function WorkItemRow({
         {item.summary}
       </span>
 
-      {/* 4. Status */}
+      {/* 5. Status */}
       <div>
         <span
           className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold"
@@ -199,17 +190,21 @@ export function WorkItemRow({
         </span>
       </div>
 
-      {/* 5. Theme (placeholder — will be populated when themes are created in Catalyst) */}
-      <div>
-        <span
-          className="text-[10.5px] italic"
-          style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}
-        >
-          —
-        </span>
+      {/* 6. Theme */}
+      <div className="flex items-center gap-1.5 min-w-0">
+        {themeName ? (
+          <>
+            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: themeColor || '#94a3b8' }} />
+            <span className="text-[11px] truncate" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>
+              {themeName}
+            </span>
+          </>
+        ) : (
+          <span className="text-[10.5px] italic" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>—</span>
+        )}
       </div>
 
-      {/* 6. Assignee — mapped profile avatar with fallback */}
+      {/* 7. Assignee */}
       <div className="flex items-center gap-1 min-w-0">
         {item.assignee_display_name ? (
           <>
@@ -237,7 +232,7 @@ export function WorkItemRow({
         )}
       </div>
 
-      {/* 6. Priority */}
+      {/* 8. Priority */}
       <div className="flex items-center gap-1">
         <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: priorityColor }} />
         <span className="text-[11px] font-medium" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>
@@ -245,12 +240,12 @@ export function WorkItemRow({
         </span>
       </div>
 
-      {/* 7. Updated */}
+      {/* 9. Updated */}
       <span className="text-[10.5px] truncate" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
         {formatDate(item.jira_updated_at)}
       </span>
 
-      {/* 8. Created */}
+      {/* 10. Created */}
       <span className="text-[10.5px] truncate" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
         {formatDate(item.jira_created_at)}
       </span>
