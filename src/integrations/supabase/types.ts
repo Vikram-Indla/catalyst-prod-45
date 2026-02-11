@@ -30917,27 +30917,33 @@ export type Database = {
         Row: {
           change_summary: string | null
           changed_by: string | null
+          changed_fields: string[] | null
           created_at: string | null
           id: string
           snapshot: Json
+          steps: Json | null
           test_case_id: string
           version_number: number
         }
         Insert: {
           change_summary?: string | null
           changed_by?: string | null
+          changed_fields?: string[] | null
           created_at?: string | null
           id?: string
           snapshot: Json
+          steps?: Json | null
           test_case_id: string
           version_number: number
         }
         Update: {
           change_summary?: string | null
           changed_by?: string | null
+          changed_fields?: string[] | null
           created_at?: string | null
           id?: string
           snapshot?: Json
+          steps?: Json | null
           test_case_id?: string
           version_number?: number
         }
@@ -31668,6 +31674,9 @@ export type Database = {
           completed_at: string | null
           created_at: string | null
           cycle_scope_id: string
+          data_row_index: number | null
+          data_row_snapshot: Json | null
+          dataset_id: string | null
           duration_seconds: number | null
           environment_snapshot: Json | null
           executed_by: string | null
@@ -31687,6 +31696,9 @@ export type Database = {
           completed_at?: string | null
           created_at?: string | null
           cycle_scope_id: string
+          data_row_index?: number | null
+          data_row_snapshot?: Json | null
+          dataset_id?: string | null
           duration_seconds?: number | null
           environment_snapshot?: Json | null
           executed_by?: string | null
@@ -31706,6 +31718,9 @@ export type Database = {
           completed_at?: string | null
           created_at?: string | null
           cycle_scope_id?: string
+          data_row_index?: number | null
+          data_row_snapshot?: Json | null
+          dataset_id?: string | null
           duration_seconds?: number | null
           environment_snapshot?: Json | null
           executed_by?: string | null
