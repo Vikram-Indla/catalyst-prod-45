@@ -1202,3 +1202,190 @@
 .caty-count-up {
   animation: catyCountUp 0.5s ease-out;
 }
+
+/* ==================== ENTERPRISE PROSE (QA Assistant) ==================== */
+.caty-enterprise-prose {
+  font-family: var(--caty-font-family);
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--caty-text-secondary);
+}
+
+.caty-enterprise-prose h1,
+.caty-enterprise-prose h2,
+.caty-enterprise-prose h3 {
+  color: var(--caty-text-primary);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+  padding: 0;
+}
+
+.caty-enterprise-prose h1 {
+  font-size: 15px;
+  border-bottom: 2px solid #2563eb;
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+  margin-top: 16px;
+}
+
+.caty-enterprise-prose h1:first-child {
+  margin-top: 0;
+}
+
+.caty-enterprise-prose h2 {
+  font-size: 13.5px;
+  color: #1e40af;
+  border-left: 3px solid #2563eb;
+  padding-left: 10px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.caty-enterprise-prose h3 {
+  font-size: 13px;
+  color: var(--caty-text-primary);
+  margin-top: 12px;
+  margin-bottom: 6px;
+}
+
+.caty-enterprise-prose p {
+  margin: 6px 0;
+  line-height: 1.7;
+}
+
+.caty-enterprise-prose strong {
+  color: var(--caty-text-primary);
+  font-weight: 650;
+}
+
+.caty-enterprise-prose em {
+  color: var(--caty-text-muted);
+  font-style: italic;
+}
+
+/* Lists */
+.caty-enterprise-prose ul,
+.caty-enterprise-prose ol {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.caty-enterprise-prose li {
+  margin: 4px 0;
+  line-height: 1.6;
+  position: relative;
+}
+
+.caty-enterprise-prose ul li::marker {
+  color: #2563eb;
+}
+
+.caty-enterprise-prose ol li::marker {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* Inline code */
+.caty-enterprise-prose code {
+  background: #f1f5f9;
+  color: #1e40af;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  border: 1px solid #e2e8f0;
+}
+
+/* Code blocks */
+.caty-enterprise-prose pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 10px 0;
+  font-size: 12px;
+  line-height: 1.5;
+  border: 1px solid #1e293b;
+}
+
+.caty-enterprise-prose pre code {
+  background: none;
+  border: none;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* Blockquotes — executive callout style */
+.caty-enterprise-prose blockquote {
+  margin: 12px 0;
+  padding: 10px 14px;
+  background: #eff6ff;
+  border-left: 3px solid #2563eb;
+  border-radius: 0 8px 8px 0;
+  color: var(--caty-text-secondary);
+  font-size: 13px;
+}
+
+.caty-enterprise-prose blockquote p {
+  margin: 2px 0;
+}
+
+/* Tables */
+.caty-enterprise-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 12.5px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.caty-enterprise-prose thead {
+  background: #f8fafc;
+}
+
+.caty-enterprise-prose th {
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 650;
+  color: var(--caty-text-primary);
+  border-bottom: 2px solid #e2e8f0;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.caty-enterprise-prose td {
+  padding: 7px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  color: var(--caty-text-secondary);
+}
+
+.caty-enterprise-prose tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* Horizontal rules — section dividers */
+.caty-enterprise-prose hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #cbd5e1, transparent);
+  margin: 16px 0;
+}
+
+/* Links */
+.caty-enterprise-prose a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 1px solid transparent;
+  transition: border-color 150ms;
+}
+
+.caty-enterprise-prose a:hover {
+  border-bottom-color: #2563eb;
+}
