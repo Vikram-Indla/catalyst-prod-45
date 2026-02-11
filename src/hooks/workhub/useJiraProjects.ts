@@ -1,21 +1,21 @@
 /**
- * WorkHub Resources Hook — TanStack Query
+ * WorkHub Jira Projects Hook — TanStack Query
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type { Resource } from '@/types/workhub.types';
+import type { JiraProject } from '@/types/workhub.types';
 
-export function useWHResources() {
+export function useWHJiraProjects() {
   return useQuery({
-    queryKey: ['workhub', 'resources'],
+    queryKey: ['workhub', 'jira-projects'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('wh_resources')
+        .from('wh_jira_projects')
         .select('*')
         .eq('is_active', true)
-        .order('name');
+        .order('project_key');
       if (error) throw error;
-      return (data ?? []) as unknown as Resource[];
+      return (data ?? []) as unknown as JiraProject[];
     },
     staleTime: 30_000,
     refetchInterval: 60_000,

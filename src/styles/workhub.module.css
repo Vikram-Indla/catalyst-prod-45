@@ -150,3 +150,25 @@
 .workhub-safe-area {
   padding: var(--wh-space-xl);
 }
+
+/* ── PRINT SUPPORT (Task 9) ── */
+@media print {
+  [data-print-hide="true"],
+  .workhub-sidebar,
+  .workhub-topnav {
+    display: none !important;
+  }
+  .workhub-module {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  table, .rounded-xl {
+    width: 100% !important;
+    font-size: 10px !important;
+  }
+  th, [style*="header-height"] {
+    background-color: #f1f5f9 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
