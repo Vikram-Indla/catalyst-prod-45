@@ -24658,6 +24658,165 @@ export type Database = {
           },
         ]
       }
+      th_requirement_tests: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          requirement_id: string
+          test_case_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          requirement_id: string
+          test_case_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          requirement_id?: string
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_requirement_tests_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tests_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tests_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tests_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tests_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "th_requirements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tests_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      th_requirements: {
+        Row: {
+          coverage_percent: number | null
+          created_at: string | null
+          description: string | null
+          external_id: string | null
+          failed_tests: number | null
+          id: string
+          not_run_tests: number | null
+          owner_id: string | null
+          passed_tests: number | null
+          priority: string | null
+          release_version: string | null
+          req_key: string
+          source: string | null
+          status: string | null
+          title: string
+          total_linked_tests: number | null
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          coverage_percent?: number | null
+          created_at?: string | null
+          description?: string | null
+          external_id?: string | null
+          failed_tests?: number | null
+          id?: string
+          not_run_tests?: number | null
+          owner_id?: string | null
+          passed_tests?: number | null
+          priority?: string | null
+          release_version?: string | null
+          req_key?: string
+          source?: string | null
+          status?: string | null
+          title: string
+          total_linked_tests?: number | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          coverage_percent?: number | null
+          created_at?: string | null
+          description?: string | null
+          external_id?: string | null
+          failed_tests?: number | null
+          id?: string
+          not_run_tests?: number | null
+          owner_id?: string | null
+          passed_tests?: number | null
+          priority?: string | null
+          release_version?: string | null
+          req_key?: string
+          source?: string | null
+          status?: string | null
+          title?: string
+          total_linked_tests?: number | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "th_requirements_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "th_requirements_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_requirements_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "th_requirements_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       th_shared_step_categories: {
         Row: {
           color: string | null
@@ -35657,6 +35816,28 @@ export type Database = {
         Args: { p_release_id: string }
         Returns: Json
       }
+      get_requirement_tests: {
+        Args: { p_requirement_id: string }
+        Returns: {
+          case_key: string
+          last_executed: string
+          latest_status: string
+          link_id: string
+          priority: string
+          test_case_id: string
+          title: string
+        }[]
+      }
+      get_requirements_coverage_summary: {
+        Args: never
+        Returns: {
+          avg_coverage_percent: number
+          fully_covered: number
+          not_covered: number
+          partially_covered: number
+          total_requirements: number
+        }[]
+      }
       get_resource_summary: { Args: { p_project_id: string }; Returns: Json }
       get_run_metrics: { Args: { p_run_id: string }; Returns: Json }
       get_run_progress: { Args: { p_run_id: string }; Returns: Json }
@@ -35706,6 +35887,18 @@ export type Database = {
         Args: { p_run_id: string; p_test_case_id: string }
         Returns: Json
       }
+      get_test_requirements: {
+        Args: { p_test_case_id: string }
+        Returns: {
+          link_id: string
+          priority: string
+          req_key: string
+          requirement_id: string
+          status: string
+          title: string
+          type: string
+        }[]
+      }
       get_top_failing_tests: {
         Args: { p_limit?: number }
         Returns: {
@@ -35751,6 +35944,15 @@ export type Database = {
             }[]
           }
       get_unassigned_task_count: { Args: never; Returns: number }
+      get_unlinked_test_cases: {
+        Args: never
+        Returns: {
+          case_key: string
+          id: string
+          priority: string
+          title: string
+        }[]
+      }
       get_unmapped_tests: { Args: { p_connector_id: string }; Returns: Json }
       get_user_role: {
         Args: { _user_id: string }
@@ -36729,6 +36931,10 @@ export type Database = {
       update_plan_stats: { Args: { p_plan_id: string }; Returns: undefined }
       update_recent_project: {
         Args: { p_project_id: string }
+        Returns: undefined
+      }
+      update_requirement_coverage: {
+        Args: { p_requirement_id: string }
         Returns: undefined
       }
       update_step_result_v2: {
