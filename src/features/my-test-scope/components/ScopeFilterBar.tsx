@@ -16,12 +16,18 @@ import {
 import { Search, List, Layers, Bug } from 'lucide-react';
 import type { TestScopeFilters } from '../types';
 
+interface CycleOption {
+  id: string;
+  name: string;
+}
+
 interface ScopeFilterBarProps {
   filters: TestScopeFilters;
   onFiltersChange: (filters: TestScopeFilters) => void;
+  cycles?: CycleOption[];
 }
 
-export function ScopeFilterBar({ filters, onFiltersChange }: ScopeFilterBarProps) {
+export function ScopeFilterBar({ filters, onFiltersChange, cycles = [] }: ScopeFilterBarProps) {
   const handleSearchChange = (value: string) => {
     onFiltersChange({ ...filters, search: value });
   };
@@ -40,6 +46,10 @@ export function ScopeFilterBar({ filters, onFiltersChange }: ScopeFilterBarProps
     } else {
       onFiltersChange({ ...filters, priority: [value] });
     }
+  };
+
+  const handleCycleChange = (value: string) => {
+    onFiltersChange({ ...filters, cycleId: value });
   };
 
   const handleGroupByChange = (value: TestScopeFilters['groupBy']) => {
@@ -62,6 +72,26 @@ export function ScopeFilterBar({ filters, onFiltersChange }: ScopeFilterBarProps
           className="pl-9 h-9"
         />
       </div>
+
+      {/* Cycle Filter */}
+      {cycles.length > 0 && (
+        <Select
+          value={filters.cycleId}
+          onValueChange={handleCycleChange}
+        >
+          <SelectTrigger className="w-[180px] h-9">
+            <SelectValue placeholder="Cycle" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Cycles</SelectItem>
+            {cycles.map((cycle) => (
+              <SelectItem key={cycle.id} value={cycle.id}>
+                {cycle.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
 
       {/* Status Filter */}
       <Select

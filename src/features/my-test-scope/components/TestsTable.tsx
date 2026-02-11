@@ -95,6 +95,7 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
     if (filters.status.length > 0 && !filters.status.includes(test.status)) return false;
     if (filters.priority.length > 0 && !filters.priority.includes(test.priority)) return false;
     if (filters.urgency.length > 0 && !filters.urgency.includes(test.urgency)) return false;
+    if (filters.cycleId && filters.cycleId !== 'all' && test.cycleId !== filters.cycleId) return false;
     if (filters.search) {
       const search = filters.search.toLowerCase();
       return test.title.toLowerCase().includes(search) || 

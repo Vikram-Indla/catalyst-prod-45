@@ -3,7 +3,7 @@
  * Main dashboard component with all tabs and features
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useMyTestScope } from '../hooks/useMyTestScope';
@@ -34,11 +34,23 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
     status: [],
     priority: [],
     urgency: [],
+    cycleId: 'all',
     search: '',
     groupBy: 'none',
     sortBy: 'score',
     sortOrder: 'desc',
   });
+
+  const uniqueCycles = useMemo(() => {
+    if (!data?.tests) return [];
+    const seen = new Map<string, string>();
+    data.tests.forEach(t => {
+      if (t.cycleId && !seen.has(t.cycleId)) {
+        seen.set(t.cycleId, t.cycleName);
+      }
+    });
+    return Array.from(seen, ([id, name]) => ({ id, name }));
+  }, [data?.tests]);
 
   const handleExport = useCallback(() => {
     console.log('Export clicked');
@@ -152,7 +164,11 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
       <div className="flex-1 overflow-hidden flex flex-col">
         {activeTab === 'tests' && (
           <>
-            <ScopeFilterBar filters={filters} onFiltersChange={setFilters} />
+            <ScopeFilterBar
+              filters={filters}
+              onFiltersChange={setFilters}
+              cycles={uniqueCycles}
+            />
             <div className="flex-1 overflow-auto">
               <TestsTable
                 tests={data.tests}

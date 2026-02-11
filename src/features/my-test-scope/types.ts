@@ -90,6 +90,7 @@ export interface TestScopeFilters {
   status: string[];
   priority: string[];
   urgency: string[];
+  cycleId: string;
   search: string;
   groupBy: 'none' | 'feature' | 'defect' | 'cycle';
   sortBy: 'score' | 'dueDate' | 'status' | 'priority';

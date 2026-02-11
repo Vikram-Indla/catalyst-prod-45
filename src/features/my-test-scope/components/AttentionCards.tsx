@@ -45,16 +45,16 @@ export function AttentionCards({ summary, onCardClick }: AttentionCardsProps) {
       icon: Bug,
       label: 'Defects',
       count: summary.linkedDefectsCount,
-      colorClass: 'text-orange-500',
-      bgClass: 'bg-orange-500/10 hover:bg-orange-500/20',
+      colorClass: 'text-destructive',
+      bgClass: 'bg-destructive/10 hover:bg-destructive/20',
     },
     {
       id: 'incidents',
       icon: Zap,
       label: 'Incidents',
       count: summary.activeIncidentsCount,
-      colorClass: 'text-purple-500',
-      bgClass: 'bg-purple-500/10 hover:bg-purple-500/20',
+      colorClass: 'text-accent-foreground',
+      bgClass: 'bg-accent/50 hover:bg-accent',
     },
   ];
 
