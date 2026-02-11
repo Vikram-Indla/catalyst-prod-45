@@ -122,20 +122,6 @@
   --wh-status-blocked-text: #dc2626;
 }
 
-/* ── DARK MODE ── */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --wh-bg: #0f172a;
-    --wh-surface: #1e293b;
-    --wh-surface-elevated: #334155;
-    --wh-border: #334155;
-    --wh-border-light: #1e293b;
-    --wh-text-primary: #f1f5f9;
-    --wh-text-secondary: #94a3b8;
-    --wh-text-tertiary: #64748b;
-  }
-}
-
 /* ── UTILITY CLASSES ── */
 .workhub-module {
   font-family: var(--wh-font-sans);
