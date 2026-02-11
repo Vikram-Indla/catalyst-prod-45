@@ -16,7 +16,7 @@ const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   release_vehicle_id: z.string().min(1, 'Release vehicle is required'),
   target_date: z.string().optional(),
-  status: z.enum(['planned', 'ready', 'shipped']),
+  status: z.enum(['planned', 'ready', 'shipped', 'planning', 'development', 'testing', 'uat', 'staging', 'released', 'archived']),
   readiness_pct: z.number().min(0).max(100).optional(),
   notes: z.string().optional(),
 });
