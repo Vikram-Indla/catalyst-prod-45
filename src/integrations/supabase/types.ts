@@ -16976,6 +16976,42 @@ export type Database = {
           },
         ]
       }
+      release_test_cycles: {
+        Row: {
+          created_at: string | null
+          cycle_id: string
+          id: string
+          release_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          cycle_id: string
+          id?: string
+          release_id: string
+        }
+        Update: {
+          created_at?: string | null
+          cycle_id?: string
+          id?: string
+          release_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "release_test_cycles_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "th_test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "release_test_cycles_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       release_vehicles: {
         Row: {
           created_at: string | null
@@ -17050,10 +17086,12 @@ export type Database = {
       }
       releases: {
         Row: {
+          actual_release_date: string | null
           blocked_reason: string | null
           coverage_percent: number | null
           created_at: string | null
           created_by: string | null
+          critical_defects: number | null
           defects_open: number | null
           description: string | null
           health: string | null
@@ -17064,22 +17102,29 @@ export type Database = {
           owner_id: string | null
           progress: number | null
           project_id: string | null
+          qa_lead_id: string | null
           readiness_pct: number | null
           release_date: string | null
+          release_manager_id: string | null
           release_vehicle_id: string
           start_date: string | null
           status: Database["public"]["Enums"]["release_status"] | null
           target_date: string | null
+          test_cases_blocked: number | null
+          test_cases_executed: number | null
+          test_cases_failed: number | null
           test_cases_passed: number | null
           test_cases_total: number | null
           updated_at: string | null
           version: string
         }
         Insert: {
+          actual_release_date?: string | null
           blocked_reason?: string | null
           coverage_percent?: number | null
           created_at?: string | null
           created_by?: string | null
+          critical_defects?: number | null
           defects_open?: number | null
           description?: string | null
           health?: string | null
@@ -17090,22 +17135,29 @@ export type Database = {
           owner_id?: string | null
           progress?: number | null
           project_id?: string | null
+          qa_lead_id?: string | null
           readiness_pct?: number | null
           release_date?: string | null
+          release_manager_id?: string | null
           release_vehicle_id: string
           start_date?: string | null
           status?: Database["public"]["Enums"]["release_status"] | null
           target_date?: string | null
+          test_cases_blocked?: number | null
+          test_cases_executed?: number | null
+          test_cases_failed?: number | null
           test_cases_passed?: number | null
           test_cases_total?: number | null
           updated_at?: string | null
           version: string
         }
         Update: {
+          actual_release_date?: string | null
           blocked_reason?: string | null
           coverage_percent?: number | null
           created_at?: string | null
           created_by?: string | null
+          critical_defects?: number | null
           defects_open?: number | null
           description?: string | null
           health?: string | null
@@ -17116,12 +17168,17 @@ export type Database = {
           owner_id?: string | null
           progress?: number | null
           project_id?: string | null
+          qa_lead_id?: string | null
           readiness_pct?: number | null
           release_date?: string | null
+          release_manager_id?: string | null
           release_vehicle_id?: string
           start_date?: string | null
           status?: Database["public"]["Enums"]["release_status"] | null
           target_date?: string | null
+          test_cases_blocked?: number | null
+          test_cases_executed?: number | null
+          test_cases_failed?: number | null
           test_cases_passed?: number | null
           test_cases_total?: number | null
           updated_at?: string | null
@@ -17189,6 +17246,62 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "releases_qa_lead_id_fkey"
+            columns: ["qa_lead_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "releases_qa_lead_id_fkey"
+            columns: ["qa_lead_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "releases_qa_lead_id_fkey"
+            columns: ["qa_lead_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "releases_qa_lead_id_fkey"
+            columns: ["qa_lead_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "releases_release_manager_id_fkey"
+            columns: ["release_manager_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "releases_release_manager_id_fkey"
+            columns: ["release_manager_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "releases_release_manager_id_fkey"
+            columns: ["release_manager_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "releases_release_manager_id_fkey"
+            columns: ["release_manager_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
           {
@@ -38971,7 +39084,17 @@ export type Database = {
       ra_item_type: "prd" | "epic" | "feature" | "story"
       ra_template_type: "prd" | "epic" | "feature" | "story"
       ra_user_role: "admin" | "manager" | "user" | "viewer"
-      release_status: "planned" | "ready" | "shipped"
+      release_status:
+        | "planned"
+        | "ready"
+        | "shipped"
+        | "planning"
+        | "development"
+        | "testing"
+        | "uat"
+        | "staging"
+        | "released"
+        | "archived"
       release_vehicle_type: "program" | "team" | "portfolio"
       report_format: "pdf" | "xlsx" | "csv" | "json"
       report_type:
@@ -39617,7 +39740,18 @@ export const Constants = {
       ra_item_type: ["prd", "epic", "feature", "story"],
       ra_template_type: ["prd", "epic", "feature", "story"],
       ra_user_role: ["admin", "manager", "user", "viewer"],
-      release_status: ["planned", "ready", "shipped"],
+      release_status: [
+        "planned",
+        "ready",
+        "shipped",
+        "planning",
+        "development",
+        "testing",
+        "uat",
+        "staging",
+        "released",
+        "archived",
+      ],
       release_vehicle_type: ["program", "team", "portfolio"],
       report_format: ["pdf", "xlsx", "csv", "json"],
       report_type: [
