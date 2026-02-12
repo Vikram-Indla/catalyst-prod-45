@@ -82,12 +82,8 @@ export function RoadmapHeader({
         </button>
       )}
 
-      {/* Page Title - matches PageChrome pattern */}
+      {/* Page Title - Command Center header style (no breadcrumb prefix) */}
       <div className="flex items-center gap-2 min-w-0">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-text-muted hidden sm:inline">
-          Enterprise
-        </span>
-        <span className="text-[14px] text-text-muted hidden sm:inline">/</span>
         <h1 className="text-[16px] lg:text-[18px] font-semibold text-text-primary truncate">
           Enterprise Roadmap
         </h1>
