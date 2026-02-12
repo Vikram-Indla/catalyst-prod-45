@@ -23,18 +23,10 @@ export function useRisks(programId?: string) {
   } = useQuery({
     queryKey: ['risks', programId],
     queryFn: async () => {
-      // Fetch risks with business_requests join
+      // Fetch risks without join (no FK relationship exists)
       let query = supabase
         .from('risks')
-        .select(`
-          *,
-          business_requests (
-            department,
-            business_owner,
-            department_id,
-            business_owner_id
-          )
-        `)
+        .select('*')
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
 
@@ -45,35 +37,49 @@ export function useRisks(programId?: string) {
       const { data, error } = await query;
       if (error) throw error;
 
-      // Fetch all departments and business owners for lookup
-      const [deptRes, ownerRes] = await Promise.all([
-        supabase.from('departments').select('id, name'),
-        (supabase as any).from('business_owners').select('id, name')
-      ]);
-      
-      const deptMap = new Map((deptRes.data || []).map((d: any) => [d.id, d.name]));
-      const ownerMap = new Map((ownerRes.data as any[] || []).map((o: any) => [o.id, o.name]));
+      const risksData = data || [];
 
-      // Flatten the joined data - resolve UUIDs to names
-      return (data || []).map((risk: any) => {
-        const br = risk.business_requests;
+      // Collect BR IDs that need lookup
+      const brIds = risksData
+        .map((r: any) => r.business_request_id)
+        .filter(Boolean) as string[];
+
+      if (brIds.length === 0) {
+        return risksData.map((risk: any) => ({
+          ...risk,
+          department: null,
+          business_owner: null,
+        })) as RiskWithBR[];
+      }
+
+      // Fetch BR data, departments, and owners in parallel
+      const [brRes, deptRes, ownerRes] = await Promise.all([
+        supabase
+          .from('business_requests' as any)
+          .select('id, department, business_owner, department_id, business_owner_id')
+          .in('id', brIds),
+        supabase.from('departments').select('id, name'),
+        (supabase as any).from('business_owners').select('id, name'),
+      ]);
+
+      const brMap = new Map(((brRes.data as any[]) || []).map((br: any) => [br.id, br]));
+      const deptMap = new Map((deptRes.data || []).map((d: any) => [d.id, d.name]));
+      const ownerMap = new Map(((ownerRes.data as any[]) || []).map((o: any) => [o.id, o.name]));
+
+      return risksData.map((risk: any) => {
+        const br = brMap.get(risk.business_request_id);
         let deptName: string | null = null;
         let ownerName: string | null = null;
 
         if (br) {
-          // Try department_id first, then legacy department field (which may contain UUID)
           if (br.department_id) {
             deptName = deptMap.get(br.department_id) || null;
           } else if (br.department) {
-            // Legacy field might contain UUID or text - try lookup
             deptName = deptMap.get(br.department) || null;
           }
-
-          // Try business_owner_id first, then legacy business_owner field
           if (br.business_owner_id) {
             ownerName = ownerMap.get(br.business_owner_id) || null;
           } else if (br.business_owner) {
-            // Legacy field might contain name or UUID - try lookup first
             ownerName = ownerMap.get(br.business_owner) || br.business_owner;
           }
         }
@@ -82,10 +88,10 @@ export function useRisks(programId?: string) {
           ...risk,
           department: deptName,
           business_owner: ownerName,
-          business_requests: undefined,
         };
       }) as RiskWithBR[];
-    }
+    },
+    retry: 1,
   });
 
   const createRiskMutation = useMutation({
