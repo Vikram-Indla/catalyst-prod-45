@@ -386,6 +386,7 @@ export default function ImportExportPage() {
         onClose={() => setShowExportModal(false)}
         onExported={fetchData}
       />
+      </div>
     </div>
   );
 }
