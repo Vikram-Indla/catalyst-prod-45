@@ -70,14 +70,18 @@ export function WorkHubDashboard() {
               color: 'var(--wh-text-secondary, #64748b)',
               margin: '2px 0 0',
             }}>
-              Portfolio overview — {relativeTime(kpisQuery.dataUpdatedAt)}
+              Portfolio overview
             </p>
           </div>
-          <button
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            style={{
-              background: 'none',
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <span style={{ fontSize: 13, color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+              {relativeTime(kpisQuery.dataUpdatedAt)}
+            </span>
+            <button
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              style={{
+                background: 'none',
               border: 'none',
               cursor: 'pointer',
               padding: 6,
@@ -93,7 +97,8 @@ export function WorkHubDashboard() {
               height: 16,
               animation: isRefreshing ? 'spin 1s linear infinite' : undefined,
             }} />
-          </button>
+           </button>
+          </div>
         </div>
 
         {/* Error state */}
