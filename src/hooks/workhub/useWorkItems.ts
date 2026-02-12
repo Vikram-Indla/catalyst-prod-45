@@ -57,6 +57,7 @@ export interface WorkItemFilterConfig {
   search_query?: string;
   priorities?: string[];
   fix_version_names?: string[];
+  theme_ids?: string[];
 }
 
 export interface PaginationConfig {
@@ -84,6 +85,7 @@ function buildFilteredQuery(
   if (filters?.statuses?.length) q = q.in('status', filters.statuses);
   if (filters?.project_keys?.length) q = q.in('project_key', filters.project_keys);
   if (filters?.priorities?.length) q = q.in('priority', filters.priorities);
+  if (filters?.theme_ids?.length) q = q.in('theme_id', filters.theme_ids);
   if (filters?.search_query) {
     const s = filters.search_query;
     q = q.or(`summary.ilike.%${s}%,issue_key.ilike.%${s}%`);
