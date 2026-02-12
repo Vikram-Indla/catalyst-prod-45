@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { supabase } from '@/integrations/supabase/client';
 import { PageChrome } from '@/components/layout/PageChrome';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 
 // Catalyst Blue + Teal Palette (semantic tokens)
 const palette = {
@@ -479,9 +480,12 @@ export default function EnterpriseRisks() {
   );
 
   return (
-    <PageChrome toolbar={toolbarContent}>
+    <PageChrome hideHeader toolbar={toolbarContent}>
+      <CommandCenterHeader
+        title="Risk Register"
+        subtitle="Enterprise-level risk analysis & ROAM tracking"
+      />
       <div className="flex-1 overflow-auto p-6">
-        {/* KPI Cards Row */}
         <div className="grid grid-cols-4 gap-4 mb-6">
           <div className="rounded-2xl p-5 border bg-gradient-to-br from-brand-primary/5 to-brand-primary/15 border-brand-primary/30">
             <p className="text-xs font-medium uppercase tracking-wide mb-2 text-brand-primary">Total Open Risks</p>
