@@ -1,9 +1,10 @@
 /**
- * useResource360Data — Resource 360 data from profiles + subtasks of active stories
+ * useResource360Data — Resource 360 data from profiles + ph_issues (Jira subtasks)
  * 
  * People & departments from profiles + capacity_departments
- * Work assignments from subtasks under stories not in 'done' status
- * Due dates from releases linked to stories/features
+ * Work assignments from ph_issues (Backend, Frontend, Figma, Integration subtasks)
+ * Only includes subtasks under active (non-Done) parent stories
+ * Due dates from effective_due_date in ph_issues
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -47,12 +48,12 @@ export function useResource360Departments() {
   });
 }
 
-/** Main Resource 360 hook — profiles with subtask aggregation */
+/** Main Resource 360 hook — profiles with ph_issues (Jira subtasks) */
 export function useResource360People() {
   return useQuery({
     queryKey: ['resource360', 'people'],
     queryFn: async () => {
-      // 1. Get all profiles with department join
+      // 1. Get all profiles with department info
       const { data: profiles, error: pErr } = await supabase
         .from('profiles')
         .select('id, full_name, role, department_id, avatar_url')
@@ -69,41 +70,57 @@ export function useResource360People() {
       const deptMap = new Map<string, string>();
       (depts ?? []).forEach(d => deptMap.set(d.id, d.name));
 
-      // 3. Get all subtasks with their story status, release info
-      const { data: subtasks, error: sErr } = await supabase
-        .from('subtasks')
+      // 3. Get ph_user_mapping to map jira_account_id → catalyst_profile_id
+      const { data: userMappings, error: umErr } = await supabase
+        .from('ph_user_mapping')
+        .select('jira_account_id, catalyst_profile_id')
+        .eq('is_mapped', true);
+      if (umErr) throw new Error(umErr.message);
+
+      const accountIdToProfileMap = new Map<string, string>();
+      (userMappings ?? []).forEach((m: any) => {
+        if (m.catalyst_profile_id) {
+          accountIdToProfileMap.set(m.jira_account_id, m.catalyst_profile_id);
+        }
+      });
+
+      // 4. Get all subtask-type issues from ph_issues with their parent story info
+      const { data: subtaskIssues, error: sErr } = await supabase
+        .from('ph_issues')
         .select(`
-          id,
-          assignee_id,
+          issue_key,
+          summary,
           status,
-          story_id,
-          release_id,
-          story:stories!subtasks_story_id_fkey(
-            id, status, name,
-            feature:features!stories_feature_id_fkey(
-              id,
-              release:releases!features_release_id_fkey(id, name, target_date)
-            )
-          )
-        `);
+          status_category,
+          assignee_account_id,
+          parent_key,
+          effective_due_date
+        `)
+        .in('issue_type', ['Backend', 'Frontend', 'Figma', 'Integration', 'Sub-task'])
+        .not('assignee_account_id', 'is', null);
       if (sErr) throw new Error(sErr.message);
 
-      // 4. Get releases for subtasks that have direct release_id
-      const releaseIds = new Set<string>();
-      (subtasks ?? []).forEach((st: any) => {
-        if (st.release_id) releaseIds.add(st.release_id);
+      // 5. Get parent stories to check their status (active = not Done)
+      const parentKeys = new Set<string>();
+      (subtaskIssues ?? []).forEach((issue: any) => {
+        if (issue.parent_key) parentKeys.add(issue.parent_key);
       });
-      
-      let releaseMap = new Map<string, { name: string; target_date: string | null }>();
-      if (releaseIds.size > 0) {
-        const { data: releases } = await supabase
-          .from('releases')
-          .select('id, name, target_date')
-          .in('id', Array.from(releaseIds));
-        (releases ?? []).forEach((r: any) => releaseMap.set(r.id, { name: r.name, target_date: r.target_date }));
+
+      let parentStoryMap = new Map<string, { status_category: string; fix_versions: any }>();
+      if (parentKeys.size > 0) {
+        const { data: parentStories } = await supabase
+          .from('ph_issues')
+          .select('issue_key, status_category, fix_versions')
+          .in('issue_key', Array.from(parentKeys));
+        (parentStories ?? []).forEach((p: any) => {
+          parentStoryMap.set(p.issue_key, { 
+            status_category: p.status_category,
+            fix_versions: p.fix_versions
+          });
+        });
       }
 
-      // 5. Aggregate per person
+      // 6. Initialize all profiles
       const personMap = new Map<string, Resource360Person>();
       (profiles ?? []).forEach((p: any) => {
         personMap.set(p.id, {
@@ -125,52 +142,50 @@ export function useResource360People() {
 
       const releaseNamesPerPerson = new Map<string, Set<string>>();
 
-      (subtasks ?? []).forEach((st: any) => {
-        if (!st.assignee_id) return;
-        const person = personMap.get(st.assignee_id);
-        if (!person) return;
+      // 7. Process subtask issues
+      (subtaskIssues ?? []).forEach((issue: any) => {
+        // Map jira assignee_account_id to catalyst profile_id
+        const assigneeAccountId = issue.assignee_account_id;
+        const profileId = accountIdToProfileMap.get(assigneeAccountId);
+        
+        if (!profileId) return; // Skip if no mapping found
 
-        const story = st.story;
-        if (!story) return;
+        const person = personMap.get(profileId);
+        if (!person) return; // Skip if profile not found
 
-        // Only count subtasks under active stories (not done)
-        const storyActive = story.status !== 'done';
-        if (!storyActive) return;
+        // Check if parent story is active (status_category !== 'Done')
+        const parentStory = issue.parent_key ? parentStoryMap.get(issue.parent_key) : undefined;
+        if (!parentStory || parentStory.status_category === 'Done') return;
 
+        // Count this subtask
         person.total_subtasks++;
-        if (st.status === 'done') {
+        if (issue.status_category === 'Done') {
           person.done_subtasks++;
         } else {
           person.active_subtasks++;
         }
 
-        // Release from subtask.release_id or story→feature→release
-        let releaseName: string | null = null;
-        let releaseTargetDate: string | null = null;
-
-        if (st.release_id && releaseMap.has(st.release_id)) {
-          const rel = releaseMap.get(st.release_id)!;
-          releaseName = rel.name;
-          releaseTargetDate = rel.target_date;
-        } else if (story.feature?.release) {
-          releaseName = story.feature.release.name;
-          releaseTargetDate = story.feature.release.target_date;
+        // Extract release names from fix_versions if available
+        if (parentStory.fix_versions && Array.isArray(parentStory.fix_versions)) {
+          parentStory.fix_versions.forEach((version: any) => {
+            if (version.name) {
+              if (!releaseNamesPerPerson.has(profileId)) {
+                releaseNamesPerPerson.set(profileId, new Set());
+              }
+              releaseNamesPerPerson.get(profileId)!.add(version.name);
+            }
+          });
         }
 
-        if (releaseName) {
-          if (!releaseNamesPerPerson.has(person.id)) releaseNamesPerPerson.set(person.id, new Set());
-          releaseNamesPerPerson.get(person.id)!.add(releaseName);
-        }
-
-        // Track next due date (earliest release target_date)
-        if (releaseTargetDate && st.status !== 'done') {
-          if (!person.next_due_date || releaseTargetDate < person.next_due_date) {
-            person.next_due_date = releaseTargetDate;
+        // Track next due date (earliest effective_due_date)
+        if (issue.effective_due_date && issue.status_category !== 'Done') {
+          if (!person.next_due_date || issue.effective_due_date < person.next_due_date) {
+            person.next_due_date = issue.effective_due_date;
           }
         }
       });
 
-      // Finalize release names
+
       personMap.forEach((person) => {
         const names = releaseNamesPerPerson.get(person.id);
         if (names) person.release_names = Array.from(names);
