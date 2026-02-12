@@ -70,9 +70,9 @@ export function WorkItemsPage() {
   const pageEnd = Math.min((currentPage + 1) * PAGE_SIZE, totalCount);
 
   return (
-    <div style={{ fontFamily: 'var(--wh-font-sans)' }}>
+    <div style={{ fontFamily: 'var(--wh-font-sans)', overflow: 'hidden' }}>
       {/* Page Header */}
-      <header className="flex items-start justify-between mb-6">
+      <header className="flex flex-col sm:flex-row items-start justify-between mb-6 gap-3">
         <div className="flex items-start gap-4">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: '#dbeafe' }}>
             <FileStack className="w-5 h-5" style={{ color: 'var(--wh-primary, #2563eb)' }} />
@@ -137,7 +137,7 @@ export function WorkItemsPage() {
       {/* Pagination Controls */}
       {totalCount > PAGE_SIZE && (
         <div
-          className="flex items-center justify-between mt-3 px-4 py-2.5 rounded-lg border"
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-3 px-4 py-2.5 rounded-lg border gap-2"
           style={{ backgroundColor: 'var(--wh-surface, #fff)', borderColor: 'var(--wh-border, #e2e8f0)' }}
         >
           <span className="text-xs" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
