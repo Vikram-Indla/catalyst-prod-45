@@ -1,11 +1,9 @@
 /**
  * Progress Gauge Component
  * Circular progress indicator with status breakdown
- * Styled to match dashboard widget pattern: white bg, #E2E8F0 border
  */
 
 import React from 'react';
-import { cn } from '@/lib/utils';
 import { CheckCircle2, XCircle, Ban, Circle } from 'lucide-react';
 import type { TestScopeSummary } from '../types';
 
@@ -21,37 +19,24 @@ export function ProgressGauge({ summary }: ProgressGaugeProps) {
   const strokeOffset = circumference - (passRate / 100) * circumference;
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: 20,
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
-        borderRadius: 8,
-      }}
-    >
-      <div style={{ position: 'relative', width: 128, height: 128 }}>
-        <svg style={{ width: '100%', height: '100%', transform: 'rotate(-90deg)' }} viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r={radius} fill="none" stroke="#F1F5F9" strokeWidth="8" />
+    <div className="flex flex-col items-center p-5 bg-card border border-border rounded-lg">
+      <div className="relative w-32 h-32">
+        <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r={radius} fill="none" className="stroke-muted" strokeWidth="8" />
           <circle
             cx="50" cy="50" r={radius} fill="none"
             stroke="#10B981" strokeWidth="8" strokeLinecap="round"
             strokeDasharray={circumference} strokeDashoffset={strokeOffset}
-            style={{ transition: 'stroke-dashoffset 500ms ease-out' }}
+            className="transition-[stroke-dashoffset] duration-500 ease-out"
           />
         </svg>
-        <div style={{
-          position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center',
-        }}>
-          <span style={{ fontSize: 28, fontWeight: 700, color: '#0F172A', fontFamily: 'Inter, sans-serif' }}>{passRate}%</span>
-          <span style={{ fontSize: 12, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>{passedTests}/{totalTests}</span>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-[28px] font-bold text-foreground font-['Inter']">{passRate}%</span>
+          <span className="text-xs text-muted-foreground font-['Inter']">{passedTests}/{totalTests}</span>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, marginTop: 16, width: '100%' }}>
+      <div className="grid grid-cols-4 gap-2 mt-4 w-full">
         <StatusItem icon={CheckCircle2} count={passedTests} label="Passed" color="#10B981" />
         <StatusItem icon={XCircle} count={failedTests} label="Failed" color="#EF4444" />
         <StatusItem icon={Ban} count={blockedTests} label="Blocked" color="#F59E0B" />
@@ -68,12 +53,12 @@ function StatusItem({ icon: Icon, count, label, color }: {
   color: string;
 }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+    <div className="flex flex-col items-center">
+      <div className="flex items-center gap-1">
         <Icon style={{ width: 14, height: 14, color }} />
-        <span style={{ fontWeight: 600, color: '#0F172A', fontSize: 14, fontFamily: 'Inter, sans-serif' }}>{count}</span>
+        <span className="font-semibold text-foreground text-sm font-['Inter']">{count}</span>
       </div>
-      <span style={{ fontSize: 11, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>{label}</span>
+      <span className="text-[11px] text-muted-foreground font-['Inter']">{label}</span>
     </div>
   );
 }

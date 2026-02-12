@@ -182,7 +182,7 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
   const allComplete = data.summary.totalTests > 0 && data.summary.notRunTests === 0 && data.summary.failedTests === 0 && data.summary.blockedTests === 0;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#F8FAFC', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div className="flex flex-col h-full bg-muted/50 font-['Inter']">
       <ScopeHeader
         userName={userName}
         summary={data.summary}
@@ -190,7 +190,7 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
         onExecuteAll={handleExecuteAll}
       />
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 12, padding: '12px 24px', borderBottom: '1px solid #E2E8F0', flexShrink: 0 }}>
+      <div className="grid grid-cols-[1fr_2fr] gap-3 px-6 py-3 border-b border-border shrink-0">
         <ProgressGauge summary={data.summary} />
         <div>
           <AIStartMyDay
@@ -202,14 +202,11 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
       </div>
 
       {allComplete && (
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 12, padding: '12px 24px',
-          background: '#F0FDF4', borderBottom: '1px solid #BBF7D0',
-        }}>
-          <PartyPopper style={{ width: 20, height: 20, color: '#16A34A' }} />
+        <div className="flex items-center gap-3 px-6 py-3 bg-green-50 dark:bg-green-950/30 border-b border-green-200 dark:border-green-800">
+          <PartyPopper className="w-5 h-5 text-green-600" />
           <div>
-            <p style={{ fontWeight: 600, color: '#16A34A', fontSize: 14, margin: 0 }}>All tests complete!</p>
-            <p style={{ fontSize: 13, color: '#64748B', margin: '2px 0 0' }}>
+            <p className="font-semibold text-green-600 text-sm m-0">All tests complete!</p>
+            <p className="text-[13px] text-muted-foreground mt-0.5">
               Great job, {userName}! All {data.summary.totalTests} tests have been executed successfully.
             </p>
           </div>
