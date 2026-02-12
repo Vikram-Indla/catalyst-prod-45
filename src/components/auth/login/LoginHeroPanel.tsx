@@ -4,7 +4,6 @@
  */
 
 import catalystWordmark from '@/assets/catalyst-wordmark-2.svg';
-import catalystLogoMark from '@/assets/catalyst-logo-mark.svg';
 import './login-styles.css';
 
 // Catalyst Convergence Hub Logo (white on blue)
@@ -91,14 +90,8 @@ export function LoginHeroPanel() {
 
       {/* Centered content */}
       <div className="hero-content-v10">
-        {/* Logo mark above wordmark */}
-        <div className="hero-logo" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-          <img 
-            src={catalystLogoMark} 
-            alt="" 
-            aria-hidden="true"
-            style={{ height: '100px', width: 'auto', filter: 'brightness(0) invert(1)' }} 
-          />
+        {/* Wordmark */}
+        <div className="hero-logo">
           <img 
             src={catalystWordmark} 
             alt="Catalyst" 
