@@ -44,15 +44,17 @@ export function WorkHubDashboard() {
 
   return (
     <div style={{ minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
+      {/* Header — full width, spans edge-to-edge */}
+      <CommandCenterHeader
+        title="Dashboard"
+        subtitle="Portfolio overview"
+        timestamp={relativeTime(kpisQuery.dataUpdatedAt)}
+        onRefresh={handleRefresh}
+        isRefreshing={isRefreshing}
+      />
+
+      {/* Content container — constrained max-width with padding */}
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '24px 24px 48px' }}>
-        {/* Header */}
-        <CommandCenterHeader
-          title="Dashboard"
-          subtitle="Portfolio overview"
-          timestamp={relativeTime(kpisQuery.dataUpdatedAt)}
-          onRefresh={handleRefresh}
-          isRefreshing={isRefreshing}
-        />
 
         {/* Error state */}
         {kpisQuery.isError && (
