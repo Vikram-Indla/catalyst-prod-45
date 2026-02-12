@@ -181,14 +181,6 @@ export function WorkItemsPage() {
       {/* Bulk Ops History */}
       {showHistory && <BulkOpsHistory onClose={() => setShowHistory(false)} />}
 
-      {/* Saved Filter Bar */}
-      <SavedFilterBar
-        currentFilters={filters}
-        activeFilterId={activeFilterId}
-        onApplyFilter={handleApplySavedFilter}
-        onDeactivate={handleDeactivateFilter}
-        onClearAll={handleClearAll}
-      />
 
       {/* Basic Filters + Advanced toggle */}
       <div className="mb-3 mt-2">
