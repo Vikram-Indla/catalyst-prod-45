@@ -16,9 +16,9 @@ interface ThemeItemLinkerProps {
 }
 
 interface UnlinkedItem {
-  issue_key: string;
+  item_key: string;
   summary: string;
-  issue_type: string;
+  item_type: string;
 }
 
 export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef }: ThemeItemLinkerProps) {
@@ -38,10 +38,10 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
       let hasMore = true;
       while (hasMore) {
         const { data, error } = await supabase
-          .from('wh_issues')
-          .select('issue_key, summary, issue_type')
+          .from('ph_work_items')
+          .select('item_key, summary, item_type')
           .is('theme_id', null)
-          .order('issue_key')
+          .order('item_key')
           .range(page * batchSize, (page + 1) * batchSize - 1);
         if (error) throw new Error(error.message);
         if (!data || data.length === 0) break;
@@ -75,7 +75,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
   if (!isOpen) return null;
 
   const filtered = (items ?? []).filter(i =>
-    i.issue_key.toLowerCase().includes(search.toLowerCase()) ||
+    i.item_key.toLowerCase().includes(search.toLowerCase()) ||
     i.summary.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -96,9 +96,9 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
       for (let i = 0; i < keys.length; i += 200) {
         const batch = keys.slice(i, i + 200);
         const { error } = await supabase
-          .from('wh_issues')
+          .from('ph_work_items')
           .update({ theme_id: themeId } as any)
-          .in('issue_key', batch);
+          .in('item_key', batch);
         if (error) throw new Error(error.message);
       }
       toast.success(`${selected.size} items linked to ${themeName}`);
@@ -156,32 +156,32 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
         ) : (
           filtered.slice(0, 100).map(item => (
             <label
-              key={item.issue_key}
+              key={item.item_key}
               style={{
                 display: 'flex', alignItems: 'center', gap: 8,
                 padding: '6px 12px', cursor: 'pointer', fontSize: 12,
-                background: selected.has(item.issue_key) ? '#f0f9ff' : 'transparent',
+                background: selected.has(item.item_key) ? '#f0f9ff' : 'transparent',
               }}
             >
               <input
                 type="checkbox"
-                checked={selected.has(item.issue_key)}
-                onChange={() => toggleItem(item.issue_key)}
+                checked={selected.has(item.item_key)}
+                onChange={() => toggleItem(item.item_key)}
                 style={{ accentColor: '#2563eb', flexShrink: 0 }}
               />
               <span style={{
-                fontFamily: 'var(--wh-font-mono, monospace)',
+                fontFamily: 'var(--ph-font-mono, monospace)',
                 fontWeight: 600, color: '#2563eb', whiteSpace: 'nowrap',
                 fontSize: 11,
               }}>
-                {item.issue_key}
+                {item.item_key}
               </span>
               <span style={{
                 padding: '1px 6px', borderRadius: 4,
                 fontSize: 10, fontWeight: 600,
                 background: '#f1f5f9', color: '#475569',
               }}>
-                {item.issue_type}
+                {item.item_type}
               </span>
               <span style={{
                 color: '#0f172a', overflow: 'hidden',

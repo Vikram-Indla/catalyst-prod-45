@@ -47,7 +47,7 @@ export function useSyncHealth() {
         .select('*', { count: 'exact', head: true })
 
       const { data: conn } = await supabase
-        .from('wh_jira_connection')
+        .from('ph_jira_connection')
         .select('project_count')
         .single()
 

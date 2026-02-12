@@ -25,7 +25,7 @@ export function useJiraConnection() {
     queryKey: ['wh', 'jira-connection'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('wh_jira_connection')
+        .from('ph_jira_connection')
         .select('*')
         .single();
       if (error) throw new Error(error.message);
@@ -47,7 +47,7 @@ export function useUpdateJiraConnection() {
     }) => {
       // Get the singleton row id
       const { data: existing, error: fetchErr } = await supabase
-        .from('wh_jira_connection')
+        .from('ph_jira_connection')
         .select('id')
         .single();
       if (fetchErr) throw new Error(fetchErr.message);
@@ -55,7 +55,7 @@ export function useUpdateJiraConnection() {
       const userId = (await supabase.auth.getUser()).data.user?.id;
 
       const { data, error } = await supabase
-        .from('wh_jira_connection')
+        .from('ph_jira_connection')
         .update({
           ...input,
           status: 'not_configured',
