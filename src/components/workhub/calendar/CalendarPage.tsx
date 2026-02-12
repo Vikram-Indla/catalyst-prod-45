@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useCalendarEvents, useCalendarNavigation } from '@/hooks/workhub/useCalendarEvents';
 import { getMonthName, getEventsForDate, eventOverlapsMonth } from '@/lib/workhub/calendarHelpers';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { CalendarReleaseView } from './CalendarReleaseView';
 import { CalendarThemeView } from './CalendarThemeView';
 import { CalendarResourceView } from './CalendarResourceView';
@@ -47,16 +48,13 @@ export function CalendarPage() {
   const monthName = getMonthName(month);
 
   return (
-    <div style={{ fontFamily: 'var(--wh-font-sans)', color: 'var(--wh-text-primary)' }}>
-      {/* Page Header */}
-      <div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid var(--wh-border, #e2e8f0)' }}>
-        <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0, color: 'var(--wh-text-primary)' }}>
-          Calendar
-        </h1>
-        <p style={{ fontSize: 14, margin: '2px 0 0', color: 'var(--wh-text-secondary)' }}>
-          Portfolio timeline — {monthName} {year}
-        </p>
-      </div>
+    <div style={{ fontFamily: 'var(--wh-font-sans)', color: 'var(--wh-text-primary)', display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      {/* Header */}
+      <CommandCenterHeader
+        title="Calendar"
+        subtitle={`Portfolio timeline — ${monthName} ${year}`}
+        onRefresh={() => refetch()}
+      />
 
       {/* Month Navigation */}
       <div
@@ -66,6 +64,8 @@ export function CalendarPage() {
           justifyContent: 'space-between',
           marginBottom: 16,
           padding: '8px 0',
+          paddingLeft: 24,
+          paddingRight: 24,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -125,38 +125,42 @@ export function CalendarPage() {
         </div>
       </div>
 
+      {/* Scrollable content */}
+      <div className="flex flex-col flex-1 min-h-0 px-6 overflow-y-auto">
+
       {/* Error */}
-      {isError && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '24px', backgroundColor: 'var(--wh-danger-light)', border: '1px solid var(--wh-danger)', borderRadius: 'var(--wh-radius-lg)', marginBottom: 16, fontFamily: 'var(--wh-font-sans)' }}>
-          <AlertTriangle style={{ width: 20, height: 20, color: 'var(--wh-danger)' }} />
-          <span style={{ flex: 1, fontSize: 14, color: 'var(--wh-danger)' }}>Failed to load calendar events</span>
-          <button
-            onClick={() => refetch()}
-            style={{ padding: '6px 14px', fontSize: 13, fontWeight: 500, backgroundColor: 'var(--wh-danger)', color: '#ffffff', border: 'none', borderRadius: 'var(--wh-radius-md)', cursor: 'pointer' }}
-          >
-            Retry
-          </button>
-        </div>
-      )}
+        {isError && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '24px', backgroundColor: 'var(--wh-danger-light)', border: '1px solid var(--wh-danger)', borderRadius: 'var(--wh-radius-lg)', marginBottom: 16, fontFamily: 'var(--wh-font-sans)' }}>
+            <AlertTriangle style={{ width: 20, height: 20, color: 'var(--wh-danger)' }} />
+            <span style={{ flex: 1, fontSize: 14, color: 'var(--wh-danger)' }}>Failed to load calendar events</span>
+            <button
+              onClick={() => refetch()}
+              style={{ padding: '6px 14px', fontSize: 13, fontWeight: 500, backgroundColor: 'var(--wh-danger)', color: '#ffffff', border: 'none', borderRadius: 'var(--wh-radius-md)', cursor: 'pointer' }}
+            >
+              Retry
+            </button>
+          </div>
+        )}
 
-      {/* Content */}
-      {viewMode === 'releases' && (
-        <CalendarReleaseView year={year} month={month} events={events} isLoading={isLoading} onDateClick={handleDateClick} />
-      )}
-      {viewMode === 'themes' && (
-        <CalendarThemeView year={year} month={month} events={events} isLoading={isLoading} />
-      )}
-      {viewMode === 'resources' && (
-        <CalendarResourceView year={year} month={month} events={events} isLoading={isLoading} onDateClick={handleDateClick} />
-      )}
+        {/* Content */}
+        {viewMode === 'releases' && (
+          <CalendarReleaseView year={year} month={month} events={events} isLoading={isLoading} onDateClick={handleDateClick} />
+        )}
+        {viewMode === 'themes' && (
+          <CalendarThemeView year={year} month={month} events={events} isLoading={isLoading} />
+        )}
+        {viewMode === 'resources' && (
+          <CalendarResourceView year={year} month={month} events={events} isLoading={isLoading} onDateClick={handleDateClick} />
+        )}
 
-      {/* Event Drawer */}
-      <CalendarEventDrawer
-        isOpen={selectedDate !== null}
-        onClose={() => setSelectedDate(null)}
-        dateStr={selectedDate}
-        events={drawerEvents}
-      />
+        {/* Event Drawer */}
+        <CalendarEventDrawer
+          isOpen={selectedDate !== null}
+          onClose={() => setSelectedDate(null)}
+          dateStr={selectedDate}
+          events={drawerEvents}
+        />
+      </div>
     </div>
   );
 }
