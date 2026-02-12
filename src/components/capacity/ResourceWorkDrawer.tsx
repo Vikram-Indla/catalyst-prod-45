@@ -42,109 +42,129 @@ function getStatusColor(status: string) {
   return STATUS_COLORS[status] || STATUS_COLORS[status?.toLowerCase()] || '#64748b';
 }
 
-/** Jira-style type icon SVGs — matches Jira's native colors */
+/** Jira-native type icons — outline style matching Jira's UI */
 function JiraTypeIcon({ type, size = 16 }: { type: string; size?: number }) {
   const t = type.toLowerCase();
-  
+
   // Epic — purple lightning bolt
   if (t === 'epic') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect width="16" height="16" rx="2" fill="#904ee2"/>
-      <path d="M9.5 3L6 8.5h2.5L7.5 13l4-5.5H9L9.5 3z" fill="white"/>
+      <path d="M9.41 1.59a.55.55 0 0 1 .47.84L7.17 7.45h3.38a.55.55 0 0 1 .43.89l-4.95 6.2a.55.55 0 0 1-.97-.53l2.04-4.46H3.98a.55.55 0 0 1-.48-.82L8.85 1.8a.55.55 0 0 1 .56-.21z" fill="#904ee2"/>
     </svg>
   );
-  
+
   // Story — green bookmark
   if (t === 'story') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect width="16" height="16" rx="2" fill="#63ba3c"/>
-      <path d="M5 3h6v10l-3-2-3 2V3z" fill="white"/>
+      <path d="M4 2.5A1.5 1.5 0 0 1 5.5 1h5A1.5 1.5 0 0 1 12 2.5v12a.5.5 0 0 1-.77.42L8 12.6l-3.23 2.32A.5.5 0 0 1 4 14.5v-12z" fill="#36b37e"/>
     </svg>
   );
-  
-  // Task — blue check
+
+  // Task — blue square with checkmark
   if (t === 'task') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect width="16" height="16" rx="2" fill="#4bade8"/>
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="#4bade8"/>
       <path d="M4.5 8.5L7 11l4.5-5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
-  
-  // Sub-task — blue sub-task icon
+
+  // Sub-task — blue square with nested icon
   if (t === 'sub-task' || t === 'subtask') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect width="16" height="16" rx="2" fill="#4bade8"/>
-      <rect x="4" y="4" width="8" height="8" rx="1" stroke="white" strokeWidth="1.2" fill="none"/>
-      <path d="M6 8h4M8 6v4" stroke="white" strokeWidth="1.2" strokeLinecap="round"/>
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="#4bade8"/>
+      <rect x="4.5" y="4.5" width="7" height="7" rx="1" stroke="white" strokeWidth="1" fill="none"/>
+      <path d="M6.5 8h3M8 6.5v3" stroke="white" strokeWidth="1" strokeLinecap="round"/>
     </svg>
   );
-  
-  // Bug / Defect / QA Bug — red circle
+
+  // Bug / QA Bug — red bug icon
   if (t === 'bug' || t === 'defect' || t === 'qa bug') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect width="16" height="16" rx="2" fill="#e5493a"/>
-      <circle cx="8" cy="8" r="3.5" fill="white"/>
+      <circle cx="8" cy="9" r="5" fill="#e5493a"/>
+      <path d="M6 7.5h4M6 9.5h4M6 11.5h4" stroke="white" strokeWidth=".8"/>
+      <path d="M3 7l2 1M13 7l-2 1M3 11l2-1M13 11l-2-1M5.5 4L6.5 6M10.5 4L9.5 6" stroke="#e5493a" strokeWidth="1.2" strokeLinecap="round"/>
     </svg>
   );
-  
-  // Production Incident — orange/red warning
+
+  // Production Incident — orange circle with question mark
   if (t.includes('production incident') || t.includes('incident')) return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect width="16" height="16" rx="2" fill="#e5493a"/>
-      <path d="M8 4L12.5 12H3.5L8 4z" fill="white"/>
-      <rect x="7.25" y="7" width="1.5" height="2.5" rx="0.5" fill="#e5493a"/>
-      <circle cx="8" cy="10.75" r="0.75" fill="#e5493a"/>
+      <circle cx="8" cy="8" r="7" stroke="#ff8b00" strokeWidth="1.5" fill="none"/>
+      <text x="8" y="11.5" textAnchor="middle" fontSize="10" fontWeight="bold" fill="#ff8b00">?</text>
     </svg>
   );
-  
-  // Frontend — blue
+
+  // Feature — blue square with checkmark (same as Task style)
+  if (t === 'feature') return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="#2684ff"/>
+      <path d="M4.5 8.5L7 11l4.5-5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  // Change Request — blue square with checkmark
+  if (t.includes('change request')) return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="#2684ff"/>
+      <path d="M4.5 8.5L7 11l4.5-5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+
+  // Business Gap — orange/red rounded square with exclamation
+  if (t.includes('business gap')) return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <rect x="1" y="1" width="14" height="14" rx="3" fill="#ff5630"/>
+      <rect x="7.25" y="4" width="1.5" height="5" rx=".75" fill="white"/>
+      <circle cx="8" cy="11.5" r="1" fill="white"/>
+    </svg>
+  );
+
+  // API Requirement — orange gear
+  if (t.includes('api requirement') || t.includes('api')) return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <circle cx="8" cy="8" r="3" stroke="#ff8b00" strokeWidth="1.5" fill="none"/>
+      <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="#ff8b00" strokeWidth="1.2" strokeLinecap="round"/>
+    </svg>
+  );
+
+  // Frontend — blue code brackets
   if (t === 'frontend') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect width="16" height="16" rx="2" fill="#2684ff"/>
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="#2684ff"/>
       <path d="M5 6l-2 2 2 2M11 6l2 2-2 2M9 5l-2 6" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
-  
-  // Backend — purple
+
+  // Backend — purple server
   if (t === 'backend') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect width="16" height="16" rx="2" fill="#8777d9"/>
-      <rect x="4" y="4.5" width="8" height="2.5" rx="0.5" fill="white"/>
-      <rect x="4" y="9" width="8" height="2.5" rx="0.5" fill="white"/>
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="#8777d9"/>
+      <rect x="4" y="4.5" width="8" height="2.5" rx=".5" fill="white"/>
+      <rect x="4" y="9" width="8" height="2.5" rx=".5" fill="white"/>
     </svg>
   );
-  
-  // Integration — teal
+
+  // Integration — teal link
   if (t === 'integration') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect width="16" height="16" rx="2" fill="#00b8d9"/>
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="#00b8d9"/>
       <path d="M5 8h6M8 5v6" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
     </svg>
   );
-  
-  // Figma — pink
+
+  // Figma
   if (t === 'figma' || t === 'entity figma') return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect width="16" height="16" rx="2" fill="#f24e1e"/>
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="#f24e1e"/>
       <circle cx="8" cy="8" r="2.5" fill="white"/>
-      <circle cx="5.5" cy="5.5" r="1.5" fill="white"/>
-      <circle cx="10.5" cy="5.5" r="1.5" fill="white"/>
     </svg>
   );
-  
-  // Change Request — amber
-  if (t.includes('change request')) return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect width="16" height="16" rx="2" fill="#ff991f"/>
-      <path d="M5 8h6M8 5v6" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-    </svg>
-  );
-  
-  // Default — gray
+
+  // Default — gray circle
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect width="16" height="16" rx="2" fill="#97a0af"/>
-      <circle cx="8" cy="8" r="3" fill="white"/>
+      <circle cx="8" cy="8" r="6" stroke="#97a0af" strokeWidth="1.5" fill="none"/>
+      <circle cx="8" cy="8" r="2" fill="#97a0af"/>
     </svg>
   );
 }
