@@ -6,6 +6,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, TrendingUp, AlertTriangle, BarChart3 } from 'lucide-react';
 import { useResource360People, useResource360Departments } from '@/hooks/workhub/useResource360Data';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { ResourceCard } from './ResourceCard';
 
 type SortMode = 'name' | 'department' | 'active';
@@ -105,16 +106,10 @@ export function Resource360Page() {
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       {/* Header */}
-      <div style={{ padding: '24px 24px 0', flexShrink: 0 }}>
-        <div style={{ marginBottom: 4, paddingBottom: 16, borderBottom: '1px solid var(--wh-border, #e2e8f0)' }}>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--wh-text-primary, #0f172a)', margin: 0 }}>
-            Resource 360
-          </h1>
-          <p style={{ fontSize: 14, color: 'var(--wh-text-secondary, #64748b)', margin: '2px 0 0' }}>
-            Team assignments &amp; subtask scope — {filtered.length} members
-          </p>
-        </div>
-      </div>
+      <CommandCenterHeader
+        title="Resource 360"
+        subtitle={`Team assignments & subtask scope — ${filtered.length} members`}
+      />
 
       {/* Department Tabs */}
       <div style={{ padding: '16px 24px', display: 'flex', flexWrap: 'wrap', gap: 6, flexShrink: 0 }}>
