@@ -27,6 +27,7 @@ export interface WorkItem {
   updatedAt: string;
   assignee: WorkItemAssignee;
   reporter?: string;
+  issueType: string;
   group: WorkGroup;
   starred?: boolean;
 }
@@ -106,6 +107,7 @@ function mapIssueToWorkItem(row: any, starredSet: Set<string>): WorkItem {
     summary: row.summary || '',
     mode: inferMode(row.project_key, row.issue_type),
     level: row.issue_type || 'Task',
+    issueType: row.issue_type || 'Task',
     updatedAt: row.jira_updated_at ? formatRelativeTime(row.jira_updated_at) : '-',
     assignee: {
       id: row.assignee_account_id || 'none',
