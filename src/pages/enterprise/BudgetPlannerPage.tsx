@@ -270,15 +270,36 @@ export default function BudgetPlannerPage() {
           {/* ROW 2: Search + Hero Tabs — floating strip */}
           <div className="px-6 pb-4 pt-3" style={{ backgroundColor: 'hsl(var(--muted))' }}>
             <div className="flex items-center justify-between px-5 py-3 bg-card border border-border rounded-xl shadow-sm">
-              {/* Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search assignments..."
-                  className="w-56 h-10 pl-10 pr-3 text-sm rounded-xl bg-slate-100 border-slate-200 focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-muted-foreground"
-                />
+              {/* Left: Search + Period Toggle */}
+              <div className="flex items-center gap-4">
+                {/* Search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search assignments..."
+                    className="w-56 h-10 pl-10 pr-3 text-sm rounded-xl bg-slate-100 border-slate-200 focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-muted-foreground"
+                  />
+                </div>
+
+                {/* Period Toggle */}
+                <div className="flex items-center gap-0.5 bg-slate-100 rounded-lg p-1 border border-slate-200">
+                  {PERIODS.map(p => (
+                    <button
+                      key={p.value}
+                      onClick={() => setPeriod(p.value)}
+                      className={cn(
+                        'px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-150',
+                        period === p.value
+                          ? 'bg-[#2563eb] text-white shadow-sm'
+                          : 'text-slate-600 hover:bg-white hover:text-slate-900'
+                      )}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Hero Tab Strip - Right Aligned */}
@@ -307,7 +328,7 @@ export default function BudgetPlannerPage() {
         </div>
 
         {/* Content Area - Scrollable */}
-        <div className="flex-1 overflow-auto p-6 lg:px-8 bg-[hsl(var(--background))]">
+        <div className="flex-1 overflow-auto p-6 lg:px-8" style={{ backgroundColor: 'hsl(var(--muted))' }}>
 
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
@@ -315,35 +336,16 @@ export default function BudgetPlannerPage() {
             </div>
           ) : activeTab === 'budget' ? (
             <>
-              {/* V8: Period Toggle + Context Badge */}
-              <div className="flex items-center justify-between mb-6">
-                {/* Period Toggle - Pill-style */}
-                <div className="period-toggle">
-                  {PERIODS.map(p => (
-                    <button
-                      key={p.value}
-                      onClick={() => setPeriod(p.value)}
-                      className={cn(
-                        "period-btn",
-                        period === p.value && "active"
-                      )}
-                    >
-                      {p.label}
-                    </button>
-                  ))}
-                </div>
-                
-                {/* V8: Context Badge - Shows period + total */}
-                <div className="flex items-center gap-3 px-4 py-2.5 bg-card border border-border rounded-xl">
-                  <Calendar className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">
-                    <span className="font-bold text-foreground">{getPeriodLabel()}</span>
-                    <span className="mx-2 text-muted-foreground/60">•</span>
-                    <span className="font-mono font-bold text-primary">
-                      {formatCurrency(currentBudget?.total || 0)} SAR
-                    </span>
+              {/* Context Badge - Shows period + total */}
+              <div className="flex items-center gap-3 px-4 py-2.5 mb-6 bg-card border border-border rounded-xl w-fit">
+                <Calendar className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">
+                  <span className="font-bold text-foreground">{getPeriodLabel()}</span>
+                  <span className="mx-2 text-muted-foreground/60">•</span>
+                  <span className="font-mono font-bold text-primary">
+                    {formatCurrency(currentBudget?.total || 0)} SAR
                   </span>
-                </div>
+                </span>
               </div>
 
               {/* Department Filter Tabs */}
