@@ -39,7 +39,7 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
       {/* Row 1: Avatar + Name + Department */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <AvatarChip name={r.name} color={r.color} size={36} />
+          <AvatarChip name={r.name} color={r.color} size={36} avatarUrl={r.avatar_url} />
           <div>
             <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--wh-text-primary, #0f172a)' }}>
               {r.name}

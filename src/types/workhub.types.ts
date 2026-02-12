@@ -105,11 +105,13 @@ export interface Resource {
   department?: string;
   skills?: string[];
   color: string;
+  avatar_url?: string;
   capacity_hours_per_week: number;
   is_active: boolean;
 }
 
 export interface ResourceUtilization extends Resource {
+  jira_account_id?: string;
   total_items: number;
   active_items: number;
   completed_items: number;
