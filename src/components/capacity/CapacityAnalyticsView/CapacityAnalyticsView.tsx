@@ -28,7 +28,7 @@ type CategoryFilter = 'insourced' | 'cosourced' | 'outsourced' | 'licenses' | nu
 interface CapacityAnalyticsViewProps {
   departmentFilter?: string;
   onDepartmentChange?: (dept: string) => void;
-  onResourceClick?: (resourceId: string) => void;
+  onResourceClick?: (resourceId: string, resourceName?: string) => void;
   searchQuery?: string;
   hideWidgets?: boolean;
 }

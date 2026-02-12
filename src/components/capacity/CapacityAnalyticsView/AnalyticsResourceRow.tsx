@@ -9,7 +9,7 @@ import type { CapacityRow } from './types';
 
 interface AnalyticsResourceRowProps {
   row: CapacityRow;
-  onResourceClick?: (resourceId: string) => void;
+  onResourceClick?: (resourceId: string, resourceName?: string) => void;
 }
 
 export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResourceRowProps) {
@@ -53,7 +53,7 @@ export function AnalyticsResourceRow({ row, onResourceClick }: AnalyticsResource
       <td className="sticky left-0 z-10 bg-card py-3 px-4 min-w-[280px] max-w-[280px] w-[280px] border-r border-border">
         <div 
           className="flex items-center gap-3 cursor-pointer"
-          onClick={() => onResourceClick?.(resource.id)}
+          onClick={() => onResourceClick?.(resource.id, resource.name)}
         >
           {/* Avatar with flag overlay - V10 Style: Unified CapacityAvatar */}
           <CapacityAvatar

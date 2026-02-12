@@ -30,6 +30,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Avatar360 } from '@/components/capacity/Avatar360';
 import { Resource360Drawer } from '@/components/capacity/resource360/Resource360Drawer';
+import { ResourceWorkDrawer } from '@/components/capacity/ResourceWorkDrawer';
 import { CapacityAIDrawer } from '@/components/capacity/CapacityAIDrawer';
 import { CatalystEnterpriseTable, CatalystColumn } from '@/components/industry/CatalystEnterpriseTable';
 import { BulkEditModal } from '@/components/capacity/BulkEditModal';
@@ -257,6 +258,8 @@ export default function CapacityPlannerPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
   const [resource360Id, setResource360Id] = useState<string | null>(null);
+  const [workDrawerResourceId, setWorkDrawerResourceId] = useState<string | null>(null);
+  const [workDrawerResourceName, setWorkDrawerResourceName] = useState<string | undefined>(undefined);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [resourceToDelete, setResourceToDelete] = useState<ResourceMetric | null>(null);
   const [resourcesToDelete, setResourcesToDelete] = useState<ResourceMetric[]>([]);
@@ -1031,7 +1034,7 @@ export default function CapacityPlannerPage() {
                   <CapacityAnalyticsView 
                     departmentFilter={departmentFilter}
                     onDepartmentChange={setDepartmentFilter}
-                    onResourceClick={(id) => handleOpenAllocationModal(id)}
+                    onResourceClick={(id, name) => { setWorkDrawerResourceId(id); setWorkDrawerResourceName(name); }}
                     searchQuery={searchQuery}
                     hideWidgets={true}
                   />
@@ -1099,6 +1102,13 @@ export default function CapacityPlannerPage() {
         <Resource360Drawer 
           resourceId={resource360Id} 
           onClose={() => setResource360Id(null)} 
+        />
+
+        {/* Resource Work Items Drawer */}
+        <ResourceWorkDrawer
+          resourceId={workDrawerResourceId}
+          resourceName={workDrawerResourceName}
+          onClose={() => { setWorkDrawerResourceId(null); setWorkDrawerResourceName(undefined); }}
         />
 
         {/* Legacy Resource 360° Sheet */}
@@ -1724,7 +1734,7 @@ export default function CapacityPlannerPage() {
                 <CapacityAnalyticsView 
                   departmentFilter={departmentFilter}
                   onDepartmentChange={setDepartmentFilter}
-                  onResourceClick={(id) => setResource360Id(id)}
+                  onResourceClick={(id, name) => { setWorkDrawerResourceId(id); setWorkDrawerResourceName(name); }}
                   hideWidgets={true}
                 />
               )}
@@ -2803,9 +2813,10 @@ interface TimelineViewProps {
   groupedByDepartment: Record<string, ResourceMetric[]>;
   allocations?: ResourceAllocation[];
   onEditResource?: (id: string) => void;
+  onResourceWorkClick?: (id: string, name: string) => void;
 }
 
-function TimelineView({ resources, period, groupBy, groupedByAssignment, groupedByDepartment, allocations = [], onEditResource }: TimelineViewProps) {
+function TimelineView({ resources, period, groupBy, groupedByAssignment, groupedByDepartment, allocations = [], onEditResource, onResourceWorkClick }: TimelineViewProps) {
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
   const toggleGroup = (name: string) => {
@@ -3123,7 +3134,14 @@ function TimelineView({ resources, period, groupBy, groupedByAssignment, grouped
         }}
       >
         {/* Resource Info */}
-        <div className="px-4 py-3 flex items-center gap-3 border-r border-border">
+        <div
+          className="px-4 py-3 flex items-center gap-3 border-r border-border cursor-pointer hover:bg-muted/60 transition-colors"
+          onClick={() => {
+            const riId = (resource as any).resourceInventoryId || resource.id;
+            onResourceWorkClick?.(riId, resource.name);
+          }}
+          title={`View ${resource.name}'s work items`}
+        >
           <div className="relative shrink-0">
             <div 
               className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white"
