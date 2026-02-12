@@ -60,6 +60,15 @@ export function useResource360People() {
         .order('full_name');
       if (pErr) throw new Error(pErr.message);
 
+      // 1b. Get resource_inventory for canonical role_name
+      const { data: resources } = await supabase
+        .from('resource_inventory')
+        .select('profile_id, role_name');
+      const roleMap = new Map<string, string>();
+      (resources ?? []).forEach((r: any) => {
+        if (r.profile_id && r.role_name) roleMap.set(r.profile_id, r.role_name);
+      });
+
       // 2. Get capacity_departments for name lookup
       const { data: depts, error: dErr } = await supabase
         .from('capacity_departments')
@@ -126,7 +135,7 @@ export function useResource360People() {
         personMap.set(p.id, {
           id: p.id,
           full_name: p.full_name || 'Unknown',
-          role: p.role || 'Team Member',
+          role: roleMap.get(p.id) || 'Team Member',
           department_id: p.department_id,
           department_name: p.department_id ? (deptMap.get(p.department_id) || null) : null,
           avatar_url: p.avatar_url,
