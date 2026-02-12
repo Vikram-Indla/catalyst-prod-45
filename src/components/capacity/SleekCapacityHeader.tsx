@@ -269,8 +269,8 @@ export function SleekCapacityHeader({
         </div>
       </div>
 
-      {/* Space between rows — matches OKR Hub header-to-content gap (~8px) */}
-      <div style={{ height: '8px', backgroundColor: 'hsl(var(--background))' }} />
+      {/* Space between rows — 12px */}
+      <div style={{ height: '12px', backgroundColor: 'hsl(var(--background))' }} />
 
       {/* ROW 2: Search + Hero Tabs (No Q1/H1/Full toggle) */}
       <div className="flex items-center justify-between px-5 py-3">
