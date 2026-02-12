@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { Palette, Plus, Loader2 } from 'lucide-react';
 import { useThemeProgress } from '@/hooks/workhub/useThemes';
 import type { ThemeProgress } from '@/types/workhub.types';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { ThemeCard } from './ThemeCard';
 import { ThemeModal } from './ThemeModal';
 
@@ -65,37 +66,30 @@ export function ThemesPage() {
   }
 
   return (
-    <div style={{ padding: '24px 32px', maxWidth: 1200, margin: '0 auto' }}>
+    <div style={{ fontFamily: 'var(--wh-font-sans)', display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid var(--wh-border, #e2e8f0)' }}>
-        <div>
-          <h1 style={{
-            fontSize: 20, fontWeight: 700, margin: 0,
-            color: 'var(--wh-text-primary, #0f172a)',
-          }}>
-            Themes
-          </h1>
-          <p style={{
-            fontSize: 14, color: 'var(--wh-text-secondary, #64748b)',
-            margin: '2px 0 0',
-          }}>
-            Strategic initiatives — {themes?.length ?? 0} themes
-          </p>
-        </div>
+      <CommandCenterHeader
+        title="Themes"
+        subtitle={`Strategic initiatives — ${themes?.length ?? 0} themes`}
+        onRefresh={() => refetch()}
+        actions={
+          <button
+            onClick={() => setModalOpen(true)}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '8px 16px', borderRadius: 8, border: 'none',
+              background: 'var(--wh-primary, #2563eb)', color: '#fff',
+              fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            }}
+          >
+            <Plus size={16} />
+            New Theme
+          </button>
+        }
+      />
 
-        <button
-          onClick={() => setModalOpen(true)}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            padding: '8px 16px', borderRadius: 8, border: 'none',
-            background: 'var(--wh-primary, #2563eb)', color: '#fff',
-            fontSize: 13, fontWeight: 600, cursor: 'pointer',
-          }}
-        >
-          <Plus size={16} />
-          New Theme
-        </button>
-      </div>
+      {/* Content with padding */}
+      <div className="flex flex-col flex-1 min-h-0 px-6 pb-4 overflow-y-auto">
 
       {/* Status Tabs */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
@@ -148,6 +142,7 @@ export function ThemesPage() {
           border-color: var(--wh-border-hover, #cbd5e1) !important;
         }
       `}</style>
+      </div>{/* end content wrapper */}
     </div>
   );
 }
