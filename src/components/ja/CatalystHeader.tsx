@@ -38,6 +38,7 @@ import { cn } from "@/lib/utils";
 import { useAppHeaderOffset } from "@/hooks/useAppHeaderOffset";
 import catalystLogoLight from "@/assets/catalyst-logo-light.svg";
 import catalystFullLogoLight from "@/assets/catalyst-full-logo-light.svg";
+import catalystWordmark3 from "@/assets/catalyst-wordmark-3.svg";
 
 export function CatalystHeader() {
   const navigate = useNavigate();
@@ -197,36 +198,12 @@ export function CatalystHeader() {
           style={{ marginRight: '32px' }}
           onClick={() => navigate('/home')}
         >
-          {/* Convergence Hub Icon (28×28) */}
-          <svg width="28" height="28" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0" style={{ marginRight: '8px' }}>
-            <defs>
-              <linearGradient id="catalystBlueHeader" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#3B82F6"/>
-                <stop offset="100%" stopColor="#1D4ED8"/>
-              </linearGradient>
-            </defs>
-            <line x1="32" y1="32" x2="12" y2="12" stroke="#93c5fd" strokeWidth="3" strokeLinecap="round"/>
-            <line x1="32" y1="32" x2="52" y2="12" stroke="#93c5fd" strokeWidth="3" strokeLinecap="round"/>
-            <line x1="32" y1="32" x2="12" y2="52" stroke="#93c5fd" strokeWidth="3" strokeLinecap="round"/>
-            <line x1="32" y1="32" x2="52" y2="52" stroke="#93c5fd" strokeWidth="3" strokeLinecap="round"/>
-            <circle cx="12" cy="12" r="8" fill="url(#catalystBlueHeader)"/>
-            <circle cx="52" cy="12" r="8" fill="url(#catalystBlueHeader)"/>
-            <circle cx="12" cy="52" r="8" fill="url(#catalystBlueHeader)"/>
-            <circle cx="52" cy="52" r="8" fill="url(#catalystBlueHeader)"/>
-            <circle cx="32" cy="32" r="12" fill="url(#catalystBlueHeader)"/>
-            <circle cx="32" cy="32" r="6" fill="white"/>
-          </svg>
-          {/* Wordmark: "Cata" dark + "lyst" blue per branding spec */}
-          <span style={{
-            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-            fontWeight: 700,
-            fontSize: '20px',
-            letterSpacing: '-0.025em',
-            lineHeight: 1,
-          }}>
-            <span style={{ color: '#09090B' }}>Cata</span>
-            <span style={{ color: '#2563EB' }}>lyst</span>
-          </span>
+          {/* Catalyst Wordmark */}
+          <img 
+            src={catalystWordmark3} 
+            alt="Catalyst" 
+            style={{ height: '32px', width: 'auto' }} 
+          />
         </a>
         
         {/* ===== NAVIGATION ZONE ===== */}
