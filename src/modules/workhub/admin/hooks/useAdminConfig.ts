@@ -87,7 +87,7 @@ export function useUserMappings() {
     queryKey: [...USER_MAP_KEY],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
-        .from('wh_user_mapping')
+        .from('ph_user_mapping')
         .select('*')
         .order('is_mapped', { ascending: false })
         .order('jira_display_name')
@@ -106,7 +106,7 @@ export function useUpdateUserMapping() {
       catalyst_profile_id: string | null
     }) => {
       const { error } = await (supabase as any)
-        .from('wh_user_mapping')
+        .from('ph_user_mapping')
         .update({
           catalyst_profile_id,
           is_mapped: catalyst_profile_id !== null,
@@ -124,7 +124,7 @@ export function useBatchSaveUserMappings() {
     mutationFn: async (mappings: Array<{ id: string; catalyst_profile_id: string | null }>) => {
       // 1. Save the mappings
       const promises = mappings.map(m =>
-        (supabase as any).from('wh_user_mapping')
+        (supabase as any).from('ph_user_mapping')
           .update({
             catalyst_profile_id: m.catalyst_profile_id,
             is_mapped: m.catalyst_profile_id !== null,
@@ -139,7 +139,7 @@ export function useBatchSaveUserMappings() {
         .map(m => m.id)
       if (mappedIds.length > 0) {
         const { data: jiraRecords } = await (supabase as any)
-          .from('wh_user_mapping')
+          .from('ph_user_mapping')
           .select('catalyst_profile_id, jira_avatar_url')
           .in('id', mappedIds)
           .not('jira_avatar_url', 'eq', '')
@@ -168,7 +168,7 @@ export function useAutoMatchUsers() {
   return useMutation({
     mutationFn: async () => {
       const { data: unmapped } = await (supabase as any)
-        .from('wh_user_mapping')
+        .from('ph_user_mapping')
         .select('id, jira_email, jira_avatar_url')
         .eq('is_mapped', false)
         .neq('jira_email', '')
@@ -187,7 +187,7 @@ export function useAutoMatchUsers() {
           (p: any) => p.email?.toLowerCase() === u.jira_email?.toLowerCase()
         )
         if (match) {
-          await (supabase as any).from('wh_user_mapping')
+          await (supabase as any).from('ph_user_mapping')
             .update({
               catalyst_profile_id: match.id,
               is_mapped: true,

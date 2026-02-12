@@ -39,7 +39,7 @@ function useAssigneeAvatars() {
     queryKey: ['workhub', 'assignee-avatars'],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
-        .from('wh_user_mapping')
+        .from('ph_user_mapping')
         .select('jira_account_id, jira_avatar_url, catalyst_profile_id')
         .eq('is_mapped', true);
 
