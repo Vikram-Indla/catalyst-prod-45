@@ -249,18 +249,18 @@ export default function BudgetPlannerPage() {
           />
 
           {/* ROW 2: Search + Hero Tabs — floating strip */}
-          <div className="px-6 pt-3" style={{ backgroundColor: 'hsl(var(--muted))', paddingBottom: '4px' }}>
-            <div className="flex items-center justify-between px-5 py-3 bg-card border border-border rounded-xl shadow-sm">
+          <div className="px-3 sm:px-6 pt-3" style={{ backgroundColor: 'hsl(var(--muted))', paddingBottom: '4px' }}>
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 px-3 sm:px-5 py-3 bg-card border border-border rounded-xl shadow-sm">
               {/* Left: Search + Period Toggle */}
-              <div className="flex items-center gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
                 {/* Search */}
-                <div className="relative">
+                <div className="relative w-full sm:w-56">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search assignments..."
-                    className="w-56 h-10 pl-10 pr-3 text-sm rounded-xl bg-slate-100 border-slate-200 focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-muted-foreground"
+                    className="w-full h-10 pl-10 pr-3 text-sm rounded-xl bg-slate-100 border-slate-200 focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-muted-foreground"
                   />
                 </div>
 
@@ -283,8 +283,8 @@ export default function BudgetPlannerPage() {
                 </div>
               </div>
 
-              {/* Hero Tab Strip - Right Aligned */}
-              <nav className="flex items-center gap-1 bg-slate-100 rounded-xl p-1.5 border border-slate-200">
+              {/* Hero Tab Strip */}
+              <nav className="flex items-center gap-1 bg-slate-100 rounded-xl p-1.5 border border-slate-200 overflow-x-auto w-full lg:w-auto">
                 {viewTabs.map((tab) => {
                   const Icon = tab.icon;
                   return (
@@ -292,14 +292,14 @@ export default function BudgetPlannerPage() {
                       key={tab.id}
                       onClick={tab.onClick}
                       className={cn(
-                        'flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-150',
+                        'flex items-center gap-2 px-3 sm:px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-150 whitespace-nowrap',
                         tab.isActive 
                           ? 'bg-[#2563eb] text-white shadow-md'
                           : 'text-slate-700 hover:bg-white hover:shadow-sm hover:text-slate-900'
                       )}
                     >
-                      <Icon className="w-4 h-4" />
-                      <span>{tab.label}</span>
+                      <Icon className="w-4 h-4 flex-shrink-0" />
+                      <span className="hidden sm:inline">{tab.label}</span>
                     </button>
                   );
                 })}
@@ -309,7 +309,7 @@ export default function BudgetPlannerPage() {
         </div>
 
         {/* Content Area - Scrollable */}
-        <div className="flex-1 overflow-auto px-6 lg:px-8 pb-6" style={{ backgroundColor: 'hsl(var(--muted))', paddingTop: '4px' }}>
+        <div className="flex-1 overflow-auto px-3 sm:px-6 lg:px-8 pb-6" style={{ backgroundColor: 'hsl(var(--muted))', paddingTop: '4px' }}>
 
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
