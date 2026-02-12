@@ -7,6 +7,8 @@ import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Search, ChevronDown, Check, X, Milestone, FolderGit2, Layers, Activity, Filter } from 'lucide-react';
 import { useIssueProjectKeys, useIssueTypes, useIssueStatuses, useIssueFixVersions } from '@/hooks/workhub/useWorkItems';
 import type { WorkItemFilterConfig } from '@/hooks/workhub/useWorkItems';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface WorkItemFiltersProps {
   filters: Partial<WorkItemFilterConfig>;
@@ -233,7 +235,25 @@ export function WorkItemFilters({ filters, onChange }: WorkItemFiltersProps) {
   const { data: statuses = [] } = useIssueStatuses();
   const { data: fixVersions = [] } = useIssueFixVersions();
 
-  const projectOptions = useMemo(() => projectKeys.map(pk => ({ value: pk, label: pk })), [projectKeys]);
+  // Fetch project names from ph_jira_projects for display labels
+  const { data: projectNameMap = {} } = useQuery({
+    queryKey: ['ph-jira-project-names'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_jira_projects')
+        .select('project_key, name');
+      if (!data) return {};
+      const map: Record<string, string> = {};
+      data.forEach(p => { map[p.project_key] = p.name; });
+      return map;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const projectOptions = useMemo(() => projectKeys.map(pk => ({
+    value: pk,
+    label: projectNameMap[pk] ? `${pk} - ${projectNameMap[pk].replace(/^.*? - /, '')}` : pk,
+  })), [projectKeys, projectNameMap]);
   const typeOptions = useMemo(() => issueTypes.map(t => ({ value: t, label: t })), [issueTypes]);
   const statusOptions = useMemo(() => statuses.map(s => ({ value: s, label: s })), [statuses]);
   const releaseOptions = useMemo(
