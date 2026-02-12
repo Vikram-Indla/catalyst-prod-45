@@ -269,8 +269,8 @@ export function SleekCapacityHeader({
         </div>
       </div>
 
-      {/* 1px space divider */}
-      <div style={{ height: '1px', backgroundColor: '#e4e4e7' }} />
+      {/* 3px space between rows — no line */}
+      <div style={{ height: '3px', backgroundColor: 'hsl(var(--background))' }} />
 
       {/* ROW 2: Search + Hero Tabs (No Q1/H1/Full toggle) */}
       <div className="flex items-center justify-between px-5 py-3">
