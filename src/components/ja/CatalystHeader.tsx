@@ -39,7 +39,6 @@ import { useAppHeaderOffset } from "@/hooks/useAppHeaderOffset";
 import catalystLogoLight from "@/assets/catalyst-logo-light.svg";
 import catalystFullLogoLight from "@/assets/catalyst-full-logo-light.svg";
 import catalystWordmark3 from "@/assets/catalyst-wordmark-3.svg";
-import catalystLogoMark2 from "@/assets/catalyst-logo-mark-2.svg";
 
 export function CatalystHeader() {
   const navigate = useNavigate();
@@ -199,12 +198,6 @@ export function CatalystHeader() {
           style={{ marginRight: '32px' }}
           onClick={() => navigate('/home')}
         >
-          {/* Convergence Hub Icon */}
-          <img 
-            src={catalystLogoMark2} 
-            alt="" 
-            style={{ height: '28px', width: '28px', marginRight: '8px' }} 
-          />
           {/* Catalyst Wordmark */}
           <img 
             src={catalystWordmark3} 
