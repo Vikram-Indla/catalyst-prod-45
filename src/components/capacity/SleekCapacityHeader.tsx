@@ -273,7 +273,7 @@ export function SleekCapacityHeader({
       <div style={{ height: '12px', backgroundColor: 'hsl(var(--background))' }} />
 
       {/* ROW 2: Search + Hero Tabs (No Q1/H1/Full toggle) */}
-      <div className="flex items-center justify-between px-6 py-3">
+      <div className="flex items-center justify-between px-10 py-3">
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
