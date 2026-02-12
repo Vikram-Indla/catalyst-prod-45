@@ -29,13 +29,13 @@ const enterpriseSidebarConfig: SidebarConfig = {
   label: 'Strategy Hub',
   items: [
     { id: 'strategy-room', title: 'Strategy Room', path: '/strategyhub/strategy-room', icon: Focus, exact: true },
-    { id: 'strategic-backlog', title: 'Strategic Backlog', path: '/strategyhub/backlog', icon: ListTree, exact: false },
-    { id: 'objective-tree', title: 'Objective Tree', path: '/strategyhub/okr-hub', icon: Workflow, exact: false },
-    { id: 'roadmaps', title: 'Enterprise Roadmap', path: '/strategyhub/roadmaps', icon: Map, exact: false },
-    { id: 'risks', title: 'Risks', path: '/strategyhub/risks', icon: Blocks, exact: false },
+    { id: 'strategic-backlog', title: 'Strategy Backlog', path: '/strategyhub/backlog', icon: ListTree, exact: false },
+    { id: 'objective-tree', title: 'Strategy Tree', path: '/strategyhub/okr-hub', icon: Workflow, exact: false },
+    { id: 'roadmaps', title: 'Strategy Roadmap', path: '/strategyhub/roadmaps', icon: Map, exact: false },
+    { id: 'risks', title: 'Strategy Risks', path: '/strategyhub/risks', icon: Blocks, exact: false },
     { id: 'capacity', title: 'Capacity Planner', path: '/strategyhub/capacity', icon: UsersIcon, exact: false },
     { id: 'budget-planner', title: 'Budget Planner', path: '/strategyhub/budget-planner', icon: Wallet, exact: false },
-    { id: 'reports', title: 'Reports', path: '/reports-discovery', icon: TrendingUp, exact: false },
+    { id: 'reports', title: 'Strategy Reports', path: '/reports-discovery', icon: TrendingUp, exact: false },
   ],
   footerItem: {
     id: 'settings',
