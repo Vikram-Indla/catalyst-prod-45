@@ -1,47 +1,162 @@
 /**
- * ThemesPage — Themes management placeholder
+ * ThemesPage — Strategic themes management with card grid
+ * Route: /workhub/themes
  */
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Palette, Plus, Loader2 } from 'lucide-react';
+import { useThemeProgress } from '@/hooks/workhub/useThemes';
+import type { ThemeProgress } from '@/types/workhub.types';
+import { ThemeCard } from './ThemeCard';
+import { ThemeModal } from './ThemeModal';
 
-import { Palette } from 'lucide-react';
+type TabKey = 'All' | 'Active' | 'Completed' | 'On Hold';
+const TABS: TabKey[] = ['All', 'Active', 'Completed', 'On Hold'];
 
 export function ThemesPage() {
+  const navigate = useNavigate();
+  const { data: themes, isLoading, error, refetch } = useThemeProgress();
+  const [activeTab, setActiveTab] = useState<TabKey>('All');
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const tabCounts = useMemo(() => {
+    const all = themes ?? [];
+    return {
+      All: all.length,
+      Active: all.filter(t => t.status === 'Active').length,
+      Completed: all.filter(t => t.status === 'Completed').length,
+      'On Hold': all.filter(t => t.status === 'On Hold').length,
+    };
+  }, [themes]);
+
+  const filtered = useMemo(() => {
+    if (!themes) return [];
+    if (activeTab === 'All') return themes;
+    return themes.filter(t => t.status === activeTab);
+  }, [themes, activeTab]);
+
+  if (isLoading) {
+    return (
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        height: '100%', color: 'var(--wh-text-secondary, #64748b)',
+      }}>
+        <Loader2 className="animate-spin" size={24} />
+        <span style={{ marginLeft: 8, fontSize: 14 }}>Loading themes...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        height: '100%', gap: 12,
+      }}>
+        <p style={{ color: '#ef4444', fontSize: 14 }}>Failed to load themes</p>
+        <button onClick={() => refetch()} style={{
+          padding: '8px 16px', borderRadius: 6, border: '1px solid var(--wh-border)',
+          background: 'var(--wh-surface)', fontSize: 13, cursor: 'pointer',
+        }}>
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen">
-      <div className="flex flex-col items-center justify-center py-16 px-6">
-        <div className="text-center max-w-2xl">
-          <div
-            className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6"
-            style={{ backgroundColor: 'var(--wh-primary-light)' }}
-          >
-            <Palette
-              className="w-10 h-10"
-              style={{ color: 'var(--wh-primary)' }}
-            />
+    <div style={{ padding: '24px 32px', maxWidth: 1200, margin: '0 auto' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+        <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: 10, background: '#dbeafe',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          }}>
+            <Palette size={20} color="#2563eb" />
           </div>
-          <h1
-            className="text-3xl font-bold mb-2"
-            style={{
-              fontFamily: 'var(--wh-font-display)',
-              color: 'var(--wh-text-primary)',
-            }}
-          >
-            Themes
-          </h1>
-          <p className="text-base mb-8" style={{ color: 'var(--wh-text-secondary)' }}>
-            Strategic themes that group work across releases
-          </p>
-          <div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border"
-            style={{
-              backgroundColor: 'var(--wh-warning-light)',
-              borderColor: 'var(--wh-warning)',
-              color: 'var(--wh-warning)',
-            }}
-          >
-            <span className="text-sm font-medium">Coming in Phase 5</span>
+          <div>
+            <h1 style={{
+              fontSize: 24, fontWeight: 700, margin: 0,
+              fontFamily: 'var(--wh-font-display, Sora, sans-serif)',
+              color: 'var(--wh-text-primary, #0f172a)',
+            }}>
+              Themes
+            </h1>
+            <p style={{
+              fontSize: 14, color: 'var(--wh-text-secondary, #64748b)',
+              margin: '2px 0 0',
+            }}>
+              Strategic initiatives — {themes?.length ?? 0} themes
+            </p>
           </div>
         </div>
+
+        <button
+          onClick={() => setModalOpen(true)}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            padding: '8px 16px', borderRadius: 8, border: 'none',
+            background: 'var(--wh-primary, #2563eb)', color: '#fff',
+            fontSize: 13, fontWeight: 600, cursor: 'pointer',
+          }}
+        >
+          <Plus size={16} />
+          New Theme
+        </button>
       </div>
+
+      {/* Status Tabs */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
+        {TABS.map(tab => {
+          const isActive = activeTab === tab;
+          return (
+            <button key={tab} onClick={() => setActiveTab(tab)} style={{
+              padding: '6px 16px', borderRadius: 9999, border: 'none',
+              fontSize: 13, fontWeight: 500, cursor: 'pointer',
+              background: isActive ? 'var(--wh-primary, #2563eb)' : 'var(--wh-border-light, #f1f5f9)',
+              color: isActive ? '#fff' : 'var(--wh-text-secondary, #64748b)',
+              transition: 'background 150ms, color 150ms',
+            }}>
+              {tab} ({tabCounts[tab] ?? 0})
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Card Grid */}
+      {filtered.length === 0 ? (
+        <div style={{
+          textAlign: 'center', padding: '48px 0',
+          color: 'var(--wh-text-tertiary, #94a3b8)', fontSize: 14,
+        }}>
+          No {activeTab === 'All' ? '' : activeTab.toLowerCase() + ' '}themes found
+        </div>
+      ) : (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+          gap: 20,
+        }}>
+          {filtered.map(t => (
+            <ThemeCard
+              key={t.id}
+              theme={t}
+              onClick={() => navigate(`/workhub/themes/${t.id}`)}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Create Modal */}
+      <ThemeModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
+
+      <style>{`
+        .wh-theme-card:hover {
+          box-shadow: var(--wh-shadow-md) !important;
+          border-color: var(--wh-border-hover, #cbd5e1) !important;
+        }
+      `}</style>
     </div>
   );
 }
