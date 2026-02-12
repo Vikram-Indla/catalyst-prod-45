@@ -273,8 +273,8 @@ export function SleekCapacityHeader({
       <div style={{ height: '12px', backgroundColor: 'hsl(var(--background))' }} />
 
       {/* ROW 2: Search + Hero Tabs — floating strip with side padding */}
-      <div className="px-6">
-        <div className="flex items-center justify-between px-5 py-3 bg-card border border-border rounded-xl">
+      <div className="px-6 pb-4 pt-1" style={{ backgroundColor: 'hsl(var(--background))' }}>
+        <div className="flex items-center justify-between px-5 py-3 bg-card border border-border rounded-xl shadow-sm">
           {/* Search */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
