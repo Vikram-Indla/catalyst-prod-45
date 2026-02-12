@@ -35812,6 +35812,27 @@ export type Database = {
           },
         ]
       }
+      wh_config: {
+        Row: {
+          created_at: string
+          key: string
+          updated_at: string
+          value: Json | null
+        }
+        Insert: {
+          created_at?: string
+          key: string
+          updated_at?: string
+          value?: Json | null
+        }
+        Update: {
+          created_at?: string
+          key?: string
+          updated_at?: string
+          value?: Json | null
+        }
+        Relationships: []
+      }
       work_item_activity: {
         Row: {
           activity_type: string
