@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { Rocket, Loader2, FolderGit2, Milestone, ChevronDown, X, Search } from 'lucide-react';
 import { useJiraReleases } from '@/hooks/workhub/useJiraReleases';
 import type { JiraRelease } from '@/hooks/workhub/useJiraReleases';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { ReleaseCard } from './ReleaseCard';
 
 type TabKey = 'All' | 'Active' | 'At Risk' | 'Planned' | 'Completed';
@@ -217,24 +218,16 @@ export function ReleasesPage() {
   }
 
   return (
-    <div style={{ padding: '24px 32px', maxWidth: 900, margin: '0 auto' }}>
+    <div style={{ fontFamily: 'var(--wh-font-sans)', display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid var(--wh-border, #e2e8f0)' }}>
-        <div>
-          <h1 style={{
-            fontSize: 20, fontWeight: 700, margin: 0,
-            color: 'var(--wh-text-primary, #0f172a)',
-          }}>
-            Releases
-          </h1>
-          <p style={{
-            fontSize: 14, color: 'var(--wh-text-secondary, #64748b)',
-            margin: '2px 0 0',
-          }}>
-            Jira fix versions — {releases?.length ?? 0} releases
-          </p>
-        </div>
-      </div>
+      <CommandCenterHeader
+        title="Releases"
+        subtitle={`Jira fix versions — ${releases?.length ?? 0} releases`}
+        onRefresh={() => refetch()}
+      />
+
+      {/* Content with padding */}
+      <div className="flex flex-col flex-1 min-h-0 px-6 pb-4 overflow-y-auto">
 
       {/* Status Tabs + Filters */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -323,6 +316,7 @@ export function ReleasesPage() {
         }
         .wh-view-detail:hover { text-decoration: underline; }
       `}</style>
+      </div>{/* end content wrapper */}
     </div>
   );
 }
