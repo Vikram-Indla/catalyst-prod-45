@@ -67,18 +67,22 @@ export function PageChrome({
           >
             {/* Left: Breadcrumb + Title (NO ICONS) */}
             <div className="flex items-center gap-2">
-              <span
-                className="text-[11px] font-semibold uppercase tracking-wider"
-                style={{ color: 'var(--text-3)' }}
-              >
-                {section}
-              </span>
-              <span 
-                className="text-[14px]" 
-                style={{ color: 'var(--text-4)' }}
-              >
-                /
-              </span>
+              {section && (
+                <>
+                  <span
+                    className="text-[11px] font-semibold uppercase tracking-wider"
+                    style={{ color: 'var(--text-3)' }}
+                  >
+                    {section}
+                  </span>
+                  <span 
+                    className="text-[14px]" 
+                    style={{ color: 'var(--text-4)' }}
+                  >
+                    /
+                  </span>
+                </>
+              )}
               <h1
                 className="text-[18px] font-semibold"
                 style={{ color: 'var(--text-1)' }}
