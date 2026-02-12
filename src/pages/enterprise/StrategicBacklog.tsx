@@ -7,6 +7,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { PageChrome } from '@/components/layout/PageChrome';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { StrategicBacklogTabs } from '@/components/strategic-backlog/StrategicBacklogTabs';
 
 import { StrategicBacklogThemesSection } from '@/components/strategic-backlog/StrategicBacklogThemesSection';
@@ -227,8 +228,13 @@ export default function StrategicBacklog() {
   };
 
   return (
-    <PageChrome>
+    <PageChrome hideHeader>
       <div className="h-full flex flex-col min-h-0 overflow-hidden">
+        {/* Command Center Header */}
+        <CommandCenterHeader
+          title="Strategic Backlog"
+          subtitle="Themes, snapshots, objectives & epics"
+        />
         {/* Tabs */}
         <div className="shrink-0 px-6 py-4">
           <StrategicBacklogTabs
