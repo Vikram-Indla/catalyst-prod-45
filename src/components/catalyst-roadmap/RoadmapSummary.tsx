@@ -36,7 +36,7 @@ export function RoadmapSummary({
     : '#dc2626';
 
   return (
-    <div className="h-[68px] px-5 flex items-center gap-8 bg-card border-b shrink-0">
+    <div className="h-[68px] px-5 flex items-center gap-8 shrink-0" style={{ backgroundColor: 'var(--bg, #fff)', borderBottom: '1px solid var(--divider, #e4e4e7)' }}>
       {/* Health Ring */}
       <div className="flex items-center gap-3">
         <div className="relative w-11 h-11">
