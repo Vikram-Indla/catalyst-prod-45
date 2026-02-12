@@ -6,6 +6,7 @@
 import { BarChart3, Users, Clock, TrendingUp } from 'lucide-react';
 import { useDepartmentCapacity } from '@/hooks/workhub/useCapacityData';
 import { getUtilColor } from '@/components/workhub/shared/UtilizationBar';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { DepartmentUtilizationChart } from './DepartmentUtilizationChart';
 import { CapacityTable } from './CapacityTable';
 
@@ -35,80 +36,64 @@ export function CapacityPage() {
   }
 
   return (
-    <div style={{ padding: '32px 32px 48px', maxWidth: 1400, margin: '0 auto' }}>
-      {/* HEADER */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 28 }}>
+    <div style={{ fontFamily: 'var(--wh-font-sans)', display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      {/* Header */}
+      <CommandCenterHeader
+        title="Capacity Planning"
+        subtitle={`Department & individual resource capacity — ${totalMembers} members`}
+      />
+
+      {/* Content with padding */}
+      <div className="flex flex-col flex-1 min-h-0 px-6 pb-4 overflow-y-auto">
+        {/* KPI ROW */}
         <div style={{
-          width: 40, height: 40, borderRadius: '50%',
-          backgroundColor: '#dbeafe', display: 'flex',
-          alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: 16, marginBottom: 28,
         }}>
-          <BarChart3 size={20} style={{ color: '#2563eb' }} />
-        </div>
-        <div>
-          <h1 style={{
-            fontFamily: 'Sora, sans-serif', fontSize: 24,
-            fontWeight: 700, color: 'var(--wh-text-primary)', margin: 0,
-          }}>
-            Capacity Planning
-          </h1>
-          <p style={{
-            fontFamily: 'Inter, system-ui, sans-serif', fontSize: 14,
-            color: 'var(--wh-text-secondary)', marginTop: 4,
-          }}>
-            Department & individual resource capacity — {totalMembers} members
-          </p>
-        </div>
-      </div>
-
-      {/* KPI ROW */}
-      <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-        gap: 16, marginBottom: 28,
-      }}>
-        {kpis.map(kpi => (
-          <div
-            key={kpi.label}
-            style={{
-              backgroundColor: 'var(--wh-surface)',
-              border: '1px solid var(--wh-border)',
-              borderRadius: 'var(--wh-radius-xl, 16px)',
-              padding: '20px 20px',
-              display: 'flex', alignItems: 'center', gap: 14,
-            }}
-          >
-            <div style={{
-              width: 36, height: 36, borderRadius: 10,
-              backgroundColor: '#f1f5f9', display: 'flex',
-              alignItems: 'center', justifyContent: 'center',
-            }}>
-              <kpi.icon size={18} style={{ color: kpi.color }} />
-            </div>
-            <div>
+          {kpis.map(kpi => (
+            <div
+              key={kpi.label}
+              style={{
+                backgroundColor: 'var(--wh-surface)',
+                border: '1px solid var(--wh-border)',
+                borderRadius: 'var(--wh-radius-xl, 16px)',
+                padding: '20px 20px',
+                display: 'flex', alignItems: 'center', gap: 14,
+              }}
+            >
               <div style={{
-                fontFamily: 'Sora, sans-serif', fontSize: 22, fontWeight: 700,
-                color: kpi.color, lineHeight: 1.1,
+                width: 36, height: 36, borderRadius: 10,
+                backgroundColor: '#f1f5f9', display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
               }}>
-                {kpi.value}{kpi.suffix}
+                <kpi.icon size={18} style={{ color: kpi.color }} />
               </div>
-              <div style={{
-                fontFamily: 'Inter, system-ui, sans-serif', fontSize: 12,
-                color: 'var(--wh-text-tertiary)', marginTop: 2,
-              }}>
-                {kpi.label}
+              <div>
+                <div style={{
+                  fontFamily: 'Sora, sans-serif', fontSize: 22, fontWeight: 700,
+                  color: kpi.color, lineHeight: 1.1,
+                }}>
+                  {kpi.value}{kpi.suffix}
+                </div>
+                <div style={{
+                  fontFamily: 'Inter, system-ui, sans-serif', fontSize: 12,
+                  color: 'var(--wh-text-tertiary)', marginTop: 2,
+                }}>
+                  {kpi.label}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      {/* DEPARTMENT UTILIZATION CHART */}
-      <div style={{ marginBottom: 28 }}>
-        <DepartmentUtilizationChart departments={departments} />
-      </div>
+        {/* DEPARTMENT UTILIZATION CHART */}
+        <div style={{ marginBottom: 28 }}>
+          <DepartmentUtilizationChart departments={departments} />
+        </div>
 
-      {/* INDIVIDUAL CAPACITY TABLE */}
-      <CapacityTable resources={resources ?? []} />
+        {/* INDIVIDUAL CAPACITY TABLE */}
+        <CapacityTable resources={resources ?? []} />
+      </div>
     </div>
   );
 }
