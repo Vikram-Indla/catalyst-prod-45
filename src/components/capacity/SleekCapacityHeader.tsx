@@ -242,7 +242,7 @@ export function SleekCapacityHeader({
   };
 
   return (
-    <div className="bg-card" style={{ borderBottom: '1px solid #e4e4e7' }}>
+    <div className="bg-card">
       {/* ROW 1: Title + Live Badge (inline) | Primary CTA only */}
       <div className="flex items-center justify-between px-5 h-16">
         {/* Left: Title + Live Badge Inline */}
@@ -269,11 +269,8 @@ export function SleekCapacityHeader({
         </div>
       </div>
 
-      {/* Space between rows — 12px */}
-      <div style={{ height: '12px', backgroundColor: 'hsl(var(--background))' }} />
-
       {/* ROW 2: Search + Hero Tabs — floating strip with side padding */}
-      <div className="px-6 pb-4 pt-1" style={{ backgroundColor: 'hsl(var(--background))' }}>
+      <div className="px-6 pb-4 pt-3" style={{ backgroundColor: 'hsl(var(--muted))' }}>
         <div className="flex items-center justify-between px-5 py-3 bg-card border border-border rounded-xl shadow-sm">
           {/* Search */}
           <div className="relative">
