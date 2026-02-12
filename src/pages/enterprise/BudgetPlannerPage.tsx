@@ -246,11 +246,11 @@ export default function BudgetPlannerPage() {
           subtitle={`Financial planning & scenario modeling — ${getPeriodLabel()}`}
         />
 
-        {/* Content Area - Scrollable */}
-        <div className="flex-1 overflow-auto p-6">
-          {/* Tab Strip + Search */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
-            <nav className="flex items-center gap-1 bg-muted rounded-xl p-1.5 border border-border overflow-x-auto">
+        {/* Floating strip: Tabs + Search */}
+        <div className="px-6 pt-3 pb-1" style={{ backgroundColor: 'hsl(var(--muted))' }}>
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 px-5 py-3 bg-card border border-border rounded-xl shadow-sm">
+            {/* Hero Tab Strip */}
+            <nav className="flex items-center gap-1 bg-muted rounded-xl p-1.5 border border-border overflow-x-auto w-full lg:w-auto">
               {viewTabs.map((tab) => {
                 const Icon = tab.icon;
                 return (
@@ -258,9 +258,9 @@ export default function BudgetPlannerPage() {
                     key={tab.id}
                     onClick={tab.onClick}
                     className={cn(
-                      'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 whitespace-nowrap',
+                      'flex items-center gap-2 px-3 sm:px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-150 whitespace-nowrap',
                       tab.isActive 
-                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        ? 'bg-primary text-primary-foreground shadow-md'
                         : 'text-muted-foreground hover:bg-card hover:text-foreground hover:shadow-sm'
                     )}
                   >
@@ -270,6 +270,7 @@ export default function BudgetPlannerPage() {
                 );
               })}
             </nav>
+            {/* Search */}
             <div className="relative w-full sm:w-56">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -280,6 +281,10 @@ export default function BudgetPlannerPage() {
               />
             </div>
           </div>
+        </div>
+
+        {/* Content Area - Scrollable */}
+        <div className="flex-1 overflow-auto p-6">
 
           {isLoading ? (
             <div className="flex items-center justify-center py-20">

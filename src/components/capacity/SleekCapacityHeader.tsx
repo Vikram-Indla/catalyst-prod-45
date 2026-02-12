@@ -250,42 +250,46 @@ export function SleekCapacityHeader({
         subtitle={`Resource allocation & utilization — ${summary.total} resources, ${summary.utilizationPercentage}% utilized`}
       />
 
-      {/* Toolbar: Tabs + Search — inside content flow */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-6 py-4 border-b border-border">
-        <nav className="flex items-center gap-1 bg-muted rounded-xl p-1.5 border border-border overflow-x-auto">
-          {viewTabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={tab.onClick}
-                className={cn(
-                  'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 whitespace-nowrap',
-                  tab.isActive 
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:bg-card hover:text-foreground hover:shadow-sm'
-                )}
-              >
-                <Icon className="w-4 h-4 flex-shrink-0" />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
-        </nav>
-        <div className="relative w-full sm:w-56">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder={primaryView === 'projects' ? "Search projects..." : "Search resources..."}
-            className="w-full h-10 pl-10 pr-3 text-sm rounded-xl bg-muted border-border focus:bg-card transition-all placeholder:text-muted-foreground"
-          />
+      {/* Floating strip: Tabs + Search */}
+      <div className="px-6 pt-3 pb-1" style={{ backgroundColor: 'hsl(var(--muted))' }}>
+        <div className="flex items-center justify-between px-5 py-3 bg-card border border-border rounded-xl shadow-sm">
+          {/* Hero Tab Strip */}
+          <nav className="flex items-center gap-1 bg-muted rounded-xl p-1.5 border border-border">
+            {viewTabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={tab.onClick}
+                  className={cn(
+                    'flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-150 whitespace-nowrap',
+                    tab.isActive 
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'text-muted-foreground hover:bg-card hover:text-foreground hover:shadow-sm'
+                  )}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder={primaryView === 'projects' ? "Search projects..." : "Search resources..."}
+              className="w-56 h-10 pl-10 pr-3 text-sm rounded-xl bg-muted border-border focus:bg-card transition-all placeholder:text-muted-foreground"
+            />
+          </div>
         </div>
       </div>
 
       {/* Projects: Period Navigator */}
       {primaryView === 'projects' && projectPeriodRange && (
-      <div className="flex items-center px-6 py-2.5 border-b border-border/30">
+      <div className="flex items-center px-6 py-2.5" style={{ backgroundColor: 'hsl(var(--muted))' }}>
         <div className="flex items-center gap-3">
           <div className="flex items-center bg-muted rounded-lg p-0.5 border border-border">
             <button
