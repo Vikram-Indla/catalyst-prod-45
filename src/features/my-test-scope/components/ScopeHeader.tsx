@@ -17,7 +17,7 @@ interface ScopeHeaderProps {
 
 export function ScopeHeader({ userName, summary, onExport, onExecuteAll }: ScopeHeaderProps) {
   return (
-    <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+    <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-white">
       <div>
         <h1 className="text-2xl font-semibold text-foreground">
           My Scope
