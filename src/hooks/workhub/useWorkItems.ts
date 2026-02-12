@@ -219,87 +219,42 @@ export function useWorkItems(
   });
 }
 
-export function useIssueFixVersions() {
+/** Single RPC call returning all distinct filter options */
+function useWorkItemFilters() {
   return useQuery({
-    queryKey: ['projecthub', 'issue-fix-versions'],
+    queryKey: ['projecthub', 'work-item-filters'],
     queryFn: async () => {
-      const allVersions = new Map<string, { name: string; releaseDate?: string }>();
-      let page = 0;
-      const batchSize = 1000;
-      let hasMore = true;
-      while (hasMore) {
-        const { data, error } = await supabase
-          .from('ph_issues')
-          .select('fix_versions')
-          .not('fix_versions', 'eq', '[]')
-          .range(page * batchSize, (page + 1) * batchSize - 1);
-        if (error) throw new Error(error.message);
-        if (!data || data.length === 0) break;
-        data.forEach((row: any) => {
-          if (Array.isArray(row.fix_versions)) {
-            row.fix_versions.forEach((v: any) => {
-              if (v?.name && !allVersions.has(v.name)) {
-                allVersions.set(v.name, { name: v.name, releaseDate: v.releaseDate });
-              }
-            });
-          }
-        });
-        hasMore = data.length === batchSize;
-        page++;
-      }
-      return Array.from(allVersions.values())
-        .sort((a, b) => (b.releaseDate || '').localeCompare(a.releaseDate || '') || a.name.localeCompare(b.name));
+      const { data, error } = await supabase.rpc('fn_ph_work_item_filters' as any);
+      if (error) throw new Error(error.message);
+      return data as {
+        issue_types: string[];
+        statuses: string[];
+        project_keys: string[];
+        fix_versions: { name: string; releaseDate?: string }[];
+      };
     },
     staleTime: 120_000,
   });
 }
 
+export function useIssueFixVersions() {
+  const { data, ...rest } = useWorkItemFilters();
+  return { data: data?.fix_versions ?? [], ...rest };
+}
+
 export function useIssueProjectKeys() {
-  return useQuery({
-    queryKey: ['projecthub', 'issue-project-keys'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select('project_key')
-        .order('project_key');
-      if (error) throw new Error(error.message);
-      const keys = [...new Set((data ?? []).map(d => d.project_key))];
-      return keys;
-    },
-    staleTime: 60_000,
-  });
+  const { data, ...rest } = useWorkItemFilters();
+  return { data: data?.project_keys ?? [], ...rest };
 }
 
 export function useIssueTypes() {
-  return useQuery({
-    queryKey: ['projecthub', 'issue-types'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select('issue_type')
-        .order('issue_type');
-      if (error) throw new Error(error.message);
-      const types = [...new Set((data ?? []).map(d => d.issue_type))];
-      return types;
-    },
-    staleTime: 60_000,
-  });
+  const { data, ...rest } = useWorkItemFilters();
+  return { data: data?.issue_types ?? [], ...rest };
 }
 
 export function useIssueStatuses() {
-  return useQuery({
-    queryKey: ['projecthub', 'issue-statuses'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select('status')
-        .order('status');
-      if (error) throw new Error(error.message);
-      const statuses = [...new Set((data ?? []).map(d => d.status))];
-      return statuses;
-    },
-    staleTime: 60_000,
-  });
+  const { data, ...rest } = useWorkItemFilters();
+  return { data: data?.statuses ?? [], ...rest };
 }
 
 export function useUpdateWorkItem() {

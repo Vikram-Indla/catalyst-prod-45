@@ -39552,6 +39552,7 @@ export type Database = {
           version_name: string
         }[]
       }
+      fn_ph_work_item_filters: { Args: never; Returns: Json }
       generate_change_number: { Args: never; Returns: string }
       generate_cycle_key: { Args: never; Returns: string }
       generate_cycle_report_data: {
