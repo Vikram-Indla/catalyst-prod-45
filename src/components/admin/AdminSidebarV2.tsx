@@ -138,7 +138,7 @@ const adminPockets = [
   },
   {
     id: 'planhub',
-    label: 'PlanHub™',
+    label: 'Plan Hub™',
     icon: Calendar,
     path: '/admin/planhub',
     children: [
