@@ -20,7 +20,7 @@ export function ScopeHeader({ userName, summary, onExport, onExecuteAll }: Scope
     <div className="h-16 px-6 bg-card border-b border-border flex items-center justify-between shrink-0">
       <div>
         <h1 className="font-['Sora'] text-lg font-bold text-foreground tracking-tight m-0 leading-tight">
-          My Scope
+          My Test Scope
         </h1>
         <p className="font-['Inter'] text-[13px] text-muted-foreground mt-0.5 leading-tight">
           {summary.totalTests} tests &bull; {summary.linkedDefectsCount} defects &bull; {summary.activeIncidentsCount} incidents
