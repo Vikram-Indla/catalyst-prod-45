@@ -272,6 +272,7 @@ export default function BudgetPlannerPage() {
                       onClick={() => setPeriod(p.value)}
                       className={cn(
                         'px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-150',
+                        p.value !== 'Full' && 'hidden',
                         period === p.value
                           ? 'bg-[#2563eb] text-white shadow-sm'
                           : 'text-slate-600 hover:bg-white hover:text-slate-900'
