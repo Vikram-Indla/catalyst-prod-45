@@ -21,35 +21,36 @@ export function useRunRateData() {
   return useQuery({
     queryKey: ['run-rate-resources'],
     queryFn: async () => {
-      // Fetch resources with department, resource_type, CTC, contract_end_date, and assignment
-      const { data: resources, error } = await supabase
-        .from('resource_inventory')
-        .select(`
-          id,
-          name,
-          resource_type,
-          ctc,
-          contract_end_date,
-          department_id,
-          assignment_id,
-          capacity_departments!resource_inventory_department_id_fkey(id, name),
-          resource_assignments!resource_inventory_assignment_id_fkey(id, name)
-        `)
-        .eq('is_active', true);
+      // Fetch resources, departments, and assignments in parallel (no FK join - FK doesn't exist)
+      const [
+        { data: resources, error },
+        { data: departments },
+        { data: assignments },
+      ] = await Promise.all([
+        supabase
+          .from('resource_inventory')
+          .select('id, name, resource_type, ctc, contract_end_date, department_id, assignment_id')
+          .eq('is_active', true),
+        supabase.from('capacity_departments').select('id, name'),
+        supabase.from('resource_assignments').select('id, name'),
+      ]);
 
       if (error) throw error;
+
+      const deptMap = new Map(departments?.map(d => [d.id, d.name]) || []);
+      const assignMap = new Map(assignments?.map(a => [a.id, a.name]) || []);
 
       return (resources || []).map((r: any) => ({
         id: r.id,
         name: r.name,
-        department_name: r.capacity_departments?.name || null,
+        department_name: r.department_id ? deptMap.get(r.department_id) || null : null,
         resource_type: r.resource_type,
         ctc: r.ctc ? parseFloat(r.ctc) : null,
         contract_end_date: r.contract_end_date || null,
-        assignment_name: r.resource_assignments?.name || null,
+        assignment_name: r.assignment_id ? assignMap.get(r.assignment_id) || null : null,
         assignment_id: r.assignment_id || null,
       })) as RunRateResource[];
     },
-    staleTime: 30000,
+    staleTime: 5 * 60 * 1000,
   });
 }
