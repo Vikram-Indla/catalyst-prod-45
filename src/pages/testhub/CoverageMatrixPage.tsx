@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
+import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -221,27 +222,14 @@ export default function CoverageMatrixPage() {
   }
 
   return (
-    <div className="flex-1 p-6 overflow-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <LayoutGrid className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">Traceability Matrix</h1>
-            <p className="text-sm text-muted-foreground">
-              {summary.pct}% coverage ({summary.full}/{summary.total} requirements) · {summary.none} gap{summary.none !== 1 ? 's' : ''}{summary.critGaps > 0 ? ` (${summary.critGaps} critical)` : ''}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => exportCSV(filtered)}>
-            <Download className="w-4 h-4 mr-2" />
-            Export CSV
-          </Button>
-        </div>
-      </div>
+    <div className="flex-1 flex flex-col overflow-auto">
+      <TestHubPageHeader title="Traceability Matrix" subtitle={`${summary.pct}% coverage (${summary.full}/${summary.total} requirements) · ${summary.none} gap${summary.none !== 1 ? 's' : ''}${summary.critGaps > 0 ? ` (${summary.critGaps} critical)` : ''}`}>
+        <Button variant="outline" size="sm" onClick={() => exportCSV(filtered)}>
+          <Download className="w-4 h-4 mr-2" />
+          Export CSV
+        </Button>
+      </TestHubPageHeader>
+      <div className="flex-1 p-6 overflow-auto">
 
       {/* Coverage Summary Bar */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
@@ -654,6 +642,7 @@ function GapAnalysisView({
           </div>
         </div>
       ))}
+      </div>
     </div>
   );
 }

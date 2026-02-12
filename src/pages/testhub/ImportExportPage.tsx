@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
+import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { ImportModal } from '@/components/testhub/import-export/ImportModal';
 import { ExportModal } from '@/components/testhub/import-export/ExportModal';
 
@@ -129,57 +130,13 @@ export default function ImportExportPage() {
   };
 
   return (
-    <div style={{ padding: 24, backgroundColor: '#F8FAFC', minHeight: '100vh' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{
-              width: 48, height: 48, borderRadius: 12,
-              background: 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <Database size={24} style={{ color: '#FFFFFF' }} />
-            </div>
-            <div>
-              <h1 style={{ fontSize: 24, fontWeight: 700, color: '#0F172A', margin: 0 }}>
-                Import / Export
-              </h1>
-              <p style={{ fontSize: 14, color: '#64748B', margin: '4px 0 0' }}>
-                Import data from files or export your test data
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button
-            onClick={() => setShowImportModal(true)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              height: 44, padding: '0 20px',
-              border: '1px solid #E2E8F0', borderRadius: 10,
-              backgroundColor: '#FFFFFF', color: '#334155',
-              fontSize: 14, fontWeight: 500, cursor: 'pointer',
-            }}
-          >
-            <Upload size={18} /> Import
-          </button>
-          <button
-            onClick={() => setShowExportModal(true)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              height: 44, padding: '0 20px',
-              border: 'none', borderRadius: 10,
-              background: 'linear-gradient(135deg, #14B8A6 0%, #0D9488 100%)',
-              color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(20, 184, 166, 0.3)',
-            }}
-          >
-            <Download size={18} /> Export
-          </button>
-        </div>
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
+      <TestHubPageHeader title="Import / Export" subtitle="Import data from files or export your test data">
+        <button onClick={fetchData} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 16px', border: '1px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          <RefreshCw size={16} /> Refresh
+        </button>
+      </TestHubPageHeader>
+      <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
 
       {/* Stats Cards */}
       {stats && (

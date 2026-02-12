@@ -5,6 +5,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { RefreshCw, Plus, Trash2, MoveRight, CheckSquare, Download, Upload, Sparkles } from 'lucide-react';
+import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { FolderPanel } from '@/components/testhub/FolderPanel';
 import { TestCasesTable } from '@/components/testhub/TestCasesTable';
 import { TestCasesToolbar } from '@/components/testhub/TestCasesToolbar';
@@ -594,31 +595,7 @@ export function TestRepositoryPage() {
     <div className="testhub">
       <div className="th-page">
         {/* Page Header */}
-        <div style={{
-          height: 64,
-          padding: '0 24px',
-          backgroundColor: '#FFFFFF',
-          borderBottom: '1px solid #E2E8F0',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-          <div>
-            <h1 style={{
-              fontFamily: 'Sora, sans-serif',
-              fontSize: 18,
-              fontWeight: 700,
-              color: '#0F172A',
-              letterSpacing: '-0.01em',
-              margin: 0,
-            }}>Test Repository</h1>
-            <p style={{
-              fontFamily: 'Inter, sans-serif',
-              fontSize: 13,
-              color: '#64748B',
-              margin: '2px 0 0 0',
-            }}>Manage your test case repository</p>
-          </div>
+        <TestHubPageHeader title="Test Repository" subtitle="Manage your test case repository">
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {/* Refresh */}
             <button 
@@ -726,7 +703,7 @@ export function TestRepositoryPage() {
               Create Test Case
             </button>
           </div>
-        </div>
+        </TestHubPageHeader>
 
         {/* Content */}
         <div className="th-page-content">

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
+import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { CreateReportModal } from '@/components/testhub/reports/CreateReportModal';
 
 interface Report {
@@ -128,22 +129,13 @@ export default function ReportsListPage() {
   const hasActiveFilters = typeFilter !== 'all' || statusFilter !== 'all' || searchTerm;
 
   return (
-    <div style={{ padding: 24, backgroundColor: '#F8FAFC', minHeight: '100vh' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <FileBarChart size={24} style={{ color: '#FFFFFF' }} />
-          </div>
-          <div>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#0F172A', margin: 0 }}>Test Reports</h1>
-            <p style={{ fontSize: 14, color: '#64748B', margin: '4px 0 0' }}>Generate and export test execution reports</p>
-          </div>
-        </div>
-        <button onClick={() => setShowCreateModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 20px', border: 'none', borderRadius: 10, background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(245, 158, 11, 0.3)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
+      <TestHubPageHeader title="Test Reports" subtitle="Generate and export test execution reports">
+        <button onClick={() => setShowCreateModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
           <Plus size={18} /> New Report
         </button>
-      </div>
+      </TestHubPageHeader>
+      <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
 
       {/* Stats Cards */}
       {stats && (
@@ -276,6 +268,7 @@ export default function ReportsListPage() {
       <CreateReportModal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} onCreated={fetchReports} />
 
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      </div>
     </div>
   );
 }

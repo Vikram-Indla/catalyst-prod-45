@@ -11,6 +11,7 @@ import {
   ChevronRight, ChevronDown, Target, FileText, ArrowRight,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { EmptyState } from '@/components/ui/EmptyState';
 
 interface Requirement {
@@ -127,14 +128,8 @@ export default function TraceabilityPage() {
   }, [requirements]);
 
   return (
-    <div className="flex-1 p-6 overflow-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <GitBranch className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-semibold text-foreground">Traceability</h1>
-        </div>
-      </div>
+    <div className="flex-1 flex flex-col overflow-auto">
+      <TestHubPageHeader title="Traceability" subtitle="Requirements-to-test traceability view" />
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">

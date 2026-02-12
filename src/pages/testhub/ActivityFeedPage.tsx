@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
+import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 
 interface ActivityItem {
   id: string;
@@ -137,23 +138,14 @@ export default function ActivityFeedPage() {
   }, {} as Record<string, ActivityItem[]>);
 
   return (
-    <div style={{ padding: 24, backgroundColor: '#F8FAFC', minHeight: '100vh' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Activity size={24} style={{ color: '#FFFFFF' }} />
-          </div>
-          <div>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#0F172A', margin: 0 }}>Activity Feed</h1>
-            <p style={{ fontSize: 14, color: '#64748B', margin: '4px 0 0' }}>Track all changes and actions across TestHub</p>
-          </div>
-        </div>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
+      <TestHubPageHeader title="Activity Feed" subtitle="Track all changes and actions across TestHub">
         <button onClick={fetchActivities}
-          style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 20px', border: '1px solid #E2E8F0', borderRadius: 10, backgroundColor: '#FFFFFF', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+          style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px', border: '1px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
           <RefreshCw size={16} /> Refresh
         </button>
-      </div>
+      </TestHubPageHeader>
+      <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
 
       {/* Stats Cards */}
       {stats && (
@@ -269,6 +261,7 @@ export default function ActivityFeedPage() {
       )}
 
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      </div>
     </div>
   );
 }

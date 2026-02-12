@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
+import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { CreateSharedStepModal } from '@/components/testhub/CreateSharedStepModal';
 import { ViewSharedStepModal } from '@/components/testhub/ViewSharedStepModal';
 import { DeleteSharedStepModal } from '@/components/testhub/DeleteSharedStepModal';
@@ -257,23 +258,7 @@ export default function SharedStepsPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
-      {/* Header */}
-      <div style={{ padding: '24px 32px', backgroundColor: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <h1 style={{
-              fontSize: 24, fontWeight: 700, color: '#0F172A', margin: 0,
-              display: 'flex', alignItems: 'center', gap: 12,
-              fontFamily: 'Sora, sans-serif',
-            }}>
-              <Library size={28} style={{ color: '#2563EB' }} />
-              Shared Steps Library
-            </h1>
-            <p style={{ fontSize: 14, color: '#64748B', margin: '8px 0 0', fontFamily: 'Inter, sans-serif' }}>
-              Reusable test steps for consistency across test cases
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: 12 }}>
+      <TestHubPageHeader title="Shared Steps Library" subtitle="Reusable test steps for consistency across test cases">
             <button onClick={handleRefresh} title="Refresh" style={{
               width: 40, height: 40, padding: 0, border: '1.5px solid #E2E8F0', borderRadius: 8,
               backgroundColor: '#FFFFFF', color: '#64748B', cursor: 'pointer',
@@ -291,9 +276,7 @@ export default function SharedStepsPage() {
               <Plus size={18} />
               Create Shared Step
             </button>
-          </div>
-        </div>
-      </div>
+      </TestHubPageHeader>
 
       {/* Main */}
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
