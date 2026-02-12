@@ -401,11 +401,11 @@ const IncidentKanbanPage = lazy(() => import("./modules/incidents/kanban/pages/I
 
 const queryClient = new QueryClient();
 
-// Caty FAB only on capacity planner - functionality unhooked
+// Caty FAB on capacity planner and project hub routes
 function CatyWidgetRouteGuard() {
   const location = useLocation();
-  const isCapacityPlannerRoute = location.pathname.startsWith('/enterprise/capacity');
-  if (!isCapacityPlannerRoute) return null;
+  const showCaty = location.pathname.startsWith('/enterprise/capacity') || location.pathname.startsWith('/projecthub');
+  if (!showCaty) return null;
   return <CatyFabPlaceholder />;
 }
 

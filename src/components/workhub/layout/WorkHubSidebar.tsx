@@ -23,8 +23,6 @@ interface WorkHubSidebarProps {
   expanded: boolean;
   onToggle: () => void;
   className?: string;
-  catyOpen?: boolean;
-  onCatyToggle?: () => void;
 }
 
 const projectHubSidebarConfig: SidebarConfig = {
@@ -43,7 +41,7 @@ const projectHubSidebarConfig: SidebarConfig = {
   ],
 };
 
-export function WorkHubSidebar({ expanded, onToggle, className, catyOpen, onCatyToggle }: WorkHubSidebarProps) {
+export function WorkHubSidebar({ expanded, onToggle, className }: WorkHubSidebarProps) {
   return (
     <SidebarBase
       config={projectHubSidebarConfig}
