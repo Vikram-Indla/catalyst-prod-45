@@ -39178,6 +39178,21 @@ export type Database = {
           },
         ]
       }
+      vw_wh_calendar_events: {
+        Row: {
+          assignee_name: string | null
+          assignee_user_id: string | null
+          entity_id: string | null
+          event_color: string | null
+          event_date: string | null
+          event_end: string | null
+          event_start: string | null
+          event_status: string | null
+          event_title: string | null
+          event_type: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       add_test_cases_to_run: {
