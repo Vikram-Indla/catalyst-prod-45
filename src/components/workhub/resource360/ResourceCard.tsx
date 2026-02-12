@@ -1,15 +1,13 @@
 /**
- * ResourceCard — Single resource utilization card
- * Phase 6: Resource 360
+ * ResourceCard — Single resource card showing subtask assignments
+ * Data from profiles + subtasks of active stories
  */
-import { AlertTriangle } from 'lucide-react';
 import { AvatarChip } from '@/components/workhub/shared/AvatarChip';
 import { DepartmentBadge } from '@/components/workhub/shared/DepartmentBadge';
-import { UtilizationBar } from '@/components/workhub/shared/UtilizationBar';
-import type { ResourceUtilization } from '@/types/workhub.types';
+import type { Resource360Person } from '@/hooks/workhub/useResource360Data';
 
 interface ResourceCardProps {
-  resource: ResourceUtilization;
+  resource: Resource360Person;
   onClick: () => void;
 }
 
@@ -39,50 +37,58 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
       {/* Row 1: Avatar + Name + Department */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <AvatarChip name={r.name} color={r.color} size={36} avatarUrl={r.avatar_url} />
+          <AvatarChip name={r.full_name} size={36} avatarUrl={r.avatar_url} />
           <div>
             <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--wh-text-primary, #0f172a)' }}>
-              {r.name}
+              {r.full_name}
             </div>
             <div style={{ fontSize: 13, color: 'var(--wh-text-secondary, #64748b)', marginTop: 1 }}>
               {r.role || 'Team Member'}
             </div>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <DepartmentBadge department={r.department || 'Engineering'} />
-          <span style={{ fontSize: 12, color: 'var(--wh-text-tertiary, #94a3b8)', whiteSpace: 'nowrap' }}>
-            {r.capacity_hours_per_week}h/wk
-          </span>
-        </div>
+        {r.department_name && (
+          <DepartmentBadge department={r.department_name} />
+        )}
       </div>
 
-      {/* Row 2: Utilization Bar */}
-      <div style={{ marginBottom: 12 }}>
-        <UtilizationBar percent={r.utilization_percent} height={10} />
-      </div>
-
-      {/* Row 3: Active/Done/Blocked + Next due */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 4 }}>
+      {/* Row 2: Active/Done counts */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 8 }}>
         <div style={{ color: 'var(--wh-text-secondary, #64748b)' }}>
-          <span>{r.active_items} active</span>
-          <span style={{ margin: '0 4px' }}>·</span>
-          <span>{r.completed_items} done</span>
-          <span style={{ margin: '0 4px' }}>·</span>
-          <span style={{ color: r.blocked_items > 0 ? 'var(--wh-danger, #ef4444)' : undefined }}>
-            {r.blocked_items} blocked
-          </span>
+          <span style={{ fontWeight: 600, color: 'var(--wh-text-primary, #0f172a)' }}>{r.active_subtasks}</span> active
+          <span style={{ margin: '0 6px', color: 'var(--wh-border, #e2e8f0)' }}>·</span>
+          <span style={{ fontWeight: 600, color: '#16a34a' }}>{r.done_subtasks}</span> done
+          {r.blocked_items > 0 && (
+            <>
+              <span style={{ margin: '0 6px', color: 'var(--wh-border, #e2e8f0)' }}>·</span>
+              <span style={{ fontWeight: 600, color: '#ef4444' }}>{r.blocked_items}</span> blocked
+            </>
+          )}
         </div>
         <div style={{ color: 'var(--wh-text-secondary, #64748b)', fontSize: 12 }}>
           {nextDue ? `Next due: ${nextDue}` : 'No upcoming'}
         </div>
       </div>
 
-      {/* Row 4: Releases/Themes + Hours */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--wh-text-tertiary, #94a3b8)' }}>
-        <span>{r.release_count} releases · {r.theme_count} themes</span>
-        <span>Est: {r.total_estimated_hours}h · Act: {r.total_actual_hours}h</span>
-      </div>
+      {/* Row 3: Releases */}
+      {r.release_names.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, fontSize: 11 }}>
+          {r.release_names.map(name => (
+            <span
+              key={name}
+              style={{
+                padding: '2px 8px',
+                borderRadius: 9999,
+                background: 'rgba(37, 99, 235, 0.08)',
+                color: '#2563eb',
+                fontWeight: 500,
+              }}
+            >
+              {name}
+            </span>
+          ))}
+        </div>
+      )}
 
       <style>{`
         .wh-resource-card:hover {
