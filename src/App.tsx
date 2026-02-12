@@ -787,7 +787,7 @@ const App = () => (
                 <Route path="calendar" element={<WorkHubCalendarPage />} />
                 <Route path="capacity" element={<WorkHubCapacityPage />} />
                 <Route path="analytics" element={<WorkHubAnalyticsPage />} />
-                <Route path="caty" element={<WorkHubCatyPage />} />
+                
               </Route>
               <Route path="/projects/:projectKey/settings" element={<ProjectSettingsPage />} />
               <Route path="/projects/:projectId/features" element={<FeaturesPage />} />

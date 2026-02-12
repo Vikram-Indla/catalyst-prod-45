@@ -14,8 +14,6 @@ import {
   CalendarDays,
   BarChart3,
   PieChart,
-  Sparkles,
-  RefreshCw,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig, SidebarMenuItem } from '@/components/layout/SidebarBase';
 
@@ -37,7 +35,6 @@ const projectHubSidebarConfig: SidebarConfig = {
     { id: 'calendar', title: 'Calendar', path: '/projecthub/calendar', icon: CalendarDays, exact: false },
     { id: 'capacity', title: 'Capacity', path: '/projecthub/capacity', icon: BarChart3, exact: false },
     { id: 'analytics', title: 'Analytics', path: '/projecthub/analytics', icon: PieChart, exact: false },
-    { id: 'caty-ai', title: 'Caty AI', path: '/projecthub/caty', icon: Sparkles, exact: false },
   ],
 };
 
