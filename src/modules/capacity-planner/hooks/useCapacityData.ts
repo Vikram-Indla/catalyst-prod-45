@@ -9,66 +9,56 @@ export function useCapacityData() {
   // Fetch all resources from resource_inventory table (single source of truth)
   const { data: resources = [], isLoading: resourcesLoading, isFetching: resourcesFetching, isError: resourcesError, error: resourcesErrorObj, refetch: refetchResources } = useQuery({
     queryKey: ['capacity-planner-resources'],
-    staleTime: 0, // Always fetch fresh data to ensure country flags are current
-    gcTime: 0, // Don't cache - force fresh fetch
-    refetchOnMount: 'always', // Always refetch when component mounts
+    staleTime: 5 * 60 * 1000, // 5 minutes — data doesn't change that often
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
     queryFn: async () => {
-      // STEP 1: Fetch all ACTIVE resources from resource_inventory
-      const { data: resourceInventory, error: riError } = await supabase
-        .from('resource_inventory')
-        .select('*')
-        .eq('is_active', true)
-        .order('name');
-      if (riError) throw riError;
-      
-      // STEP 2: Fetch departments to map names
-      const { data: departments } = await supabase
-        .from('capacity_departments')
-        .select('id, name');
-      const deptMap = new Map(departments?.map(d => [d.id, d.name]) || []);
-      
-      // STEP 3: Fetch resource assignments to map names
-      const { data: resourceAssignments } = await supabase
-        .from('resource_assignments')
-        .select('id, name')
-        .eq('is_active', true);
-      const assignmentTypeMap = new Map(resourceAssignments?.map((a) => [a.id, a.name]) || []);
-      
-      // STEP 3b: Fetch resource vendors to map names
-      const { data: resourceVendors } = await supabase
-        .from('resource_vendors')
-        .select('id, name');
-      const vendorMap = new Map(resourceVendors?.map(v => [v.id, v.name]) || []);
-      
-      // STEP 3c: Fetch resource countries to map names and flags
-      const { data: resourceCountries } = await supabase
-        .from('resource_countries')
-        .select('id, name, code, flag_svg');
-      const countryMap = new Map(resourceCountries?.map(c => [c.id, { name: c.name, code: c.code, flag_svg: c.flag_svg }]) || []);
-      
-      // STEP 3d: Fetch resource locations to map names
-      const { data: resourceLocations } = await supabase
-        .from('resource_locations')
-        .select('id, name');
-      const locationMap = new Map(resourceLocations?.map(l => [l.id, l.name]) || []);
-      
-      // STEP 4: Fetch profiles for avatar, email, etc (enrichment only)
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, full_name, email, avatar_url, department_id');
-      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
-      const profileByName = new Map(profiles?.map(p => [p.full_name?.toLowerCase(), p]) || []);
-      
-      // STEP 5: Fetch product roles for role display
-      const [{ data: userProductRoles }, { data: productRoles }] = await Promise.all([
+      // Current month range for allocations
+      const now = new Date();
+      const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+      const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+
+      // PARALLEL: Fetch all reference data at once
+      const [
+        { data: resourceInventory, error: riError },
+        { data: departments },
+        { data: resourceAssignments },
+        { data: resourceVendors },
+        { data: resourceCountries },
+        { data: resourceLocations },
+        { data: profiles },
+        { data: userProductRoles },
+        { data: productRoles },
+        { data: allocationsData },
+      ] = await Promise.all([
+        supabase.from('resource_inventory').select('*').eq('is_active', true).order('name'),
+        supabase.from('capacity_departments').select('id, name'),
+        supabase.from('resource_assignments').select('id, name').eq('is_active', true),
+        supabase.from('resource_vendors').select('id, name'),
+        supabase.from('resource_countries').select('id, name, code, flag_svg'),
+        supabase.from('resource_locations').select('id, name'),
+        supabase.from('profiles').select('id, full_name, email, avatar_url, department_id'),
         supabase.from('user_product_roles').select('user_id, role_id'),
         supabase.from('product_roles').select('id, name'),
+        supabase.from('resource_allocations')
+          .select('resource_id, allocation_percent, start_date, end_date, status')
+          .lte('start_date', currentMonthEnd)
+          .gte('end_date', currentMonthStart)
+          .eq('status', 'committed'),
       ]);
+      if (riError) throw riError;
+
+      // Build lookup maps
+      const deptMap = new Map(departments?.map(d => [d.id, d.name]) || []);
+      const assignmentTypeMap = new Map(resourceAssignments?.map((a) => [a.id, a.name]) || []);
+      const vendorMap = new Map(resourceVendors?.map(v => [v.id, v.name]) || []);
+      const countryMap = new Map(resourceCountries?.map(c => [c.id, { name: c.name, code: c.code, flag_svg: c.flag_svg }]) || []);
+      const locationMap = new Map(resourceLocations?.map(l => [l.id, l.name]) || []);
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+      const profileByName = new Map(profiles?.map(p => [p.full_name?.toLowerCase(), p]) || []);
 
       const roleIdToName = new Map<string, string>(
         (productRoles || []).map((r: any) => [r.id, r.name])
       );
-
       const userRoleMap = new Map<string, string>();
       (userProductRoles || []).forEach((upr: any) => {
         const roleName = roleIdToName.get(upr.role_id);
@@ -76,20 +66,8 @@ export function useCapacityData() {
           userRoleMap.set(upr.user_id, roleName);
         }
       });
-      
-      // STEP 6: Fetch resource_allocations for current month (committed only for utilization)
-      // Use current month range to sync with Resource Utilization which saves monthly allocations
-      const now = new Date();
-      const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-      const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
-      const { data: allocationsData } = await supabase
-        .from('resource_allocations')
-        .select('resource_id, allocation_percent, start_date, end_date, status')
-        .lte('start_date', currentMonthEnd)
-        .gte('end_date', currentMonthStart)
-        .eq('status', 'committed');
-      
-      // Calculate current allocation per resource_inventory ID
+
+      // Calculate current allocation per resource
       const currentAllocationByResourceId = new Map<string, number>();
       (allocationsData || []).forEach((alloc: any) => {
         const current = currentAllocationByResourceId.get(alloc.resource_id) || 0;
