@@ -272,40 +272,42 @@ export function SleekCapacityHeader({
       {/* Space between rows — 12px */}
       <div style={{ height: '12px', backgroundColor: 'hsl(var(--background))' }} />
 
-      {/* ROW 2: Search + Hero Tabs (No Q1/H1/Full toggle) */}
-      <div className="flex items-center justify-between px-10 py-3">
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-          <Input
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            placeholder={primaryView === 'projects' ? "Search projects..." : "Search resources..."}
-            className="w-56 h-10 pl-10 pr-3 text-sm bg-slate-100 border-slate-200 rounded-xl focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400"
-          />
-        </div>
+      {/* ROW 2: Search + Hero Tabs — floating strip with side padding */}
+      <div className="px-6">
+        <div className="flex items-center justify-between px-5 py-3 bg-card border border-border rounded-xl">
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder={primaryView === 'projects' ? "Search projects..." : "Search resources..."}
+              className="w-56 h-10 pl-10 pr-3 text-sm bg-slate-100 border-slate-200 rounded-xl focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400"
+            />
+          </div>
 
-        {/* Hero Tab Strip - Right Aligned */}
-        <nav className="flex items-center gap-1 bg-slate-100 rounded-xl p-1.5 border border-slate-200">
-          {viewTabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={tab.onClick}
-                className={cn(
-                  'flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-150',
-                  tab.isActive 
-                    ? 'bg-[#2563eb] text-white shadow-md'
-                    : 'text-slate-700 hover:bg-white hover:shadow-sm hover:text-slate-900'
-                )}
-              >
-                <Icon className="w-4 h-4" />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
-        </nav>
+          {/* Hero Tab Strip - Right Aligned */}
+          <nav className="flex items-center gap-1 bg-slate-100 rounded-xl p-1.5 border border-slate-200">
+            {viewTabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={tab.onClick}
+                  className={cn(
+                    'flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-150',
+                    tab.isActive 
+                      ? 'bg-[#2563eb] text-white shadow-md'
+                      : 'text-slate-700 hover:bg-white hover:shadow-sm hover:text-slate-900'
+                  )}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
       </div>
 
       {/* ROW 3: Stats + Filters - REMOVED per user request */}
