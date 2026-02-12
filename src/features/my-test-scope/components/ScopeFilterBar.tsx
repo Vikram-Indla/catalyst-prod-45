@@ -66,7 +66,7 @@ export function ScopeFilterBar({ filters, onFiltersChange, cycles = [], releases
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-3 px-6 py-3 border-b border-border bg-muted/30">
+    <div className="flex flex-wrap items-center gap-3 px-6 py-3 border-b border-border bg-white">
       {/* Search */}
       <div className="relative flex-1 min-w-[200px] max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
