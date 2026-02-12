@@ -4,7 +4,7 @@
  */
 
 import { X, RotateCw, Minus } from 'lucide-react';
-import catalystLogoWhite from '@/assets/catalyst-ai-logo-white.svg';
+import catalystWordmark from '@/assets/catalyst-wordmark.svg';
 
 interface CatyHeaderProps {
   onClose: () => void;
@@ -26,10 +26,9 @@ export function CatyHeader({
       <div className="caty-header-content">
         <div className="caty-header-brand">
           <img 
-            src={catalystLogoWhite} 
-            alt="Catalyst AI" 
-            className="w-8 h-8"
-            style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}
+            src={catalystWordmark} 
+            alt="Catalyst" 
+            style={{ height: '32px', width: 'auto', filter: 'brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0,0,0,0.2))' }}
           />
           <div>
             <div className="caty-header-title">Caty</div>
