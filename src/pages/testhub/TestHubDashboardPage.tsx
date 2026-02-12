@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   RefreshCw, Download, AlertTriangle, ChevronRight, Plus, Play, FileText,
 } from 'lucide-react';
+import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import type { DashboardStats } from '@/components/testhub/dashboard/DashboardStatCards';
@@ -147,32 +148,11 @@ export default function TestHubDashboardPage() {
       background: '#F8FAFC', fontFamily: 'Inter, system-ui, sans-serif',
     }}>
 
-      {/* ═══ PAGE HEADER — 48px ═══ */}
-      <header style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '0 24px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
-        height: 48, boxSizing: 'border-box', flexShrink: 0,
-      }}>
-        <div>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
-            TestHub Dashboard
-          </h1>
-          <p style={{ fontSize: 16, fontWeight: 400, color: '#64748B', margin: 0, lineHeight: 1.2 }}>
-            Test execution metrics and activity
-          </p>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      {/* ═══ PAGE HEADER — 64px ═══ */}
+      <TestHubPageHeader title="TestHub Dashboard" subtitle="Test execution metrics and activity">
           <span style={{ fontSize: 12, fontWeight: 400, color: '#64748B' }}>
             Updated {formatLastUpdated()}
           </span>
-          <button style={{
-            display: 'inline-flex', alignItems: 'center', gap: 4,
-            height: 32, padding: '0 12px', fontSize: 13, fontWeight: 500,
-            color: '#2563EB', background: '#EFF6FF', border: 'none',
-            borderRadius: 16, cursor: 'pointer',
-          }}>
-            Last 30 days
-          </button>
           <button onClick={fetchDashboardData} style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 32, padding: '0 12px', fontSize: 13, fontWeight: 500,
@@ -189,8 +169,7 @@ export default function TestHubDashboardPage() {
           }}>
             <Download size={13} /> Export
           </button>
-        </div>
-      </header>
+      </TestHubPageHeader>
 
       {/* ═══ BODY ═══ */}
       <div style={{ flex: 1, minHeight: 0, padding: '12px 16px', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 12 }}>

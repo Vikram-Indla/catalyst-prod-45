@@ -4,6 +4,7 @@
  */
 import { useState } from 'react';
 import { Bug, Plus, Download } from 'lucide-react';
+import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDefectsG25, useDefectStatsG25, useDeleteDefectG25 } from '@/hooks/useDefectsG25';
@@ -39,25 +40,14 @@ export default function DefectsPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-destructive/10">
-            <Bug className="h-5 w-5 text-destructive" />
-          </div>
-          <div>
-            <h1 className="text-xl font-semibold">Defects</h1>
-            <p className="text-sm text-muted-foreground">Track and manage bugs discovered during testing</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
+    <div className="flex flex-col h-full">
+      <TestHubPageHeader title="Defects" subtitle="Track and manage bugs discovered during testing">
           <Button variant="outline" size="sm"><Download className="h-4 w-4 mr-2" />Export</Button>
           <Button onClick={() => setShowCreate(true)}>
             <Plus className="h-4 w-4 mr-2" />Create Defect
           </Button>
-        </div>
-      </div>
+      </TestHubPageHeader>
+      <div className="p-6 space-y-6 flex-1 overflow-auto">
 
       {/* Stats Bar */}
       {loadingStats ? <Skeleton className="h-12 w-full" /> : stats && <DefectStatsBar stats={stats} />}
@@ -92,6 +82,7 @@ export default function DefectsPage() {
       )}
 
       <CreateDefectModalG25 open={showCreate} onClose={() => setShowCreate(false)} />
+      </div>
     </div>
   );
 }

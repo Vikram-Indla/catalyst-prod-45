@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
+import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { TestCycleCard } from '@/components/testhub/TestCycleCard';
 import { CreateTestCycleModal } from '@/components/testhub/CreateTestCycleModal';
 
@@ -99,16 +100,7 @@ export default function TestCyclesPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
-      {/* Header */}
-      <div style={{ padding: '24px 32px', backgroundColor: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#0F172A', margin: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
-              <Calendar size={28} style={{ color: '#2563EB' }} /> Test Cycles
-            </h1>
-            <p style={{ fontSize: 14, color: '#64748B', margin: '8px 0 0' }}>Plan and track test execution across sprints and releases</p>
-          </div>
-          <div style={{ display: 'flex', gap: 12 }}>
+      <TestHubPageHeader title="Test Cycles" subtitle="Plan and track test execution across sprints and releases">
             <button onClick={() => { fetchCycles(); catalystToast.success('Test cycles refreshed'); }} title="Refresh"
               style={{ width: 40, height: 40, padding: 0, border: '1.5px solid #E2E8F0', borderRadius: 8, backgroundColor: '#FFFFFF', color: '#64748B', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
               <RefreshCw size={18} />
@@ -117,9 +109,7 @@ export default function TestCyclesPage() {
               style={{ height: 40, padding: '0 20px', background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
               <Plus size={18} /> Create Test Cycle
             </button>
-          </div>
-        </div>
-      </div>
+      </TestHubPageHeader>
 
       {/* Toolbar */}
       <div style={{ padding: '16px 32px', backgroundColor: '#FFFFFF', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 12 }}>

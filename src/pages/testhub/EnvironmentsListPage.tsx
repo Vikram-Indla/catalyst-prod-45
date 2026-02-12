@@ -131,7 +131,7 @@ export default function EnvironmentsListPage() {
   };
 
   return (
-    <div style={{ padding: 24, backgroundColor: '#F8FAFC', minHeight: '100vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
         <div>

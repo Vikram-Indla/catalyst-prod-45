@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { Tags, Plus, Search, X, Edit2, Trash2, RefreshCw, Hash } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
+import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
 import { CreateTagModal } from '@/components/testhub/tags/CreateTagModal';
 
 interface Tag {
@@ -95,22 +96,13 @@ export default function TagsListPage() {
   const hasActiveFilters = categoryFilter !== 'all' || searchTerm;
 
   return (
-    <div style={{ padding: 24, backgroundColor: '#F8FAFC', minHeight: '100vh' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 48, height: 48, borderRadius: 12, background: 'linear-gradient(135deg, #EC4899 0%, #DB2777 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Tags size={24} style={{ color: '#FFFFFF' }} />
-          </div>
-          <div>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#0F172A', margin: 0 }}>Tags & Labels</h1>
-            <p style={{ fontSize: 14, color: '#64748B', margin: '4px 0 0' }}>Organize test cases, defects, and requirements with tags</p>
-          </div>
-        </div>
-        <button onClick={() => setShowCreateModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 44, padding: '0 20px', border: 'none', borderRadius: 10, background: 'linear-gradient(135deg, #EC4899 0%, #DB2777 100%)', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(236, 72, 153, 0.3)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#F8FAFC' }}>
+      <TestHubPageHeader title="Tags & Labels" subtitle="Organize test cases, defects, and requirements with tags">
+        <button onClick={() => setShowCreateModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
           <Plus size={18} /> Create Tag
         </button>
-      </div>
+      </TestHubPageHeader>
+      <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
 
       {/* Stats Cards */}
       {stats && (
@@ -198,6 +190,7 @@ export default function TagsListPage() {
 
       <CreateTagModal isOpen={showCreateModal} onClose={() => { setShowCreateModal(false); setEditingTag(null); }} onSaved={fetchTags} editingTag={editingTag} />
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      </div>
     </div>
   );
 }
