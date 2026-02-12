@@ -366,19 +366,30 @@ export function useForYouData() {
 
     try {
       if (isCurrentlyStarred) {
-        await supabase
+        const { error } = await supabase
           .from('user_starred_items')
           .delete()
           .eq('user_id', authUser.id)
           .eq('item_id', itemId);
+        if (error) throw error;
+        
+        // Remove from starredData
+        setStarredData(prev => prev.filter(r => r.issue_key !== itemId));
       } else {
-        await supabase
+        const { error } = await supabase
           .from('user_starred_items')
           .insert({
             user_id: authUser.id,
             item_id: itemId,
             item_type: 'ph_issue',
           });
+        if (error) throw error;
+        
+        // Add to starredData from assigned/worked items
+        const issueRow = [...assignedItems, ...workedOnItems].find(r => r.issue_key === itemId);
+        if (issueRow) {
+          setStarredData(prev => [issueRow, ...prev]);
+        }
       }
     } catch (err) {
       console.error('Error toggling star:', err);
