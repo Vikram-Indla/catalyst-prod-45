@@ -117,15 +117,23 @@ export function SyncConfigPanel() {
   const fixVersionsByProject = useMemo(() => {
     const map: Record<string, MultiSelectOption[]> = {};
     fixVersionsRaw.forEach(v => {
-      if (!map[v.project_key]) map[v.project_key] = [];
+      if (!map[v.project_key]) {
+        map[v.project_key] = [{ value: '__NO_VERSION__', label: 'No version', sublabel: 'Unassigned to any release' }];
+      }
       map[v.project_key].push({
         value: v.name,
         label: v.name,
         sublabel: v.released ? 'Released' : undefined,
       });
     });
+    // For projects with no versions at all, still offer the "No version" option
+    selectedProjects.forEach(pk => {
+      if (!map[pk]) {
+        map[pk] = [{ value: '__NO_VERSION__', label: 'No version', sublabel: 'Unassigned to any release' }];
+      }
+    });
     return map;
-  }, [fixVersionsRaw]);
+  }, [fixVersionsRaw, selectedProjects]);
 
   const handleProjectChange = (newSelected: string[]) => {
     setSelectedProjects(newSelected);
