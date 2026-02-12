@@ -29,7 +29,7 @@ interface WorkHubSidebarProps {
 
 const projectHubSidebarConfig: SidebarConfig = {
   badge: 'PH',
-  label: 'ProjectHub',
+  label: 'Project Hub',
   items: [
     { id: 'dashboard', title: 'Dashboard', path: '/projecthub', icon: LayoutDashboard, exact: true },
     { id: 'workitems', title: 'Work Items', path: '/projecthub/workitems', icon: FileStack, exact: false },
