@@ -6,6 +6,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Star } from 'lucide-react';
+import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import type { WorkItem, WorkGroup } from '@/hooks/useForYouData';
 
 interface ForYouTableProps {
@@ -42,20 +43,6 @@ const MODE_STYLES: Record<string, { bg: string; text: string; border: string }> 
   },
 };
 
-// Get semantic dot color based on item type prefix (INC, FTR, PLN, etc.)
-const getItemTypeDotColor = (key: string): string => {
-  const prefix = key?.split('-')[0]?.toUpperCase();
-  
-  switch (prefix) {
-    case 'INC': return 'bg-[#f87171]';    // Red - Incidents need attention
-    case 'FTR': return 'bg-[#3b82f6]';    // Blue - Features (standard work)
-    case 'PLN': return 'bg-[#14b8a6]';    // Teal - Plans
-    case 'CEA': return 'bg-[#6b7280]';    // Gray - Capabilities
-    case 'EPK': return 'bg-[#a78bfa]';    // Purple - Epics
-    case 'STY': return 'bg-[#60a5fa]';    // Light blue - Stories
-    default:    return 'bg-[#6b7280]';    // Gray fallback
-  }
-};
 
 // Generate consistent avatar color based on name (deterministic)
 const getAvatarStyle = (name: string) => {
@@ -264,9 +251,9 @@ export function ForYouTable({
                   />
                 </div>
 
-                {/* Key with semantic indicator - color based on item type prefix */}
+                {/* Key with Jira Issue Type Icon */}
                 <div className="flex items-center gap-2.5">
-                  <span className={cn("w-2.5 h-2.5 rounded-full shrink-0", getItemTypeDotColor(item.key))} />
+                  <JiraIssueTypeIcon issueType={item.issueType} size={14} />
                   <a 
                     className="font-mono text-[13px] font-medium text-[hsl(var(--link-color))] hover:text-[hsl(var(--link-color-hover))] hover:underline cursor-pointer"
                     onClick={(e) => e.stopPropagation()}
