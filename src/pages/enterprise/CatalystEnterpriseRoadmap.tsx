@@ -152,35 +152,6 @@ export default function CatalystEnterpriseRoadmap() {
         />
       )}
 
-      {/* Header with toolbar */}
-      {!state.presentation && (
-        <RoadmapHeader
-          slice={state.slice}
-          zoom={state.zoom}
-          snap={state.snap}
-          dark={state.dark}
-          presentation={state.presentation}
-          canUndo={computed.canUndo}
-          canRedo={computed.canRedo}
-          activeFiltersCount={computed.activeFiltersCount}
-          onSliceChange={actions.setSlice}
-          onZoomIn={actions.zoomIn}
-          onZoomOut={actions.zoomOut}
-          onToggleSnap={actions.toggleSnap}
-          onToggleFilter={actions.toggleFilter}
-          onToggleDark={actions.toggleDark}
-          onTogglePresentation={actions.togglePresentation}
-          onUndo={actions.undo}
-          onRedo={actions.redo}
-          onScrollToToday={actions.scrollToToday}
-          onExport={handleExport}
-          onShowHelp={actions.showHelp}
-          // Mobile hamburger props
-          onToggleMobilePanel={() => setIsMobilePanelOpen(prev => !prev)}
-          isMobilePanelOpen={isMobilePanelOpen}
-        />
-      )}
-
       {/* Executive Summary KPIs */}
       {!state.presentation && (
         <RoadmapSummary
