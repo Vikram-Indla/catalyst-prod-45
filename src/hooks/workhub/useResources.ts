@@ -1,5 +1,5 @@
 /**
- * WorkHub Resources Hook — TanStack Query
+ * ProjectHub Resources Hook — TanStack Query
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,10 +7,10 @@ import type { Resource } from '@/types/workhub.types';
 
 export function useWHResources() {
   return useQuery({
-    queryKey: ['workhub', 'resources'],
+    queryKey: ['projecthub', 'resources'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('wh_resources')
+        .from('ph_resources')
         .select('*')
         .eq('is_active', true)
         .order('name');

@@ -12809,6 +12809,966 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_bulk_ops_log: {
+        Row: {
+          affected_item_ids: string[]
+          field_changed: string | null
+          id: string
+          item_count: number | null
+          new_values: Json | null
+          old_values: Json | null
+          operation: string
+          performed_at: string | null
+          performed_by: string | null
+          reverted_at: string | null
+          reverted_by: string | null
+        }
+        Insert: {
+          affected_item_ids: string[]
+          field_changed?: string | null
+          id?: string
+          item_count?: number | null
+          new_values?: Json | null
+          old_values?: Json | null
+          operation: string
+          performed_at?: string | null
+          performed_by?: string | null
+          reverted_at?: string | null
+          reverted_by?: string | null
+        }
+        Update: {
+          affected_item_ids?: string[]
+          field_changed?: string | null
+          id?: string
+          item_count?: number | null
+          new_values?: Json | null
+          old_values?: Json | null
+          operation?: string
+          performed_at?: string | null
+          performed_by?: string | null
+          reverted_at?: string | null
+          reverted_by?: string | null
+        }
+        Relationships: []
+      }
+      ph_comments: {
+        Row: {
+          body: string
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          user_id: string | null
+          work_item_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+          work_item_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wh_comments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_comments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_config: {
+        Row: {
+          description: string | null
+          key: string
+          updated_at: string | null
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          description?: string | null
+          key: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          description?: string | null
+          key?: string
+          updated_at?: string | null
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
+      ph_issues: {
+        Row: {
+          assignee_account_id: string | null
+          assignee_display_name: string | null
+          changelog: Json | null
+          comments: Json | null
+          components: Json | null
+          description_adf: Json | null
+          description_text: string | null
+          due_date: string | null
+          effective_due_date: string | null
+          effective_due_source: string | null
+          fix_versions: Json | null
+          hierarchy_level: number | null
+          issue_key: string
+          issue_type: string
+          jira_created_at: string | null
+          jira_updated_at: string | null
+          labels: Json | null
+          parent_key: string | null
+          parent_summary: string | null
+          priority: string | null
+          project_key: string
+          raw_json: Json | null
+          resolution: string | null
+          sprint_name: string | null
+          status: string
+          status_category: string | null
+          story_points: number | null
+          summary: string
+          synced_at: string | null
+          theme_id: string | null
+          type_icon_url: string | null
+        }
+        Insert: {
+          assignee_account_id?: string | null
+          assignee_display_name?: string | null
+          changelog?: Json | null
+          comments?: Json | null
+          components?: Json | null
+          description_adf?: Json | null
+          description_text?: string | null
+          due_date?: string | null
+          effective_due_date?: string | null
+          effective_due_source?: string | null
+          fix_versions?: Json | null
+          hierarchy_level?: number | null
+          issue_key: string
+          issue_type?: string
+          jira_created_at?: string | null
+          jira_updated_at?: string | null
+          labels?: Json | null
+          parent_key?: string | null
+          parent_summary?: string | null
+          priority?: string | null
+          project_key: string
+          raw_json?: Json | null
+          resolution?: string | null
+          sprint_name?: string | null
+          status?: string
+          status_category?: string | null
+          story_points?: number | null
+          summary?: string
+          synced_at?: string | null
+          theme_id?: string | null
+          type_icon_url?: string | null
+        }
+        Update: {
+          assignee_account_id?: string | null
+          assignee_display_name?: string | null
+          changelog?: Json | null
+          comments?: Json | null
+          components?: Json | null
+          description_adf?: Json | null
+          description_text?: string | null
+          due_date?: string | null
+          effective_due_date?: string | null
+          effective_due_source?: string | null
+          fix_versions?: Json | null
+          hierarchy_level?: number | null
+          issue_key?: string
+          issue_type?: string
+          jira_created_at?: string | null
+          jira_updated_at?: string | null
+          labels?: Json | null
+          parent_key?: string | null
+          parent_summary?: string | null
+          priority?: string | null
+          project_key?: string
+          raw_json?: Json | null
+          resolution?: string | null
+          sprint_name?: string | null
+          status?: string
+          status_category?: string | null
+          story_points?: number | null
+          summary?: string
+          synced_at?: string | null
+          theme_id?: string | null
+          type_icon_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wh_issues_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "ph_themes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_issues_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_theme_progress"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_jira_connection: {
+        Row: {
+          accessible_projects: Json | null
+          auth_email: string
+          auth_method: string
+          auth_token_encrypted: string
+          configured_by: string | null
+          created_at: string | null
+          id: string
+          jira_server_version: string | null
+          last_test_result: Json | null
+          last_tested_at: string | null
+          oauth_client_id: string | null
+          oauth_client_secret_encrypted: string | null
+          oauth_refresh_token_encrypted: string | null
+          permissions_level: string | null
+          project_count: number | null
+          server_title: string | null
+          site_url: string
+          status: string
+          total_issue_count: number | null
+          total_version_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          accessible_projects?: Json | null
+          auth_email?: string
+          auth_method?: string
+          auth_token_encrypted?: string
+          configured_by?: string | null
+          created_at?: string | null
+          id?: string
+          jira_server_version?: string | null
+          last_test_result?: Json | null
+          last_tested_at?: string | null
+          oauth_client_id?: string | null
+          oauth_client_secret_encrypted?: string | null
+          oauth_refresh_token_encrypted?: string | null
+          permissions_level?: string | null
+          project_count?: number | null
+          server_title?: string | null
+          site_url?: string
+          status?: string
+          total_issue_count?: number | null
+          total_version_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          accessible_projects?: Json | null
+          auth_email?: string
+          auth_method?: string
+          auth_token_encrypted?: string
+          configured_by?: string | null
+          created_at?: string | null
+          id?: string
+          jira_server_version?: string | null
+          last_test_result?: Json | null
+          last_tested_at?: string | null
+          oauth_client_id?: string | null
+          oauth_client_secret_encrypted?: string | null
+          oauth_refresh_token_encrypted?: string | null
+          permissions_level?: string | null
+          project_count?: number | null
+          server_title?: string | null
+          site_url?: string
+          status?: string
+          total_issue_count?: number | null
+          total_version_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      ph_jira_projects: {
+        Row: {
+          avatar_url: string | null
+          color: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          jira_project_id: string
+          last_synced_at: string | null
+          name: string
+          project_key: string
+          sync_config: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          jira_project_id: string
+          last_synced_at?: string | null
+          name: string
+          project_key: string
+          sync_config?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          jira_project_id?: string
+          last_synced_at?: string | null
+          name?: string
+          project_key?: string
+          sync_config?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      ph_jira_sync_log: {
+        Row: {
+          completed_at: string | null
+          duration_ms: number | null
+          errors: Json | null
+          id: string
+          items_created: number | null
+          items_unchanged: number | null
+          items_updated: number | null
+          jira_project_id: string | null
+          started_at: string | null
+          status: string | null
+          sync_type: string | null
+          triggered_by: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          duration_ms?: number | null
+          errors?: Json | null
+          id?: string
+          items_created?: number | null
+          items_unchanged?: number | null
+          items_updated?: number | null
+          jira_project_id?: string | null
+          started_at?: string | null
+          status?: string | null
+          sync_type?: string | null
+          triggered_by?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          duration_ms?: number | null
+          errors?: Json | null
+          id?: string
+          items_created?: number | null
+          items_unchanged?: number | null
+          items_updated?: number | null
+          jira_project_id?: string | null
+          started_at?: string | null
+          status?: string | null
+          sync_type?: string | null
+          triggered_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wh_jira_sync_log_jira_project_id_fkey"
+            columns: ["jira_project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_jira_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_releases: {
+        Row: {
+          actual_date: string | null
+          color: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          owner_user_id: string | null
+          sort_order: number | null
+          start_date: string | null
+          status: string
+          target_date: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          actual_date?: string | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          owner_user_id?: string | null
+          sort_order?: number | null
+          start_date?: string | null
+          status?: string
+          target_date: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          actual_date?: string | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          owner_user_id?: string | null
+          sort_order?: number | null
+          start_date?: string | null
+          status?: string
+          target_date?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      ph_resource_assignments: {
+        Row: {
+          assigned_at: string | null
+          id: string
+          resource_id: string
+          role: string | null
+          work_item_id: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          id?: string
+          resource_id: string
+          role?: string | null
+          work_item_id: string
+        }
+        Update: {
+          assigned_at?: string | null
+          id?: string
+          resource_id?: string
+          role?: string | null
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wh_resource_assignments_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "ph_resources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_resource_assignments_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_resource_utilization"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_resource_assignments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_resource_assignments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_resources: {
+        Row: {
+          avatar_url: string | null
+          capacity_hours_per_week: number | null
+          color: string | null
+          created_at: string | null
+          department: string | null
+          email: string | null
+          id: string
+          is_active: boolean | null
+          jira_account_id: string | null
+          name: string
+          role: string | null
+          skills: string[] | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          capacity_hours_per_week?: number | null
+          color?: string | null
+          created_at?: string | null
+          department?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          jira_account_id?: string | null
+          name: string
+          role?: string | null
+          skills?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          capacity_hours_per_week?: number | null
+          color?: string | null
+          created_at?: string | null
+          department?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          jira_account_id?: string | null
+          name?: string
+          role?: string | null
+          skills?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      ph_saved_filters: {
+        Row: {
+          created_at: string | null
+          filter_config: Json
+          id: string
+          is_shared: boolean | null
+          name: string
+          page: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          filter_config: Json
+          id?: string
+          is_shared?: boolean | null
+          name: string
+          page?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          filter_config?: Json
+          id?: string
+          is_shared?: boolean | null
+          name?: string
+          page?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      ph_sync_log: {
+        Row: {
+          completed_at: string | null
+          duration_ms: number | null
+          error_message: string | null
+          id: string
+          issues_fetched: number | null
+          issues_pruned: number | null
+          issues_upserted: number | null
+          jql_query: string | null
+          lookback_months: number | null
+          projects_synced: string[] | null
+          started_at: string | null
+          status: string
+          sync_type: string
+          versions_fetched: number | null
+          warnings: string[] | null
+        }
+        Insert: {
+          completed_at?: string | null
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          issues_fetched?: number | null
+          issues_pruned?: number | null
+          issues_upserted?: number | null
+          jql_query?: string | null
+          lookback_months?: number | null
+          projects_synced?: string[] | null
+          started_at?: string | null
+          status?: string
+          sync_type: string
+          versions_fetched?: number | null
+          warnings?: string[] | null
+        }
+        Update: {
+          completed_at?: string | null
+          duration_ms?: number | null
+          error_message?: string | null
+          id?: string
+          issues_fetched?: number | null
+          issues_pruned?: number | null
+          issues_upserted?: number | null
+          jql_query?: string | null
+          lookback_months?: number | null
+          projects_synced?: string[] | null
+          started_at?: string | null
+          status?: string
+          sync_type?: string
+          versions_fetched?: number | null
+          warnings?: string[] | null
+        }
+        Relationships: []
+      }
+      ph_theme_items: {
+        Row: {
+          added_at: string | null
+          added_by: string | null
+          issue_key: string
+          theme_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          added_by?: string | null
+          issue_key: string
+          theme_id: string
+        }
+        Update: {
+          added_at?: string | null
+          added_by?: string | null
+          issue_key?: string
+          theme_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wh_theme_items_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "ph_themes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_theme_items_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_theme_progress"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_themes: {
+        Row: {
+          color: string
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          name: string
+          owner_id: string | null
+          owner_user_id: string | null
+          progress: number | null
+          sort_order: number | null
+          start_date: string | null
+          status: string | null
+          target_date: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name: string
+          owner_id?: string | null
+          owner_user_id?: string | null
+          progress?: number | null
+          sort_order?: number | null
+          start_date?: string | null
+          status?: string | null
+          target_date?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name?: string
+          owner_id?: string | null
+          owner_user_id?: string | null
+          progress?: number | null
+          sort_order?: number | null
+          start_date?: string | null
+          status?: string | null
+          target_date?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      ph_user_mapping: {
+        Row: {
+          auto_matched: boolean | null
+          catalyst_profile_id: string | null
+          created_at: string | null
+          id: string
+          is_mapped: boolean | null
+          jira_account_id: string
+          jira_avatar_url: string | null
+          jira_display_name: string | null
+          jira_email: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          auto_matched?: boolean | null
+          catalyst_profile_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_mapped?: boolean | null
+          jira_account_id: string
+          jira_avatar_url?: string | null
+          jira_display_name?: string | null
+          jira_email?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          auto_matched?: boolean | null
+          catalyst_profile_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_mapped?: boolean | null
+          jira_account_id?: string
+          jira_avatar_url?: string | null
+          jira_display_name?: string | null
+          jira_email?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      ph_versions: {
+        Row: {
+          archived: boolean | null
+          description: string | null
+          jira_id: string
+          name: string
+          parsed_date: string | null
+          project_key: string
+          release_date: string | null
+          released: boolean | null
+          start_date: string | null
+          synced_at: string | null
+        }
+        Insert: {
+          archived?: boolean | null
+          description?: string | null
+          jira_id: string
+          name: string
+          parsed_date?: string | null
+          project_key: string
+          release_date?: string | null
+          released?: boolean | null
+          start_date?: string | null
+          synced_at?: string | null
+        }
+        Update: {
+          archived?: boolean | null
+          description?: string | null
+          jira_id?: string
+          name?: string
+          parsed_date?: string | null
+          project_key?: string
+          release_date?: string | null
+          released?: boolean | null
+          start_date?: string | null
+          synced_at?: string | null
+        }
+        Relationships: []
+      }
+      ph_work_items: {
+        Row: {
+          actual_hours: number | null
+          assignee_user_id: string | null
+          completed_at: string | null
+          created_at: string | null
+          depth: number | null
+          description: string | null
+          due_date: string | null
+          estimated_hours: number | null
+          hierarchy_path: string[] | null
+          id: string
+          is_jira_locked: boolean | null
+          item_key: string
+          item_type: string
+          jira_issue_id: string | null
+          jira_labels: string[] | null
+          jira_priority: string | null
+          jira_project_id: string | null
+          jira_sprint: string | null
+          jira_status: string | null
+          jira_story_points: number | null
+          jira_url: string | null
+          last_synced_at: string | null
+          parent_id: string | null
+          priority: string | null
+          release_id: string | null
+          start_date: string | null
+          status: string
+          story_points: number | null
+          summary: string
+          sync_source: string | null
+          team_id: string | null
+          theme_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          actual_hours?: number | null
+          assignee_user_id?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          depth?: number | null
+          description?: string | null
+          due_date?: string | null
+          estimated_hours?: number | null
+          hierarchy_path?: string[] | null
+          id?: string
+          is_jira_locked?: boolean | null
+          item_key: string
+          item_type: string
+          jira_issue_id?: string | null
+          jira_labels?: string[] | null
+          jira_priority?: string | null
+          jira_project_id?: string | null
+          jira_sprint?: string | null
+          jira_status?: string | null
+          jira_story_points?: number | null
+          jira_url?: string | null
+          last_synced_at?: string | null
+          parent_id?: string | null
+          priority?: string | null
+          release_id?: string | null
+          start_date?: string | null
+          status?: string
+          story_points?: number | null
+          summary: string
+          sync_source?: string | null
+          team_id?: string | null
+          theme_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          actual_hours?: number | null
+          assignee_user_id?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          depth?: number | null
+          description?: string | null
+          due_date?: string | null
+          estimated_hours?: number | null
+          hierarchy_path?: string[] | null
+          id?: string
+          is_jira_locked?: boolean | null
+          item_key?: string
+          item_type?: string
+          jira_issue_id?: string | null
+          jira_labels?: string[] | null
+          jira_priority?: string | null
+          jira_project_id?: string | null
+          jira_sprint?: string | null
+          jira_status?: string | null
+          jira_story_points?: number | null
+          jira_url?: string | null
+          last_synced_at?: string | null
+          parent_id?: string | null
+          priority?: string | null
+          release_id?: string | null
+          start_date?: string | null
+          status?: string
+          story_points?: number | null
+          summary?: string
+          sync_source?: string | null
+          team_id?: string | null
+          theme_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wh_work_items_jira_project_id_fkey"
+            columns: ["jira_project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_jira_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "ph_releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_release_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "ph_themes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_theme_progress"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pi_objectives: {
         Row: {
           actual_bv: number | null
@@ -34859,966 +35819,6 @@ export type Database = {
           },
         ]
       }
-      wh_bulk_ops_log: {
-        Row: {
-          affected_item_ids: string[]
-          field_changed: string | null
-          id: string
-          item_count: number | null
-          new_values: Json | null
-          old_values: Json | null
-          operation: string
-          performed_at: string | null
-          performed_by: string | null
-          reverted_at: string | null
-          reverted_by: string | null
-        }
-        Insert: {
-          affected_item_ids: string[]
-          field_changed?: string | null
-          id?: string
-          item_count?: number | null
-          new_values?: Json | null
-          old_values?: Json | null
-          operation: string
-          performed_at?: string | null
-          performed_by?: string | null
-          reverted_at?: string | null
-          reverted_by?: string | null
-        }
-        Update: {
-          affected_item_ids?: string[]
-          field_changed?: string | null
-          id?: string
-          item_count?: number | null
-          new_values?: Json | null
-          old_values?: Json | null
-          operation?: string
-          performed_at?: string | null
-          performed_by?: string | null
-          reverted_at?: string | null
-          reverted_by?: string | null
-        }
-        Relationships: []
-      }
-      wh_comments: {
-        Row: {
-          body: string
-          created_at: string | null
-          id: string
-          updated_at: string | null
-          user_id: string | null
-          work_item_id: string
-        }
-        Insert: {
-          body: string
-          created_at?: string | null
-          id?: string
-          updated_at?: string | null
-          user_id?: string | null
-          work_item_id: string
-        }
-        Update: {
-          body?: string
-          created_at?: string | null
-          id?: string
-          updated_at?: string | null
-          user_id?: string | null
-          work_item_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "wh_comments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "vw_wh_work_items_full"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_comments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "wh_work_items"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      wh_config: {
-        Row: {
-          description: string | null
-          key: string
-          updated_at: string | null
-          updated_by: string | null
-          value: Json
-        }
-        Insert: {
-          description?: string | null
-          key: string
-          updated_at?: string | null
-          updated_by?: string | null
-          value: Json
-        }
-        Update: {
-          description?: string | null
-          key?: string
-          updated_at?: string | null
-          updated_by?: string | null
-          value?: Json
-        }
-        Relationships: []
-      }
-      wh_issues: {
-        Row: {
-          assignee_account_id: string | null
-          assignee_display_name: string | null
-          changelog: Json | null
-          comments: Json | null
-          components: Json | null
-          description_adf: Json | null
-          description_text: string | null
-          due_date: string | null
-          effective_due_date: string | null
-          effective_due_source: string | null
-          fix_versions: Json | null
-          hierarchy_level: number | null
-          issue_key: string
-          issue_type: string
-          jira_created_at: string | null
-          jira_updated_at: string | null
-          labels: Json | null
-          parent_key: string | null
-          parent_summary: string | null
-          priority: string | null
-          project_key: string
-          raw_json: Json | null
-          resolution: string | null
-          sprint_name: string | null
-          status: string
-          status_category: string | null
-          story_points: number | null
-          summary: string
-          synced_at: string | null
-          theme_id: string | null
-          type_icon_url: string | null
-        }
-        Insert: {
-          assignee_account_id?: string | null
-          assignee_display_name?: string | null
-          changelog?: Json | null
-          comments?: Json | null
-          components?: Json | null
-          description_adf?: Json | null
-          description_text?: string | null
-          due_date?: string | null
-          effective_due_date?: string | null
-          effective_due_source?: string | null
-          fix_versions?: Json | null
-          hierarchy_level?: number | null
-          issue_key: string
-          issue_type?: string
-          jira_created_at?: string | null
-          jira_updated_at?: string | null
-          labels?: Json | null
-          parent_key?: string | null
-          parent_summary?: string | null
-          priority?: string | null
-          project_key: string
-          raw_json?: Json | null
-          resolution?: string | null
-          sprint_name?: string | null
-          status?: string
-          status_category?: string | null
-          story_points?: number | null
-          summary?: string
-          synced_at?: string | null
-          theme_id?: string | null
-          type_icon_url?: string | null
-        }
-        Update: {
-          assignee_account_id?: string | null
-          assignee_display_name?: string | null
-          changelog?: Json | null
-          comments?: Json | null
-          components?: Json | null
-          description_adf?: Json | null
-          description_text?: string | null
-          due_date?: string | null
-          effective_due_date?: string | null
-          effective_due_source?: string | null
-          fix_versions?: Json | null
-          hierarchy_level?: number | null
-          issue_key?: string
-          issue_type?: string
-          jira_created_at?: string | null
-          jira_updated_at?: string | null
-          labels?: Json | null
-          parent_key?: string | null
-          parent_summary?: string | null
-          priority?: string | null
-          project_key?: string
-          raw_json?: Json | null
-          resolution?: string | null
-          sprint_name?: string | null
-          status?: string
-          status_category?: string | null
-          story_points?: number | null
-          summary?: string
-          synced_at?: string | null
-          theme_id?: string | null
-          type_icon_url?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "wh_issues_theme_id_fkey"
-            columns: ["theme_id"]
-            isOneToOne: false
-            referencedRelation: "vw_wh_theme_progress"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_issues_theme_id_fkey"
-            columns: ["theme_id"]
-            isOneToOne: false
-            referencedRelation: "wh_themes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      wh_jira_connection: {
-        Row: {
-          accessible_projects: Json | null
-          auth_email: string
-          auth_method: string
-          auth_token_encrypted: string
-          configured_by: string | null
-          created_at: string | null
-          id: string
-          jira_server_version: string | null
-          last_test_result: Json | null
-          last_tested_at: string | null
-          oauth_client_id: string | null
-          oauth_client_secret_encrypted: string | null
-          oauth_refresh_token_encrypted: string | null
-          permissions_level: string | null
-          project_count: number | null
-          server_title: string | null
-          site_url: string
-          status: string
-          total_issue_count: number | null
-          total_version_count: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          accessible_projects?: Json | null
-          auth_email?: string
-          auth_method?: string
-          auth_token_encrypted?: string
-          configured_by?: string | null
-          created_at?: string | null
-          id?: string
-          jira_server_version?: string | null
-          last_test_result?: Json | null
-          last_tested_at?: string | null
-          oauth_client_id?: string | null
-          oauth_client_secret_encrypted?: string | null
-          oauth_refresh_token_encrypted?: string | null
-          permissions_level?: string | null
-          project_count?: number | null
-          server_title?: string | null
-          site_url?: string
-          status?: string
-          total_issue_count?: number | null
-          total_version_count?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          accessible_projects?: Json | null
-          auth_email?: string
-          auth_method?: string
-          auth_token_encrypted?: string
-          configured_by?: string | null
-          created_at?: string | null
-          id?: string
-          jira_server_version?: string | null
-          last_test_result?: Json | null
-          last_tested_at?: string | null
-          oauth_client_id?: string | null
-          oauth_client_secret_encrypted?: string | null
-          oauth_refresh_token_encrypted?: string | null
-          permissions_level?: string | null
-          project_count?: number | null
-          server_title?: string | null
-          site_url?: string
-          status?: string
-          total_issue_count?: number | null
-          total_version_count?: number | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      wh_jira_projects: {
-        Row: {
-          avatar_url: string | null
-          color: string | null
-          created_at: string | null
-          description: string | null
-          id: string
-          is_active: boolean | null
-          jira_project_id: string
-          last_synced_at: string | null
-          name: string
-          project_key: string
-          sync_config: Json | null
-          updated_at: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          color?: string | null
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          is_active?: boolean | null
-          jira_project_id: string
-          last_synced_at?: string | null
-          name: string
-          project_key: string
-          sync_config?: Json | null
-          updated_at?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          color?: string | null
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          is_active?: boolean | null
-          jira_project_id?: string
-          last_synced_at?: string | null
-          name?: string
-          project_key?: string
-          sync_config?: Json | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      wh_jira_sync_log: {
-        Row: {
-          completed_at: string | null
-          duration_ms: number | null
-          errors: Json | null
-          id: string
-          items_created: number | null
-          items_unchanged: number | null
-          items_updated: number | null
-          jira_project_id: string | null
-          started_at: string | null
-          status: string | null
-          sync_type: string | null
-          triggered_by: string | null
-        }
-        Insert: {
-          completed_at?: string | null
-          duration_ms?: number | null
-          errors?: Json | null
-          id?: string
-          items_created?: number | null
-          items_unchanged?: number | null
-          items_updated?: number | null
-          jira_project_id?: string | null
-          started_at?: string | null
-          status?: string | null
-          sync_type?: string | null
-          triggered_by?: string | null
-        }
-        Update: {
-          completed_at?: string | null
-          duration_ms?: number | null
-          errors?: Json | null
-          id?: string
-          items_created?: number | null
-          items_unchanged?: number | null
-          items_updated?: number | null
-          jira_project_id?: string | null
-          started_at?: string | null
-          status?: string | null
-          sync_type?: string | null
-          triggered_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "wh_jira_sync_log_jira_project_id_fkey"
-            columns: ["jira_project_id"]
-            isOneToOne: false
-            referencedRelation: "wh_jira_projects"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      wh_releases: {
-        Row: {
-          actual_date: string | null
-          color: string | null
-          created_at: string | null
-          description: string | null
-          id: string
-          name: string
-          owner_user_id: string | null
-          sort_order: number | null
-          start_date: string | null
-          status: string
-          target_date: string
-          title: string
-          updated_at: string | null
-        }
-        Insert: {
-          actual_date?: string | null
-          color?: string | null
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          name: string
-          owner_user_id?: string | null
-          sort_order?: number | null
-          start_date?: string | null
-          status?: string
-          target_date: string
-          title: string
-          updated_at?: string | null
-        }
-        Update: {
-          actual_date?: string | null
-          color?: string | null
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          name?: string
-          owner_user_id?: string | null
-          sort_order?: number | null
-          start_date?: string | null
-          status?: string
-          target_date?: string
-          title?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      wh_resource_assignments: {
-        Row: {
-          assigned_at: string | null
-          id: string
-          resource_id: string
-          role: string | null
-          work_item_id: string
-        }
-        Insert: {
-          assigned_at?: string | null
-          id?: string
-          resource_id: string
-          role?: string | null
-          work_item_id: string
-        }
-        Update: {
-          assigned_at?: string | null
-          id?: string
-          resource_id?: string
-          role?: string | null
-          work_item_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "wh_resource_assignments_resource_id_fkey"
-            columns: ["resource_id"]
-            isOneToOne: false
-            referencedRelation: "vw_wh_resource_utilization"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_resource_assignments_resource_id_fkey"
-            columns: ["resource_id"]
-            isOneToOne: false
-            referencedRelation: "wh_resources"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_resource_assignments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "vw_wh_work_items_full"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_resource_assignments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "wh_work_items"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      wh_resources: {
-        Row: {
-          avatar_url: string | null
-          capacity_hours_per_week: number | null
-          color: string | null
-          created_at: string | null
-          department: string | null
-          email: string | null
-          id: string
-          is_active: boolean | null
-          jira_account_id: string | null
-          name: string
-          role: string | null
-          skills: string[] | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          capacity_hours_per_week?: number | null
-          color?: string | null
-          created_at?: string | null
-          department?: string | null
-          email?: string | null
-          id?: string
-          is_active?: boolean | null
-          jira_account_id?: string | null
-          name: string
-          role?: string | null
-          skills?: string[] | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          capacity_hours_per_week?: number | null
-          color?: string | null
-          created_at?: string | null
-          department?: string | null
-          email?: string | null
-          id?: string
-          is_active?: boolean | null
-          jira_account_id?: string | null
-          name?: string
-          role?: string | null
-          skills?: string[] | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      wh_saved_filters: {
-        Row: {
-          created_at: string | null
-          filter_config: Json
-          id: string
-          is_shared: boolean | null
-          name: string
-          page: string
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          filter_config: Json
-          id?: string
-          is_shared?: boolean | null
-          name: string
-          page?: string
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          filter_config?: Json
-          id?: string
-          is_shared?: boolean | null
-          name?: string
-          page?: string
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      wh_sync_log: {
-        Row: {
-          completed_at: string | null
-          duration_ms: number | null
-          error_message: string | null
-          id: string
-          issues_fetched: number | null
-          issues_pruned: number | null
-          issues_upserted: number | null
-          jql_query: string | null
-          lookback_months: number | null
-          projects_synced: string[] | null
-          started_at: string | null
-          status: string
-          sync_type: string
-          versions_fetched: number | null
-          warnings: string[] | null
-        }
-        Insert: {
-          completed_at?: string | null
-          duration_ms?: number | null
-          error_message?: string | null
-          id?: string
-          issues_fetched?: number | null
-          issues_pruned?: number | null
-          issues_upserted?: number | null
-          jql_query?: string | null
-          lookback_months?: number | null
-          projects_synced?: string[] | null
-          started_at?: string | null
-          status?: string
-          sync_type: string
-          versions_fetched?: number | null
-          warnings?: string[] | null
-        }
-        Update: {
-          completed_at?: string | null
-          duration_ms?: number | null
-          error_message?: string | null
-          id?: string
-          issues_fetched?: number | null
-          issues_pruned?: number | null
-          issues_upserted?: number | null
-          jql_query?: string | null
-          lookback_months?: number | null
-          projects_synced?: string[] | null
-          started_at?: string | null
-          status?: string
-          sync_type?: string
-          versions_fetched?: number | null
-          warnings?: string[] | null
-        }
-        Relationships: []
-      }
-      wh_theme_items: {
-        Row: {
-          added_at: string | null
-          added_by: string | null
-          issue_key: string
-          theme_id: string
-        }
-        Insert: {
-          added_at?: string | null
-          added_by?: string | null
-          issue_key: string
-          theme_id: string
-        }
-        Update: {
-          added_at?: string | null
-          added_by?: string | null
-          issue_key?: string
-          theme_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "wh_theme_items_theme_id_fkey"
-            columns: ["theme_id"]
-            isOneToOne: false
-            referencedRelation: "vw_wh_theme_progress"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_theme_items_theme_id_fkey"
-            columns: ["theme_id"]
-            isOneToOne: false
-            referencedRelation: "wh_themes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      wh_themes: {
-        Row: {
-          color: string
-          created_at: string | null
-          created_by: string | null
-          description: string | null
-          end_date: string | null
-          id: string
-          name: string
-          owner_id: string | null
-          owner_user_id: string | null
-          progress: number | null
-          sort_order: number | null
-          start_date: string | null
-          status: string | null
-          target_date: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          color?: string
-          created_at?: string | null
-          created_by?: string | null
-          description?: string | null
-          end_date?: string | null
-          id?: string
-          name: string
-          owner_id?: string | null
-          owner_user_id?: string | null
-          progress?: number | null
-          sort_order?: number | null
-          start_date?: string | null
-          status?: string | null
-          target_date?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          color?: string
-          created_at?: string | null
-          created_by?: string | null
-          description?: string | null
-          end_date?: string | null
-          id?: string
-          name?: string
-          owner_id?: string | null
-          owner_user_id?: string | null
-          progress?: number | null
-          sort_order?: number | null
-          start_date?: string | null
-          status?: string | null
-          target_date?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      wh_user_mapping: {
-        Row: {
-          auto_matched: boolean | null
-          catalyst_profile_id: string | null
-          created_at: string | null
-          id: string
-          is_mapped: boolean | null
-          jira_account_id: string
-          jira_avatar_url: string | null
-          jira_display_name: string | null
-          jira_email: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          auto_matched?: boolean | null
-          catalyst_profile_id?: string | null
-          created_at?: string | null
-          id?: string
-          is_mapped?: boolean | null
-          jira_account_id: string
-          jira_avatar_url?: string | null
-          jira_display_name?: string | null
-          jira_email?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          auto_matched?: boolean | null
-          catalyst_profile_id?: string | null
-          created_at?: string | null
-          id?: string
-          is_mapped?: boolean | null
-          jira_account_id?: string
-          jira_avatar_url?: string | null
-          jira_display_name?: string | null
-          jira_email?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      wh_versions: {
-        Row: {
-          archived: boolean | null
-          description: string | null
-          jira_id: string
-          name: string
-          parsed_date: string | null
-          project_key: string
-          release_date: string | null
-          released: boolean | null
-          start_date: string | null
-          synced_at: string | null
-        }
-        Insert: {
-          archived?: boolean | null
-          description?: string | null
-          jira_id: string
-          name: string
-          parsed_date?: string | null
-          project_key: string
-          release_date?: string | null
-          released?: boolean | null
-          start_date?: string | null
-          synced_at?: string | null
-        }
-        Update: {
-          archived?: boolean | null
-          description?: string | null
-          jira_id?: string
-          name?: string
-          parsed_date?: string | null
-          project_key?: string
-          release_date?: string | null
-          released?: boolean | null
-          start_date?: string | null
-          synced_at?: string | null
-        }
-        Relationships: []
-      }
-      wh_work_items: {
-        Row: {
-          actual_hours: number | null
-          assignee_user_id: string | null
-          completed_at: string | null
-          created_at: string | null
-          depth: number | null
-          description: string | null
-          due_date: string | null
-          estimated_hours: number | null
-          hierarchy_path: string[] | null
-          id: string
-          is_jira_locked: boolean | null
-          item_key: string
-          item_type: string
-          jira_issue_id: string | null
-          jira_labels: string[] | null
-          jira_priority: string | null
-          jira_project_id: string | null
-          jira_sprint: string | null
-          jira_status: string | null
-          jira_story_points: number | null
-          jira_url: string | null
-          last_synced_at: string | null
-          parent_id: string | null
-          priority: string | null
-          release_id: string | null
-          start_date: string | null
-          status: string
-          story_points: number | null
-          summary: string
-          sync_source: string | null
-          team_id: string | null
-          theme_id: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          actual_hours?: number | null
-          assignee_user_id?: string | null
-          completed_at?: string | null
-          created_at?: string | null
-          depth?: number | null
-          description?: string | null
-          due_date?: string | null
-          estimated_hours?: number | null
-          hierarchy_path?: string[] | null
-          id?: string
-          is_jira_locked?: boolean | null
-          item_key: string
-          item_type: string
-          jira_issue_id?: string | null
-          jira_labels?: string[] | null
-          jira_priority?: string | null
-          jira_project_id?: string | null
-          jira_sprint?: string | null
-          jira_status?: string | null
-          jira_story_points?: number | null
-          jira_url?: string | null
-          last_synced_at?: string | null
-          parent_id?: string | null
-          priority?: string | null
-          release_id?: string | null
-          start_date?: string | null
-          status?: string
-          story_points?: number | null
-          summary: string
-          sync_source?: string | null
-          team_id?: string | null
-          theme_id?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          actual_hours?: number | null
-          assignee_user_id?: string | null
-          completed_at?: string | null
-          created_at?: string | null
-          depth?: number | null
-          description?: string | null
-          due_date?: string | null
-          estimated_hours?: number | null
-          hierarchy_path?: string[] | null
-          id?: string
-          is_jira_locked?: boolean | null
-          item_key?: string
-          item_type?: string
-          jira_issue_id?: string | null
-          jira_labels?: string[] | null
-          jira_priority?: string | null
-          jira_project_id?: string | null
-          jira_sprint?: string | null
-          jira_status?: string | null
-          jira_story_points?: number | null
-          jira_url?: string | null
-          last_synced_at?: string | null
-          parent_id?: string | null
-          priority?: string | null
-          release_id?: string | null
-          start_date?: string | null
-          status?: string
-          story_points?: number | null
-          summary?: string
-          sync_source?: string | null
-          team_id?: string | null
-          theme_id?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "wh_work_items_jira_project_id_fkey"
-            columns: ["jira_project_id"]
-            isOneToOne: false
-            referencedRelation: "wh_jira_projects"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_work_items_parent_id_fkey"
-            columns: ["parent_id"]
-            isOneToOne: false
-            referencedRelation: "vw_wh_work_items_full"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_work_items_parent_id_fkey"
-            columns: ["parent_id"]
-            isOneToOne: false
-            referencedRelation: "wh_work_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_work_items_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "vw_wh_release_progress"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_work_items_release_id_fkey"
-            columns: ["release_id"]
-            isOneToOne: false
-            referencedRelation: "wh_releases"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_work_items_theme_id_fkey"
-            columns: ["theme_id"]
-            isOneToOne: false
-            referencedRelation: "vw_wh_theme_progress"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "wh_work_items_theme_id_fkey"
-            columns: ["theme_id"]
-            isOneToOne: false
-            referencedRelation: "wh_themes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       work_item_activity: {
         Row: {
           activity_type: string
@@ -36911,6 +36911,75 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      ph_at_risk_items: {
+        Row: {
+          assignee_display_name: string | null
+          effective_due_date: string | null
+          effective_due_source: string | null
+          fix_versions: Json | null
+          issue_key: string | null
+          issue_type: string | null
+          parent_key: string | null
+          project_key: string | null
+          risk_tag: string | null
+          status: string | null
+          status_category: string | null
+          summary: string | null
+        }
+        Relationships: []
+      }
+      ph_exceptions: {
+        Row: {
+          effective_due_date: string | null
+          effective_due_source: string | null
+          exception_type: string | null
+          issue_key: string | null
+          issue_type: string | null
+          parent_key: string | null
+          project_key: string | null
+          status_category: string | null
+          summary: string | null
+        }
+        Relationships: []
+      }
+      ph_overview_stats: {
+        Row: {
+          active_count: number | null
+          blocked_count: number | null
+          done_this_week: number | null
+          overdue_count: number | null
+          stale_count: number | null
+        }
+        Relationships: []
+      }
+      ph_person_workload: {
+        Row: {
+          active_count: number | null
+          assignee_account_id: string | null
+          assignee_display_name: string | null
+          blocked_count: number | null
+          done_count: number | null
+          done_this_week: number | null
+          overdue_count: number | null
+        }
+        Relationships: []
+      }
+      ph_release_health: {
+        Row: {
+          blocked_count: number | null
+          completion_pct: number | null
+          done_count: number | null
+          effective_release_date: string | null
+          in_progress_count: number | null
+          jira_id: string | null
+          project_key: string | null
+          released: boolean | null
+          todo_count: number | null
+          total_issues: number | null
+          version_name: string | null
+        }
+        Relationships: []
       }
       planner_board_columns: {
         Row: {
@@ -38902,7 +38971,7 @@ export type Database = {
         }
         Relationships: []
       }
-      vw_wh_calendar_events: {
+      vw_ph_calendar_events: {
         Row: {
           assignee_name: string | null
           assignee_user_id: string | null
@@ -38917,7 +38986,7 @@ export type Database = {
         }
         Relationships: []
       }
-      vw_wh_dashboard_kpis: {
+      vw_ph_dashboard_kpis: {
         Row: {
           active_releases: number | null
           active_themes: number | null
@@ -38932,7 +39001,7 @@ export type Database = {
         }
         Relationships: []
       }
-      vw_wh_release_progress: {
+      vw_ph_release_progress: {
         Row: {
           actual_date: string | null
           blocked_items: number | null
@@ -38958,7 +39027,7 @@ export type Database = {
         }
         Relationships: []
       }
-      vw_wh_resource_utilization: {
+      vw_ph_resource_utilization: {
         Row: {
           active_items: number | null
           blocked_items: number | null
@@ -38984,7 +39053,7 @@ export type Database = {
         }
         Relationships: []
       }
-      vw_wh_theme_progress: {
+      vw_ph_theme_progress: {
         Row: {
           color: string | null
           completion_percent: number | null
@@ -39004,7 +39073,7 @@ export type Database = {
         }
         Relationships: []
       }
-      vw_wh_work_items_full: {
+      vw_ph_work_items_full: {
         Row: {
           actual_hours: number | null
           assignee_color: string | null
@@ -39062,121 +39131,52 @@ export type Database = {
             foreignKeyName: "wh_work_items_jira_project_id_fkey"
             columns: ["jira_project_id"]
             isOneToOne: false
-            referencedRelation: "wh_jira_projects"
+            referencedRelation: "ph_jira_projects"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "wh_work_items_parent_id_fkey"
             columns: ["parent_id"]
             isOneToOne: false
-            referencedRelation: "vw_wh_work_items_full"
+            referencedRelation: "ph_work_items"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "wh_work_items_parent_id_fkey"
             columns: ["parent_id"]
             isOneToOne: false
-            referencedRelation: "wh_work_items"
+            referencedRelation: "vw_ph_work_items_full"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "wh_work_items_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "vw_wh_release_progress"
+            referencedRelation: "ph_releases"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "wh_work_items_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
-            referencedRelation: "wh_releases"
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "wh_work_items_theme_id_fkey"
             columns: ["theme_id"]
             isOneToOne: false
-            referencedRelation: "vw_wh_theme_progress"
+            referencedRelation: "ph_themes"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "wh_work_items_theme_id_fkey"
             columns: ["theme_id"]
             isOneToOne: false
-            referencedRelation: "wh_themes"
+            referencedRelation: "vw_ph_theme_progress"
             referencedColumns: ["id"]
           },
         ]
-      }
-      wh_at_risk_items: {
-        Row: {
-          assignee_display_name: string | null
-          effective_due_date: string | null
-          effective_due_source: string | null
-          fix_versions: Json | null
-          issue_key: string | null
-          issue_type: string | null
-          parent_key: string | null
-          project_key: string | null
-          risk_tag: string | null
-          status: string | null
-          status_category: string | null
-          summary: string | null
-        }
-        Relationships: []
-      }
-      wh_exceptions: {
-        Row: {
-          effective_due_date: string | null
-          effective_due_source: string | null
-          exception_type: string | null
-          issue_key: string | null
-          issue_type: string | null
-          parent_key: string | null
-          project_key: string | null
-          status_category: string | null
-          summary: string | null
-        }
-        Relationships: []
-      }
-      wh_overview_stats: {
-        Row: {
-          active_count: number | null
-          blocked_count: number | null
-          done_this_week: number | null
-          overdue_count: number | null
-          stale_count: number | null
-        }
-        Relationships: []
-      }
-      wh_person_workload: {
-        Row: {
-          active_count: number | null
-          assignee_account_id: string | null
-          assignee_display_name: string | null
-          blocked_count: number | null
-          done_count: number | null
-          done_this_week: number | null
-          overdue_count: number | null
-        }
-        Relationships: []
-      }
-      wh_release_health: {
-        Row: {
-          blocked_count: number | null
-          completion_pct: number | null
-          done_count: number | null
-          effective_release_date: string | null
-          in_progress_count: number | null
-          jira_id: string | null
-          project_key: string | null
-          released: boolean | null
-          todo_count: number | null
-          total_issues: number | null
-          version_name: string | null
-        }
-        Relationships: []
       }
     }
     Functions: {
@@ -39510,7 +39510,7 @@ export type Database = {
           story_key: string
         }[]
       }
-      fn_wh_bulk_update: {
+      fn_ph_bulk_update: {
         Args: {
           p_field: string
           p_item_ids: string[]
@@ -39519,7 +39519,7 @@ export type Database = {
         }
         Returns: number
       }
-      fn_wh_get_item_tree: {
+      fn_ph_get_item_tree: {
         Args: { p_parent_id?: string }
         Returns: {
           assignee_user_id: string
@@ -40363,6 +40363,10 @@ export type Database = {
         Args: { p_execution_id: string; p_step_id: string }
         Returns: Json
       }
+      ph_parse_and_update_versions: { Args: never; Returns: undefined }
+      ph_parse_version_name: { Args: { vname: string }; Returns: string }
+      ph_prune_stale: { Args: { window_months?: number }; Returns: number }
+      ph_recompute_all: { Args: never; Returns: undefined }
       planhub_create_version: {
         Args: {
           plan_uuid: string
@@ -41350,10 +41354,6 @@ export type Database = {
         Returns: boolean
       }
       validate_batch_update: { Args: { p_job_id: string }; Returns: Json }
-      wh_parse_and_update_versions: { Args: never; Returns: undefined }
-      wh_parse_version_name: { Args: { vname: string }; Returns: string }
-      wh_prune_stale: { Args: { window_months?: number }; Returns: number }
-      wh_recompute_all: { Args: never; Returns: undefined }
       worker_heartbeat: { Args: { p_worker_id: string }; Returns: Json }
     }
     Enums: {
