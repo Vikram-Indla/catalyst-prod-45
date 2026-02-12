@@ -4,7 +4,7 @@
  * STRATEGY D: Horizontal Bar styling enforced via ra-enterprise-clean wrapper
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import '@/styles/ra-enterprise-clean.css';
 import '@/styles/ra-enterprise-polish.css';
 import '@/styles/resource-allocation-enterprise.css';
@@ -31,6 +31,8 @@ interface CapacityAnalyticsViewProps {
   onResourceClick?: (resourceId: string, resourceName?: string) => void;
   searchQuery?: string;
   hideWidgets?: boolean;
+  /** Callback to expose the current filtered resource list for navigation */
+  onFilteredResourcesChange?: (resources: { id: string; name: string }[]) => void;
 }
 
 export function CapacityAnalyticsView({ 
@@ -39,6 +41,7 @@ export function CapacityAnalyticsView({
   onResourceClick,
   searchQuery = '',
   hideWidgets = false,
+  onFilteredResourcesChange,
 }: CapacityAnalyticsViewProps) {
   const [viewScope, setViewScope] = useState<ViewScope>('full');
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('insourced');
@@ -256,6 +259,14 @@ export function CapacityAnalyticsView({
 
     return Array.from(groups.entries()).sort((a, b) => a[0].localeCompare(b[0]));
   }, [filteredRows]);
+
+  // Expose filtered resource list for drawer navigation
+  useEffect(() => {
+    if (onFilteredResourcesChange) {
+      const list = filteredRows.map(r => ({ id: r.resource.id, name: r.resource.name || '' }));
+      onFilteredResourcesChange(list);
+    }
+  }, [filteredRows, onFilteredResourcesChange]);
 
   if (isError) {
     return (

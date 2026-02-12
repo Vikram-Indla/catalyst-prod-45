@@ -258,8 +258,9 @@ export default function CapacityPlannerPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
   const [resource360Id, setResource360Id] = useState<string | null>(null);
-  const [workDrawerResourceId, setWorkDrawerResourceId] = useState<string | null>(null);
-  const [workDrawerResourceName, setWorkDrawerResourceName] = useState<string | undefined>(undefined);
+   const [workDrawerResourceId, setWorkDrawerResourceId] = useState<string | null>(null);
+   const [workDrawerResourceName, setWorkDrawerResourceName] = useState<string | undefined>(undefined);
+   const [analyticsResourceList, setAnalyticsResourceList] = useState<{ id: string; name: string }[]>([]);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [resourceToDelete, setResourceToDelete] = useState<ResourceMetric | null>(null);
   const [resourcesToDelete, setResourcesToDelete] = useState<ResourceMetric[]>([]);
@@ -1037,6 +1038,7 @@ export default function CapacityPlannerPage() {
                     onResourceClick={(id, name) => { setWorkDrawerResourceId(id); setWorkDrawerResourceName(name); }}
                     searchQuery={searchQuery}
                     hideWidgets={true}
+                    onFilteredResourcesChange={setAnalyticsResourceList}
                   />
                 </motion.div>
               )}
@@ -1109,6 +1111,8 @@ export default function CapacityPlannerPage() {
           resourceId={workDrawerResourceId}
           resourceName={workDrawerResourceName}
           onClose={() => { setWorkDrawerResourceId(null); setWorkDrawerResourceName(undefined); }}
+          departmentResourceIds={analyticsResourceList}
+          onNavigate={(id, name) => { setWorkDrawerResourceId(id); setWorkDrawerResourceName(name); }}
         />
 
         {/* Legacy Resource 360° Sheet */}
@@ -1736,6 +1740,7 @@ export default function CapacityPlannerPage() {
                   onDepartmentChange={setDepartmentFilter}
                   onResourceClick={(id, name) => { setWorkDrawerResourceId(id); setWorkDrawerResourceName(name); }}
                   hideWidgets={true}
+                  onFilteredResourcesChange={setAnalyticsResourceList}
                 />
               )}
               
