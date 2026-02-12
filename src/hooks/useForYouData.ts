@@ -1,5 +1,5 @@
 /**
- * For You Page Data Hook - Mock data and state management
+ * For You Page Data Hook - Real data from Jira sync (ph_issues)
  */
 
 import { useState, useMemo, useEffect } from 'react';
@@ -54,22 +54,68 @@ export interface PerformanceStats {
   personalBest: number;
 }
 
-// Empty work items - no seed data
-const MOCK_WORK_ITEMS: WorkItem[] = [];
+// Helper: compute time group based on jira_updated_at
+function computeGroup(updatedAt: string): WorkGroup {
+  const now = new Date();
+  const updated = new Date(updatedAt);
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const weekAgo = new Date(today);
+  weekAgo.setDate(weekAgo.getDate() - 7);
 
-// Empty AI suggestions - no seed data
-const MOCK_AI_SUGGESTIONS: AISuggestion[] = [];
+  if (updated >= yesterday) return 'YESTERDAY';
+  if (updated >= weekAgo) return 'THIS_WEEK';
+  return 'EARLIER';
+}
 
-// Empty performance stats
-const MOCK_PERFORMANCE_STATS: PerformanceStats = {
-  closed: 0,
-  ops: 0,
-  del: 0,
-  pln: 0,
-  slaRate: 0,
-  percentChange: 0,
-  personalBest: 0,
-};
+// Helper: format relative time
+function formatRelativeTime(dateStr: string): string {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 60) return `${diffMins}m`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `${diffDays}d`;
+  return `${Math.floor(diffDays / 7)}w`;
+}
+
+// Helper: get initials from name
+function getInitials(name: string): string {
+  return name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2);
+}
+
+// Helper: infer mode from project_key or issue_type
+function inferMode(projectKey: string, issueType: string): WorkMode {
+  const type = issueType?.toLowerCase() || '';
+  if (type.includes('incident') || type.includes('bug') || type.includes('production')) return 'OPS';
+  // Default to DEL (delivery) for stories, epics, sub-tasks, etc.
+  return 'DEL';
+}
+
+// Map ph_issues row to WorkItem
+function mapIssueToWorkItem(row: any, starredSet: Set<string>): WorkItem {
+  const assigneeName = row.assignee_display_name || 'Unassigned';
+  return {
+    id: row.issue_key,
+    key: row.issue_key,
+    summary: row.summary || '',
+    mode: inferMode(row.project_key, row.issue_type),
+    level: row.issue_type || 'Task',
+    updatedAt: row.jira_updated_at ? formatRelativeTime(row.jira_updated_at) : '-',
+    assignee: {
+      id: row.assignee_account_id || 'none',
+      name: assigneeName,
+      initials: getInitials(assigneeName),
+      avatarColor: '#6b7280',
+    },
+    group: row.jira_updated_at ? computeGroup(row.jira_updated_at) : 'EARLIER',
+    starred: starredSet.has(row.issue_key),
+  };
+}
 
 export function useForYouData() {
   // State
@@ -81,34 +127,130 @@ export function useForYouData() {
     order: 'desc' 
   });
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
-  const [starredItems, setStarredItems] = useState<Set<string>>(
-    new Set(MOCK_WORK_ITEMS.filter(i => i.starred).map(i => i.id))
-  );
+  const [starredItems, setStarredItems] = useState<Set<string>>(new Set());
+
+  // Data state
+  const [workedOnItems, setWorkedOnItems] = useState<any[]>([]);
+  const [assignedItems, setAssignedItems] = useState<any[]>([]);
+  const [starredData, setStarredData] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [jiraAccountIds, setJiraAccountIds] = useState<string[]>([]);
 
   // Fetch actual user profile
   const { user: authUser } = useAuth();
   const [userProfile, setUserProfile] = useState<{ firstName: string; lastName: string } | null>(null);
 
+  // 1. Fetch profile + Jira mapping
   useEffect(() => {
-    async function fetchProfile() {
+    async function fetchUserMapping() {
       if (!authUser?.id) return;
-      
-      const { data } = await supabase
+
+      // Fetch profile name
+      const { data: profileData } = await supabase
         .from('profiles')
         .select('full_name')
         .eq('id', authUser.id)
         .single();
-      
-      if (data?.full_name) {
-        const parts = data.full_name.split(' ');
+
+      if (profileData?.full_name) {
+        const parts = profileData.full_name.split(' ');
         setUserProfile({
           firstName: parts[0] || 'there',
           lastName: parts.slice(1).join(' ') || '',
         });
       }
+
+      // Fetch user's Jira account IDs from mapping
+      const { data: mappings } = await supabase
+        .from('ph_user_mapping')
+        .select('jira_account_id')
+        .eq('catalyst_profile_id', authUser.id)
+        .eq('is_mapped', true);
+
+      if (mappings && mappings.length > 0) {
+        const ids = mappings.map(m => m.jira_account_id).filter(Boolean);
+        setJiraAccountIds(ids);
+      } else {
+        // No mapping found - try matching by name
+        if (profileData?.full_name) {
+          const { data: nameMatches } = await supabase
+            .from('ph_user_mapping')
+            .select('jira_account_id')
+            .ilike('jira_display_name', `%${profileData.full_name}%`)
+            .eq('is_mapped', true);
+          
+          if (nameMatches && nameMatches.length > 0) {
+            setJiraAccountIds(nameMatches.map(m => m.jira_account_id).filter(Boolean));
+          } else {
+            setJiraAccountIds([]);
+          }
+        }
+      }
     }
-    fetchProfile();
+    fetchUserMapping();
   }, [authUser?.id]);
+
+  // 2. Fetch issues once we have Jira account IDs
+  useEffect(() => {
+    async function fetchIssues() {
+      if (!authUser?.id) {
+        setIsLoading(false);
+        return;
+      }
+
+      // Wait for mapping resolution
+      if (jiraAccountIds.length === 0 && authUser?.id) {
+        // Check if mapping query has completed (give it a moment)
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+
+      try {
+        // Assigned: directly assigned to user
+        const { data: assigned } = await supabase
+          .from('ph_issues')
+          .select('issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, priority, jira_updated_at, parent_key, parent_summary')
+          .in('assignee_account_id', jiraAccountIds)
+          .order('jira_updated_at', { ascending: false })
+          .limit(200);
+
+        setAssignedItems(assigned || []);
+
+        // Worked on: for now same as assigned (user's name appears as assignee)
+        // In future, can expand to check comments/changelog
+        setWorkedOnItems(assigned || []);
+
+        // Starred: fetch from user_starred_items
+        const { data: stars } = await supabase
+          .from('user_starred_items')
+          .select('item_id, item_type')
+          .eq('user_id', authUser.id);
+
+        if (stars && stars.length > 0) {
+          const starredKeys = new Set(stars.map(s => s.item_id));
+          setStarredItems(starredKeys as any);
+
+          // Fetch the actual starred issue data
+          // item_id might be UUID or issue_key, let's handle both
+          const itemIds = stars.map(s => s.item_id);
+          const { data: starredIssues } = await supabase
+            .from('ph_issues')
+            .select('issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, priority, jira_updated_at, parent_key, parent_summary')
+            .in('issue_key', itemIds)
+            .order('jira_updated_at', { ascending: false });
+
+          setStarredData(starredIssues || []);
+        }
+      } catch (err) {
+        console.error('Error fetching ForYou data:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchIssues();
+  }, [authUser?.id, jiraAccountIds]);
 
   const user = {
     id: authUser?.id || 'current-user',
@@ -116,21 +258,23 @@ export function useForYouData() {
     lastName: userProfile?.lastName || '',
   };
 
+  // Pick source data based on active tab
+  const sourceItems = useMemo(() => {
+    switch (activeTab) {
+      case 'assigned': return assignedItems;
+      case 'starred': return starredData;
+      case 'worked':
+      default: return workedOnItems;
+    }
+  }, [activeTab, workedOnItems, assignedItems, starredData]);
+
   // Filtered and grouped work items
   const filteredItems = useMemo(() => {
-    let items = MOCK_WORK_ITEMS.map(item => ({
-      ...item,
-      starred: starredItems.has(item.id),
-    }));
+    let items = sourceItems.map(row => mapIssueToWorkItem(row, starredItems));
 
     // Filter by mode
     if (activeMode !== 'all') {
       items = items.filter(item => item.mode.toLowerCase() === activeMode);
-    }
-
-    // Filter by tab
-    if (activeTab === 'starred') {
-      items = items.filter(item => item.starred);
     }
 
     // Filter by search
@@ -143,7 +287,7 @@ export function useForYouData() {
     }
 
     return items;
-  }, [activeMode, activeTab, searchQuery, starredItems]);
+  }, [sourceItems, activeMode, searchQuery, starredItems]);
 
   // Group items
   const groupedItems = useMemo(() => {
@@ -162,23 +306,24 @@ export function useForYouData() {
 
   // Counts for tabs
   const tabCounts = useMemo(() => ({
-    worked: MOCK_WORK_ITEMS.length,
-    assigned: MOCK_WORK_ITEMS.filter(i => i.assignee.id === 'u1').length,
-    starred: starredItems.size,
-  }), [starredItems]);
+    worked: workedOnItems.length,
+    assigned: assignedItems.length,
+    starred: starredData.length,
+  }), [workedOnItems, assignedItems, starredData]);
 
-  // AI Data
-  const aiData = useMemo(() => {
-    const priorityItem = MOCK_AI_SUGGESTIONS.find(s => s.isPriority);
-    const nextItems = MOCK_AI_SUGGESTIONS.filter(s => !s.isPriority).slice(0, 2);
-    
-    return {
-      criticalCount: 3,
-      priorityItem,
-      nextItems,
-      suggestions: MOCK_AI_SUGGESTIONS,
-    };
-  }, []);
+  // AI Data (empty for now)
+  const aiData = useMemo(() => ({
+    criticalCount: 0,
+    priorityItem: undefined,
+    nextItems: [] as AISuggestion[],
+    suggestions: [] as AISuggestion[],
+  }), []);
+
+  // Performance stats (empty for now)
+  const performanceStats: PerformanceStats = {
+    closed: 0, ops: 0, del: 0, pln: 0,
+    slaRate: 0, percentChange: 0, personalBest: 0,
+  };
 
   // Handlers
   const handleRowClick = (itemId: string) => {
@@ -201,7 +346,12 @@ export function useForYouData() {
     console.log('Show deprioritize options');
   };
 
-  const toggleStar = (itemId: string) => {
+  const toggleStar = async (itemId: string) => {
+    if (!authUser?.id) return;
+    
+    const isCurrentlyStarred = starredItems.has(itemId);
+    
+    // Optimistic update
     setStarredItems(prev => {
       const next = new Set(prev);
       if (next.has(itemId)) {
@@ -211,6 +361,33 @@ export function useForYouData() {
       }
       return next;
     });
+
+    try {
+      if (isCurrentlyStarred) {
+        await supabase
+          .from('user_starred_items')
+          .delete()
+          .eq('user_id', authUser.id)
+          .eq('item_id', itemId);
+      } else {
+        await supabase
+          .from('user_starred_items')
+          .insert({
+            user_id: authUser.id,
+            item_id: itemId,
+            item_type: 'ph_issue',
+          });
+      }
+    } catch (err) {
+      console.error('Error toggling star:', err);
+      // Revert optimistic update
+      setStarredItems(prev => {
+        const next = new Set(prev);
+        if (isCurrentlyStarred) next.add(itemId);
+        else next.delete(itemId);
+        return next;
+      });
+    }
   };
 
   return {
@@ -232,8 +409,8 @@ export function useForYouData() {
     groupedItems,
     tabCounts,
     aiData,
-    performanceStats: MOCK_PERFORMANCE_STATS,
-    isLoading: false,
+    performanceStats,
+    isLoading,
 
     // Handlers
     handleRowClick,
