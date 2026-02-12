@@ -21,8 +21,8 @@ export interface WorkspaceContext {
  */
 export function deriveWorkspaceType(pathname: string): WorkspaceType {
   
-  // WorkHub module - Jira integration & portfolio management
-  if (pathname.startsWith('/workhub')) {
+  // WorkHub/ProjectHub module - Jira integration & portfolio management
+  if (pathname.startsWith('/workhub') || pathname.startsWith('/projecthub')) {
     return 'workhub';
   }
   

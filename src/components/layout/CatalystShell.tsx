@@ -91,8 +91,8 @@ function CatalystShellContent() {
   // Check if on TestHub route
   const isTestHubRoute = location.pathname.startsWith('/testhub');
 
-  // Check if on WorkHub route (v4.5)
-  const isWorkHubRoute = location.pathname.startsWith('/workhub');
+  // Check if on WorkHub/ProjectHub route (v4.5)
+  const isWorkHubRoute = location.pathname.startsWith('/workhub') || location.pathname.startsWith('/projecthub');
 
   // Prevent full document reloads caused by accidental <a href="/..."> navigation.
   // IMPORTANT: In Preview, the URL contains special query params (e.g. __lovable_token).
