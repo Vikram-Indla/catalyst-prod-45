@@ -23,6 +23,7 @@ export interface Resource360Person {
   release_names: string[];
   theme_names: string[];
   next_due_date: string | null;
+  assignment_type: string | null;
 }
 
 export interface Resource360Department {
@@ -56,10 +57,23 @@ export function useResource360People() {
       // 1. Get ALL active resources from resource_inventory (source of truth for headcount)
       const { data: resources, error: rErr } = await supabase
         .from('resource_inventory')
-        .select('id, name, role_name, profile_id, department_id, department_name, is_active')
+        .select('id, name, role_name, profile_id, department_id, department_name, is_active, assignment_id')
         .eq('is_active', true)
         .order('name');
       if (rErr) throw new Error(rErr.message);
+
+      // 1a. Get assignment types from resource_assignments
+      const assignmentIds = (resources ?? []).map((r: any) => r.assignment_id).filter(Boolean);
+      let assignmentTypeMap = new Map<string, string>();
+      if (assignmentIds.length > 0) {
+        const { data: assignments } = await supabase
+          .from('resource_assignments')
+          .select('id, assignment_type')
+          .in('id', assignmentIds);
+        (assignments ?? []).forEach((a: any) => {
+          if (a.assignment_type) assignmentTypeMap.set(a.id, a.assignment_type);
+        });
+      }
 
       // 1b. Get profiles for avatar_url lookup (only those that exist)
       const profileIds = (resources ?? [])
@@ -165,6 +179,7 @@ export function useResource360People() {
           release_names: [],
           theme_names: [],
           next_due_date: null,
+          assignment_type: r.assignment_id ? (assignmentTypeMap.get(r.assignment_id) || null) : null,
         });
 
         if (r.profile_id) {

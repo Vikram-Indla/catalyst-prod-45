@@ -44,6 +44,11 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
             </div>
             <div style={{ fontSize: 13, color: 'var(--wh-text-secondary, #64748b)', marginTop: 1 }}>
               {r.role || 'Team Member'}
+              {r.assignment_type && (
+                <span style={{ marginLeft: 6, fontSize: 11, padding: '1px 6px', borderRadius: 4, background: 'rgba(100,116,139,0.1)', color: '#475569', fontWeight: 500 }}>
+                  {r.assignment_type}
+                </span>
+              )}
             </div>
           </div>
         </div>
