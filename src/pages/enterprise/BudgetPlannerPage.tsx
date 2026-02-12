@@ -248,7 +248,7 @@ export default function BudgetPlannerPage() {
               <div className="flex flex-col gap-0.5">
                 {/* Breadcrumb - Shows active tab */}
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-medium text-muted-foreground">Enterprise / Budget Planner</span>
+                  <span className="text-xs font-medium text-muted-foreground">Budget Planner</span>
                   <span className="text-xs text-muted-foreground/60">•</span>
                   <span className="text-xs font-medium text-primary">{getActiveTabName()}</span>
                 </div>
