@@ -24,7 +24,7 @@ serve(async (req) => {
     )
 
     const { data: conn } = await supabase
-      .from('wh_jira_connection')
+      .from('ph_jira_connection')
       .select('*')
       .single()
 
@@ -34,7 +34,7 @@ serve(async (req) => {
       })
     }
 
-    await supabase.from('wh_jira_connection')
+    await supabase.from('ph_jira_connection')
       .update({ status: 'testing' })
       .eq('id', conn.id)
 
@@ -240,7 +240,7 @@ serve(async (req) => {
     const totalIssues = checks.find(c => c.name === 'Issue Read')?.data?.total ?? 0
     const totalVersions = checks.find(c => c.name === 'Version Read')?.data?.total ?? 0
 
-    await supabase.from('wh_jira_connection').update({
+    await supabase.from('ph_jira_connection').update({
       status: allPassed ? 'connected' : 'error',
       last_tested_at: new Date().toISOString(),
       last_test_result: { checks, overall: allPassed ? 'success' : 'failure' },

@@ -16,7 +16,7 @@ serve(async (req) => {
     )
 
     const { data: conn } = await supabase
-      .from('wh_jira_connection')
+      .from('ph_jira_connection')
       .select('*')
       .single()
 
@@ -84,7 +84,7 @@ serve(async (req) => {
     const result = buildHierarchy(allIssues)
 
     // Update total counts in DB
-    await supabase.from('wh_jira_connection').update({
+    await supabase.from('ph_jira_connection').update({
       total_issue_count: apiTotal > 0 ? apiTotal : allIssues.length,
     }).eq('id', conn.id)
 

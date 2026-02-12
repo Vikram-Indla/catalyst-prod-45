@@ -32,7 +32,7 @@ serve(async (req) => {
 
   // Create log entry
   const { data: logEntry } = await supabase
-    .from('wh_sync_log')
+    .from('ph_sync_log')
     .insert({ sync_type: syncType, status: 'running', projects_synced: overrideProjects || [] })
     .select()
     .single()
@@ -40,7 +40,7 @@ serve(async (req) => {
 
   try {
     // 1. Get connection credentials
-    const { data: conn } = await supabase.from('wh_jira_connection').select('*').single()
+    const { data: conn } = await supabase.from('ph_jira_connection').select('*').single()
     if (!conn || conn.status !== 'connected') {
       throw new Error('Jira connection not configured or not connected')
     }
@@ -101,12 +101,11 @@ serve(async (req) => {
       jqlParts.push(`project = "${projectKey}"`)
       jqlParts.push(`updated >= -${lookbackDays}d`)
 
-      // Status category filter (Jira native: "To Do", "In Progress", "Done")
+      // Status category filter
       const statusCategories = pConfig.status_categories || []
       if (statusCategories.length > 0) {
         jqlParts.push(`statusCategory in (${statusCategories.map(c => `"${c}"`).join(',')})`)
       } else if (pConfig.statuses && pConfig.statuses.length > 0) {
-        // Legacy fallback: individual statuses
         jqlParts.push(`status in (${pConfig.statuses.map(s => `"${s}"`).join(',')})`)
       }
 
@@ -115,14 +114,20 @@ serve(async (req) => {
       if (projIssueTypes.length > 0) {
         jqlParts.push(`issuetype in (${projIssueTypes.map(t => `"${t}"`).join(',')})`)
       } else if (syncIssueTypes.length > 0) {
-        // Global fallback
         jqlParts.push(`issuetype in (${syncIssueTypes.map(t => `"${t}"`).join(',')})`)
       }
 
       // Per-project fix version filter
-      const projFixVersions = pConfig.fix_versions || []
-      if (projFixVersions.length > 0) {
+      const projFixVersions = (pConfig.fix_versions || []).filter(v => v !== '__NO_VERSION__')
+      const includeNoVersion = (pConfig.fix_versions || []).includes('__NO_VERSION__')
+      
+      if (projFixVersions.length > 0 && includeNoVersion) {
+        // Include both specific versions AND unversioned tickets
+        jqlParts.push(`(fixVersion in (${projFixVersions.map(v => `"${v}"`).join(',')}) OR fixVersion is EMPTY)`)
+      } else if (projFixVersions.length > 0) {
         jqlParts.push(`fixVersion in (${projFixVersions.map(v => `"${v}"`).join(',')})`)
+      } else if (includeNoVersion) {
+        jqlParts.push(`fixVersion is EMPTY`)
       } else if (syncFixVersions.length > 0) {
         jqlParts.push(`fixVersion in (${syncFixVersions.map(v => `"${v}"`).join(',')})`)
       }
@@ -143,7 +148,6 @@ serve(async (req) => {
         if (!res.ok) {
           const errText = await res.text().catch(() => '')
           console.error(`[search] ${projectKey} Error ${res.status}: ${errText.slice(0, 300)}`)
-          // Skip this project on error rather than failing entire sync
           break
         }
 
@@ -241,23 +245,20 @@ serve(async (req) => {
     for (let i = 0; i < rows.length; i += 500) {
       const chunk = rows.slice(i, i + 500)
       const { error } = await supabase
-        .from('wh_issues')
+        .from('ph_issues')
         .upsert(chunk, { onConflict: 'issue_key' })
       if (error) throw error
       upsertedCount += chunk.length
     }
 
     // 8. HARD DELETE — Remove issues not in the fetched set for synced projects
-    // This ensures only items matching the sync criteria remain
     const fetchedKeys = new Set(rows.map(r => r.issue_key))
     let pruned = 0
 
     if (syncType === 'full' && projectsToSync.length > 0) {
-      // For each synced project, delete issues that weren't fetched
       for (const projectKey of projectsToSync) {
-        // Get all existing issue keys for this project
         const { data: existingIssues } = await supabase
-          .from('wh_issues')
+          .from('ph_issues')
           .select('issue_key')
           .eq('project_key', projectKey)
 
@@ -267,11 +268,10 @@ serve(async (req) => {
             .filter((k: string) => !fetchedKeys.has(k))
 
           if (toDelete.length > 0) {
-            // Delete in batches
             for (let i = 0; i < toDelete.length; i += 500) {
               const batch = toDelete.slice(i, i + 500)
               await supabase
-                .from('wh_issues')
+                .from('ph_issues')
                 .delete()
                 .in('issue_key', batch)
             }
@@ -297,12 +297,12 @@ serve(async (req) => {
     })
     if (uniqueUsers.size > 0) {
       await supabase
-        .from('wh_user_mapping')
+        .from('ph_user_mapping')
         .upsert(Array.from(uniqueUsers.values()), { onConflict: 'jira_account_id', ignoreDuplicates: false })
 
       // Propagate Jira avatars to profiles for already-mapped users
       const { data: mappedUsers } = await supabase
-        .from('wh_user_mapping')
+        .from('ph_user_mapping')
         .select('catalyst_profile_id, jira_avatar_url')
         .eq('is_mapped', true)
         .not('jira_avatar_url', 'eq', '')
@@ -337,7 +337,7 @@ serve(async (req) => {
             synced_at: new Date().toISOString(),
           }))
           if (vRows.length > 0) {
-            await supabase.from('wh_versions').upsert(vRows, { onConflict: 'jira_id' })
+            await supabase.from('ph_versions').upsert(vRows, { onConflict: 'jira_id' })
             totalVersions += vRows.length
           }
         }
@@ -347,13 +347,13 @@ serve(async (req) => {
     }
 
     // 11. Parse version names for dates
-    await supabase.rpc('wh_parse_and_update_versions')
+    await supabase.rpc('ph_parse_and_update_versions')
 
     // 12. Recompute effective due dates
-    await supabase.rpc('wh_recompute_all')
+    await supabase.rpc('ph_recompute_all')
 
     // 13. Update connection totals
-    await supabase.from('wh_jira_connection').update({
+    await supabase.from('ph_jira_connection').update({
       total_issue_count: upsertedCount,
       total_version_count: totalVersions,
     }).neq('id', '00000000-0000-0000-0000-000000000000')
@@ -361,7 +361,7 @@ serve(async (req) => {
     // 14. Collect warnings
     const warnings: string[] = []
     const { data: unmapped } = await supabase
-      .from('wh_user_mapping')
+      .from('ph_user_mapping')
       .select('jira_display_name')
       .eq('is_mapped', false)
     if (unmapped && unmapped.length > 0) {
@@ -376,7 +376,7 @@ serve(async (req) => {
 
     // 16. Update log entry
     const duration = Date.now() - startTime
-    await supabase.from('wh_sync_log').update({
+    await supabase.from('ph_sync_log').update({
       status: warnings.length > 0 ? 'warning' : 'success',
       lookback_months: maxLookback,
       jql_query: `Per-project JQL (${projectsToSync.length} projects)`,
@@ -405,7 +405,7 @@ serve(async (req) => {
   } catch (error) {
     const duration = Date.now() - startTime
     if (logId) {
-      await supabase.from('wh_sync_log').update({
+      await supabase.from('ph_sync_log').update({
         status: 'error',
         error_message: (error as Error).message,
         duration_ms: duration,
