@@ -10,6 +10,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 // --- Official Jira icon configs (exact Atlassian SVG paths) ---
 
@@ -113,7 +114,7 @@ export function JiraIssueTypeIcon({ issueType, size = 16, className }: JiraIssue
   const config = ICON_CONFIGS[issueType] || FALLBACK_CONFIG;
   const viewBox = '0 0 14 14';
 
-  return (
+  const icon = (
     <svg
       width={size}
       height={size}
@@ -128,6 +129,19 @@ export function JiraIssueTypeIcon({ issueType, size = 16, className }: JiraIssue
         {config.render(size)}
       </g>
     </svg>
+  );
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          {icon}
+        </TooltipTrigger>
+        <TooltipContent side="top" sideOffset={4}>
+          {config.label}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
