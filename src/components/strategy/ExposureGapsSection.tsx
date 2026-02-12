@@ -70,7 +70,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
         title: `${displayData.alignmentGaps} Alignment Gap${displayData.alignmentGaps !== 1 ? 's' : ''}`,
         reason: `${displayData.misalignedEpics} epics, ${displayData.misalignedFeatures} features`,
         severity: displayData.alignmentGaps > 5 ? 'high' : 'medium',
-        link: '/enterprise/backlog',
+        link: '/strategyhub/backlog',
       });
     }
 
@@ -183,7 +183,7 @@ export function ExposureGapsSection({ snapshotId }: ExposureGapsSectionProps) {
             </div>
             <a 
               className="sr-panel-link"
-              onClick={() => navigate('/enterprise/backlog')}
+              onClick={() => navigate('/strategyhub/backlog')}
               style={{ cursor: 'pointer' }}
             >
               View backlog <ChevronRight size={12} style={{ display: 'inline' }} />
