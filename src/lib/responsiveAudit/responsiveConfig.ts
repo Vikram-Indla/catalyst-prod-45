@@ -38,7 +38,7 @@ export const responsiveRoutes = [
   { path: '/industry/roadmaps', name: 'Executive Roadmaps', category: 'visualization', priority: 'high' },
   
   // Enterprise
-  { path: '/enterprise/strategy-room', name: 'Strategy Room', category: 'dashboard', priority: 'critical' },
+  { path: '/strategyhub/strategy-room', name: 'Strategy Room', category: 'dashboard', priority: 'critical' },
   { path: '/enterprise/okr-heatmap', name: 'OKR Heatmap', category: 'visualization', priority: 'high' },
   { path: '/enterprise/okr-tree', name: 'OKR Tree', category: 'visualization', priority: 'high' },
   { path: '/enterprise/work-tree', name: 'Work Tree', category: 'visualization', priority: 'high' },

@@ -45,7 +45,7 @@ export function SnapshotDetailsDrawer({ open, onClose, snapshot }: SnapshotDetai
   const quarterCount = configuration?.quarters?.length || 0;
 
   const handleNavigateToStrategyRoom = () => {
-    navigate(`/enterprise/strategy-room?snapshot=${snapshot.id}`);
+    navigate(`/strategyhub/strategy-room?snapshot=${snapshot.id}`);
     onClose();
   };
 

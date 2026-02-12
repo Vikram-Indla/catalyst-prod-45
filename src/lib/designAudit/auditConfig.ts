@@ -16,7 +16,7 @@ export const auditRoutes = [
   { path: '/features', name: 'Features List', category: 'table' },
   { path: '/risks', name: 'Risks Grid', category: 'table' },
   { path: '/roadmaps', name: 'Roadmaps', category: 'visualization' },
-  { path: '/enterprise/strategy-room', name: 'Strategy Room', category: 'dashboard' },
+  { path: '/strategyhub/strategy-room', name: 'Strategy Room', category: 'dashboard' },
   { path: '/enterprise/okr-heatmap', name: 'OKR Heatmap', category: 'visualization' },
   { path: '/program-board', name: 'Program Board', category: 'board' },
   { path: '/dependencies', name: 'Dependencies', category: 'table' },

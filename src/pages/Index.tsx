@@ -10,7 +10,7 @@ const Index = () => {
 
   useEffect(() => {
     if (user && !loading) {
-      navigate('/enterprise/strategy-room');
+      navigate('/strategyhub/strategy-room');
     }
   }, [user, loading, navigate]);
 

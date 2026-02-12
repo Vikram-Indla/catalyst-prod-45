@@ -88,7 +88,7 @@ export const routesComponentsRegistry: RegistryEntry[] = [
     id: 'strategy-room',
     category: 'Enterprise',
     name: 'StrategyRoomPage',
-    route: '/enterprise/strategy-room',
+    route: '/strategyhub/strategy-room',
     filePath: 'src/pages/enterprise/StrategyRoomPage.tsx',
     description: 'Executive strategy dashboard with widgets',
     type: 'Page',

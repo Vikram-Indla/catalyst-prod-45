@@ -513,8 +513,8 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/capacity" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/programs" element={<PlaceholderPage />} />
               <Route path="/strategy-room" element={<StrategyRoomPage />} />
-              <Route path="/enterprise/strategy-room" element={<StrategyRoomPage />} />
-              <Route path="/enterprise/strategy-room/capacity" element={<Navigate to="/enterprise/capacity" replace />} />
+              <Route path="/strategyhub/strategy-room" element={<StrategyRoomPage />} />
+              <Route path="/strategyhub/strategy-room/capacity" element={<Navigate to="/enterprise/capacity" replace />} />
               <Route path="/enterprise/capacity" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CapacityPlannerPage /></Suspense>} />
               <Route path="/enterprise/capacity-planner/budget" element={<Suspense fallback={<div className="p-8">Loading...</div>}><BudgetGovernancePage /></Suspense>} />
               <Route path="/enterprise/budget-planner" element={<Suspense fallback={<div className="p-8">Loading...</div>}><BudgetPlannerPage /></Suspense>} />
