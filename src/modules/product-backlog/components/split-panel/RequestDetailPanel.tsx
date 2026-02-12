@@ -368,12 +368,16 @@ export function RequestDetailPanel({
   if (!request) {
     return (
       <div className="h-full flex items-center justify-center" style={{ backgroundColor: 'var(--bg)' }}>
-        <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: 'var(--surface-2)' }}>
-            <FileText className="w-8 h-8" style={{ color: 'var(--text-3)' }} />
+        <div className="text-center max-w-xs mx-auto space-y-4">
+          <div className="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'var(--surface-2)' }}>
+            <FileText className="w-7 h-7" style={{ color: 'var(--text-3)' }} />
           </div>
-          <h3 className="text-lg font-medium" style={{ color: 'var(--text-1)' }}>No request selected</h3>
-          <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>Select a request from the list to view details</p>
+          <div className="space-y-1.5">
+            <h3 className="text-base font-semibold" style={{ color: 'var(--text-1)' }}>No request selected</h3>
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--text-3)' }}>
+              Select a request from the list to view details, edit fields, and manage attachments.
+            </p>
+          </div>
         </div>
       </div>
     );
