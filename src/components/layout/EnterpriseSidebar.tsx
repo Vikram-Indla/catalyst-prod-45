@@ -26,7 +26,7 @@ interface EnterpriseSidebarProps {
 
 const enterpriseSidebarConfig: SidebarConfig = {
   badge: 'ST',
-  label: 'Strategy',
+  label: 'Strategy Hub',
   items: [
     { id: 'strategy-room', title: 'Strategy Room', path: '/enterprise/strategy-room', icon: Focus, exact: true },
     { id: 'strategic-backlog', title: 'Strategic Backlog', path: '/enterprise/backlog', icon: ListTree, exact: false },
