@@ -1,0 +1,58 @@
+<svg width="420" height="80" viewBox="0 0 420 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Catalyst Logo - Convergence Hub Icon + Umbrella-C Wordmark - LIGHT MODE -->
+  
+  <defs>
+    <linearGradient id="catalystBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- ==================== CONVERGENCE HUB ICON ==================== -->
+  <g transform="translate(8, 8)">
+    <!-- Connection lines -->
+    <line x1="32" y1="32" x2="12" y2="12" stroke="#93c5fd" stroke-width="3" stroke-linecap="round"/>
+    <line x1="32" y1="32" x2="52" y2="12" stroke="#93c5fd" stroke-width="3" stroke-linecap="round"/>
+    <line x1="32" y1="32" x2="12" y2="52" stroke="#93c5fd" stroke-width="3" stroke-linecap="round"/>
+    <line x1="32" y1="32" x2="52" y2="52" stroke="#93c5fd" stroke-width="3" stroke-linecap="round"/>
+    <!-- Outer nodes -->
+    <circle cx="12" cy="12" r="8" fill="url(#catalystBlue)"/>
+    <circle cx="52" cy="12" r="8" fill="url(#catalystBlue)"/>
+    <circle cx="12" cy="52" r="8" fill="url(#catalystBlue)"/>
+    <circle cx="52" cy="52" r="8" fill="url(#catalystBlue)"/>
+    <!-- Center hub -->
+    <circle cx="32" cy="32" r="12" fill="url(#catalystBlue)"/>
+    <circle cx="32" cy="32" r="6" fill="white"/>
+  </g>
+  
+  <!-- ==================== UMBRELLA-C WORDMARK ==================== -->
+  <!-- Umbrella arc (protective canopy) -->
+  <path 
+    d="M88 22C88 10 102 4 122 4C142 4 156 10 156 22" 
+    stroke="url(#catalystBlue)" 
+    stroke-width="5" 
+    stroke-linecap="round" 
+    fill="none"
+  />
+  
+  <!-- C letterform -->
+  <path 
+    d="M148 38C148 28 136 22 122 22C104 22 92 32 92 48C92 64 104 74 122 74C136 74 148 68 148 58" 
+    stroke="url(#catalystBlue)" 
+    stroke-width="7" 
+    stroke-linecap="round" 
+    fill="none"
+  />
+  
+  <!-- "atalyst" text -->
+  <text 
+    x="162" 
+    y="62" 
+    font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" 
+    font-size="52" 
+    font-weight="700" 
+    fill="url(#catalystBlue)" 
+    letter-spacing="-1"
+  >atalyst</text>
+  
+</svg>
