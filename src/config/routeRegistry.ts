@@ -17,10 +17,10 @@ export interface RouteConfig {
 export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   // Enterprise routes - Core
   '/strategyhub/strategy-room': { section: 'ENTERPRISE', pageTitle: 'Strategy Room' },
-  '/enterprise/snapshots': { section: 'ENTERPRISE', pageTitle: 'Strategic Snapshots' },
-  '/enterprise/backlog': { section: 'ENTERPRISE', pageTitle: 'Strategic Backlog' },
-  '/enterprise/okr-hub': { section: 'ENTERPRISE', pageTitle: 'Objectives tree' },
-  '/enterprise/okr-tree': { section: 'ENTERPRISE', pageTitle: 'Objective Tree' },
+  '/strategyhub/snapshots': { section: 'ENTERPRISE', pageTitle: 'Strategic Snapshots' },
+  '/strategyhub/backlog': { section: 'ENTERPRISE', pageTitle: 'Strategic Backlog' },
+  '/strategyhub/okr-hub': { section: 'ENTERPRISE', pageTitle: 'Objectives tree' },
+  '/strategyhub/okr-tree': { section: 'ENTERPRISE', pageTitle: 'Objective Tree' },
   '/enterprise/okr-heatmap': { section: 'ENTERPRISE', pageTitle: 'OKR Heatmap' },
   '/enterprise/roadmaps': { section: 'ENTERPRISE', pageTitle: 'Enterprise Roadmap' },
   '/enterprise/risks': { section: 'ENTERPRISE', pageTitle: 'Risks' },

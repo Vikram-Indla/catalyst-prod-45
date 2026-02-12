@@ -105,7 +105,7 @@ export function CreateDropdown() {
     
     // Handle snapshot creation - route to backlog with snapshots tab and create param
     if (type === 'snapshot') {
-      navigate('/enterprise/backlog?tab=snapshots&create=true');
+      navigate('/strategyhub/backlog?tab=snapshots&create=true');
       return;
     }
     

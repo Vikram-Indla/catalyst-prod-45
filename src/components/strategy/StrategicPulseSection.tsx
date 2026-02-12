@@ -187,7 +187,7 @@ export function StrategicPulseSection({ snapshotId }: StrategicPulseSectionProps
             value={displayData.alignmentGaps}
             subtext={displayData.alignmentGaps === 0 ? 'Aligned' : 'Unlinked'}
             icon={<Target size={18} />}
-            onClick={() => navigate('/enterprise/backlog')}
+            onClick={() => navigate('/strategyhub/backlog')}
             accentColor={displayData.alignmentGaps > 0 ? 'warning' : undefined}
             tooltip={METRIC_TOOLTIPS.gaps}
           />

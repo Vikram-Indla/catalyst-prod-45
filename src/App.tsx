@@ -518,11 +518,11 @@ const App = () => (
               <Route path="/strategyhub/strategy-room/capacity" element={<Navigate to="/enterprise/capacity" replace />} />
               <Route path="/enterprise/capacity" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CapacityPlannerPage /></Suspense>} />
               <Route path="/enterprise/capacity-planner/budget" element={<Suspense fallback={<div className="p-8">Loading...</div>}><BudgetGovernancePage /></Suspense>} />
-              <Route path="/enterprise/budget-planner" element={<Suspense fallback={<div className="p-8">Loading...</div>}><BudgetPlannerPage /></Suspense>} />
-              <Route path="/enterprise/snapshots" element={<StrategicSnapshots />} />
-              <Route path="/enterprise/backlog" element={<StrategicBacklog />} />
-              <Route path="/enterprise/okr-heatmap" element={<EnterpriseComingSoon />} />
-              <Route path="/enterprise/okr-tree" element={<OKRTree />} />
+              <Route path="/strategyhub/budget-planner" element={<Suspense fallback={<div className="p-8">Loading...</div>}><BudgetPlannerPage /></Suspense>} />
+              <Route path="/strategyhub/snapshots" element={<StrategicSnapshots />} />
+              <Route path="/strategyhub/backlog" element={<StrategicBacklog />} />
+              <Route path="/strategyhub/okr-heatmap" element={<EnterpriseComingSoon />} />
+              <Route path="/strategyhub/okr-tree" element={<OKRTree />} />
               <Route path="/enterprise/okr-hub" element={<OKRHub />} />
               <Route path="/portfolio/:portfolioId/okr-hub" element={<OKRHub />} />
               <Route path="/program/:programId/okr-hub" element={<OKRHub />} />

@@ -178,7 +178,7 @@ export function SnapshotHealthStrip({ snapshotId }: SnapshotHealthStripProps) {
         value={alignmentGaps}
         icon={<Target size={14} />}
         status={gapStatus}
-        onClick={() => navigate('/enterprise/backlog')}
+        onClick={() => navigate('/strategyhub/backlog')}
       />
       
       <MetricPill
