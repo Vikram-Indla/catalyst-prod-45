@@ -1,10 +1,10 @@
 /**
  * Scope Tabs Navigation
  * Tab navigation for My Test Scope views
+ * Styled to match dashboard: white bg, consistent borders
  */
 
 import React from 'react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FileCheck, Bug, Zap, Network, BarChart3 } from 'lucide-react';
 import type { TestScopeTab } from '../types';
 
@@ -18,34 +18,58 @@ interface ScopeTabsProps {
   };
 }
 
+const TABS: { value: TestScopeTab; label: string; icon: React.ComponentType<{ style?: React.CSSProperties }>; countKey?: keyof ScopeTabsProps['counts'] }[] = [
+  { value: 'tests', label: 'My Tests', icon: FileCheck, countKey: 'tests' },
+  { value: 'defects', label: 'Linked Defects', icon: Bug, countKey: 'defects' },
+  { value: 'incidents', label: 'Incidents', icon: Zap, countKey: 'incidents' },
+  { value: 'traceability', label: 'Traceability', icon: Network },
+  { value: 'workload', label: 'Workload', icon: BarChart3 },
+];
+
 export function ScopeTabs({ activeTab, onTabChange, counts }: ScopeTabsProps) {
   return (
-    <Tabs value={activeTab} onValueChange={(v) => onTabChange(v as TestScopeTab)}>
-      <TabsList className="w-full justify-start h-auto p-1 bg-muted/50 rounded-none border-b border-border">
-        <TabsTrigger value="tests" className="gap-2 data-[state=active]:bg-background">
-          <FileCheck className="h-4 w-4" />
-          My Tests
-          <span className="ml-1 text-xs bg-muted px-1.5 py-0.5 rounded">{counts.tests}</span>
-        </TabsTrigger>
-        <TabsTrigger value="defects" className="gap-2 data-[state=active]:bg-background">
-          <Bug className="h-4 w-4" />
-          Linked Defects
-          <span className="ml-1 text-xs bg-muted px-1.5 py-0.5 rounded">{counts.defects}</span>
-        </TabsTrigger>
-        <TabsTrigger value="incidents" className="gap-2 data-[state=active]:bg-background">
-          <Zap className="h-4 w-4" />
-          Incidents
-          <span className="ml-1 text-xs bg-muted px-1.5 py-0.5 rounded">{counts.incidents}</span>
-        </TabsTrigger>
-        <TabsTrigger value="traceability" className="gap-2 data-[state=active]:bg-background">
-          <Network className="h-4 w-4" />
-          Traceability
-        </TabsTrigger>
-        <TabsTrigger value="workload" className="gap-2 data-[state=active]:bg-background">
-          <BarChart3 className="h-4 w-4" />
-          Workload
-        </TabsTrigger>
-      </TabsList>
-    </Tabs>
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 0,
+      borderBottom: '1px solid #E2E8F0',
+      backgroundColor: '#FFFFFF',
+      padding: '0 24px',
+      flexShrink: 0,
+      fontFamily: 'Inter, sans-serif',
+    }}>
+      {TABS.map((tab) => {
+        const isActive = activeTab === tab.value;
+        const count = tab.countKey ? counts[tab.countKey] : undefined;
+        return (
+          <button
+            key={tab.value}
+            onClick={() => onTabChange(tab.value)}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '10px 16px',
+              fontSize: 13, fontWeight: isActive ? 600 : 500,
+              color: isActive ? '#2563EB' : '#64748B',
+              background: 'none', border: 'none',
+              borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
+              cursor: 'pointer',
+              transition: 'color 150ms, border-color 150ms',
+              marginBottom: -1,
+            }}
+          >
+            <tab.icon style={{ width: 14, height: 14 }} />
+            {tab.label}
+            {count !== undefined && (
+              <span style={{
+                fontSize: 11, fontWeight: 600,
+                background: isActive ? '#EFF6FF' : '#F1F5F9',
+                color: isActive ? '#2563EB' : '#64748B',
+                padding: '1px 6px', borderRadius: 4,
+              }}>
+                {count}
+              </span>
+            )}
+          </button>
+        );
+      })}
+    </div>
   );
 }

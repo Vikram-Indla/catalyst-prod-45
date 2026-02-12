@@ -1,12 +1,11 @@
 /**
  * AI "Start My Day" Card
  * Shows AI-recommended next test with reasons
+ * Styled to match dashboard widget pattern: white bg, #E2E8F0 border
  */
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import { Sparkles, Play, SkipForward } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { getScoreColor } from '../types';
 import type { AIRecommendation } from '../types';
 
@@ -19,17 +18,30 @@ interface AIStartMyDayProps {
 export function AIStartMyDay({ recommendation, onStartTest, onSkip }: AIStartMyDayProps) {
   const { priorityTest, reasons } = recommendation;
 
+  const cardStyle: React.CSSProperties = {
+    flex: 1,
+    padding: 20,
+    background: '#FFFFFF',
+    border: '1px solid #E2E8F0',
+    borderRadius: 8,
+    fontFamily: 'Inter, sans-serif',
+  };
+
   if (!priorityTest) {
     return (
-      <div className="flex-1 p-6 bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg border border-primary/20">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="p-2 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500">
-            <Sparkles className="h-5 w-5 text-white" />
+      <div style={cardStyle}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <div style={{
+            width: 32, height: 32, borderRadius: 8,
+            background: 'linear-gradient(135deg, #8B5CF6, #6366F1)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Sparkles style={{ width: 16, height: 16, color: '#FFFFFF' }} />
           </div>
-          <h3 className="font-semibold text-foreground">AI Start My Day</h3>
+          <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>AI Start My Day</span>
         </div>
-        <p className="text-sm text-muted-foreground">
-          🎉 All tests complete! No pending work in your queue.
+        <p style={{ fontSize: 13, color: '#64748B' }}>
+          All tests complete! No pending work in your queue.
         </p>
       </div>
     );
@@ -38,53 +50,66 @@ export function AIStartMyDay({ recommendation, onStartTest, onSkip }: AIStartMyD
   const scoreColor = getScoreColor(priorityTest.priorityScore);
 
   return (
-    <div className="flex-1 p-6 bg-gradient-to-br from-violet-500/5 via-indigo-500/5 to-primary/5 rounded-lg border border-primary/20">
-      <div className="flex items-center gap-2 mb-4">
-        <div className="p-2 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500">
-          <Sparkles className="h-5 w-5 text-white" />
+    <div style={cardStyle}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+        <div style={{
+          width: 32, height: 32, borderRadius: 8,
+          background: 'linear-gradient(135deg, #8B5CF6, #6366F1)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <Sparkles style={{ width: 16, height: 16, color: '#FFFFFF' }} />
         </div>
-        <h3 className="font-semibold text-foreground">AI Start My Day</h3>
+        <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>AI Start My Day</span>
       </div>
 
-      <div className="mb-4">
-        <div className="flex items-center gap-3 mb-2">
-          <span className="text-sm text-muted-foreground">Start with</span>
-          <span 
-            className="inline-flex items-center justify-center w-10 h-6 rounded text-xs font-bold text-white"
-            style={{ backgroundColor: scoreColor }}
-          >
+      <div style={{ marginBottom: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+          <span style={{ fontSize: 13, color: '#64748B' }}>Start with</span>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            minWidth: 32, height: 22, borderRadius: 4, fontSize: 12, fontWeight: 700,
+            color: '#FFFFFF', backgroundColor: scoreColor, padding: '0 6px',
+          }}>
             {priorityTest.priorityScore}
           </span>
         </div>
-        <p className="font-medium text-foreground">
+        <p style={{ fontWeight: 500, color: '#0F172A', fontSize: 14, margin: 0 }}>
           {priorityTest.key} — {priorityTest.title}
         </p>
       </div>
 
-      {/* Reasons */}
-      <ul className="space-y-1 mb-4">
+      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 14px 0' }}>
         {reasons.map((reason, index) => (
-          <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-            <span className="text-primary">•</span>
+          <li key={index} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, fontSize: 13, color: '#64748B', marginBottom: 4 }}>
+            <span style={{ color: '#2563EB' }}>•</span>
             {reason}
           </li>
         ))}
       </ul>
 
-      {/* Actions */}
-      <div className="flex items-center gap-2">
-        <Button 
-          size="sm" 
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <button
           onClick={() => onStartTest(priorityTest.scopeId)}
-          className="bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            height: 32, padding: '0 14px', fontSize: 13, fontWeight: 500,
+            color: '#FFFFFF', background: 'linear-gradient(135deg, #8B5CF6, #6366F1)',
+            border: 'none', borderRadius: 6, cursor: 'pointer',
+          }}
         >
-          <Play className="h-4 w-4 mr-2" />
-          Start This Test
-        </Button>
-        <Button variant="ghost" size="sm" onClick={onSkip}>
-          <SkipForward className="h-4 w-4 mr-1" />
-          Skip
-        </Button>
+          <Play style={{ width: 13, height: 13 }} /> Start This Test
+        </button>
+        <button
+          onClick={onSkip}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4,
+            height: 32, padding: '0 12px', fontSize: 13, fontWeight: 500,
+            color: '#64748B', background: 'transparent',
+            border: 'none', borderRadius: 6, cursor: 'pointer',
+          }}
+        >
+          <SkipForward style={{ width: 13, height: 13 }} /> Skip
+        </button>
       </div>
     </div>
   );
