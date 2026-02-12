@@ -12917,6 +12917,48 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_issue_type_icons: {
+        Row: {
+          bg_color: string
+          category: string
+          color: string
+          created_at: string
+          id: string
+          issue_type: string
+          label: string
+          sort_order: number
+          svg_path: string
+          svg_viewbox: string
+          updated_at: string
+        }
+        Insert: {
+          bg_color: string
+          category?: string
+          color: string
+          created_at?: string
+          id?: string
+          issue_type: string
+          label: string
+          sort_order?: number
+          svg_path: string
+          svg_viewbox?: string
+          updated_at?: string
+        }
+        Update: {
+          bg_color?: string
+          category?: string
+          color?: string
+          created_at?: string
+          id?: string
+          issue_type?: string
+          label?: string
+          sort_order?: number
+          svg_path?: string
+          svg_viewbox?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ph_issues: {
         Row: {
           assignee_account_id: string | null
@@ -12941,6 +12983,8 @@ export type Database = {
           priority: string | null
           project_key: string
           raw_json: Json | null
+          reporter_account_id: string | null
+          reporter_display_name: string | null
           resolution: string | null
           sprint_name: string | null
           status: string
@@ -12974,6 +13018,8 @@ export type Database = {
           priority?: string | null
           project_key: string
           raw_json?: Json | null
+          reporter_account_id?: string | null
+          reporter_display_name?: string | null
           resolution?: string | null
           sprint_name?: string | null
           status?: string
@@ -13007,6 +13053,8 @@ export type Database = {
           priority?: string | null
           project_key?: string
           raw_json?: Json | null
+          reporter_account_id?: string | null
+          reporter_display_name?: string | null
           resolution?: string | null
           sprint_name?: string | null
           status?: string

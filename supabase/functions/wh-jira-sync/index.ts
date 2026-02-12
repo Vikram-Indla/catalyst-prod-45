@@ -215,6 +215,8 @@ serve(async (req) => {
         status_category: issue.fields.status?.statusCategory?.name || mapStatusCategory(issue.fields.status?.name || 'To Do'),
         assignee_account_id: issue.fields.assignee?.accountId || null,
         assignee_display_name: issue.fields.assignee?.displayName || null,
+        reporter_account_id: issue.fields.reporter?.accountId || null,
+        reporter_display_name: issue.fields.reporter?.displayName || null,
         parent_key: issue.fields.parent?.key || null,
         parent_summary: issue.fields.parent?.fields?.summary || null,
         hierarchy_level: getHierarchyLevel(issue.fields.issuetype?.name || 'Task'),

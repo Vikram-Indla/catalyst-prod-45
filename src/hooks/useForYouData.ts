@@ -26,6 +26,7 @@ export interface WorkItem {
   level: string;
   updatedAt: string;
   assignee: WorkItemAssignee;
+  reporter?: string;
   group: WorkGroup;
   starred?: boolean;
 }
@@ -112,6 +113,7 @@ function mapIssueToWorkItem(row: any, starredSet: Set<string>): WorkItem {
       initials: getInitials(assigneeName),
       avatarColor: '#6b7280',
     },
+    reporter: row.reporter_display_name || undefined,
     group: row.jira_updated_at ? computeGroup(row.jira_updated_at) : 'EARLIER',
     starred: starredSet.has(row.issue_key),
   };
@@ -211,7 +213,7 @@ export function useForYouData() {
         // Assigned: directly assigned to user
         const { data: assigned } = await supabase
           .from('ph_issues')
-          .select('issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, priority, jira_updated_at, parent_key, parent_summary')
+          .select('issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, parent_key, parent_summary')
           .in('assignee_account_id', jiraAccountIds)
           .order('jira_updated_at', { ascending: false })
           .limit(200);
@@ -237,7 +239,7 @@ export function useForYouData() {
           const itemIds = stars.map(s => s.item_id);
           const { data: starredIssues } = await supabase
             .from('ph_issues')
-            .select('issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, priority, jira_updated_at, parent_key, parent_summary')
+            .select('issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, parent_key, parent_summary')
             .in('issue_key', itemIds)
             .order('jira_updated_at', { ascending: false });
 
