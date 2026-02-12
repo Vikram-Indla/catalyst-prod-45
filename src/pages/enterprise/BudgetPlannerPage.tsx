@@ -240,9 +240,9 @@ export default function BudgetPlannerPage() {
     <PageChrome hideHeader>
       <div className="budget-module flex flex-col h-full bg-[hsl(var(--background))]">
         {/* Header - Matches Capacity Planner 2-Row Structure */}
-        <div className="bg-card" style={{ borderBottom: '1px solid #e4e4e7' }}>
+        <div className="bg-card">
           {/* ROW 1: Title + Live Badge (inline) */}
-          <div className="flex items-center justify-between px-5 h-16 border-b border-border/40">
+          <div className="flex items-center justify-between px-5 h-16">
             {/* Left: Title + Live Badge Inline */}
             <div className="flex items-center gap-4">
                <div className="flex flex-col gap-0.5">
@@ -253,12 +253,12 @@ export default function BudgetPlannerPage() {
               </div>
               
               {/* Live Badge - Inline with title */}
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border bg-muted border-border">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border bg-emerald-50 border-emerald-200">
                 <span className="relative flex items-center justify-center">
                   <span className="w-2 h-2 rounded-full bg-emerald-500" />
                   <span className="absolute w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
                 </span>
-                <span className="text-xs font-semibold text-foreground">Live</span>
+                <span className="text-xs font-semibold text-emerald-700">Live</span>
               </div>
             </div>
 
@@ -267,40 +267,42 @@ export default function BudgetPlannerPage() {
             </div>
           </div>
 
-          {/* ROW 2: Search + Hero Tabs */}
-          <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search assignments..."
-                className="w-56 h-10 pl-10 pr-3 text-sm rounded-xl bg-muted/60 border-border focus:bg-card placeholder:text-muted-foreground"
-              />
-            </div>
+          {/* ROW 2: Search + Hero Tabs — floating strip */}
+          <div className="px-6 pb-4 pt-3" style={{ backgroundColor: 'hsl(var(--muted))' }}>
+            <div className="flex items-center justify-between px-5 py-3 bg-card border border-border rounded-xl shadow-sm">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search assignments..."
+                  className="w-56 h-10 pl-10 pr-3 text-sm rounded-xl bg-slate-100 border-slate-200 focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-muted-foreground"
+                />
+              </div>
 
-            {/* Hero Tab Strip - Right Aligned */}
-            <nav className="flex items-center gap-1 bg-muted rounded-xl p-1.5 border border-border">
-              {viewTabs.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={tab.onClick}
-                    className={cn(
-                      'flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-150',
-                      tab.isActive 
-                        ? 'bg-primary text-primary-foreground shadow-md'
-                        : 'text-muted-foreground hover:bg-card hover:shadow-sm hover:text-foreground'
-                    )}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span>{tab.label}</span>
-                  </button>
-                );
-              })}
-            </nav>
+              {/* Hero Tab Strip - Right Aligned */}
+              <nav className="flex items-center gap-1 bg-slate-100 rounded-xl p-1.5 border border-slate-200">
+                {viewTabs.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={tab.onClick}
+                      className={cn(
+                        'flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-150',
+                        tab.isActive 
+                          ? 'bg-[#2563eb] text-white shadow-md'
+                          : 'text-slate-700 hover:bg-white hover:shadow-sm hover:text-slate-900'
+                      )}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
           </div>
         </div>
 
