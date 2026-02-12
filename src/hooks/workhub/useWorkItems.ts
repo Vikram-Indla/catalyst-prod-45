@@ -141,39 +141,58 @@ export function useWorkItems(
     queryKey: ['projecthub', 'work-items', filters, page, pageSize],
     queryFn: async () => {
       if (hasVersionFilter) {
+        // Use server-side JSONB containment for each version name
+        // Build an OR filter using PostgREST contains operator
+        const versionNames = filters!.fix_version_names!;
+        
+        // For a single version, use contains directly
+        // For multiple, we need to do parallel queries and merge
         const allItems: JiraIssue[] = [];
-        const batchSize = 1000;
-        let batchPage = 0;
-        let hasMore = true;
-        while (hasMore) {
-          const from = batchPage * batchSize;
-          const to = from + batchSize - 1;
-          let q = supabase
-            .from('ph_issues')
-            .select('*')
-            .order('jira_updated_at', { ascending: false })
-            .range(from, to);
-          q = buildFilteredQuery(q, filters);
-          const { data, error } = await q;
-          if (error) throw new Error(error.message);
-          if (!data || data.length === 0) break;
-          allItems.push(...(data as unknown as JiraIssue[]));
-          hasMore = data.length === batchSize;
-          batchPage++;
+        
+        for (const vName of versionNames) {
+          let batchPage = 0;
+          let hasMore = true;
+          const batchSize = 1000;
+          while (hasMore) {
+            const from = batchPage * batchSize;
+            const to = from + batchSize - 1;
+            let q = supabase
+              .from('ph_issues')
+              .select('*')
+              .contains('fix_versions', JSON.stringify([{ name: vName }]))
+              .order('jira_updated_at', { ascending: false })
+              .range(from, to);
+            // Apply other filters (not fix_version_names)
+            const otherFilters = { ...filters, fix_version_names: undefined };
+            q = buildFilteredQuery(q, otherFilters);
+            const { data, error } = await q;
+            if (error) throw new Error(error.message);
+            if (!data || data.length === 0) break;
+            allItems.push(...(data as unknown as JiraIssue[]));
+            hasMore = data.length === batchSize;
+            batchPage++;
+          }
         }
-        const versionNames = new Set(filters!.fix_version_names!);
-        const filtered = allItems.filter(item => {
-          if (!Array.isArray(item.fix_versions) || item.fix_versions.length === 0) return false;
-          return item.fix_versions.some((v: any) => versionNames.has(v.name));
+        
+        // Deduplicate by issue_key (item may match multiple versions)
+        const seen = new Set<string>();
+        const unique = allItems.filter(item => {
+          if (seen.has(item.issue_key)) return false;
+          seen.add(item.issue_key);
+          return true;
         });
+        
+        // Sort by jira_updated_at desc
+        unique.sort((a, b) => (b.jira_updated_at || '').localeCompare(a.jira_updated_at || ''));
+        
         const from = page * pageSize;
-        const paged = filtered.slice(from, from + pageSize);
+        const paged = unique.slice(from, from + pageSize);
         return {
           items: paged,
-          totalCount: filtered.length,
+          totalCount: unique.length,
           page,
           pageSize,
-          totalPages: Math.ceil(filtered.length / pageSize),
+          totalPages: Math.ceil(unique.length / pageSize),
         };
       }
 
