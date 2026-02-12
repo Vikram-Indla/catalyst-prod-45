@@ -1,60 +1,69 @@
 /**
- * Resource360Page — Team capacity & utilization list
- * Phase 6: Resource 360
+ * Resource360Page — Team resource view based on profiles + subtasks
+ * Departments from admin/users, work from subtasks of active stories
  */
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, TrendingUp, AlertTriangle, BarChart3 } from 'lucide-react';
-import { useResourceUtilization } from '@/hooks/workhub/useResources';
+import { useResource360People, useResource360Departments } from '@/hooks/workhub/useResource360Data';
 import { ResourceCard } from './ResourceCard';
-import type { ResourceUtilization } from '@/types/workhub.types';
 
-type SortMode = 'utilization' | 'name' | 'department';
+type SortMode = 'name' | 'department' | 'active';
 
 export function Resource360Page() {
   const navigate = useNavigate();
-  const { data: resources = [], isLoading } = useResourceUtilization();
-  const [activeDept, setActiveDept] = useState('All');
-  const [sortBy, setSortBy] = useState<SortMode>('utilization');
+  const { data: people = [], isLoading: loadingPeople } = useResource360People();
+  const { data: departments = [], isLoading: loadingDepts } = useResource360Departments();
 
-  // Department tabs
-  const departments = useMemo(() => {
-    const counts: Record<string, number> = {};
-    resources.forEach(r => {
-      const d = r.department || 'Other';
-      counts[d] = (counts[d] || 0) + 1;
+  // Default department to Delivery
+  const deliveryDept = departments.find(d => d.name === 'Delivery');
+  const [activeDeptId, setActiveDeptId] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<SortMode>('name');
+
+  // Use Delivery as default once loaded
+  const effectiveDeptId = activeDeptId === null && deliveryDept ? deliveryDept.id : activeDeptId;
+  const isAll = effectiveDeptId === 'all';
+
+  // Department counts
+  const deptCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    people.forEach(p => {
+      if (p.department_id) {
+        map.set(p.department_id, (map.get(p.department_id) || 0) + 1);
+      }
     });
-    return Object.entries(counts).sort(([a], [b]) => a.localeCompare(b));
-  }, [resources]);
+    return map;
+  }, [people]);
 
-  // Filter
+  // Filter by department
   const filtered = useMemo(() => {
-    if (activeDept === 'All') return resources;
-    return resources.filter(r => r.department === activeDept);
-  }, [resources, activeDept]);
+    if (isAll) return people;
+    return people.filter(p => p.department_id === effectiveDeptId);
+  }, [people, effectiveDeptId, isAll]);
 
   // Sort
   const sorted = useMemo(() => {
     const arr = [...filtered];
     switch (sortBy) {
       case 'name':
-        return arr.sort((a, b) => a.name.localeCompare(b.name));
+        return arr.sort((a, b) => a.full_name.localeCompare(b.full_name));
       case 'department':
         return arr.sort((a, b) =>
-          (a.department || '').localeCompare(b.department || '') || a.name.localeCompare(b.name)
+          (a.department_name || '').localeCompare(b.department_name || '') || a.full_name.localeCompare(b.full_name)
         );
-      case 'utilization':
+      case 'active':
+        return arr.sort((a, b) => b.active_subtasks - a.active_subtasks);
       default:
-        return arr.sort((a, b) => b.utilization_percent - a.utilization_percent);
+        return arr;
     }
   }, [filtered, sortBy]);
 
-  // Department-grouped rendering
+  // Department-grouped
   const groupedByDept = useMemo(() => {
     if (sortBy !== 'department') return null;
-    const map = new Map<string, ResourceUtilization[]>();
+    const map = new Map<string, typeof sorted>();
     sorted.forEach(r => {
-      const d = r.department || 'Other';
+      const d = r.department_name || 'Other';
       if (!map.has(d)) map.set(d, []);
       map.get(d)!.push(r);
     });
@@ -63,14 +72,12 @@ export function Resource360Page() {
 
   // KPIs
   const kpis = useMemo(() => {
-    const total = resources.length;
-    const overUtil = resources.filter(r => r.utilization_percent > 80).length;
-    const blockedSum = resources.reduce((s, r) => s + r.blocked_items, 0);
-    const avgUtil = total > 0 ? Math.round(resources.reduce((s, r) => s + r.utilization_percent, 0) / total) : 0;
-    return { total, overUtil, blockedSum, avgUtil };
-  }, [resources]);
-
-  const avgUtilColor = kpis.avgUtil > 80 ? '#ef4444' : kpis.avgUtil >= 60 ? '#d97706' : '#16a34a';
+    const total = filtered.length;
+    const activeItems = filtered.reduce((s, r) => s + r.active_subtasks, 0);
+    const doneItems = filtered.reduce((s, r) => s + r.done_subtasks, 0);
+    const blockedSum = filtered.reduce((s, r) => s + r.blocked_items, 0);
+    return { total, activeItems, doneItems, blockedSum };
+  }, [filtered]);
 
   const pillStyle = (active: boolean): React.CSSProperties => ({
     padding: '6px 16px',
@@ -84,6 +91,8 @@ export function Resource360Page() {
     transition: 'background 150ms, color 150ms',
     fontFamily: 'Inter, system-ui, sans-serif',
   });
+
+  const isLoading = loadingPeople || loadingDepts;
 
   if (isLoading) {
     return (
@@ -102,19 +111,23 @@ export function Resource360Page() {
             Resource 360
           </h1>
           <p style={{ fontSize: 14, color: 'var(--wh-text-secondary, #64748b)', margin: '2px 0 0' }}>
-            Team capacity &amp; utilization — {resources.length} members
+            Team assignments &amp; subtask scope — {filtered.length} members
           </p>
         </div>
       </div>
 
       {/* Department Tabs */}
       <div style={{ padding: '16px 24px', display: 'flex', flexWrap: 'wrap', gap: 6, flexShrink: 0 }}>
-        <button onClick={() => setActiveDept('All')} style={pillStyle(activeDept === 'All')}>
-          All ({resources.length})
+        <button onClick={() => setActiveDeptId('all')} style={pillStyle(isAll)}>
+          All ({people.length})
         </button>
-        {departments.map(([dept, count]) => (
-          <button key={dept} onClick={() => setActiveDept(dept)} style={pillStyle(activeDept === dept)}>
-            {dept} ({count})
+        {departments.map(dept => (
+          <button
+            key={dept.id}
+            onClick={() => setActiveDeptId(dept.id)}
+            style={pillStyle(effectiveDeptId === dept.id)}
+          >
+            {dept.name} ({deptCounts.get(dept.id) || 0})
           </button>
         ))}
       </div>
@@ -123,9 +136,9 @@ export function Resource360Page() {
       <div style={{ padding: '0 24px 16px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, flexShrink: 0 }}>
         {[
           { label: 'Team Size', value: kpis.total, icon: Users, color: 'var(--wh-text-primary, #0f172a)' },
-          { label: 'Over 80%', value: kpis.overUtil, icon: TrendingUp, color: kpis.overUtil > 0 ? '#ef4444' : 'var(--wh-text-primary)' },
+          { label: 'Active Subtasks', value: kpis.activeItems, icon: TrendingUp, color: kpis.activeItems > 0 ? '#2563eb' : 'var(--wh-text-primary)' },
+          { label: 'Done Subtasks', value: kpis.doneItems, icon: BarChart3, color: kpis.doneItems > 0 ? '#16a34a' : 'var(--wh-text-primary)' },
           { label: 'Blocked Items', value: kpis.blockedSum, icon: AlertTriangle, color: kpis.blockedSum > 0 ? '#ef4444' : 'var(--wh-text-primary)' },
-          { label: 'Avg Utilization', value: `${kpis.avgUtil}%`, icon: BarChart3, color: avgUtilColor },
         ].map(kpi => (
           <div key={kpi.label} style={{
             background: 'var(--wh-surface, #fff)',
@@ -145,9 +158,9 @@ export function Resource360Page() {
       {/* Sort Bar */}
       <div style={{ padding: '0 24px 12px', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
         <span style={{ fontSize: 12, color: 'var(--wh-text-tertiary, #94a3b8)', fontWeight: 500 }}>Sort by:</span>
-        {(['utilization', 'name', 'department'] as SortMode[]).map(mode => (
+        {(['name', 'active', 'department'] as SortMode[]).map(mode => (
           <button key={mode} onClick={() => setSortBy(mode)} style={pillStyle(sortBy === mode)}>
-            {mode === 'utilization' ? 'Utilization' : mode === 'name' ? 'Name' : 'Department'}
+            {mode === 'name' ? 'Name' : mode === 'active' ? 'Active Tasks' : 'Department'}
           </button>
         ))}
       </div>
