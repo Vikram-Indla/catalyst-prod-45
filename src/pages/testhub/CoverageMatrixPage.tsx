@@ -452,6 +452,7 @@ export default function CoverageMatrixPage() {
           />
         </TabsContent>
       </Tabs>
+      </div>
     </div>
   );
 }
@@ -643,6 +644,5 @@ function GapAnalysisView({
         </div>
       ))}
       </div>
-    </div>
   );
 }
