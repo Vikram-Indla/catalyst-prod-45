@@ -53,21 +53,31 @@ export function useResource360People() {
   return useQuery({
     queryKey: ['resource360', 'people'],
     queryFn: async () => {
-      // 1. Get all profiles with department info
-      const { data: profiles, error: pErr } = await supabase
-        .from('profiles')
-        .select('id, full_name, role, department_id, avatar_url')
-        .order('full_name');
-      if (pErr) throw new Error(pErr.message);
-
-      // 1b. Get resource_inventory for canonical role_name
-      const { data: resources } = await supabase
+      // 1. Get ALL active resources from resource_inventory (source of truth for headcount)
+      const { data: resources, error: rErr } = await supabase
         .from('resource_inventory')
-        .select('profile_id, role_name');
-      const roleMap = new Map<string, string>();
-      (resources ?? []).forEach((r: any) => {
-        if (r.profile_id && r.role_name) roleMap.set(r.profile_id, r.role_name);
-      });
+        .select('id, name, role_name, profile_id, department_id, department_name, is_active')
+        .eq('is_active', true)
+        .order('name');
+      if (rErr) throw new Error(rErr.message);
+
+      // 1b. Get profiles for avatar_url lookup (only those that exist)
+      const profileIds = (resources ?? [])
+        .map((r: any) => r.profile_id)
+        .filter(Boolean);
+      
+      let avatarMap = new Map<string, string>();
+      let profileDeptMap = new Map<string, string>();
+      if (profileIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, avatar_url, department_id')
+          .in('id', profileIds);
+        (profiles ?? []).forEach((p: any) => {
+          if (p.avatar_url) avatarMap.set(p.id, p.avatar_url);
+          if (p.department_id) profileDeptMap.set(p.id, p.department_id);
+        });
+      }
 
       // 2. Get capacity_departments for name lookup
       const { data: depts, error: dErr } = await supabase
@@ -77,7 +87,10 @@ export function useResource360People() {
       if (dErr) throw new Error(dErr.message);
 
       const deptMap = new Map<string, string>();
-      (depts ?? []).forEach(d => deptMap.set(d.id, d.name));
+      (depts ?? []).forEach(d => {
+        deptMap.set(d.id, d.name);
+        deptMap.set(d.department_id, d.name);
+      });
 
       // 3. Get ph_user_mapping to map jira_account_id → catalyst_profile_id
       const { data: userMappings, error: umErr } = await supabase
@@ -129,16 +142,22 @@ export function useResource360People() {
         });
       }
 
-      // 6. Initialize all profiles
+      // 6. Initialize all resources (from resource_inventory, not profiles)
       const personMap = new Map<string, Resource360Person>();
-      (profiles ?? []).forEach((p: any) => {
-        personMap.set(p.id, {
-          id: p.id,
-          full_name: p.full_name || 'Unknown',
-          role: roleMap.get(p.id) || 'Team Member',
-          department_id: p.department_id,
-          department_name: p.department_id ? (deptMap.get(p.department_id) || null) : null,
-          avatar_url: p.avatar_url,
+      // Also build a reverse map: profile_id → resource inventory id
+      const profileToResourceId = new Map<string, string>();
+
+      (resources ?? []).forEach((r: any) => {
+        const deptId = r.department_id || (r.profile_id ? profileDeptMap.get(r.profile_id) : null);
+        const deptName = deptId ? (deptMap.get(deptId) || r.department_name || null) : (r.department_name || null);
+        
+        personMap.set(r.id, {
+          id: r.id,
+          full_name: r.name || 'Unknown',
+          role: r.role_name || 'Team Member',
+          department_id: deptId || null,
+          department_name: deptName,
+          avatar_url: r.profile_id ? (avatarMap.get(r.profile_id) || null) : null,
           active_subtasks: 0,
           done_subtasks: 0,
           blocked_items: 0,
@@ -147,20 +166,26 @@ export function useResource360People() {
           theme_names: [],
           next_due_date: null,
         });
+
+        if (r.profile_id) {
+          profileToResourceId.set(r.profile_id, r.id);
+        }
       });
 
       const releaseNamesPerPerson = new Map<string, Set<string>>();
 
       // 7. Process subtask issues
       (subtaskIssues ?? []).forEach((issue: any) => {
-        // Map jira assignee_account_id to catalyst profile_id
         const assigneeAccountId = issue.assignee_account_id;
         const profileId = accountIdToProfileMap.get(assigneeAccountId);
-        
-        if (!profileId) return; // Skip if no mapping found
+        if (!profileId) return;
 
-        const person = personMap.get(profileId);
-        if (!person) return; // Skip if profile not found
+        // Map profile_id → resource_inventory id
+        const resourceId = profileToResourceId.get(profileId);
+        if (!resourceId) return;
+
+        const person = personMap.get(resourceId);
+        if (!person) return;
 
         // Check if parent story is active (status_category !== 'Done')
         const parentStory = issue.parent_key ? parentStoryMap.get(issue.parent_key) : undefined;
@@ -178,10 +203,10 @@ export function useResource360People() {
         if (parentStory.fix_versions && Array.isArray(parentStory.fix_versions)) {
           parentStory.fix_versions.forEach((version: any) => {
             if (version.name) {
-              if (!releaseNamesPerPerson.has(profileId)) {
-                releaseNamesPerPerson.set(profileId, new Set());
+              if (!releaseNamesPerPerson.has(resourceId)) {
+                releaseNamesPerPerson.set(resourceId, new Set());
               }
-              releaseNamesPerPerson.get(profileId)!.add(version.name);
+              releaseNamesPerPerson.get(resourceId)!.add(version.name);
             }
           });
         }
@@ -193,7 +218,6 @@ export function useResource360People() {
           }
         }
       });
-
 
       personMap.forEach((person) => {
         const names = releaseNamesPerPerson.get(person.id);
