@@ -245,15 +245,8 @@ export default function BudgetPlannerPage() {
           <div className="flex items-center justify-between px-5 h-16 border-b border-border/40">
             {/* Left: Title + Live Badge Inline */}
             <div className="flex items-center gap-4">
-              <div className="flex flex-col gap-0.5">
-                {/* Breadcrumb - Shows active tab */}
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-medium text-muted-foreground">Budget Planner</span>
-                  <span className="text-xs text-muted-foreground/60">•</span>
-                  <span className="text-xs font-medium text-primary">{getActiveTabName()}</span>
-                </div>
-                
-                {/* Title */}
+               <div className="flex flex-col gap-0.5">
+                 {/* Title */}
                 <h1 className="text-2xl font-bold text-foreground tracking-tight">
                   Budget Planner
                 </h1>
