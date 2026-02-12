@@ -240,7 +240,7 @@ export default function BudgetPlannerPage() {
     <PageChrome hideHeader>
       <div className="budget-module flex flex-col h-full bg-[hsl(var(--background))]">
         {/* Header - Matches Capacity Planner 2-Row Structure */}
-        <div className="bg-card border-b border-border">
+        <div className="bg-card" style={{ borderBottom: '1px solid #e4e4e7' }}>
           {/* ROW 1: Title + Live Badge (inline) */}
           <div className="flex items-center justify-between px-5 h-16 border-b border-border/40">
             {/* Left: Title + Live Badge Inline */}
