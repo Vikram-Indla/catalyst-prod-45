@@ -64,13 +64,13 @@ export function RoadmapHeader({
   isMobilePanelOpen,
 }: RoadmapHeaderProps) {
   return (
-    <header className="h-[52px] px-4 lg:px-6 flex items-center gap-2 lg:gap-3 bg-surface-0 border-b border-border shrink-0">
+    <header className="h-[52px] px-4 lg:px-6 flex items-center justify-end gap-2 lg:gap-3 bg-surface-0 shrink-0">
       {/* Mobile hamburger menu - only visible below 1024px */}
       {onToggleMobilePanel && (
         <button
           onClick={onToggleMobilePanel}
           className={cn(
-            "lg:hidden h-[30px] w-[30px] flex items-center justify-center",
+            "lg:hidden h-[30px] w-[30px] flex items-center justify-center mr-auto",
             "border border-border bg-surface-0 rounded-md",
             "text-text-secondary hover:border-border-strong hover:text-text-primary hover:bg-surface-1",
             "transition-all",
@@ -81,15 +81,6 @@ export function RoadmapHeader({
           <Menu className="w-4 h-4" />
         </button>
       )}
-
-      {/* Page Title - Command Center header style (no breadcrumb prefix) */}
-      <div className="flex items-center gap-2 min-w-0">
-        <h1 className="text-[16px] lg:text-[18px] font-semibold text-text-primary truncate">
-          Enterprise Roadmap
-        </h1>
-      </div>
-
-      <div className="flex-1" />
 
       {/* Toolbar */}
       <div className="flex items-center gap-1 lg:gap-1.5">
