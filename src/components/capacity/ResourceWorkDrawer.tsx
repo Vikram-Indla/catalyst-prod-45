@@ -22,17 +22,131 @@ interface ResourceWorkDrawerProps {
 
 const STATUS_COLORS: Record<string, string> = {
   'Done': '#0d9488',
+  'done': '#0d9488',
   'IN PROGRESS': '#2563eb',
   'In Progress': '#2563eb',
+  'in progress': '#2563eb',
   'To Do': '#64748b',
+  'ToDo': '#64748b',
+  'todo': '#64748b',
   'BACKLOG': '#64748b',
   'Backlog': '#64748b',
   'In Review': '#8b5cf6',
   'Blocked': '#dc2626',
+  'ready for production': '#7c3aed',
+  'Ready for Production': '#7c3aed',
+  'READY FOR PRODUCTION': '#7c3aed',
 };
 
 function getStatusColor(status: string) {
-  return STATUS_COLORS[status] || STATUS_COLORS[status?.toUpperCase()] || '#64748b';
+  return STATUS_COLORS[status] || STATUS_COLORS[status?.toLowerCase()] || '#64748b';
+}
+
+/** Jira-style type icon SVGs — matches Jira's native colors */
+function JiraTypeIcon({ type, size = 16 }: { type: string; size?: number }) {
+  const t = type.toLowerCase();
+  
+  // Epic — purple lightning bolt
+  if (t === 'epic') return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <rect width="16" height="16" rx="2" fill="#904ee2"/>
+      <path d="M9.5 3L6 8.5h2.5L7.5 13l4-5.5H9L9.5 3z" fill="white"/>
+    </svg>
+  );
+  
+  // Story — green bookmark
+  if (t === 'story') return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <rect width="16" height="16" rx="2" fill="#63ba3c"/>
+      <path d="M5 3h6v10l-3-2-3 2V3z" fill="white"/>
+    </svg>
+  );
+  
+  // Task — blue check
+  if (t === 'task') return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <rect width="16" height="16" rx="2" fill="#4bade8"/>
+      <path d="M4.5 8.5L7 11l4.5-5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+  
+  // Sub-task — blue sub-task icon
+  if (t === 'sub-task' || t === 'subtask') return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <rect width="16" height="16" rx="2" fill="#4bade8"/>
+      <rect x="4" y="4" width="8" height="8" rx="1" stroke="white" strokeWidth="1.2" fill="none"/>
+      <path d="M6 8h4M8 6v4" stroke="white" strokeWidth="1.2" strokeLinecap="round"/>
+    </svg>
+  );
+  
+  // Bug / Defect / QA Bug — red circle
+  if (t === 'bug' || t === 'defect' || t === 'qa bug') return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <rect width="16" height="16" rx="2" fill="#e5493a"/>
+      <circle cx="8" cy="8" r="3.5" fill="white"/>
+    </svg>
+  );
+  
+  // Production Incident — orange/red warning
+  if (t.includes('production incident') || t.includes('incident')) return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <rect width="16" height="16" rx="2" fill="#e5493a"/>
+      <path d="M8 4L12.5 12H3.5L8 4z" fill="white"/>
+      <rect x="7.25" y="7" width="1.5" height="2.5" rx="0.5" fill="#e5493a"/>
+      <circle cx="8" cy="10.75" r="0.75" fill="#e5493a"/>
+    </svg>
+  );
+  
+  // Frontend — blue
+  if (t === 'frontend') return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <rect width="16" height="16" rx="2" fill="#2684ff"/>
+      <path d="M5 6l-2 2 2 2M11 6l2 2-2 2M9 5l-2 6" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+  
+  // Backend — purple
+  if (t === 'backend') return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <rect width="16" height="16" rx="2" fill="#8777d9"/>
+      <rect x="4" y="4.5" width="8" height="2.5" rx="0.5" fill="white"/>
+      <rect x="4" y="9" width="8" height="2.5" rx="0.5" fill="white"/>
+    </svg>
+  );
+  
+  // Integration — teal
+  if (t === 'integration') return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <rect width="16" height="16" rx="2" fill="#00b8d9"/>
+      <path d="M5 8h6M8 5v6" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  );
+  
+  // Figma — pink
+  if (t === 'figma' || t === 'entity figma') return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <rect width="16" height="16" rx="2" fill="#f24e1e"/>
+      <circle cx="8" cy="8" r="2.5" fill="white"/>
+      <circle cx="5.5" cy="5.5" r="1.5" fill="white"/>
+      <circle cx="10.5" cy="5.5" r="1.5" fill="white"/>
+    </svg>
+  );
+  
+  // Change Request — amber
+  if (t.includes('change request')) return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <rect width="16" height="16" rx="2" fill="#ff991f"/>
+      <path d="M5 8h6M8 5v6" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
+    </svg>
+  );
+  
+  // Default — gray
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <rect width="16" height="16" rx="2" fill="#97a0af"/>
+      <circle cx="8" cy="8" r="3" fill="white"/>
+    </svg>
+  );
 }
 
 function formatDate(dateStr: string | null) {
@@ -63,11 +177,9 @@ function SubtaskRow({ item }: { item: JiraWorkItem }) {
 
   return (
     <div className="flex items-start gap-2 py-1.5 px-3 ml-6 border-l-2 border-border/50 hover:bg-muted/30 transition-colors">
-      {item.type_icon_url ? (
-        <img src={item.type_icon_url} alt={item.issue_type} className="w-4 h-4 mt-0.5 shrink-0" />
-      ) : (
-        <div className="w-4 h-4 rounded-sm bg-muted mt-0.5 shrink-0" />
-      )}
+      <div className="mt-0.5 shrink-0">
+        <JiraTypeIcon type={item.issue_type} />
+      </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <JiraLink issueKey={item.issue_key} />
@@ -105,13 +217,9 @@ function StoryGroupRow({ group }: { group: StoryGroup }) {
         className="flex items-start gap-2 py-2 px-3 rounded-lg hover:bg-muted/40 transition-colors cursor-pointer"
         onClick={() => setExpanded(!expanded)}
       >
-        {story.type_icon_url ? (
-          <img src={story.type_icon_url} alt={story.issue_type} className="w-4 h-4 mt-0.5 shrink-0" />
-        ) : (
-          <div className="w-4 h-4 rounded-sm bg-emerald-500/20 mt-0.5 shrink-0 flex items-center justify-center">
-            <div className="w-2 h-2 rounded-full bg-emerald-500" />
-          </div>
-        )}
+        <div className="mt-0.5 shrink-0">
+          <JiraTypeIcon type={story.issue_type} />
+        </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <JiraLink issueKey={story.issue_key} />
@@ -123,6 +231,7 @@ function StoryGroupRow({ group }: { group: StoryGroup }) {
                 {story.status}
               </span>
             )}
+            <span className="text-[10px] text-muted-foreground ml-auto shrink-0">{story.issue_type}</span>
           </div>
           <p className="text-sm font-semibold text-foreground truncate mt-0.5">{story.summary}</p>
           <div className="flex items-center gap-3 mt-0.5">
