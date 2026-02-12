@@ -62,16 +62,19 @@ export function SyncConfigPanel() {
   const [syncOverallPhase, setSyncOverallPhase] = useState<'idle' | 'syncing' | 'done' | 'error'>('idle');
   const progressTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Load saved config
+  // Track whether we've loaded the initial config from DB
+  const initialLoadDone = useRef(false);
+
+  // Load saved config — only on first successful fetch
   useEffect(() => {
-    if (syncConfig) {
+    if (syncConfig && !initialLoadDone.current) {
+      initialLoadDone.current = true;
       const savedProjects = syncConfig.sync_projects;
       if (Array.isArray(savedProjects) && savedProjects.length > 0) {
         setSelectedProjects(savedProjects);
       }
       const savedProjectConfigs = syncConfig.sync_project_config;
       if (savedProjectConfigs && typeof savedProjectConfigs === 'object') {
-        // Migrate old format: statuses -> status_categories
         const migrated: Record<string, ProjectSyncConfig> = {};
         Object.entries(savedProjectConfigs as Record<string, any>).forEach(([key, val]) => {
           migrated[key] = {
