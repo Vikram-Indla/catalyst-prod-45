@@ -3,6 +3,7 @@
 
 import { OKRHubV2 } from '@/modules/okr-v2';
 import { PageChrome } from '@/components/layout/PageChrome';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 
 interface OKRHubProps {
   scopeType?: 'enterprise' | 'portfolio' | 'program' | 'team';
@@ -10,9 +11,12 @@ interface OKRHubProps {
 }
 
 export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) {
-  // v2 is now the only OKR implementation
   return (
-    <PageChrome>
+    <PageChrome hideHeader>
+      <CommandCenterHeader
+        title="Objective Tree"
+        subtitle="Strategic objectives, key results & delivery items"
+      />
       <OKRHubV2 />
     </PageChrome>
   );

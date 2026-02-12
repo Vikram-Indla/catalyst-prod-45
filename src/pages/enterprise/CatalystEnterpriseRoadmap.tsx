@@ -5,6 +5,7 @@
 import React, { useEffect, useCallback, useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Menu } from 'lucide-react';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { useRoadmapState } from '@/hooks/useRoadmapState';
 import {
   RoadmapHeader,
@@ -143,6 +144,14 @@ export default function CatalystEnterpriseRoadmap() {
         state.presentation && "presentation"
       )}
     >
+      {/* Command Center Header */}
+      {!state.presentation && (
+        <CommandCenterHeader
+          title="Enterprise Roadmap"
+          subtitle="Strategic timeline with objectives & dependencies"
+        />
+      )}
+
       {/* Header with toolbar */}
       {!state.presentation && (
         <RoadmapHeader

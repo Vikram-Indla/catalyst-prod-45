@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { AdminGuard } from "@/components/admin/AdminGuard";
+import { CommandCenterHeader } from "@/components/shared/CommandCenterHeader";
 import { Search, BarChart3, LineChart, PieChart, Table2, PlayCircle } from "lucide-react";
 
 const defaultReports = [
@@ -119,10 +120,11 @@ export default function ReportsDiscovery() {
   return (
     <AdminGuard>
       <div className="flex flex-col h-full bg-background">
-        {/* Row 1: Title */}
-        <div className="h-[44px] flex items-center px-6">
-          <h1 className="text-xl font-semibold text-secondary-green">Reports Discovery</h1>
-        </div>
+        {/* Command Center Header */}
+        <CommandCenterHeader
+          title="Reports Discovery"
+          subtitle="Explore and run enterprise analytics reports"
+        />
 
         {/* Row 2: Controls */}
         <div 
