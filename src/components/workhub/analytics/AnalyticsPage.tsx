@@ -3,8 +3,8 @@
  * Phase 11
  */
 
-import { PieChart } from 'lucide-react';
 import { useAnalyticsData } from '@/hooks/workhub/useCapacityData';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { StatusDistributionChart } from './StatusDistributionChart';
 import { TypeDistributionChart } from './TypeDistributionChart';
 import { PriorityDistributionChart } from './PriorityDistributionChart';
@@ -27,33 +27,12 @@ export function AnalyticsPage() {
   const releaseCount = releases?.length ?? 0;
 
   return (
-    <div style={{ padding: '32px 32px 48px', maxWidth: 1400, margin: '0 auto' }}>
-      {/* HEADER */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 28 }}>
-        <div style={{
-          width: 40, height: 40, borderRadius: '50%',
-          backgroundColor: '#dbeafe', display: 'flex',
-          alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-        }}>
-          <PieChart size={20} style={{ color: '#2563eb' }} />
-        </div>
-        <div>
-          <h1 style={{
-            fontFamily: 'Sora, sans-serif', fontSize: 24,
-            fontWeight: 700, color: 'var(--wh-text-primary)', margin: 0,
-          }}>
-            Analytics
-          </h1>
-          <p style={{
-            fontFamily: 'Inter, system-ui, sans-serif', fontSize: 14,
-            color: 'var(--wh-text-secondary)', marginTop: 4,
-          }}>
-            Portfolio data insights — {totalItems} work items across {releaseCount} releases
-          </p>
-        </div>
-      </div>
-
-      {/* 2-COLUMN CHART GRID */}
+    <>
+      <CommandCenterHeader
+        title="Analytics"
+        subtitle={`Portfolio data insights — ${totalItems} work items across ${releaseCount} releases`}
+      />
+      <div style={{ padding: '32px 32px 48px', maxWidth: 1400, margin: '0 auto' }}>
       {analytics && (
         <>
           <div style={{
@@ -85,6 +64,7 @@ export function AnalyticsPage() {
       {themes && themes.length > 0 && (
         <ThemeHealthChart themes={themes} />
       )}
-    </div>
+      </div>
+    </>
   );
 }
