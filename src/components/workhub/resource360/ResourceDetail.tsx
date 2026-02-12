@@ -49,27 +49,76 @@ function useResourceByJiraAccount(jiraAccountId: string | undefined) {
 
 function useResourceUtilById(id: string) {
   return useQuery({
-    queryKey: ['workhub', 'resource-utilization', id],
+    queryKey: ['workhub', 'resource-detail', id],
     queryFn: async () => {
-      // Try by profile id first, then by jira_account_id
-      const { data, error } = await supabase
-        .from('vw_ph_resource_utilization')
-        .select('*')
+      // 1. Look up resource_inventory by id (this is the id from the URL)
+      const { data: ri, error: riErr } = await supabase
+        .from('resource_inventory')
+        .select('id, name, role_name, profile_id, department_id, department_name, assignment_id')
         .eq('id', id)
         .maybeSingle();
-      if (error) throw error;
-      if (data) return data as unknown as ResourceUtilization;
-      
-      // Fallback: try matching by jira_account_id
-      const { data: d2, error: e2 } = await supabase
-        .from('vw_ph_resource_utilization')
-        .select('*')
-        .eq('jira_account_id', id)
-        .maybeSingle();
-      if (e2) throw e2;
-      return d2 as unknown as ResourceUtilization | null;
+      if (riErr) throw riErr;
+
+      // 2. If we have a profile_id, look up utilization view for rich data
+      let utilData: ResourceUtilization | null = null;
+      if (ri?.profile_id) {
+        const { data } = await supabase
+          .from('vw_ph_resource_utilization')
+          .select('*')
+          .or(`id.eq.${ri.profile_id},user_id.eq.${ri.profile_id}`)
+          .maybeSingle();
+        utilData = data as unknown as ResourceUtilization | null;
+      }
+
+      // 3. If no utilization data found, also try by the id directly (legacy ph_resources match)
+      if (!utilData) {
+        const { data } = await supabase
+          .from('vw_ph_resource_utilization')
+          .select('*')
+          .eq('id', id)
+          .maybeSingle();
+        utilData = data as unknown as ResourceUtilization | null;
+      }
+
+      // 4. Merge: prefer utilization view data but fall back to resource_inventory
+      if (utilData) {
+        // Enrich with resource_inventory fields if missing
+        if (!utilData.name && ri?.name) utilData.name = ri.name;
+        if ((!utilData.role || utilData.role === 'Team Member') && ri?.role_name) utilData.role = ri.role_name;
+        if (!utilData.department && ri?.department_name) utilData.department = ri.department_name;
+        return utilData;
+      }
+
+      // 5. No utilization view record at all — build a minimal one from resource_inventory
+      if (ri) {
+        return {
+          id: ri.id,
+          name: ri.name,
+          role: ri.role_name || 'Team Member',
+          department: ri.department_name || 'Unassigned',
+          email: null,
+          avatar_url: null,
+          color: '#64748b',
+          capacity_hours_per_week: 40,
+          total_items: 0,
+          active_items: 0,
+          completed_items: 0,
+          in_progress_items: 0,
+          blocked_items: 0,
+          total_estimated_hours: 0,
+          total_actual_hours: 0,
+          utilization_percent: 0,
+          jira_account_id: null,
+          release_count: 0,
+          theme_count: 0,
+          next_due_date: null,
+        } as unknown as ResourceUtilization;
+      }
+
+      return null;
     },
     enabled: !!id,
+    staleTime: 30_000,
   });
 }
 
