@@ -31,6 +31,7 @@ export function PeriodToggle({ period, onPeriodChange, className }: PeriodToggle
           className={cn(
             'px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-150',
             'focus-visible:outline-2 focus-visible:outline-blue-600 focus-visible:outline-offset-2',
+            p.value !== 'Full' && 'hidden',
             period === p.value
               ? 'bg-white dark:bg-slate-700 text-primary shadow-sm'
               : 'text-muted-foreground hover:text-foreground hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
