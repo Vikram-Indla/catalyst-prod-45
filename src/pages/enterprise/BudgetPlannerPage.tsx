@@ -56,11 +56,97 @@ export default function BudgetPlannerPage() {
   // Cross-tab navigation params (for Fix Data, Scenario presets)
   const [tabParams, setTabParams] = useState<Record<string, string>>({});
 
+  // Derive departments dynamically from budget data
+  const departments = useMemo(() => {
+    if (!data?.departments) return [{ id: 'all', name: 'All Departments' }];
+    
+    const deptList = [{ id: 'all', name: 'All Departments' }];
+    Object.keys(data.departments).forEach(key => {
+      if (key !== 'all') {
+        deptList.push({ 
+          id: key, 
+          name: key === 'Technical Support' ? 'Tech Support' : key 
+        });
+      }
+    });
+    return deptList;
+  }, [data?.departments]);
+
+  // Filter assignments by department and search
+  const filteredAssignments = useMemo(() => {
+    if (!data?.assignments) return [];
+    
+    let assignments = [...data.assignments];
+    
+    // Filter by department
+    if (currentDept !== 'all') {
+      assignments = assignments.filter(a => 
+        a.department === currentDept || 
+        (a.type === 'Cosourced' && a.department === currentDept)
+      );
+    }
+    
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      assignments = assignments.filter(a => 
+        a.name?.toLowerCase().includes(query) ||
+        a.department?.toLowerCase().includes(query) ||
+        a.vendor?.toLowerCase().includes(query)
+      );
+    }
+    
+    return assignments;
+  }, [data?.assignments, currentDept, searchQuery]);
+
+  // Sort by budget descending
+  const sortedAssignments = useMemo(() => {
+    return [...filteredAssignments].sort((a, b) => b.budget - a.budget);
+  }, [filteredAssignments]);
+
+  // Current department budget
+  const currentBudget = useMemo(() => {
+    if (!data?.departments) return null;
+    return data.departments[currentDept] || data.departments.all;
+  }, [data?.departments, currentDept]);
+
   // Handler for cross-tab navigation with params
   const handleTabChange = (tab: string, params?: Record<string, string>) => {
     setActiveTab(tab as BudgetPlannerTab);
     setTabParams(params || {});
   };
+
+  // Hero Tab Configuration (matches Capacity Planner style)
+  const viewTabs = [
+    { 
+      id: 'summary', 
+      label: 'Summary', 
+      icon: BarChart3,
+      isActive: activeTab === 'summary',
+      onClick: () => setActiveTab('summary')
+    },
+    { 
+      id: 'budget', 
+      label: 'Budget', 
+      icon: Wallet,
+      isActive: activeTab === 'budget',
+      onClick: () => setActiveTab('budget')
+    },
+    { 
+      id: 'scenario', 
+      label: 'Scenario Planning', 
+      icon: GitBranch,
+      isActive: activeTab === 'scenario',
+      onClick: () => setActiveTab('scenario')
+    },
+    { 
+      id: 'quality', 
+      label: 'Data Quality', 
+      icon: FileCheck,
+      isActive: activeTab === 'quality',
+      onClick: () => handleTabChange('quality')
+    },
+  ];
 
   // Show loading while checking role
   if (roleLoading) {
@@ -125,92 +211,6 @@ export default function BudgetPlannerPage() {
     };
     return periodLabels[period];
   };
-
-  // Derive departments dynamically from budget data
-  const departments = useMemo(() => {
-    if (!data?.departments) return [{ id: 'all', name: 'All Departments' }];
-    
-    const deptList = [{ id: 'all', name: 'All Departments' }];
-    Object.keys(data.departments).forEach(key => {
-      if (key !== 'all') {
-        deptList.push({ 
-          id: key, 
-          name: key === 'Technical Support' ? 'Tech Support' : key 
-        });
-      }
-    });
-    return deptList;
-  }, [data?.departments]);
-
-  // Filter assignments by department and search
-  const filteredAssignments = useMemo(() => {
-    if (!data?.assignments) return [];
-    
-    let assignments = [...data.assignments];
-    
-    // Filter by department
-    if (currentDept !== 'all') {
-      assignments = assignments.filter(a => 
-        a.department === currentDept || 
-        (a.type === 'Cosourced' && a.department === currentDept)
-      );
-    }
-    
-    // Filter by search query
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      assignments = assignments.filter(a => 
-        a.name?.toLowerCase().includes(query) ||
-        a.department?.toLowerCase().includes(query) ||
-        a.vendor?.toLowerCase().includes(query)
-      );
-    }
-    
-    return assignments;
-  }, [data?.assignments, currentDept, searchQuery]);
-
-  // Sort by budget descending
-  const sortedAssignments = useMemo(() => {
-    return [...filteredAssignments].sort((a, b) => b.budget - a.budget);
-  }, [filteredAssignments]);
-
-  // Current department budget
-  const currentBudget = useMemo(() => {
-    if (!data?.departments) return null;
-    return data.departments[currentDept] || data.departments.all;
-  }, [data?.departments, currentDept]);
-
-  // Hero Tab Configuration (matches Capacity Planner style)
-  const viewTabs = [
-    { 
-      id: 'summary', 
-      label: 'Summary', 
-      icon: BarChart3,
-      isActive: activeTab === 'summary',
-      onClick: () => setActiveTab('summary')
-    },
-    { 
-      id: 'budget', 
-      label: 'Budget', 
-      icon: Wallet,
-      isActive: activeTab === 'budget',
-      onClick: () => setActiveTab('budget')
-    },
-    { 
-      id: 'scenario', 
-      label: 'Scenario Planning', 
-      icon: GitBranch,
-      isActive: activeTab === 'scenario',
-      onClick: () => setActiveTab('scenario')
-    },
-    { 
-      id: 'quality', 
-      label: 'Data Quality', 
-      icon: FileCheck,
-      isActive: activeTab === 'quality',
-      onClick: () => handleTabChange('quality')
-    },
-  ];
 
   if (error) {
     return (
