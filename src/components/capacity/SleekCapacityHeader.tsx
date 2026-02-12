@@ -242,9 +242,9 @@ export function SleekCapacityHeader({
   };
 
   return (
-    <div className="bg-card" style={{ borderBottom: '1px solid #e4e4e7' }}>
+    <div className="bg-card flex flex-col" style={{ borderBottom: '1px solid #e4e4e7', gap: '1px', backgroundColor: '#e4e4e7' }}>
       {/* ROW 1: Title + Live Badge (inline) | Primary CTA only */}
-      <div className="flex items-center justify-between px-5 h-16 border-b border-border/40">
+      <div className="flex items-center justify-between px-5 h-16 bg-card">
         {/* Left: Title + Live Badge Inline */}
         <div className="flex items-center gap-4">
           <div className="flex flex-col gap-0.5">
@@ -270,7 +270,7 @@ export function SleekCapacityHeader({
       </div>
 
       {/* ROW 2: Search + Hero Tabs (No Q1/H1/Full toggle) */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
+      <div className="flex items-center justify-between px-5 py-3 bg-card">
         {/* Search */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
