@@ -219,7 +219,7 @@ export function useUpdateSyncSchedule() {
       }
       if (input.sync_full_time_utc !== undefined) {
         updates.push(
-          (supabase as any).from('wh_config').update({ value: JSON.stringify(input.sync_full_time_utc) })
+          (supabase as any).from('wh_config').update({ value: input.sync_full_time_utc })
             .eq('key', 'sync_full_time_utc')
         )
       }
@@ -244,17 +244,17 @@ export function useSaveFilterSettings() {
       const updates = []
       if (input.sync_projects !== undefined) {
         updates.push(
-          (supabase as any).from('wh_config').upsert({ key: 'sync_projects', value: JSON.stringify(input.sync_projects) }, { onConflict: 'key' })
+          (supabase as any).from('wh_config').upsert({ key: 'sync_projects', value: input.sync_projects }, { onConflict: 'key' })
         )
       }
       if (input.sync_issue_types !== undefined) {
         updates.push(
-          (supabase as any).from('wh_config').upsert({ key: 'sync_issue_types', value: JSON.stringify(input.sync_issue_types) }, { onConflict: 'key' })
+          (supabase as any).from('wh_config').upsert({ key: 'sync_issue_types', value: input.sync_issue_types }, { onConflict: 'key' })
         )
       }
       if (input.sync_fix_versions !== undefined) {
         updates.push(
-          (supabase as any).from('wh_config').upsert({ key: 'sync_fix_versions', value: JSON.stringify(input.sync_fix_versions) }, { onConflict: 'key' })
+          (supabase as any).from('wh_config').upsert({ key: 'sync_fix_versions', value: input.sync_fix_versions }, { onConflict: 'key' })
         )
       }
       if (input.sync_lookback_months !== undefined) {
@@ -264,7 +264,7 @@ export function useSaveFilterSettings() {
       }
       if (input.sync_project_config !== undefined) {
         updates.push(
-          (supabase as any).from('wh_config').upsert({ key: 'sync_project_config', value: JSON.stringify(input.sync_project_config) }, { onConflict: 'key' })
+          (supabase as any).from('wh_config').upsert({ key: 'sync_project_config', value: input.sync_project_config }, { onConflict: 'key' })
         )
       }
       await Promise.all(updates)
