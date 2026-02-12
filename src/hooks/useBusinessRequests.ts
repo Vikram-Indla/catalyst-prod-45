@@ -134,7 +134,8 @@ export function useBusinessRequests(searchQuery?: string) {
         return transformed;
       });
     },
-    staleTime: 30000, // Cache for 30 seconds to reduce re-fetches
+    staleTime: 30000,
+    placeholderData: (prev: any) => prev, // Keep previous data visible during refetch
   });
 }
 

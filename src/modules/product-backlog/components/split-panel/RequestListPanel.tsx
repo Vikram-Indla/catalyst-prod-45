@@ -120,19 +120,45 @@ export function RequestListPanel({
 
       {/* List Items */}
       <div className="flex-1 overflow-y-auto">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-32">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-brand-primary" />
+      {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-3">
+            <div className="relative w-10 h-10">
+              <div className="absolute inset-0 rounded-full border-2 border-muted" />
+              <div className="absolute inset-0 rounded-full border-2 border-t-brand-primary animate-spin" />
+            </div>
+            <p className="text-xs font-medium" style={{ color: 'var(--text-3)' }}>Loading requests…</p>
           </div>
         ) : requests.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-32 text-sm" style={{ color: 'var(--text-3)' }}>
-            <p>No requests match the current filter</p>
-            {activeFilter !== 'all' && (
+          <div className="flex flex-col items-center justify-center py-20 px-6 text-center gap-4">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ backgroundColor: 'var(--surface-3)' }}>
+              <Search className="w-6 h-6" style={{ color: 'var(--text-3)' }} />
+            </div>
+            <div className="space-y-1.5">
+              <p className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>
+                {activeFilter !== 'all' ? 'No matching requests' : 'No requests yet'}
+              </p>
+              <p className="text-xs leading-relaxed max-w-[220px]" style={{ color: 'var(--text-3)' }}>
+                {activeFilter !== 'all'
+                  ? 'Try adjusting your filters or search to find what you\'re looking for.'
+                  : 'Create your first business request to get started with the product backlog.'}
+              </p>
+            </div>
+            {activeFilter !== 'all' ? (
               <button 
                 onClick={() => onFilterChange('all')}
-                className="mt-2 text-xs underline text-brand-primary"
+                className="text-xs font-medium px-3 py-1.5 rounded-md transition-colors hover:bg-muted"
+                style={{ color: 'hsl(var(--brand-primary))' }}
               >
-                Clear filter
+                Clear filters
+              </button>
+            ) : (
+              <button 
+                onClick={onCreateRequest}
+                className="text-xs font-medium px-3 py-1.5 rounded-md flex items-center gap-1.5 transition-colors hover:bg-muted"
+                style={{ color: 'hsl(var(--brand-primary))' }}
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Create request
               </button>
             )}
           </div>

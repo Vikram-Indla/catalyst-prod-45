@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 import { useBusinessRequests } from '@/hooks/useBusinessRequests';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
@@ -86,29 +87,25 @@ export default function CatalystDemandList() {
   // Use the shared query with search
   const { data: businessRequests = [], isLoading } = useBusinessRequests(searchQuery);
   
-  // Fetch attachment info for all requests
-  const [attachmentMap, setAttachmentMap] = useState<Record<string, boolean>>({});
-  
-  useEffect(() => {
-    const fetchAttachments = async () => {
-      if (businessRequests.length === 0) return;
-      
-      const requestIds = businessRequests.map((br: any) => br.id);
+  // Fetch attachment info as a separate non-blocking query
+  const requestIds = useMemo(() => businessRequests.map((br: any) => br.id), [businessRequests]);
+  const { data: attachmentMap = {} } = useQuery({
+    queryKey: ['business-request-attachments', requestIds],
+    queryFn: async () => {
+      if (requestIds.length === 0) return {};
       const { data: links } = await (supabase as any)
         .from('business_request_links')
         .select('business_request_id')
         .in('business_request_id', requestIds);
-      
-      if (links) {
-        const map: Record<string, boolean> = {};
-        ((links || []) as any[]).forEach((link: any) => {
-          map[link.business_request_id] = true;
-        });
-        setAttachmentMap(map);
-      }
-    };
-    fetchAttachments();
-  }, [businessRequests]);
+      const map: Record<string, boolean> = {};
+      ((links || []) as any[]).forEach((link: any) => {
+        map[link.business_request_id] = true;
+      });
+      return map;
+    },
+    enabled: requestIds.length > 0,
+    staleTime: 60_000,
+  });
   
   const [selectedRequest, setSelectedRequest] = useState<RequestItem | null>(null);
   const [drawerRequestId, setDrawerRequestId] = useState<string | null>(null);
