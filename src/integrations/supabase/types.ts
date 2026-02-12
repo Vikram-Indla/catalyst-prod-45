@@ -13283,13 +13283,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "wh_resource_assignments_resource_id_fkey"
-            columns: ["resource_id"]
-            isOneToOne: false
-            referencedRelation: "vw_ph_resource_utilization"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "wh_resource_assignments_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
@@ -39030,6 +39023,7 @@ export type Database = {
       vw_ph_resource_utilization: {
         Row: {
           active_items: number | null
+          avatar_url: string | null
           blocked_items: number | null
           capacity_hours_per_week: number | null
           color: string | null
@@ -39039,6 +39033,7 @@ export type Database = {
           id: string | null
           in_progress_items: number | null
           is_active: boolean | null
+          jira_account_id: string | null
           name: string | null
           next_due_date: string | null
           release_count: number | null

@@ -1,6 +1,6 @@
 /**
- * ResourceDetail — Individual resource view with time-based filtering
- * Phase 6: Resource 360
+ * ResourceDetail — Individual resource view with real Jira data
+ * Phase 6: Resource 360 — Updated to use real data
  */
 import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -11,53 +11,105 @@ import {
 import { AvatarChip } from '@/components/workhub/shared/AvatarChip';
 import { DepartmentBadge } from '@/components/workhub/shared/DepartmentBadge';
 import { UtilizationBar } from '@/components/workhub/shared/UtilizationBar';
-import { StatusBadge } from '@/components/workhub/shared/StatusBadge';
-import { TypeBadge } from '@/components/workhub/shared/TypeBadge';
-import {
-  useResourceUtilizationById,
-  useResourceWorkItems,
-} from '@/hooks/workhub/useResources';
-import { getTimeRanges, isOverdue, daysDifference } from '@/lib/workhub/timeRanges';
-import type { WorkItemFull, WorkItemStatus, WorkItemType } from '@/types/workhub.types';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import type { ResourceUtilization } from '@/types/workhub.types';
+
+interface JiraIssueRow {
+  issue_key: string;
+  summary: string;
+  status: string;
+  status_category: string;
+  issue_type: string;
+  priority: string;
+  due_date: string | null;
+  project_key: string;
+  story_points: number | null;
+  sprint_name: string | null;
+}
+
+function useResourceByJiraAccount(jiraAccountId: string | undefined) {
+  return useQuery({
+    queryKey: ['workhub', 'resource-issues', jiraAccountId],
+    queryFn: async () => {
+      if (!jiraAccountId) return [];
+      const { data, error } = await supabase
+        .from('ph_issues')
+        .select('issue_key, summary, status, status_category, issue_type, priority, due_date, project_key, story_points, sprint_name')
+        .eq('assignee_account_id', jiraAccountId)
+        .order('due_date', { nullsFirst: false })
+        .order('issue_key');
+      if (error) throw error;
+      return (data ?? []) as JiraIssueRow[];
+    },
+    enabled: !!jiraAccountId,
+    staleTime: 30_000,
+  });
+}
+
+function useResourceUtilById(id: string) {
+  return useQuery({
+    queryKey: ['workhub', 'resource-utilization', id],
+    queryFn: async () => {
+      // Try by profile id first, then by jira_account_id
+      const { data, error } = await supabase
+        .from('vw_ph_resource_utilization')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+      if (error) throw error;
+      if (data) return data as unknown as ResourceUtilization;
+      
+      // Fallback: try matching by jira_account_id
+      const { data: d2, error: e2 } = await supabase
+        .from('vw_ph_resource_utilization')
+        .select('*')
+        .eq('jira_account_id', id)
+        .maybeSingle();
+      if (e2) throw e2;
+      return d2 as unknown as ResourceUtilization | null;
+    },
+    enabled: !!id,
+  });
+}
+
+const STATUS_COLORS: Record<string, string> = {
+  'To Do': '#94a3b8',
+  'In Progress': '#2563eb',
+  'In Review': '#7c3aed',
+  'Done': '#16a34a',
+  'Blocked': '#ef4444',
+  'Cancelled': '#6b7280',
+};
+
+const TYPE_COLORS: Record<string, string> = {
+  'Epic': '#1e40af',
+  'Story': '#065f46',
+  'Sub-task': '#312e81',
+  'Bug': '#dc2626',
+  'Task': '#0d9488',
+};
 
 export function ResourceDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [activeRange, setActiveRange] = useState(0); // index into getTimeRanges()
-  const timeRanges = useMemo(() => getTimeRanges(), []);
-  const currentRange = timeRanges[activeRange];
+  const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  const { data: utilData, isLoading: loadingUtil } = useResourceUtilizationById(id || '');
+  const { data: utilData, isLoading: loadingUtil } = useResourceUtilById(id || '');
+  const { data: issues = [], isLoading: loadingItems } = useResourceByJiraAccount(utilData?.jira_account_id);
 
-  const timeFilter = currentRange.start
-    ? { start: currentRange.start, end: currentRange.end }
-    : undefined;
+  const filtered = useMemo(() => {
+    if (statusFilter === 'all') return issues;
+    return issues.filter(i => i.status_category === statusFilter);
+  }, [issues, statusFilter]);
 
-  const { data: workItems = [], isLoading: loadingItems } = useResourceWorkItems(
-    utilData?.user_id || utilData?.id || '',
-    timeFilter
-  );
-
-  // Compute KPIs from filtered work items
-  const kpis = useMemo(() => {
-    if (activeRange === 0 && utilData) {
-      return {
-        utilization: utilData.utilization_percent,
-        total: utilData.total_items,
-        active: utilData.active_items,
-        done: utilData.completed_items,
-        blocked: utilData.blocked_items,
-        estHours: utilData.total_estimated_hours,
-      };
-    }
-    const total = workItems.length;
-    const done = workItems.filter(w => w.status === 'Done').length;
-    const blocked = workItems.filter(w => w.status === 'Blocked').length;
-    const active = total - done - workItems.filter(w => w.status === 'Cancelled').length;
-    const estHours = workItems.reduce((s, w) => s + (w.estimated_hours || 0), 0);
-    const utilization = utilData ? Math.round((estHours / (utilData.capacity_hours_per_week * 4)) * 100) : 0;
-    return { utilization, total, active, done, blocked, estHours };
-  }, [workItems, utilData, activeRange]);
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: issues.length };
+    issues.forEach(i => {
+      counts[i.status_category] = (counts[i.status_category] || 0) + 1;
+    });
+    return counts;
+  }, [issues]);
 
   const pillStyle = (active: boolean): React.CSSProperties => ({
     padding: '6px 16px',
@@ -81,10 +133,10 @@ export function ResourceDetail() {
   }
 
   const r = utilData;
+  const isOverdue = (d: string | null, status: string) => d && status !== 'Done' && new Date(d) < new Date();
 
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      {/* Scrollable content */}
       <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
         {/* Breadcrumb */}
         <button
@@ -102,12 +154,12 @@ export function ResourceDetail() {
         </button>
 
         <div style={{ fontSize: 11, color: 'var(--wh-text-tertiary, #94a3b8)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 500 }}>
-          WorkHub &gt; Resource 360 &gt; {r.name}
+          ProjectHub &gt; Resource 360 &gt; {r.name}
         </div>
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 6 }}>
-          <AvatarChip name={r.name} color={r.color} size={48} />
+          <AvatarChip name={r.name} color={r.color} size={48} avatarUrl={r.avatar_url} />
           <div>
             <h1 style={{
               fontFamily: 'Sora, sans-serif', fontSize: 24, fontWeight: 700,
@@ -116,7 +168,7 @@ export function ResourceDetail() {
               {r.name}
             </h1>
             <div style={{ fontSize: 14, color: 'var(--wh-text-secondary, #64748b)', marginTop: 2 }}>
-              {r.role || 'Team Member'} · {r.department || 'Engineering'} · {r.capacity_hours_per_week}h/wk
+              {r.role || 'Team Member'} · {r.department || 'Unassigned'} · {r.capacity_hours_per_week}h/wk
             </div>
             {r.email && (
               <a
@@ -130,7 +182,7 @@ export function ResourceDetail() {
           </div>
         </div>
 
-        {/* Time Range Pills */}
+        {/* Status Filter Pills */}
         <div style={{
           display: 'flex', flexWrap: 'wrap', gap: 6,
           padding: '16px 0',
@@ -138,11 +190,14 @@ export function ResourceDetail() {
           marginBottom: 16,
         }}>
           <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--wh-text-tertiary, #94a3b8)', alignSelf: 'center', marginRight: 4 }}>
-            TIME RANGE:
+            FILTER:
           </span>
-          {timeRanges.map((tr, i) => (
-            <button key={tr.label} onClick={() => setActiveRange(i)} style={pillStyle(activeRange === i)}>
-              {tr.label}
+          <button onClick={() => setStatusFilter('all')} style={pillStyle(statusFilter === 'all')}>
+            All ({statusCounts.all || 0})
+          </button>
+          {['To Do', 'In Progress', 'Done'].map(cat => (
+            <button key={cat} onClick={() => setStatusFilter(cat)} style={pillStyle(statusFilter === cat)}>
+              {cat} ({statusCounts[cat] || 0})
             </button>
           ))}
         </div>
@@ -150,12 +205,12 @@ export function ResourceDetail() {
         {/* KPI Row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12, marginBottom: 16 }}>
           {[
-            { label: 'Utilization', value: `${kpis.utilization}%`, icon: BarChart3, color: kpis.utilization > 80 ? '#ef4444' : kpis.utilization >= 60 ? '#d97706' : '#16a34a' },
-            { label: 'Total Items', value: kpis.total, icon: FileStack, color: 'var(--wh-text-primary, #0f172a)' },
-            { label: 'Active', value: kpis.active, icon: Clock, color: 'var(--wh-text-primary, #0f172a)' },
-            { label: 'Done', value: kpis.done, icon: CheckCircle2, color: '#16a34a' },
-            { label: 'Blocked', value: kpis.blocked, icon: AlertTriangle, color: kpis.blocked > 0 ? '#ef4444' : 'var(--wh-text-primary, #0f172a)' },
-            { label: 'Est. Hours', value: `${kpis.estHours}h`, icon: Clock, color: 'var(--wh-text-primary, #0f172a)' },
+            { label: 'Completion', value: `${r.utilization_percent}%`, icon: BarChart3, color: r.utilization_percent > 80 ? '#16a34a' : r.utilization_percent >= 40 ? '#d97706' : '#ef4444' },
+            { label: 'Total Items', value: r.total_items, icon: FileStack, color: 'var(--wh-text-primary, #0f172a)' },
+            { label: 'Active', value: r.active_items, icon: Clock, color: 'var(--wh-text-primary, #0f172a)' },
+            { label: 'Done', value: r.completed_items, icon: CheckCircle2, color: '#16a34a' },
+            { label: 'Blocked', value: r.blocked_items, icon: AlertTriangle, color: r.blocked_items > 0 ? '#ef4444' : 'var(--wh-text-primary, #0f172a)' },
+            { label: 'Story Points', value: r.total_estimated_hours + r.total_actual_hours, icon: Zap, color: 'var(--wh-text-primary, #0f172a)' },
           ].map(kpi => (
             <div key={kpi.label} style={{
               background: 'var(--wh-surface, #fff)',
@@ -174,7 +229,7 @@ export function ResourceDetail() {
 
         {/* Utilization Bar */}
         <div style={{ marginBottom: 24 }}>
-          <UtilizationBar percent={kpis.utilization} height={12} />
+          <UtilizationBar percent={r.utilization_percent} height={12} />
         </div>
 
         {/* Work Items Table */}
@@ -183,14 +238,14 @@ export function ResourceDetail() {
             fontFamily: 'Sora, sans-serif', fontSize: 16, fontWeight: 600,
             color: 'var(--wh-text-primary, #0f172a)', marginBottom: 12,
           }}>
-            Work Items ({workItems.length})
+            Jira Issues ({filtered.length})
           </h2>
 
           {loadingItems ? (
             <div style={{ padding: 32, textAlign: 'center', color: 'var(--wh-text-tertiary)', fontSize: 13 }}>
-              Loading work items...
+              Loading issues...
             </div>
-          ) : workItems.length === 0 ? (
+          ) : filtered.length === 0 ? (
             <div style={{
               padding: 48, textAlign: 'center',
               background: 'var(--wh-surface, #fff)',
@@ -198,7 +253,7 @@ export function ResourceDetail() {
               borderRadius: 'var(--wh-radius-lg, 8px)',
               color: 'var(--wh-text-tertiary, #94a3b8)', fontSize: 14,
             }}>
-              No work items in this time range.
+              No issues found for this filter.
             </div>
           ) : (
             <div style={{
@@ -209,7 +264,7 @@ export function ResourceDetail() {
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--wh-border, #e2e8f0)', background: 'var(--wh-border-light, #f8fafc)' }}>
-                    {['KEY', 'TYPE', 'SUMMARY', 'STATUS', 'DUE DATE', 'RELEASE', 'THEME'].map(h => (
+                    {['KEY', 'TYPE', 'SUMMARY', 'STATUS', 'PRIORITY', 'DUE DATE', 'PROJECT', 'SPRINT'].map(h => (
                       <th key={h} style={{
                         padding: '10px 12px', textAlign: 'left',
                         fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
@@ -221,11 +276,11 @@ export function ResourceDetail() {
                   </tr>
                 </thead>
                 <tbody>
-                  {workItems.map((item: WorkItemFull) => {
-                    const overdue = isOverdue(item.due_date, item.status);
+                  {filtered.slice(0, 100).map((item) => {
+                    const overdue = isOverdue(item.due_date, item.status_category);
                     return (
                       <tr
-                        key={item.id}
+                        key={item.issue_key}
                         style={{
                           height: 44,
                           borderBottom: '1px solid var(--wh-border-light, #f1f5f9)',
@@ -234,24 +289,38 @@ export function ResourceDetail() {
                         }}
                         className="wh-detail-row"
                       >
-                        <td style={{ padding: '0 12px', fontFamily: 'monospace', fontWeight: 600, color: 'var(--wh-primary, #2563eb)', cursor: 'pointer', whiteSpace: 'nowrap' }}
-                          onClick={() => navigate(`/projecthub/workitems?view=${item.id}`)}
-                        >
-                          {item.item_key}
+                        <td style={{ padding: '0 12px', fontFamily: 'monospace', fontWeight: 600, color: 'var(--wh-primary, #2563eb)', whiteSpace: 'nowrap' }}>
+                          {item.issue_key}
                         </td>
                         <td style={{ padding: '0 12px' }}>
-                          <TypeBadge type={item.item_type as WorkItemType} size="sm" />
+                          <span style={{
+                            display: 'inline-block', padding: '2px 8px', borderRadius: 4,
+                            fontSize: 11, fontWeight: 600,
+                            backgroundColor: (TYPE_COLORS[item.issue_type] || '#94a3b8') + '18',
+                            color: TYPE_COLORS[item.issue_type] || '#94a3b8',
+                          }}>
+                            {item.issue_type}
+                          </span>
                         </td>
                         <td style={{
-                          padding: '0 12px', maxWidth: 240, overflow: 'hidden',
+                          padding: '0 12px', maxWidth: 300, overflow: 'hidden',
                           textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           color: 'var(--wh-text-primary, #0f172a)',
-                          fontWeight: item.item_type === 'Epic' ? 600 : 400,
                         }}>
                           {item.summary}
                         </td>
                         <td style={{ padding: '0 12px' }}>
-                          <StatusBadge status={item.status as WorkItemStatus} size="sm" />
+                          <span style={{
+                            display: 'inline-block', padding: '2px 8px', borderRadius: 4,
+                            fontSize: 11, fontWeight: 600,
+                            backgroundColor: (STATUS_COLORS[item.status] || '#94a3b8') + '18',
+                            color: STATUS_COLORS[item.status] || '#94a3b8',
+                          }}>
+                            {item.status}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0 12px', fontSize: 12, color: 'var(--wh-text-secondary, #64748b)' }}>
+                          {item.priority || '—'}
                         </td>
                         <td style={{ padding: '0 12px', whiteSpace: 'nowrap' }}>
                           {item.due_date ? (
@@ -259,9 +328,7 @@ export function ResourceDetail() {
                               display: 'inline-flex', alignItems: 'center', gap: 4,
                               color: overdue ? '#ef4444' : 'var(--wh-text-secondary, #64748b)',
                               fontWeight: overdue ? 600 : 400,
-                            }}
-                              title={overdue ? `Overdue by ${daysDifference(item.due_date)} days` : undefined}
-                            >
+                            }}>
                               {overdue && <AlertCircle style={{ width: 14, height: 14 }} />}
                               {new Date(item.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                             </span>
@@ -269,62 +336,23 @@ export function ResourceDetail() {
                             <span style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>—</span>
                           )}
                         </td>
-                        <td style={{ padding: '0 12px', color: 'var(--wh-text-secondary, #64748b)', fontSize: 12 }}>
-                          {item.release_name || '—'}
+                        <td style={{ padding: '0 12px', fontFamily: 'monospace', fontSize: 12, color: 'var(--wh-text-secondary, #64748b)' }}>
+                          {item.project_key || '—'}
                         </td>
-                        <td style={{ padding: '0 12px' }}>
-                          {item.theme_name ? (
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12 }}>
-                              <span style={{
-                                width: 8, height: 8, borderRadius: 4,
-                                backgroundColor: item.theme_color || '#94a3b8',
-                                flexShrink: 0,
-                              }} />
-                              <span style={{ color: 'var(--wh-text-secondary, #64748b)' }}>{item.theme_name}</span>
-                            </span>
-                          ) : (
-                            <span style={{ color: 'var(--wh-text-tertiary, #94a3b8)', fontSize: 12 }}>—</span>
-                          )}
+                        <td style={{ padding: '0 12px', fontSize: 12, color: 'var(--wh-text-secondary, #64748b)' }}>
+                          {item.sprint_name || '—'}
                         </td>
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
+              {filtered.length > 100 && (
+                <div style={{ padding: '8px 12px', fontSize: 12, color: 'var(--wh-text-tertiary)', textAlign: 'center', borderTop: '1px solid var(--wh-border-light)' }}>
+                  Showing first 100 of {filtered.length} issues
+                </div>
+              )}
             </div>
-          )}
-        </div>
-
-        {/* Skills Section */}
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-            <Zap style={{ width: 14, height: 14, color: 'var(--wh-text-tertiary, #94a3b8)' }} />
-            <h2 style={{
-              fontFamily: 'Sora, sans-serif', fontSize: 16, fontWeight: 600,
-              color: 'var(--wh-text-primary, #0f172a)', margin: 0,
-            }}>
-              Skills
-            </h2>
-          </div>
-          {r.skills && r.skills.length > 0 ? (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {r.skills.map(skill => (
-                <span key={skill} style={{
-                  backgroundColor: 'var(--wh-border-light, #f1f5f9)',
-                  color: 'var(--wh-text-secondary, #64748b)',
-                  borderRadius: 9999,
-                  padding: '4px 12px',
-                  fontSize: 12,
-                  fontWeight: 500,
-                }}>
-                  {skill}
-                </span>
-              ))}
-            </div>
-          ) : (
-            <p style={{ fontStyle: 'italic', color: 'var(--wh-text-tertiary, #94a3b8)', fontSize: 13 }}>
-              No skills listed
-            </p>
           )}
         </div>
       </div>
