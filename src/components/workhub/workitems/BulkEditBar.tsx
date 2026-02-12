@@ -1,5 +1,6 @@
 /**
  * BulkEditBar — Appears when items are selected, blue bar with actions
+ * Phase 9: Now logs to bulk ops audit trail
  */
 
 import { useState } from 'react';
@@ -7,6 +8,7 @@ import { X, ChevronDown } from 'lucide-react';
 import { useWHReleases } from '@/hooks/workhub/useReleases';
 import { useWHThemes } from '@/hooks/workhub/useThemes';
 import { useBulkUpdateWorkItems } from '@/hooks/workhub/useWorkItems';
+import { useLogBulkOp } from '@/hooks/workhub/useBulkOpsLog';
 import type { WorkItemStatus } from '@/types/workhub.types';
 
 interface BulkEditBarProps {
@@ -16,6 +18,12 @@ interface BulkEditBarProps {
 }
 
 const STATUSES: WorkItemStatus[] = ['To Do', 'In Progress', 'In Review', 'Done', 'Blocked', 'Cancelled'];
+
+const FIELD_TO_OP: Record<string, string> = {
+  status: 'change_status',
+  release_id: 'assign_release',
+  theme_id: 'assign_theme',
+};
 
 function BulkDropdown({ label, options, onSelect }: {
   label: string;
@@ -57,10 +65,22 @@ export function BulkEditBar({ selectedCount, selectedIds, onClear }: BulkEditBar
   const { data: releases } = useWHReleases();
   const { data: themes } = useWHThemes();
   const bulkUpdate = useBulkUpdateWorkItems();
+  const logBulkOp = useLogBulkOp();
 
   const handleBulk = (field: string, value: string) => {
+    const operation = FIELD_TO_OP[field] || `change_${field}`;
     bulkUpdate.mutate({ issueKeys: selectedIds, field, value }, {
-      onSuccess: () => onClear(),
+      onSuccess: () => {
+        // Log the bulk operation
+        logBulkOp.mutate({
+          operation,
+          affected_item_ids: selectedIds,
+          field_changed: field,
+          new_values: { [field]: value },
+          item_count: selectedIds.length,
+        });
+        onClear();
+      },
     });
   };
 
@@ -71,7 +91,7 @@ export function BulkEditBar({ selectedCount, selectedIds, onClear }: BulkEditBar
       data-print-hide="true"
     >
       <span className="text-xs font-medium text-white">
-        ✓ {selectedCount} selected
+        {selectedCount} selected
       </span>
 
       <div className="w-px h-5 bg-white/20" />
