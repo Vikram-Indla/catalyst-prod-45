@@ -43,7 +43,7 @@ export function WorkHubDashboard() {
   const anyLoading = kpisQuery.isLoading || releasesQuery.isLoading || themesQuery.isLoading || resourcesQuery.isLoading;
 
   return (
-    <div style={{ minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ fontFamily: 'Inter, system-ui, sans-serif', display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header — full width, spans edge-to-edge */}
       <CommandCenterHeader
         title="Dashboard"
