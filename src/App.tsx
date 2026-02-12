@@ -90,6 +90,7 @@ const ReleasesListPage = lazy(() => import("./pages/testhub/ReleasesListPage"));
 const ReleaseDetailPage = lazy(() => import("./pages/testhub/ReleaseDetailPage"));
 const CommandCenterPage = lazy(() => import("./pages/testhub/CommandCenterPage"));
 const CatyAIPage = lazy(() => import("./pages/testhub/CatyAIPage"));
+const TestHubDocsPage = lazy(() => import("./pages/testhub/TestHubDocsPage"));
 // Task10 pages
 const T10LandingPage = lazy(() => import("./modules/task10/pages/T10LandingPage").then(m => ({ default: m.T10LandingPage })));
 const T10WeekPage = lazy(() => import("./modules/task10/pages/T10WeekPage").then(m => ({ default: m.T10WeekPage })));
@@ -591,6 +592,7 @@ const App = () => (
                 <Route path="releases/quality-gates" element={<Suspense fallback={<div className="p-8">Loading...</div>}><QualityGatesPage /></Suspense>} />
                 <Route path="releases/:releaseId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleaseDetailPage /></Suspense>} />
                 <Route path="caty" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CatyAIPage /></Suspense>} />
+                <Route path="docs" element={<Suspense fallback={<div className="p-8">Loading...</div>}><TestHubDocsPage /></Suspense>} />
               </Route>
               
               {/* ReleaseHub Module — Release Management (NEW) */}
