@@ -5,7 +5,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { RefreshCw, Loader2, ChevronLeft, ChevronRight, Download, History, SlidersHorizontal } from 'lucide-react';
-import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { toast } from 'sonner';
 import { useWorkItems } from '@/hooks/workhub/useWorkItems';
 import type { WorkItemFilterConfig, PaginationConfig, JiraIssue } from '@/hooks/workhub/useWorkItems';
@@ -130,11 +130,12 @@ export function WorkItemsPage() {
 
   return (
     <div style={{ fontFamily: 'var(--wh-font-sans)', display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-      {/* Catalyst Page Header */}
-      <GlobalPageHeader
-        sectionLabel="PROJECT HUB"
-        pageTitle="Work Items"
-        rightActions={
+      {/* Header */}
+      <CommandCenterHeader
+        title="Work Items"
+        subtitle="Portfolio work item tracker"
+        onRefresh={() => refetch()}
+        actions={
           <div className="flex items-center gap-2">
             {isFetching && !isLoading && (
               <span className="inline-flex items-center gap-1 text-xs" style={{ color: 'var(--text-3)' }}>
@@ -148,7 +149,7 @@ export function WorkItemsPage() {
               onClick={handleExport}
               disabled={items.length === 0}
               title={items.length === 0 ? 'No items to export' : 'Export filtered items as CSV'}
-              className="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors flex items-center gap-1.5 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+              className="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors flex items-center gap-1.5 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-primary/30"
               style={{ borderColor: 'var(--divider)', color: 'var(--text-2)' }}
             >
               <Download className="w-3.5 h-3.5" />
@@ -156,23 +157,15 @@ export function WorkItemsPage() {
             </button>
             <button
               onClick={() => setShowHistory(!showHistory)}
-              className="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+              className="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-primary/30"
               style={{
-                borderColor: showHistory ? '#2563eb' : 'var(--divider)',
-                color: showHistory ? '#2563eb' : 'var(--text-2)',
-                backgroundColor: showHistory ? 'rgba(37,99,235,0.06)' : 'transparent',
+                borderColor: showHistory ? 'hsl(var(--primary))' : 'var(--divider)',
+                color: showHistory ? 'hsl(var(--primary))' : 'var(--text-2)',
+                backgroundColor: showHistory ? 'hsl(var(--primary) / 0.06)' : 'transparent',
               }}
             >
               <History className="w-3.5 h-3.5" />
               History
-            </button>
-            <button
-              onClick={() => refetch()}
-              className="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-              style={{ borderColor: '#2563eb', color: '#2563eb' }}
-            >
-              <RefreshCw className="w-3.5 h-3.5" />
-              Refresh
             </button>
           </div>
         }
@@ -181,7 +174,8 @@ export function WorkItemsPage() {
       {/* Bulk Ops History */}
       {showHistory && <BulkOpsHistory onClose={() => setShowHistory(false)} />}
 
-
+      {/* Content with padding */}
+      <div className="flex flex-col flex-1 min-h-0 px-6 pb-4">
       {/* Basic Filters + Advanced toggle */}
       <div className="mb-3 mt-2">
         <div className="flex items-end gap-2">
@@ -303,6 +297,7 @@ export function WorkItemsPage() {
           </div>
         </div>
       )}
+      </div>{/* end content wrapper */}
 
       {/* Drawer */}
       <WorkItemDrawer item={drawerItem} onClose={() => setDrawerItem(null)} />
