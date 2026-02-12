@@ -39536,6 +39536,22 @@ export type Database = {
           theme_id: string
         }[]
       }
+      fn_ph_release_summary: {
+        Args: never
+        Returns: {
+          assignees: Json
+          blocked_items: number
+          completion_percent: number
+          done_items: number
+          in_progress_items: number
+          in_review_items: number
+          projects: string[]
+          release_date: string
+          todo_items: number
+          total_items: number
+          version_name: string
+        }[]
+      }
       generate_change_number: { Args: never; Returns: string }
       generate_cycle_key: { Args: never; Returns: string }
       generate_cycle_report_data: {
