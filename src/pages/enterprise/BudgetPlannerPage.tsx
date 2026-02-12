@@ -16,6 +16,7 @@ import { PageChrome } from '@/components/layout/PageChrome';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AlertTriangle, Search, Wallet, BarChart3, GitBranch, Lock, Home, Calendar } from 'lucide-react';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { cn } from '@/lib/utils';
 import { useBudgetData, formatCurrency, type BudgetPeriod } from '@/hooks/budget/useBudgetData';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -241,31 +242,11 @@ export default function BudgetPlannerPage() {
       <div className="budget-module flex flex-col h-full bg-[hsl(var(--background))]">
         {/* Header - Matches Capacity Planner 2-Row Structure */}
         <div className="bg-card">
-          {/* ROW 1: Title + Live Badge (inline) */}
-          <div className="flex items-center justify-between px-5 h-16">
-            {/* Left: Title + Live Badge Inline */}
-            <div className="flex items-center gap-4">
-               <div className="flex flex-col gap-0.5">
-                 {/* Title */}
-                <h1 className="text-2xl font-bold text-foreground tracking-tight">
-                  Budget Planner
-                </h1>
-              </div>
-              
-              {/* Live Badge - Inline with title */}
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border bg-emerald-50 border-emerald-200">
-                <span className="relative flex items-center justify-center">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                  <span className="absolute w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                </span>
-                <span className="text-xs font-semibold text-emerald-700">Live</span>
-              </div>
-            </div>
-
-            {/* Right: Reserved for future actions */}
-            <div className="flex items-center gap-3">
-            </div>
-          </div>
+          {/* ROW 1: CommandCenterHeader */}
+          <CommandCenterHeader
+            title="Budget Planner"
+            subtitle={`Financial planning & scenario modeling — ${getPeriodLabel()}`}
+          />
 
           {/* ROW 2: Search + Hero Tabs — floating strip */}
           <div className="px-6 pt-3" style={{ backgroundColor: 'hsl(var(--muted))', paddingBottom: '4px' }}>

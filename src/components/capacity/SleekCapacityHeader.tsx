@@ -10,6 +10,7 @@ import {
   Presentation, Briefcase, Users, Layers, FileText, Calendar,
   ChevronLeft, ChevronRight, BarChart3, RefreshCw, Wallet
 } from 'lucide-react';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -243,31 +244,11 @@ export function SleekCapacityHeader({
 
   return (
     <div className="bg-card">
-      {/* ROW 1: Title + Live Badge (inline) | Primary CTA only */}
-      <div className="flex items-center justify-between px-5 h-16">
-        {/* Left: Title + Live Badge Inline */}
-        <div className="flex items-center gap-4">
-          <div className="flex flex-col gap-0.5">
-            {/* Title */}
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-[var(--text-primary)] tracking-tight">
-              Capacity Planner
-            </h1>
-          </div>
-          
-          {/* Live Badge - Inline with title */}
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 rounded-full border border-emerald-200">
-            <span className="relative flex items-center justify-center">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span className="absolute w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-            </span>
-            <span className="text-xs font-semibold text-emerald-700">Live</span>
-          </div>
-        </div>
-
-        {/* Right: Reserved for future actions */}
-        <div className="flex items-center gap-3">
-        </div>
-      </div>
+      {/* ROW 1: CommandCenterHeader */}
+      <CommandCenterHeader
+        title="Capacity Planner"
+        subtitle={`Resource allocation & utilization — ${summary.total} resources, ${summary.utilizationPercentage}% utilized`}
+      />
 
       {/* ROW 2: Search + Hero Tabs — floating strip with side padding */}
       <div className="px-6 pt-3" style={{ backgroundColor: 'hsl(var(--muted))', paddingBottom: '4px' }}>
