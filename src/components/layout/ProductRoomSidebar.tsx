@@ -141,7 +141,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                 className="text-[13px] font-semibold truncate tracking-tight"
                 style={{ color: 'var(--text-1)' }}
               >
-                Product
+                Product Hub
               </span>
             )}
           </div>
