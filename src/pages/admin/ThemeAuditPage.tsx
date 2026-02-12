@@ -96,7 +96,7 @@ function generateId(): string {
 // Quick navigation routes
 const QUICK_NAV_ROUTES = [
   { label: 'Home (For you)', path: '/for-you' },
-  { label: 'Strategy Room', path: '/enterprise/strategy-room' },
+  { label: 'Strategy Room', path: '/strategyhub/strategy-room' },
   { label: 'Product Backlog', path: '/industry/backlog' },
 ];
 

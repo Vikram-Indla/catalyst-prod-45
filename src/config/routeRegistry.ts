@@ -16,7 +16,7 @@ export interface RouteConfig {
  */
 export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   // Enterprise routes - Core
-  '/enterprise/strategy-room': { section: 'ENTERPRISE', pageTitle: 'Strategy Room' },
+  '/strategyhub/strategy-room': { section: 'ENTERPRISE', pageTitle: 'Strategy Room' },
   '/enterprise/snapshots': { section: 'ENTERPRISE', pageTitle: 'Strategic Snapshots' },
   '/enterprise/backlog': { section: 'ENTERPRISE', pageTitle: 'Strategic Backlog' },
   '/enterprise/okr-hub': { section: 'ENTERPRISE', pageTitle: 'Objectives tree' },

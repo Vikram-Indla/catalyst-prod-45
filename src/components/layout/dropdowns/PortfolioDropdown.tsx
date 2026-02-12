@@ -26,7 +26,7 @@ export function PortfolioDropdown({ onClose }: PortfolioDropdownProps) {
   );
 
   const handleSelect = (portfolio: string) => {
-    navigate(`/enterprise/strategy-room?portfolio=${encodeURIComponent(portfolio)}`);
+    navigate(`/strategyhub/strategy-room?portfolio=${encodeURIComponent(portfolio)}`);
     onClose();
   };
 

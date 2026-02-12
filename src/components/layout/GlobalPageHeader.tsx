@@ -144,7 +144,7 @@ export function GlobalPageHeader({
  * Use this to derive sectionLabel and pageTitle from route paths
  */
 export const ROUTE_META: Record<string, { sectionLabel: string; pageTitle: string }> = {
-  '/enterprise/strategy-room': { sectionLabel: 'Enterprise', pageTitle: 'Strategy Room' },
+  '/strategyhub/strategy-room': { sectionLabel: 'Enterprise', pageTitle: 'Strategy Room' },
   '/enterprise/strategic-backlog': { sectionLabel: 'Enterprise', pageTitle: 'Strategic Backlog' },
   '/enterprise/roadmaps': { sectionLabel: 'Enterprise', pageTitle: 'Enterprise Roadmap' },
   '/industry/backlog': { sectionLabel: 'Product', pageTitle: 'Product Backlog' },
