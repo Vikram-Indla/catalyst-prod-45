@@ -226,7 +226,7 @@ function SubtaskRow({ item }: { item: JiraWorkItem }) {
 }
 
 function StoryGroupRow({ group }: { group: StoryGroup }) {
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
   const { story, subtasks } = group;
   const statusColor = getStatusColor(story.status);
 
