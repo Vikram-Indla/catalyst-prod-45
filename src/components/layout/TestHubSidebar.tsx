@@ -42,7 +42,7 @@ interface TestHubSidebarProps {
 
 const testHubSidebarConfig: SidebarConfig = {
   badge: 'TH',
-  label: 'TestHub',
+  label: 'Test Hub',
   sections: [
     {
       title: 'Overview',
