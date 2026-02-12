@@ -405,7 +405,7 @@ const queryClient = new QueryClient();
 // Caty FAB on capacity planner and project hub routes
 function CatyWidgetRouteGuard() {
   const location = useLocation();
-  const showCaty = location.pathname.startsWith('/enterprise/capacity') || location.pathname.startsWith('/projecthub');
+  const showCaty = location.pathname.startsWith('/strategyhub/capacity') || location.pathname.startsWith('/enterprise/capacity') || location.pathname.startsWith('/projecthub');
   if (!showCaty) return null;
   return <CatyFabPlaceholder />;
 }
@@ -515,15 +515,17 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/programs" element={<PlaceholderPage />} />
               <Route path="/strategy-room" element={<StrategyRoomPage />} />
               <Route path="/strategyhub/strategy-room" element={<StrategyRoomPage />} />
-              <Route path="/strategyhub/strategy-room/capacity" element={<Navigate to="/enterprise/capacity" replace />} />
-              <Route path="/enterprise/capacity" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CapacityPlannerPage /></Suspense>} />
+              <Route path="/strategyhub/strategy-room/capacity" element={<Navigate to="/strategyhub/capacity" replace />} />
+              <Route path="/strategyhub/capacity" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CapacityPlannerPage /></Suspense>} />
+              <Route path="/enterprise/capacity" element={<Navigate to="/strategyhub/capacity" replace />} />
               <Route path="/enterprise/capacity-planner/budget" element={<Suspense fallback={<div className="p-8">Loading...</div>}><BudgetGovernancePage /></Suspense>} />
               <Route path="/strategyhub/budget-planner" element={<Suspense fallback={<div className="p-8">Loading...</div>}><BudgetPlannerPage /></Suspense>} />
               <Route path="/strategyhub/snapshots" element={<StrategicSnapshots />} />
               <Route path="/strategyhub/backlog" element={<StrategicBacklog />} />
               <Route path="/strategyhub/okr-heatmap" element={<EnterpriseComingSoon />} />
               <Route path="/strategyhub/okr-tree" element={<OKRTree />} />
-              <Route path="/enterprise/okr-hub" element={<OKRHub />} />
+              <Route path="/strategyhub/okr-hub" element={<OKRHub />} />
+              <Route path="/enterprise/okr-hub" element={<Navigate to="/strategyhub/okr-hub" replace />} />
               <Route path="/portfolio/:portfolioId/okr-hub" element={<OKRHub />} />
               <Route path="/program/:programId/okr-hub" element={<OKRHub />} />
               <Route path="/program" element={<ProgramRedirect />} />
@@ -545,7 +547,8 @@ const App = () => (
               {/* Execution Workbench now at /program/:programId/work-tree */}
               <Route path="/program/:programId/reports" element={<PlaceholderPage />} />
               <Route path="/team/:teamId/okr-hub" element={<OKRHub />} />
-              <Route path="/enterprise/roadmaps" element={<CatalystEnterpriseRoadmap />} />
+              <Route path="/strategyhub/roadmaps" element={<CatalystEnterpriseRoadmap />} />
+              <Route path="/enterprise/roadmaps" element={<Navigate to="/strategyhub/roadmaps" replace />} />
               <Route path="/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/kanban-boards" element={<EnterpriseComingSoon />} />
@@ -661,7 +664,8 @@ const App = () => (
 
               {/* Enterprise More Items */}
               <Route path="/enterprise/ideation" element={<Navigate to="/industry/ideas/hub" replace />} />
-              <Route path="/enterprise/risks" element={<EnterpriseRisks />} />
+              <Route path="/strategyhub/risks" element={<EnterpriseRisks />} />
+              <Route path="/enterprise/risks" element={<Navigate to="/strategyhub/risks" replace />} />
               <Route path="/enterprise/impediments" element={<EnterpriseComingSoon />} />
               <Route path="/enterprise/epics" element={<EnterpriseEpics />} />
               
