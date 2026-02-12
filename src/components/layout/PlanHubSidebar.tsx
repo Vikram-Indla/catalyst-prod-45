@@ -151,7 +151,7 @@ export function PlanHubSidebar({ expanded, onToggle, className }: PlanHubSidebar
 
   const config: SidebarConfig = {
     badge: 'PH',
-    label: 'PlanHub™',
+    label: 'Plan Hub™',
     items: buildNavItems(),
     footerItem: {
       id: 'settings',
