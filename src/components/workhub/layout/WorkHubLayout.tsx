@@ -9,13 +9,10 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { WorkHubSidebar } from './WorkHubSidebar';
-import { CatyPanel } from '../caty/CatyPanel';
-import { CatyFAB } from '../caty/CatyFAB';
 import '@/styles/workhub.module.css';
 
 export function WorkHubLayout() {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
-  const [catyOpen, setCatyOpen] = useState(false);
 
   return (
     <div className="workhub-module flex h-full w-full">
@@ -23,8 +20,6 @@ export function WorkHubLayout() {
       <WorkHubSidebar
         expanded={sidebarExpanded}
         onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-        catyOpen={catyOpen}
-        onCatyToggle={() => setCatyOpen(!catyOpen)}
       />
 
       {/* Main Content Area */}
@@ -39,12 +34,6 @@ export function WorkHubLayout() {
           <Outlet />
         </div>
       </main>
-
-      {/* Caty AI Panel */}
-      <CatyPanel isOpen={catyOpen} onClose={() => setCatyOpen(false)} />
-
-      {/* Caty FAB */}
-      <CatyFAB isOpen={catyOpen} onClick={() => setCatyOpen(!catyOpen)} />
     </div>
   );
 }
