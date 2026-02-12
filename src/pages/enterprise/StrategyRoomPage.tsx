@@ -220,7 +220,17 @@ export default function StrategyRoomPage() {
   );
 
   return (
-    <PageChrome rightActions={snapshotSelector}>
+    <PageChrome hideHeader>
+      {/* Command Center–style header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b bg-card">
+        <div>
+          <h1 className="text-xl font-bold text-foreground">Strategy Room</h1>
+          <p className="text-sm text-muted-foreground">Executive overview of strategic health and alignment</p>
+        </div>
+        <div className="flex items-center gap-3">
+          {snapshotSelector}
+        </div>
+      </div>
       {/* Ring-fenced Strategy Room wrapper - V8 design system */}
       <div className="strategy-room-content">
         <div className="px-5 py-4 pb-6 max-w-[1400px] mx-auto">
