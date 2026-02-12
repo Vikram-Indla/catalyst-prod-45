@@ -268,7 +268,7 @@ export default function BudgetPlannerPage() {
           </div>
 
           {/* ROW 2: Search + Hero Tabs — floating strip */}
-          <div className="px-6 pb-4 pt-3" style={{ backgroundColor: 'hsl(var(--muted))' }}>
+          <div className="px-6 pt-3" style={{ backgroundColor: 'hsl(var(--muted))', paddingBottom: '4px' }}>
             <div className="flex items-center justify-between px-5 py-3 bg-card border border-border rounded-xl shadow-sm">
               {/* Left: Search + Period Toggle */}
               <div className="flex items-center gap-4">
@@ -328,7 +328,7 @@ export default function BudgetPlannerPage() {
         </div>
 
         {/* Content Area - Scrollable */}
-        <div className="flex-1 overflow-auto p-6 lg:px-8" style={{ backgroundColor: 'hsl(var(--muted))' }}>
+        <div className="flex-1 overflow-auto px-6 lg:px-8 pb-6" style={{ backgroundColor: 'hsl(var(--muted))', paddingTop: '4px' }}>
 
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
