@@ -40,7 +40,6 @@ import catalystLogoLight from "@/assets/catalyst-logo-light.svg";
 import catalystFullLogoLight from "@/assets/catalyst-full-logo-light.svg";
 import catalystWordmark3 from "@/assets/catalyst-wordmark-3.svg";
 import catalystLogoMark2 from "@/assets/catalyst-logo-mark-2.svg";
-import { useSidebarState } from "@/hooks/useSidebarState";
 
 export function CatalystHeader() {
   const navigate = useNavigate();
@@ -56,9 +55,8 @@ export function CatalystHeader() {
   const canAccessSettings = isAdmin || isSuperAdmin || isProgramManager;
   const { isModuleEnabled, isLoading: modulesLoading } = useEnabledModules();
   const { canViewInNav, isLoading: accessLoading } = useModuleAccess();
-  const { workspaceType } = useCatalystContext();
+  const { workspaceType, sidebarExpanded } = useCatalystContext();
   const singleItemNav = useSingleItemNavigation();
-  const { isCollapsed: isSidebarCollapsed } = useSidebarState();
   
   // Get active nav item based on workspace context
   const activeNavItem = getActiveNavItem(workspaceType);
@@ -201,7 +199,7 @@ export function CatalystHeader() {
           style={{ marginRight: '32px' }}
           onClick={() => navigate('/home')}
         >
-          {isSidebarCollapsed ? (
+          {!sidebarExpanded ? (
             <img 
               src={catalystLogoMark2} 
               alt="Catalyst" 

@@ -18,6 +18,10 @@ interface CatalystContextState {
   // Workspace context (derived from route + selections)
   workspaceType: WorkspaceType;
   
+  // Sidebar collapsed state (shared between shell + header)
+  sidebarExpanded: boolean;
+  setSidebarExpanded: (expanded: boolean | ((prev: boolean) => boolean)) => void;
+  
   // Entity IDs
   portfolioId: string | null;
   setPortfolioId: (id: string | null) => void;
@@ -128,7 +132,7 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
   const [industryFilters, setIndustryFilters] = useState<IndustryFilters>(initialState.industryFilters || DEFAULT_INDUSTRY_FILTERS);
   const [programName, setProgramName] = useState<string | null>(initialState.programName);
   const [projectName, setProjectName] = useState<string | null>(initialState.projectName);
-  
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
   // Derive workspace type PURELY from route (single source of truth)
   const workspaceType = useMemo(() => 
     deriveWorkspaceType(location.pathname),
@@ -188,6 +192,8 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     tier,
     setTier,
     workspaceType,
+    sidebarExpanded,
+    setSidebarExpanded,
     portfolioId,
     setPortfolioId,
     programId,

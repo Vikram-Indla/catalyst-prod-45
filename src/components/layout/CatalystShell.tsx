@@ -35,8 +35,7 @@ function CatalystShellContent() {
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string; projectId?: string }>();
-  const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter } = useCatalystContext();
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter, sidebarExpanded, setSidebarExpanded } = useCatalystContext();
   const { isModuleEnabled } = useEnabledModules();
   
   // Extract IDs from URL params - these take precedence
