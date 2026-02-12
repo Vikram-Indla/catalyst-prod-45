@@ -243,66 +243,58 @@ export function SleekCapacityHeader({
   };
 
   return (
-    <div className="bg-card">
-      {/* ROW 1: CommandCenterHeader */}
+    <div>
+      {/* Header — matches Risk Register pattern */}
       <CommandCenterHeader
         title="Capacity Planner"
         subtitle={`Resource allocation & utilization — ${summary.total} resources, ${summary.utilizationPercentage}% utilized`}
       />
 
-      {/* ROW 2: Search + Hero Tabs — floating strip with side padding */}
-      <div className="px-6 pt-3" style={{ backgroundColor: 'hsl(var(--muted))', paddingBottom: '4px' }}>
-        <div className="flex items-center justify-between px-5 py-3 bg-card border border-border rounded-xl shadow-sm">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <Input
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              placeholder={primaryView === 'projects' ? "Search projects..." : "Search resources..."}
-              className="w-56 h-10 pl-10 pr-3 text-sm bg-slate-100 border-slate-200 rounded-xl focus:bg-white focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400"
-            />
-          </div>
-
-          {/* Hero Tab Strip - Right Aligned */}
-          <nav className="flex items-center gap-1 bg-slate-100 rounded-xl p-1.5 border border-slate-200">
-            {viewTabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={tab.onClick}
-                  className={cn(
-                    'flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-150',
-                    tab.isActive 
-                      ? 'bg-[#2563eb] text-white shadow-md'
-                      : 'text-slate-700 hover:bg-white hover:shadow-sm hover:text-slate-900'
-                  )}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </nav>
+      {/* Toolbar: Tabs + Search — inside content flow */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-6 py-4 border-b border-border">
+        <nav className="flex items-center gap-1 bg-muted rounded-xl p-1.5 border border-border overflow-x-auto">
+          {viewTabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={tab.onClick}
+                className={cn(
+                  'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-150 whitespace-nowrap',
+                  tab.isActive 
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:bg-card hover:text-foreground hover:shadow-sm'
+                )}
+              >
+                <Icon className="w-4 h-4 flex-shrink-0" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+        <div className="relative w-full sm:w-56">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder={primaryView === 'projects' ? "Search projects..." : "Search resources..."}
+            className="w-full h-10 pl-10 pr-3 text-sm rounded-xl bg-muted border-border focus:bg-card transition-all placeholder:text-muted-foreground"
+          />
         </div>
       </div>
 
-      {/* ROW 3: Stats + Filters - REMOVED per user request */}
-
-      {/* ROW 3 for Projects: Period Navigator */}
+      {/* Projects: Period Navigator */}
       {primaryView === 'projects' && projectPeriodRange && (
-      <div className="flex items-center px-5 py-2.5 bg-muted/50 dark:bg-[var(--surface-2)] border-b border-border/30 dark:border-[var(--border-subtle)]">
+      <div className="flex items-center px-6 py-2.5 border-b border-border/30">
         <div className="flex items-center gap-3">
-          {/* Period Type Toggle */}
-          <div className="flex items-center bg-muted/80 dark:bg-[var(--surface-3)] rounded-lg p-0.5 border border-border dark:border-[var(--border-default)]">
+          <div className="flex items-center bg-muted rounded-lg p-0.5 border border-border">
             <button
               onClick={() => onProjectPeriodTypeChange?.('weekly')}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all",
                 projectPeriodType === 'weekly'
-                  ? "bg-card dark:bg-[var(--surface-elevated)] text-foreground dark:text-[var(--text-primary)] shadow-sm"
-                  : "text-muted-foreground dark:text-[var(--text-secondary)] hover:text-foreground dark:hover:text-[var(--text-primary)]"
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
               <CalendarDays className="w-3.5 h-3.5" />
@@ -313,8 +305,8 @@ export function SleekCapacityHeader({
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all",
                 projectPeriodType === 'monthly'
-                  ? "bg-card dark:bg-[var(--surface-elevated)] text-foreground dark:text-[var(--text-primary)] shadow-sm"
-                  : "text-muted-foreground dark:text-[var(--text-secondary)] hover:text-foreground dark:hover:text-[var(--text-primary)]"
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
               <Calendar className="w-3.5 h-3.5" />
@@ -322,7 +314,6 @@ export function SleekCapacityHeader({
             </button>
           </div>
 
-          {/* Period Navigation */}
           <div className="flex items-center gap-1">
             <Button
               variant="ghost"
@@ -333,13 +324,11 @@ export function SleekCapacityHeader({
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            
             <div className="min-w-[160px] text-center">
-              <span className="text-sm font-medium text-foreground dark:text-[var(--text-primary)]">
+              <span className="text-sm font-medium text-foreground">
                 {projectPeriodRange.label}
               </span>
             </div>
-            
             <Button
               variant="ghost"
               size="icon"
