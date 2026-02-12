@@ -1,8 +1,9 @@
 /**
  * Login Hero Panel V10 - Institutional
- * Blue gradient background with Islamic geometric pattern and Catalyst Convergence Hub logo
+ * Blue gradient background with Islamic geometric pattern and Catalyst wordmark
  */
 
+import catalystWordmark from '@/assets/catalyst-wordmark-2.svg';
 import './login-styles.css';
 
 // Catalyst Convergence Hub Logo (white on blue)
@@ -89,13 +90,14 @@ export function LoginHeroPanel() {
 
       {/* Centered content */}
       <div className="hero-content-v10">
-        {/* Logo */}
-        <div className="hero-logo">
-          <CatalystLogo size={100} />
-        </div>
-
         {/* Wordmark */}
-        <h1 className="hero-wordmark">Catalyst</h1>
+        <div className="hero-logo">
+          <img 
+            src={catalystWordmark} 
+            alt="Catalyst" 
+            style={{ height: '80px', width: 'auto', filter: 'brightness(0) invert(1)' }} 
+          />
+        </div>
 
         {/* Sub-brand */}
         <p className="hero-subbrand">Enterprise Portfolio Management</p>
