@@ -1,4 +1,4 @@
-import { Logo } from "@/components/brand/Logo";
+import catalystWordmark from "@/assets/catalyst-wordmark-2.svg";
 
 export function HeroPanel() {
   const stats = [
@@ -20,7 +20,7 @@ export function HeroPanel() {
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-primary to-transparent" />
 
       <div className="relative z-10">
-        <Logo variant="light" size="lg" />
+        <img src={catalystWordmark} alt="Catalyst" style={{ height: '64px', width: 'auto' }} />
       </div>
 
       <div className="relative z-10 max-w-[520px]">
