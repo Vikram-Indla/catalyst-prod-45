@@ -242,7 +242,7 @@ export function SleekCapacityHeader({
   };
 
   return (
-    <div className="bg-card border-b border-border">
+    <div className="bg-card" style={{ borderBottom: '1px solid var(--divider, #e4e4e7)' }}>
       {/* ROW 1: Title + Live Badge (inline) | Primary CTA only */}
       <div className="flex items-center justify-between px-5 h-16 border-b border-border/40">
         {/* Left: Title + Live Badge Inline */}
