@@ -339,7 +339,7 @@ import EnterpriseObjectives from "./pages/enterprise/EnterpriseObjectives";
 import EnterpriseDependencies from "./pages/enterprise/EnterpriseDependencies";
 import EnterpriseReleaseVehicles from "./pages/enterprise/EnterpriseReleaseVehicles";
 import EnterpriseSuccessCriteria from "./pages/enterprise/EnterpriseSuccessCriteria";
-import EnterpriseRisks from "./pages/enterprise/EnterpriseRisks";
+const EnterpriseRisks = lazy(() => import("./pages/enterprise/EnterpriseRisks"));
 import EnterpriseComingSoon from "./pages/enterprise/ComingSoon";
 import SkillsInventory from "./pages/SkillsInventory";
 import StarredPage from "./pages/StarredPage";
@@ -664,7 +664,7 @@ const App = () => (
 
               {/* Enterprise More Items */}
               <Route path="/enterprise/ideation" element={<Navigate to="/industry/ideas/hub" replace />} />
-              <Route path="/strategyhub/risks" element={<EnterpriseRisks />} />
+              <Route path="/strategyhub/risks" element={<Suspense fallback={<div className="p-8">Loading...</div>}><EnterpriseRisks /></Suspense>} />
               <Route path="/enterprise/risks" element={<Navigate to="/strategyhub/risks" replace />} />
               <Route path="/enterprise/impediments" element={<EnterpriseComingSoon />} />
               <Route path="/enterprise/epics" element={<EnterpriseEpics />} />
