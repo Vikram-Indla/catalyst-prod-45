@@ -31,7 +31,7 @@ export function useSyncHealth() {
     queryKey: ['wh', 'sync-health'],
     queryFn: async (): Promise<SyncHealth> => {
       const { data: lastSync } = await (supabase as any)
-        .from('wh_sync_log')
+        .from('ph_sync_log')
         .select('*')
         .in('status', ['success', 'warning'])
         .order('started_at', { ascending: false })
@@ -39,11 +39,11 @@ export function useSyncHealth() {
         .maybeSingle()
 
       const { count: issueCount } = await (supabase as any)
-        .from('wh_issues')
+        .from('ph_issues')
         .select('*', { count: 'exact', head: true })
 
       const { count: versionCount } = await (supabase as any)
-        .from('wh_versions')
+        .from('ph_versions')
         .select('*', { count: 'exact', head: true })
 
       const { data: conn } = await supabase
@@ -68,7 +68,7 @@ export function useSyncLogs(limit: number = 10) {
     queryKey: ['wh', 'sync-logs', limit],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
-        .from('wh_sync_log')
+        .from('ph_sync_log')
         .select('*')
         .order('started_at', { ascending: false })
         .limit(limit)
@@ -144,7 +144,7 @@ export function useAvailableProjects() {
     queryKey: ['wh', 'available-projects'],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
-        .from('wh_jira_connection')
+        .from('ph_jira_connection')
         .select('accessible_projects')
         .single()
       if (error) throw new Error(error.message)
@@ -172,7 +172,7 @@ export function useAvailableIssueTypes() {
       const pageSize = 1000
       while (true) {
         const { data, error } = await (supabase as any)
-          .from('wh_issues')
+          .from('ph_issues')
           .select('issue_type')
           .range(from, from + pageSize - 1)
         if (error) throw new Error(error.message)
@@ -192,7 +192,7 @@ export function useAvailableFixVersions() {
     queryKey: ['wh', 'available-fix-versions'],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
-        .from('wh_versions')
+        .from('ph_versions')
         .select('name, project_key, released')
         .order('name')
         .limit(5000)
