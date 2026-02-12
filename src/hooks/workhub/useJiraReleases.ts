@@ -1,5 +1,6 @@
 /**
- * useJiraReleases — Derives releases from ph_issues fix_versions (real Jira data)
+ * useJiraReleases — Server-side aggregation via fn_ph_release_summary()
+ * Replaces slow client-side batched approach with single RPC call
  */
 
 import { useQuery } from '@tanstack/react-query';
@@ -30,161 +31,31 @@ export function useJiraReleases() {
   return useQuery({
     queryKey: ['projecthub', 'jira-releases'],
     queryFn: async () => {
-      const releaseMap = new Map<string, {
-        releaseDate: string | null;
-        total: number; done: number; inProgress: number;
-        inReview: number; blocked: number; todo: number;
-        projects: Set<string>;
-        assigneeMap: Map<string, { accountId: string; displayName: string }>;
-      }>();
+      const { data, error } = await supabase.rpc('fn_ph_release_summary' as any);
+      if (error) throw new Error(error.message);
 
-      let page = 0;
-      const batchSize = 1000;
-      let hasMore = true;
-
-      while (hasMore) {
-        const { data, error } = await supabase
-          .from('ph_issues')
-          .select('fix_versions, project_key, status, status_category, assignee_account_id, assignee_display_name')
-          .not('fix_versions', 'eq', '[]')
-          .range(page * batchSize, (page + 1) * batchSize - 1);
-
-        if (error) throw new Error(error.message);
-        if (!data || data.length === 0) break;
-
-        data.forEach((row: any) => {
-          if (!Array.isArray(row.fix_versions)) return;
-          row.fix_versions.forEach((v: any) => {
-            if (!v?.name) return;
-            const name = v.name;
-            if (!releaseMap.has(name)) {
-              releaseMap.set(name, {
-                releaseDate: v.releaseDate || null,
-                total: 0, done: 0, inProgress: 0, inReview: 0, blocked: 0, todo: 0,
-                projects: new Set(),
-                assigneeMap: new Map(),
-              });
-            }
-            const r = releaseMap.get(name)!;
-            r.total++;
-            r.projects.add(row.project_key);
-            const status = (row.status || '').toLowerCase();
-            const category = (row.status_category || '').toLowerCase();
-            if (category === 'done') r.done++;
-            else if (status === 'blocked') r.blocked++;
-            else if (['in review', 'technical validation', 'ready for qa', 'ready for uat'].includes(status)) r.inReview++;
-            else if (category === 'in progress' || ['in progress', 'in development', 'in beta'].includes(status)) r.inProgress++;
-            else r.todo++;
-            if (row.assignee_account_id && row.assignee_display_name) {
-              if (!r.assigneeMap.has(row.assignee_account_id)) {
-                r.assigneeMap.set(row.assignee_account_id, {
-                  accountId: row.assignee_account_id,
-                  displayName: row.assignee_display_name,
-                });
-              }
-            }
-          });
-        });
-
-        hasMore = data.length === batchSize;
-        page++;
-      }
-
-      // Fetch avatar URLs from ph_user_mapping
-      const allAccountIds = new Set<string>();
-      releaseMap.forEach(r => r.assigneeMap.forEach((_, id) => allAccountIds.add(id)));
-
-      const avatarMap = new Map<string, string>();
-      const profileIdMap = new Map<string, string>();
-      if (allAccountIds.size > 0) {
-        const ids = Array.from(allAccountIds);
-        for (let i = 0; i < ids.length; i += 500) {
-          const batch = ids.slice(i, i + 500);
-          const { data: mappings } = await (supabase as any)
-            .from('ph_user_mapping')
-            .select('jira_account_id, jira_avatar_url, catalyst_profile_id')
-            .in('jira_account_id', batch);
-
-          const profileIds = (mappings ?? [])
-            .filter((m: any) => m.catalyst_profile_id)
-            .map((m: any) => m.catalyst_profile_id);
-
-          let profileAvatars = new Map<string, string>();
-          if (profileIds.length > 0) {
-            const { data: profiles } = await supabase
-              .from('profiles')
-              .select('id, avatar_url')
-              .in('id', profileIds);
-            (profiles ?? []).forEach((p: any) => {
-              if (p.avatar_url) profileAvatars.set(p.id, p.avatar_url);
-            });
-          }
-
-          (mappings ?? []).forEach((m: any) => {
-            const profileAvatar = m.catalyst_profile_id ? profileAvatars.get(m.catalyst_profile_id) : null;
-            const url = profileAvatar || m.jira_avatar_url;
-            if (url) avatarMap.set(m.jira_account_id, url);
-            if (m.catalyst_profile_id) {
-              profileIdMap.set(m.jira_account_id, m.catalyst_profile_id);
-            }
-          });
-        }
-      }
-
-      // Fetch roles from resource_inventory
-      const roleMap = new Map<string, string>();
-      const allProfileIds = Array.from(profileIdMap.values()).filter(Boolean);
-      if (allProfileIds.length > 0) {
-        for (let i = 0; i < allProfileIds.length; i += 500) {
-          const batch = allProfileIds.slice(i, i + 500);
-          const { data: resources } = await supabase
-            .from('resource_inventory')
-            .select('profile_id, role_name')
-            .in('profile_id', batch);
-          (resources ?? []).forEach((r: any) => {
-            if (r.role_name && r.profile_id) roleMap.set(r.profile_id, r.role_name);
-          });
-        }
-      }
-
-      const results: JiraRelease[] = [];
-      releaseMap.forEach((r, name) => {
-        const assignees: JiraReleaseAssignee[] = [];
-        r.assigneeMap.forEach(a => {
-          const pid = profileIdMap.get(a.accountId);
-          assignees.push({
-            accountId: a.accountId,
-            displayName: a.displayName,
-            avatarUrl: avatarMap.get(a.accountId) || null,
-            roleName: pid ? (roleMap.get(pid) || null) : null,
-          });
-        });
-
-        results.push({
-          versionName: name,
-          releaseDate: r.releaseDate,
-          totalItems: r.total,
-          doneItems: r.done,
-          inProgressItems: r.inProgress,
-          inReviewItems: r.inReview,
-          blockedItems: r.blocked,
-          todoItems: r.todo,
-          completionPercent: r.total > 0 ? Math.round((r.done / r.total) * 100) : 0,
-          projects: Array.from(r.projects).sort(),
-          assignees: assignees.sort((a, b) => a.displayName.localeCompare(b.displayName)),
-        });
-      });
-
-      results.sort((a, b) => {
-        if (a.releaseDate && b.releaseDate) return b.releaseDate.localeCompare(a.releaseDate);
-        if (a.releaseDate) return -1;
-        if (b.releaseDate) return 1;
-        return a.versionName.localeCompare(b.versionName);
-      });
-
-      return results;
+      return ((data as any[]) ?? []).map((r): JiraRelease => ({
+        versionName: r.version_name,
+        releaseDate: r.release_date || null,
+        totalItems: Number(r.total_items),
+        doneItems: Number(r.done_items),
+        inProgressItems: Number(r.in_progress_items),
+        inReviewItems: Number(r.in_review_items),
+        blockedItems: Number(r.blocked_items),
+        todoItems: Number(r.todo_items),
+        completionPercent: Number(r.completion_percent),
+        projects: r.projects ?? [],
+        assignees: ((r.assignees as any[]) ?? []).map((a: any) => ({
+          accountId: a.accountId ?? '',
+          displayName: a.displayName ?? '',
+          avatarUrl: a.avatarUrl || null,
+          roleName: a.roleName || null,
+        })).sort((a: JiraReleaseAssignee, b: JiraReleaseAssignee) =>
+          a.displayName.localeCompare(b.displayName)
+        ),
+      }));
     },
-    staleTime: 30_000,
+    staleTime: 60_000,
   });
 }
 
