@@ -94,7 +94,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
           Release Timeline
         </h2>
         <button
-          onClick={() => navigate('/workhub/calendar')}
+          onClick={() => navigate('/projecthub/calendar')}
           style={{
             fontFamily: 'Inter, system-ui, sans-serif',
             fontSize: 13,
@@ -181,7 +181,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                   borderBottom: '1px solid var(--wh-border-light, #f1f5f9)',
                   cursor: 'pointer',
                 }}
-                onClick={() => navigate(`/workhub/releases/${release.id}`)}
+                onClick={() => navigate(`/projecthub/releases/${release.id}`)}
                 onMouseEnter={e => {
                   const rect = e.currentTarget.getBoundingClientRect();
                   setTooltip({ release, x: rect.left + rect.width / 2, y: rect.top });

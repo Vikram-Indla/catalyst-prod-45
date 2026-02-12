@@ -85,9 +85,9 @@ export function CalendarEventDrawer({ isOpen, onClose, dateStr, events }: Props)
   const workitems = events.filter((e) => e.event_type === 'workitem');
 
   const handleNavigate = (event: CalendarEvent) => {
-    if (event.event_type === 'release') navigate(`/workhub/releases/${event.entity_id}`);
-    else if (event.event_type === 'theme') navigate(`/workhub/themes/${event.entity_id}`);
-    else navigate('/workhub/workitems');
+    if (event.event_type === 'release') navigate(`/projecthub/releases/${event.entity_id}`);
+    else if (event.event_type === 'theme') navigate(`/projecthub/themes/${event.entity_id}`);
+    else navigate('/projecthub/workitems');
   };
 
   return (

@@ -49,30 +49,13 @@ export function CalendarPage() {
   return (
     <div style={{ fontFamily: 'var(--wh-font-sans)', color: 'var(--wh-text-primary)' }}>
       {/* Page Header */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 4 }}>
-          <div
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 'var(--wh-radius-lg)',
-              backgroundColor: '#dbeafe',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <CalendarDays style={{ width: 22, height: 22, color: 'var(--wh-primary)' }} />
-          </div>
-          <div>
-            <h1 style={{ fontFamily: 'var(--wh-font-display)', fontSize: 24, fontWeight: 700, margin: 0, color: 'var(--wh-text-primary)' }}>
-              Calendar
-            </h1>
-            <p style={{ fontSize: 14, margin: 0, color: 'var(--wh-text-secondary)' }}>
-              Portfolio timeline — {monthName} {year}
-            </p>
-          </div>
-        </div>
+      <div style={{ marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid var(--wh-border, #e2e8f0)' }}>
+        <h1 style={{ fontSize: 20, fontWeight: 700, margin: 0, color: 'var(--wh-text-primary)' }}>
+          Calendar
+        </h1>
+        <p style={{ fontSize: 14, margin: '2px 0 0', color: 'var(--wh-text-secondary)' }}>
+          Portfolio timeline — {monthName} {year}
+        </p>
       </div>
 
       {/* Month Navigation */}

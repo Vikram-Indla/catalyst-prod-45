@@ -88,7 +88,7 @@ export function ResourceDetail() {
       <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
         {/* Breadcrumb */}
         <button
-          onClick={() => navigate('/workhub/resource360')}
+          onClick={() => navigate('/projecthub/resource360')}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             background: 'none', border: 'none', cursor: 'pointer',
@@ -235,7 +235,7 @@ export function ResourceDetail() {
                         className="wh-detail-row"
                       >
                         <td style={{ padding: '0 12px', fontFamily: 'monospace', fontWeight: 600, color: 'var(--wh-primary, #2563eb)', cursor: 'pointer', whiteSpace: 'nowrap' }}
-                          onClick={() => navigate(`/workhub/workitems?view=${item.id}`)}
+                          onClick={() => navigate(`/projecthub/workitems?view=${item.id}`)}
                         >
                           {item.item_key}
                         </td>

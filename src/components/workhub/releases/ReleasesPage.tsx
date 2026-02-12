@@ -219,29 +219,20 @@ export function ReleasesPage() {
   return (
     <div style={{ padding: '24px 32px', maxWidth: 900, margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
-        <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-          <div style={{
-            width: 40, height: 40, borderRadius: 10, background: '#dbeafe',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid var(--wh-border, #e2e8f0)' }}>
+        <div>
+          <h1 style={{
+            fontSize: 20, fontWeight: 700, margin: 0,
+            color: 'var(--wh-text-primary, #0f172a)',
           }}>
-            <Rocket size={20} color="#2563eb" />
-          </div>
-          <div>
-            <h1 style={{
-              fontSize: 24, fontWeight: 700, margin: 0,
-              fontFamily: 'var(--wh-font-display, Sora, sans-serif)',
-              color: 'var(--wh-text-primary, #0f172a)',
-            }}>
-              Releases
-            </h1>
-            <p style={{
-              fontSize: 14, color: 'var(--wh-text-secondary, #64748b)',
-              margin: '2px 0 0',
-            }}>
-              Jira fix versions — {releases?.length ?? 0} releases
-            </p>
-          </div>
+            Releases
+          </h1>
+          <p style={{
+            fontSize: 14, color: 'var(--wh-text-secondary, #64748b)',
+            margin: '2px 0 0',
+          }}>
+            Jira fix versions — {releases?.length ?? 0} releases
+          </p>
         </div>
       </div>
 
@@ -320,7 +311,7 @@ export function ReleasesPage() {
           <ReleaseCard
             key={rel.versionName}
             release={rel}
-            onClick={() => navigate(`/workhub/releases/${encodeURIComponent(rel.versionName)}`)}
+            onClick={() => navigate(`/projecthub/releases/${encodeURIComponent(rel.versionName)}`)}
           />
         ))
       )}

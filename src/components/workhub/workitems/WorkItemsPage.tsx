@@ -130,24 +130,19 @@ export function WorkItemsPage() {
   return (
     <div style={{ fontFamily: 'var(--wh-font-sans)', overflow: 'hidden' }}>
       {/* Page Header */}
-      <header className="flex flex-col sm:flex-row items-start justify-between mb-4 gap-3">
-        <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: '#dbeafe' }}>
-            <FileStack className="w-5 h-5" style={{ color: 'var(--wh-primary, #2563eb)' }} />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold" style={{ fontFamily: 'var(--wh-font-display)', color: 'var(--wh-text-primary, #0f172a)' }}>
-              Work Items
-            </h1>
-            <p className="text-sm mt-0.5" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>
-              Jira-synced issues — {totalCount.toLocaleString()} items across {uniqueProjects} projects
-              {isFetching && !isLoading && (
-                <span className="ml-2 inline-flex items-center gap-1 text-xs" style={{ color: 'var(--wh-primary, #2563eb)' }}>
-                  <Loader2 className="w-3 h-3 animate-spin" /> updating...
-                </span>
-              )}
-            </p>
-          </div>
+      <header className="flex items-center justify-between mb-4 pb-4" style={{ borderBottom: '1px solid var(--wh-border, #e2e8f0)' }}>
+        <div>
+          <h1 className="text-xl font-bold" style={{ color: 'var(--wh-text-primary, #0f172a)' }}>
+            Work Items
+          </h1>
+          <p className="text-sm mt-0.5" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>
+            Jira-synced issues — {totalCount.toLocaleString()} items across {uniqueProjects} projects
+            {isFetching && !isLoading && (
+              <span className="ml-2 inline-flex items-center gap-1 text-xs" style={{ color: 'var(--wh-primary, #2563eb)' }}>
+                <Loader2 className="w-3 h-3 animate-spin" /> updating...
+              </span>
+            )}
+          </p>
         </div>
 
         <div className="flex items-center gap-2">

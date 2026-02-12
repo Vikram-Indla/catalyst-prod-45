@@ -60,8 +60,8 @@ export function WorkHubSidebar({
   }, []);
 
   const getIsActive = (path: string) => {
-    if (path === '/workhub') {
-      return location.pathname === '/workhub';
+    if (path === '/projecthub') {
+      return location.pathname === '/projecthub';
     }
     return location.pathname.startsWith(path);
   };
@@ -160,7 +160,7 @@ export function WorkHubSidebar({
             >
               <div className="p-4 border-b flex items-center justify-between">
                 <h2 className="font-semibold" style={{ color: 'var(--wh-text-primary)' }}>
-                  WorkHub
+                  ProjectHub
                 </h2>
                 <button onClick={onMobileClose} className="p-1">
                   <X className="w-5 h-5" />

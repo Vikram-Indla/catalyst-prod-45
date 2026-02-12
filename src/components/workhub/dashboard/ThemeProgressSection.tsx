@@ -29,7 +29,7 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
           Theme Progress
         </h2>
         <button
-          onClick={() => navigate('/workhub/themes')}
+          onClick={() => navigate('/projecthub/themes')}
           style={{
             fontFamily: 'Inter, system-ui, sans-serif',
             fontSize: 13,
@@ -61,10 +61,10 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
           {active.map(theme => (
             <div
               key={theme.id}
-              onClick={() => navigate(`/workhub/themes/${theme.id}`)}
+              onClick={() => navigate(`/projecthub/themes/${theme.id}`)}
               role="button"
               tabIndex={0}
-              onKeyDown={e => e.key === 'Enter' && navigate(`/workhub/themes/${theme.id}`)}
+              onKeyDown={e => e.key === 'Enter' && navigate(`/projecthub/themes/${theme.id}`)}
               style={{
                 background: 'var(--wh-surface, #fff)',
                 border: '1px solid var(--wh-border, #e2e8f0)',

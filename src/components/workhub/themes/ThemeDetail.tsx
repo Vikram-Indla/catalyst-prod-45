@@ -52,7 +52,7 @@ export function ThemeDetail() {
     return (
       <div style={{ padding: '48px 32px', textAlign: 'center' }}>
         <p style={{ color: '#ef4444', fontSize: 14, marginBottom: 12 }}>Theme not found</p>
-        <button onClick={() => navigate('/workhub/themes')} style={{
+        <button onClick={() => navigate('/projecthub/themes')} style={{
           padding: '8px 16px', borderRadius: 8, border: '1px solid #e2e8f0',
           background: '#fff', fontSize: 13, cursor: 'pointer',
         }}>
@@ -66,7 +66,7 @@ export function ThemeDetail() {
     try {
       await deleteMut.mutateAsync(theme.id);
       toast.success('Theme deleted');
-      navigate('/workhub/themes');
+      navigate('/projecthub/themes');
     } catch (e: any) {
       toast.error(`Delete failed: ${e.message}`);
     }
@@ -80,7 +80,7 @@ export function ThemeDetail() {
     <div style={{ padding: '24px 32px', maxWidth: 1100, margin: '0 auto', fontFamily: 'var(--wh-font-sans, Inter, sans-serif)' }}>
       {/* Breadcrumb */}
       <button
-        onClick={() => navigate('/workhub/themes')}
+        onClick={() => navigate('/projecthub/themes')}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
           background: 'none', border: 'none', cursor: 'pointer',

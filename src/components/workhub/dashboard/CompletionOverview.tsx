@@ -41,7 +41,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
           Overall Completion
         </h2>
         <button
-          onClick={() => navigate('/workhub/workitems')}
+          onClick={() => navigate('/projecthub/workitems')}
           style={{
             fontFamily: 'Inter, system-ui, sans-serif',
             fontSize: 13,
@@ -107,7 +107,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
         />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <button
-            onClick={() => navigate('/workhub/themes')}
+            onClick={() => navigate('/projecthub/themes')}
             style={{
               fontFamily: 'Inter, system-ui, sans-serif',
               fontSize: 13,
@@ -123,7 +123,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
             Active Themes: <strong style={{ color: 'var(--wh-text-primary, #0f172a)' }}>{kpis.active_themes}</strong>
           </button>
           <button
-            onClick={() => navigate('/workhub/resource360')}
+            onClick={() => navigate('/projecthub/resource360')}
             style={{
               fontFamily: 'Inter, system-ui, sans-serif',
               fontSize: 13,

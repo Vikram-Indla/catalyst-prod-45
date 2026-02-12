@@ -45,61 +45,55 @@ export function WorkHubDashboard() {
     <div style={{ minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '24px 24px 48px' }}>
         {/* Header */}
-        <div style={{ marginBottom: 32 }}>
-          <div style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
-            background: '#dbeafe',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: 12,
-          }}>
-            <LayoutDashboard style={{ width: 20, height: 20, color: '#2563eb' }} />
-          </div>
-          <h1 style={{
-            fontFamily: 'Sora, Inter, system-ui, sans-serif',
-            fontSize: 24,
-            fontWeight: 700,
-            color: 'var(--wh-text-primary, #0f172a)',
-            margin: '0 0 4px',
-          }}>
-            Dashboard
-          </h1>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-          }}>
-            <span style={{
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '16px 24px',
+          borderBottom: '1px solid var(--wh-border, #e2e8f0)',
+          background: 'var(--wh-surface, #fff)',
+          borderRadius: 'var(--wh-radius-xl, 16px) var(--wh-radius-xl, 16px) 0 0',
+          marginBottom: 24,
+        }}>
+          <div>
+            <h1 style={{
+              fontSize: 20,
+              fontWeight: 700,
+              color: 'var(--wh-text-primary, #0f172a)',
+              margin: 0,
+              fontFamily: 'Inter, system-ui, sans-serif',
+            }}>
+              Dashboard
+            </h1>
+            <p style={{
               fontSize: 14,
               color: 'var(--wh-text-secondary, #64748b)',
+              margin: '2px 0 0',
             }}>
               Portfolio overview — {relativeTime(kpisQuery.dataUpdatedAt)}
-            </span>
-            <button
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: 4,
-                borderRadius: 4,
-                display: 'inline-flex',
-                color: 'var(--wh-text-tertiary, #94a3b8)',
-              }}
-              className="hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-              title="Refresh data"
-            >
-              <RefreshCw style={{
-                width: 14,
-                height: 14,
-                animation: isRefreshing ? 'spin 1s linear infinite' : undefined,
-              }} />
-            </button>
+            </p>
           </div>
+          <button
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 6,
+              borderRadius: 6,
+              display: 'inline-flex',
+              color: 'var(--wh-text-tertiary, #94a3b8)',
+            }}
+            className="hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+            title="Refresh data"
+          >
+            <RefreshCw style={{
+              width: 16,
+              height: 16,
+              animation: isRefreshing ? 'spin 1s linear infinite' : undefined,
+            }} />
+          </button>
         </div>
 
         {/* Error state */}

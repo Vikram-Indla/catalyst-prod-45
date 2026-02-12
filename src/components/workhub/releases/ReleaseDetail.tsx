@@ -44,7 +44,7 @@ export function ReleaseDetail() {
     return (
       <div style={{ padding: 32, textAlign: 'center' }}>
         <p style={{ color: '#ef4444', fontSize: 14 }}>Release not found: {versionName}</p>
-        <button onClick={() => navigate('/workhub/releases')} style={{
+        <button onClick={() => navigate('/projecthub/releases')} style={{
           marginTop: 12, padding: '8px 16px', borderRadius: 6,
           border: '1px solid var(--wh-border)', background: 'var(--wh-surface)',
           fontSize: 13, cursor: 'pointer',
@@ -85,7 +85,7 @@ export function ReleaseDetail() {
   return (
     <div style={{ padding: '24px 32px', maxWidth: 1100, margin: '0 auto' }}>
       {/* Breadcrumb */}
-      <button onClick={() => navigate('/workhub/releases')} style={{
+      <button onClick={() => navigate('/projecthub/releases')} style={{
         display: 'inline-flex', alignItems: 'center', gap: 6,
         background: 'none', border: 'none', cursor: 'pointer',
         fontSize: 13, fontWeight: 500, color: 'var(--wh-primary, #2563eb)',
