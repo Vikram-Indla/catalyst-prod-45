@@ -128,7 +128,7 @@ export function WorkItemsPage() {
   const pageEnd = Math.min((currentPage + 1) * PAGE_SIZE, totalCount);
 
   return (
-    <div style={{ fontFamily: 'var(--wh-font-sans)', overflow: 'hidden' }}>
+    <div style={{ fontFamily: 'var(--wh-font-sans)', display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       {/* Page Header */}
       <header className="flex items-center justify-between mb-4 pb-4" style={{ borderBottom: '1px solid var(--wh-border, #e2e8f0)' }}>
         <div>
@@ -243,21 +243,24 @@ export function WorkItemsPage() {
         </div>
       )}
 
-      {/* Table */}
-      <WorkItemsTable
-        items={items}
-        isLoading={isLoading}
-        error={error as Error | null}
-        selectedIds={selectedIds}
-        onToggleSelect={toggleSelect}
-        onSelectAll={handleSelectAll}
-        selectAllState={selectAllState}
-        onOpenDrawer={(key) => {
-          const found = items.find(i => i.issue_key === key);
-          if (found) setDrawerItem(found);
-        }}
-        onRetry={() => refetch()}
-      />
+      {/* Table — fills remaining space */}
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <WorkItemsTable
+          items={items}
+          isLoading={isLoading}
+          error={error as Error | null}
+          selectedIds={selectedIds}
+          onToggleSelect={toggleSelect}
+          onSelectAll={handleSelectAll}
+          selectAllState={selectAllState}
+          onOpenDrawer={(key) => {
+            const found = items.find(i => i.issue_key === key);
+            if (found) setDrawerItem(found);
+          }}
+          onRetry={() => refetch()}
+          fillHeight
+        />
+      </div>
 
       {/* Pagination Controls */}
       {totalCount > PAGE_SIZE && (

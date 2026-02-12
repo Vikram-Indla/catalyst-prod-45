@@ -24,6 +24,7 @@ interface WorkItemsTableProps {
   selectAllState: 'none' | 'some' | 'all';
   onOpenDrawer: (key: string) => void;
   onRetry?: () => void;
+  fillHeight?: boolean;
 }
 
 const ROW_HEIGHT = 44;
@@ -108,7 +109,7 @@ function useIssueThemeMap(issueKeys: string[]) {
 export function WorkItemsTable({
   items, isLoading, error, selectedIds,
   onToggleSelect, onSelectAll, selectAllState,
-  onOpenDrawer, onRetry,
+  onOpenDrawer, onRetry, fillHeight = false,
 }: WorkItemsTableProps) {
   const parentRef = useRef<HTMLDivElement>(null);
   const [expandedKeys, setExpandedKeys] = useState<Set<string>>(() => {
@@ -201,8 +202,8 @@ export function WorkItemsTable({
   }
 
   return (
-    <div className="rounded-xl border overflow-x-auto" style={{ borderColor: 'var(--wh-border, #e2e8f0)', backgroundColor: 'var(--wh-surface, #fff)' }}>
-      <div style={{ minWidth: MIN_TABLE_WIDTH }}>
+    <div className="rounded-xl border overflow-x-auto" style={{ borderColor: 'var(--wh-border, #e2e8f0)', backgroundColor: 'var(--wh-surface, #fff)', height: fillHeight ? '100%' : 'auto', display: fillHeight ? 'flex' : 'block', flexDirection: 'column' }}>
+      <div style={{ minWidth: MIN_TABLE_WIDTH, flex: fillHeight ? 1 : undefined, display: fillHeight ? 'flex' : 'block', flexDirection: 'column' }}>
         {/* Header */}
         <div
           className="grid items-center border-b sticky top-0"
@@ -232,7 +233,7 @@ export function WorkItemsTable({
         </div>
 
         {/* Virtualized rows */}
-        <div ref={parentRef} style={{ height: Math.min(flatNodes.length * ROW_HEIGHT, 600), overflow: 'auto' }}>
+        <div ref={parentRef} style={{ height: fillHeight ? undefined : Math.min(flatNodes.length * ROW_HEIGHT, 600), flex: fillHeight ? 1 : undefined, minHeight: fillHeight ? 0 : undefined, overflow: 'auto' }}>
           <div style={{ height: `${virtualizer.getTotalSize()}px`, width: '100%', position: 'relative' }}>
             {virtualizer.getVirtualItems().map(virtualRow => {
               const node = flatNodes[virtualRow.index];
