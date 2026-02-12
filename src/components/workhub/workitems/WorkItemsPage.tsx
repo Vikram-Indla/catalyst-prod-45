@@ -4,7 +4,8 @@
  */
 
 import { useState, useMemo, useCallback } from 'react';
-import { FileStack, RefreshCw, Loader2, ChevronLeft, ChevronRight, Download, History, SlidersHorizontal } from 'lucide-react';
+import { RefreshCw, Loader2, ChevronLeft, ChevronRight, Download, History, SlidersHorizontal } from 'lucide-react';
+import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { toast } from 'sonner';
 import { useWorkItems } from '@/hooks/workhub/useWorkItems';
 import type { WorkItemFilterConfig, PaginationConfig, JiraIssue } from '@/hooks/workhub/useWorkItems';
@@ -129,55 +130,53 @@ export function WorkItemsPage() {
 
   return (
     <div style={{ fontFamily: 'var(--wh-font-sans)', display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-      {/* Page Header */}
-      <header className="flex items-center justify-between mb-4 pb-4" style={{ borderBottom: '1px solid var(--wh-border, #e2e8f0)' }}>
-        <div>
-          <h1 className="text-xl font-bold" style={{ color: 'var(--wh-text-primary, #0f172a)' }}>
-            Work Items
-          </h1>
-          <p className="text-sm mt-0.5" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>
-            Jira-synced issues — {totalCount.toLocaleString()} items across {uniqueProjects} projects
+      {/* Catalyst Page Header */}
+      <GlobalPageHeader
+        sectionLabel="PROJECT HUB"
+        pageTitle="Work Items"
+        rightActions={
+          <div className="flex items-center gap-2">
             {isFetching && !isLoading && (
-              <span className="ml-2 inline-flex items-center gap-1 text-xs" style={{ color: 'var(--wh-primary, #2563eb)' }}>
+              <span className="inline-flex items-center gap-1 text-xs" style={{ color: 'var(--text-3)' }}>
                 <Loader2 className="w-3 h-3 animate-spin" /> updating...
               </span>
             )}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleExport}
-            disabled={items.length === 0}
-            title={items.length === 0 ? 'No items to export' : 'Export filtered items as CSV'}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors flex items-center gap-1.5 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            style={{ borderColor: 'var(--wh-border, #e2e8f0)', color: 'var(--wh-text-secondary, #64748b)' }}
-          >
-            <Download className="w-3.5 h-3.5" />
-            Export
-          </button>
-          <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            style={{
-              borderColor: showHistory ? 'var(--wh-primary, #2563eb)' : 'var(--wh-border, #e2e8f0)',
-              color: showHistory ? 'var(--wh-primary, #2563eb)' : 'var(--wh-text-secondary, #64748b)',
-              backgroundColor: showHistory ? '#eff6ff' : 'transparent',
-            }}
-          >
-            <History className="w-3.5 h-3.5" />
-            History
-          </button>
-          <button
-            onClick={() => refetch()}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            style={{ borderColor: 'var(--wh-primary, #2563eb)', color: 'var(--wh-primary, #2563eb)' }}
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            Refresh
-          </button>
-        </div>
-      </header>
+            <span className="text-xs" style={{ color: 'var(--text-3)' }}>
+              {totalCount.toLocaleString()} items · {uniqueProjects} projects
+            </span>
+            <button
+              onClick={handleExport}
+              disabled={items.length === 0}
+              title={items.length === 0 ? 'No items to export' : 'Export filtered items as CSV'}
+              className="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors flex items-center gap-1.5 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+              style={{ borderColor: 'var(--divider)', color: 'var(--text-2)' }}
+            >
+              <Download className="w-3.5 h-3.5" />
+              Export
+            </button>
+            <button
+              onClick={() => setShowHistory(!showHistory)}
+              className="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+              style={{
+                borderColor: showHistory ? '#2563eb' : 'var(--divider)',
+                color: showHistory ? '#2563eb' : 'var(--text-2)',
+                backgroundColor: showHistory ? 'rgba(37,99,235,0.06)' : 'transparent',
+              }}
+            >
+              <History className="w-3.5 h-3.5" />
+              History
+            </button>
+            <button
+              onClick={() => refetch()}
+              className="px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+              style={{ borderColor: '#2563eb', color: '#2563eb' }}
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              Refresh
+            </button>
+          </div>
+        }
+      />
 
       {/* Bulk Ops History */}
       {showHistory && <BulkOpsHistory onClose={() => setShowHistory(false)} />}
