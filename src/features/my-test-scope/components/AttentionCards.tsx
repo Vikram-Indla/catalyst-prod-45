@@ -1,7 +1,6 @@
 /**
  * Attention Cards
  * Quick status indicators for overdue, due today, defects, incidents
- * Styled to match dashboard: white bg, consistent borders
  */
 
 import React from 'react';
@@ -15,48 +14,33 @@ interface AttentionCardsProps {
 
 interface AttentionCard {
   id: 'overdue' | 'today' | 'defects' | 'incidents';
-  icon: React.ComponentType<{ style?: React.CSSProperties }>;
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   label: string;
   count: number;
   color: string;
-  bg: string;
+  bgClass: string;
 }
 
 export function AttentionCards({ summary, onCardClick }: AttentionCardsProps) {
   const cards: AttentionCard[] = [
-    { id: 'overdue', icon: Flame, label: 'Overdue', count: summary.overdueCount, color: '#DC2626', bg: '#FEF2F2' },
-    { id: 'today', icon: Clock, label: 'Due Today', count: summary.dueTodayCount, color: '#D97706', bg: '#FFFBEB' },
-    { id: 'defects', icon: Bug, label: 'Defects', count: summary.linkedDefectsCount, color: '#DC2626', bg: '#FEF2F2' },
-    { id: 'incidents', icon: Zap, label: 'Incidents', count: summary.activeIncidentsCount, color: '#64748B', bg: '#F1F5F9' },
+    { id: 'overdue', icon: Flame, label: 'Overdue', count: summary.overdueCount, color: '#DC2626', bgClass: 'bg-red-50 dark:bg-red-950/30' },
+    { id: 'today', icon: Clock, label: 'Due Today', count: summary.dueTodayCount, color: '#D97706', bgClass: 'bg-amber-50 dark:bg-amber-950/30' },
+    { id: 'defects', icon: Bug, label: 'Defects', count: summary.linkedDefectsCount, color: '#DC2626', bgClass: 'bg-red-50 dark:bg-red-950/30' },
+    { id: 'incidents', icon: Zap, label: 'Incidents', count: summary.activeIncidentsCount, color: '#64748B', bgClass: 'bg-muted' },
   ];
 
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: 8,
-      padding: '10px 24px',
-      borderBottom: '1px solid #E2E8F0',
-      overflowX: 'auto',
-      backgroundColor: '#FFFFFF',
-      fontFamily: 'Inter, sans-serif',
-    }}>
+    <div className="flex items-center gap-2 px-6 py-2.5 border-b border-border overflow-x-auto bg-card font-['Inter']">
       {cards.map((card) => (
         <button
           key={card.id}
           onClick={() => onCardClick(card.id)}
           disabled={card.count === 0}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            padding: '4px 12px', borderRadius: 9999,
-            background: card.bg, border: 'none',
-            fontSize: 13, fontWeight: 500, whiteSpace: 'nowrap',
-            cursor: card.count === 0 ? 'not-allowed' : 'pointer',
-            opacity: card.count === 0 ? 0.5 : 1,
-            transition: 'opacity 150ms',
-          }}
+          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border-none text-[13px] font-medium whitespace-nowrap transition-opacity disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer ${card.bgClass}`}
         >
           <card.icon style={{ width: 14, height: 14, color: card.color }} />
           <span style={{ fontWeight: 700, color: card.color }}>{card.count}</span>
-          <span style={{ color: '#64748B' }}>{card.label}</span>
+          <span className="text-muted-foreground">{card.label}</span>
         </button>
       ))}
     </div>

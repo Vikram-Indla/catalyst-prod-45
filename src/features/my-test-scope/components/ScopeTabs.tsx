@@ -1,7 +1,6 @@
 /**
  * Scope Tabs Navigation
  * Tab navigation for My Test Scope views
- * Styled to match dashboard: white bg, consistent borders
  */
 
 import React from 'react';
@@ -18,7 +17,7 @@ interface ScopeTabsProps {
   };
 }
 
-const TABS: { value: TestScopeTab; label: string; icon: React.ComponentType<{ style?: React.CSSProperties }>; countKey?: keyof ScopeTabsProps['counts'] }[] = [
+const TABS: { value: TestScopeTab; label: string; icon: React.ComponentType<{ className?: string }>; countKey?: keyof ScopeTabsProps['counts'] }[] = [
   { value: 'tests', label: 'My Tests', icon: FileCheck, countKey: 'tests' },
   { value: 'defects', label: 'Linked Defects', icon: Bug, countKey: 'defects' },
   { value: 'incidents', label: 'Incidents', icon: Zap, countKey: 'incidents' },
@@ -28,14 +27,7 @@ const TABS: { value: TestScopeTab; label: string; icon: React.ComponentType<{ st
 
 export function ScopeTabs({ activeTab, onTabChange, counts }: ScopeTabsProps) {
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: 0,
-      borderBottom: '1px solid #E2E8F0',
-      backgroundColor: '#FFFFFF',
-      padding: '0 24px',
-      flexShrink: 0,
-      fontFamily: 'Inter, sans-serif',
-    }}>
+    <div className="flex items-center border-b border-border bg-card px-6 shrink-0 font-['Inter']">
       {TABS.map((tab) => {
         const isActive = activeTab === tab.value;
         const count = tab.countKey ? counts[tab.countKey] : undefined;
@@ -43,27 +35,20 @@ export function ScopeTabs({ activeTab, onTabChange, counts }: ScopeTabsProps) {
           <button
             key={tab.value}
             onClick={() => onTabChange(tab.value)}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '10px 16px',
-              fontSize: 13, fontWeight: isActive ? 600 : 500,
-              color: isActive ? '#2563EB' : '#64748B',
-              background: 'none', border: 'none',
-              borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
-              cursor: 'pointer',
-              transition: 'color 150ms, border-color 150ms',
-              marginBottom: -1,
-            }}
+            className={`inline-flex items-center gap-1.5 px-4 py-2.5 text-[13px] bg-transparent border-none cursor-pointer transition-colors -mb-px ${
+              isActive
+                ? 'font-semibold text-primary border-b-2 border-primary'
+                : 'font-medium text-muted-foreground border-b-2 border-transparent hover:text-foreground'
+            }`}
           >
-            <tab.icon style={{ width: 14, height: 14 }} />
+            <tab.icon className="w-3.5 h-3.5" />
             {tab.label}
             {count !== undefined && (
-              <span style={{
-                fontSize: 11, fontWeight: 600,
-                background: isActive ? '#EFF6FF' : '#F1F5F9',
-                color: isActive ? '#2563EB' : '#64748B',
-                padding: '1px 6px', borderRadius: 4,
-              }}>
+              <span className={`text-[11px] font-semibold px-1.5 py-px rounded ${
+                isActive
+                  ? 'bg-primary/10 text-primary'
+                  : 'bg-muted text-muted-foreground'
+              }`}>
                 {count}
               </span>
             )}
