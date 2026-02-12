@@ -16,6 +16,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -651,26 +652,13 @@ export default function CommandCenterPage() {
   return (
     <div className="min-h-screen bg-background" ref={dashboardRef} id="command-center-dashboard">
       {/* Page Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b bg-card">
-        <div>
-          <h1 className="text-xl font-bold text-foreground">Command Center</h1>
-          <p className="text-sm text-muted-foreground">Executive overview of testing operations</p>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <TooltipProvider>
-            <UITooltip>
-              <TooltipTrigger asChild>
-                <span className="text-xs text-muted-foreground cursor-default">
-                  Last updated: {getTimeAgo()}
-                </span>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">
-                {lastUpdated.toLocaleString()}
-              </TooltipContent>
-            </UITooltip>
-          </TooltipProvider>
-          
+      <CommandCenterHeader
+        title="Command Center"
+        subtitle="Executive overview of testing operations"
+        timestamp={`Last updated: ${getTimeAgo()}`}
+        onRefresh={handleRefresh}
+        isRefreshing={isRefreshing}
+        actions={
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" aria-label="Export dashboard">
@@ -716,27 +704,8 @@ export default function CommandCenterPage() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          
-          <TooltipProvider>
-            <UITooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={handleRefresh}
-                  disabled={isRefreshing}
-                  aria-label="Refresh dashboard"
-                >
-                  <RefreshCw className={cn('h-4 w-4', isRefreshing && 'animate-spin')} />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">
-                Refresh all data
-              </TooltipContent>
-            </UITooltip>
-          </TooltipProvider>
-        </div>
-      </div>
+        }
+      />
       
       {/* Dashboard Content */}
       <div className="p-6 space-y-6">

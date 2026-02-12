@@ -8,6 +8,7 @@
 export { PageContainer } from './PageContainer';
 export { PageShell } from './PageShell';
 export { PageHeader } from './PageHeader';
+export { CommandCenterHeader } from './CommandCenterHeader';
 export { DrawerPanel, DrawerSection } from './DrawerPanel';
 export { SurfaceCard } from './SurfaceCard';
 

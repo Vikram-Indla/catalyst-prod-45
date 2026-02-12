@@ -4,7 +4,8 @@
  */
 import { useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { LayoutDashboard, RefreshCw, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { useDashboardKPIs } from '@/hooks/workhub/useDashboardKPIs';
 import { useReleaseProgress } from '@/hooks/workhub/useReleases';
 import { useThemeProgress } from '@/hooks/workhub/useThemes';
@@ -45,61 +46,13 @@ export function WorkHubDashboard() {
     <div style={{ minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '24px 24px 48px' }}>
         {/* Header */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '16px 24px',
-          borderBottom: '1px solid var(--wh-border, #e2e8f0)',
-          background: 'var(--wh-surface, #fff)',
-          borderRadius: 'var(--wh-radius-xl, 16px) var(--wh-radius-xl, 16px) 0 0',
-          marginBottom: 24,
-        }}>
-          <div>
-            <h1 style={{
-              fontSize: 20,
-              fontWeight: 700,
-              color: 'var(--wh-text-primary, #0f172a)',
-              margin: 0,
-              fontFamily: 'Inter, system-ui, sans-serif',
-            }}>
-              Dashboard
-            </h1>
-            <p style={{
-              fontSize: 14,
-              color: 'var(--wh-text-secondary, #64748b)',
-              margin: '2px 0 0',
-            }}>
-              Portfolio overview
-            </p>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <span style={{ fontSize: 13, color: 'var(--wh-text-tertiary, #94a3b8)' }}>
-              {relativeTime(kpisQuery.dataUpdatedAt)}
-            </span>
-            <button
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-              style={{
-                background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 6,
-              borderRadius: 6,
-              display: 'inline-flex',
-              color: 'var(--wh-text-tertiary, #94a3b8)',
-            }}
-            className="hover:text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            title="Refresh data"
-          >
-            <RefreshCw style={{
-              width: 16,
-              height: 16,
-              animation: isRefreshing ? 'spin 1s linear infinite' : undefined,
-            }} />
-           </button>
-          </div>
-        </div>
+        <CommandCenterHeader
+          title="Dashboard"
+          subtitle="Portfolio overview"
+          timestamp={relativeTime(kpisQuery.dataUpdatedAt)}
+          onRefresh={handleRefresh}
+          isRefreshing={isRefreshing}
+        />
 
         {/* Error state */}
         {kpisQuery.isError && (
