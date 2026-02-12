@@ -6,20 +6,20 @@
  * - Caty AI panel (380px right, toggle via sidebar or FAB)
  */
 
-import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { WorkHubSidebar } from './WorkHubSidebar';
+import { useCatalystContext } from '@/contexts/CatalystContext';
 import '@/styles/workhub.module.css';
 
 export function WorkHubLayout() {
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const { sidebarExpanded, setSidebarExpanded } = useCatalystContext();
 
   return (
     <div className="workhub-module flex h-full w-full">
       {/* Sidebar */}
       <WorkHubSidebar
         expanded={sidebarExpanded}
-        onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        onToggle={() => setSidebarExpanded(prev => !prev)}
       />
 
       {/* Main Content Area */}
