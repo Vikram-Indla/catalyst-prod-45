@@ -27,7 +27,7 @@ export function JiraProjectsPage() {
     queryKey: ['workhub', 'total-work-items'],
     queryFn: async () => {
       const { count, error } = await supabase
-        .from('wh_work_items')
+        .from('ph_work_items')
         .select('*', { count: 'exact', head: true });
       if (error) throw new Error(error.message);
       return count || 0;
@@ -40,7 +40,7 @@ export function JiraProjectsPage() {
     queryKey: ['workhub', 'project-item-counts'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('wh_work_items')
+        .from('ph_work_items')
         .select('jira_project_id');
       if (error) throw new Error(error.message);
       const counts: Record<string, number> = {};
