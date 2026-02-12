@@ -5,23 +5,30 @@
 
 import './login-styles.css';
 
-// Catalyst Convergence Hub Logo (white on blue)
-function CatalystLogo({ size = 80 }: { size?: number }) {
+// Catalyst Full Logo — white version for blue hero background (Convergence Hub + Umbrella-C + "atalyst")
+function CatalystLogoWhite({ width = 280 }: { width?: number }) {
+  const height = (width / 420) * 80;
   return (
-    <svg width={size} height={size} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      {/* Connecting lines */}
-      <line x1="50" y1="50" x2="22" y2="22" stroke="rgba(255,255,255,0.4)" strokeWidth="4" strokeLinecap="round"/>
-      <line x1="50" y1="50" x2="78" y2="22" stroke="rgba(255,255,255,0.4)" strokeWidth="4" strokeLinecap="round"/>
-      <line x1="50" y1="50" x2="22" y2="78" stroke="rgba(255,255,255,0.4)" strokeWidth="4" strokeLinecap="round"/>
-      <line x1="50" y1="50" x2="78" y2="78" stroke="rgba(255,255,255,0.4)" strokeWidth="4" strokeLinecap="round"/>
-      {/* Corner circles */}
-      <circle cx="22" cy="22" r="12" fill="white"/>
-      <circle cx="78" cy="22" r="12" fill="white"/>
-      <circle cx="22" cy="78" r="12" fill="white"/>
-      <circle cx="78" cy="78" r="12" fill="white"/>
-      {/* Center hub */}
-      <circle cx="50" cy="50" r="18" fill="white"/>
-      <circle cx="50" cy="50" r="9" fill="#2563eb"/>
+    <svg width={width} height={height} viewBox="0 0 420 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      {/* Convergence Hub Icon */}
+      <g transform="translate(8, 8)">
+        <line x1="32" y1="32" x2="12" y2="12" stroke="rgba(255,255,255,0.4)" strokeWidth="3" strokeLinecap="round"/>
+        <line x1="32" y1="32" x2="52" y2="12" stroke="rgba(255,255,255,0.4)" strokeWidth="3" strokeLinecap="round"/>
+        <line x1="32" y1="32" x2="12" y2="52" stroke="rgba(255,255,255,0.4)" strokeWidth="3" strokeLinecap="round"/>
+        <line x1="32" y1="32" x2="52" y2="52" stroke="rgba(255,255,255,0.4)" strokeWidth="3" strokeLinecap="round"/>
+        <circle cx="12" cy="12" r="8" fill="white"/>
+        <circle cx="52" cy="12" r="8" fill="white"/>
+        <circle cx="12" cy="52" r="8" fill="white"/>
+        <circle cx="52" cy="52" r="8" fill="white"/>
+        <circle cx="32" cy="32" r="12" fill="white"/>
+        <circle cx="32" cy="32" r="6" fill="#2563eb"/>
+      </g>
+      {/* Umbrella Arc */}
+      <path d="M88 22C88 10 102 4 122 4C142 4 156 10 156 22" stroke="white" strokeWidth="5" strokeLinecap="round" fill="none"/>
+      {/* C Letterform */}
+      <path d="M148 38C148 28 136 22 122 22C104 22 92 32 92 48C92 64 104 74 122 74C136 74 148 68 148 58" stroke="white" strokeWidth="7" strokeLinecap="round" fill="none"/>
+      {/* "atalyst" text */}
+      <text x="162" y="62" fontFamily="Inter, -apple-system, BlinkMacSystemFont, sans-serif" fontSize="52" fontWeight="700" fill="white" letterSpacing="-1">atalyst</text>
     </svg>
   );
 }
@@ -89,15 +96,10 @@ export function LoginHeroPanel() {
 
       {/* Centered content */}
       <div className="hero-content-v10">
-        {/* Logo */}
+        {/* Logo + Wordmark (combined) */}
         <div className="hero-logo">
-          <CatalystLogo size={100} />
+          <CatalystLogoWhite width={320} />
         </div>
-
-        {/* Wordmark */}
-        <h1 className="hero-wordmark">Catalyst</h1>
-
-        {/* Sub-brand */}
         <p className="hero-subbrand">Enterprise Portfolio Management</p>
 
         {/* Horizontal rule */}
