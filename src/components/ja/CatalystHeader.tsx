@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useAppHeaderOffset } from "@/hooks/useAppHeaderOffset";
+import catalystLogoLight from "@/assets/catalyst-logo-light.svg";
 
 export function CatalystHeader() {
   const navigate = useNavigate();
@@ -189,45 +190,17 @@ export function CatalystHeader() {
           backfaceVisibility: 'hidden',
         }}
       >
-        {/* ===== LOGO ZONE — V10: 28px Convergence Hub + Sora 800 "Cata[lyst]" blue split ===== */}
+        {/* ===== LOGO ZONE — Umbrella-C Wordmark ===== */}
         <a 
-          className="flex items-center gap-3 flex-shrink-0 cursor-pointer no-underline rounded-lg transition-colors p-2 -m-2 hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
+          className="flex items-center flex-shrink-0 cursor-pointer no-underline rounded-lg transition-colors p-2 -m-2 hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
           style={{ marginRight: '32px' }}
           onClick={() => navigate('/home')}
         >
-          {/* V10: Convergence Hub Logo — 28×28, theme-aware gradient */}
-          <svg 
-            className="w-7 h-7 flex-shrink-0" 
-            viewBox="0 0 100 100" 
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {/* Connection lines */}
-            <line x1="50" y1="50" x2="22" y2="22" stroke="rgba(37,99,235,0.3)" strokeWidth="4" strokeLinecap="round"/>
-            <line x1="50" y1="50" x2="78" y2="22" stroke="rgba(37,99,235,0.3)" strokeWidth="4" strokeLinecap="round"/>
-            <line x1="50" y1="50" x2="22" y2="78" stroke="rgba(37,99,235,0.3)" strokeWidth="4" strokeLinecap="round"/>
-            <line x1="50" y1="50" x2="78" y2="78" stroke="rgba(37,99,235,0.3)" strokeWidth="4" strokeLinecap="round"/>
-            {/* Outer nodes */}
-            <circle cx="22" cy="22" r="12" fill="#2563eb"/>
-            <circle cx="78" cy="22" r="12" fill="#2563eb"/>
-            <circle cx="22" cy="78" r="12" fill="#2563eb"/>
-            <circle cx="78" cy="78" r="12" fill="#2563eb"/>
-            {/* Center hub */}
-            <circle cx="50" cy="50" r="18" fill="#2563eb"/>
-            <circle cx="50" cy="50" r="9" fill="white"/>
-          </svg>
-          {/* V10 Wordmark — Sora 800, "Cata[lyst]" blue split */}
-          <span 
-            style={{ 
-              fontFamily: "'Sora', sans-serif",
-              fontSize: '1.15rem', 
-              fontWeight: 800, 
-              letterSpacing: '-0.03em',
-              lineHeight: 1,
-              color: 'var(--text-1, #0f172a)',
-            }}
-          >
-            Cata<span style={{ color: '#2563eb' }}>lyst</span>
-          </span>
+          <img 
+            src={catalystLogoLight} 
+            alt="Catalyst" 
+            style={{ height: '28px', width: 'auto' }}
+          />
         </a>
         
         {/* ===== NAVIGATION ZONE ===== */}
