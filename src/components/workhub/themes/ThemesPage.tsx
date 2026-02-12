@@ -67,29 +67,20 @@ export function ThemesPage() {
   return (
     <div style={{ padding: '24px 32px', maxWidth: 1200, margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
-        <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-          <div style={{
-            width: 40, height: 40, borderRadius: 10, background: '#dbeafe',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, paddingBottom: 16, borderBottom: '1px solid var(--wh-border, #e2e8f0)' }}>
+        <div>
+          <h1 style={{
+            fontSize: 20, fontWeight: 700, margin: 0,
+            color: 'var(--wh-text-primary, #0f172a)',
           }}>
-            <Palette size={20} color="#2563eb" />
-          </div>
-          <div>
-            <h1 style={{
-              fontSize: 24, fontWeight: 700, margin: 0,
-              fontFamily: 'var(--wh-font-display, Sora, sans-serif)',
-              color: 'var(--wh-text-primary, #0f172a)',
-            }}>
-              Themes
-            </h1>
-            <p style={{
-              fontSize: 14, color: 'var(--wh-text-secondary, #64748b)',
-              margin: '2px 0 0',
-            }}>
-              Strategic initiatives — {themes?.length ?? 0} themes
-            </p>
-          </div>
+            Themes
+          </h1>
+          <p style={{
+            fontSize: 14, color: 'var(--wh-text-secondary, #64748b)',
+            margin: '2px 0 0',
+          }}>
+            Strategic initiatives — {themes?.length ?? 0} themes
+          </p>
         </div>
 
         <button
@@ -142,7 +133,7 @@ export function ThemesPage() {
             <ThemeCard
               key={t.id}
               theme={t}
-              onClick={() => navigate(`/workhub/themes/${t.id}`)}
+              onClick={() => navigate(`/projecthub/themes/${t.id}`)}
             />
           ))}
         </div>

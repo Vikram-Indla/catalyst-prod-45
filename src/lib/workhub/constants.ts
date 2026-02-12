@@ -91,13 +91,13 @@ export const RELEASE_STATUS_CONFIG: Record<ReleaseStatus, { bg: string; text: st
 
 /* ── Sidebar Navigation Items ── */
 export const WORKHUB_NAV_ITEMS = [
-  { label: 'Dashboard', path: '/workhub', icon: 'LayoutDashboard' },
-  { label: 'Work Items', path: '/workhub/workitems', icon: 'FileStack' },
-  { label: 'Releases', path: '/workhub/releases', icon: 'Rocket' },
-  { label: 'Themes', path: '/workhub/themes', icon: 'Palette' },
-  { label: 'Resource 360', path: '/workhub/resource360', icon: 'Users' },
-  { label: 'Calendar', path: '/workhub/calendar', icon: 'CalendarDays' },
-  { label: 'Capacity', path: '/workhub/capacity', icon: 'BarChart3' },
-  { label: 'Analytics', path: '/workhub/analytics', icon: 'PieChart' },
-  { label: 'Caty AI', path: '/workhub/caty', icon: 'Sparkles' },
+  { label: 'Dashboard', path: '/projecthub', icon: 'LayoutDashboard' },
+  { label: 'Work Items', path: '/projecthub/workitems', icon: 'FileStack' },
+  { label: 'Releases', path: '/projecthub/releases', icon: 'Rocket' },
+  { label: 'Themes', path: '/projecthub/themes', icon: 'Palette' },
+  { label: 'Resource 360', path: '/projecthub/resource360', icon: 'Users' },
+  { label: 'Calendar', path: '/projecthub/calendar', icon: 'CalendarDays' },
+  { label: 'Capacity', path: '/projecthub/capacity', icon: 'BarChart3' },
+  { label: 'Analytics', path: '/projecthub/analytics', icon: 'PieChart' },
+  { label: 'Caty AI', path: '/projecthub/caty', icon: 'Sparkles' },
 ] as const;

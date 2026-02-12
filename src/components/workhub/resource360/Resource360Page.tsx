@@ -97,22 +97,13 @@ export function Resource360Page() {
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       {/* Header */}
       <div style={{ padding: '24px 24px 0', flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 4 }}>
-          <div style={{
-            width: 40, height: 40, borderRadius: 20,
-            backgroundColor: '#dbeafe',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <Users style={{ width: 20, height: 20, color: '#2563eb' }} />
-          </div>
-          <div>
-            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 24, fontWeight: 700, color: 'var(--wh-text-primary, #0f172a)', margin: 0 }}>
-              Resource 360
-            </h1>
-            <p style={{ fontSize: 14, color: 'var(--wh-text-secondary, #64748b)', margin: '2px 0 0' }}>
-              Team capacity &amp; utilization — {resources.length} members
-            </p>
-          </div>
+        <div style={{ marginBottom: 4, paddingBottom: 16, borderBottom: '1px solid var(--wh-border, #e2e8f0)' }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--wh-text-primary, #0f172a)', margin: 0 }}>
+            Resource 360
+          </h1>
+          <p style={{ fontSize: 14, color: 'var(--wh-text-secondary, #64748b)', margin: '2px 0 0' }}>
+            Team capacity &amp; utilization — {resources.length} members
+          </p>
         </div>
       </div>
 
@@ -178,7 +169,7 @@ export function Resource360Page() {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {items.map(r => (
-                    <ResourceCard key={r.id} resource={r} onClick={() => navigate(`/workhub/resource360/${r.id}`)} />
+                    <ResourceCard key={r.id} resource={r} onClick={() => navigate(`/projecthub/resource360/${r.id}`)} />
                   ))}
                 </div>
               </div>
@@ -186,7 +177,7 @@ export function Resource360Page() {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {sorted.map(r => (
-                <ResourceCard key={r.id} resource={r} onClick={() => navigate(`/workhub/resource360/${r.id}`)} />
+                <ResourceCard key={r.id} resource={r} onClick={() => navigate(`/projecthub/resource360/${r.id}`)} />
               ))}
             </div>
           )}

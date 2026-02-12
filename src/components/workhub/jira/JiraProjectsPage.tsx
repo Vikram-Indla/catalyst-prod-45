@@ -171,7 +171,7 @@ export function JiraProjectsPage() {
                   borderLeft: `4px solid ${project.color}`,
                   boxShadow: 'var(--wh-shadow-sm)',
                 }}
-                onClick={() => navigate(`/workhub/workitems?project=${project.id}`)}
+                onClick={() => navigate(`/projecthub/workitems?project=${project.id}`)}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>

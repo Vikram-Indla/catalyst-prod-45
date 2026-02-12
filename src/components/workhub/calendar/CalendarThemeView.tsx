@@ -108,11 +108,11 @@ export function CalendarThemeView({ year, month, events, isLoading }: Props) {
           return (
             <div
               key={theme.entity_id}
-              onClick={() => navigate(`/workhub/themes/${theme.entity_id}`)}
+              onClick={() => navigate(`/projecthub/themes/${theme.entity_id}`)}
               role="button"
               tabIndex={0}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') navigate(`/workhub/themes/${theme.entity_id}`);
+                if (e.key === 'Enter') navigate(`/projecthub/themes/${theme.entity_id}`);
               }}
               style={{
                 display: 'grid',

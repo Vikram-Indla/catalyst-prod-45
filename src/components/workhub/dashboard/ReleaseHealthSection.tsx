@@ -29,7 +29,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
           Release Health
         </h2>
         <button
-          onClick={() => navigate('/workhub/releases')}
+          onClick={() => navigate('/projecthub/releases')}
           style={{
             fontFamily: 'Inter, system-ui, sans-serif',
             fontSize: 13,
@@ -63,10 +63,10 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
             return (
               <div
                 key={release.id}
-                onClick={() => navigate(`/workhub/releases/${release.id}`)}
+                onClick={() => navigate(`/projecthub/releases/${release.id}`)}
                 role="button"
                 tabIndex={0}
-                onKeyDown={e => e.key === 'Enter' && navigate(`/workhub/releases/${release.id}`)}
+                onKeyDown={e => e.key === 'Enter' && navigate(`/projecthub/releases/${release.id}`)}
                 style={{
                   background: 'var(--wh-surface, #fff)',
                   border: '1px solid var(--wh-border, #e2e8f0)',

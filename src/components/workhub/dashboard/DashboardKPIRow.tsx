@@ -26,7 +26,7 @@ const KPI_CARDS: KPICardDef[] = [
     icon: Rocket,
     iconBg: '#dbeafe',
     iconColor: '#2563eb',
-    path: '/workhub/releases',
+    path: '/projecthub/releases',
   },
   {
     label: 'At Risk',
@@ -35,7 +35,7 @@ const KPI_CARDS: KPICardDef[] = [
     iconBg: '#fee2e2',
     iconColor: '#ef4444',
     getValueColor: k => k.at_risk_releases > 0 ? '#ef4444' : '#16a34a',
-    path: '/workhub/releases',
+    path: '/projecthub/releases',
   },
   {
     label: 'Total Items',
@@ -44,7 +44,7 @@ const KPI_CARDS: KPICardDef[] = [
     icon: FileStack,
     iconBg: '#f0fdf4',
     iconColor: '#16a34a',
-    path: '/workhub/workitems',
+    path: '/projecthub/workitems',
   },
   {
     label: 'Due This Week',
@@ -53,7 +53,7 @@ const KPI_CARDS: KPICardDef[] = [
     iconBg: '#fefce8',
     iconColor: '#d97706',
     getValueColor: k => k.due_this_week > 0 ? '#d97706' : undefined,
-    path: '/workhub/workitems',
+    path: '/projecthub/workitems',
   },
   {
     label: 'Overdue Items',
@@ -63,7 +63,7 @@ const KPI_CARDS: KPICardDef[] = [
     iconColor: '#ef4444',
     getValueColor: k => k.overdue_items > 0 ? '#ef4444' : undefined,
     getDangerBorder: k => k.overdue_items > 0,
-    path: '/workhub/workitems',
+    path: '/projecthub/workitems',
   },
 ];
 

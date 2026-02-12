@@ -770,9 +770,11 @@ const App = () => (
               <Route path="/projects/:projectKey/summary" element={<Navigate to={`/projects`} replace />} />
 
               {/* ═══════════════════════════════════════════════════════════════ */}
-              {/* WORKHUB V4.5 — PHASE 1 ROUTING ═══════════════════════════════ */}
+              {/* PROJECTHUB V4.5 — ROUTING ═════════════════════════════════════ */}
               {/* ═══════════════════════════════════════════════════════════════ */}
-              <Route path="/workhub" element={<WorkHubLayout />}>
+              <Route path="/workhub" element={<Navigate to="/projecthub" replace />} />
+              <Route path="/workhub/*" element={<Navigate to="/projecthub" replace />} />
+              <Route path="/projecthub" element={<WorkHubLayout />}>
                 <Route index element={<WorkHubDashboard />} />
                 <Route path="workitems" element={<WorkItemsPage />} />
                 <Route path="jira-projects" element={<JiraProjectsPage />} />
