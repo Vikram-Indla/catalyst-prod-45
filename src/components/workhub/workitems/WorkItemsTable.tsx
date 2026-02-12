@@ -27,6 +27,7 @@ interface WorkItemsTableProps {
 }
 
 const ROW_HEIGHT = 44;
+const MIN_TABLE_WIDTH = 1100;
 const GRID_COLS = '36px 36px minmax(140px, auto) 1fr 120px 140px 120px 130px 90px 90px 90px';
 const HEADER_COLS = ['Type', 'Key', 'Summary', 'Status', 'Fix Version', 'Theme', 'Assignee', 'Priority', 'Updated', 'Created'];
 
@@ -200,77 +201,78 @@ export function WorkItemsTable({
   }
 
   return (
-    <div className="rounded-xl border overflow-hidden" style={{ borderColor: 'var(--wh-border, #e2e8f0)', backgroundColor: 'var(--wh-surface, #fff)' }}>
-      {/* Header */}
-      <div
-        className="grid items-center border-b sticky top-0"
-        style={{
-          gridTemplateColumns: GRID_COLS,
-          height: '36px',
-          backgroundColor: '#f8fafc',
-          borderColor: 'var(--wh-border, #e2e8f0)',
-          zIndex: 10,
-        }}
-      >
-        <div className="flex justify-center">
-          <input
-            type="checkbox"
-            checked={selectAllState === 'all'}
-            ref={el => { if (el) el.indeterminate = selectAllState === 'some'; }}
-            onChange={onSelectAll}
-            className="w-4 h-4 rounded cursor-pointer"
-            style={{ accentColor: 'var(--wh-primary, #2563eb)' }}
-          />
+    <div className="rounded-xl border overflow-x-auto" style={{ borderColor: 'var(--wh-border, #e2e8f0)', backgroundColor: 'var(--wh-surface, #fff)' }}>
+      <div style={{ minWidth: MIN_TABLE_WIDTH }}>
+        {/* Header */}
+        <div
+          className="grid items-center border-b sticky top-0"
+          style={{
+            gridTemplateColumns: GRID_COLS,
+            height: '36px',
+            backgroundColor: '#f8fafc',
+            borderColor: 'var(--wh-border, #e2e8f0)',
+            zIndex: 10,
+          }}
+        >
+          <div className="flex justify-center">
+            <input
+              type="checkbox"
+              checked={selectAllState === 'all'}
+              ref={el => { if (el) el.indeterminate = selectAllState === 'some'; }}
+              onChange={onSelectAll}
+              className="w-4 h-4 rounded cursor-pointer"
+              style={{ accentColor: 'var(--wh-primary, #2563eb)' }}
+            />
+          </div>
+          {HEADER_COLS.map(col => (
+            <span key={col} className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
+              {col}
+            </span>
+          ))}
         </div>
-        {HEADER_COLS.map(col => (
-          <span key={col} className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
-            {col}
-          </span>
-        ))}
-      </div>
 
-      {/* Virtualized rows */}
-      <div ref={parentRef} style={{ height: Math.min(flatNodes.length * ROW_HEIGHT, 600), overflow: 'auto' }}>
-        <div style={{ height: `${virtualizer.getTotalSize()}px`, width: '100%', position: 'relative' }}>
-          {virtualizer.getVirtualItems().map(virtualRow => {
-            const node = flatNodes[virtualRow.index];
-            if (!node) return null;
-            const assigneeAvatar = node.item.assignee_account_id
-              ? avatarMap?.get(node.item.assignee_account_id) ?? null
-              : null;
+        {/* Virtualized rows */}
+        <div ref={parentRef} style={{ height: Math.min(flatNodes.length * ROW_HEIGHT, 600), overflow: 'auto' }}>
+          <div style={{ height: `${virtualizer.getTotalSize()}px`, width: '100%', position: 'relative' }}>
+            {virtualizer.getVirtualItems().map(virtualRow => {
+              const node = flatNodes[virtualRow.index];
+              if (!node) return null;
+              const assigneeAvatar = node.item.assignee_account_id
+                ? avatarMap?.get(node.item.assignee_account_id) ?? null
+                : null;
 
-            // Resolve theme
-            const issueThemeId = themeIdMap?.get(node.item.issue_key) ?? null;
-            const theme = issueThemeId ? themeMap.get(issueThemeId) : null;
+              const issueThemeId = themeIdMap?.get(node.item.issue_key) ?? null;
+              const theme = issueThemeId ? themeMap.get(issueThemeId) : null;
 
-            return (
-              <div
-                key={node.item.issue_key}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: `${virtualRow.size}px`,
-                  transform: `translateY(${virtualRow.start}px)`,
-                }}
-              >
-                <WorkItemRow
-                  item={node.item}
-                  depth={node.depth}
-                  hasChildren={keysWithChildren.has(node.item.issue_key)}
-                  isExpanded={expandedKeys.has(node.item.issue_key)}
-                  isSelected={selectedIds.has(node.item.issue_key)}
-                  avatarUrl={assigneeAvatar}
-                  themeName={theme?.name ?? null}
-                  themeColor={theme?.color ?? null}
-                  onToggleExpand={() => toggleExpand(node.item.issue_key)}
-                  onToggleSelect={() => onToggleSelect(node.item.issue_key)}
-                  onOpenDrawer={() => onOpenDrawer(node.item.issue_key)}
-                />
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={node.item.issue_key}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: `${virtualRow.size}px`,
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  <WorkItemRow
+                    item={node.item}
+                    depth={node.depth}
+                    hasChildren={keysWithChildren.has(node.item.issue_key)}
+                    isExpanded={expandedKeys.has(node.item.issue_key)}
+                    isSelected={selectedIds.has(node.item.issue_key)}
+                    avatarUrl={assigneeAvatar}
+                    themeName={theme?.name ?? null}
+                    themeColor={theme?.color ?? null}
+                    onToggleExpand={() => toggleExpand(node.item.issue_key)}
+                    onToggleSelect={() => onToggleSelect(node.item.issue_key)}
+                    onOpenDrawer={() => onOpenDrawer(node.item.issue_key)}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
