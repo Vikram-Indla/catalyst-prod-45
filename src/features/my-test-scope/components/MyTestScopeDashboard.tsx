@@ -182,7 +182,7 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
   const allComplete = data.summary.totalTests > 0 && data.summary.notRunTests === 0 && data.summary.failedTests === 0 && data.summary.blockedTests === 0;
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#F8FAFC', fontFamily: 'Inter, system-ui, sans-serif' }}>
       <ScopeHeader
         userName={userName}
         summary={data.summary}
@@ -190,9 +190,9 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
         onExecuteAll={handleExecuteAll}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 px-6 py-4 border-b border-border">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 12, padding: '12px 24px', borderBottom: '1px solid #E2E8F0', flexShrink: 0 }}>
         <ProgressGauge summary={data.summary} />
-        <div className="lg:col-span-2">
+        <div>
           <AIStartMyDay
             recommendation={data.aiRecommendation}
             onStartTest={handleStartTest}
@@ -202,11 +202,14 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
       </div>
 
       {allComplete && (
-        <div className="flex items-center gap-3 px-6 py-4 bg-success/10 border-b border-success/20">
-          <PartyPopper className="h-6 w-6 text-success" />
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12, padding: '12px 24px',
+          background: '#F0FDF4', borderBottom: '1px solid #BBF7D0',
+        }}>
+          <PartyPopper style={{ width: 20, height: 20, color: '#16A34A' }} />
           <div>
-            <p className="font-semibold text-success">All tests complete! 🎉</p>
-            <p className="text-sm text-muted-foreground">
+            <p style={{ fontWeight: 600, color: '#16A34A', fontSize: 14, margin: 0 }}>All tests complete!</p>
+            <p style={{ fontSize: 13, color: '#64748B', margin: '2px 0 0' }}>
               Great job, {userName}! All {data.summary.totalTests} tests have been executed successfully.
             </p>
           </div>

@@ -1,10 +1,10 @@
 /**
  * Attention Cards
  * Quick status indicators for overdue, due today, defects, incidents
+ * Styled to match dashboard: white bg, consistent borders
  */
 
 import React from 'react';
-import { cn } from '@/lib/utils';
 import { Flame, Clock, Bug, Zap } from 'lucide-react';
 import type { TestScopeSummary } from '../types';
 
@@ -15,65 +15,48 @@ interface AttentionCardsProps {
 
 interface AttentionCard {
   id: 'overdue' | 'today' | 'defects' | 'incidents';
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ style?: React.CSSProperties }>;
   label: string;
   count: number;
-  colorClass: string;
-  bgClass: string;
+  color: string;
+  bg: string;
 }
 
 export function AttentionCards({ summary, onCardClick }: AttentionCardsProps) {
   const cards: AttentionCard[] = [
-    {
-      id: 'overdue',
-      icon: Flame,
-      label: 'Overdue',
-      count: summary.overdueCount,
-      colorClass: 'text-danger',
-      bgClass: 'bg-danger/10 hover:bg-danger/20',
-    },
-    {
-      id: 'today',
-      icon: Clock,
-      label: 'Due Today',
-      count: summary.dueTodayCount,
-      colorClass: 'text-warning',
-      bgClass: 'bg-warning/10 hover:bg-warning/20',
-    },
-    {
-      id: 'defects',
-      icon: Bug,
-      label: 'Defects',
-      count: summary.linkedDefectsCount,
-      colorClass: 'text-destructive',
-      bgClass: 'bg-destructive/10 hover:bg-destructive/20',
-    },
-    {
-      id: 'incidents',
-      icon: Zap,
-      label: 'Incidents',
-      count: summary.activeIncidentsCount,
-      colorClass: 'text-accent-foreground',
-      bgClass: 'bg-accent/50 hover:bg-accent',
-    },
+    { id: 'overdue', icon: Flame, label: 'Overdue', count: summary.overdueCount, color: '#DC2626', bg: '#FEF2F2' },
+    { id: 'today', icon: Clock, label: 'Due Today', count: summary.dueTodayCount, color: '#D97706', bg: '#FFFBEB' },
+    { id: 'defects', icon: Bug, label: 'Defects', count: summary.linkedDefectsCount, color: '#DC2626', bg: '#FEF2F2' },
+    { id: 'incidents', icon: Zap, label: 'Incidents', count: summary.activeIncidentsCount, color: '#64748B', bg: '#F1F5F9' },
   ];
 
   return (
-    <div className="flex items-center gap-2 px-6 py-3 border-b border-border overflow-x-auto">
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 8,
+      padding: '10px 24px',
+      borderBottom: '1px solid #E2E8F0',
+      overflowX: 'auto',
+      backgroundColor: '#FFFFFF',
+      fontFamily: 'Inter, sans-serif',
+    }}>
       {cards.map((card) => (
         <button
           key={card.id}
           onClick={() => onCardClick(card.id)}
           disabled={card.count === 0}
-          className={cn(
-            'flex items-center gap-2 px-3 py-1.5 rounded-full transition-colors text-sm font-medium whitespace-nowrap',
-            card.bgClass,
-            card.count === 0 && 'opacity-50 cursor-not-allowed'
-          )}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            padding: '4px 12px', borderRadius: 9999,
+            background: card.bg, border: 'none',
+            fontSize: 13, fontWeight: 500, whiteSpace: 'nowrap',
+            cursor: card.count === 0 ? 'not-allowed' : 'pointer',
+            opacity: card.count === 0 ? 0.5 : 1,
+            transition: 'opacity 150ms',
+          }}
         >
-          <card.icon className={cn('h-4 w-4', card.colorClass)} />
-          <span className={card.colorClass}>{card.count}</span>
-          <span className="text-muted-foreground">{card.label}</span>
+          <card.icon style={{ width: 14, height: 14, color: card.color }} />
+          <span style={{ fontWeight: 700, color: card.color }}>{card.count}</span>
+          <span style={{ color: '#64748B' }}>{card.label}</span>
         </button>
       ))}
     </div>
