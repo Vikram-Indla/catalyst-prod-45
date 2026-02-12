@@ -61,7 +61,7 @@ Priorities10Icon.displayName = 'Priorities10Icon';
 
 const taskHubSidebarConfig: SidebarConfig = {
   badge: 'TH',
-  label: 'TaskHub',
+  label: 'Task Hub',
   sections: [
     {
       title: '',
