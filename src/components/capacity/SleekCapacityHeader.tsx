@@ -248,13 +248,6 @@ export function SleekCapacityHeader({
         {/* Left: Title + Live Badge Inline */}
         <div className="flex items-center gap-4">
           <div className="flex flex-col gap-0.5">
-            {/* Breadcrumb - Shows active tab */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs font-medium text-slate-500">Enterprise / Capacity</span>
-              <span className="text-xs text-slate-400">•</span>
-              <span className="text-xs font-medium text-slate-500">{getActiveTabName()}</span>
-            </div>
-            
             {/* Title */}
             <h1 className="text-2xl font-bold text-slate-900 dark:text-[var(--text-primary)] tracking-tight">
               Capacity Planner
