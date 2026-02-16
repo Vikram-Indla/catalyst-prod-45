@@ -1,5 +1,5 @@
 /**
- * For You Sub Tabs - Worked on, Assigned, Starred
+ * For You Sub Tabs - Worked on, Assigned, Starred (CATALYST10 v3 spec)
  */
 
 import React from 'react';
@@ -24,13 +24,7 @@ export function ForYouSubTabs({ activeTab, counts, onTabChange }: ForYouSubTabsP
   ];
 
   return (
-    <div 
-      className={cn(
-        "inline-flex items-center p-1 gap-1 rounded-[10px]",
-        "bg-[var(--surface-muted)] border border-[var(--border-subtle-hex)]"
-      )}
-      role="tablist"
-    >
+    <div className="inline-flex items-center gap-2" role="tablist">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
 
@@ -41,23 +35,23 @@ export function ForYouSubTabs({ activeTab, counts, onTabChange }: ForYouSubTabsP
             aria-selected={isActive}
             onClick={() => onTabChange(tab.id)}
             className={cn(
-              "inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium",
+              "inline-flex items-center gap-2 px-4 py-2 rounded-[20px] text-[13px]",
               "transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring-hex)]",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(217,91%,60%)]",
               isActive
-                ? "bg-[var(--brand-primary-hex)] text-white shadow-sm"
-                : "text-[var(--text-3)] hover:text-[var(--text-1)] hover:bg-white/60 dark:hover:bg-white/5"
+                ? "font-semibold bg-[hsl(217,91%,60%)] text-white shadow-sm"
+                : "font-medium text-[hsl(215,25%,27%)] border border-[hsl(214,32%,91%)] hover:bg-[hsl(210,40%,96%)]"
             )}
           >
             {tab.label}
-            {/* Count badge - Catalyst V5 compliant */}
+            {/* Count badge */}
             <span
               className={cn(
-                "min-w-[28px] h-[20px] px-2 rounded-[10px] text-xs font-semibold tabular-nums",
+                "min-w-[22px] h-[18px] px-1.5 rounded-[10px] text-[11px] font-bold tabular-nums",
                 "inline-flex items-center justify-center",
                 isActive
-                  ? "bg-white/20 text-white"
-                  : "bg-[var(--surface-muted)] text-[var(--text-4)]"
+                  ? "bg-white text-[hsl(217,91%,60%)]"
+                  : "bg-[hsl(210,40%,96%)] text-[hsl(215,16%,47%)]"
               )}
             >
               {tab.count > 99 ? '99+' : tab.count}
