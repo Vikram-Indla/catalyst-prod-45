@@ -57,10 +57,6 @@ const MAIN_MENU_ITEMS: SidebarMenuItem[] = [
   { id: 'Product Roadmap', title: 'Product Roadmap', path: '/industry/roadmaps-v1', exact: false },
 ];
 
-// Items after Ideas group
-const AFTER_IDEAS_ITEMS: SidebarMenuItem[] = [
-  { id: 'ReqFlow AI', title: 'ReqFlow AI', path: '/industry/reqflow', icon: FileText, exact: true },
-];
 
 export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoomSidebarProps) {
   const { isAdmin } = useUserRole();
@@ -262,21 +258,6 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
             </CollapsibleContent>
           </Collapsible>
 
-          {/* Items after Ideas (Requirement Assist, Generation History) */}
-          <div style={{ marginTop: '8px' }}>
-            {AFTER_IDEAS_ITEMS.map((item) => (
-              <MenuItemButton 
-                key={item.id}
-                item={item}
-                isActive={isActive(item.path, item.exact)}
-                expanded={expanded}
-                onClick={() => handleNavigation(item.path)}
-                iconResolver={(id) => PRODUCT_ROOM_NAV_ICONS[id] || item.icon}
-                isFavorite={isFavorite}
-                toggleFavorite={toggleFavorite}
-              />
-            ))}
-          </div>
         </nav>
 
         {/* Footer Item (Settings for admins) */}

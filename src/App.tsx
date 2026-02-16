@@ -29,7 +29,7 @@ import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
 const CapacityPlannerPage = lazy(() => import("./pages/enterprise/CapacityPlannerPage"));
 const BudgetGovernancePage = lazy(() => import("./pages/enterprise/BudgetGovernancePage"));
 const BudgetPlannerPage = lazy(() => import("./pages/enterprise/BudgetPlannerPage"));
-const ReqFlowAIPage = lazy(() => import("./pages/industry/ReqFlowAIPage"));
+
 import Themes from "./pages/Themes";
 import Initiatives from "./pages/Initiatives";
 // Epics removed - redirects to epic-backlog
@@ -493,7 +493,7 @@ const App = () => (
               <Route path="/industry/roadmaps" element={<ProductRoadmapV2Page />} />
               <Route path="/industry/roadmaps-v1" element={<IndustryRoadmapPage />} />
               <Route path="/industry/reports" element={<IndustryComingSoon />} />
-              <Route path="/industry/reqflow" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReqFlowAIPage /></Suspense>} />
+              
               
               {/* Starred items page */}
               <Route path="/starred" element={<StarredPage />} />
