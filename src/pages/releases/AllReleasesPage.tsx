@@ -95,8 +95,10 @@ function mapToViewRelease(r: DBRelease): ViewRelease {
   const target = r.target_date ? parseISO(r.target_date) : null;
   const start = r.start_date ? parseISO(r.start_date) : null;
   const now = new Date();
-  const daysRemaining = target ? Math.max(0, differenceInDays(target, now)) : 0;
-  const overdue = target ? differenceInDays(now, target) > 0 && r.status !== 'released' : false;
+  now.setHours(0, 0, 0, 0);
+  const rawDiff = target ? differenceInDays(target, now) : 0;
+  const daysRemaining = Math.abs(rawDiff);
+  const overdue = target ? rawDiff < 0 && r.status !== 'released' : false;
   const score = healthToScore(r.health);
 
   // Compute timeline bar positions (Jan 2026 = 0, Oct 2026 = 100)
@@ -276,8 +278,8 @@ export default function AllReleasesPage() {
 
   const statCounts = useMemo(() => ({
     total: releases.length,
-    planned: releases.filter(r => r.status === 'planned' || r.status === 'planning').length,
-    active: releases.filter(r => r.status === 'active' || r.status === 'development' || r.status === 'staging').length,
+    planning: releases.filter(r => r.status === 'planned' || r.status === 'planning').length,
+    staging: releases.filter(r => r.status === 'staging' || r.status === 'active' || r.status === 'development').length,
     testing: releases.filter(r => r.status === 'testing' || r.status === 'uat').length,
     released: releases.filter(r => r.status === 'released').length,
     atRisk: releases.filter(r => r.health >= 40 && r.health < 60).length,
@@ -483,8 +485,8 @@ export default function AllReleasesPage() {
         <div className="flex items-center justify-between w-full" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fff', padding: '6px 16px' }}>
           <div className="flex items-center gap-5">
             <StatItem number={statCounts.total} label="Total" />
-            <StatItem number={statCounts.planned} label="Planned" dotColor="#94a3b8" />
-            <StatItem number={statCounts.active} label="Active" dotColor="#6366f1" />
+            <StatItem number={statCounts.planning} label="Planning" dotColor="#94a3b8" />
+            <StatItem number={statCounts.staging} label="Staging" dotColor="#6366f1" />
             <StatItem number={statCounts.testing} label="Testing" dotColor="#d97706" />
             <StatItem number={statCounts.atRisk} label="At Risk" dotColor="#ef4444" />
             <StatItem number={statCounts.released} label="Released" dotColor="#0d9488" />
@@ -1258,7 +1260,7 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
                 <span style={{ color: '#64748b' }}>📅 {r.targetDate}</span>
                 {r.overdue && (
                   <span style={{ fontSize: '10px', fontWeight: 600, color: '#ef4444', background: '#fee2e2', borderRadius: '8px', padding: '1px 6px' }}>
-                    Overdue
+                    {r.daysRemaining}d overdue
                   </span>
                 )}
                 <span className="ml-auto" style={{ color: '#94a3b8', fontSize: '12px' }}>{r.owner}</span>
