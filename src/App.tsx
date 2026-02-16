@@ -29,6 +29,7 @@ import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
 const CapacityPlannerPage = lazy(() => import("./pages/enterprise/CapacityPlannerPage"));
 const BudgetGovernancePage = lazy(() => import("./pages/enterprise/BudgetGovernancePage"));
 const BudgetPlannerPage = lazy(() => import("./pages/enterprise/BudgetPlannerPage"));
+const ReqFlowAIPage = lazy(() => import("./pages/industry/ReqFlowAIPage"));
 import Themes from "./pages/Themes";
 import Initiatives from "./pages/Initiatives";
 // Epics removed - redirects to epic-backlog
@@ -327,7 +328,6 @@ import ForYouPage from "./pages/ForYouPage";
 import ProductRoadmapPage from "./pages/ProductRoadmapPage";
 import ProductRoadmapV2Page from "./pages/ProductRoadmapV2Page";
 import IndustryRoadmapPage from "./pages/industry/IndustryRoadmapPage";
-const ReqFlowAIPage = lazy(() => import("./pages/industry/ReqFlowAIPage"));
 
 import StrategicSnapshots from "./pages/enterprise/StrategicSnapshots";
 import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
