@@ -540,8 +540,8 @@ export default function AllReleasesPage() {
       {/* ═══ PAGE HEADER (52px) ═══ */}
       <header className="flex items-center justify-between px-6 border-b" style={{ height: '52px', flexShrink: 0, borderColor: '#e2e8f0', background: '#ffffff' }}>
         <div className="flex items-center gap-3">
-          <h1 style={{ fontSize: '20px', fontWeight: 700, color: '#0f172a' }}>All Releases</h1>
-          <span style={{ fontSize: '12px', fontWeight: 500, color: '#64748b' }}>{releases.length} releases</span>
+          <h1 style={{ fontSize: '24px', fontWeight: 600, color: '#0f172a', lineHeight: 1.2 }}>All Releases</h1>
+          <span style={{ fontSize: '13px', fontWeight: 400, color: '#94a3b8' }}>{releases.length} releases</span>
         </div>
         <div className="flex items-center gap-2">
           {/* Export */}
@@ -579,7 +579,7 @@ export default function AllReleasesPage() {
       {/* ═══ STAT STRIP (48px) ═══ */}
       <div className="flex items-center px-6" style={{ height: '48px', flexShrink: 0 }}>
         <div className="flex items-center justify-between w-full" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fff', padding: '6px 16px' }}>
-          <div className="flex items-center gap-5">
+          <div className="flex items-center" style={{ gap: '16px' }}>
             <StatItem number={statCounts.total} label="Total" />
             <StatItem number={statCounts.planning} label="Planning" dotColor="#94a3b8" />
             <StatItem number={statCounts.staging} label="Staging" dotColor="#8b5cf6" />
@@ -698,9 +698,9 @@ export default function AllReleasesPage() {
               onClick={() => setActiveView(v.key)}
               className="flex items-center gap-1 transition-colors"
               style={{
-                padding: '4px 10px', fontSize: '12px', fontWeight: activeView === v.key ? 600 : 400,
-                background: activeView === v.key ? '#dbeafe' : '#fff',
-                color: activeView === v.key ? '#2563eb' : '#64748b',
+                padding: '4px 12px', fontSize: '13px', fontWeight: 500,
+                background: activeView === v.key ? '#2563eb' : '#fff',
+                color: activeView === v.key ? '#ffffff' : '#64748b',
                 border: 'none', cursor: 'pointer',
               }}
             >
@@ -1019,17 +1019,17 @@ function generateDynamicInsights(releases: ViewRelease[]) {
 
 const colHeaderStyle: React.CSSProperties = {
   fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase',
-  letterSpacing: '0.04em', textAlign: 'left', padding: '0 16px', whiteSpace: 'nowrap',
-  height: '36px', lineHeight: '36px',
+  letterSpacing: '0.05em', textAlign: 'left', padding: '0 12px', whiteSpace: 'nowrap',
+  height: '32px', lineHeight: '32px', borderBottom: '1px solid #e2e8f0', background: '#f8fafc',
 };
 
 
 function StatItem({ number, label, dotColor }: { number: number; label: string; dotColor?: string }) {
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1.5" style={{ gap: '6px' }}>
       {dotColor && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: dotColor }} />}
-      <span style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>{number}</span>
-      <span style={{ fontSize: '12px', fontWeight: 500, color: '#64748b' }}>{label}</span>
+      <span style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>{number}</span>
+      <span style={{ fontSize: '13px', fontWeight: 500, color: '#64748b' }}>{label}</span>
     </div>
   );
 }
@@ -1037,7 +1037,7 @@ function StatItem({ number, label, dotColor }: { number: number; label: string; 
 function StatusPill({ status }: { status: string }) {
   const c = getStatusConfig(status);
   return (
-    <span className="inline-flex items-center gap-1" style={{ padding: '1px 8px', borderRadius: '12px', background: c.bg, color: c.text, fontSize: '11px', fontWeight: 500, lineHeight: '20px' }}>
+    <span className="inline-flex items-center gap-1" style={{ padding: '0 8px', borderRadius: '11px', background: c.bg, color: c.text, fontSize: '11px', fontWeight: 500, height: '22px', lineHeight: '22px', border: `1px solid ${c.bg === '#f1f5f9' ? '#e2e8f0' : 'transparent'}` }}>
       <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: c.dot }} />
       {c.label}
     </span>
@@ -1093,33 +1093,33 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
           style={{ opacity: selected ? 1 : undefined, cursor: 'pointer', accentColor: '#2563eb', width: '16px', height: '16px' }}
         />
       </td>
-      <td style={{ ...cellStyle, minWidth: '240px' }}>
-        <span style={{ display: 'inline-block', padding: '1px 6px', background: '#f1f5f9', color: '#64748b', border: '1px solid #e2e8f0', borderRadius: '4px', fontSize: '10px', fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", marginRight: '6px', verticalAlign: 'middle' }}>{r.version}</span>
-        <span style={{ fontSize: '13px', fontWeight: 500, color: '#0f172a' }}>{r.name}</span>
+      <td style={{ ...cellStyle, minWidth: '280px' }}>
+        <span style={{ display: 'inline-block', padding: '2px 6px', background: '#f1f5f9', color: '#94a3b8', border: '1px solid #e2e8f0', borderRadius: '4px', fontSize: '11px', fontWeight: 500, fontFamily: "'JetBrains Mono', monospace", marginRight: '6px', verticalAlign: 'middle' }}>{r.version}</span>
+        <span style={{ fontSize: '14px', fontWeight: 500, color: '#0f172a' }}>{r.name}</span>
       </td>
       <td style={{ ...cellStyle, width: '100px' }}><StatusPill status={r.status} /></td>
       <td style={{ ...cellStyle, width: '130px' }}>
         <div className="flex items-center gap-2">
-          <div style={{ width: '80px', height: '4px', background: '#e2e8f0', borderRadius: '2px', overflow: 'hidden' }}>
-            <div style={{ width: `${r.progress}%`, height: '100%', background: '#2563eb', borderRadius: '2px' }} />
+          <div style={{ width: '64px', height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+            <div style={{ width: `${r.progress}%`, height: '100%', background: r.progress <= 30 ? '#ef4444' : r.progress <= 60 ? '#d97706' : '#0d9488', borderRadius: '3px' }} />
           </div>
-          <span style={{ fontSize: '11px', fontWeight: 500, color: '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>{r.progress}%</span>
+          <span style={{ fontSize: '13px', fontWeight: 500, color: '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>{r.progress}%</span>
         </div>
       </td>
       <td style={cellStyle}>
         <div className="flex items-center gap-2">
-          <div className="flex" style={{ width: '60px', height: '4px', borderRadius: '2px', overflow: 'hidden', background: '#e2e8f0' }}>
+          <div className="flex" style={{ width: '60px', height: '6px', borderRadius: '3px', overflow: 'hidden', background: '#e2e8f0' }}>
             {r.testsTotal > 0 && (
               <>
                 <div style={{ width: `${testRatio * 100}%`, background: testBarColor }} />
-                <div style={{ width: `${(1 - testRatio) * 100}%`, background: '#ef4444' }} />
+                {testRatio < 0.8 && <div style={{ width: `${(1 - testRatio) * 100}%`, background: '#ef4444' }} />}
               </>
             )}
           </div>
-          <span style={{ fontSize: '11px', fontWeight: 400, color: '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>{r.testsPass}/{r.testsTotal}</span>
+          <span style={{ fontSize: '13px', fontWeight: testRatio < 0.8 ? 600 : 400, color: '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>{r.testsPass}/{r.testsTotal}</span>
         </div>
       </td>
-      <td style={{ ...cellStyle, width: '70px', fontSize: '13px', fontWeight: r.defects > 0 ? 600 : 400, color: r.defects > 0 ? '#ef4444' : '#94a3b8', fontFamily: "'JetBrains Mono', monospace" }}>
+      <td style={{ ...cellStyle, width: '72px', fontSize: '14px', fontWeight: 600, color: r.defects >= 20 ? '#ef4444' : r.defects >= 10 ? '#d97706' : r.defects > 0 ? '#10b981' : '#94a3b8', fontFamily: "'JetBrains Mono', monospace" }}>
         {r.defects > 0 ? r.defects : '—'}
       </td>
       <td style={{ ...cellStyle, width: '100px' }}>
@@ -1128,7 +1128,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
             <div style={{ width: '48px', height: '4px', background: '#e2e8f0', borderRadius: '2px', overflow: 'hidden' }}>
               <div style={{ width: `${r.coverage}%`, height: '100%', background: covColor, borderRadius: '2px' }} />
             </div>
-            <span style={{ fontSize: '11px', fontWeight: 500, color: covColor, fontFamily: "'JetBrains Mono', monospace" }}>{r.coverage}%</span>
+            <span style={{ fontSize: '13px', fontWeight: 500, color: covColor, fontFamily: "'JetBrains Mono', monospace" }}>{r.coverage}%</span>
           </div>
         ) : (
           <span style={{ fontSize: '13px', color: '#94a3b8' }}>—</span>
@@ -1137,19 +1137,25 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
       <td style={{ ...cellStyle, width: '80px' }}>
         <div className="flex items-center gap-1.5">
           <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: getHealthColor(r.health) }} />
-          <span style={{ fontSize: '11px', fontWeight: 600, color: getHealthColor(r.health) }}>{r.health}</span>
+          <span style={{ fontSize: '14px', fontWeight: 700, color: getHealthColor(r.health) }}>{r.health}</span>
         </div>
       </td>
-      <td style={{ ...cellStyle, width: '60px', fontSize: '12px', fontWeight: r.overdue || r.status === 'released' ? 600 : 500, color: r.status === 'released' ? '#0d9488' : r.overdue ? '#ef4444' : '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>
-        {r.status === 'released' ? 'Released' : `${r.daysRemaining}d`}
+      <td style={{ ...cellStyle, width: '80px' }}>
+        {r.status === 'released' ? (
+          <span style={{ fontSize: '11px', fontWeight: 500, color: '#059669', textTransform: 'uppercase' as const, letterSpacing: '0.03em' }}>Released</span>
+        ) : (
+          <span style={{ fontSize: '13px', fontWeight: r.daysRemaining <= 7 ? 600 : 500, color: r.daysRemaining <= 7 ? '#ef4444' : r.daysRemaining <= 14 ? '#d97706' : '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>
+            {r.overdue ? `-${r.daysRemaining}d` : `${r.daysRemaining}d`}
+          </span>
+        )}
       </td>
       <td style={{ ...cellStyle, width: '100px' }}>
         {r.owner === 'Unassigned' ? (
-          <div className="flex items-center gap-1.5" style={{ color: '#94a3b8' }}>
+          <div className="flex items-center gap-1.5" style={{ color: '#2563eb' }}>
             <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#f1f5f9', border: '1px dashed #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Plus className="w-3 h-3" style={{ color: '#94a3b8' }} />
+              <Plus className="w-2.5 h-2.5" style={{ color: '#94a3b8' }} />
             </div>
-            <span style={{ fontSize: '12px' }}>Assign</span>
+            <span style={{ fontSize: '12px', fontWeight: 500, color: '#2563eb' }}>Assign</span>
           </div>
         ) : (
           <span style={{ fontSize: '13px', fontWeight: 400, color: '#334155' }}>{r.owner}</span>
@@ -1177,7 +1183,7 @@ function FilterPill({ label, active, count, isOpen, onToggle, children }: {
         onClick={onToggle}
         className="flex items-center gap-1 transition-colors"
         style={{
-          height: '30px', padding: '0 10px', borderRadius: '6px', fontSize: '13px', fontWeight: 500, cursor: 'pointer',
+          height: '32px', padding: '0 12px', borderRadius: '6px', fontSize: '13px', fontWeight: 500, cursor: 'pointer',
           border: `1px solid ${active ? '#2563eb' : '#e2e8f0'}`,
           background: active ? '#dbeafe' : '#fff',
           color: active ? '#2563eb' : '#334155',
@@ -1438,7 +1444,7 @@ function TimelineView({ releases, onBarClick }: {
         <div />
         <div className="flex items-center gap-4">
           {LEGEND_ITEMS.map(l => (
-            <div key={l.label} className="flex items-center gap-1" style={{ fontSize: '11px', color: '#64748b' }}>
+            <div key={l.label} className="flex items-center" style={{ gap: '6px', fontSize: '12px', fontWeight: 500, color: '#64748b' }}>
               {l.shape === 'circle' ? (
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: l.color }} />
               ) : (
@@ -1453,7 +1459,7 @@ function TimelineView({ releases, onBarClick }: {
       <div className="flex flex-1 min-h-0" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden', background: '#fff' }}>
         <div style={{ width: '260px', flexShrink: 0, borderRight: '1px solid #e2e8f0' }}>
           <div style={{ height: '32px', background: '#f8fafc', display: 'flex', alignItems: 'center', padding: '0 12px', borderBottom: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>RELEASE</span>
+            <span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' as const, letterSpacing: '0.05em' }}>RELEASE</span>
           </div>
           {releases.map(r => (
             <div
@@ -1464,7 +1470,7 @@ function TimelineView({ releases, onBarClick }: {
             >
               <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: getHealthColor(r.health), flexShrink: 0 }} />
               <div className="min-w-0 flex-1">
-                <div className="truncate" style={{ fontSize: '12px', fontWeight: 500, color: '#0f172a', lineHeight: '36px' }}>{r.name}</div>
+                <div className="truncate" style={{ fontSize: '14px', fontWeight: 500, color: '#0f172a', lineHeight: '36px' }}>{r.name}</div>
               </div>
             </div>
           ))}
@@ -1473,15 +1479,15 @@ function TimelineView({ releases, onBarClick }: {
         <div className="flex-1 overflow-x-auto relative">
           <div className="flex" style={{ height: '32px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
             {MONTHS.map(m => (
-              <div key={m} className="flex-1" style={{ minWidth: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 500, color: '#64748b', borderRight: '1px solid #f1f5f9' }}>
+              <div key={m} className="flex-1" style={{ minWidth: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' as const, letterSpacing: '0.05em', borderRight: '1px solid #f1f5f9' }}>
                 {m}
               </div>
             ))}
           </div>
 
           {/* Today marker */}
-          <div className="absolute" style={{ left: `${todayPos}%`, top: '32px', bottom: 0, width: '2px', background: '#ef4444', zIndex: 5, borderStyle: 'dashed' }}>
-            <span style={{ position: 'absolute', top: '-16px', left: '-12px', fontSize: '10px', fontWeight: 600, color: '#ef4444' }}>Today</span>
+          <div className="absolute" style={{ left: `${todayPos}%`, top: '32px', bottom: 0, width: '2px', background: '#ef4444', zIndex: 5 }}>
+            <span style={{ position: 'absolute', top: '-18px', left: '50%', transform: 'translateX(-50%)', fontSize: '11px', fontWeight: 600, color: '#ef4444', whiteSpace: 'nowrap' }}>Today</span>
           </div>
 
           {releases.map((r, i) => {
@@ -1496,7 +1502,7 @@ function TimelineView({ releases, onBarClick }: {
                   className="absolute cursor-pointer"
                   style={{
                     left: `${r.barLeft}%`, width: `${r.barWidth}%`,
-                    height: '20px', top: '8px', borderRadius: '4px',
+                    height: '24px', top: '6px', borderRadius: '4px',
                     background: isPlanned ? 'transparent' : barColor,
                     border: isPlanned ? `1.5px dashed #cbd5e1` : 'none',
                     animation: 'barGrow 0.4s ease-out both',
@@ -1505,6 +1511,7 @@ function TimelineView({ releases, onBarClick }: {
                     transition: 'filter 100ms',
                     zIndex: 1,
                     overflow: 'hidden',
+                    minWidth: '40px',
                   }}
                   onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(0.88)')}
                 >
@@ -1512,7 +1519,7 @@ function TimelineView({ releases, onBarClick }: {
                   {r.progress > 0 && !isPlanned && (
                     <div style={{ width: `${r.progress}%`, height: '100%', background: 'rgba(255,255,255,0.35)', position: 'absolute', left: 0, top: 0 }} />
                   )}
-                  <span style={{ fontSize: '10px', fontWeight: 600, color: isPlanned ? '#94a3b8' : '#fff', padding: '0 6px', lineHeight: '20px', position: 'relative', zIndex: 1 }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, color: isPlanned ? '#94a3b8' : '#fff', padding: '0 6px', lineHeight: '24px', position: 'relative', zIndex: 1, textShadow: isPlanned ? 'none' : '0 1px 2px rgba(0,0,0,0.3)' }}>
                     {r.progress}%
                   </span>
                 </div>
