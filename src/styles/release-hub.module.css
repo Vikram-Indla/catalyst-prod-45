@@ -77,8 +77,6 @@
 
   /* Page layout */
   width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
   height: calc(100vh - 52px);
@@ -296,15 +294,16 @@
   font-size: var(--rh-type-body-sm);
   font-weight: 600;
   color: #FFFFFF;
-  background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+  background: linear-gradient(135deg, var(--rh-success), #16A34A);
   border: none;
   border-radius: var(--rh-radius-md);
   cursor: pointer;
   transition: all var(--rh-duration) var(--rh-ease);
+  box-shadow: 0 2px 8px rgba(34,197,94,0.18);
 }
 .btnAI:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(139,92,246,0.3);
+  box-shadow: 0 4px 12px rgba(34,197,94,0.3);
 }
 .btnOutlineSm {
   composes: btnOutline;
