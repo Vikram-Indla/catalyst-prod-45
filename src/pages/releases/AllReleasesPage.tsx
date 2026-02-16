@@ -610,8 +610,8 @@ export default function AllReleasesPage() {
       {/* ═══ DETAIL DRAWER ═══ */}
       {detailRelease && (
         <>
-          <div className="fixed inset-0 z-40" style={{ background: 'rgba(0,0,0,0.3)' }} onClick={() => setDetailRelease(null)} />
-          <div className="fixed right-0 top-0 bottom-0 z-50 overflow-y-auto" style={{ width: '480px', background: '#fff', boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', animation: 'slideInRight 200ms ease' }}>
+          <div className="fixed inset-0 z-[200]" style={{ background: 'rgba(0,0,0,0.3)' }} onClick={() => setDetailRelease(null)} />
+          <div className="fixed right-0 top-0 bottom-0 z-[201] overflow-y-auto" style={{ width: '480px', background: '#fff', boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', animation: 'slideInRight 200ms ease' }}>
             <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: '#e2e8f0' }}>
               <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>{detailRelease.name}</h2>
               <button onClick={() => setDetailRelease(null)} style={{ color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}>✕</button>
@@ -646,8 +646,8 @@ export default function AllReleasesPage() {
       {/* ═══ AI INSIGHTS DRAWER ═══ */}
       {isAIDrawerOpen && (
         <>
-          <div className="fixed inset-0 z-40" style={{ background: 'rgba(0,0,0,0.3)' }} onClick={() => setIsAIDrawerOpen(false)} />
-          <div className="fixed right-0 top-0 bottom-0 z-50 overflow-y-auto" style={{ width: '420px', background: '#fff', boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', animation: 'slideInRight 200ms ease' }}>
+          <div className="fixed inset-0 z-[200]" style={{ background: 'rgba(0,0,0,0.3)' }} onClick={() => setIsAIDrawerOpen(false)} />
+          <div className="fixed right-0 top-0 bottom-0 z-[201] overflow-y-auto" style={{ width: '420px', background: '#fff', boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', animation: 'slideInRight 200ms ease' }}>
             <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: '#e2e8f0' }}>
               <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>AI Insights</h2>
               <button onClick={() => setIsAIDrawerOpen(false)} style={{ color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}>✕</button>
