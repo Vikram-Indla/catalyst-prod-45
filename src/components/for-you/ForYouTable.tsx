@@ -1,5 +1,6 @@
 /**
- * For You Work Items Table - Grouped data table with selection & keyboard nav
+ * For You Work Items Table - CATALYST10 v3 spec
+ * Enterprise typography, muted mode badges, row hover with inline "Open →"
  */
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
@@ -24,34 +25,22 @@ const GROUP_LABELS: Record<WorkGroup, string> = {
   EARLIER: 'Earlier',
 };
 
-// Catalyst V5 dark mode compliant - all badges use alpha background + border pattern
-const MODE_STYLES: Record<string, { bg: string; text: string; border: string }> = {
-  OPS: { 
-    bg: 'bg-[rgba(20,184,166,0.15)]', 
-    text: 'text-[#14b8a6]',
-    border: 'border border-[rgba(20,184,166,0.4)]'
-  },
-  DEL: { 
-    bg: 'bg-[rgba(59,130,246,0.15)]', 
-    text: 'text-[#60a5fa]',
-    border: 'border border-[rgba(59,130,246,0.4)]'
-  },
-  PLN: { 
-    bg: 'bg-[rgba(107,114,128,0.15)]', 
-    text: 'text-[#9ca3af]',
-    border: 'border border-[rgba(107,114,128,0.4)]'
-  },
+// CATALYST10 v3 — Sophisticated muted enterprise tones
+const MODE_STYLES: Record<string, { bg: string; text: string }> = {
+  OPS: { bg: 'bg-[hsl(45,96%,89%)]', text: 'text-[hsl(26,90%,37%)]' },
+  DEL: { bg: 'bg-[hsl(152,81%,96%)]', text: 'text-[hsl(164,82%,20%)]' },
+  PLN: { bg: 'bg-[hsl(217,92%,95%)]', text: 'text-[hsl(224,76%,48%)]' },
+  DEV: { bg: 'bg-[hsl(217,92%,95%)]', text: 'text-[hsl(224,76%,48%)]' },
+  QA:  { bg: 'bg-[hsl(234,89%,94%)]', text: 'text-[hsl(234,43%,42%)]' },
 };
 
-
-// Generate consistent avatar color based on name (deterministic)
-const getAvatarStyle = (name: string) => {
-  // Use neutral gray for dark mode consistency per Catalyst V5
-  return {
-    bg: 'var(--border-default-hex)',      // #404040 in dark mode
-    text: 'var(--text-2)',                // #d4d4d4 in dark mode
-    border: 'var(--border-subtle-hex)',   // #333333 in dark mode
-  };
+// Priority color map — deep sophisticated tones
+const PRIORITY_COLORS: Record<string, string> = {
+  Highest: 'hsl(0,72%,51%)',     // red-600 #dc2626
+  High: 'hsl(21,90%,48%)',       // amber-600 #d97706
+  Medium: 'hsl(217,91%,60%)',    // blue-600 #2563eb
+  Low: 'hsl(160,84%,39%)',       // emerald-600 #059669
+  Lowest: 'hsl(160,84%,39%)',    // emerald-600
 };
 
 export function ForYouTable({ 
@@ -158,12 +147,12 @@ export function ForYouTable({
 
   if (groups.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 border border-border/30 dark:border-border/20 rounded-lg bg-surface-0">
-        <div className="w-14 h-14 bg-surface-1 rounded-xl flex items-center justify-center mb-4">
+      <div className="flex flex-col items-center justify-center py-16 border border-[hsl(214,32%,91%)] rounded-lg bg-white">
+        <div className="w-14 h-14 bg-[hsl(210,40%,96%)] rounded-xl flex items-center justify-center mb-4">
           <span className="text-2xl">📋</span>
         </div>
-        <p className="text-sm font-medium text-text-primary mb-1">No work items found</p>
-        <p className="text-xs text-text-muted">Try adjusting your filters or search</p>
+        <p className="text-[13px] font-semibold text-[hsl(222,47%,11%)] mb-1">No work items found</p>
+        <p className="text-[11px] text-[hsl(215,16%,47%)]">Try adjusting your filters or search</p>
       </div>
     );
   }
@@ -175,33 +164,33 @@ export function ForYouTable({
       ref={tableRef}
       tabIndex={0}
       className={cn(
-        "border border-border/30 dark:border-border/20 rounded-lg overflow-hidden outline-none",
-        "focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+        "border border-[hsl(214,32%,91%)] rounded-lg overflow-hidden outline-none",
+        "focus-visible:ring-2 focus-visible:ring-[hsl(217,91%,60%)] focus-visible:ring-offset-2"
       )}
     >
-      {/* Table Header - Catalyst V5: using table header bg token */}
-      <div className="grid grid-cols-[40px_100px_1fr_80px_90px_160px] gap-4 px-4 py-3 bg-[var(--table-header-bg)] border-b border-[var(--border-color)]">
+      {/* Column Headers — 11px/600 slate-500 uppercase tracking-wide */}
+      <div className="grid grid-cols-[40px_120px_1fr_80px_80px_160px] gap-4 px-4 py-3 bg-[hsl(210,40%,98%)] border-b border-[hsl(214,32%,91%)]">
         <div className="flex items-center">
           <Checkbox 
             checked={isAllSelected}
             onCheckedChange={handleSelectAll}
-            className={cn(isPartiallySelected && "data-[state=unchecked]:bg-brand-primary/20")}
+            className={cn(isPartiallySelected && "data-[state=unchecked]:bg-[hsl(217,91%,60%)]/20")}
             aria-label="Select all items"
           />
         </div>
-        <span className="text-xs font-semibold text-text-muted uppercase tracking-wide whitespace-nowrap flex items-center">
+        <span className="text-[11px] font-semibold text-[hsl(215,16%,47%)] uppercase tracking-[0.06em] flex items-center">
           Key
         </span>
-        <span className="text-xs font-semibold text-text-muted uppercase tracking-wide whitespace-nowrap flex items-center">
+        <span className="text-[11px] font-semibold text-[hsl(215,16%,47%)] uppercase tracking-[0.06em] flex items-center">
           Summary
         </span>
-        <span className="text-xs font-semibold text-text-muted uppercase tracking-wide whitespace-nowrap flex items-center">
+        <span className="text-[11px] font-semibold text-[hsl(215,16%,47%)] uppercase tracking-[0.06em] flex items-center">
           Mode
         </span>
-        <span className="text-xs font-semibold text-text-muted uppercase tracking-wide whitespace-nowrap flex items-center">
+        <span className="text-[11px] font-semibold text-[hsl(215,16%,47%)] uppercase tracking-[0.06em] flex items-center">
           Updated
         </span>
-        <span className="text-xs font-semibold text-text-muted uppercase tracking-wide whitespace-nowrap flex items-center">
+        <span className="text-[11px] font-semibold text-[hsl(215,16%,47%)] uppercase tracking-[0.06em] flex items-center">
           Assignee
         </span>
       </div>
@@ -209,9 +198,9 @@ export function ForYouTable({
       {/* Table Body - Grouped */}
       {groups.map((group) => (
         <div key={group}>
-          {/* Group Header - Catalyst V5 dark mode: muted text with blue accent bar */}
-          <div className="flex items-center px-4 py-2.5 bg-[var(--surface-muted)] border-l-[3px] border-[var(--brand-primary-hex)]">
-            <span className="text-[11px] font-semibold text-[var(--text-4)] uppercase tracking-[0.08em]">
+          {/* Group Header — 11px/600 slate-500 uppercase, blue left accent */}
+          <div className="flex items-center px-4 py-2 bg-[hsl(210,40%,98%)] border-l-[3px] border-[hsl(217,91%,60%)]">
+            <span className="text-[11px] font-semibold text-[hsl(215,16%,47%)] uppercase tracking-[0.06em]">
               {GROUP_LABELS[group]}
             </span>
           </div>
@@ -222,6 +211,7 @@ export function ForYouTable({
             const currentRowIndex = rowIndex;
             const isSelected = selectedIds.has(item.id);
             const isFocused = focusedIndex === currentRowIndex;
+            const priorityColor = PRIORITY_COLORS[item.level] || PRIORITY_COLORS.Medium;
 
             return (
               <div
@@ -232,78 +222,80 @@ export function ForYouTable({
                   onRowClick(item.id);
                 }}
                 className={cn(
-                  "grid grid-cols-[40px_100px_1fr_80px_90px_160px] gap-4 px-4 py-3 cursor-pointer transition-colors group",
-                  "border-b border-border-subtle",
+                  "relative grid grid-cols-[40px_120px_1fr_80px_80px_160px] gap-4 px-4 py-3 cursor-pointer transition-[background] duration-100 group",
+                  "border-b border-[hsl(210,40%,96%)]",
                   indexInGroup === groupedItems[group].length - 1 && "border-b-0",
-                  isSelected && "bg-[hsl(var(--surface-active))]",
-                  isFocused && "ring-2 ring-inset ring-brand-primary",
-                  !isSelected && "hover:bg-surface-hover",
+                  isSelected && "bg-[hsl(217,91%,95%)]",
+                  isFocused && "ring-2 ring-inset ring-[hsl(217,91%,60%)]",
+                  !isSelected && "hover:bg-[hsl(210,40%,98%)]",
                   isInitialLoad && "animate-fade-in",
                 )}
                 style={isInitialLoad ? { animationDelay: `${currentRowIndex * 50}ms` } : undefined}
               >
-                {/* Checkbox */}
+                {/* Checkbox — hidden until hover */}
                 <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
                   <Checkbox 
                     checked={isSelected}
                     onCheckedChange={(checked) => handleSelectItem(item.id, !!checked)}
+                    className={cn(
+                      "w-[15px] h-[15px] rounded border-[1.5px] border-[hsl(214,32%,82%)] transition-opacity duration-100",
+                      !isSelected && "opacity-0 group-hover:opacity-100"
+                    )}
                     aria-label={`Select ${item.key}`}
                   />
                 </div>
 
-                {/* Key with Jira Issue Type Icon */}
-                <div className="flex items-center gap-2.5">
+                {/* Key with priority square + Jira icon */}
+                <div className="flex items-center gap-2">
+                  {/* Priority square — 8×8 deep tones */}
+                  <div 
+                    className="w-2 h-2 rounded-[2px] shrink-0"
+                    style={{ backgroundColor: priorityColor }}
+                  />
                   <JiraIssueTypeIcon issueType={item.issueType} size={14} />
                   <a 
-                    className="font-mono text-[13px] font-medium text-[hsl(var(--link-color))] hover:text-[hsl(var(--link-color-hover))] hover:underline cursor-pointer"
+                    className="text-[13px] font-medium text-[hsl(215,25%,27%)] tabular-nums font-[Inter,monospace] hover:underline cursor-pointer"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {item.key}
                   </a>
                 </div>
 
-                {/* Summary - Catalyst V5 text token */}
-                <div className="text-sm font-medium text-[var(--text-1)] truncate">
+                {/* Summary — 13px/600 slate-900 */}
+                <div className="text-[13px] font-semibold text-[hsl(222,47%,11%)] truncate flex items-center">
                   {item.summary}
                 </div>
 
-                {/* Mode Badge - Catalyst V5 compliant */}
+                {/* Mode Badge — Muted enterprise tones */}
                 <div className="flex items-center">
                   <span className={cn(
-                    "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold uppercase",
-                    MODE_STYLES[item.mode]?.bg || 'bg-[var(--status-muted-bg)]',
-                    MODE_STYLES[item.mode]?.text || 'text-[var(--text-4)]',
-                    MODE_STYLES[item.mode]?.border || 'border border-[var(--status-muted-border)]'
+                    "inline-flex items-center px-2 py-0.5 rounded-[5px] text-[11px] font-semibold",
+                    MODE_STYLES[item.mode]?.bg || 'bg-[hsl(210,40%,96%)]',
+                    MODE_STYLES[item.mode]?.text || 'text-[hsl(215,16%,47%)]',
                   )}>
                     {item.mode}
                   </span>
                 </div>
 
-                {/* Updated */}
-                <div className="flex items-center text-[13px] text-text-muted">
+                {/* Updated — 13px/500 slate-700 tabular-nums */}
+                <div className="flex items-center text-[13px] font-medium text-[hsl(215,25%,27%)] tabular-nums">
                   {item.updatedAt}
                 </div>
 
-                {/* Assignee with actions - Catalyst V5 neutral avatar */}
+                {/* Assignee — avatar + name */}
                 <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                    <div 
-                      className="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-semibold shrink-0"
-                      style={{ 
-                        backgroundColor: getAvatarStyle(item.assignee.name).bg,
-                        color: getAvatarStyle(item.assignee.name).text,
-                        border: `1px solid ${getAvatarStyle(item.assignee.name).border}`
-                      }}
-                    >
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    {/* Avatar — 24px circle, blue tint */}
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 bg-[hsl(217,92%,95%)] text-[hsl(217,91%,60%)]">
                       {item.assignee.initials}
                     </div>
-                    <span className="text-[13px] text-[var(--text-2)] truncate">
+                    <span className="text-[13px] font-medium text-[hsl(215,25%,27%)] truncate">
                       {item.assignee.name}
                     </span>
                   </div>
                   
-                  {/* Row actions - visible on hover */}
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {/* Star — visible on hover */}
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-100">
                     {onStarToggle && (
                       <button
                         onClick={(e) => {
@@ -311,16 +303,32 @@ export function ForYouTable({
                           onStarToggle(item.id);
                         }}
                         className={cn(
-                          "p-1 rounded hover:bg-surface-hover transition-colors",
-                          item.starred ? "text-status-warning" : "text-text-muted"
+                          "p-1 rounded hover:bg-[hsl(210,40%,96%)] transition-colors",
+                          item.starred ? "text-[hsl(45,93%,47%)]" : "text-[hsl(215,16%,47%)]"
                         )}
                         aria-label={item.starred ? "Unstar item" : "Star item"}
                       >
-                        <Star className={cn("w-4 h-4", item.starred && "fill-current")} />
+                        <Star className={cn("w-3.5 h-3.5", item.starred && "fill-current")} />
                       </button>
                     )}
                   </div>
                 </div>
+
+                {/* Inline "Open →" action — appears on hover */}
+                <span 
+                  className={cn(
+                    "absolute right-4 top-1/2 -translate-y-1/2 z-10",
+                    "text-[11px] font-medium text-[hsl(217,91%,60%)] bg-[hsl(219,100%,97%)] px-2.5 py-1 rounded-[5px]",
+                    "opacity-0 group-hover:opacity-100 transition-all duration-[120ms] cursor-pointer",
+                    "hover:bg-[hsl(217,92%,95%)] hover:text-[hsl(224,76%,48%)]"
+                  )}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRowClick(item.id);
+                  }}
+                >
+                  Open →
+                </span>
               </div>
             );
           })}

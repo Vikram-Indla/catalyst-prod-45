@@ -194,7 +194,7 @@ export default function ForYouPage() {
 
         {/* Work Section */}
         <section className="bg-surface-0">
-          <h2 className="text-sm font-semibold text-text-primary mb-4">Your work</h2>
+          <h2 className="text-[14px] font-semibold text-[hsl(222,47%,11%)] mb-4">Your work</h2>
 
           {/* Controls Row */}
           <div className="flex items-center gap-4 mb-4">
