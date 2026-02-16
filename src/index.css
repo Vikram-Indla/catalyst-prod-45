@@ -5133,3 +5133,82 @@ input[type="checkbox"]:checked {
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   RELEASEHUB TABLE — 36px Row Height + Dead Space Fix
+   ═══════════════════════════════════════════════════════════════ */
+
+/* FIX 1: Enforce 36px rows */
+.all-releases-table tbody tr {
+  height: 36px !important;
+  max-height: 36px !important;
+}
+
+.all-releases-table tbody td {
+  height: 36px !important;
+  max-height: 36px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  vertical-align: middle !important;
+  font-size: 13px !important;
+  line-height: 1 !important;
+}
+
+.all-releases-table thead th {
+  height: 36px !important;
+  max-height: 36px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  font-size: 11px !important;
+  line-height: 1 !important;
+}
+
+/* Status pills inside 36px rows */
+.all-releases-table [class*="badge"],
+.all-releases-table [class*="pill"],
+.all-releases-table [class*="status"] {
+  padding: 1px 8px !important;
+  font-size: 11px !important;
+  height: auto !important;
+  max-height: 22px !important;
+  line-height: 1.4 !important;
+}
+
+/* Version badges */
+.all-releases-table [class*="version"] {
+  padding: 0px 5px !important;
+  font-size: 10px !important;
+  max-height: 20px !important;
+}
+
+/* Progress bars */
+.all-releases-table [class*="progress"] {
+  height: 4px !important;
+}
+
+/* Health badges */
+.all-releases-table [class*="health"] span,
+.all-releases-table [class*="health"] div {
+  padding: 1px 6px !important;
+  font-size: 11px !important;
+  max-height: 22px !important;
+}
+
+/* FIX 2: Remove dead space — fill viewport, pin pagination */
+.all-releases-page {
+  display: flex !important;
+  flex-direction: column !important;
+  height: calc(100vh - var(--app-header-h, 56px)) !important;
+  overflow: hidden !important;
+}
+
+.all-releases-page .all-releases-content {
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+}
+
+.all-releases-page .all-releases-pagination {
+  flex-shrink: 0 !important;
+  margin-top: 0 !important;
+}
