@@ -284,9 +284,9 @@ export function ForYouTable({
                   {item.updatedAt}
                 </div>
 
-                {/* Assignee — avatar + name */}
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                {/* Assignee — avatar + name + inline Open → */}
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="flex items-center gap-2.5 min-w-0">
                     {/* Avatar — rounded-xl square, profile photo with initials fallback (Capacity Planner style) */}
                     {(() => {
                       const avatarUrl = nameAvatarMap.get(item.assignee.name);
@@ -306,42 +306,39 @@ export function ForYouTable({
                       {item.assignee.name}
                     </span>
                   </div>
-                  
-                  {/* Star — visible on hover */}
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-100">
-                    {onStarToggle && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onStarToggle(item.id);
-                        }}
-                        className={cn(
-                          "p-1 rounded hover:bg-[hsl(210,40%,96%)] transition-colors",
-                          item.starred ? "text-[hsl(45,93%,47%)]" : "text-[hsl(215,16%,47%)]"
-                        )}
-                        aria-label={item.starred ? "Unstar item" : "Star item"}
-                      >
-                        <Star className={cn("w-3.5 h-3.5", item.starred && "fill-current")} />
-                      </button>
-                    )}
-                  </div>
-                </div>
 
-                {/* Inline "Open →" action — appears on hover */}
-                <span 
-                  className={cn(
-                    "absolute right-4 top-1/2 -translate-y-1/2 z-10",
-                    "text-[11px] font-medium text-[hsl(217,91%,60%)] bg-[hsl(219,100%,97%)] px-2.5 py-1 rounded-[5px]",
-                    "opacity-0 group-hover:opacity-100 transition-all duration-[120ms] cursor-pointer",
-                    "hover:bg-[hsl(217,92%,95%)] hover:text-[hsl(224,76%,48%)]"
+                  {/* Inline "Open →" — appears on hover, next to assignee name */}
+                  <span 
+                    className={cn(
+                      "shrink-0 text-[11px] font-medium text-[hsl(217,91%,60%)] bg-[hsl(219,100%,97%)] px-2.5 py-1 rounded-[5px]",
+                      "opacity-0 group-hover:opacity-100 transition-all duration-[120ms] cursor-pointer",
+                      "hover:bg-[hsl(217,92%,95%)] hover:text-[hsl(224,76%,48%)]"
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRowClick(item.id);
+                    }}
+                  >
+                    Open →
+                  </span>
+
+                  {/* Star — visible on hover */}
+                  {onStarToggle && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onStarToggle(item.id);
+                      }}
+                      className={cn(
+                        "shrink-0 p-1 rounded hover:bg-[hsl(210,40%,96%)] transition-colors opacity-0 group-hover:opacity-100",
+                        item.starred ? "text-[hsl(45,93%,47%)]" : "text-[hsl(215,16%,47%)]"
+                      )}
+                      aria-label={item.starred ? "Unstar item" : "Star item"}
+                    >
+                      <Star className={cn("w-3.5 h-3.5", item.starred && "fill-current")} />
+                    </button>
                   )}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRowClick(item.id);
-                  }}
-                >
-                  Open →
-                </span>
+                </div>
               </div>
             );
           })}
