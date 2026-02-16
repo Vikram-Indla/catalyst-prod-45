@@ -80,11 +80,11 @@ const STATUS_DISPLAY: Record<string, { dot: string; bg: string; text: string; la
   planned:  { dot: '#94a3b8', bg: '#f1f5f9', text: '#475569', label: 'Planned' },
   planning: { dot: '#94a3b8', bg: '#f1f5f9', text: '#475569', label: 'Planning' },
   active:   { dot: '#2563eb', bg: '#dbeafe', text: '#1e40af', label: 'Active' },
-  development: { dot: '#6366f1', bg: '#e0e7ff', text: '#3730a3', label: 'Development' },
-  staging:  { dot: '#6366f1', bg: '#e0e7ff', text: '#3730a3', label: 'Staging' },
-  testing:  { dot: '#d97706', bg: '#fef3c7', text: '#92400e', label: 'Testing' },
-  uat:      { dot: '#d97706', bg: '#fef3c7', text: '#92400e', label: 'UAT' },
-  released: { dot: '#0d9488', bg: '#ccfbf1', text: '#115e59', label: 'Released' },
+  development: { dot: '#2563eb', bg: 'rgba(37,99,235,0.1)', text: '#2563eb', label: 'Development' },
+  staging:  { dot: '#8b5cf6', bg: 'rgba(139,92,246,0.1)', text: '#8b5cf6', label: 'Staging' },
+  testing:  { dot: '#d97706', bg: 'rgba(217,119,6,0.1)', text: '#d97706', label: 'Testing' },
+  uat:      { dot: '#f97316', bg: 'rgba(249,115,22,0.1)', text: '#f97316', label: 'UAT' },
+  released: { dot: '#0d9488', bg: 'rgba(13,148,136,0.1)', text: '#0d9488', label: 'Released' },
 };
 
 function getStatusConfig(status: string) {
@@ -564,7 +564,9 @@ export default function AllReleasesPage() {
           <button
             onClick={() => setIsAIDrawerOpen(true)}
             className="flex items-center gap-1.5 transition-colors"
-            style={{ border: '1px solid #6366f1', borderRadius: '16px', padding: '4px 12px', color: '#6366f1', fontSize: '12px', fontWeight: 600, background: 'transparent', cursor: 'pointer' }}
+            style={{ border: '1px solid rgba(139,92,246,0.3)', borderRadius: '16px', padding: '4px 12px', color: '#8b5cf6', fontSize: '12px', fontWeight: 600, background: 'transparent', cursor: 'pointer' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,92,246,0.05)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             <Sparkles className="w-3 h-3" /> AI Insights
           </button>
@@ -860,23 +862,32 @@ export default function AllReleasesPage() {
           <div className="fixed right-0 top-0 bottom-0 z-[201] overflow-y-auto" style={{ width: '400px', background: '#fff', boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', animation: 'slideInRight 200ms ease' }}>
             <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: '#e2e8f0' }}>
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4" style={{ color: '#6366f1' }} />
+                <Sparkles className="w-4 h-4" style={{ color: '#8b5cf6' }} />
                 <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>AI Insights</h2>
               </div>
               <button onClick={() => setIsAIDrawerOpen(false)} style={{ color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}>✕</button>
             </div>
             <div className="px-6 py-4 space-y-3">
-              {generateDynamicInsights(releases).map((insight, i) => (
-                <div key={i} style={{ padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fafafa' }}>
-                  <div className="flex items-start gap-2">
-                    <span style={{ fontSize: '16px' }}>{insight.icon}</span>
-                    <div>
-                      <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>{insight.title}</div>
-                      <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px', lineHeight: '1.5' }}>{insight.desc}</div>
+              {generateDynamicInsights(releases).map((insight, i) => {
+                const INSIGHT_ICONS: Record<string, React.ReactNode> = {
+                  critical: <AlertTriangle className="w-4 h-4" style={{ color: '#ef4444' }} />,
+                  warning: <AlertTriangle className="w-4 h-4" style={{ color: '#d97706' }} />,
+                  chart: <ArrowUpDown className="w-4 h-4" style={{ color: '#2563eb' }} />,
+                  check: <Check className="w-4 h-4" style={{ color: '#0d9488' }} />,
+                  info: <Sparkles className="w-4 h-4" style={{ color: '#8b5cf6' }} />,
+                };
+                return (
+                  <div key={i} style={{ padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fafafa' }}>
+                    <div className="flex items-start gap-2">
+                      <div className="mt-0.5">{INSIGHT_ICONS[insight.iconType]}</div>
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>{insight.title}</div>
+                        <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px', lineHeight: '1.5' }}>{insight.desc}</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </>
@@ -929,12 +940,12 @@ export default function AllReleasesPage() {
 
 // ─── Dynamic AI Insights (generated from real data) ─────────────
 function generateDynamicInsights(releases: ViewRelease[]) {
-  const insights: { icon: string; title: string; desc: string }[] = [];
+  const insights: { iconType: 'critical' | 'warning' | 'chart' | 'check' | 'info'; title: string; desc: string }[] = [];
 
   const critical = releases.filter(r => r.health < 40);
   if (critical.length > 0) {
     insights.push({
-      icon: '🔴',
+      iconType: 'critical',
       title: `${critical.length} Release${critical.length > 1 ? 's' : ''} in Critical Health`,
       desc: `${critical.map(r => r.name).join(', ')} ${critical.length > 1 ? 'have' : 'has'} health below 40. Consider reallocating testing resources.`,
     });
@@ -943,7 +954,7 @@ function generateDynamicInsights(releases: ViewRelease[]) {
   const overdue = releases.filter(r => r.overdue);
   if (overdue.length > 0) {
     insights.push({
-      icon: '⚠️',
+      iconType: 'warning',
       title: `${overdue.length} Overdue Release${overdue.length > 1 ? 's' : ''}`,
       desc: `${overdue.map(r => r.name).join(', ')} ${overdue.length > 1 ? 'are' : 'is'} past target date. Escalation recommended.`,
     });
@@ -952,7 +963,7 @@ function generateDynamicInsights(releases: ViewRelease[]) {
   const noCoverage = releases.filter(r => r.coverage === null || r.coverage === 0);
   if (noCoverage.length > 0) {
     insights.push({
-      icon: '📊',
+      iconType: 'chart',
       title: 'Coverage Gap',
       desc: `${noCoverage.length} of ${releases.length} releases have no test coverage data. Run initial test suites for baseline metrics.`,
     });
@@ -961,7 +972,7 @@ function generateDynamicInsights(releases: ViewRelease[]) {
   const completed = releases.filter(r => r.status === 'released' && r.health >= 80);
   if (completed.length > 0) {
     insights.push({
-      icon: '✅',
+      iconType: 'check',
       title: `${completed.length} Successfully Released`,
       desc: `${completed.map(r => r.name).join(', ')} completed with healthy metrics. Ready for post-release retrospective.`,
     });
@@ -969,7 +980,7 @@ function generateDynamicInsights(releases: ViewRelease[]) {
 
   if (insights.length === 0) {
     insights.push({
-      icon: '💡',
+      iconType: 'info',
       title: 'All Looking Good',
       desc: 'No immediate concerns detected across your release portfolio.',
     });
@@ -1022,14 +1033,20 @@ function SortableHeader({ label, field, current, direction, onClick, style }: {
   );
 }
 
-function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick }: {
-  release: ViewRelease; index?: number; selected: boolean; onToggle: () => void; onClick: () => void;
+function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavigate }: {
+  release: ViewRelease; index?: number; selected: boolean; onToggle: () => void; onClick: () => void; onNavigate?: () => void;
 }) {
   const cellStyle: React.CSSProperties = { padding: '0 16px', height: '36px', maxHeight: '36px', lineHeight: '36px', verticalAlign: 'middle', whiteSpace: 'nowrap' as const };
+  // Test bar color based on pass ratio
+  const testRatio = r.testsTotal > 0 ? r.testsPass / r.testsTotal : 0;
+  const testBarColor = testRatio <= 0.3 ? '#ef4444' : testRatio <= 0.6 ? '#d97706' : '#0d9488';
+  // Coverage color
+  const covColor = r.coverage === null ? '#94a3b8' : r.coverage <= 30 ? '#ef4444' : r.coverage <= 60 ? '#d97706' : '#0d9488';
+
   return (
     <tr
       onClick={onClick}
-      className="group cursor-pointer transition-colors"
+      className="group cursor-pointer transition-colors hover:bg-muted/50"
       style={{
         height: '36px', maxHeight: '36px', borderBottom: '1px solid #f1f5f9',
         background: selected ? '#eff6ff' : undefined,
@@ -1068,8 +1085,8 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick }: {
           <div className="flex" style={{ width: '60px', height: '4px', borderRadius: '2px', overflow: 'hidden', background: '#e2e8f0' }}>
             {r.testsTotal > 0 && (
               <>
-                <div style={{ width: `${(r.testsPass / r.testsTotal) * 100}%`, background: '#0d9488' }} />
-                <div style={{ width: `${((r.testsTotal - r.testsPass) / r.testsTotal) * 100}%`, background: '#ef4444' }} />
+                <div style={{ width: `${testRatio * 100}%`, background: testBarColor }} />
+                <div style={{ width: `${(1 - testRatio) * 100}%`, background: '#ef4444' }} />
               </>
             )}
           </div>
@@ -1079,8 +1096,17 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick }: {
       <td style={{ ...cellStyle, width: '70px', fontSize: '13px', fontWeight: r.defects > 0 ? 600 : 400, color: r.defects > 0 ? '#ef4444' : '#94a3b8', fontFamily: "'JetBrains Mono', monospace" }}>
         {r.defects > 0 ? r.defects : '—'}
       </td>
-      <td style={{ ...cellStyle, width: '80px', fontSize: '13px', fontWeight: 400, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>
-        {r.coverage !== null ? `${r.coverage}%` : '—'}
+      <td style={{ ...cellStyle, width: '100px' }}>
+        {r.coverage !== null ? (
+          <div className="flex items-center gap-2">
+            <div style={{ width: '48px', height: '4px', background: '#e2e8f0', borderRadius: '2px', overflow: 'hidden' }}>
+              <div style={{ width: `${r.coverage}%`, height: '100%', background: covColor, borderRadius: '2px' }} />
+            </div>
+            <span style={{ fontSize: '11px', fontWeight: 500, color: covColor, fontFamily: "'JetBrains Mono', monospace" }}>{r.coverage}%</span>
+          </div>
+        ) : (
+          <span style={{ fontSize: '13px', color: '#94a3b8' }}>—</span>
+        )}
       </td>
       <td style={{ ...cellStyle, width: '80px' }}>
         <div className="flex items-center gap-1.5">
@@ -1091,8 +1117,17 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick }: {
       <td style={{ ...cellStyle, width: '60px', fontSize: '12px', fontWeight: r.overdue || r.status === 'released' ? 600 : 500, color: r.status === 'released' ? '#0d9488' : r.overdue ? '#ef4444' : '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>
         {r.status === 'released' ? 'Released' : `${r.daysRemaining}d`}
       </td>
-      <td style={{ ...cellStyle, width: '100px', fontSize: '13px', fontWeight: 400, color: r.owner === 'Unassigned' ? '#94a3b8' : '#334155' }}>
-        {r.owner}
+      <td style={{ ...cellStyle, width: '100px' }}>
+        {r.owner === 'Unassigned' ? (
+          <div className="flex items-center gap-1.5" style={{ color: '#94a3b8' }}>
+            <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: '#f1f5f9', border: '1px dashed #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Plus className="w-3 h-3" style={{ color: '#94a3b8' }} />
+            </div>
+            <span style={{ fontSize: '12px' }}>Assign</span>
+          </div>
+        ) : (
+          <span style={{ fontSize: '13px', fontWeight: 400, color: '#334155' }}>{r.owner}</span>
+        )}
       </td>
     </tr>
   );
@@ -1238,10 +1273,10 @@ function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => voi
 
 // ─── Cards View ────────────────────────────────────────────────
 const HEALTH_BADGE: Record<string, { bg: string; text: string }> = {
-  critical: { bg: '#fee2e2', text: '#991b1b' },
-  'at-risk': { bg: '#fef3c7', text: '#92400e' },
-  attention: { bg: '#dbeafe', text: '#1e40af' },
-  healthy: { bg: '#ccfbf1', text: '#115e59' },
+  critical: { bg: 'rgba(239,68,68,0.1)', text: '#ef4444' },
+  'at-risk': { bg: 'rgba(217,119,6,0.1)', text: '#d97706' },
+  attention: { bg: 'rgba(37,99,235,0.1)', text: '#2563eb' },
+  healthy: { bg: 'rgba(13,148,136,0.1)', text: '#0d9488' },
 };
 
 function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
@@ -1294,23 +1329,40 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
               </div>
               <div className="flex items-center gap-2 flex-wrap" style={{ fontSize: '12px' }}>
                 <StatusPill status={r.status} />
-                <span style={{ color: '#64748b' }}>📅 {r.targetDate}</span>
+                <span style={{ color: '#64748b' }}><Calendar className="w-3 h-3 inline-block mr-0.5" style={{ verticalAlign: 'middle' }} /> {r.targetDate}</span>
                 {r.overdue && (
-                  <span style={{ fontSize: '10px', fontWeight: 600, color: '#ef4444', background: '#fee2e2', borderRadius: '8px', padding: '1px 6px' }}>
+                  <span style={{ fontSize: '10px', fontWeight: 600, color: '#ef4444', background: 'rgba(239,68,68,0.1)', borderRadius: '8px', padding: '1px 6px' }}>
                     {r.daysRemaining}d overdue
                   </span>
                 )}
-                <span className="ml-auto" style={{ color: '#94a3b8', fontSize: '12px' }}>{r.owner}</span>
+                {r.owner === 'Unassigned' ? (
+                  <div className="ml-auto flex items-center gap-1" style={{ color: '#94a3b8' }}>
+                    <div style={{ width: '20px', height: '20px', borderRadius: '50%', background: '#f1f5f9', border: '1px dashed #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Plus className="w-2.5 h-2.5" style={{ color: '#94a3b8' }} />
+                    </div>
+                  </div>
+                ) : (
+                  <span className="ml-auto" style={{ color: '#334155', fontSize: '12px' }}>{r.owner}</span>
+                )}
               </div>
               <div className="flex items-center gap-4" style={{ borderTop: '1px solid #e2e8f0', marginTop: '8px', paddingTop: '8px' }}>
                 <span style={{ fontSize: '11px', color: '#64748b' }}>
                   <span style={{ fontWeight: 600, color: '#334155' }}>{r.testsPass}/{r.testsTotal}</span> Tests
                 </span>
                 <span style={{ fontSize: '11px', color: '#64748b' }}>
-                  <span style={{ fontWeight: 600, color: r.defects > 0 ? '#ef4444' : '#334155' }}>{r.defects}</span> Defects
+                  <span style={{ fontWeight: 600, color: r.defects > 0 ? '#ef4444' : '#64748b' }}>{r.defects}</span> Defects
                 </span>
                 <span style={{ fontSize: '11px', color: '#64748b' }}>
-                  <span style={{ fontWeight: 600, color: '#334155' }}>{r.coverage !== null ? `${r.coverage}%` : '—'}</span> Coverage
+                  {r.coverage !== null ? (
+                    <span className="inline-flex items-center gap-1">
+                      <span style={{ display: 'inline-block', width: '32px', height: '3px', background: '#e2e8f0', borderRadius: '2px', overflow: 'hidden', verticalAlign: 'middle' }}>
+                        <span style={{ display: 'block', width: `${r.coverage}%`, height: '100%', background: r.coverage <= 30 ? '#ef4444' : r.coverage <= 60 ? '#d97706' : '#0d9488', borderRadius: '2px' }} />
+                      </span>
+                      <span style={{ fontWeight: 600, color: '#334155' }}>{r.coverage}%</span>
+                    </span>
+                  ) : (
+                    <span style={{ fontWeight: 600, color: '#94a3b8' }}>—</span>
+                  )} Coverage
                 </span>
               </div>
             </div>
@@ -1382,12 +1434,11 @@ function TimelineView({ releases, onBarClick }: {
               key={r.id}
               onClick={() => onBarClick(r)}
               className="flex items-center gap-2 cursor-pointer transition-colors hover:bg-[#f8fafc]"
-              style={{ height: '48px', padding: '0 12px', borderBottom: '1px solid #f1f5f9' }}
+              style={{ height: '36px', padding: '0 12px', borderBottom: '1px solid #f1f5f9' }}
             >
-              <span style={{ padding: '1px 6px', background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '4px', fontSize: '11px', fontWeight: 600, flexShrink: 0 }}>{r.version}</span>
-              <div className="min-w-0">
-                <div className="truncate" style={{ fontSize: '13px', fontWeight: 500, color: '#0f172a' }}>{r.name}</div>
-                <div style={{ fontSize: '10px', color: '#64748b' }}>{getStatusConfig(r.status).label}</div>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: getHealthColor(r.health), flexShrink: 0 }} />
+              <div className="min-w-0 flex-1">
+                <div className="truncate" style={{ fontSize: '12px', fontWeight: 500, color: '#0f172a', lineHeight: '36px' }}>{r.name}</div>
               </div>
             </div>
           ))}
@@ -1407,34 +1458,41 @@ function TimelineView({ releases, onBarClick }: {
             <span style={{ position: 'absolute', top: '-16px', left: '-12px', fontSize: '10px', fontWeight: 600, color: '#ef4444' }}>Today</span>
           </div>
 
-          {releases.map((r, i) => (
-            <div key={r.id} className="relative" style={{ height: '48px', borderBottom: '1px solid #f1f5f9' }}>
-              <div
-                onClick={() => onBarClick(r)}
-                onMouseMove={e => handleBarHover(e, r)}
-                onMouseLeave={e => { setHoveredRelease(null); e.currentTarget.style.filter = ''; }}
-                className="absolute cursor-pointer"
-                style={{
-                  left: `${r.barLeft}%`, width: `${r.barWidth}%`,
-                  height: '28px', top: '10px', borderRadius: '4px',
-                  background: getTimelineBarColor(r),
-                  animation: 'barGrow 0.4s ease-out both',
-                  animationDelay: `${i * 40}ms`,
-                  transformOrigin: 'left center',
-                  transition: 'filter 100ms',
-                  zIndex: 1,
-                  overflow: 'hidden',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(0.88)')}
-              >
-                {/* Progress fill inside bar */}
-                {r.progress > 0 && (
-                  <div style={{ width: `${r.progress}%`, height: '100%', background: 'rgba(255,255,255,0.35)', position: 'absolute', left: 0, top: 0 }} />
-                )}
-                <span style={{ fontSize: '10px', fontWeight: 600, color: '#fff', padding: '0 6px', lineHeight: '28px', position: 'relative', zIndex: 1 }}>{r.progress}%</span>
+          {releases.map((r, i) => {
+            const isPlanned = r.progress === 0 && r.status !== 'released';
+            const barColor = getTimelineBarColor(r);
+            return (
+              <div key={r.id} className="relative" style={{ height: '36px', borderBottom: '1px solid #f1f5f9' }}>
+                <div
+                  onClick={() => onBarClick(r)}
+                  onMouseMove={e => handleBarHover(e, r)}
+                  onMouseLeave={e => { setHoveredRelease(null); e.currentTarget.style.filter = ''; }}
+                  className="absolute cursor-pointer"
+                  style={{
+                    left: `${r.barLeft}%`, width: `${r.barWidth}%`,
+                    height: '20px', top: '8px', borderRadius: '4px',
+                    background: isPlanned ? 'transparent' : barColor,
+                    border: isPlanned ? `1.5px dashed #cbd5e1` : 'none',
+                    animation: 'barGrow 0.4s ease-out both',
+                    animationDelay: `${i * 40}ms`,
+                    transformOrigin: 'left center',
+                    transition: 'filter 100ms',
+                    zIndex: 1,
+                    overflow: 'hidden',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(0.88)')}
+                >
+                  {/* Progress fill inside bar */}
+                  {r.progress > 0 && !isPlanned && (
+                    <div style={{ width: `${r.progress}%`, height: '100%', background: 'rgba(255,255,255,0.35)', position: 'absolute', left: 0, top: 0 }} />
+                  )}
+                  <span style={{ fontSize: '10px', fontWeight: 600, color: isPlanned ? '#94a3b8' : '#fff', padding: '0 6px', lineHeight: '20px', position: 'relative', zIndex: 1 }}>
+                    {r.progress}%
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
