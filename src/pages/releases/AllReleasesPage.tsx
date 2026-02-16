@@ -9,6 +9,7 @@ import {
   Search, X, ChevronDown, ChevronUp, Download, Plus, Sparkles,
   LayoutGrid, Clock, Table2, FileText, FileSpreadsheet, FileDown,
   Clipboard, Check, Loader2, ArrowUpDown, Calendar, Rocket,
+  AlertTriangle, Package, RefreshCw,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAllReleases } from '@/hooks/releases/useAllReleases';
@@ -165,12 +166,23 @@ export default function AllReleasesPage() {
   const exportRef = useRef<HTMLDivElement>(null);
 
   // ─── Fetch real data ──────────────────────────────────────────
-  const { data, isLoading } = useAllReleases({
+  const { data, isLoading, isError, error, refetch } = useAllReleases({
     filter: { status: [], health: [], search: '' },
     sort: { column: 'name', direction: 'asc' },
     page: 0,
     pageSize: 100,
   });
+
+  // ─── Realtime subscription ─────────────────────────────────
+  useEffect(() => {
+    const channel = supabase
+      .channel(`releases-live-${crypto.randomUUID().slice(0, 6)}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'releases' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['all-releases'] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [queryClient]);
 
   const releases = useMemo(() => {
     if (!data?.releases) return [];
@@ -223,15 +235,16 @@ export default function AllReleasesPage() {
 
   const bulkDeleteMutation = useMutation({
     mutationFn: async (ids: string[]) => {
+      // Soft delete — set deleted_at instead of hard DELETE
       const { error } = await supabase
         .from('releases')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() } as any)
         .in('id', ids);
       if (error) throw new Error(error.message);
     },
     onSuccess: (_, ids) => {
       queryClient.invalidateQueries({ queryKey: ['all-releases'] });
-      toast.success(`Deleted ${ids.length} releases`);
+      toast.success(`Archived ${ids.length} releases`);
       setSelectedIds(new Set());
       setDeleteConfirm(false);
     },
@@ -426,12 +439,71 @@ export default function AllReleasesPage() {
     return Array.from(statuses).sort();
   }, [releases]);
 
-  // ─── Loading state ──────────────────────────────────────────
+  // ─── Loading skeleton ────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center" style={{ height: 'calc(100vh - 52px)' }}>
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#2563eb' }} />
-        <span className="mt-2" style={{ fontSize: '13px', color: '#64748b' }}>Loading releases...</span>
+      <div className="flex flex-col" style={{ height: 'calc(100vh - 52px)', background: '#f8fafc' }}>
+        <div className="px-6 py-4 space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="h-6 w-40 rounded bg-border/40 animate-pulse" />
+            <div className="h-5 w-16 rounded bg-border/40 animate-pulse" />
+          </div>
+          <div className="h-10 w-full rounded-lg bg-border/40 animate-pulse" />
+          <div className="flex gap-2">
+            {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-8 w-20 rounded bg-border/40 animate-pulse" />)}
+          </div>
+        </div>
+        <div className="px-6 flex-1 space-y-1">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className="h-9 w-full rounded bg-border/40 animate-pulse" style={{ opacity: 1 - i * 0.06 }} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Error state ────────────────────────────────────────────
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4" style={{ height: 'calc(100vh - 52px)' }}>
+        <div className="flex items-center justify-center w-12 h-12 rounded-full" style={{ background: '#fee2e2' }}>
+          <AlertTriangle className="w-6 h-6" style={{ color: '#ef4444' }} />
+        </div>
+        <div className="text-center">
+          <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>Failed to load releases</h3>
+          <p style={{ fontSize: '13px', color: '#64748b', marginTop: '4px', maxWidth: '360px' }}>
+            {error instanceof Error ? error.message : 'An unexpected error occurred'}
+          </p>
+        </div>
+        <button
+          onClick={() => refetch()}
+          className="flex items-center gap-1.5 transition-colors"
+          style={{ padding: '8px 16px', borderRadius: '6px', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+        >
+          <RefreshCw className="w-3.5 h-3.5" /> Retry
+        </button>
+      </div>
+    );
+  }
+
+  // ─── Empty state ────────────────────────────────────────────
+  if (!isLoading && releases.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4" style={{ height: 'calc(100vh - 52px)' }}>
+        <div className="flex items-center justify-center w-12 h-12 rounded-full" style={{ background: '#dbeafe' }}>
+          <Package className="w-6 h-6" style={{ color: '#2563eb' }} />
+        </div>
+        <div className="text-center">
+          <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>No releases yet</h3>
+          <p style={{ fontSize: '13px', color: '#64748b', marginTop: '4px' }}>Create your first release to get started</p>
+        </div>
+        <button
+          onClick={() => setIsNewReleaseModalOpen(true)}
+          className="flex items-center gap-1.5 transition-colors"
+          style={{ padding: '8px 16px', borderRadius: '6px', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+        >
+          <Plus className="w-3.5 h-3.5" /> Create First Release
+        </button>
       </div>
     );
   }
@@ -824,8 +896,8 @@ export default function AllReleasesPage() {
         <>
           <div className="fixed inset-0 z-50" style={{ background: 'rgba(0,0,0,0.4)' }} onClick={() => setDeleteConfirm(false)} />
           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" style={{ width: '400px', background: '#fff', borderRadius: '12px', boxShadow: '0 20px 60px rgba(0,0,0,0.15)', padding: '24px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a', marginBottom: '8px' }}>Delete {selectedIds.size} releases?</h3>
-            <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '20px' }}>This action cannot be undone. All release data will be permanently removed.</p>
+            <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a', marginBottom: '8px' }}>Archive {selectedIds.size} releases?</h3>
+            <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '20px' }}>These releases will be archived and hidden from the list. They can be restored later.</p>
             <div className="flex justify-end gap-2">
               <button onClick={() => setDeleteConfirm(false)} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid #e2e8f0', background: '#fff', color: '#334155', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
               <button
