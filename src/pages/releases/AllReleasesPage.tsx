@@ -149,8 +149,7 @@ export default function AllReleasesPage() {
   const [sortField, setSortField] = useState<SortableField>('health');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [perPage, setPerPage] = useState(12);
-  const [currentPage, setCurrentPage] = useState(1);
+  // Pagination removed — all releases shown
 
   // UI state
   const [isNewReleaseModalOpen, setIsNewReleaseModalOpen] = useState(false);
@@ -273,8 +272,7 @@ export default function AllReleasesPage() {
     return result;
   }, [releases, searchQuery, statusFilter, healthFilter, quarterFilter, sortField, sortDirection]);
 
-  const totalPages = Math.ceil(filteredReleases.length / perPage);
-  const paginatedReleases = filteredReleases.slice((currentPage - 1) * perPage, currentPage * perPage);
+  // No pagination needed — show all filtered releases
 
   const statCounts = useMemo(() => ({
     total: releases.length,
@@ -344,10 +342,10 @@ export default function AllReleasesPage() {
   };
 
   const toggleSelectAll = () => {
-    if (selectedIds.size === paginatedReleases.length) {
+    if (selectedIds.size === filteredReleases.length) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(paginatedReleases.map(r => r.id)));
+      setSelectedIds(new Set(filteredReleases.map(r => r.id)));
     }
   };
 
@@ -416,7 +414,7 @@ export default function AllReleasesPage() {
   // Select all checkbox state
   const selectAllState: 'none' | 'some' | 'all' =
     selectedIds.size === 0 ? 'none' :
-    selectedIds.size === paginatedReleases.length ? 'all' : 'some';
+    selectedIds.size === filteredReleases.length ? 'all' : 'some';
 
   // ─── Render Helpers ─────────────────────────────────────────
   const sortArrow = sortDirection === 'asc' ? '↑' : '↓';
@@ -509,7 +507,7 @@ export default function AllReleasesPage() {
           <input
             ref={searchRef}
             value={searchQuery}
-            onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+            onChange={e => { setSearchQuery(e.target.value); }}
             placeholder="Search releases..."
             className="focus:outline-none"
             style={{ width: '200px', height: '32px', paddingLeft: '32px', paddingRight: searchQuery ? '28px' : '8px', border: '1px solid #e2e8f0', borderRadius: '6px', fontSize: '13px', background: '#f8fafc' }}
@@ -517,7 +515,7 @@ export default function AllReleasesPage() {
             onBlur={e => (e.currentTarget.style.borderColor = '#e2e8f0')}
           />
           {searchQuery && (
-            <button onClick={() => { setSearchQuery(''); setCurrentPage(1); }} className="absolute right-2 top-1/2 -translate-y-1/2" style={{ color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer' }}>
+            <button onClick={() => { setSearchQuery(''); }} className="absolute right-2 top-1/2 -translate-y-1/2" style={{ color: '#94a3b8', background: 'none', border: 'none', cursor: 'pointer' }}>
               <X className="w-3.5 h-3.5" />
             </button>
           )}
@@ -533,7 +531,7 @@ export default function AllReleasesPage() {
         >
           {uniqueStatuses.map(s => (
             <CheckboxRow key={s} checked={statusFilter.includes(s)} label={`${getStatusConfig(s).label} (${releases.filter(r => r.status === s).length})`}
-              onChange={() => { setStatusFilter(p => p.includes(s) ? p.filter(x => x !== s) : [...p, s]); setCurrentPage(1); }} />
+              onChange={() => { setStatusFilter(p => p.includes(s) ? p.filter(x => x !== s) : [...p, s]); }} />
           ))}
           <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '4px', paddingTop: '4px', display: 'flex', justifyContent: 'space-between' }}>
             <button onClick={() => setStatusFilter([])} style={{ fontSize: '12px', color: '#64748b', background: 'none', border: 'none', cursor: 'pointer' }}>Clear</button>
@@ -551,7 +549,7 @@ export default function AllReleasesPage() {
           {(['critical', 'at-risk', 'attention', 'healthy'] as const).map(h => {
             const labels: Record<string, string> = { critical: 'Critical (0–39)', 'at-risk': 'At Risk (40–59)', attention: 'Attention (60–79)', healthy: 'Healthy (80–100)' };
             return <CheckboxRow key={h} checked={healthFilter.includes(h)} label={labels[h]}
-              onChange={() => { setHealthFilter(p => p.includes(h) ? p.filter(x => x !== h) : [...p, h]); setCurrentPage(1); }} />;
+              onChange={() => { setHealthFilter(p => p.includes(h) ? p.filter(x => x !== h) : [...p, h]); }} />;
           })}
           <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '4px', paddingTop: '4px', display: 'flex', justifyContent: 'space-between' }}>
             <button onClick={() => setHealthFilter([])} style={{ fontSize: '12px', color: '#64748b', background: 'none', border: 'none', cursor: 'pointer' }}>Clear</button>
@@ -568,7 +566,7 @@ export default function AllReleasesPage() {
         >
           {['Q1 2026', 'Q2 2026', 'Q3 2026'].map(q => (
             <CheckboxRow key={q} checked={quarterFilter.includes(q)} label={q}
-              onChange={() => { setQuarterFilter(p => p.includes(q) ? p.filter(x => x !== q) : [...p, q]); setCurrentPage(1); }} />
+              onChange={() => { setQuarterFilter(p => p.includes(q) ? p.filter(x => x !== q) : [...p, q]); }} />
           ))}
           <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '4px', paddingTop: '4px', display: 'flex', justifyContent: 'space-between' }}>
             <button onClick={() => setQuarterFilter([])} style={{ fontSize: '12px', color: '#64748b', background: 'none', border: 'none', cursor: 'pointer' }}>Clear</button>
@@ -648,7 +646,7 @@ export default function AllReleasesPage() {
 
         {/* Views */}
         <div className="h-full overflow-y-auto" style={{ paddingTop: selectedIds.size > 0 ? '48px' : 0 }} key={activeView}>
-          {paginatedReleases.length === 0 ? (
+          {filteredReleases.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full" style={{ animation: 'fadeInUp 0.3s ease both' }}>
               <Rocket className="w-12 h-12 mb-4" style={{ color: '#94a3b8' }} />
               <div style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>
@@ -667,7 +665,7 @@ export default function AllReleasesPage() {
                 </button>
               ) : (
                 <button
-                  onClick={() => { setSearchQuery(''); setStatusFilter([]); setHealthFilter([]); setQuarterFilter([]); setCurrentPage(1); }}
+                  onClick={() => { setSearchQuery(''); setStatusFilter([]); setHealthFilter([]); setQuarterFilter([]); }}
                   className="mt-4 transition-colors"
                   style={{ padding: '6px 16px', borderRadius: '6px', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer' }}
                 >
@@ -700,7 +698,7 @@ export default function AllReleasesPage() {
                 </tr>
               </thead>
               <tbody>
-                {paginatedReleases.map((r, i) => (
+                {filteredReleases.map((r, i) => (
                   <ReleaseRow
                     key={r.id}
                     release={r}
@@ -714,55 +712,25 @@ export default function AllReleasesPage() {
             </table>
           ) : activeView === 'cards' ? (
             <CardsView
-              releases={paginatedReleases}
+              releases={filteredReleases}
               selectedIds={selectedIds}
               onToggle={toggleSelect}
               onCardClick={setDetailRelease}
             />
           ) : (
             <TimelineView
-              releases={paginatedReleases}
+              releases={filteredReleases}
               onBarClick={setDetailRelease}
             />
           )}
         </div>
       </div>
 
-      {/* ═══ PAGINATION (40px) ═══ */}
-      <div className="flex items-center justify-between px-6" style={{ height: '40px', flexShrink: 0, borderTop: '1px solid #e2e8f0' }}>
+      {/* ═══ STATUS BAR (32px) ═══ */}
+      <div className="flex items-center px-6" style={{ height: '32px', flexShrink: 0, borderTop: '1px solid #e2e8f0', background: '#fff' }}>
         <span style={{ fontSize: '12px', fontWeight: 500, color: '#64748b' }}>
-          Showing {filteredReleases.length > 0 ? (currentPage - 1) * perPage + 1 : 0}–{Math.min(currentPage * perPage, filteredReleases.length)} of {filteredReleases.length} releases
+          {filteredReleases.length} of {releases.length} releases
         </span>
-        <div className="flex items-center gap-2">
-          {totalPages > 1 && (
-            <div className="flex items-center gap-1 mr-3">
-              <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}
-                style={{ ...paginationBtnStyle, opacity: currentPage === 1 ? 0.4 : 1 }}>← Prev</button>
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button key={i + 1} onClick={() => setCurrentPage(i + 1)}
-                  style={{ ...paginationBtnStyle, ...(currentPage === i + 1 ? activePaginationStyle : {}) }}>{i + 1}</button>
-              ))}
-              <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}
-                style={{ ...paginationBtnStyle, opacity: currentPage === totalPages ? 0.4 : 1 }}>Next →</button>
-            </div>
-          )}
-          <span style={{ fontSize: '12px', color: '#64748b', marginRight: '4px' }}>Per page:</span>
-          {[6, 12, 24].map(size => (
-            <button
-              key={size}
-              onClick={() => { setPerPage(size); setCurrentPage(1); }}
-              style={{
-                width: '28px', height: '24px', borderRadius: '4px', fontSize: '12px', fontWeight: perPage === size ? 600 : 400,
-                border: `1px solid ${perPage === size ? '#2563eb' : '#e2e8f0'}`,
-                background: perPage === size ? '#dbeafe' : '#fff',
-                color: perPage === size ? '#2563eb' : '#64748b',
-                cursor: 'pointer',
-              }}
-            >
-              {size}
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* ═══ DETAIL DRAWER ═══ */}
@@ -946,14 +914,6 @@ const colHeaderStyle: React.CSSProperties = {
   height: '36px', lineHeight: '36px',
 };
 
-const paginationBtnStyle: React.CSSProperties = {
-  padding: '2px 8px', borderRadius: '4px', border: '1px solid #e2e8f0', background: '#fff',
-  color: '#64748b', fontSize: '12px', cursor: 'pointer',
-};
-
-const activePaginationStyle: React.CSSProperties = {
-  background: '#dbeafe', color: '#2563eb', borderColor: '#2563eb', fontWeight: 600,
-};
 
 function StatItem({ number, label, dotColor }: { number: number; label: string; dotColor?: string }) {
   return (
