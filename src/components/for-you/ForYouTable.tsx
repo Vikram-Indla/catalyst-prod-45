@@ -302,25 +302,10 @@ export function ForYouTable({
                         </div>
                       );
                     })()}
-                    <span className="text-[13px] font-medium text-[hsl(215,25%,27%)] truncate">
+                    <span className="text-[13px] font-medium text-[hsl(215,25%,27%)]">
                       {item.assignee.name}
                     </span>
                   </div>
-
-                  {/* Inline "Open →" — appears on hover, next to assignee name */}
-                  <span 
-                    className={cn(
-                      "shrink-0 text-[11px] font-medium text-[hsl(217,91%,60%)] bg-[hsl(219,100%,97%)] px-2.5 py-1 rounded-[5px]",
-                      "opacity-0 group-hover:opacity-100 transition-all duration-[120ms] cursor-pointer",
-                      "hover:bg-[hsl(217,92%,95%)] hover:text-[hsl(224,76%,48%)]"
-                    )}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onRowClick(item.id);
-                    }}
-                  >
-                    Open →
-                  </span>
 
                   {/* Star — visible on hover */}
                   {onStarToggle && (
