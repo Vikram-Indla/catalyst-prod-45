@@ -192,6 +192,14 @@ export default function AllReleasesPage() {
   // ─── Mutations ────────────────────────────────────────────────
   const createReleaseMutation = useMutation({
     mutationFn: async (input: { name: string; version: string; target_date?: string; status: string; description?: string }) => {
+      // Fetch the first available release vehicle to avoid hardcoded UUID
+      const { data: vehicles } = await supabase
+        .from('release_vehicles')
+        .select('id')
+        .limit(1)
+        .single();
+      const vehicleId = vehicles?.id || null;
+
       const { data, error } = await supabase
         .from('releases')
         .insert({
@@ -200,7 +208,7 @@ export default function AllReleasesPage() {
           target_date: input.target_date || null,
           status: input.status === 'planning' ? 'planned' : input.status,
           description: input.description || null,
-          release_vehicle_id: '00000000-0000-0000-0000-000000000001',
+          ...(vehicleId ? { release_vehicle_id: vehicleId } : {}),
         } as any)
         .select()
         .single();
@@ -304,6 +312,7 @@ export default function AllReleasesPage() {
         if (e.key === 'Escape') { (e.target as HTMLElement).blur(); }
         return;
       }
+      if (e.target !== document.body && !(e.target as HTMLElement)?.closest('[data-shortcuts-ok]')) return;
       if (e.key === '/') { e.preventDefault(); searchRef.current?.focus(); }
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); searchRef.current?.focus(); }
       if (e.key === 'Escape') {
@@ -316,11 +325,11 @@ export default function AllReleasesPage() {
         setDeleteConfirm(false);
         if (selectedIds.size > 0) setSelectedIds(new Set());
       }
-      if (e.key === 'n' || e.key === 'N') setIsNewReleaseModalOpen(true);
-      if (e.key === 'e' || e.key === 'E') setIsExportDropdownOpen(p => !p);
-      if (e.key === '1') setActiveView('cards');
-      if (e.key === '2') setActiveView('timeline');
-      if (e.key === '3') setActiveView('table');
+      if (e.key === 'n' && !e.metaKey && !e.ctrlKey) setIsNewReleaseModalOpen(true);
+      if (e.key === 'e' && !e.metaKey && !e.ctrlKey) setIsExportDropdownOpen(p => !p);
+      if (e.key === '1' && !e.metaKey && !e.ctrlKey) setActiveView('cards');
+      if (e.key === '2' && !e.metaKey && !e.ctrlKey) setActiveView('timeline');
+      if (e.key === '3' && !e.metaKey && !e.ctrlKey) setActiveView('table');
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
