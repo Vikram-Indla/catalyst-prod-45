@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { ReleaseCalendar, CalendarRelease } from '@/features/release-calendar';
 import { useAllReleases } from '@/hooks/releases/useAllReleases';
 import { Loader2 } from 'lucide-react';
-import { addDays, subDays } from 'date-fns';
+import { subDays } from 'date-fns';
 
 // Transform database releases to calendar format
 function transformToCalendarRelease(r: any, index: number): CalendarRelease {
@@ -27,36 +27,31 @@ function transformToCalendarRelease(r: any, index: number): CalendarRelease {
     : healthScore >= 50 ? 'at_risk' 
     : 'critical';
 
-  // Generate some milestones for demo
-  const targetDate = new Date(r.target_date || Date.now());
-  const milestones = [
-    {
-      id: `${r.id}-cf`,
-      type: 'code_freeze' as const,
-      name: 'Code Freeze',
-      date: subDays(targetDate, 7).toISOString(),
-      status: 'pending' as const,
-    },
+  const targetDate = r.target_date ? new Date(r.target_date) : new Date();
+  const startDate = r.start_date ? new Date(r.start_date) : subDays(targetDate, 30);
+
+  // Only include milestones if release has actual dates
+  const milestones = r.target_date ? [
     {
       id: `${r.id}-gl`,
       type: 'go_live' as const,
       name: 'Go Live',
       date: targetDate.toISOString(),
-      status: 'pending' as const,
+      status: (r.status === 'released' ? 'complete' : 'pending') as 'complete' | 'pending',
     },
-  ];
+  ] : [];
 
   return {
     id: r.id,
     version: r.version || `v${index + 1}.0`,
     name: r.name,
     status: r.status === 'active' ? 'in_progress' : r.status === 'uat' ? 'testing' : r.status,
-    startDate: r.start_date || subDays(targetDate, 30).toISOString(),
-    targetDate: r.target_date || addDays(new Date(), 30).toISOString(),
+    startDate: startDate.toISOString(),
+    targetDate: targetDate.toISOString(),
     actualDate: r.release_date,
     healthScore,
     healthLevel,
-    progress: r.progress ?? r.readiness_pct ?? Math.floor(Math.random() * 80 + 10),
+    progress: r.progress ?? r.readiness_pct ?? 0,
     milestones,
     row: 0,
     extendsLeft: false,
@@ -80,22 +75,23 @@ export default function CalendarPage() {
   }, [data?.releases]);
 
   const handleReleaseClick = (release: CalendarRelease) => {
-    // Navigate to release detail or open modal
     navigate(`/releases/all?selected=${release.id}`);
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="flex items-center justify-center" style={{ height: 'calc(100vh - 52px)' }}>
         <Loader2 className="w-8 h-8 animate-spin text-[#2563eb]" />
       </div>
     );
   }
 
   return (
-    <ReleaseCalendar 
-      releases={calendarReleases} 
-      onReleaseClick={handleReleaseClick}
-    />
+    <div style={{ height: 'calc(100vh - 52px)', overflow: 'hidden' }}>
+      <ReleaseCalendar 
+        releases={calendarReleases} 
+        onReleaseClick={handleReleaseClick}
+      />
+    </div>
   );
 }

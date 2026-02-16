@@ -1,6 +1,6 @@
 /**
- * ALL RELEASES PAGE — CATALYST10 Complete Rebuild (Prompt 1 of 2)
- * Viewport-locked layout, Table view default, all CTAs functional
+ * ALL RELEASES PAGE — CATALYST10 Complete Rebuild
+ * Now wired to real Supabase data via useAllReleases hook
  */
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
@@ -11,15 +11,20 @@ import {
   Clipboard, Check, Loader2, ArrowUpDown, Calendar, Rocket,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAllReleases } from '@/hooks/releases/useAllReleases';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Release as DBRelease, ReleaseStatus, ReleaseHealth } from '@/types/releases';
+import { differenceInDays, format, parseISO } from 'date-fns';
 
-// ─── Types ──────────────────────────────────────────────────────
-interface Release {
+// ─── View-layer type (derived from DB release) ──────────────────
+interface ViewRelease {
   id: string;
   name: string;
   version: string;
-  type: 'MAJOR' | 'MINOR' | 'PATCH';
-  status: 'planning' | 'staging' | 'testing' | 'released';
+  status: string;
   health: number;
+  healthRaw: ReleaseHealth;
   progress: number;
   testsPass: number;
   testsTotal: number;
@@ -32,25 +37,19 @@ interface Release {
   description: string;
   barLeft: number;
   barWidth: number;
+  startDate: string | null;
 }
 
-// ─── Seed Data ──────────────────────────────────────────────────
-const initialReleases: Release[] = [
-  { id: "r1", name: "24 Jan Release", version: "v1.0", type: "MAJOR", status: "planning", health: 30, progress: 0, testsPass: 0, testsTotal: 1, defects: 0, coverage: null, targetDate: "Jan 29, 2026", daysRemaining: 0, overdue: true, owner: "Unassigned", description: "January maintenance release", barLeft: 5, barWidth: 14 },
-  { id: "r2", name: "Cloud Integration v2.0", version: "2.0.0", type: "MAJOR", status: "staging", health: 53, progress: 75, testsPass: 152, testsTotal: 203, defects: 18, coverage: 76, targetDate: "Feb 20, 2026", daysRemaining: 3, overdue: false, owner: "Unassigned", description: "Cloud platform integration", barLeft: 10, barWidth: 18 },
-  { id: "r3", name: "Legacy Migration v1.0", version: "1.0.0", type: "MAJOR", status: "released", health: 99, progress: 99, testsPass: 154, testsTotal: 156, defects: 0, coverage: 99, targetDate: "Jan 20, 2026", daysRemaining: 0, overdue: false, owner: "Unassigned", description: "Legacy system migration", barLeft: 2, barWidth: 12 },
-  { id: "r4", name: "Microservices Suite v4.1", version: "4.1.0", type: "MINOR", status: "planning", health: 30, progress: 0, testsPass: 0, testsTotal: 389, defects: 0, coverage: null, targetDate: "Apr 30, 2026", daysRemaining: 72, overdue: false, owner: "Unassigned", description: "Microservices architecture update", barLeft: 35, barWidth: 20 },
-  { id: "r5", name: "Platform Beta v3.0", version: "3.0.0", type: "MAJOR", status: "planning", health: 40, progress: 51, testsPass: 261, testsTotal: 512, defects: 34, coverage: 65, targetDate: "Mar 15, 2026", daysRemaining: 26, overdue: false, owner: "Unassigned", description: "Platform beta release", barLeft: 15, barWidth: 18 },
-  { id: "r6", name: "Project Alpha v2.1", version: "2.1.0", type: "MINOR", status: "testing", health: 55, progress: 76, testsPass: 187, testsTotal: 245, defects: 12, coverage: 82, targetDate: "Feb 28, 2026", daysRemaining: 11, overdue: false, owner: "Unassigned", description: "Alpha project iteration", barLeft: 12, barWidth: 16 },
-  { id: "r7", name: "Q1 2026 Release v1.0", version: "v1.0", type: "MAJOR", status: "planning", health: 30, progress: 0, testsPass: 0, testsTotal: 2, defects: 0, coverage: null, targetDate: "Mar 15, 2026", daysRemaining: 26, overdue: false, owner: "Unassigned", description: "Q1 quarterly release", barLeft: 18, barWidth: 14 },
-  { id: "r8", name: "Q1 2026 Release v1.1", version: "v1.0", type: "MAJOR", status: "planning", health: 30, progress: 0, testsPass: 0, testsTotal: 1, defects: 0, coverage: null, targetDate: "Mar 31, 2026", daysRemaining: 42, overdue: false, owner: "Unassigned", description: "Q1 patch release", barLeft: 20, barWidth: 16 },
-  { id: "r9", name: "Q2 2026 Release v2.0", version: "v1.0", type: "MAJOR", status: "planning", health: 70, progress: 0, testsPass: 0, testsTotal: 0, defects: 0, coverage: null, targetDate: "Jun 15, 2026", daysRemaining: 118, overdue: false, owner: "Unassigned", description: "Q2 major release", barLeft: 48, barWidth: 18 },
-  { id: "r10", name: "Q2 2026 Release v2.1", version: "v1.0", type: "MAJOR", status: "planning", health: 70, progress: 0, testsPass: 0, testsTotal: 0, defects: 0, coverage: null, targetDate: "Jun 30, 2026", daysRemaining: 133, overdue: false, owner: "Unassigned", description: "Q2 patch release", barLeft: 52, barWidth: 18 },
-  { id: "r11", name: "Q3 2026 Release v3.0", version: "v1.0", type: "MAJOR", status: "planning", health: 70, progress: 0, testsPass: 0, testsTotal: 0, defects: 0, coverage: null, targetDate: "Sep 15, 2026", daysRemaining: 210, overdue: false, owner: "Unassigned", description: "Q3 quarterly release", barLeft: 75, barWidth: 18 },
-  { id: "r12", name: "Security Patch v1.2.3", version: "1.2.3", type: "PATCH", status: "testing", health: 60, progress: 82, testsPass: 71, testsTotal: 87, defects: 28, coverage: 91, targetDate: "Feb 10, 2026", daysRemaining: 0, overdue: true, owner: "Unassigned", description: "Critical security patch", barLeft: 8, barWidth: 14 },
-];
-
 // ─── Helpers ────────────────────────────────────────────────────
+function healthToScore(h: ReleaseHealth): number {
+  switch (h) {
+    case 'critical': return 25;
+    case 'at_risk': return 55;
+    case 'healthy': return 85;
+    default: return 50;
+  }
+}
+
 function getHealthLabel(h: number) {
   if (h < 40) return 'critical';
   if (h < 60) return 'at-risk';
@@ -76,21 +75,70 @@ function getHealthBg(h: number) {
   return '#ccfbf1';
 }
 
-const STATUS_CONFIG: Record<string, { dot: string; bg: string; text: string; label: string }> = {
+const STATUS_DISPLAY: Record<string, { dot: string; bg: string; text: string; label: string }> = {
+  planned:  { dot: '#94a3b8', bg: '#f1f5f9', text: '#475569', label: 'Planned' },
   planning: { dot: '#94a3b8', bg: '#f1f5f9', text: '#475569', label: 'Planning' },
+  active:   { dot: '#2563eb', bg: '#dbeafe', text: '#1e40af', label: 'Active' },
+  development: { dot: '#6366f1', bg: '#e0e7ff', text: '#3730a3', label: 'Development' },
   staging:  { dot: '#6366f1', bg: '#e0e7ff', text: '#3730a3', label: 'Staging' },
   testing:  { dot: '#d97706', bg: '#fef3c7', text: '#92400e', label: 'Testing' },
+  uat:      { dot: '#d97706', bg: '#fef3c7', text: '#92400e', label: 'UAT' },
   released: { dot: '#0d9488', bg: '#ccfbf1', text: '#115e59', label: 'Released' },
 };
+
+function getStatusConfig(status: string) {
+  return STATUS_DISPLAY[status] || STATUS_DISPLAY.planned;
+}
+
+// Map DB release to view release
+function mapToViewRelease(r: DBRelease): ViewRelease {
+  const target = r.target_date ? parseISO(r.target_date) : null;
+  const start = r.start_date ? parseISO(r.start_date) : null;
+  const now = new Date();
+  const daysRemaining = target ? Math.max(0, differenceInDays(target, now)) : 0;
+  const overdue = target ? differenceInDays(now, target) > 0 && r.status !== 'released' : false;
+  const score = healthToScore(r.health);
+
+  // Compute timeline bar positions (Jan 2026 = 0, Oct 2026 = 100)
+  const timelineStart = new Date('2026-01-01').getTime();
+  const timelineEnd = new Date('2026-11-01').getTime();
+  const range = timelineEnd - timelineStart;
+  const sTime = start ? start.getTime() : (target ? target.getTime() - 30 * 86400000 : timelineStart);
+  const tTime = target ? target.getTime() : sTime + 30 * 86400000;
+  const barLeft = Math.max(0, Math.min(95, ((sTime - timelineStart) / range) * 100));
+  const barWidth = Math.max(3, Math.min(40, ((tTime - sTime) / range) * 100));
+
+  return {
+    id: r.id,
+    name: r.name,
+    version: r.version || 'v1.0',
+    status: r.status || 'planned',
+    health: score,
+    healthRaw: r.health,
+    progress: r.progress ?? 0,
+    testsPass: r.test_cases_passed ?? 0,
+    testsTotal: r.test_cases_total ?? 0,
+    defects: r.defects_open ?? 0,
+    coverage: r.coverage_percent != null ? r.coverage_percent : null,
+    targetDate: target ? format(target, 'MMM d, yyyy') : 'TBD',
+    daysRemaining,
+    overdue,
+    owner: r.owner?.full_name || 'Unassigned',
+    description: r.description || r.notes || '',
+    barLeft,
+    barWidth,
+    startDate: r.start_date,
+  };
+}
 
 type SortableField = 'name' | 'status' | 'progress' | 'defects' | 'health' | 'daysRemaining';
 
 // ─── Page Component ─────────────────────────────────────────────
 export default function AllReleasesPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // Core state
-  const [releases, setReleases] = useState<Release[]>(initialReleases);
   const [activeView, setActiveView] = useState<'cards' | 'timeline' | 'table'>('table');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string[]>([]);
@@ -106,7 +154,7 @@ export default function AllReleasesPage() {
   const [isNewReleaseModalOpen, setIsNewReleaseModalOpen] = useState(false);
   const [isExportDropdownOpen, setIsExportDropdownOpen] = useState(false);
   const [isAIDrawerOpen, setIsAIDrawerOpen] = useState(false);
-  const [detailRelease, setDetailRelease] = useState<Release | null>(null);
+  const [detailRelease, setDetailRelease] = useState<ViewRelease | null>(null);
   const [activeFilterDropdown, setActiveFilterDropdown] = useState<string | null>(null);
   const [bulkStatusDropdown, setBulkStatusDropdown] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
@@ -114,6 +162,80 @@ export default function AllReleasesPage() {
   // Refs
   const searchRef = useRef<HTMLInputElement>(null);
   const exportRef = useRef<HTMLDivElement>(null);
+
+  // ─── Fetch real data ──────────────────────────────────────────
+  const { data, isLoading } = useAllReleases({
+    filter: { status: [], health: [], search: '' },
+    sort: { column: 'name', direction: 'asc' },
+    page: 0,
+    pageSize: 100,
+  });
+
+  const releases = useMemo(() => {
+    if (!data?.releases) return [];
+    return data.releases.map(mapToViewRelease);
+  }, [data?.releases]);
+
+  // ─── Mutations ────────────────────────────────────────────────
+  const createReleaseMutation = useMutation({
+    mutationFn: async (input: { name: string; version: string; target_date?: string; status: string; description?: string }) => {
+      const { data, error } = await supabase
+        .from('releases')
+        .insert({
+          name: input.name,
+          version: input.version,
+          target_date: input.target_date || null,
+          status: input.status === 'planning' ? 'planned' : input.status,
+          description: input.description || null,
+          release_vehicle_id: '00000000-0000-0000-0000-000000000001',
+        } as any)
+        .select()
+        .single();
+      if (error) throw new Error(error.message);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-releases'] });
+      toast.success('Release created');
+      setIsNewReleaseModalOpen(false);
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
+  const bulkUpdateStatusMutation = useMutation({
+    mutationFn: async ({ ids, status }: { ids: string[]; status: string }) => {
+      const dbStatus = status === 'planning' ? 'planned' : status;
+      const { error } = await supabase
+        .from('releases')
+        .update({ status: dbStatus } as any)
+        .in('id', ids);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['all-releases'] });
+      toast.success(`Updated ${vars.ids.length} releases`);
+      setSelectedIds(new Set());
+      setBulkStatusDropdown(false);
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { error } = await supabase
+        .from('releases')
+        .delete()
+        .in('id', ids);
+      if (error) throw new Error(error.message);
+    },
+    onSuccess: (_, ids) => {
+      queryClient.invalidateQueries({ queryKey: ['all-releases'] });
+      toast.success(`Deleted ${ids.length} releases`);
+      setSelectedIds(new Set());
+      setDeleteConfirm(false);
+    },
+    onError: (err: Error) => toast.error(err.message),
+  });
 
   // ─── Derived state ──────────────────────────────────────────
   const filteredReleases = useMemo(() => {
@@ -133,6 +255,7 @@ export default function AllReleasesPage() {
     }
     if (quarterFilter.length > 0) {
       result = result.filter(r => {
+        if (r.targetDate === 'TBD') return false;
         const d = new Date(r.targetDate);
         const q = `Q${Math.ceil((d.getMonth() + 1) / 3)} ${d.getFullYear()}`;
         return quarterFilter.includes(q);
@@ -153,9 +276,9 @@ export default function AllReleasesPage() {
 
   const statCounts = useMemo(() => ({
     total: releases.length,
-    planning: releases.filter(r => r.status === 'planning').length,
-    staging: releases.filter(r => r.status === 'staging').length,
-    testing: releases.filter(r => r.status === 'testing').length,
+    planned: releases.filter(r => r.status === 'planned' || r.status === 'planning').length,
+    active: releases.filter(r => r.status === 'active' || r.status === 'development' || r.status === 'staging').length,
+    testing: releases.filter(r => r.status === 'testing' || r.status === 'uat').length,
     released: releases.filter(r => r.status === 'released').length,
     atRisk: releases.filter(r => r.health >= 40 && r.health < 60).length,
   }), [releases]);
@@ -227,9 +350,9 @@ export default function AllReleasesPage() {
   };
 
   const handleExportCSV = () => {
-    const headers = "Release,Version,Type,Status,Health,Progress,Tests,Defects,Coverage,Days,Owner";
+    const headers = "Release,Version,Status,Health,Progress,Tests,Defects,Coverage,Days,Owner";
     const rows = filteredReleases.map(r =>
-      `"${r.name}",${r.version},${r.type},${r.status},${r.health},${r.progress}%,${r.testsPass}/${r.testsTotal},${r.defects},${r.coverage ?? '—'},${r.daysRemaining}d,${r.owner}`
+      `"${r.name}",${r.version},${r.status},${r.health},${r.progress}%,${r.testsPass}/${r.testsTotal},${r.defects},${r.coverage ?? '—'},${r.daysRemaining}d,${r.owner}`
     );
     const csv = [headers, ...rows].join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -244,9 +367,9 @@ export default function AllReleasesPage() {
   };
 
   const handleCopyClipboard = () => {
-    const headers = "Release\tVersion\tType\tStatus\tHealth\tProgress\tTests\tDefects\tCoverage\tDays\tOwner";
+    const headers = "Release\tVersion\tStatus\tHealth\tProgress\tTests\tDefects\tCoverage\tDays\tOwner";
     const rows = filteredReleases.map(r =>
-      `${r.name}\t${r.version}\t${r.type}\t${r.status}\t${r.health}\t${r.progress}%\t${r.testsPass}/${r.testsTotal}\t${r.defects}\t${r.coverage ?? '—'}\t${r.daysRemaining}d\t${r.owner}`
+      `${r.name}\t${r.version}\t${r.status}\t${r.health}\t${r.progress}%\t${r.testsPass}/${r.testsTotal}\t${r.defects}\t${r.coverage ?? '—'}\t${r.daysRemaining}d\t${r.owner}`
     );
     navigator.clipboard.writeText([headers, ...rows].join('\n'));
     toast.success("Copied to clipboard!");
@@ -254,24 +377,18 @@ export default function AllReleasesPage() {
   };
 
   const handleBulkDelete = () => {
-    setReleases(prev => prev.filter(r => !selectedIds.has(r.id)));
-    toast.success(`Deleted ${selectedIds.size} releases`);
-    setSelectedIds(new Set());
-    setDeleteConfirm(false);
+    bulkDeleteMutation.mutate(Array.from(selectedIds));
   };
 
-  const handleBulkStatus = (newStatus: Release['status']) => {
-    setReleases(prev => prev.map(r => selectedIds.has(r.id) ? { ...r, status: newStatus } : r));
-    toast.success(`Updated ${selectedIds.size} releases to ${STATUS_CONFIG[newStatus].label}`);
-    setSelectedIds(new Set());
-    setBulkStatusDropdown(false);
+  const handleBulkStatus = (newStatus: string) => {
+    bulkUpdateStatusMutation.mutate({ ids: Array.from(selectedIds), status: newStatus });
   };
 
   const handleExportSelected = () => {
     const sel = filteredReleases.filter(r => selectedIds.has(r.id));
-    const headers = "Release,Version,Type,Status,Health,Progress,Tests,Defects,Coverage,Days,Owner";
+    const headers = "Release,Version,Status,Health,Progress,Tests,Defects,Coverage,Days,Owner";
     const rows = sel.map(r =>
-      `"${r.name}",${r.version},${r.type},${r.status},${r.health},${r.progress}%,${r.testsPass}/${r.testsTotal},${r.defects},${r.coverage ?? '—'},${r.daysRemaining}d,${r.owner}`
+      `"${r.name}",${r.version},${r.status},${r.health},${r.progress}%,${r.testsPass}/${r.testsTotal},${r.defects},${r.coverage ?? '—'},${r.daysRemaining}d,${r.owner}`
     );
     const csv = [headers, ...rows].join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -284,6 +401,16 @@ export default function AllReleasesPage() {
     toast.success(`Exported ${sel.length} releases`);
   };
 
+  const handleCreateRelease = (input: { name: string; version: string; status: string; targetDate: string; description: string }) => {
+    createReleaseMutation.mutate({
+      name: input.name,
+      version: input.version,
+      status: input.status,
+      target_date: input.targetDate || undefined,
+      description: input.description || undefined,
+    });
+  };
+
   // Select all checkbox state
   const selectAllState: 'none' | 'some' | 'all' =
     selectedIds.size === 0 ? 'none' :
@@ -292,6 +419,22 @@ export default function AllReleasesPage() {
   // ─── Render Helpers ─────────────────────────────────────────
   const sortArrow = sortDirection === 'asc' ? '↑' : '↓';
   const sortFieldLabel = { name: 'Name', status: 'Status', progress: 'Progress', defects: 'Defects', health: 'Health', daysRemaining: 'Days' }[sortField];
+
+  // Get unique statuses from data
+  const uniqueStatuses = useMemo(() => {
+    const statuses = new Set(releases.map(r => r.status));
+    return Array.from(statuses).sort();
+  }, [releases]);
+
+  // ─── Loading state ──────────────────────────────────────────
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center" style={{ height: 'calc(100vh - 52px)' }}>
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#2563eb' }} />
+        <span className="mt-2" style={{ fontSize: '13px', color: '#64748b' }}>Loading releases...</span>
+      </div>
+    );
+  }
 
   // ─── RENDER ─────────────────────────────────────────────────
   return (
@@ -340,8 +483,8 @@ export default function AllReleasesPage() {
         <div className="flex items-center justify-between w-full" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fff', padding: '6px 16px' }}>
           <div className="flex items-center gap-5">
             <StatItem number={statCounts.total} label="Total" />
-            <StatItem number={statCounts.planning} label="Planning" dotColor="#94a3b8" />
-            <StatItem number={statCounts.staging} label="Staging" dotColor="#6366f1" />
+            <StatItem number={statCounts.planned} label="Planned" dotColor="#94a3b8" />
+            <StatItem number={statCounts.active} label="Active" dotColor="#6366f1" />
             <StatItem number={statCounts.testing} label="Testing" dotColor="#d97706" />
             <StatItem number={statCounts.atRisk} label="At Risk" dotColor="#ef4444" />
             <StatItem number={statCounts.released} label="Released" dotColor="#0d9488" />
@@ -351,7 +494,7 @@ export default function AllReleasesPage() {
             className="flex items-center gap-1.5 transition-colors"
             style={{ border: '1px solid #6366f1', borderRadius: '16px', padding: '4px 12px', color: '#6366f1', fontSize: '12px', fontWeight: 600, background: 'transparent', cursor: 'pointer' }}
           >
-            <Sparkles className="w-3 h-3" /> AI Insights <span style={{ background: '#6366f1', color: '#fff', borderRadius: '8px', padding: '0 5px', fontSize: '10px', fontWeight: 700, marginLeft: '2px' }}>5</span>
+            <Sparkles className="w-3 h-3" /> AI Insights
           </button>
         </div>
       </div>
@@ -386,8 +529,8 @@ export default function AllReleasesPage() {
           isOpen={activeFilterDropdown === 'status'}
           onToggle={() => setActiveFilterDropdown(p => p === 'status' ? null : 'status')}
         >
-          {(['planning', 'staging', 'testing', 'released'] as const).map(s => (
-            <CheckboxRow key={s} checked={statusFilter.includes(s)} label={`${STATUS_CONFIG[s].label} (${releases.filter(r => r.status === s).length})`}
+          {uniqueStatuses.map(s => (
+            <CheckboxRow key={s} checked={statusFilter.includes(s)} label={`${getStatusConfig(s).label} (${releases.filter(r => r.status === s).length})`}
               onChange={() => { setStatusFilter(p => p.includes(s) ? p.filter(x => x !== s) : [...p, s]); setCurrentPage(1); }} />
           ))}
           <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '4px', paddingTop: '4px', display: 'flex', justifyContent: 'space-between' }}>
@@ -482,9 +625,9 @@ export default function AllReleasesPage() {
               </button>
               {bulkStatusDropdown && (
                 <div className="absolute top-full mt-1 left-0 z-50" style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '6px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', minWidth: '140px' }}>
-                  {(['planning', 'staging', 'testing', 'released'] as const).map(s => (
+                  {(['planned', 'active', 'testing', 'uat', 'released'] as const).map(s => (
                     <button key={s} onClick={() => handleBulkStatus(s)} className="block w-full text-left px-3 py-1.5 transition-colors hover:bg-[#f8fafc]" style={{ fontSize: '13px', color: '#334155', border: 'none', background: 'transparent', cursor: 'pointer' }}>
-                      {STATUS_CONFIG[s].label}
+                      {getStatusConfig(s).label}
                     </button>
                   ))}
                 </div>
@@ -501,21 +644,34 @@ export default function AllReleasesPage() {
           </div>
         )}
 
-        {/* Views with crossfade */}
+        {/* Views */}
         <div className="h-full overflow-y-auto" style={{ paddingTop: selectedIds.size > 0 ? '48px' : 0 }} key={activeView}>
           {paginatedReleases.length === 0 ? (
-            /* ═══ EMPTY STATE ═══ */
             <div className="flex flex-col items-center justify-center h-full" style={{ animation: 'fadeInUp 0.3s ease both' }}>
               <Rocket className="w-12 h-12 mb-4" style={{ color: '#94a3b8' }} />
-              <div style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>No releases match your filters</div>
-              <div style={{ fontSize: '13px', color: '#64748b', marginTop: '4px' }}>Try adjusting your search or filter criteria</div>
-              <button
-                onClick={() => { setSearchQuery(''); setStatusFilter([]); setHealthFilter([]); setQuarterFilter([]); setCurrentPage(1); }}
-                className="mt-4 transition-colors"
-                style={{ padding: '6px 16px', borderRadius: '6px', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer' }}
-              >
-                Clear all filters
-              </button>
+              <div style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>
+                {releases.length === 0 ? 'No releases yet' : 'No releases match your filters'}
+              </div>
+              <div style={{ fontSize: '13px', color: '#64748b', marginTop: '4px' }}>
+                {releases.length === 0 ? 'Create your first release to get started' : 'Try adjusting your search or filter criteria'}
+              </div>
+              {releases.length === 0 ? (
+                <button
+                  onClick={() => setIsNewReleaseModalOpen(true)}
+                  className="mt-4 transition-colors"
+                  style={{ padding: '6px 16px', borderRadius: '6px', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+                >
+                  Create Release
+                </button>
+              ) : (
+                <button
+                  onClick={() => { setSearchQuery(''); setStatusFilter([]); setHealthFilter([]); setQuarterFilter([]); setCurrentPage(1); }}
+                  className="mt-4 transition-colors"
+                  style={{ padding: '6px 16px', borderRadius: '6px', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+                >
+                  Clear all filters
+                </button>
+              )}
             </div>
           ) : activeView === 'table' ? (
             <table className="w-full" style={{ borderCollapse: 'collapse' }}>
@@ -618,25 +774,37 @@ export default function AllReleasesPage() {
             </div>
             <div className="px-6 py-5">
               <div className="flex gap-4 mb-6">
-                <MetricBox value={detailRelease.health} label="Health" color={getHealthColor(detailRelease.health)} />
+                <MetricBox value={detailRelease.health} label="Health Score" color={getHealthColor(detailRelease.health)} />
                 <MetricBox value={`${detailRelease.progress}%`} label="Progress" color="#2563eb" />
-                <MetricBox value={detailRelease.defects} label="Defects" color={detailRelease.defects > 0 ? '#ef4444' : '#64748b'} />
+                <MetricBox value={detailRelease.defects} label="Defects" color={detailRelease.defects > 0 ? '#ef4444' : '#0d9488'} />
               </div>
-              <div className="space-y-3" style={{ fontSize: '13px' }}>
-                <DetailRow label="STATUS" value={<StatusPill status={detailRelease.status} />} />
-                <DetailRow label="VERSION" value={<span>{detailRelease.version} <span style={{ color: '#64748b', fontSize: '11px' }}>{detailRelease.type}</span></span>} />
-                <DetailRow label="TARGET" value={detailRelease.targetDate} />
-                <DetailRow label="TESTS" value={`${detailRelease.testsPass}/${detailRelease.testsTotal}${detailRelease.coverage !== null ? ` (${detailRelease.coverage}% coverage)` : ''}`} />
-                <DetailRow label="DAYS" value={detailRelease.status === 'released' ? <span style={{ color: '#0d9488', fontWeight: 600 }}>Released</span> : detailRelease.overdue ? <span style={{ color: '#ef4444', fontWeight: 600 }}>{detailRelease.daysRemaining}d overdue</span> : `${detailRelease.daysRemaining}d remaining`} />
-                <DetailRow label="OWNER" value={<span style={{ color: detailRelease.owner === 'Unassigned' ? '#94a3b8' : '#334155' }}>{detailRelease.owner}</span>} />
+              <div className="space-y-0">
+                <DetailRow label="Version" value={detailRelease.version} />
+                <DetailRow label="Status" value={<StatusPill status={detailRelease.status} />} />
+                <DetailRow label="Target Date" value={detailRelease.targetDate} />
+                <DetailRow label="Days Remaining" value={
+                  detailRelease.status === 'released' ? <span style={{ color: '#0d9488', fontWeight: 600 }}>Released</span> :
+                  detailRelease.overdue ? <span style={{ color: '#ef4444', fontWeight: 600 }}>Overdue</span> :
+                  `${detailRelease.daysRemaining}d`
+                } />
+                <DetailRow label="Tests" value={`${detailRelease.testsPass} / ${detailRelease.testsTotal}`} />
+                <DetailRow label="Coverage" value={detailRelease.coverage !== null ? `${detailRelease.coverage}%` : '—'} />
+                <DetailRow label="Owner" value={detailRelease.owner} />
               </div>
-              <div className="mt-5">
-                <span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>DESCRIPTION</span>
-                <p style={{ fontSize: '13px', color: '#334155', marginTop: '4px', lineHeight: 1.6 }}>{detailRelease.description}</p>
-              </div>
-              <div className="flex gap-2 mt-6">
-                <button onClick={() => { navigate(`/releasehub/${detailRelease.id}`); }} style={{ flex: 1, height: '36px', borderRadius: '6px', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer' }}>Open Dashboard</button>
-                <button onClick={() => toast.info('Edit mode coming soon')} style={{ flex: 1, height: '36px', borderRadius: '6px', background: '#fff', color: '#334155', fontSize: '13px', fontWeight: 500, border: '1px solid #e2e8f0', cursor: 'pointer' }}>Edit Release</button>
+              {detailRelease.description && (
+                <div className="mt-6">
+                  <div style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '6px' }}>DESCRIPTION</div>
+                  <p style={{ fontSize: '13px', color: '#334155', lineHeight: '1.6' }}>{detailRelease.description}</p>
+                </div>
+              )}
+              <div className="mt-6 flex gap-2">
+                <button
+                  onClick={() => { navigate(`/releasehub/command-center?releaseId=${detailRelease.id}`); }}
+                  className="flex-1 transition-colors"
+                  style={{ padding: '8px 0', borderRadius: '6px', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+                >
+                  Open in Command Center
+                </button>
               </div>
             </div>
           </div>
@@ -646,20 +814,23 @@ export default function AllReleasesPage() {
       {/* ═══ AI INSIGHTS DRAWER ═══ */}
       {isAIDrawerOpen && (
         <>
-          <div className="fixed inset-0 z-[200]" style={{ background: 'rgba(0,0,0,0.3)' }} onClick={() => setIsAIDrawerOpen(false)} />
-          <div className="fixed right-0 top-0 bottom-0 z-[201] overflow-y-auto" style={{ width: '420px', background: '#fff', boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', animation: 'slideInRight 200ms ease' }}>
+          <div className="fixed inset-0 z-[200]" style={{ background: 'rgba(0,0,0,0.2)' }} onClick={() => setIsAIDrawerOpen(false)} />
+          <div className="fixed right-0 top-0 bottom-0 z-[201] overflow-y-auto" style={{ width: '400px', background: '#fff', boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', animation: 'slideInRight 200ms ease' }}>
             <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: '#e2e8f0' }}>
-              <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>AI Insights</h2>
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4" style={{ color: '#6366f1' }} />
+                <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>AI Insights</h2>
+              </div>
               <button onClick={() => setIsAIDrawerOpen(false)} style={{ color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}>✕</button>
             </div>
             <div className="px-6 py-4 space-y-3">
-              {AI_INSIGHTS.map((insight, i) => (
-                <div key={i} style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }} className="transition-colors hover:border-[#cbd5e1]">
+              {generateDynamicInsights(releases).map((insight, i) => (
+                <div key={i} style={{ padding: '12px', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fafafa' }}>
                   <div className="flex items-start gap-2">
                     <span style={{ fontSize: '16px' }}>{insight.icon}</span>
                     <div>
                       <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>{insight.title}</div>
-                      <div style={{ fontSize: '12px', color: '#64748b', lineHeight: 1.6, marginTop: '4px' }}>{insight.desc}</div>
+                      <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px', lineHeight: '1.5' }}>{insight.desc}</div>
                     </div>
                   </div>
                 </div>
@@ -673,30 +844,32 @@ export default function AllReleasesPage() {
       {isNewReleaseModalOpen && (
         <NewReleaseModal
           onClose={() => setIsNewReleaseModalOpen(false)}
-          onCreate={(r) => {
-            setReleases(prev => [...prev, r]);
-            setIsNewReleaseModalOpen(false);
-            toast.success('Release created successfully');
-          }}
+          onCreate={handleCreateRelease}
+          isCreating={createReleaseMutation.isPending}
         />
       )}
 
       {/* ═══ DELETE CONFIRM ═══ */}
       {deleteConfirm && (
         <>
-          <div className="fixed inset-0 z-50" style={{ background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)' }} onClick={() => setDeleteConfirm(false)} />
+          <div className="fixed inset-0 z-50" style={{ background: 'rgba(0,0,0,0.4)' }} onClick={() => setDeleteConfirm(false)} />
           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50" style={{ width: '400px', background: '#fff', borderRadius: '12px', boxShadow: '0 20px 60px rgba(0,0,0,0.15)', padding: '24px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>Delete {selectedIds.size} releases?</h3>
-            <p style={{ fontSize: '13px', color: '#64748b', marginTop: '8px' }}>This action cannot be undone.</p>
-            <div className="flex justify-end gap-2 mt-5">
+            <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a', marginBottom: '8px' }}>Delete {selectedIds.size} releases?</h3>
+            <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '20px' }}>This action cannot be undone. All release data will be permanently removed.</p>
+            <div className="flex justify-end gap-2">
               <button onClick={() => setDeleteConfirm(false)} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid #e2e8f0', background: '#fff', color: '#334155', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
-              <button onClick={handleBulkDelete} style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', background: '#ef4444', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Delete</button>
+              <button
+                onClick={handleBulkDelete}
+                disabled={bulkDeleteMutation.isPending}
+                style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', background: '#ef4444', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+              >
+                {bulkDeleteMutation.isPending ? 'Deleting...' : 'Delete'}
+              </button>
             </div>
           </div>
         </>
       )}
 
-      {/* Global keyframe styles */}
       <style>{`
         @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
         @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
@@ -705,6 +878,57 @@ export default function AllReleasesPage() {
       `}</style>
     </div>
   );
+}
+
+// ─── Dynamic AI Insights (generated from real data) ─────────────
+function generateDynamicInsights(releases: ViewRelease[]) {
+  const insights: { icon: string; title: string; desc: string }[] = [];
+
+  const critical = releases.filter(r => r.health < 40);
+  if (critical.length > 0) {
+    insights.push({
+      icon: '🔴',
+      title: `${critical.length} Release${critical.length > 1 ? 's' : ''} in Critical Health`,
+      desc: `${critical.map(r => r.name).join(', ')} ${critical.length > 1 ? 'have' : 'has'} health below 40. Consider reallocating testing resources.`,
+    });
+  }
+
+  const overdue = releases.filter(r => r.overdue);
+  if (overdue.length > 0) {
+    insights.push({
+      icon: '⚠️',
+      title: `${overdue.length} Overdue Release${overdue.length > 1 ? 's' : ''}`,
+      desc: `${overdue.map(r => r.name).join(', ')} ${overdue.length > 1 ? 'are' : 'is'} past target date. Escalation recommended.`,
+    });
+  }
+
+  const noCoverage = releases.filter(r => r.coverage === null || r.coverage === 0);
+  if (noCoverage.length > 0) {
+    insights.push({
+      icon: '📊',
+      title: 'Coverage Gap',
+      desc: `${noCoverage.length} of ${releases.length} releases have no test coverage data. Run initial test suites for baseline metrics.`,
+    });
+  }
+
+  const completed = releases.filter(r => r.status === 'released' && r.health >= 80);
+  if (completed.length > 0) {
+    insights.push({
+      icon: '✅',
+      title: `${completed.length} Successfully Released`,
+      desc: `${completed.map(r => r.name).join(', ')} completed with healthy metrics. Ready for post-release retrospective.`,
+    });
+  }
+
+  if (insights.length === 0) {
+    insights.push({
+      icon: '💡',
+      title: 'All Looking Good',
+      desc: 'No immediate concerns detected across your release portfolio.',
+    });
+  }
+
+  return insights;
 }
 
 // ─── Sub-components ────────────────────────────────────────────
@@ -734,7 +958,7 @@ function StatItem({ number, label, dotColor }: { number: number; label: string; 
 }
 
 function StatusPill({ status }: { status: string }) {
-  const c = STATUS_CONFIG[status] || STATUS_CONFIG.planning;
+  const c = getStatusConfig(status);
   return (
     <span className="inline-flex items-center gap-1" style={{ padding: '2px 8px', borderRadius: '12px', background: c.bg, color: c.text, fontSize: '12px', fontWeight: 500 }}>
       <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: c.dot }} />
@@ -759,7 +983,7 @@ function SortableHeader({ label, field, current, direction, onClick, style }: {
 }
 
 function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick }: {
-  release: Release; index?: number; selected: boolean; onToggle: () => void; onClick: () => void;
+  release: ViewRelease; index?: number; selected: boolean; onToggle: () => void; onClick: () => void;
 }) {
   return (
     <tr
@@ -774,7 +998,6 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick }: {
       onMouseEnter={e => { if (!selected) (e.currentTarget.style.background = '#f8fafc'); }}
       onMouseLeave={e => { if (!selected) (e.currentTarget.style.background = ''); }}
     >
-      {/* Checkbox */}
       <td style={{ textAlign: 'center', padding: '0 4px', position: 'relative' }}>
         <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '3px', background: '#2563eb', opacity: 0, transition: 'opacity 100ms' }} className="group-hover:!opacity-100" />
         <input
@@ -788,14 +1011,11 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick }: {
           onMouseLeave={e => { if (!selected) e.currentTarget.style.opacity = '0'; }}
         />
       </td>
-      {/* Release */}
       <td style={{ padding: '0 8px' }}>
         <span style={{ display: 'inline-block', padding: '1px 6px', background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '4px', fontSize: '11px', fontWeight: 600, marginRight: '6px' }}>{r.version}</span>
         <span style={{ fontSize: '13px', fontWeight: 500, color: '#0f172a' }}>{r.name}</span>
       </td>
-      {/* Status */}
       <td style={{ padding: '0 8px' }}><StatusPill status={r.status} /></td>
-      {/* Progress */}
       <td style={{ padding: '0 8px' }}>
         <div className="flex items-center gap-2">
           <div style={{ width: '80px', height: '4px', background: '#e2e8f0', borderRadius: '2px', overflow: 'hidden' }}>
@@ -804,7 +1024,6 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick }: {
           <span style={{ fontSize: '12px', color: '#64748b' }}>{r.progress}%</span>
         </div>
       </td>
-      {/* Tests */}
       <td style={{ padding: '0 8px' }}>
         <div className="flex items-center gap-2">
           <div className="flex" style={{ width: '60px', height: '4px', borderRadius: '2px', overflow: 'hidden', background: '#e2e8f0' }}>
@@ -818,26 +1037,21 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick }: {
           <span style={{ fontSize: '12px', color: '#64748b' }}>{r.testsPass}/{r.testsTotal}</span>
         </div>
       </td>
-      {/* Defects */}
       <td style={{ padding: '0 8px', fontSize: '13px', fontWeight: r.defects > 0 ? 600 : 400, color: r.defects > 0 ? '#ef4444' : '#94a3b8' }}>
         {r.defects > 0 ? r.defects : '—'}
       </td>
-      {/* Coverage */}
       <td style={{ padding: '0 8px', fontSize: '13px', color: '#64748b' }}>
         {r.coverage !== null ? `${r.coverage}%` : '—'}
       </td>
-      {/* Health */}
       <td style={{ padding: '0 8px' }}>
         <div className="flex items-center gap-1.5">
           <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: getHealthColor(r.health) }} />
           <span style={{ fontSize: '13px', fontWeight: 600, color: getHealthColor(r.health) }}>{r.health}</span>
         </div>
       </td>
-      {/* Days */}
       <td style={{ padding: '0 8px', fontSize: '13px', fontWeight: r.overdue || r.status === 'released' ? 600 : 400, color: r.status === 'released' ? '#0d9488' : r.overdue ? '#ef4444' : '#334155' }}>
         {r.status === 'released' ? 'Released' : `${r.daysRemaining}d`}
       </td>
-      {/* Owner */}
       <td style={{ padding: '0 8px', fontSize: '13px', fontWeight: 400, color: r.owner === 'Unassigned' ? '#94a3b8' : '#334155' }}>
         {r.owner}
       </td>
@@ -910,46 +1124,17 @@ function DetailRow({ label, value }: { label: string; value: React.ReactNode }) 
   );
 }
 
-const AI_INSIGHTS = [
-  { icon: '🔴', title: '4 Releases in Critical Health', desc: '24 Jan Release, Microservices Suite, Q1 v1.0, and Q1 v1.1 all have health below 40. Consider reallocating testing resources.' },
-  { icon: '⚠️', title: 'Security Patch Overdue', desc: 'Security Patch v1.2.3 is 6 days overdue with 28 open defects. Escalation recommended.' },
-  { icon: '📊', title: 'Coverage Gap', desc: '7 of 12 releases have no test coverage data. Run initial test suites for baseline metrics.' },
-  { icon: '✅', title: 'Legacy Migration Complete', desc: '99% health with 154/156 tests passing. Ready for post-release retrospective.' },
-  { icon: '💡', title: 'Consolidation Opportunity', desc: 'Q1 v1.0 and v1.1 have similar timelines. Consider merging to reduce coordination overhead.' },
-];
-
 // ─── New Release Modal ─────────────────────────────────────────
-function NewReleaseModal({ onClose, onCreate }: { onClose: () => void; onCreate: (r: Release) => void }) {
+function NewReleaseModal({ onClose, onCreate, isCreating }: { onClose: () => void; onCreate: (r: { name: string; version: string; status: string; targetDate: string; description: string }) => void; isCreating: boolean }) {
   const [name, setName] = useState('');
   const [version, setVersion] = useState('v1.0');
-  const [type, setType] = useState<Release['type']>('MAJOR');
-  const [status, setStatus] = useState<Release['status']>('planning');
+  const [status, setStatus] = useState('planned');
   const [targetDate, setTargetDate] = useState('');
   const [description, setDescription] = useState('');
 
   const handleSubmit = () => {
     if (!name.trim()) { toast.error('Release name is required'); return; }
-    const release: Release = {
-      id: `r${Date.now()}`,
-      name: name.trim(),
-      version,
-      type,
-      status,
-      health: 50,
-      progress: 0,
-      testsPass: 0,
-      testsTotal: 0,
-      defects: 0,
-      coverage: null,
-      targetDate: targetDate || 'TBD',
-      daysRemaining: targetDate ? Math.max(0, Math.floor((new Date(targetDate).getTime() - Date.now()) / 86400000)) : 0,
-      overdue: false,
-      owner: 'Unassigned',
-      description: description || '',
-      barLeft: 0,
-      barWidth: 10,
-    };
-    onCreate(release);
+    onCreate({ name: name.trim(), version, status, targetDate, description });
   };
 
   const inputStyle: React.CSSProperties = {
@@ -978,25 +1163,18 @@ function NewReleaseModal({ onClose, onCreate }: { onClose: () => void; onCreate:
           </div>
           <div className="flex gap-4">
             <div className="flex-1">
-              <label style={labelStyle}>TYPE</label>
-              <select value={type} onChange={e => setType(e.target.value as Release['type'])} style={inputStyle}>
-                <option value="MAJOR">MAJOR</option>
-                <option value="MINOR">MINOR</option>
-                <option value="PATCH">PATCH</option>
+              <label style={labelStyle}>STATUS</label>
+              <select value={status} onChange={e => setStatus(e.target.value)} style={inputStyle}>
+                <option value="planned">Planned</option>
+                <option value="active">Active</option>
+                <option value="testing">Testing</option>
+                <option value="uat">UAT</option>
               </select>
             </div>
             <div className="flex-1">
-              <label style={labelStyle}>STATUS</label>
-              <select value={status} onChange={e => setStatus(e.target.value as Release['status'])} style={inputStyle}>
-                <option value="planning">Planning</option>
-                <option value="staging">Staging</option>
-                <option value="testing">Testing</option>
-              </select>
+              <label style={labelStyle}>TARGET DATE</label>
+              <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={inputStyle} onFocus={e => (e.currentTarget.style.borderColor = '#2563eb')} onBlur={e => (e.currentTarget.style.borderColor = '#e2e8f0')} />
             </div>
-          </div>
-          <div>
-            <label style={labelStyle}>TARGET DATE</label>
-            <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={inputStyle} onFocus={e => (e.currentTarget.style.borderColor = '#2563eb')} onBlur={e => (e.currentTarget.style.borderColor = '#e2e8f0')} />
           </div>
           <div>
             <label style={labelStyle}>DESCRIPTION (optional)</label>
@@ -1005,7 +1183,13 @@ function NewReleaseModal({ onClose, onCreate }: { onClose: () => void; onCreate:
         </div>
         <div className="flex justify-end gap-2 px-6 py-4 border-t" style={{ borderColor: '#e2e8f0' }}>
           <button onClick={onClose} style={{ padding: '6px 16px', borderRadius: '6px', border: '1px solid #e2e8f0', background: '#fff', color: '#334155', fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
-          <button onClick={handleSubmit} style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Create Release</button>
+          <button
+            onClick={handleSubmit}
+            disabled={isCreating}
+            style={{ padding: '6px 16px', borderRadius: '6px', border: 'none', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer', opacity: isCreating ? 0.7 : 1 }}
+          >
+            {isCreating ? 'Creating...' : 'Create Release'}
+          </button>
         </div>
         <style>{`@keyframes scaleIn { from { transform: translate(-50%,-50%) scale(0.95); opacity: 0; } to { transform: translate(-50%,-50%) scale(1); opacity: 1; } }`}</style>
       </div>
@@ -1022,7 +1206,7 @@ const HEALTH_BADGE: Record<string, { bg: string; text: string }> = {
 };
 
 function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
-  releases: Release[]; selectedIds: Set<string>; onToggle: (id: string) => void; onCardClick: (r: Release) => void;
+  releases: ViewRelease[]; selectedIds: Set<string>; onToggle: (id: string) => void; onCardClick: (r: ViewRelease) => void;
 }) {
   return (
     <div style={{ padding: '16px 0', overflow: 'auto', height: '100%' }}>
@@ -1046,7 +1230,6 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
               onMouseEnter={e => { if (!selected) { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'; } }}
               onMouseLeave={e => { if (!selected) { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none'; } }}
             >
-              {/* Checkbox */}
               <input
                 type="checkbox"
                 checked={selected}
@@ -1057,38 +1240,29 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
                 onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
                 onMouseLeave={e => { if (!selected) e.currentTarget.style.opacity = '0'; }}
               />
-
-              {/* Row 1: Header */}
               <div className="flex items-center gap-1.5 mb-2">
                 <span style={{ padding: '1px 6px', background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>{r.version}</span>
-                <span style={{ padding: '1px 5px', background: '#f1f5f9', borderRadius: '4px', fontSize: '10px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' as const }}>{r.type}</span>
                 <span className="flex-1 truncate" style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>{r.name}</span>
                 <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 600, background: hBadge.bg, color: hBadge.text, flexShrink: 0 }}>
                   {getHealthDisplay(r.health)}
                 </span>
               </div>
-
-              {/* Row 2: Progress bar */}
               <div className="flex items-center gap-2 mb-2">
                 <div style={{ flex: 1, height: '4px', background: '#e2e8f0', borderRadius: '2px', overflow: 'hidden' }}>
                   <div style={{ width: `${r.health}%`, height: '100%', background: getHealthColor(r.health), borderRadius: '2px', transition: 'width 400ms ease-out' }} />
                 </div>
                 <span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>{r.health}</span>
               </div>
-
-              {/* Row 3: Metadata */}
               <div className="flex items-center gap-2 flex-wrap" style={{ fontSize: '12px' }}>
                 <StatusPill status={r.status} />
                 <span style={{ color: '#64748b' }}>📅 {r.targetDate}</span>
                 {r.overdue && (
                   <span style={{ fontSize: '10px', fontWeight: 600, color: '#ef4444', background: '#fee2e2', borderRadius: '8px', padding: '1px 6px' }}>
-                    {r.daysRemaining}d overdue
+                    Overdue
                   </span>
                 )}
                 <span className="ml-auto" style={{ color: '#94a3b8', fontSize: '12px' }}>{r.owner}</span>
               </div>
-
-              {/* Row 4: Stats footer */}
               <div className="flex items-center gap-4" style={{ borderTop: '1px solid #e2e8f0', marginTop: '8px', paddingTop: '8px' }}>
                 <span style={{ fontSize: '11px', color: '#64748b' }}>
                   <span style={{ fontWeight: 600, color: '#334155' }}>{r.testsPass}/{r.testsTotal}</span> Tests
@@ -1111,59 +1285,49 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
 // ─── Timeline View ─────────────────────────────────────────────
 const MONTHS = ['Jan 2026', 'Feb 2026', 'Mar 2026', 'Apr 2026', 'May 2026', 'Jun 2026', 'Jul 2026', 'Aug 2026', 'Sep 2026', 'Oct 2026'];
 const BAR_COLORS: Record<string, string> = {
+  planned: '#e2e8f0',
   planning: '#e2e8f0',
+  active: '#a5b4fc',
+  development: '#a5b4fc',
   staging: '#a5b4fc',
   testing: '#fcd34d',
+  uat: '#fcd34d',
   released: '#6ee7b7',
 };
 const LEGEND_ITEMS = [
   { label: 'Critical', color: '#ef4444', shape: 'circle' },
   { label: 'At Risk', color: '#d97706', shape: 'circle' },
-  { label: 'Attention', color: '#2563eb', shape: 'circle' },
   { label: 'Healthy', color: '#0d9488', shape: 'circle' },
-  { label: 'Code Freeze', color: '#d97706', shape: 'diamond' },
-  { label: 'Go Live', color: '#0d9488', shape: 'diamond' },
+  { label: 'Today', color: '#ef4444', shape: 'line' },
 ];
 
 function TimelineView({ releases, onBarClick }: {
-  releases: Release[]; onBarClick: (r: Release) => void;
+  releases: ViewRelease[]; onBarClick: (r: ViewRelease) => void;
 }) {
-  const [timeScale, setTimeScale] = useState<'week' | 'month' | 'quarter'>('month');
-  const [hoveredRelease, setHoveredRelease] = useState<Release | null>(null);
+  const [hoveredRelease, setHoveredRelease] = useState<ViewRelease | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
-  const handleBarHover = (e: React.MouseEvent, r: Release | null) => {
+  const handleBarHover = (e: React.MouseEvent, r: ViewRelease | null) => {
     setHoveredRelease(r);
     if (r) setTooltipPos({ x: e.clientX, y: e.clientY });
   };
 
+  // Calculate today marker position
+  const timelineStart = new Date('2026-01-01').getTime();
+  const timelineEnd = new Date('2026-11-01').getTime();
+  const todayPos = Math.max(0, Math.min(100, ((Date.now() - timelineStart) / (timelineEnd - timelineStart)) * 100));
+
   return (
     <div className="flex flex-col h-full">
-      {/* Header row */}
       <div className="flex items-center justify-between mb-2">
-        <div className="flex" style={{ border: '1px solid #e2e8f0', borderRadius: '6px', overflow: 'hidden' }}>
-          {(['week', 'month', 'quarter'] as const).map(t => (
-            <button
-              key={t}
-              onClick={() => t === 'month' ? setTimeScale(t) : toast.info('Coming soon')}
-              style={{
-                padding: '4px 10px', fontSize: '12px', fontWeight: timeScale === t ? 600 : 400,
-                background: timeScale === t ? '#dbeafe' : '#fff',
-                color: timeScale === t ? '#2563eb' : '#64748b',
-                border: 'none', cursor: 'pointer', textTransform: 'capitalize' as const,
-              }}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
+        <div />
         <div className="flex items-center gap-4">
           {LEGEND_ITEMS.map(l => (
             <div key={l.label} className="flex items-center gap-1" style={{ fontSize: '11px', color: '#64748b' }}>
               {l.shape === 'circle' ? (
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: l.color }} />
               ) : (
-                <div style={{ width: '8px', height: '8px', background: l.color, transform: 'rotate(45deg)' }} />
+                <div style={{ width: '12px', height: '2px', background: l.color, borderRadius: '1px' }} />
               )}
               {l.label}
             </div>
@@ -1171,9 +1335,7 @@ function TimelineView({ releases, onBarClick }: {
         </div>
       </div>
 
-      {/* Chart body */}
       <div className="flex flex-1 min-h-0" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden', background: '#fff' }}>
-        {/* Left column */}
         <div style={{ width: '260px', flexShrink: 0, borderRight: '1px solid #e2e8f0' }}>
           <div style={{ height: '32px', background: '#f8fafc', display: 'flex', alignItems: 'center', padding: '0 12px', borderBottom: '1px solid #e2e8f0' }}>
             <span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>RELEASE</span>
@@ -1188,15 +1350,13 @@ function TimelineView({ releases, onBarClick }: {
               <span style={{ padding: '1px 6px', background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '4px', fontSize: '11px', fontWeight: 600, flexShrink: 0 }}>{r.version}</span>
               <div className="min-w-0">
                 <div className="truncate" style={{ fontSize: '13px', fontWeight: 500, color: '#0f172a' }}>{r.name}</div>
-                <div style={{ fontSize: '10px', color: '#64748b' }}>{STATUS_CONFIG[r.status]?.label}</div>
+                <div style={{ fontSize: '10px', color: '#64748b' }}>{getStatusConfig(r.status).label}</div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Right column — chart area */}
         <div className="flex-1 overflow-x-auto relative">
-          {/* Month headers */}
           <div className="flex" style={{ height: '32px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
             {MONTHS.map(m => (
               <div key={m} className="flex-1" style={{ minWidth: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 500, color: '#64748b', borderRight: '1px solid #f1f5f9' }}>
@@ -1206,18 +1366,16 @@ function TimelineView({ releases, onBarClick }: {
           </div>
 
           {/* Today marker */}
-          <div className="absolute" style={{ left: '15%', top: '32px', bottom: 0, width: '2px', background: '#ef4444', zIndex: 5 }}>
+          <div className="absolute" style={{ left: `${todayPos}%`, top: '32px', bottom: 0, width: '2px', background: '#ef4444', zIndex: 5, borderStyle: 'dashed' }}>
             <span style={{ position: 'absolute', top: '-16px', left: '-12px', fontSize: '10px', fontWeight: 600, color: '#ef4444' }}>Today</span>
           </div>
 
-          {/* Bars */}
           {releases.map((r, i) => (
             <div key={r.id} className="relative" style={{ height: '44px', borderBottom: '1px solid #f1f5f9' }}>
-              {/* Bar */}
               <div
                 onClick={() => onBarClick(r)}
                 onMouseMove={e => handleBarHover(e, r)}
-                onMouseLeave={() => setHoveredRelease(null)}
+                onMouseLeave={e => { setHoveredRelease(null); e.currentTarget.style.filter = ''; }}
                 className="absolute cursor-pointer"
                 style={{
                   left: `${r.barLeft}%`, width: `${r.barWidth}%`,
@@ -1228,39 +1386,21 @@ function TimelineView({ releases, onBarClick }: {
                   transformOrigin: 'left center',
                   transition: 'filter 100ms',
                   zIndex: 1,
+                  overflow: 'hidden',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(0.88)')}
               >
+                {/* Progress fill inside bar */}
                 {r.progress > 0 && (
-                  <span style={{ fontSize: '10px', fontWeight: 600, color: '#334155', padding: '0 6px', lineHeight: '24px' }}>{r.progress}%</span>
+                  <div style={{ width: `${r.progress}%`, height: '100%', background: getHealthColor(r.health), opacity: 0.6, position: 'absolute', left: 0, top: 0 }} />
                 )}
+                <span style={{ fontSize: '10px', fontWeight: 600, color: '#334155', padding: '0 6px', lineHeight: '24px', position: 'relative', zIndex: 1 }}>{r.progress}%</span>
               </div>
-              {/* Code Freeze diamond */}
-              <div
-                className="absolute transition-transform hover:scale-[1.3]"
-                title={`Code Freeze: ${r.targetDate}`}
-                style={{
-                  left: `${r.barLeft + r.barWidth - 2}%`, top: '17px',
-                  width: '10px', height: '10px', background: '#d97706',
-                  transform: 'rotate(45deg)', zIndex: 2,
-                }}
-              />
-              {/* Go Live diamond */}
-              <div
-                className="absolute transition-transform hover:scale-[1.3]"
-                title={`Go Live: ${r.targetDate}`}
-                style={{
-                  left: `${r.barLeft + r.barWidth + 1}%`, top: '17px',
-                  width: '10px', height: '10px', background: '#0d9488',
-                  transform: 'rotate(45deg)', zIndex: 2,
-                }}
-              />
             </div>
           ))}
         </div>
       </div>
 
-      {/* Tooltip */}
       {hoveredRelease && (
         <div
           className="fixed z-50 pointer-events-none"
@@ -1272,7 +1412,7 @@ function TimelineView({ releases, onBarClick }: {
           }}
         >
           <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>{hoveredRelease.name}</div>
-          <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Status: {STATUS_CONFIG[hoveredRelease.status]?.label}</div>
+          <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Status: {getStatusConfig(hoveredRelease.status).label}</div>
           <div style={{ fontSize: '12px', marginTop: '2px' }}>
             <span style={{ color: '#64748b' }}>Health: </span>
             <span style={{ color: getHealthColor(hoveredRelease.health), fontWeight: 600 }}>{hoveredRelease.health} ({getHealthDisplay(hoveredRelease.health)})</span>
