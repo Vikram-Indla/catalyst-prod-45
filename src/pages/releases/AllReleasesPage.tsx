@@ -300,8 +300,12 @@ export default function AllReleasesPage() {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName;
-      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return;
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) {
+        if (e.key === 'Escape') { (e.target as HTMLElement).blur(); }
+        return;
+      }
       if (e.key === '/') { e.preventDefault(); searchRef.current?.focus(); }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); searchRef.current?.focus(); }
       if (e.key === 'Escape') {
         setIsNewReleaseModalOpen(false);
         setIsExportDropdownOpen(false);
@@ -556,7 +560,7 @@ export default function AllReleasesPage() {
           <div className="flex items-center gap-5">
             <StatItem number={statCounts.total} label="Total" />
             <StatItem number={statCounts.planning} label="Planning" dotColor="#94a3b8" />
-            <StatItem number={statCounts.staging} label="Staging" dotColor="#6366f1" />
+            <StatItem number={statCounts.staging} label="Staging" dotColor="#8b5cf6" />
             <StatItem number={statCounts.testing} label="Testing" dotColor="#d97706" />
             <StatItem number={statCounts.atRisk} label="At Risk" dotColor="#ef4444" />
             <StatItem number={statCounts.released} label="Released" dotColor="#0d9488" />
