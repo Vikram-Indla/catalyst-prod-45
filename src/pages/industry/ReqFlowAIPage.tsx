@@ -37,9 +37,9 @@ interface BrdDocument {
   template: number;
   language: string;
   sections: { id: string; title: string; content: string; order: number }[];
-  requirements: { id: string; code: string; type: 'functional' | 'non-functional'; priority: 'must' | 'should' | 'could' | 'wont'; description: string; acceptance: string }[];
-  epics: { id: string; title: string; description: string; stories: { id: string; title: string; points: number; priority: string }[] }[];
-  uatCases: { id: string; scenario: string; given: string; when: string; then: string; priority: 'high' | 'medium' | 'low' }[];
+  requirements: { id: string; code: string; type: 'functional' | 'non-functional'; priority: 'must' | 'should' | 'could' | 'wont'; description: string; acceptance: string; category?: string }[];
+  epics: { id: string; title: string; description: string; stories: { id: string; title: string; points: number; priority: string; acceptance?: string[] }[] }[];
+  uatCases: { id: string; scenario: string; given: string; when: string; then: string; priority: 'high' | 'medium' | 'low'; type?: 'positive' | 'negative' }[];
   created: string;
 }
 
@@ -165,6 +165,7 @@ function generateMockBrd(tplIdx: number, lang: string, history: BrdEntry[]): { e
     order: i,
   }));
 
+  const CATEGORIES = ['User Interface', 'Data Processing', 'Security', 'Integration', 'Performance', 'Reporting', 'Workflow', 'Compliance'];
   const funcCount = Math.floor(Math.random() * 15) + 20;
   const nfCount = Math.floor(Math.random() * 8) + 8;
   const requirements = [
@@ -175,6 +176,7 @@ function generateMockBrd(tplIdx: number, lang: string, history: BrdEntry[]): { e
       priority: (['must', 'should', 'could', 'wont'] as const)[Math.floor(Math.random() * 3)],
       description: `The system shall provide capability ${i + 1} as defined in the business requirements specification.`,
       acceptance: `Verify that capability ${i + 1} functions correctly under standard and edge-case conditions.`,
+      category: CATEGORIES[i % CATEGORIES.length],
     })),
     ...Array.from({ length: nfCount }, (_, i) => ({
       id: `NFR-${String(i + 1).padStart(3, '0')}`,
@@ -183,21 +185,27 @@ function generateMockBrd(tplIdx: number, lang: string, history: BrdEntry[]): { e
       priority: (['must', 'should', 'could'] as const)[Math.floor(Math.random() * 3)],
       description: `The system shall meet non-functional requirement ${i + 1} for performance, security, or scalability.`,
       acceptance: `Measure and validate NFR ${i + 1} against defined thresholds.`,
+      category: CATEGORIES[(i + 3) % CATEGORIES.length],
     })),
   ];
 
-  const epicCount = Math.floor(Math.random() * 4) + 4;
+  const epicCount = Math.floor(Math.random() * 4) + 8;
   const epics = Array.from({ length: epicCount }, (_, i) => {
     const storyCount = Math.floor(Math.random() * 5) + 3;
     return {
       id: `EPIC-${i + 1}`,
-      title: `Epic ${i + 1}: ${['User Management', 'Data Integration', 'Reporting Engine', 'Notification System', 'Workflow Automation', 'Security Module', 'Analytics Dashboard', 'API Gateway'][i % 8]}`,
+      title: `Epic ${i + 1}: ${['User Management', 'Data Integration', 'Reporting Engine', 'Notification System', 'Workflow Automation', 'Security Module', 'Analytics Dashboard', 'API Gateway', 'Document Management', 'Audit Trail', 'Role Based Access', 'License Processing'][i % 12]}`,
       description: `This epic covers the implementation of major feature area ${i + 1}.`,
       stories: Array.from({ length: storyCount }, (_, j) => ({
         id: `US-${i + 1}.${j + 1}`,
         title: `Story ${j + 1} for Epic ${i + 1}`,
         points: [1, 2, 3, 5, 8, 13][Math.floor(Math.random() * 6)],
         priority: (['high', 'medium', 'low'] as const)[Math.floor(Math.random() * 3)],
+        acceptance: [
+          `✓ User can perform action ${j + 1} successfully`,
+          `✓ System validates all required fields`,
+          `✓ Appropriate error messages are displayed for invalid input`,
+        ],
       })),
     };
   });
@@ -211,6 +219,7 @@ function generateMockBrd(tplIdx: number, lang: string, history: BrdEntry[]): { e
     when: `When the user performs the designated action for scenario ${i + 1}`,
     then: `Then the system responds correctly and all acceptance criteria are met`,
     priority: (['high', 'medium', 'low'] as const)[Math.floor(Math.random() * 3)],
+    type: (i % 5 === 4 ? 'negative' : 'positive') as 'positive' | 'negative',
   }));
 
   const entry: BrdEntry = {
@@ -278,7 +287,11 @@ export default function ReqFlowAIPage() {
   const [activeTab, setActiveTab] = useState<'brd' | 'reqs' | 'epics' | 'uat'>('brd');
   const [expandedEpics, setExpandedEpics] = useState<Set<string>>(new Set());
   const [reqSearch, setReqSearch] = useState('');
-
+  const [reqSortCol, setReqSortCol] = useState<'code' | 'type' | 'priority' | 'description'>('code');
+  const [reqSortDir, setReqSortDir] = useState<'asc' | 'desc'>('asc');
+  const [showJiraModal, setShowJiraModal] = useState(false);
+  const [jiraKey, setJiraKey] = useState('');
+  const [jiraPublishing, setJiraPublishing] = useState(false);
   // Persist
   useEffect(() => { saveHistory(history); }, [history]);
   useEffect(() => { saveDocs(docs); }, [docs]);
@@ -390,15 +403,87 @@ export default function ReqFlowAIPage() {
     setSelectedRows(new Set());
   }, [selectedRows]);
 
-  const handleExport = useCallback((doc: BrdDocument) => {
+  const handleExport = useCallback((doc: BrdDocument, brdOnly?: boolean) => {
     const secs = TEMPLATES[doc.template]?.sections || [];
-    const html = `<!DOCTYPE html><html><head><title>${doc.title}</title><style>body{font-family:'Plus Jakarta Sans',sans-serif;max-width:800px;margin:0 auto;padding:40px;color:#0F172A}h1{font-size:28px;border-bottom:2px solid #2563EB;padding-bottom:12px}h2{font-size:18px;color:#2563EB;margin-top:32px}p{line-height:1.75;font-size:13.5px}.meta{color:#64748B;font-size:12px;margin-bottom:24px}</style></head><body><h1>${doc.title}</h1><div class="meta">ID: ${doc.id} | Template: ${TEMPLATES[doc.template].name} | ${new Date(doc.created).toLocaleDateString()}</div>${doc.sections.map((s, i) => `<h2>${secs[i] || `${i + 1}. ${s.title}`}</h2><p>${s.content}</p>`).join('')}</body></html>`;
+    const tpl = TEMPLATES[doc.template];
+    const tplC = TPL_COLORS[doc.template] || TPL_COLORS[0];
+    const funcReqs = doc.requirements.filter(r => r.type === 'functional');
+    const nfReqs = doc.requirements.filter(r => r.type === 'non-functional');
+    const totalStories = doc.epics.reduce((a, e) => a + e.stories.length, 0);
+    const dateStr = new Date(doc.created).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    const reqsTable = brdOnly ? '' : `
+      <h2 style="color:${tplC.color};margin-top:48px;page-break-before:always">Requirements Traceability Matrix</h2>
+      <table class="brd-tbl"><thead><tr><th>ID</th><th>Type</th><th>Priority</th><th>Description</th></tr></thead><tbody>
+      ${doc.requirements.map(r => `<tr><td style="font-family:'JetBrains Mono',monospace;color:#2563EB;font-weight:600">${r.code}</td><td>${r.type === 'functional' ? 'FUNC' : 'NFR'}</td><td style="text-transform:uppercase">${r.priority}</td><td>${r.description}</td></tr>`).join('')}
+      </tbody></table>`;
+
+    const uatTable = brdOnly ? '' : `
+      <h2 style="color:${tplC.color};margin-top:48px;page-break-before:always">UAT Scenarios</h2>
+      <table class="brd-tbl"><thead><tr><th>ID</th><th>Scenario</th><th>Given</th><th>When</th><th>Then</th><th>Priority</th></tr></thead><tbody>
+      ${doc.uatCases.map(u => `<tr><td style="font-family:'JetBrains Mono',monospace;color:#2563EB;font-weight:600">${u.id}</td><td>${u.scenario}</td><td>${u.given}</td><td>${u.when}</td><td>${u.then}</td><td style="text-transform:uppercase">${u.priority}</td></tr>`).join('')}
+      </tbody></table>`;
+
+    const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>${doc.title}</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+      *{box-sizing:border-box;margin:0;padding:0}
+      body{font-family:'Plus Jakarta Sans',sans-serif;max-width:900px;margin:0 auto;padding:48px;color:#0F172A;font-size:13.5px;line-height:1.75}
+      .cover{text-align:center;padding:64px 0 48px;border-bottom:4px solid #2563EB;margin-bottom:48px}
+      .cover h1{font-size:36px;font-weight:900;line-height:1.1;margin-bottom:16px}
+      .cover .classification{display:inline-block;padding:4px 12px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;background:#FEF2F2;color:#991B1B;margin-bottom:24px}
+      .meta-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:24px;text-align:left}
+      .meta-grid dt{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:#94A3B8}
+      .meta-grid dd{font-size:14px;font-weight:600;color:#0F172A;margin:0}
+      .toc{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:8px;padding:20px 24px;margin-bottom:40px}
+      .toc h3{font-size:14px;font-weight:700;margin-bottom:12px;color:#0F172A}
+      .toc-item{display:block;font-size:13px;color:#64748B;text-decoration:none;padding:3px 0}
+      .toc-item:hover{color:#2563EB}
+      h2{font-size:20px;font-weight:800;color:${tplC.color};margin-top:40px;margin-bottom:12px}
+      h2 .sec-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;background:${tplC.bg};color:${tplC.color};font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;margin-right:8px}
+      p{margin-bottom:16px}
+      .brd-tbl{width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden;margin:16px 0}
+      .brd-tbl th{background:#F1F5F9;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:#64748B;padding:8px 12px;text-align:left}
+      .brd-tbl td{padding:8px 12px;font-size:13px;border-bottom:1px solid #F1F5F9}
+      .brd-tbl tr:hover td{background:#F8FAFC}
+      .approval{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:48px;page-break-before:always}
+      .approval-box{border:2px dashed #E2E8F0;border-radius:8px;padding:20px;background:#F8FAFC}
+      .approval-box h4{font-size:12px;font-weight:700;color:#334155;margin-bottom:16px}
+      .approval-box .sig-line{border-bottom:1px solid #94A3B8;height:32px;margin-bottom:8px}
+      .approval-box .sig-label{font-size:10px;color:#94A3B8}
+      .footer{margin-top:48px;padding-top:16px;border-top:1px solid #E2E8F0;font-size:11px;color:#94A3B8;text-align:center}
+      @media print{body{padding:24px}.cover{page-break-after:always}h2{page-break-after:avoid}}
+    </style></head><body>
+    <div class="cover">
+      <div class="classification">CONFIDENTIAL — Government Use Only</div>
+      <h1>${doc.title}</h1>
+      <dl class="meta-grid">
+        <div><dt>Document ID</dt><dd>${doc.id}</dd></div>
+        <div><dt>Template</dt><dd>${tpl.name}</dd></div>
+        <div><dt>Language</dt><dd>${doc.language}</dd></div>
+        <div><dt>Date</dt><dd>${dateStr}</dd></div>
+        <div><dt>Requirements</dt><dd>${doc.requirements.length} (${funcReqs.length}F + ${nfReqs.length}NF)</dd></div>
+        <div><dt>UAT Coverage</dt><dd>${doc.uatCases.length} scenarios</dd></div>
+      </dl>
+    </div>
+    <div class="toc">
+      <h3>Table of Contents</h3>
+      ${secs.map((s, i) => `<a class="toc-item" href="#sec-${i}">${s}</a>`).join('')}
+    </div>
+    ${doc.sections.map((s, i) => `<h2 id="sec-${i}"><span class="sec-num">${i + 1}</span>${secs[i] || s.title}</h2><p>${s.content}</p>`).join('')}
+    ${reqsTable}
+    ${uatTable}
+    <div class="approval">
+      ${['Prepared By', 'Reviewed By', 'Approved By', 'Accepted By'].map(role => `<div class="approval-box"><h4>${role}</h4><div class="sig-line"></div><div class="sig-label">Name & Signature</div><div style="margin-top:12px"><div class="sig-line"></div><div class="sig-label">Date</div></div></div>`).join('')}
+    </div>
+    <div class="footer">${doc.id} · ${tpl.name} · ${dateStr} · Generated by ReqFlow AI</div>
+    </body></html>`;
     const blob = new Blob([html], { type: 'text/html' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = `${doc.id}_BRD.html`;
     a.click();
-    showToast('success', 'BRD exported as HTML');
+    showToast('success', brdOnly ? 'BRD-only exported as HTML' : 'Full BRD exported as HTML');
   }, []);
 
   const handleExportUat = useCallback((doc: BrdDocument) => {
@@ -1039,7 +1124,7 @@ export default function ReqFlowAIPage() {
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // SCREEN 4: VIEWER
+  // SCREEN 4: VIEWER — Professional BRD Document
   // ═══════════════════════════════════════════════════════════════
 
   function ViewerScreen() {
@@ -1050,64 +1135,98 @@ export default function ReqFlowAIPage() {
     const funcReqs = doc.requirements.filter(r => r.type === 'functional');
     const nfReqs = doc.requirements.filter(r => r.type === 'non-functional');
     const totalStories = doc.epics.reduce((a, e) => a + e.stories.length, 0);
+    const dateStr = new Date(doc.created).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    const uatCoverage = entry ? entry.coverage : Math.round((doc.uatCases.length / Math.max(doc.requirements.length, 1)) * 100);
+    const uatDisplayLimit = 50;
 
-    const filteredReqs = reqSearch
-      ? doc.requirements.filter(r => (r.description + r.code).toLowerCase().includes(reqSearch.toLowerCase()))
-      : doc.requirements;
+    // Sort + filter requirements
+    const filteredReqs = useMemo(() => {
+      let r = [...doc.requirements];
+      if (reqSearch) {
+        const q = reqSearch.toLowerCase();
+        r = r.filter(rr => (rr.description + rr.code + rr.priority + (rr.category || '')).toLowerCase().includes(q));
+      }
+      r.sort((a, b) => {
+        const priority = { must: 0, should: 1, could: 2, wont: 3 };
+        let va: any, vb: any;
+        if (reqSortCol === 'code') { va = a.code; vb = b.code; }
+        else if (reqSortCol === 'type') { va = a.type; vb = b.type; }
+        else if (reqSortCol === 'priority') { va = priority[a.priority]; vb = priority[b.priority]; }
+        else { va = a.description; vb = b.description; }
+        return reqSortDir === 'asc' ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
+      });
+      return r;
+    }, [doc.requirements, reqSearch, reqSortCol, reqSortDir]);
+
+    const toggleReqSort = (col: typeof reqSortCol) => {
+      if (reqSortCol === col) setReqSortDir(d => d === 'asc' ? 'desc' : 'asc');
+      else { setReqSortCol(col); setReqSortDir('asc'); }
+    };
+
+    const handleJiraPublish = () => {
+      if (!/^[A-Z0-9]{2,10}$/.test(jiraKey)) {
+        showToast('error', 'Project key must be 2-10 uppercase alphanumeric characters');
+        return;
+      }
+      setJiraPublishing(true);
+      setTimeout(() => {
+        setJiraPublishing(false);
+        setShowJiraModal(false);
+        setJiraKey('');
+        showToast('success', `✅ Published ${doc.requirements.length} requirements to ${jiraKey}`);
+      }, 1500);
+    };
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-        {/* Top bar */}
-        <div style={{ flexShrink: 0, padding: '0 24px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', position: 'relative' }}>
+        {/* Viewer Header */}
+        <div style={{ flexShrink: 0, padding: '12px 24px', borderBottom: '1px solid #E2E8F0', background: '#FFF' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
             <button
               onClick={() => setScreen('library')}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', fontWeight: 500, color: '#64748B', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 500, color: '#64748B', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#2563EB')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#64748B')}
             >
               <ChevronLeft size={14} /> ← Back to Library
             </button>
-            <span style={{ color: '#E2E8F0' }}>|</span>
-            <span style={{ fontSize: '11px', fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: '#64748B' }}>{doc.id}</span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', height: '22px', padding: '0 8px', borderRadius: '11px', fontSize: '11px', fontWeight: 500, background: tplC.bg, color: tplC.color }}>
-              {tpl.name}
-            </span>
           </div>
-
-          {/* Export bar — sticky in the top bar */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <SmallBtn icon={<Download size={13} />} label="Export BRD" onClick={() => handleExport(doc)} />
-            <SmallBtn icon={<Download size={13} />} label="Export UAT" onClick={() => handleExportUat(doc)} />
-            <SmallBtn icon={<Clipboard size={13} />} label="Copy All" onClick={() => handleCopyAll(doc)} />
-            <button
-              onClick={() => showToast('success', 'Published to Jira — Epics and stories synced')}
-              style={{ height: '32px', padding: '0 12px', fontSize: '13px', fontWeight: 600, color: '#FFF', background: '#2563EB', borderRadius: '6px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-            >
-              <ExternalLink size={13} /> Publish to Jira
-            </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ fontSize: '11px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", padding: '3px 10px', borderRadius: '6px', background: '#EFF6FF', color: '#2563EB' }}>
+              {doc.id}
+            </span>
+            <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#0F172A', margin: 0, lineHeight: 1.2 }}>{doc.title}</h2>
+          </div>
+          <div style={{ fontSize: '12px', color: '#64748B', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 8px', borderRadius: '10px', fontSize: '11px', fontWeight: 500, background: tplC.bg, color: tplC.color }}>{tpl.name}</span>
+            <span>·</span>
+            <span>{doc.language}</span>
+            <span>·</span>
+            <span>{dateStr}</span>
           </div>
         </div>
 
         {/* Tab bar */}
         <div style={{ flexShrink: 0, padding: '0 24px', display: 'flex', alignItems: 'center', gap: '4px', borderBottom: '1px solid #E2E8F0', background: '#FAFBFC' }}>
           {([
-            { key: 'brd', label: 'Full BRD', count: doc.sections.length },
-            { key: 'reqs', label: 'Requirements', count: doc.requirements.length },
-            { key: 'epics', label: 'Epics & Stories', count: doc.epics.length + totalStories },
-            { key: 'uat', label: 'UAT Scenarios', count: doc.uatCases.length },
-          ] as const).map(tab => (
+            { key: 'brd' as const, icon: '📄', label: 'Full BRD', count: doc.sections.length },
+            { key: 'reqs' as const, icon: '📋', label: 'Requirements', count: doc.requirements.length },
+            { key: 'epics' as const, icon: '🎯', label: 'Epics & Stories', count: doc.epics.length + totalStories },
+            { key: 'uat' as const, icon: '✅', label: 'UAT', count: doc.uatCases.length },
+          ]).map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               style={{
-                height: '40px', padding: '0 16px', fontSize: '13px', fontWeight: activeTab === tab.key ? 600 : 500,
+                height: '40px', padding: '0 16px', fontSize: '13px',
+                fontWeight: activeTab === tab.key ? 700 : 500,
                 color: activeTab === tab.key ? '#2563EB' : '#64748B',
-                borderBottom: activeTab === tab.key ? '2px solid #2563EB' : '2px solid transparent',
-                background: 'none', border: 'none', borderBottomWidth: '2px', borderBottomStyle: 'solid',
-                borderBottomColor: activeTab === tab.key ? '#2563EB' : 'transparent',
+                background: 'none', border: 'none',
+                borderBottom: `2px solid ${activeTab === tab.key ? '#2563EB' : 'transparent'}`,
                 cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
               }}
             >
-              {tab.label}
+              {tab.icon} {tab.label}
               <span style={{
                 fontSize: '9px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace",
                 padding: '1px 6px', borderRadius: '10px',
@@ -1122,12 +1241,14 @@ export default function ReqFlowAIPage() {
 
         {/* Tab content */}
         <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+
+          {/* ──── FULL BRD TAB ──── */}
           {activeTab === 'brd' && (
             <div style={{ display: 'flex', minHeight: '100%' }}>
-              {/* TOC sidebar — 240px sticky */}
-              <div style={{ width: '240px', minWidth: '240px', flexShrink: 0, borderRight: '1px solid #E2E8F0', padding: '16px 0', overflowY: 'auto' }}>
+              {/* TOC sidebar — 240px */}
+              <div style={{ width: '240px', minWidth: '240px', flexShrink: 0, borderRight: '1px solid #E2E8F0', padding: '16px 0', position: 'sticky', top: 0, alignSelf: 'flex-start', maxHeight: 'calc(100vh - 200px)', overflowY: 'auto' }}>
                 <div style={{ padding: '0 16px', marginBottom: '8px', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#94A3B8' }}>
-                  Table of Contents
+                  Table of Contents ({doc.sections.length})
                 </div>
                 {doc.sections.map((sec, i) => (
                   <button
@@ -1138,39 +1259,72 @@ export default function ReqFlowAIPage() {
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                   >
                     <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', opacity: 0.5, marginRight: '6px' }}>{i + 1}.</span>
-                    {sec.title}
+                    {tpl.sections[i]?.replace(/^§\d+\s+/, '') || sec.title}
                   </button>
                 ))}
               </div>
 
-              {/* BRD content */}
-              <div style={{ flex: 1, padding: '24px 32px', maxWidth: '800px' }}>
-                <div style={{ marginBottom: '32px', paddingBottom: '20px', borderBottom: '2px solid #2563EB' }}>
-                  <h1 style={{ fontSize: '36px', fontWeight: 900, lineHeight: 1.1, color: '#0F172A', marginBottom: '8px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              {/* BRD Document content */}
+              <div style={{ flex: 1, padding: '32px 40px', maxWidth: '840px' }}>
+                {/* Cover page */}
+                <div style={{ textAlign: 'center', paddingBottom: '32px', marginBottom: '40px', borderBottom: '4px solid #2563EB' }}>
+                  <div style={{ display: 'inline-block', padding: '4px 12px', borderRadius: '4px', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', background: '#FEF2F2', color: '#991B1B', marginBottom: '20px' }}>
+                    CONFIDENTIAL — Government Use Only
+                  </div>
+                  <h1 style={{ fontSize: '36px', fontWeight: 900, lineHeight: 1.1, color: '#0F172A', marginBottom: '20px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
                     {doc.title}
                   </h1>
-                  <div style={{ fontSize: '12px', color: '#64748B', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <span>{doc.id}</span><span>·</span>
-                    <span>{tpl.name}</span><span>·</span>
-                    <span>{doc.requirements.length} Requirements ({funcReqs.length}F + {nfReqs.length}NF)</span><span>·</span>
-                    <span>{doc.epics.length} Epics · {totalStories} Stories</span><span>·</span>
-                    <span>{doc.uatCases.length} UAT</span><span>·</span>
-                    <span>{new Date(doc.created).toLocaleDateString()}</span>
+                  {/* 3×2 metadata grid */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', textAlign: 'left', marginTop: '24px' }}>
+                    {[
+                      { label: 'DOCUMENT ID', value: doc.id },
+                      { label: 'TEMPLATE', value: tpl.name },
+                      { label: 'LANGUAGE', value: doc.language },
+                      { label: 'DATE', value: dateStr },
+                      { label: 'REQUIREMENTS', value: `${doc.requirements.length} (${funcReqs.length}F + ${nfReqs.length}NF)` },
+                      { label: 'UAT COVERAGE', value: `${doc.uatCases.length} scenarios · ${uatCoverage}%` },
+                    ].map(m => (
+                      <div key={m.label}>
+                        <div style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#94A3B8', marginBottom: '4px' }}>{m.label}</div>
+                        <div style={{ fontSize: '14px', fontWeight: 600, color: '#0F172A' }}>{m.value}</div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
+                {/* TOC block inside document */}
+                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '20px 24px', marginBottom: '40px' }}>
+                  <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', marginBottom: '12px' }}>Table of Contents</h3>
+                  {doc.sections.map((sec, i) => (
+                    <a
+                      key={sec.id}
+                      href={`#brd-sec-${i}`}
+                      onClick={e => { e.preventDefault(); document.getElementById(`brd-sec-${i}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
+                      style={{ display: 'block', fontSize: '13px', color: '#64748B', textDecoration: 'none', padding: '3px 0', cursor: 'pointer' }}
+                      onMouseEnter={e => (e.currentTarget.style.color = '#2563EB')}
+                      onMouseLeave={e => (e.currentTarget.style.color = '#64748B')}
+                    >
+                      {tpl.sections[i] || `${i + 1}. ${sec.title}`}
+                    </a>
+                  ))}
+                </div>
+
+                {/* Document sections */}
                 {doc.sections.map((sec, i) => (
-                  <div key={sec.id} id={`brd-sec-${i}`} style={{ marginBottom: '32px' }}>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                      <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#2563EB', marginBottom: '8px' }}>
-                        {tpl.sections[i] || `${i + 1}. ${sec.title}`}
+                  <div key={sec.id} id={`brd-sec-${i}`} style={{ marginBottom: '36px', scrollMarginTop: '60px' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
+                      <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#0F172A', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '6px', background: tplC.bg, color: tplC.color, fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', fontWeight: 700, flexShrink: 0 }}>
+                          {i + 1}
+                        </span>
+                        {tpl.sections[i]?.replace(/^§\d+\s+/, '') || sec.title}
                       </h2>
                       <button
                         onClick={() => handleCopySection(sec)}
                         title="Copy section"
-                        style={{ padding: '4px', borderRadius: '4px', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', opacity: 0.5 }}
+                        style={{ padding: '4px', borderRadius: '4px', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', opacity: 0.4, flexShrink: 0, marginTop: '4px' }}
                         onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = '#F1F5F9'; }}
-                        onMouseLeave={e => { e.currentTarget.style.opacity = '0.5'; e.currentTarget.style.background = 'none'; }}
+                        onMouseLeave={e => { e.currentTarget.style.opacity = '0.4'; e.currentTarget.style.background = 'none'; }}
                       >
                         <Clipboard size={14} />
                       </button>
@@ -1180,31 +1334,97 @@ export default function ReqFlowAIPage() {
                     </p>
                   </div>
                 ))}
+
+                {/* Approval block */}
+                <div style={{ marginTop: '48px', paddingTop: '24px', borderTop: '2px solid #E2E8F0' }}>
+                  <h2 style={{ fontSize: '16px', fontWeight: 700, color: '#0F172A', marginBottom: '16px' }}>Document Approval</h2>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    {['Prepared By', 'Reviewed By', 'Approved By', 'Accepted By'].map(role => (
+                      <div key={role} style={{ border: '2px dashed #E2E8F0', borderRadius: '8px', padding: '20px', background: '#F8FAFC' }}>
+                        <h4 style={{ fontSize: '12px', fontWeight: 700, color: '#334155', marginBottom: '16px' }}>{role}</h4>
+                        <div style={{ borderBottom: '1px solid #94A3B8', height: '32px', marginBottom: '8px' }} />
+                        <div style={{ fontSize: '10px', color: '#94A3B8' }}>Name & Signature</div>
+                        <div style={{ marginTop: '12px' }}>
+                          <div style={{ borderBottom: '1px solid #94A3B8', height: '32px', marginBottom: '8px' }} />
+                          <div style={{ fontSize: '10px', color: '#94A3B8' }}>Date</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Version History */}
+                <div style={{ marginTop: '32px' }}>
+                  <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0F172A', marginBottom: '12px' }}>Version History</h3>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', borderRadius: '8px', overflow: 'hidden' }}>
+                    <thead>
+                      <tr style={{ background: '#F1F5F9' }}>
+                        {['VERSION', 'DATE', 'AUTHOR', 'CHANGES'].map(h => (
+                          <th key={h} style={{ height: '32px', padding: '0 12px', textAlign: 'left', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#64748B' }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style={{ borderBottom: '1px solid #F1F5F9' }}>
+                        <td style={{ height: '36px', padding: '0 12px', fontSize: '13px', fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: '#2563EB' }}>1.0</td>
+                        <td style={{ height: '36px', padding: '0 12px', fontSize: '13px', color: '#334155' }}>{dateStr}</td>
+                        <td style={{ height: '36px', padding: '0 12px', fontSize: '13px', color: '#334155' }}>ReqFlow AI</td>
+                        <td style={{ height: '36px', padding: '0 12px', fontSize: '13px', color: '#334155' }}>Initial generation</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Document footer */}
+                <div style={{ marginTop: '40px', paddingTop: '16px', borderTop: '1px solid #E2E8F0', textAlign: 'center', fontSize: '11px', color: '#94A3B8' }}>
+                  {doc.id} · {tpl.name} · {dateStr} · Generated by ReqFlow AI
+                </div>
               </div>
             </div>
           )}
 
+          {/* ──── REQUIREMENTS TAB ──── */}
           {activeTab === 'reqs' && (
             <div style={{ padding: '16px 24px' }}>
+              {/* Filter bar */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                <div style={{ position: 'relative', flex: '0 1 280px' }}>
+                <div style={{ position: 'relative', flex: '0 1 320px' }}>
                   <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
                   <input
                     value={reqSearch}
                     onChange={e => setReqSearch(e.target.value)}
-                    placeholder="Search requirements..."
+                    placeholder="🔍 Search requirements..."
                     style={{ width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '12px', fontSize: '13px', border: '1px solid #E2E8F0', borderRadius: '6px', outline: 'none', background: 'transparent', color: '#0F172A' }}
+                    onFocus={e => (e.target.style.borderColor = '#2563EB')}
+                    onBlur={e => (e.target.style.borderColor = '#E2E8F0')}
                   />
                 </div>
-                <span style={{ fontSize: '12px', color: '#94A3B8' }}>{filteredReqs.length} of {doc.requirements.length}</span>
+                <span style={{ fontSize: '12px', color: '#94A3B8' }}>Showing {filteredReqs.length} of {doc.requirements.length}</span>
+                {reqSearch && (
+                  <button onClick={() => setReqSearch('')} style={{ fontSize: '12px', fontWeight: 500, color: '#64748B', background: 'none', border: '1px solid #E2E8F0', borderRadius: '4px', padding: '2px 8px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    <X size={10} /> Clear
+                  </button>
+                )}
               </div>
 
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ background: '#F8FAFC' }}>
-                    {['CODE', 'TYPE', 'PRIORITY', 'DESCRIPTION'].map(h => (
-                      <th key={h} style={{ height: '36px', padding: '0 12px', textAlign: 'left', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.6px', color: '#94A3B8', borderBottom: '2px solid #E2E8F0' }}>
-                        {h}
+                    {([
+                      { col: 'code' as const, label: 'ID', w: '100px' },
+                      { col: 'type' as const, label: 'TYPE', w: '130px' },
+                      { col: 'priority' as const, label: 'PRIORITY', w: '100px' },
+                      { col: 'description' as const, label: 'DESCRIPTION', w: undefined },
+                    ]).map(h => (
+                      <th
+                        key={h.label}
+                        onClick={() => toggleReqSort(h.col)}
+                        style={{ height: '36px', padding: '0 12px', textAlign: 'left', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#94A3B8', borderBottom: '2px solid #E2E8F0', width: h.w, cursor: 'pointer', userSelect: 'none' }}
+                      >
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          {h.label}
+                          {reqSortCol === h.col && (reqSortDir === 'asc' ? <SortAsc size={10} /> : <SortDesc size={10} />)}
+                        </span>
                       </th>
                     ))}
                   </tr>
@@ -1214,12 +1434,15 @@ export default function ReqFlowAIPage() {
                     <tr key={req.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
                       <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '11px', fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: '#2563EB' }}>{req.code}</td>
                       <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px', borderRadius: '10px', fontSize: '10px', fontWeight: 500, background: req.type === 'functional' ? '#EFF6FF' : '#F5F3FF', color: req.type === 'functional' ? '#2563EB' : '#7C3AED' }}>
-                          {req.type === 'functional' ? 'Functional' : 'Non-Functional'}
+                        <span style={{ display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px', borderRadius: '10px', fontSize: '10px', fontWeight: 500, background: req.type === 'functional' ? '#DBEAFE' : '#F3E8FF', color: req.type === 'functional' ? '#1E40AF' : '#6B21A8' }}>
+                          {req.type === 'functional' ? 'FUNC' : 'NFR'}
                         </span>
                       </td>
                       <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px', borderRadius: '10px', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', background: req.priority === 'must' ? '#FEF2F2' : req.priority === 'should' ? '#FEF3C7' : req.priority === 'could' ? '#ECFDF5' : '#F1F5F9', color: req.priority === 'must' ? '#B91C1C' : req.priority === 'should' ? '#D97706' : req.priority === 'could' ? '#059669' : '#64748B' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px', borderRadius: '10px', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase',
+                          background: req.priority === 'must' ? '#FEE2E2' : req.priority === 'should' ? '#FEF3C7' : req.priority === 'could' ? '#DBEAFE' : '#F1F5F9',
+                          color: req.priority === 'must' ? '#991B1B' : req.priority === 'should' ? '#92400E' : req.priority === 'could' ? '#1E40AF' : '#475569',
+                        }}>
                           {req.priority}
                         </span>
                       </td>
@@ -1231,6 +1454,7 @@ export default function ReqFlowAIPage() {
             </div>
           )}
 
+          {/* ──── EPICS TAB ──── */}
           {activeTab === 'epics' && (
             <div style={{ padding: '16px 24px' }}>
               {doc.epics.length === 0 ? (
@@ -1240,45 +1464,62 @@ export default function ReqFlowAIPage() {
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {doc.epics.map(epic => {
+                  {doc.epics.map((epic, epicIdx) => {
                     const isExpanded = expandedEpics.has(epic.id);
+                    const epicColors = ['#2563EB', '#7C3AED', '#D97706', '#059669', '#C2410C', '#B91C1C', '#0D9488', '#6366F1', '#EA580C', '#0891B2', '#4F46E5', '#DC2626'];
+                    const leftColor = epicColors[epicIdx % epicColors.length];
                     return (
-                      <div key={epic.id} style={{ border: '1px solid #E2E8F0', borderRadius: '8px', overflow: 'hidden' }}>
+                      <div key={epic.id} style={{ border: '1px solid #E2E8F0', borderRadius: '8px', overflow: 'hidden', borderLeft: `3px solid ${leftColor}` }}>
                         <button
                           onClick={() => setExpandedEpics(prev => { const n = new Set(prev); n.has(epic.id) ? n.delete(epic.id) : n.add(epic.id); return n; })}
-                          style={{ width: '100%', height: '44px', padding: '0 16px', display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+                          style={{ width: '100%', height: '48px', padding: '0 16px', display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
                           onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
                           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                         >
                           {isExpanded ? <ChevronDown size={14} style={{ color: '#64748B' }} /> : <ChevronRight size={14} style={{ color: '#64748B' }} />}
-                          <span style={{ fontSize: '14px', fontWeight: 500, color: '#0F172A', flex: 1 }}>{epic.title}</span>
+                          <span style={{ fontSize: '11px', fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: leftColor, minWidth: '60px' }}>{epic.id}</span>
+                          <span style={{ fontSize: '14px', fontWeight: 600, color: '#0F172A', flex: 1 }}>{epic.title}</span>
                           <span style={{ fontSize: '12px', color: '#64748B' }}>{epic.stories.length} stories · {epic.stories.reduce((a, s) => a + s.points, 0)} pts</span>
                         </button>
                         {isExpanded && (
-                          <div style={{ borderTop: '1px solid #E2E8F0' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                              <thead>
-                                <tr style={{ background: '#FAFBFC' }}>
-                                  {['ID', 'STORY', 'POINTS', 'PRIORITY'].map(h => (
-                                    <th key={h} style={{ height: '32px', padding: '0 12px 0 16px', textAlign: 'left', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.6px', color: '#94A3B8' }}>{h}</th>
-                                  ))}
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {epic.stories.map(story => (
-                                  <tr key={story.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                                    <td style={{ height: '36px', padding: '0 12px 0 16px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", color: '#2563EB' }}>{story.id}</td>
-                                    <td style={{ height: '36px', padding: '0 12px', fontSize: '13px', color: '#334155' }}>{story.title}</td>
-                                    <td style={{ height: '36px', padding: '0 12px', fontSize: '13px', fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: '#0F172A' }}>{story.points}</td>
-                                    <td style={{ height: '36px', padding: '0 12px' }}>
-                                      <span style={{ display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px', borderRadius: '10px', fontSize: '10px', fontWeight: 500, textTransform: 'capitalize', background: story.priority === 'high' ? '#FEF2F2' : story.priority === 'medium' ? '#FEF3C7' : '#ECFDF5', color: story.priority === 'high' ? '#B91C1C' : story.priority === 'medium' ? '#D97706' : '#059669' }}>
+                          <div style={{ borderTop: '1px solid #E2E8F0', padding: '12px 16px' }}>
+                            <p style={{ fontSize: '13px', color: '#64748B', marginBottom: '12px' }}>{epic.description}</p>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                              {epic.stories.map(story => (
+                                <div key={story.id} style={{ borderLeft: '3px solid #2563EB', background: '#FAFBFE', borderRadius: '6px', padding: '12px 16px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                      <span style={{ fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#2563EB' }}>{story.id}</span>
+                                      <span style={{ fontSize: '13px', fontWeight: 500, color: '#0F172A' }}>{story.title}</span>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                      <span style={{ fontSize: '12px', fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: '#0F172A' }}>{story.points} pts</span>
+                                      <span style={{ display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px', borderRadius: '10px', fontSize: '10px', fontWeight: 500, textTransform: 'capitalize',
+                                        background: story.priority === 'high' ? '#FEF2F2' : story.priority === 'medium' ? '#FEF3C7' : '#ECFDF5',
+                                        color: story.priority === 'high' ? '#B91C1C' : story.priority === 'medium' ? '#D97706' : '#059669',
+                                      }}>
                                         {story.priority}
                                       </span>
-                                    </td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
+                                      <button
+                                        onClick={() => { navigator.clipboard.writeText(`${story.id}: ${story.title}\nPoints: ${story.points}\nPriority: ${story.priority}\n${(story.acceptance || []).join('\n')}`); showToast('success', `${story.id} copied`); }}
+                                        style={{ padding: '2px', borderRadius: '4px', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }}
+                                        onMouseEnter={e => (e.currentTarget.style.color = '#2563EB')}
+                                        onMouseLeave={e => (e.currentTarget.style.color = '#94A3B8')}
+                                      >
+                                        <Copy size={12} />
+                                      </button>
+                                    </div>
+                                  </div>
+                                  {story.acceptance && story.acceptance.length > 0 && (
+                                    <div style={{ marginTop: '4px' }}>
+                                      {story.acceptance.map((ac, acIdx) => (
+                                        <div key={acIdx} style={{ fontSize: '12px', color: '#64748B', lineHeight: 1.6 }}>{ac}</div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>
@@ -1289,43 +1530,131 @@ export default function ReqFlowAIPage() {
             </div>
           )}
 
+          {/* ──── UAT TAB ──── */}
           {activeTab === 'uat' && (
             <div style={{ padding: '16px 24px' }}>
+              {/* UAT header */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <div>
+                    <div style={{ fontSize: '28px', fontWeight: 800, fontFamily: "'JetBrains Mono', monospace", color: uatCoverage >= 90 ? '#10B981' : uatCoverage >= 70 ? '#D97706' : '#EF4444' }}>
+                      {uatCoverage}%
+                    </div>
+                    <div style={{ fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#94A3B8' }}>Coverage</div>
+                  </div>
+                  <div style={{ width: '1px', height: '32px', background: '#E2E8F0' }} />
+                  <div>
+                    <div style={{ fontSize: '16px', fontWeight: 700, color: '#0F172A' }}>{doc.uatCases.length}</div>
+                    <div style={{ fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#94A3B8' }}>Scenarios</div>
+                  </div>
+                </div>
+                <SmallBtn icon={<Download size={13} />} label="Export UAT .csv" onClick={() => handleExportUat(doc)} />
+              </div>
+
               {doc.uatCases.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '64px 0' }}>
                   <AlertCircle size={28} style={{ color: '#94A3B8', marginBottom: '12px' }} />
                   <p style={{ fontSize: '13px', color: '#64748B' }}>No UAT cases generated for this BRD.</p>
                 </div>
               ) : (
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ background: '#F8FAFC' }}>
-                      {['ID', 'SCENARIO', 'GIVEN', 'WHEN', 'THEN', 'PRIORITY'].map(h => (
-                        <th key={h} style={{ height: '36px', padding: '0 12px', textAlign: 'left', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.6px', color: '#94A3B8', borderBottom: '2px solid #E2E8F0' }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {doc.uatCases.map(uat => (
-                      <tr key={uat.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                        <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#2563EB', whiteSpace: 'nowrap' }}>{uat.id}</td>
-                        <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '13px', color: '#334155', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{uat.scenario}</td>
-                        <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '12px', color: '#64748B', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{uat.given}</td>
-                        <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '12px', color: '#64748B', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{uat.when}</td>
-                        <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '12px', color: '#64748B', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{uat.then}</td>
-                        <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}>
-                          <span style={{ display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px', borderRadius: '10px', fontSize: '10px', fontWeight: 500, textTransform: 'capitalize', background: uat.priority === 'high' ? '#FEF2F2' : uat.priority === 'medium' ? '#FEF3C7' : '#ECFDF5', color: uat.priority === 'high' ? '#B91C1C' : uat.priority === 'medium' ? '#D97706' : '#059669' }}>
-                            {uat.priority}
-                          </span>
-                        </td>
+                <>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ background: '#F8FAFC' }}>
+                        {['ID', 'TYPE', 'SCENARIO', 'GIVEN', 'WHEN', 'THEN', 'PRIORITY'].map(h => (
+                          <th key={h} style={{ height: '36px', padding: '0 12px', textAlign: 'left', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#94A3B8', borderBottom: '2px solid #E2E8F0' }}>{h}</th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {doc.uatCases.slice(0, uatDisplayLimit).map(uat => (
+                        <tr key={uat.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                          <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#2563EB', whiteSpace: 'nowrap' }}>{uat.id}</td>
+                          <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px', borderRadius: '10px', fontSize: '10px', fontWeight: 500,
+                              background: uat.type === 'negative' ? '#FEF2F2' : '#ECFDF5',
+                              color: uat.type === 'negative' ? '#991B1B' : '#065F46',
+                            }}>
+                              {uat.type === 'negative' ? 'Negative' : 'Positive'}
+                            </span>
+                          </td>
+                          <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '13px', color: '#334155', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{uat.scenario}</td>
+                          <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '12px', color: '#64748B', maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{uat.given}</td>
+                          <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '12px', color: '#64748B', maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{uat.when}</td>
+                          <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '12px', color: '#64748B', maxWidth: '160px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{uat.then}</td>
+                          <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}>
+                            <span style={{ display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px', borderRadius: '10px', fontSize: '10px', fontWeight: 500, textTransform: 'capitalize',
+                              background: uat.priority === 'high' ? '#FEF2F2' : uat.priority === 'medium' ? '#FEF3C7' : '#ECFDF5',
+                              color: uat.priority === 'high' ? '#B91C1C' : uat.priority === 'medium' ? '#D97706' : '#059669',
+                            }}>
+                              {uat.priority}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {doc.uatCases.length > uatDisplayLimit && (
+                    <div style={{ textAlign: 'center', padding: '12px', fontSize: '13px', color: '#64748B', background: '#F8FAFC', borderRadius: '0 0 8px 8px', borderTop: '1px solid #E2E8F0' }}>
+                      ...and {doc.uatCases.length - uatDisplayLimit} more scenarios. <button onClick={() => handleExportUat(doc)} style={{ color: '#2563EB', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>Export all as .csv</button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}
         </div>
+
+        {/* ──── STICKY EXPORT BAR ──── */}
+        <div style={{ position: 'sticky', bottom: 0, zIndex: 5, flexShrink: 0, padding: '10px 24px', background: '#FFF', borderTop: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'flex-end', boxShadow: '0 -2px 8px rgba(0,0,0,0.04)' }}>
+          <SmallBtn icon={<Download size={13} />} label="Full BRD HTML" onClick={() => handleExport(doc)} />
+          <SmallBtn icon={<Download size={13} />} label="BRD Only" onClick={() => handleExport(doc, true)} />
+          <SmallBtn icon={<Download size={13} />} label="UAT .csv" onClick={() => handleExportUat(doc)} />
+          <SmallBtn icon={<Clipboard size={13} />} label="Copy All" onClick={() => handleCopyAll(doc)} />
+          <button
+            onClick={() => { setJiraKey(''); setShowJiraModal(true); }}
+            style={{ height: '32px', padding: '0 14px', fontSize: '13px', fontWeight: 600, color: '#FFF', background: '#2563EB', borderRadius: '6px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', boxShadow: '0 1px 3px rgba(37,99,235,0.3)' }}
+          >
+            <ExternalLink size={13} /> Publish to Jira
+          </button>
+        </div>
+
+        {/* ──── JIRA MODAL ──── */}
+        {showJiraModal && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(15,23,42,0.5)' }} onClick={() => !jiraPublishing && setShowJiraModal(false)}>
+            <div onClick={e => e.stopPropagation()} style={{ background: '#FFF', borderRadius: '16px', padding: '32px', width: '100%', maxWidth: '440px', boxShadow: '0 24px 48px rgba(0,0,0,0.15)' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#0F172A', marginBottom: '4px' }}>Publish to Jira</h3>
+              <p style={{ fontSize: '13px', color: '#64748B', marginBottom: '20px' }}>Sync {doc.requirements.length} requirements and {doc.epics.length} epics to your Jira project.</p>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#0F172A', marginBottom: '8px' }}>Jira Project Key</label>
+              <input
+                value={jiraKey}
+                onChange={e => setJiraKey(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
+                placeholder="e.g. PROJ"
+                maxLength={10}
+                style={{ width: '100%', height: '40px', padding: '0 12px', fontSize: '14px', fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", border: '1px solid #E2E8F0', borderRadius: '8px', outline: 'none', textTransform: 'uppercase', letterSpacing: '1px', color: '#0F172A' }}
+                onFocus={e => (e.target.style.borderColor = '#2563EB')}
+                onBlur={e => (e.target.style.borderColor = '#E2E8F0')}
+              />
+              <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '4px' }}>2-10 uppercase alphanumeric characters</div>
+              <div style={{ display: 'flex', gap: '8px', marginTop: '20px', justifyContent: 'flex-end' }}>
+                <button onClick={() => setShowJiraModal(false)} disabled={jiraPublishing} style={{ height: '36px', padding: '0 16px', fontSize: '13px', fontWeight: 500, color: '#64748B', background: 'none', border: '1px solid #E2E8F0', borderRadius: '8px', cursor: 'pointer' }}>Cancel</button>
+                <button
+                  onClick={handleJiraPublish}
+                  disabled={jiraKey.length < 2 || jiraPublishing}
+                  style={{
+                    height: '36px', padding: '0 16px', fontSize: '13px', fontWeight: 600, color: '#FFF',
+                    background: jiraKey.length >= 2 && !jiraPublishing ? '#2563EB' : '#94A3B8',
+                    borderRadius: '8px', border: 'none', cursor: jiraKey.length >= 2 && !jiraPublishing ? 'pointer' : 'not-allowed',
+                    display: 'inline-flex', alignItems: 'center', gap: '6px', opacity: jiraKey.length >= 2 ? 1 : 0.5,
+                  }}
+                >
+                  {jiraPublishing ? 'Publishing...' : 'Publish'}
+                  {!jiraPublishing && <ExternalLink size={13} />}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
