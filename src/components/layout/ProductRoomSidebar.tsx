@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import { Lock, ChevronDown, ChevronsLeft, ChevronsRight, Lightbulb, LayoutDashboard, List, Layers, Grid3X3, Sparkles, BarChart3, History, Star } from 'lucide-react';
+import { Lock, ChevronDown, ChevronsLeft, ChevronsRight, Lightbulb, LayoutDashboard, List, Layers, Grid3X3, Sparkles, BarChart3, History, Star, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -58,7 +58,9 @@ const MAIN_MENU_ITEMS: SidebarMenuItem[] = [
 ];
 
 // Items after Ideas group
-const AFTER_IDEAS_ITEMS: SidebarMenuItem[] = [];
+const AFTER_IDEAS_ITEMS: SidebarMenuItem[] = [
+  { id: 'ReqFlow AI', title: 'ReqFlow AI', path: '/industry/reqflow', icon: FileText, exact: true },
+];
 
 export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoomSidebarProps) {
   const { isAdmin } = useUserRole();
