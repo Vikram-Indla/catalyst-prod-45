@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { RichTextEditor } from '../RichTextEditor';
 import { UserPicker } from '@/components/ui/user-picker';
-import { AssigneeUserPicker } from '../AssigneeUserPicker';
+
 import { DepartmentSelect } from '../DepartmentSelect';
 import { BusinessOwnerSelect } from '../BusinessOwnerSelect';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
@@ -345,9 +345,9 @@ export function CatalystCreateDemand({ data, onChange }: DemandDetailsTabProps) 
             </FormField>
 
             <FormField label="Assignee" required isValid={!!data.assignee}>
-              <AssigneeUserPicker
+              <UserPicker
                 value={data.assignee || null}
-                onChange={(value) => onChange('assignee', value)}
+                onChange={(value) => onChange('assignee', value as string | null)}
                 placeholder="Select assignee..."
               />
             </FormField>
