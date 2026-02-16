@@ -55,9 +55,12 @@ export function useAllReleases({ filter, sort, page, pageSize, projectId }: UseA
         query = query.in('health', filter.health);
       }
       
-      // Apply search
+      // Apply search — sanitize to prevent PostgREST injection
       if (filter.search) {
-        query = query.or(`name.ilike.%${filter.search}%,version.ilike.%${filter.search}%`);
+        const sanitized = filter.search.replace(/[%_\\(),."']/g, '');
+        if (sanitized.length > 0) {
+          query = query.or(`name.ilike.%${sanitized}%,version.ilike.%${sanitized}%`);
+        }
       }
       
       // Apply sorting
