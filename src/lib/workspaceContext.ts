@@ -110,9 +110,9 @@ export function getActiveNavItem(workspaceType: WorkspaceType): string {
     case 'home':
       return 'Home';
     case 'enterprise':
-      return 'Enterprise';
+      return 'StrategyHub';
     case 'product':
-      return 'Product';
+      return 'ProductHub';
     case 'program':
       return 'Program';
     case 'project':
@@ -130,7 +130,7 @@ export function getActiveNavItem(workspaceType: WorkspaceType): string {
     case 'testhub':
       return 'TestHub';
     case 'workhub':
-      return 'WorkHub';
+      return 'ProjectHub';
     default:
       return '';
   }
