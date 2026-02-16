@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   Search, X, ChevronDown, ChevronUp, Download, Plus, Sparkles,
   LayoutGrid, Clock, Table2, FileText, FileSpreadsheet, FileDown,
-  Clipboard, Check, Loader2, ArrowUpDown,
+  Clipboard, Check, Loader2, ArrowUpDown, Calendar, Rocket,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -501,9 +501,23 @@ export default function AllReleasesPage() {
           </div>
         )}
 
-        {/* Table / Placeholder views */}
-        <div className="h-full overflow-y-auto" style={{ paddingTop: selectedIds.size > 0 ? '48px' : 0 }}>
-          {activeView === 'table' ? (
+        {/* Views with crossfade */}
+        <div className="h-full overflow-y-auto" style={{ paddingTop: selectedIds.size > 0 ? '48px' : 0 }} key={activeView}>
+          {paginatedReleases.length === 0 ? (
+            /* ═══ EMPTY STATE ═══ */
+            <div className="flex flex-col items-center justify-center h-full" style={{ animation: 'fadeInUp 0.3s ease both' }}>
+              <Rocket className="w-12 h-12 mb-4" style={{ color: '#94a3b8' }} />
+              <div style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>No releases match your filters</div>
+              <div style={{ fontSize: '13px', color: '#64748b', marginTop: '4px' }}>Try adjusting your search or filter criteria</div>
+              <button
+                onClick={() => { setSearchQuery(''); setStatusFilter([]); setHealthFilter([]); setQuarterFilter([]); setCurrentPage(1); }}
+                className="mt-4 transition-colors"
+                style={{ padding: '6px 16px', borderRadius: '6px', background: '#2563eb', color: '#fff', fontSize: '13px', fontWeight: 600, border: 'none', cursor: 'pointer' }}
+              >
+                Clear all filters
+              </button>
+            </div>
+          ) : activeView === 'table' ? (
             <table className="w-full" style={{ borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ height: '34px', background: '#f8fafc', position: 'sticky', top: 0, zIndex: 2 }}>
@@ -528,10 +542,11 @@ export default function AllReleasesPage() {
                 </tr>
               </thead>
               <tbody>
-                {paginatedReleases.map(r => (
+                {paginatedReleases.map((r, i) => (
                   <ReleaseRow
                     key={r.id}
                     release={r}
+                    index={i}
                     selected={selectedIds.has(r.id)}
                     onToggle={() => toggleSelect(r.id)}
                     onClick={() => setDetailRelease(r)}
@@ -539,10 +554,18 @@ export default function AllReleasesPage() {
                 ))}
               </tbody>
             </table>
+          ) : activeView === 'cards' ? (
+            <CardsView
+              releases={paginatedReleases}
+              selectedIds={selectedIds}
+              onToggle={toggleSelect}
+              onCardClick={setDetailRelease}
+            />
           ) : (
-            <div className="flex items-center justify-center h-full" style={{ color: '#64748b', fontSize: '14px' }}>
-              {activeView === 'cards' ? 'Cards view — coming in Prompt 2' : 'Timeline view — coming in Prompt 2'}
-            </div>
+            <TimelineView
+              releases={paginatedReleases}
+              onBarClick={setDetailRelease}
+            />
           )}
         </div>
       </div>
@@ -677,6 +700,8 @@ export default function AllReleasesPage() {
       <style>{`
         @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
         @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
       `}</style>
     </div>
   );
@@ -733,8 +758,8 @@ function SortableHeader({ label, field, current, direction, onClick, style }: {
   );
 }
 
-function ReleaseRow({ release: r, selected, onToggle, onClick }: {
-  release: Release; selected: boolean; onToggle: () => void; onClick: () => void;
+function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick }: {
+  release: Release; index?: number; selected: boolean; onToggle: () => void; onClick: () => void;
 }) {
   return (
     <tr
@@ -743,6 +768,8 @@ function ReleaseRow({ release: r, selected, onToggle, onClick }: {
       style={{
         height: '36px', borderBottom: '1px solid #f1f5f9',
         background: selected ? '#eff6ff' : undefined,
+        animation: `fadeInUp 0.3s ease both`,
+        animationDelay: `${index * 25}ms`,
       }}
       onMouseEnter={e => { if (!selected) (e.currentTarget.style.background = '#f8fafc'); }}
       onMouseLeave={e => { if (!selected) (e.currentTarget.style.background = ''); }}
@@ -983,5 +1010,277 @@ function NewReleaseModal({ onClose, onCreate }: { onClose: () => void; onCreate:
         <style>{`@keyframes scaleIn { from { transform: translate(-50%,-50%) scale(0.95); opacity: 0; } to { transform: translate(-50%,-50%) scale(1); opacity: 1; } }`}</style>
       </div>
     </>
+  );
+}
+
+// ─── Cards View ────────────────────────────────────────────────
+const HEALTH_BADGE: Record<string, { bg: string; text: string }> = {
+  critical: { bg: '#fee2e2', text: '#991b1b' },
+  'at-risk': { bg: '#fef3c7', text: '#92400e' },
+  attention: { bg: '#dbeafe', text: '#1e40af' },
+  healthy: { bg: '#ccfbf1', text: '#115e59' },
+};
+
+function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
+  releases: Release[]; selectedIds: Set<string>; onToggle: (id: string) => void; onCardClick: (r: Release) => void;
+}) {
+  return (
+    <div style={{ padding: '16px 0', overflow: 'auto', height: '100%' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }} className="max-[1199px]:!grid-cols-2 max-[767px]:!grid-cols-1">
+        {releases.map((r, i) => {
+          const selected = selectedIds.has(r.id);
+          const hl = getHealthLabel(r.health);
+          const hBadge = HEALTH_BADGE[hl] || HEALTH_BADGE.critical;
+          return (
+            <div
+              key={r.id}
+              onClick={() => onCardClick(r)}
+              className="group cursor-pointer transition-all relative"
+              style={{
+                background: selected ? '#eff6ff' : '#fff',
+                border: `1px solid ${selected ? '#2563eb' : '#e2e8f0'}`,
+                borderRadius: '8px', padding: '16px',
+                animation: `fadeInUp 0.3s ease both`,
+                animationDelay: `${i * 30}ms`,
+              }}
+              onMouseEnter={e => { if (!selected) { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'; } }}
+              onMouseLeave={e => { if (!selected) { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none'; } }}
+            >
+              {/* Checkbox */}
+              <input
+                type="checkbox"
+                checked={selected}
+                onChange={e => { e.stopPropagation(); onToggle(r.id); }}
+                onClick={e => e.stopPropagation()}
+                className="absolute transition-opacity"
+                style={{ top: '12px', left: '12px', opacity: selected ? 1 : 0, cursor: 'pointer', accentColor: '#2563eb' }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+                onMouseLeave={e => { if (!selected) e.currentTarget.style.opacity = '0'; }}
+              />
+
+              {/* Row 1: Header */}
+              <div className="flex items-center gap-1.5 mb-2">
+                <span style={{ padding: '1px 6px', background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>{r.version}</span>
+                <span style={{ padding: '1px 5px', background: '#f1f5f9', borderRadius: '4px', fontSize: '10px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' as const }}>{r.type}</span>
+                <span className="flex-1 truncate" style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>{r.name}</span>
+                <span style={{ padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 600, background: hBadge.bg, color: hBadge.text, flexShrink: 0 }}>
+                  {getHealthDisplay(r.health)}
+                </span>
+              </div>
+
+              {/* Row 2: Progress bar */}
+              <div className="flex items-center gap-2 mb-2">
+                <div style={{ flex: 1, height: '4px', background: '#e2e8f0', borderRadius: '2px', overflow: 'hidden' }}>
+                  <div style={{ width: `${r.health}%`, height: '100%', background: getHealthColor(r.health), borderRadius: '2px', transition: 'width 400ms ease-out' }} />
+                </div>
+                <span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>{r.health}</span>
+              </div>
+
+              {/* Row 3: Metadata */}
+              <div className="flex items-center gap-2 flex-wrap" style={{ fontSize: '12px' }}>
+                <StatusPill status={r.status} />
+                <span style={{ color: '#64748b' }}>📅 {r.targetDate}</span>
+                {r.overdue && (
+                  <span style={{ fontSize: '10px', fontWeight: 600, color: '#ef4444', background: '#fee2e2', borderRadius: '8px', padding: '1px 6px' }}>
+                    {r.daysRemaining}d overdue
+                  </span>
+                )}
+                <span className="ml-auto" style={{ color: '#94a3b8', fontSize: '12px' }}>{r.owner}</span>
+              </div>
+
+              {/* Row 4: Stats footer */}
+              <div className="flex items-center gap-4" style={{ borderTop: '1px solid #e2e8f0', marginTop: '8px', paddingTop: '8px' }}>
+                <span style={{ fontSize: '11px', color: '#64748b' }}>
+                  <span style={{ fontWeight: 600, color: '#334155' }}>{r.testsPass}/{r.testsTotal}</span> Tests
+                </span>
+                <span style={{ fontSize: '11px', color: '#64748b' }}>
+                  <span style={{ fontWeight: 600, color: r.defects > 0 ? '#ef4444' : '#334155' }}>{r.defects}</span> Defects
+                </span>
+                <span style={{ fontSize: '11px', color: '#64748b' }}>
+                  <span style={{ fontWeight: 600, color: '#334155' }}>{r.coverage !== null ? `${r.coverage}%` : '—'}</span> Coverage
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── Timeline View ─────────────────────────────────────────────
+const MONTHS = ['Jan 2026', 'Feb 2026', 'Mar 2026', 'Apr 2026', 'May 2026', 'Jun 2026', 'Jul 2026', 'Aug 2026', 'Sep 2026', 'Oct 2026'];
+const BAR_COLORS: Record<string, string> = {
+  planning: '#e2e8f0',
+  staging: '#a5b4fc',
+  testing: '#fcd34d',
+  released: '#6ee7b7',
+};
+const LEGEND_ITEMS = [
+  { label: 'Critical', color: '#ef4444', shape: 'circle' },
+  { label: 'At Risk', color: '#d97706', shape: 'circle' },
+  { label: 'Attention', color: '#2563eb', shape: 'circle' },
+  { label: 'Healthy', color: '#0d9488', shape: 'circle' },
+  { label: 'Code Freeze', color: '#d97706', shape: 'diamond' },
+  { label: 'Go Live', color: '#0d9488', shape: 'diamond' },
+];
+
+function TimelineView({ releases, onBarClick }: {
+  releases: Release[]; onBarClick: (r: Release) => void;
+}) {
+  const [timeScale, setTimeScale] = useState<'week' | 'month' | 'quarter'>('month');
+  const [hoveredRelease, setHoveredRelease] = useState<Release | null>(null);
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+
+  const handleBarHover = (e: React.MouseEvent, r: Release | null) => {
+    setHoveredRelease(r);
+    if (r) setTooltipPos({ x: e.clientX, y: e.clientY });
+  };
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Header row */}
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex" style={{ border: '1px solid #e2e8f0', borderRadius: '6px', overflow: 'hidden' }}>
+          {(['week', 'month', 'quarter'] as const).map(t => (
+            <button
+              key={t}
+              onClick={() => t === 'month' ? setTimeScale(t) : toast.info('Coming soon')}
+              style={{
+                padding: '4px 10px', fontSize: '12px', fontWeight: timeScale === t ? 600 : 400,
+                background: timeScale === t ? '#dbeafe' : '#fff',
+                color: timeScale === t ? '#2563eb' : '#64748b',
+                border: 'none', cursor: 'pointer', textTransform: 'capitalize' as const,
+              }}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-4">
+          {LEGEND_ITEMS.map(l => (
+            <div key={l.label} className="flex items-center gap-1" style={{ fontSize: '11px', color: '#64748b' }}>
+              {l.shape === 'circle' ? (
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: l.color }} />
+              ) : (
+                <div style={{ width: '8px', height: '8px', background: l.color, transform: 'rotate(45deg)' }} />
+              )}
+              {l.label}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Chart body */}
+      <div className="flex flex-1 min-h-0" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden', background: '#fff' }}>
+        {/* Left column */}
+        <div style={{ width: '260px', flexShrink: 0, borderRight: '1px solid #e2e8f0' }}>
+          <div style={{ height: '32px', background: '#f8fafc', display: 'flex', alignItems: 'center', padding: '0 12px', borderBottom: '1px solid #e2e8f0' }}>
+            <span style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>RELEASE</span>
+          </div>
+          {releases.map(r => (
+            <div
+              key={r.id}
+              onClick={() => onBarClick(r)}
+              className="flex items-center gap-2 cursor-pointer transition-colors hover:bg-[#f8fafc]"
+              style={{ height: '44px', padding: '0 12px', borderBottom: '1px solid #f1f5f9' }}
+            >
+              <span style={{ padding: '1px 6px', background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '4px', fontSize: '11px', fontWeight: 600, flexShrink: 0 }}>{r.version}</span>
+              <div className="min-w-0">
+                <div className="truncate" style={{ fontSize: '13px', fontWeight: 500, color: '#0f172a' }}>{r.name}</div>
+                <div style={{ fontSize: '10px', color: '#64748b' }}>{STATUS_CONFIG[r.status]?.label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Right column — chart area */}
+        <div className="flex-1 overflow-x-auto relative">
+          {/* Month headers */}
+          <div className="flex" style={{ height: '32px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+            {MONTHS.map(m => (
+              <div key={m} className="flex-1" style={{ minWidth: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 500, color: '#64748b', borderRight: '1px solid #f1f5f9' }}>
+                {m}
+              </div>
+            ))}
+          </div>
+
+          {/* Today marker */}
+          <div className="absolute" style={{ left: '15%', top: '32px', bottom: 0, width: '2px', background: '#ef4444', zIndex: 5 }}>
+            <span style={{ position: 'absolute', top: '-16px', left: '-12px', fontSize: '10px', fontWeight: 600, color: '#ef4444' }}>Today</span>
+          </div>
+
+          {/* Bars */}
+          {releases.map((r, i) => (
+            <div key={r.id} className="relative" style={{ height: '44px', borderBottom: '1px solid #f1f5f9' }}>
+              {/* Bar */}
+              <div
+                onClick={() => onBarClick(r)}
+                onMouseMove={e => handleBarHover(e, r)}
+                onMouseLeave={() => setHoveredRelease(null)}
+                className="absolute cursor-pointer"
+                style={{
+                  left: `${r.barLeft}%`, width: `${r.barWidth}%`,
+                  height: '24px', top: '10px', borderRadius: '4px',
+                  background: BAR_COLORS[r.status] || '#e2e8f0',
+                  animation: 'barGrow 0.4s ease-out both',
+                  animationDelay: `${i * 40}ms`,
+                  transformOrigin: 'left center',
+                  transition: 'filter 100ms',
+                  zIndex: 1,
+                }}
+                onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(0.88)')}
+              >
+                {r.progress > 0 && (
+                  <span style={{ fontSize: '10px', fontWeight: 600, color: '#334155', padding: '0 6px', lineHeight: '24px' }}>{r.progress}%</span>
+                )}
+              </div>
+              {/* Code Freeze diamond */}
+              <div
+                className="absolute transition-transform hover:scale-[1.3]"
+                title={`Code Freeze: ${r.targetDate}`}
+                style={{
+                  left: `${r.barLeft + r.barWidth - 2}%`, top: '17px',
+                  width: '10px', height: '10px', background: '#d97706',
+                  transform: 'rotate(45deg)', zIndex: 2,
+                }}
+              />
+              {/* Go Live diamond */}
+              <div
+                className="absolute transition-transform hover:scale-[1.3]"
+                title={`Go Live: ${r.targetDate}`}
+                style={{
+                  left: `${r.barLeft + r.barWidth + 1}%`, top: '17px',
+                  width: '10px', height: '10px', background: '#0d9488',
+                  transform: 'rotate(45deg)', zIndex: 2,
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Tooltip */}
+      {hoveredRelease && (
+        <div
+          className="fixed z-50 pointer-events-none"
+          style={{
+            left: tooltipPos.x + 8, top: tooltipPos.y + 8,
+            background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.1)', padding: '12px',
+            animation: 'fadeInUp 150ms ease both', minWidth: '200px',
+          }}
+        >
+          <div style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>{hoveredRelease.name}</div>
+          <div style={{ fontSize: '12px', color: '#64748b', marginTop: '4px' }}>Status: {STATUS_CONFIG[hoveredRelease.status]?.label}</div>
+          <div style={{ fontSize: '12px', marginTop: '2px' }}>
+            <span style={{ color: '#64748b' }}>Health: </span>
+            <span style={{ color: getHealthColor(hoveredRelease.health), fontWeight: 600 }}>{hoveredRelease.health} ({getHealthDisplay(hoveredRelease.health)})</span>
+          </div>
+          <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>Progress: {hoveredRelease.progress}%</div>
+          <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>Target: {hoveredRelease.targetDate}</div>
+        </div>
+      )}
+    </div>
   );
 }
