@@ -18697,6 +18697,7 @@ export type Database = {
         Row: {
           actual_release_date: string | null
           blocked_reason: string | null
+          blocker_defects: number | null
           coverage_percent: number | null
           created_at: string | null
           created_by: string | null
@@ -18705,11 +18706,15 @@ export type Database = {
           deleted_at: string | null
           description: string | null
           health: Database["public"]["Enums"]["release_health"] | null
+          health_score: number | null
           id: string
           is_blocked: boolean | null
+          major_defects: number | null
+          minor_defects: number | null
           name: string
           notes: string | null
           owner_id: string | null
+          passing_gates: number | null
           progress: number | null
           project_id: string | null
           qa_lead_id: string | null
@@ -18717,20 +18722,26 @@ export type Database = {
           release_date: string | null
           release_manager_id: string | null
           release_vehicle_id: string
+          scope_creep_percent: number | null
           start_date: string | null
           status: Database["public"]["Enums"]["release_status"] | null
+          stories_with_tests: number | null
           target_date: string | null
           test_cases_blocked: number | null
           test_cases_executed: number | null
           test_cases_failed: number | null
           test_cases_passed: number | null
+          test_cases_skipped: number | null
           test_cases_total: number | null
+          total_gates: number | null
+          total_stories: number | null
           updated_at: string | null
           version: string
         }
         Insert: {
           actual_release_date?: string | null
           blocked_reason?: string | null
+          blocker_defects?: number | null
           coverage_percent?: number | null
           created_at?: string | null
           created_by?: string | null
@@ -18739,11 +18750,15 @@ export type Database = {
           deleted_at?: string | null
           description?: string | null
           health?: Database["public"]["Enums"]["release_health"] | null
+          health_score?: number | null
           id?: string
           is_blocked?: boolean | null
+          major_defects?: number | null
+          minor_defects?: number | null
           name: string
           notes?: string | null
           owner_id?: string | null
+          passing_gates?: number | null
           progress?: number | null
           project_id?: string | null
           qa_lead_id?: string | null
@@ -18751,20 +18766,26 @@ export type Database = {
           release_date?: string | null
           release_manager_id?: string | null
           release_vehicle_id: string
+          scope_creep_percent?: number | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["release_status"] | null
+          stories_with_tests?: number | null
           target_date?: string | null
           test_cases_blocked?: number | null
           test_cases_executed?: number | null
           test_cases_failed?: number | null
           test_cases_passed?: number | null
+          test_cases_skipped?: number | null
           test_cases_total?: number | null
+          total_gates?: number | null
+          total_stories?: number | null
           updated_at?: string | null
           version: string
         }
         Update: {
           actual_release_date?: string | null
           blocked_reason?: string | null
+          blocker_defects?: number | null
           coverage_percent?: number | null
           created_at?: string | null
           created_by?: string | null
@@ -18773,11 +18794,15 @@ export type Database = {
           deleted_at?: string | null
           description?: string | null
           health?: Database["public"]["Enums"]["release_health"] | null
+          health_score?: number | null
           id?: string
           is_blocked?: boolean | null
+          major_defects?: number | null
+          minor_defects?: number | null
           name?: string
           notes?: string | null
           owner_id?: string | null
+          passing_gates?: number | null
           progress?: number | null
           project_id?: string | null
           qa_lead_id?: string | null
@@ -18785,14 +18810,19 @@ export type Database = {
           release_date?: string | null
           release_manager_id?: string | null
           release_vehicle_id?: string
+          scope_creep_percent?: number | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["release_status"] | null
+          stories_with_tests?: number | null
           target_date?: string | null
           test_cases_blocked?: number | null
           test_cases_executed?: number | null
           test_cases_failed?: number | null
           test_cases_passed?: number | null
+          test_cases_skipped?: number | null
           test_cases_total?: number | null
+          total_gates?: number | null
+          total_stories?: number | null
           updated_at?: string | null
           version?: string
         }

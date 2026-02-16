@@ -162,7 +162,7 @@ import Subtasks from "./pages/Subtasks";
 import Releases from "./pages/Releases";
 import ReleasesCommandCenter from "./pages/releases/CommandCenterPage";
 import ReleasesPlaceholderPage from "./pages/releases/PlaceholderPage";
-import AllReleasesPage from "./pages/releases/AllReleasesPage";
+import AllReleasesPage from "./pages/releases/AllReleasesPageV2";
 import ReleasesTestCasesPage from "./pages/releases/TestCasesPage";
 import ReleasesTestCasesLibraryPage from "./pages/releases/TestCasesLibraryPage";
 import ReleasesTestCaseDetailPage from "./pages/releases/TestCaseDetailPage";
