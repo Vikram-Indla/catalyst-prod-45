@@ -332,6 +332,415 @@ export type Database = {
         }
         Relationships: []
       }
+      business_owners: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      business_request_audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_name: string | null
+          business_request_id: string
+          created_at: string
+          field_changed: string | null
+          id: string
+          new_value: string | null
+          old_value: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_name?: string | null
+          business_request_id: string
+          created_at?: string
+          field_changed?: string | null
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_name?: string | null
+          business_request_id?: string
+          created_at?: string
+          field_changed?: string | null
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_request_audit_logs_business_request_id_fkey"
+            columns: ["business_request_id"]
+            isOneToOne: false
+            referencedRelation: "business_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_request_links: {
+        Row: {
+          business_request_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          linked_item_id: string
+          linked_item_type: string
+        }
+        Insert: {
+          business_request_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          linked_item_id: string
+          linked_item_type: string
+        }
+        Update: {
+          business_request_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          linked_item_id?: string
+          linked_item_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_request_links_business_request_id_fkey"
+            columns: ["business_request_id"]
+            isOneToOne: false
+            referencedRelation: "business_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_requests: {
+        Row: {
+          acceptance_criteria: string | null
+          approval_date: string | null
+          approval_decision: string | null
+          approval_inputs: string | null
+          approval_remarks: string | null
+          approved_budget_ceiling: number | null
+          approved_budget_sar: number | null
+          approver_name: string | null
+          assignee: string | null
+          budget_owner_name: string | null
+          budget_type: string[] | null
+          budget_year: string | null
+          business_justification: string | null
+          business_owner: string | null
+          business_owner_id: string | null
+          business_score: number | null
+          business_value: number | null
+          capacity_risks: string | null
+          capacity_status: string | null
+          complexity: string | null
+          complexity_score: number | null
+          contract_end_date: string | null
+          contract_start_date: string | null
+          contract_type: string | null
+          created_at: string
+          created_by: string | null
+          current_year_budget_sar: number | null
+          deleted_at: string | null
+          delivery_model: string | null
+          delivery_platform: string | null
+          delivery_track: string | null
+          department: string | null
+          department_id: string | null
+          dependencies: string | null
+          description: string | null
+          ea_review_required: boolean | null
+          end_date: string | null
+          end_date_locked: boolean | null
+          end_date_locked_at: string | null
+          end_date_locked_by: string | null
+          environment_dependency: string | null
+          estimated_cost: number | null
+          estimated_cost_sar: number | null
+          estimated_effort: string | null
+          estimation_dependencies: string | null
+          estimation_notes: string | null
+          estimation_risk_rating: string | null
+          executive_urgency: number | null
+          expected_resume_date: string | null
+          functional_spec_link: string | null
+          funding_assumptions: string | null
+          funding_status: string | null
+          health: string
+          id: string
+          impl_start_date: string | null
+          impl_target_end_date: string | null
+          implementation_outcome: string | null
+          implementation_owner: string | null
+          integration_required: boolean | null
+          integration_systems: string[] | null
+          internal_effort_cost_sar: number | null
+          internal_effort_pct: number | null
+          is_force_ranked: boolean
+          jira_epic_link: string | null
+          key_risks_remarks: string | null
+          on_hold_comment: string | null
+          on_hold_reason: string | null
+          outcome_summary: string | null
+          planned_external_spend_sar: number | null
+          planned_quarter: string[] | null
+          platform: string | null
+          po_numbers: string[] | null
+          portfolio_comments: string | null
+          portfolio_decision: string | null
+          primary_vendor_name: string | null
+          priority_tier: string | null
+          process_step: string
+          product_id: string | null
+          progress: number
+          project_manager_user_id: string | null
+          proposed_solution: string | null
+          qa_remarks: string | null
+          rank: number | null
+          rank_override_justification: string | null
+          readiness_checklist: Json | null
+          request_key: string | null
+          requestor: string | null
+          resolution_category: string | null
+          risk_rating: string | null
+          start_date: string | null
+          support_owner: string | null
+          support_remarks: string | null
+          technical_validator: string | null
+          title: string
+          track: string | null
+          updated_at: string
+          urgency: string | null
+          vendor_effort_pct: number | null
+        }
+        Insert: {
+          acceptance_criteria?: string | null
+          approval_date?: string | null
+          approval_decision?: string | null
+          approval_inputs?: string | null
+          approval_remarks?: string | null
+          approved_budget_ceiling?: number | null
+          approved_budget_sar?: number | null
+          approver_name?: string | null
+          assignee?: string | null
+          budget_owner_name?: string | null
+          budget_type?: string[] | null
+          budget_year?: string | null
+          business_justification?: string | null
+          business_owner?: string | null
+          business_owner_id?: string | null
+          business_score?: number | null
+          business_value?: number | null
+          capacity_risks?: string | null
+          capacity_status?: string | null
+          complexity?: string | null
+          complexity_score?: number | null
+          contract_end_date?: string | null
+          contract_start_date?: string | null
+          contract_type?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_year_budget_sar?: number | null
+          deleted_at?: string | null
+          delivery_model?: string | null
+          delivery_platform?: string | null
+          delivery_track?: string | null
+          department?: string | null
+          department_id?: string | null
+          dependencies?: string | null
+          description?: string | null
+          ea_review_required?: boolean | null
+          end_date?: string | null
+          end_date_locked?: boolean | null
+          end_date_locked_at?: string | null
+          end_date_locked_by?: string | null
+          environment_dependency?: string | null
+          estimated_cost?: number | null
+          estimated_cost_sar?: number | null
+          estimated_effort?: string | null
+          estimation_dependencies?: string | null
+          estimation_notes?: string | null
+          estimation_risk_rating?: string | null
+          executive_urgency?: number | null
+          expected_resume_date?: string | null
+          functional_spec_link?: string | null
+          funding_assumptions?: string | null
+          funding_status?: string | null
+          health?: string
+          id?: string
+          impl_start_date?: string | null
+          impl_target_end_date?: string | null
+          implementation_outcome?: string | null
+          implementation_owner?: string | null
+          integration_required?: boolean | null
+          integration_systems?: string[] | null
+          internal_effort_cost_sar?: number | null
+          internal_effort_pct?: number | null
+          is_force_ranked?: boolean
+          jira_epic_link?: string | null
+          key_risks_remarks?: string | null
+          on_hold_comment?: string | null
+          on_hold_reason?: string | null
+          outcome_summary?: string | null
+          planned_external_spend_sar?: number | null
+          planned_quarter?: string[] | null
+          platform?: string | null
+          po_numbers?: string[] | null
+          portfolio_comments?: string | null
+          portfolio_decision?: string | null
+          primary_vendor_name?: string | null
+          priority_tier?: string | null
+          process_step?: string
+          product_id?: string | null
+          progress?: number
+          project_manager_user_id?: string | null
+          proposed_solution?: string | null
+          qa_remarks?: string | null
+          rank?: number | null
+          rank_override_justification?: string | null
+          readiness_checklist?: Json | null
+          request_key?: string | null
+          requestor?: string | null
+          resolution_category?: string | null
+          risk_rating?: string | null
+          start_date?: string | null
+          support_owner?: string | null
+          support_remarks?: string | null
+          technical_validator?: string | null
+          title: string
+          track?: string | null
+          updated_at?: string
+          urgency?: string | null
+          vendor_effort_pct?: number | null
+        }
+        Update: {
+          acceptance_criteria?: string | null
+          approval_date?: string | null
+          approval_decision?: string | null
+          approval_inputs?: string | null
+          approval_remarks?: string | null
+          approved_budget_ceiling?: number | null
+          approved_budget_sar?: number | null
+          approver_name?: string | null
+          assignee?: string | null
+          budget_owner_name?: string | null
+          budget_type?: string[] | null
+          budget_year?: string | null
+          business_justification?: string | null
+          business_owner?: string | null
+          business_owner_id?: string | null
+          business_score?: number | null
+          business_value?: number | null
+          capacity_risks?: string | null
+          capacity_status?: string | null
+          complexity?: string | null
+          complexity_score?: number | null
+          contract_end_date?: string | null
+          contract_start_date?: string | null
+          contract_type?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_year_budget_sar?: number | null
+          deleted_at?: string | null
+          delivery_model?: string | null
+          delivery_platform?: string | null
+          delivery_track?: string | null
+          department?: string | null
+          department_id?: string | null
+          dependencies?: string | null
+          description?: string | null
+          ea_review_required?: boolean | null
+          end_date?: string | null
+          end_date_locked?: boolean | null
+          end_date_locked_at?: string | null
+          end_date_locked_by?: string | null
+          environment_dependency?: string | null
+          estimated_cost?: number | null
+          estimated_cost_sar?: number | null
+          estimated_effort?: string | null
+          estimation_dependencies?: string | null
+          estimation_notes?: string | null
+          estimation_risk_rating?: string | null
+          executive_urgency?: number | null
+          expected_resume_date?: string | null
+          functional_spec_link?: string | null
+          funding_assumptions?: string | null
+          funding_status?: string | null
+          health?: string
+          id?: string
+          impl_start_date?: string | null
+          impl_target_end_date?: string | null
+          implementation_outcome?: string | null
+          implementation_owner?: string | null
+          integration_required?: boolean | null
+          integration_systems?: string[] | null
+          internal_effort_cost_sar?: number | null
+          internal_effort_pct?: number | null
+          is_force_ranked?: boolean
+          jira_epic_link?: string | null
+          key_risks_remarks?: string | null
+          on_hold_comment?: string | null
+          on_hold_reason?: string | null
+          outcome_summary?: string | null
+          planned_external_spend_sar?: number | null
+          planned_quarter?: string[] | null
+          platform?: string | null
+          po_numbers?: string[] | null
+          portfolio_comments?: string | null
+          portfolio_decision?: string | null
+          primary_vendor_name?: string | null
+          priority_tier?: string | null
+          process_step?: string
+          product_id?: string | null
+          progress?: number
+          project_manager_user_id?: string | null
+          proposed_solution?: string | null
+          qa_remarks?: string | null
+          rank?: number | null
+          rank_override_justification?: string | null
+          readiness_checklist?: Json | null
+          request_key?: string | null
+          requestor?: string | null
+          resolution_category?: string | null
+          risk_rating?: string | null
+          start_date?: string | null
+          support_owner?: string | null
+          support_remarks?: string | null
+          technical_validator?: string | null
+          title?: string
+          track?: string | null
+          updated_at?: string
+          urgency?: string | null
+          vendor_effort_pct?: number | null
+        }
+        Relationships: []
+      }
       capacity_departments: {
         Row: {
           color: string | null
