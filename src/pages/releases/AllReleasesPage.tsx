@@ -613,7 +613,7 @@ export default function AllReleasesPage() {
       </div>
 
       {/* ═══ CONTENT AREA (flex:1) ═══ */}
-      <div className="flex-1 min-h-0 overflow-hidden relative px-6 pt-2 pb-0">
+      <div className="flex-1 min-h-0 overflow-hidden relative px-6 pt-2 pb-0" style={{ background: '#f8fafc' }}>
         {/* Bulk action bar */}
         {selectedIds.size > 0 && (
           <div
@@ -877,6 +877,11 @@ export default function AllReleasesPage() {
         @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes barGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+        
+        /* Force 36px compact rows */
+        table tbody tr { height: 36px !important; max-height: 36px !important; }
+        table tbody td { height: 36px !important; max-height: 36px !important; padding-top: 0 !important; padding-bottom: 0 !important; vertical-align: middle !important; line-height: 1.2 !important; font-size: 13px !important; }
+        table thead th { height: 36px !important; max-height: 36px !important; padding-top: 0 !important; padding-bottom: 0 !important; vertical-align: middle !important; }
       `}</style>
     </div>
   );
