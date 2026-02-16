@@ -678,8 +678,8 @@ export default function AllReleasesPage() {
           ) : activeView === 'table' ? (
             <table className="w-full" style={{ borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ height: '34px', background: '#f8fafc', position: 'sticky', top: 0, zIndex: 2 }}>
-                  <th style={{ width: '36px', textAlign: 'center', padding: '0 4px' }}>
+                <tr style={{ height: '36px', maxHeight: '36px', background: '#f8fafc', position: 'sticky', top: 0, zIndex: 2 }}>
+                  <th style={{ width: '40px', textAlign: 'center', padding: '0 4px', height: '36px', lineHeight: '36px' }}>
                     <input
                       type="checkbox"
                       checked={selectAllState === 'all'}
@@ -937,7 +937,8 @@ function generateDynamicInsights(releases: ViewRelease[]) {
 
 const colHeaderStyle: React.CSSProperties = {
   fontSize: '11px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase',
-  letterSpacing: '0.5px', textAlign: 'left', padding: '0 8px', whiteSpace: 'nowrap',
+  letterSpacing: '0.04em', textAlign: 'left', padding: '0 16px', whiteSpace: 'nowrap',
+  height: '36px', lineHeight: '36px',
 };
 
 const paginationBtnStyle: React.CSSProperties = {
@@ -962,7 +963,7 @@ function StatItem({ number, label, dotColor }: { number: number; label: string; 
 function StatusPill({ status }: { status: string }) {
   const c = getStatusConfig(status);
   return (
-    <span className="inline-flex items-center gap-1" style={{ padding: '2px 8px', borderRadius: '12px', background: c.bg, color: c.text, fontSize: '12px', fontWeight: 500 }}>
+    <span className="inline-flex items-center gap-1" style={{ padding: '1px 8px', borderRadius: '12px', background: c.bg, color: c.text, fontSize: '11px', fontWeight: 500, lineHeight: '20px' }}>
       <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: c.dot }} />
       {c.label}
     </span>
@@ -987,12 +988,13 @@ function SortableHeader({ label, field, current, direction, onClick, style }: {
 function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick }: {
   release: ViewRelease; index?: number; selected: boolean; onToggle: () => void; onClick: () => void;
 }) {
+  const cellStyle: React.CSSProperties = { padding: '0 16px', height: '36px', maxHeight: '36px', lineHeight: '36px', verticalAlign: 'middle', whiteSpace: 'nowrap' as const };
   return (
     <tr
       onClick={onClick}
       className="group cursor-pointer transition-colors"
       style={{
-        height: '36px', borderBottom: '1px solid #f1f5f9',
+        height: '36px', maxHeight: '36px', borderBottom: '1px solid #f1f5f9',
         background: selected ? '#eff6ff' : undefined,
         animation: `fadeInUp 0.3s ease both`,
         animationDelay: `${index * 25}ms`,
@@ -1000,33 +1002,31 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick }: {
       onMouseEnter={e => { if (!selected) (e.currentTarget.style.background = '#f8fafc'); }}
       onMouseLeave={e => { if (!selected) (e.currentTarget.style.background = ''); }}
     >
-      <td style={{ textAlign: 'center', padding: '0 4px', position: 'relative' }}>
+      <td style={{ textAlign: 'center', padding: '0 4px', position: 'relative', width: '40px', height: '36px', verticalAlign: 'middle' }}>
         <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '3px', background: '#2563eb', opacity: 0, transition: 'opacity 100ms' }} className="group-hover:!opacity-100" />
         <input
           type="checkbox"
           checked={selected}
           onChange={e => { e.stopPropagation(); onToggle(); }}
           onClick={e => e.stopPropagation()}
-          className="transition-opacity"
-          style={{ opacity: selected ? 1 : 0, cursor: 'pointer', accentColor: '#2563eb' }}
-          onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-          onMouseLeave={e => { if (!selected) e.currentTarget.style.opacity = '0'; }}
+          className="opacity-0 group-hover:opacity-100 transition-opacity"
+          style={{ opacity: selected ? 1 : undefined, cursor: 'pointer', accentColor: '#2563eb', width: '16px', height: '16px' }}
         />
       </td>
-      <td style={{ padding: '0 8px' }}>
-        <span style={{ display: 'inline-block', padding: '1px 6px', background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '4px', fontSize: '11px', fontWeight: 600, marginRight: '6px' }}>{r.version}</span>
+      <td style={{ ...cellStyle, minWidth: '240px' }}>
+        <span style={{ display: 'inline-block', padding: '1px 6px', background: '#f1f5f9', color: '#64748b', border: '1px solid #e2e8f0', borderRadius: '4px', fontSize: '10px', fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", marginRight: '6px', verticalAlign: 'middle' }}>{r.version}</span>
         <span style={{ fontSize: '13px', fontWeight: 500, color: '#0f172a' }}>{r.name}</span>
       </td>
-      <td style={{ padding: '0 8px' }}><StatusPill status={r.status} /></td>
-      <td style={{ padding: '0 8px' }}>
+      <td style={{ ...cellStyle, width: '100px' }}><StatusPill status={r.status} /></td>
+      <td style={{ ...cellStyle, width: '130px' }}>
         <div className="flex items-center gap-2">
           <div style={{ width: '80px', height: '4px', background: '#e2e8f0', borderRadius: '2px', overflow: 'hidden' }}>
             <div style={{ width: `${r.progress}%`, height: '100%', background: '#2563eb', borderRadius: '2px' }} />
           </div>
-          <span style={{ fontSize: '12px', color: '#64748b' }}>{r.progress}%</span>
+          <span style={{ fontSize: '11px', fontWeight: 500, color: '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>{r.progress}%</span>
         </div>
       </td>
-      <td style={{ padding: '0 8px' }}>
+      <td style={cellStyle}>
         <div className="flex items-center gap-2">
           <div className="flex" style={{ width: '60px', height: '4px', borderRadius: '2px', overflow: 'hidden', background: '#e2e8f0' }}>
             {r.testsTotal > 0 && (
@@ -1036,25 +1036,25 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick }: {
               </>
             )}
           </div>
-          <span style={{ fontSize: '12px', color: '#64748b' }}>{r.testsPass}/{r.testsTotal}</span>
+          <span style={{ fontSize: '11px', fontWeight: 400, color: '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>{r.testsPass}/{r.testsTotal}</span>
         </div>
       </td>
-      <td style={{ padding: '0 8px', fontSize: '13px', fontWeight: r.defects > 0 ? 600 : 400, color: r.defects > 0 ? '#ef4444' : '#94a3b8' }}>
+      <td style={{ ...cellStyle, width: '70px', fontSize: '13px', fontWeight: r.defects > 0 ? 600 : 400, color: r.defects > 0 ? '#ef4444' : '#94a3b8', fontFamily: "'JetBrains Mono', monospace" }}>
         {r.defects > 0 ? r.defects : '—'}
       </td>
-      <td style={{ padding: '0 8px', fontSize: '13px', color: '#64748b' }}>
+      <td style={{ ...cellStyle, width: '80px', fontSize: '13px', fontWeight: 400, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>
         {r.coverage !== null ? `${r.coverage}%` : '—'}
       </td>
-      <td style={{ padding: '0 8px' }}>
+      <td style={{ ...cellStyle, width: '80px' }}>
         <div className="flex items-center gap-1.5">
           <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: getHealthColor(r.health) }} />
-          <span style={{ fontSize: '13px', fontWeight: 600, color: getHealthColor(r.health) }}>{r.health}</span>
+          <span style={{ fontSize: '11px', fontWeight: 600, color: getHealthColor(r.health) }}>{r.health}</span>
         </div>
       </td>
-      <td style={{ padding: '0 8px', fontSize: '13px', fontWeight: r.overdue || r.status === 'released' ? 600 : 400, color: r.status === 'released' ? '#0d9488' : r.overdue ? '#ef4444' : '#334155' }}>
+      <td style={{ ...cellStyle, width: '60px', fontSize: '12px', fontWeight: r.overdue || r.status === 'released' ? 600 : 500, color: r.status === 'released' ? '#0d9488' : r.overdue ? '#ef4444' : '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>
         {r.status === 'released' ? 'Released' : `${r.daysRemaining}d`}
       </td>
-      <td style={{ padding: '0 8px', fontSize: '13px', fontWeight: 400, color: r.owner === 'Unassigned' ? '#94a3b8' : '#334155' }}>
+      <td style={{ ...cellStyle, width: '100px', fontSize: '13px', fontWeight: 400, color: r.owner === 'Unassigned' ? '#94a3b8' : '#334155' }}>
         {r.owner}
       </td>
     </tr>
@@ -1286,16 +1286,14 @@ function CardsView({ releases, selectedIds, onToggle, onCardClick }: {
 
 // ─── Timeline View ─────────────────────────────────────────────
 const MONTHS = ['Jan 2026', 'Feb 2026', 'Mar 2026', 'Apr 2026', 'May 2026', 'Jun 2026', 'Jul 2026', 'Aug 2026', 'Sep 2026', 'Oct 2026'];
-const BAR_COLORS: Record<string, string> = {
-  planned: '#e2e8f0',
-  planning: '#e2e8f0',
-  active: '#a5b4fc',
-  development: '#a5b4fc',
-  staging: '#a5b4fc',
-  testing: '#fcd34d',
-  uat: '#fcd34d',
-  released: '#6ee7b7',
-};
+function getTimelineBarColor(r: ViewRelease): string {
+  if (r.status === 'released') return '#0d9488';
+  if (r.progress === 0) return '#cbd5e1';
+  if (r.health < 40) return '#ef4444';
+  if (r.health < 60) return '#d97706';
+  if (r.health < 80) return '#2563eb';
+  return '#0d9488';
+}
 const LEGEND_ITEMS = [
   { label: 'Critical', color: '#ef4444', shape: 'circle' },
   { label: 'At Risk', color: '#d97706', shape: 'circle' },
@@ -1347,7 +1345,7 @@ function TimelineView({ releases, onBarClick }: {
               key={r.id}
               onClick={() => onBarClick(r)}
               className="flex items-center gap-2 cursor-pointer transition-colors hover:bg-[#f8fafc]"
-              style={{ height: '44px', padding: '0 12px', borderBottom: '1px solid #f1f5f9' }}
+              style={{ height: '48px', padding: '0 12px', borderBottom: '1px solid #f1f5f9' }}
             >
               <span style={{ padding: '1px 6px', background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', borderRadius: '4px', fontSize: '11px', fontWeight: 600, flexShrink: 0 }}>{r.version}</span>
               <div className="min-w-0">
@@ -1373,7 +1371,7 @@ function TimelineView({ releases, onBarClick }: {
           </div>
 
           {releases.map((r, i) => (
-            <div key={r.id} className="relative" style={{ height: '44px', borderBottom: '1px solid #f1f5f9' }}>
+            <div key={r.id} className="relative" style={{ height: '48px', borderBottom: '1px solid #f1f5f9' }}>
               <div
                 onClick={() => onBarClick(r)}
                 onMouseMove={e => handleBarHover(e, r)}
@@ -1381,8 +1379,8 @@ function TimelineView({ releases, onBarClick }: {
                 className="absolute cursor-pointer"
                 style={{
                   left: `${r.barLeft}%`, width: `${r.barWidth}%`,
-                  height: '24px', top: '10px', borderRadius: '4px',
-                  background: BAR_COLORS[r.status] || '#e2e8f0',
+                  height: '28px', top: '10px', borderRadius: '4px',
+                  background: getTimelineBarColor(r),
                   animation: 'barGrow 0.4s ease-out both',
                   animationDelay: `${i * 40}ms`,
                   transformOrigin: 'left center',
@@ -1394,9 +1392,9 @@ function TimelineView({ releases, onBarClick }: {
               >
                 {/* Progress fill inside bar */}
                 {r.progress > 0 && (
-                  <div style={{ width: `${r.progress}%`, height: '100%', background: getHealthColor(r.health), opacity: 0.6, position: 'absolute', left: 0, top: 0 }} />
+                  <div style={{ width: `${r.progress}%`, height: '100%', background: 'rgba(255,255,255,0.35)', position: 'absolute', left: 0, top: 0 }} />
                 )}
-                <span style={{ fontSize: '10px', fontWeight: 600, color: '#334155', padding: '0 6px', lineHeight: '24px', position: 'relative', zIndex: 1 }}>{r.progress}%</span>
+                <span style={{ fontSize: '10px', fontWeight: 600, color: '#fff', padding: '0 6px', lineHeight: '28px', position: 'relative', zIndex: 1 }}>{r.progress}%</span>
               </div>
             </div>
           ))}
