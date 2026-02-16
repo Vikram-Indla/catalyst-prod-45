@@ -256,7 +256,7 @@ export function CatalystHeader() {
               const isActive = item.label === activeNavItem;
               
               // V10 TopNav item styles — Inter 500, 0.84rem
-              // Active state uses background fill (#eff6ff), not underline
+              // Active state uses 2px blue bottom border (underline), no background fill
               const navButtonStyle: React.CSSProperties = {
                 height: '100%',
                 padding: '0 14px',
@@ -267,14 +267,15 @@ export function CatalystHeader() {
                 alignItems: 'center',
                 gap: '1px',
                 cursor: 'pointer',
-                transition: 'color 0.15s ease, background-color 0.15s ease',
+                transition: 'color 0.15s ease',
                 border: 'none',
-                background: isActive ? '#eff6ff' : 'transparent',
+                background: 'transparent',
                 position: 'relative' as const,
                 fontFamily: "'Inter', sans-serif",
                 outline: 'none',
                 letterSpacing: '0.005em',
-                borderRadius: '4px',
+                borderRadius: '0',
+                borderBottom: isActive ? '2px solid #2563eb' : '2px solid transparent',
               };
               
               // Hover handler - only change color, no backgrounds
