@@ -58,10 +58,7 @@ const MAIN_MENU_ITEMS: SidebarMenuItem[] = [
 ];
 
 // Items after Ideas group
-const AFTER_IDEAS_ITEMS: SidebarMenuItem[] = [
-  { id: 'Requirement Assist', title: 'Requirement Assist™', path: '/product/requirement-assist', exact: true },
-  { id: 'Generation History', title: 'Generation History', path: '/generation-history', exact: true, icon: History },
-];
+const AFTER_IDEAS_ITEMS: SidebarMenuItem[] = [];
 
 export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoomSidebarProps) {
   const { isAdmin } = useUserRole();

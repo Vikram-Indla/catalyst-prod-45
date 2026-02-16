@@ -352,10 +352,6 @@ import IndustryComingSoon from "./pages/enterprise/IndustryComingSoon";
 import DemandSummaryPage from "./pages/enterprise/DemandSummaryPage";
 import ProductRoomPage from "./pages/ProductRoomPage";
 import CapacityPlanningPage from "./pages/CapacityPlanningPage";
-import { RequirementAssistPage } from "./components/requirement-assist-v3";
-const GenerationHistoryPage = lazy(() => import("./pages/product/GenerationHistoryPage"));
-import { RequirementAssistHistory } from "./pages/product/requirement-assist";
-import { RAAdminAIConfiguration, RAAdminTemplates, RAAdminCompliance, RAAdminTranslation, RAAdminAnalytics, RAAdminPermissions } from "./pages/admin/requirement-assist";
 import ExecutiveRoadmapPage from "./pages/enterprise/ExecutiveRoadmapPage";
 import CatalystDemandKanban from "./modules/kanban/pages/CatalystDemandKanban";
 import CatalystDemandList from "./modules/product-backlog/pages/CatalystDemandList";
@@ -642,12 +638,6 @@ const App = () => (
 <Route path="/product/:productId/room" element={<ProductRoomPage />} />
 <Route path="/product/capacity" element={<CapacityPlanningPage />} />
 
-{/* Requirement Assist Routes - under Product */}
-<Route path="/product/requirement-assist" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistPage /></Suspense>} />
-<Route path="/product/requirement-assist/history" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistHistory /></Suspense>} />
-<Route path="/generation-history" element={<Suspense fallback={<div className="p-8">Loading...</div>}><GenerationHistoryPage /></Suspense>} />
-{/* Catch-all for unknown requirement-assist sub-routes */}
-<Route path="/product/requirement-assist/*" element={<Navigate to="/product/requirement-assist" replace />} />
 
               {/* Ideas Hub Module - under Industry/Product */}
               <Route path="/industry/ideas" element={<Navigate to="/industry/ideas/hub" replace />} />
@@ -1105,16 +1095,6 @@ const App = () => (
                 <Route path="planhub/audit" element={<PlanHubActivityLog />} />
                 {/* Catch-all for unknown planhub admin sub-routes */}
                 <Route path="planhub/*" element={<Navigate to="/admin/planhub/general" replace />} />
-                {/* Requirement Assist Admin Routes */}
-                <Route path="requirement-assist" element={<Navigate to="/admin/requirement-assist/ai-configuration" replace />} />
-                <Route path="requirement-assist/ai-configuration" element={<RAAdminAIConfiguration />} />
-                <Route path="requirement-assist/templates" element={<RAAdminTemplates />} />
-                <Route path="requirement-assist/compliance" element={<RAAdminCompliance />} />
-                <Route path="requirement-assist/translation" element={<RAAdminTranslation />} />
-                <Route path="requirement-assist/analytics" element={<RAAdminAnalytics />} />
-                <Route path="requirement-assist/permissions" element={<RAAdminPermissions />} />
-                {/* Catch-all for unknown requirement-assist admin sub-routes */}
-                <Route path="requirement-assist/*" element={<Navigate to="/admin/requirement-assist/ai-configuration" replace />} />
                 {/* Ideas Admin Settings */}
                 <Route path="ideas" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeasAdminSettingsPage /></Suspense>} />
                 {/* Slack Integration */}
