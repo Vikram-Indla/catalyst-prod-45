@@ -514,7 +514,7 @@ export default function AllReleasesPage() {
 
   // ─── RENDER ─────────────────────────────────────────────────
   return (
-    <div className="flex flex-col overflow-hidden" style={{ height: 'calc(100vh - 52px)' }}>
+    <div className="all-releases-page flex flex-col overflow-hidden" style={{ height: 'calc(100vh - 52px)' }}>
       {/* ═══ PAGE HEADER (52px) ═══ */}
       <header className="flex items-center justify-between px-6 border-b" style={{ height: '52px', flexShrink: 0, borderColor: '#e2e8f0', background: '#ffffff' }}>
         <div className="flex items-center gap-3">
@@ -689,7 +689,7 @@ export default function AllReleasesPage() {
       </div>
 
       {/* ═══ CONTENT AREA (flex:1) ═══ */}
-      <div className="flex-1 min-h-0 overflow-hidden relative px-6 pt-2 pb-0" style={{ background: '#f8fafc' }}>
+      <div className="all-releases-content flex-1 min-h-0 overflow-hidden relative px-6 pt-2 pb-0" style={{ background: '#f8fafc' }}>
         {/* Bulk action bar */}
         {selectedIds.size > 0 && (
           <div
@@ -752,7 +752,7 @@ export default function AllReleasesPage() {
               )}
             </div>
           ) : activeView === 'table' ? (
-            <table className="w-full" style={{ borderCollapse: 'collapse' }}>
+            <table className="all-releases-table w-full" style={{ borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ height: '36px', maxHeight: '36px', background: '#f8fafc', position: 'sticky', top: 0, zIndex: 2 }}>
                   <th style={{ width: '40px', textAlign: 'center', padding: '0 4px', height: '36px', lineHeight: '36px' }}>
@@ -805,7 +805,7 @@ export default function AllReleasesPage() {
       </div>
 
       {/* ═══ STATUS BAR (32px) ═══ */}
-      <div className="flex items-center px-6" style={{ height: '32px', flexShrink: 0, borderTop: '1px solid #e2e8f0', background: '#fff' }}>
+      <div className="all-releases-pagination flex items-center px-6" style={{ height: '32px', flexShrink: 0, borderTop: '1px solid #e2e8f0', background: '#fff' }}>
         <span style={{ fontSize: '12px', fontWeight: 500, color: '#64748b' }}>
           {filteredReleases.length} of {releases.length} releases
         </span>
