@@ -7,6 +7,14 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Release, ReleasesFilter, ReleasesSort, ReleaseStatus, ReleaseHealth } from '@/types/releases';
 
+const RELEASE_COLUMNS = `
+  id, name, version, description, notes, status, start_date, target_date, release_date,
+  progress, health, is_blocked, blocked_reason, owner_id, project_id, release_vehicle_id,
+  test_cases_total, test_cases_passed, defects_open, coverage_percent,
+  created_at, updated_at, created_by, readiness_pct,
+  owner:profiles!releases_owner_id_fkey(id, full_name, avatar_url)
+`;
+
 interface UseAllReleasesOptions {
   filter: ReleasesFilter;
   sort: ReleasesSort;
@@ -21,19 +29,16 @@ export function useAllReleases({ filter, sort, page, pageSize, projectId }: UseA
     queryFn: async () => {
       let query = supabase
         .from('releases')
-        .select(`
-          *,
-          owner:profiles!releases_owner_id_fkey(id, full_name, avatar_url)
-        `, { count: 'exact' });
+        .select(RELEASE_COLUMNS, { count: 'exact' })
+        .is('deleted_at', null); // Soft delete filter
       
       // Apply project filter if provided
       if (projectId) {
         query = query.eq('project_id', projectId);
       }
       
-      // Apply status filter - map frontend statuses to database values
+      // Apply status filter
       if (filter.status.length > 0 && filter.status.length < 5) {
-        // Map frontend status values to actual database enum values
         const statusMap: Record<string, string> = {
           'planning': 'planned',
           'active': 'active', 
@@ -45,10 +50,10 @@ export function useAllReleases({ filter, sort, page, pageSize, projectId }: UseA
         query = query.in('status', dbStatuses as any);
       }
       
-       // Apply health filter
-       if (filter.health.length > 0) {
-         query = query.in('health', filter.health);
-       }
+      // Apply health filter
+      if (filter.health.length > 0) {
+        query = query.in('health', filter.health);
+      }
       
       // Apply search
       if (filter.search) {
@@ -65,7 +70,7 @@ export function useAllReleases({ filter, sort, page, pageSize, projectId }: UseA
       
       const { data, error, count } = await query;
       
-      if (error) throw error;
+      if (error) throw new Error(error.message);
       
       // Map data to Release type with defaults
       const releases: Release[] = (data || []).map((r: any) => ({

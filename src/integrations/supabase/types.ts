@@ -18099,6 +18099,47 @@ export type Database = {
           },
         ]
       }
+      release_snapshots: {
+        Row: {
+          created_at: string | null
+          defect_count: number | null
+          id: string
+          progress: number | null
+          release_id: string
+          snapshot_date: string
+          test_passed: number | null
+          test_total: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          defect_count?: number | null
+          id?: string
+          progress?: number | null
+          release_id: string
+          snapshot_date: string
+          test_passed?: number | null
+          test_total?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          defect_count?: number | null
+          id?: string
+          progress?: number | null
+          release_id?: string
+          snapshot_date?: string
+          test_passed?: number | null
+          test_total?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "release_snapshots_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       release_story_links: {
         Row: {
           created_at: string | null
@@ -18252,6 +18293,7 @@ export type Database = {
           created_by: string | null
           critical_defects: number | null
           defects_open: number | null
+          deleted_at: string | null
           description: string | null
           health: Database["public"]["Enums"]["release_health"] | null
           id: string
@@ -18285,6 +18327,7 @@ export type Database = {
           created_by?: string | null
           critical_defects?: number | null
           defects_open?: number | null
+          deleted_at?: string | null
           description?: string | null
           health?: Database["public"]["Enums"]["release_health"] | null
           id?: string
@@ -18318,6 +18361,7 @@ export type Database = {
           created_by?: string | null
           critical_defects?: number | null
           defects_open?: number | null
+          deleted_at?: string | null
           description?: string | null
           health?: Database["public"]["Enums"]["release_health"] | null
           id?: string
