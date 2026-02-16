@@ -1,165 +1,195 @@
 /**
  * ReqFlow AI — BRD Generation Module (ProductHub)
  * 4-Screen Architecture: Library → Generate → Theater → Viewer
- * CATALYST10 Design System
+ * CATALYST10 Design System — Complete Rebuild
  */
 
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import {
-  FileText, Plus, Search, Trash2, Eye, Copy, Download, ChevronLeft,
+  FileText, Search, Trash2, Eye, Copy, Download, ChevronLeft,
   Sparkles, Upload, FileUp, ClipboardPaste, CheckCircle2, ArrowRight,
   ChevronDown, ChevronRight, Clipboard, ExternalLink, SortAsc, SortDesc,
-  X, Filter, MoreHorizontal, AlertCircle
+  AlertCircle, X, Check
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 // ═══════════════════════════════════════════════════════════════
-// TYPES & CONSTANTS
+// TYPES
 // ═══════════════════════════════════════════════════════════════
+
+interface BrdEntry {
+  id: string;
+  title: string;
+  tpl: number;
+  lang: string;
+  created: string;
+  reqs: number;
+  epics: number;
+  stories: number;
+  uatCount: number;
+  coverage: number;
+}
 
 interface BrdDocument {
   id: string;
   title: string;
   template: number;
   language: string;
-  sections: BrdSection[];
-  requirements: BrdRequirement[];
-  epics: BrdEpic[];
-  uatCases: BrdUatCase[];
+  sections: { id: string; title: string; content: string; order: number }[];
+  requirements: { id: string; code: string; type: 'functional' | 'non-functional'; priority: 'must' | 'should' | 'could' | 'wont'; description: string; acceptance: string }[];
+  epics: { id: string; title: string; description: string; stories: { id: string; title: string; points: number; priority: string }[] }[];
+  uatCases: { id: string; scenario: string; given: string; when: string; then: string; priority: 'high' | 'medium' | 'low' }[];
   created: string;
-  updated: string;
-  status: 'draft' | 'review' | 'approved';
-  inputType: 'upload' | 'paste';
 }
 
-interface BrdSection {
-  id: string;
-  title: string;
-  content: string;
-  order: number;
-}
-
-interface BrdRequirement {
-  id: string;
-  code: string;
-  type: 'functional' | 'non-functional';
-  priority: 'must' | 'should' | 'could' | 'wont';
-  description: string;
-  acceptance: string;
-}
-
-interface BrdEpic {
-  id: string;
-  title: string;
-  description: string;
-  stories: { id: string; title: string; points: number; priority: string }[];
-}
-
-interface BrdUatCase {
-  id: string;
-  scenario: string;
-  given: string;
-  when: string;
-  then: string;
-  priority: 'high' | 'medium' | 'low';
+interface Template {
+  name: string;
+  desc: string;
+  sections: string[];
 }
 
 type Screen = 'library' | 'generate' | 'theater' | 'viewer';
-type SortField = 'title' | 'template' | 'created' | 'status';
-type SortDir = 'asc' | 'desc';
-
-const TEMPLATES = [
-  { id: 0, name: 'IIBA / BABOK V3', sections: 18, bg: '#EFF6FF', color: '#2563EB' },
-  { id: 1, name: 'McKinsey / MBB', sections: 14, bg: '#F5F3FF', color: '#7C3AED' },
-  { id: 2, name: 'Big 4 / KPMG-Deloitte', sections: 20, bg: '#FEF3C7', color: '#D97706' },
-  { id: 3, name: 'SAFe 6.0 / Lean', sections: 14, bg: '#ECFDF5', color: '#059669' },
-  { id: 4, name: 'Accenture / SI', sections: 16, bg: '#FFF7ED', color: '#C2410C' },
-  { id: 5, name: 'Government / Public Sector', sections: 18, bg: '#FEF2F2', color: '#B91C1C' },
-] as const;
-
-const TEMPLATE_SECTIONS: Record<number, string[]> = {
-  0: ['Executive Summary','Business Context','Stakeholder Analysis','Current State Assessment','Future State Vision','Business Requirements','Functional Requirements','Non-Functional Requirements','Data Requirements','Integration Requirements','User Interface Requirements','Security & Compliance','Risk Assessment','Implementation Approach','Change Management','Testing Strategy','Appendices','Glossary'],
-  1: ['Executive Summary','Problem Statement','Situation Analysis','Hypothesis Framework','Data Analysis','Key Findings','Strategic Options','Recommended Solution','Implementation Roadmap','Financial Impact','Risk Mitigation','Governance Model','Success Metrics','Next Steps'],
-  2: ['Executive Summary','Engagement Overview','Current State Assessment','Gap Analysis','Future State Design','Business Requirements','Functional Specifications','Technical Architecture','Data Migration Plan','Integration Architecture','Security Framework','Compliance Requirements','Testing & QA Strategy','Deployment Strategy','Training & Enablement','Change Management Plan','Risk Register','Governance & RACI','Budget & Timeline','Appendices'],
-  3: ['Lean Business Case','Solution Context','Portfolio Vision','Value Stream Mapping','Feature Breakdown','Enabler Requirements','Non-Functional Requirements','Architecture Runway','PI Planning Inputs','Release Strategy','Inspect & Adapt','DevOps Pipeline','Metrics & KPIs','Appendices'],
-  4: ['Executive Summary','Project Charter','Business Case','Current State Analysis','Target Operating Model','Business Requirements','Functional Design','Technical Design','Integration Strategy','Data Strategy','Security & Privacy','Cloud Architecture','Implementation Phases','Testing Strategy','Organizational Readiness','Go-Live Criteria'],
-  5: ['Executive Summary','Policy Context','Legislative Framework','Stakeholder Register','As-Is Assessment','To-Be Vision','Business Requirements','Functional Requirements','Non-Functional Requirements','Data Sovereignty & Privacy','Accessibility (WCAG 2.1)','Security Classification','Integration with GovTech','Citizen Impact Assessment','Risk & Issues Log','Implementation Schedule','Budget Estimate','Approval Authority'],
-};
-
-const LANGUAGES = ['English', 'French', 'Arabic', 'Spanish', 'German'] as const;
-
-const LS_KEY = 'reqflow_brds';
 
 // ═══════════════════════════════════════════════════════════════
-// PERSISTENCE HELPERS
+// CONSTANTS — 6 Research-Backed Templates
 // ═══════════════════════════════════════════════════════════════
 
-function loadBrds(): BrdDocument[] {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch { return []; }
+const TEMPLATES: Template[] = [
+  { name: 'IIBA / BABOK V3', desc: 'Industry standard · 18 sections', sections: [
+    '§1 Executive Summary','§2 Business Context','§3 Stakeholder Analysis',
+    '§4 Current State','§5 Future State','§6 Business Requirements',
+    '§7 Stakeholder Requirements','§8 Functional Requirements',
+    '§9 Data Requirements','§10 Non-Functional Requirements',
+    '§11 Interface & Integration','§12 Business Rules',
+    '§13 User Journeys','§14 Reporting & Analytics',
+    '§15 Assumptions & Constraints','§16 Risk Assessment',
+    '§17 Implementation Roadmap','§18 Traceability & Appendices'] },
+  { name: 'McKinsey / MBB', desc: 'C-suite SCR · 14 sections', sections: [
+    '§1 Strategic Recommendation','§2 Situation Overview',
+    '§3 Key Complication','§4 Strategic Resolution',
+    '§5 Impact Analysis','§6 Stakeholder Map',
+    '§7 Requirements Summary','§8 Investment Case',
+    '§9 Risk Matrix','§10 Implementation Phases',
+    '§11 Success Metrics','§12 Governance Framework',
+    '§13 Next Steps','§14 Appendices'] },
+  { name: 'Big 4 / KPMG-Deloitte', desc: 'Audit-grade · 20 sections', sections: [
+    '§1 Document Control','§2 Executive Summary','§3 Background & Need',
+    '§4 Scope Matrix','§5 Stakeholder RACI','§6 Process Flows',
+    '§7 Functional Reqs','§8 Non-Functional Reqs','§9 Data Dictionary',
+    '§10 Interface Catalog','§11 Reporting Reqs','§12 Security & Access',
+    '§13 Compliance','§14 Business Rules','§15 User Journeys',
+    '§16 Transition Reqs','§17 Assumptions','§18 Dependencies',
+    '§19 Risk Register','§20 Sign-Off'] },
+  { name: 'SAFe 6.0 / Lean', desc: 'Agile hypothesis · 14 sections', sections: [
+    '§1 Problem Hypothesis','§2 Lean Business Case','§3 Solution Intent',
+    '§4 Feature Breakdown','§5 MVP Scope','§6 User Personas',
+    '§7 Acceptance Criteria','§8 Non-Functional Reqs',
+    '§9 Architectural Runway','§10 Team Topology',
+    '§11 Definition of Done','§12 Metrics',
+    '§13 Risks & Dependencies','§14 Appendices'] },
+  { name: 'Accenture / SI', desc: 'Technical BRD · 16 sections', sections: [
+    '§1 Executive Summary','§2 Business Context','§3 Process Decomposition',
+    '§4 Use Case Catalog','§5 Functional Specs','§6 Data Dictionary & ER',
+    '§7 Interface Catalog','§8 Security Matrix','§9 Performance & Scale',
+    '§10 Deployment Architecture','§11 Migration Strategy',
+    '§12 Test Strategy','§13 Training & Change',
+    '§14 Support Model','§15 Risk Register','§16 Glossary'] },
+  { name: 'Government / Public Sector', desc: 'Bilingual · 18 sections', sections: [
+    '§1 Executive Summary','§2 Mandate Reference','§3 Strategic Alignment',
+    '§4 Stakeholder Hierarchy','§5 Legacy Assessment','§6 Digital Service',
+    '§7 Functional Requirements','§8 Data Sovereignty','§9 NCA & PDPL',
+    '§10 Government APIs','§11 Accessibility & RTL','§12 Business Regulations',
+    '§13 Citizen Journeys','§14 Ministerial Dashboards',
+    '§15 Security Classification','§16 Compliance Matrix',
+    '§17 Phased Implementation','§18 Appendices'] },
+];
+
+const TPL_COLORS = [
+  { bg: '#EFF6FF', color: '#2563EB' },
+  { bg: '#F5F3FF', color: '#7C3AED' },
+  { bg: '#FEF3C7', color: '#D97706' },
+  { bg: '#ECFDF5', color: '#059669' },
+  { bg: '#FFF7ED', color: '#C2410C' },
+  { bg: '#FEF2F2', color: '#B91C1C' },
+];
+
+const LANGUAGES = ['Bilingual (AR+EN)', 'English', 'Arabic'];
+const LS_KEY = 'reqflow_history';
+const LS_DOC_KEY = 'reqflow_docs';
+
+// ═══════════════════════════════════════════════════════════════
+// PERSISTENCE
+// ═══════════════════════════════════════════════════════════════
+
+function loadHistory(): BrdEntry[] {
+  try { return JSON.parse(localStorage.getItem(LS_KEY) || '[]'); } catch { return []; }
+}
+function saveHistory(h: BrdEntry[]) {
+  localStorage.setItem(LS_KEY, JSON.stringify(h.slice(0, 50)));
+}
+function loadDocs(): Record<string, BrdDocument> {
+  try { return JSON.parse(localStorage.getItem(LS_DOC_KEY) || '{}'); } catch { return {}; }
+}
+function saveDocs(d: Record<string, BrdDocument>) {
+  localStorage.setItem(LS_DOC_KEY, JSON.stringify(d));
 }
 
-function saveBrds(brds: BrdDocument[]) {
-  localStorage.setItem(LS_KEY, JSON.stringify(brds));
+function nextBrdId(h: BrdEntry[]): string {
+  const max = h.reduce((m, b) => Math.max(m, parseInt(b.id.replace('BRD-', ''))), 0);
+  return 'BRD-' + String(max + 1).padStart(3, '0');
 }
 
-function nextBrdId(brds: BrdDocument[]): string {
-  const max = brds.reduce((m, b) => {
-    const n = parseInt(b.id.replace('BRD-', ''), 10);
-    return n > m ? n : m;
-  }, 0);
-  return `BRD-${String(max + 1).padStart(3, '0')}`;
+function timeAgo(iso: string): string {
+  const d = (Date.now() - new Date(iso).getTime()) / 60000;
+  if (d < 1) return 'just now';
+  if (d < 60) return Math.floor(d) + 'm ago';
+  if (d < 1440) return Math.floor(d / 60) + 'h ago';
+  if (d < 10080) return Math.floor(d / 1440) + 'd ago';
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 }
 
 // ═══════════════════════════════════════════════════════════════
-// GENERATE BRD (MOCK)
+// MOCK BRD GENERATOR
 // ═══════════════════════════════════════════════════════════════
 
-function generateMockBrd(templateId: number, language: string, brds: BrdDocument[]): BrdDocument {
-  const tpl = TEMPLATES[templateId];
-  const secs = TEMPLATE_SECTIONS[templateId] || TEMPLATE_SECTIONS[0];
-  const id = nextBrdId(brds);
+function generateMockBrd(tplIdx: number, lang: string, history: BrdEntry[]): { entry: BrdEntry; doc: BrdDocument } {
+  const tpl = TEMPLATES[tplIdx];
+  const id = nextBrdId(history);
   const now = new Date().toISOString();
 
-  const sections: BrdSection[] = secs.map((title, i) => ({
+  const sections = tpl.sections.map((title, i) => ({
     id: `sec-${i}`,
-    title,
-    content: `This section covers ${title.toLowerCase()} for the project. Detailed analysis and recommendations are provided based on the ${tpl.name} methodology framework. Key considerations include stakeholder alignment, technical feasibility, and organizational readiness for the proposed changes.`,
+    title: title.replace(/^§\d+\s+/, ''),
+    content: `This section covers ${title.replace(/^§\d+\s+/, '').toLowerCase()} for the project. Detailed analysis and recommendations are provided based on the ${tpl.name} methodology framework. Key considerations include stakeholder alignment, technical feasibility, and organizational readiness.`,
     order: i,
   }));
 
-  const funcReqs = Math.floor(Math.random() * 15) + 20;
-  const nfReqs = Math.floor(Math.random() * 8) + 8;
-  const requirements: BrdRequirement[] = [];
-  for (let i = 0; i < funcReqs; i++) {
-    requirements.push({
+  const funcCount = Math.floor(Math.random() * 15) + 20;
+  const nfCount = Math.floor(Math.random() * 8) + 8;
+  const requirements = [
+    ...Array.from({ length: funcCount }, (_, i) => ({
       id: `FR-${String(i + 1).padStart(3, '0')}`,
       code: `FR-${String(i + 1).padStart(3, '0')}`,
-      type: 'functional',
+      type: 'functional' as const,
       priority: (['must', 'should', 'could', 'wont'] as const)[Math.floor(Math.random() * 3)],
       description: `The system shall provide capability ${i + 1} as defined in the business requirements specification.`,
       acceptance: `Verify that capability ${i + 1} functions correctly under standard and edge-case conditions.`,
-    });
-  }
-  for (let i = 0; i < nfReqs; i++) {
-    requirements.push({
+    })),
+    ...Array.from({ length: nfCount }, (_, i) => ({
       id: `NFR-${String(i + 1).padStart(3, '0')}`,
       code: `NFR-${String(i + 1).padStart(3, '0')}`,
-      type: 'non-functional',
+      type: 'non-functional' as const,
       priority: (['must', 'should', 'could'] as const)[Math.floor(Math.random() * 3)],
       description: `The system shall meet non-functional requirement ${i + 1} for performance, security, or scalability.`,
-      acceptance: `Measure and validate non-functional requirement ${i + 1} against defined thresholds.`,
-    });
-  }
+      acceptance: `Measure and validate NFR ${i + 1} against defined thresholds.`,
+    })),
+  ];
 
   const epicCount = Math.floor(Math.random() * 4) + 4;
-  const epics: BrdEpic[] = [];
-  for (let i = 0; i < epicCount; i++) {
+  const epics = Array.from({ length: epicCount }, (_, i) => {
     const storyCount = Math.floor(Math.random() * 5) + 3;
-    epics.push({
+    return {
       id: `EPIC-${i + 1}`,
       title: `Epic ${i + 1}: ${['User Management', 'Data Integration', 'Reporting Engine', 'Notification System', 'Workflow Automation', 'Security Module', 'Analytics Dashboard', 'API Gateway'][i % 8]}`,
       description: `This epic covers the implementation of major feature area ${i + 1}.`,
@@ -169,11 +199,12 @@ function generateMockBrd(templateId: number, language: string, brds: BrdDocument
         points: [1, 2, 3, 5, 8, 13][Math.floor(Math.random() * 6)],
         priority: (['high', 'medium', 'low'] as const)[Math.floor(Math.random() * 3)],
       })),
-    });
-  }
+    };
+  });
 
+  const totalStories = epics.reduce((a, e) => a + e.stories.length, 0);
   const uatCount = Math.floor(Math.random() * 40) + 30;
-  const uatCases: BrdUatCase[] = Array.from({ length: uatCount }, (_, i) => ({
+  const uatCases = Array.from({ length: uatCount }, (_, i) => ({
     id: `UAT-${String(i + 1).padStart(3, '0')}`,
     scenario: `Scenario ${i + 1}: Validate ${['login', 'data entry', 'report generation', 'notification delivery', 'search functionality', 'export feature', 'permission check', 'workflow trigger'][i % 8]}`,
     given: `Given the user is authenticated and has appropriate permissions`,
@@ -182,260 +213,287 @@ function generateMockBrd(templateId: number, language: string, brds: BrdDocument
     priority: (['high', 'medium', 'low'] as const)[Math.floor(Math.random() * 3)],
   }));
 
-  return {
+  const entry: BrdEntry = {
     id,
     title: `${tpl.name} Business Requirements Document`,
-    template: templateId,
-    language,
-    sections,
-    requirements,
-    epics,
-    uatCases,
+    tpl: tplIdx,
+    lang,
     created: now,
-    updated: now,
-    status: 'draft',
-    inputType: 'paste',
+    reqs: requirements.length,
+    epics: epicCount,
+    stories: totalStories,
+    uatCount,
+    coverage: Math.floor(Math.random() * 20) + 75,
   };
+
+  const doc: BrdDocument = { id, title: entry.title, template: tplIdx, language: lang, sections, requirements, epics, uatCases, created: now };
+
+  return { entry, doc };
 }
 
+// ═══════════════════════════════════════════════════════════════
+// THEATER SCENES
+// ═══════════════════════════════════════════════════════════════
+
+const THEATER_STAGES = [
+  { name: 'Document Analysis', scenes: ['Parsing input document...', 'Extracting key themes...', 'Identifying stakeholders...'] },
+  { name: 'Requirements Extraction', scenes: ['Mapping functional requirements...', 'Classifying non-functional requirements...', 'Building traceability matrix...'] },
+  { name: 'Architecture Mapping', scenes: ['Generating epic hierarchy...', 'Decomposing user stories...', 'Estimating story points...'] },
+  { name: 'Document Assembly', scenes: ['Composing BRD sections...', 'Generating UAT scenarios...', 'Finalizing document...'] },
+];
 
 // ═══════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════════════════
 
 export default function ReqFlowAIPage() {
-  const [screen, setScreen] = useState<Screen>('library');
-  const [brds, setBrds] = useState<BrdDocument[]>(loadBrds);
-  const [viewingBrd, setViewingBrd] = useState<BrdDocument | null>(null);
-  const [search, setSearch] = useState('');
-  const [templateFilter, setTemplateFilter] = useState<number | -1>(-1);
-  const [sortField, setSortField] = useState<SortField>('created');
-  const [sortDir, setSortDir] = useState<SortDir>('desc');
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  // Screen state
+  const [currentScreen, setScreen] = useState<Screen>('library');
 
-  // Generate screen state
-  const [genTemplate, setGenTemplate] = useState(0);
-  const [genLanguage, setGenLanguage] = useState('English');
-  const [genInputMode, setGenInputMode] = useState<'upload' | 'paste'>('paste');
-  const [genPasteText, setGenPasteText] = useState('');
-  const [genFileName, setGenFileName] = useState('');
+  // Library state
+  const [history, setHistory] = useState<BrdEntry[]>(loadHistory);
+  const [docs, setDocs] = useState<Record<string, BrdDocument>>(loadDocs);
+  const [searchQuery, setSearch] = useState('');
+  const [filterTpl, setFilterTpl] = useState<number | 'all'>('all');
+  const [sortCol, setSortCol] = useState<'id' | 'title' | 'date'>('date');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+
+  // Generate state
+  const [selectedTpl, setTpl] = useState(0);
+  const [selectedLang, setLang] = useState('Bilingual (AR+EN)');
+  const [inputMode, setInputMode] = useState<'upload' | 'paste'>('paste');
+  const [pasteText, setPasteText] = useState('');
+  const [uploadFileName, setUploadFileName] = useState('');
 
   // Theater state
   const [theaterProgress, setTheaterProgress] = useState(0);
-  const [theaterStage, setTheaterStage] = useState('');
-  const theaterTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [theaterScene, setTheaterScene] = useState('');
+  const [theaterStageIdx, setTheaterStageIdx] = useState(0);
+  const theaterTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [theaterStartTime, setTheaterStartTime] = useState(0);
 
   // Viewer state
-  const [viewerTab, setViewerTab] = useState<'brd' | 'reqs' | 'epics' | 'uat'>('brd');
+  const [currentBrdId, setCurrentBrdId] = useState('');
+  const [activeTab, setActiveTab] = useState<'brd' | 'reqs' | 'epics' | 'uat'>('brd');
   const [expandedEpics, setExpandedEpics] = useState<Set<string>>(new Set());
   const [reqSearch, setReqSearch] = useState('');
 
-  // Persist on change
-  useEffect(() => { saveBrds(brds); }, [brds]);
+  // Persist
+  useEffect(() => { saveHistory(history); }, [history]);
+  useEffect(() => { saveDocs(docs); }, [docs]);
 
-  // Stats
-  const totalReqs = useMemo(() => brds.reduce((a, b) => a + b.requirements.length, 0), [brds]);
-  const totalEpics = useMemo(() => brds.reduce((a, b) => a + b.epics.length, 0), [brds]);
-  const totalUat = useMemo(() => brds.reduce((a, b) => a + b.uatCases.length, 0), [brds]);
+  // Derived
+  const stats = useMemo(() => ({
+    total: history.length,
+    reqs: history.reduce((s, b) => s + b.reqs, 0),
+    uat: history.reduce((s, b) => s + (b.uatCount || 0), 0),
+    coverage: history.length ? Math.round(history.reduce((s, b) => s + (b.coverage || 0), 0) / history.length) : 0,
+  }), [history]);
 
-  // Filtered & sorted library
-  const filteredBrds = useMemo(() => {
-    let list = [...brds];
-    if (search) {
-      const q = search.toLowerCase();
-      list = list.filter(b => b.title.toLowerCase().includes(q) || b.id.toLowerCase().includes(q));
+  const filteredHistory = useMemo(() => {
+    let r = [...history];
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      r = r.filter(b => (b.id + ' ' + b.title + ' ' + TEMPLATES[b.tpl]?.name).toLowerCase().includes(q));
     }
-    if (templateFilter !== -1) {
-      list = list.filter(b => b.template === templateFilter);
-    }
-    list.sort((a, b) => {
-      let cmp = 0;
-      switch (sortField) {
-        case 'title': cmp = a.title.localeCompare(b.title); break;
-        case 'template': cmp = a.template - b.template; break;
-        case 'created': cmp = new Date(a.created).getTime() - new Date(b.created).getTime(); break;
-        case 'status': cmp = a.status.localeCompare(b.status); break;
-      }
-      return sortDir === 'asc' ? cmp : -cmp;
+    if (filterTpl !== 'all') r = r.filter(b => b.tpl === filterTpl);
+    r.sort((a, b) => {
+      let va: any, vb: any;
+      if (sortCol === 'date') { va = new Date(a.created).getTime(); vb = new Date(b.created).getTime(); }
+      else if (sortCol === 'id') { va = parseInt(a.id.replace('BRD-', '')); vb = parseInt(b.id.replace('BRD-', '')); }
+      else { va = a.title.toLowerCase(); vb = b.title.toLowerCase(); }
+      return sortDir === 'asc' ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
     });
-    return list;
-  }, [brds, search, templateFilter, sortField, sortDir]);
+    return r;
+  }, [history, searchQuery, filterTpl, sortCol, sortDir]);
 
-  // Navigation
-  const goLibrary = useCallback(() => {
-    setScreen('library');
-    setSearch('');
-    setSelectedIds(new Set());
-  }, []);
+  const currentDoc = docs[currentBrdId] || null;
+  const currentEntry = history.find(b => b.id === currentBrdId) || null;
 
+  // ─── Keyboard shortcuts ──────────────────────────────────────
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === '/' && currentScreen === 'library') {
+        e.preventDefault();
+        document.getElementById('reqflow-search')?.focus();
+      }
+      if (e.key === 'n' && currentScreen === 'library') {
+        e.preventDefault();
+        goGenerate();
+      }
+      if (e.key === 'Escape' && currentScreen !== 'library') {
+        setScreen('library');
+      }
+      if (currentScreen === 'viewer' && ['1', '2', '3', '4'].includes(e.key)) {
+        setActiveTab(['brd', 'reqs', 'epics', 'uat'][parseInt(e.key) - 1] as any);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [currentScreen]);
+
+  // ─── Navigation ──────────────────────────────────────────────
   const goGenerate = useCallback(() => {
     setScreen('generate');
-    setGenPasteText('');
-    setGenFileName('');
+    setPasteText('');
+    setUploadFileName('');
   }, []);
 
-  const goViewer = useCallback((brd: BrdDocument) => {
-    setViewingBrd(brd);
-    setViewerTab('brd');
+  const goViewer = useCallback((id: string) => {
+    setCurrentBrdId(id);
+    setActiveTab('brd');
     setExpandedEpics(new Set());
     setReqSearch('');
     setScreen('viewer');
   }, []);
 
-  // CRUD
-  const handleDuplicate = useCallback((brd: BrdDocument) => {
-    const dup: BrdDocument = JSON.parse(JSON.stringify(brd));
-    dup.id = nextBrdId(brds);
-    dup.title = brd.title + ' (Copy)';
+  // ─── CRUD ────────────────────────────────────────────────────
+  const handleRename = useCallback((id: string, newTitle: string) => {
+    if (!newTitle.trim()) return;
+    setHistory(prev => prev.map(b => b.id === id ? { ...b, title: newTitle.trim() } : b));
+  }, []);
+
+  const handleDuplicate = useCallback((entry: BrdEntry) => {
+    const dup: BrdEntry = JSON.parse(JSON.stringify(entry));
+    dup.id = nextBrdId(history);
+    dup.title = entry.title + ' (Copy)';
     dup.created = new Date().toISOString();
-    dup.updated = new Date().toISOString();
-    setBrds(prev => [dup, ...prev]);
-    toast.success('BRD duplicated', { description: dup.id });
-  }, [brds]);
+    setHistory(prev => [dup, ...prev]);
+    // Also dup doc if exists
+    const srcDoc = docs[entry.id];
+    if (srcDoc) {
+      const dupDoc: BrdDocument = JSON.parse(JSON.stringify(srcDoc));
+      dupDoc.id = dup.id;
+      dupDoc.title = dup.title;
+      dupDoc.created = dup.created;
+      setDocs(prev => ({ ...prev, [dup.id]: dupDoc }));
+    }
+    showToast('success', `⧉ Duplicated as ${dup.id}`);
+  }, [history, docs]);
 
   const handleDelete = useCallback((id: string) => {
-    setBrds(prev => prev.filter(b => b.id !== id));
-    toast.success('BRD deleted');
+    if (!window.confirm('Delete this BRD? This cannot be undone.')) return;
+    setHistory(prev => prev.filter(b => b.id !== id));
+    setDocs(prev => { const n = { ...prev }; delete n[id]; return n; });
+    showToast('success', 'BRD deleted');
   }, []);
 
   const handleBulkDelete = useCallback(() => {
-    if (selectedIds.size === 0) return;
-    setBrds(prev => prev.filter(b => !selectedIds.has(b.id)));
-    toast.success(`${selectedIds.size} BRD(s) deleted`);
-    setSelectedIds(new Set());
-  }, [selectedIds]);
+    if (selectedRows.size === 0) return;
+    if (!window.confirm(`Delete ${selectedRows.size} BRD(s)?`)) return;
+    setHistory(prev => prev.filter(b => !selectedRows.has(b.id)));
+    setDocs(prev => { const n = { ...prev }; selectedRows.forEach(id => delete n[id]); return n; });
+    showToast('success', `${selectedRows.size} BRD(s) deleted`);
+    setSelectedRows(new Set());
+  }, [selectedRows]);
 
-  const handleRename = useCallback((id: string, newTitle: string) => {
-    if (!newTitle.trim()) return;
-    setBrds(prev => prev.map(b => b.id === id ? { ...b, title: newTitle.trim(), updated: new Date().toISOString() } : b));
-  }, []);
-
-  const handleExport = useCallback((brd: BrdDocument) => {
-    const html = `<!DOCTYPE html><html><head><title>${brd.title}</title><style>body{font-family:'Plus Jakarta Sans',sans-serif;max-width:800px;margin:0 auto;padding:40px;color:#1e293b}h1{font-size:28px;border-bottom:2px solid #2563eb;padding-bottom:12px}h2{font-size:20px;color:#2563eb;margin-top:32px}p{line-height:1.7;font-size:14px}.meta{color:#64748b;font-size:12px;margin-bottom:24px}</style></head><body><h1>${brd.title}</h1><div class="meta">ID: ${brd.id} | Template: ${TEMPLATES[brd.template].name} | Generated: ${new Date(brd.created).toLocaleDateString()}</div>${brd.sections.map(s => `<h2>${s.order + 1}. ${s.title}</h2><p>${s.content}</p>`).join('')}</body></html>`;
+  const handleExport = useCallback((doc: BrdDocument) => {
+    const secs = TEMPLATES[doc.template]?.sections || [];
+    const html = `<!DOCTYPE html><html><head><title>${doc.title}</title><style>body{font-family:'Plus Jakarta Sans',sans-serif;max-width:800px;margin:0 auto;padding:40px;color:#0F172A}h1{font-size:28px;border-bottom:2px solid #2563EB;padding-bottom:12px}h2{font-size:18px;color:#2563EB;margin-top:32px}p{line-height:1.75;font-size:13.5px}.meta{color:#64748B;font-size:12px;margin-bottom:24px}</style></head><body><h1>${doc.title}</h1><div class="meta">ID: ${doc.id} | Template: ${TEMPLATES[doc.template].name} | ${new Date(doc.created).toLocaleDateString()}</div>${doc.sections.map((s, i) => `<h2>${secs[i] || `${i + 1}. ${s.title}`}</h2><p>${s.content}</p>`).join('')}</body></html>`;
     const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `${brd.id}_${brd.title.replace(/[^a-zA-Z0-9]/g, '_')}.html`; a.click();
-    URL.revokeObjectURL(url);
-    toast.success('BRD exported as HTML');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${doc.id}_BRD.html`;
+    a.click();
+    showToast('success', 'BRD exported as HTML');
   }, []);
 
-  const handleExportUat = useCallback((brd: BrdDocument) => {
+  const handleExportUat = useCallback((doc: BrdDocument) => {
     const header = 'ID\tScenario\tGiven\tWhen\tThen\tPriority\n';
-    const rows = brd.uatCases.map(u => `${u.id}\t${u.scenario}\t${u.given}\t${u.when}\t${u.then}\t${u.priority}`).join('\n');
+    const rows = doc.uatCases.map(u => `${u.id}\t${u.scenario}\t${u.given}\t${u.when}\t${u.then}\t${u.priority}`).join('\n');
     const blob = new Blob([header + rows], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `${brd.id}_UAT.csv`; a.click();
-    URL.revokeObjectURL(url);
-    toast.success('UAT exported as CSV');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${doc.id}_UAT.csv`;
+    a.click();
+    showToast('success', 'UAT exported as CSV');
   }, []);
 
-  const handleCopyAll = useCallback((brd: BrdDocument) => {
-    const text = brd.sections.map(s => `## ${s.title}\n\n${s.content}`).join('\n\n');
-    navigator.clipboard.writeText(text);
-    toast.success('BRD copied to clipboard');
+  const handleCopyAll = useCallback((doc: BrdDocument) => {
+    navigator.clipboard.writeText(doc.sections.map(s => `## ${s.title}\n\n${s.content}`).join('\n\n'));
+    showToast('success', 'BRD copied to clipboard');
   }, []);
 
-  const handleCopySection = useCallback((section: BrdSection) => {
-    navigator.clipboard.writeText(`## ${section.title}\n\n${section.content}`);
-    toast.success(`"${section.title}" copied`);
+  const handleCopySection = useCallback((sec: { title: string; content: string }) => {
+    navigator.clipboard.writeText(`## ${sec.title}\n\n${sec.content}`);
+    showToast('success', `"${sec.title}" copied`);
   }, []);
 
-  const handleJiraPublish = useCallback(() => {
-    toast.success('Published to Jira', { description: 'Epics and stories synced successfully.' });
-  }, []);
-
-  // Generate flow
-  const handleFileDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file && (file.name.endsWith('.pdf') || file.name.endsWith('.docx') || file.name.endsWith('.doc'))) {
-      setGenFileName(file.name);
-      setGenInputMode('upload');
-      toast.success(`File loaded: ${file.name}`);
-    } else {
-      toast.error('Only PDF and DOCX files are supported');
-    }
-  }, []);
-
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setGenFileName(file.name);
-      setGenInputMode('upload');
-      toast.success(`File loaded: ${file.name}`);
-    }
-  }, []);
-
-  const canGenerate = genInputMode === 'upload' ? !!genFileName : genPasteText.trim().length >= 20;
+  // ─── Generate flow ───────────────────────────────────────────
+  const canGenerate = inputMode === 'upload' ? !!uploadFileName : pasteText.trim().length >= 50;
 
   const startGeneration = useCallback(() => {
     setScreen('theater');
     setTheaterProgress(0);
-    setTheaterStage('Analyzing input document...');
-
-    const stages = [
-      { at: 10, label: 'Extracting key themes...' },
-      { at: 25, label: 'Mapping stakeholder requirements...' },
-      { at: 40, label: 'Generating functional requirements...' },
-      { at: 55, label: 'Building epic & story hierarchy...' },
-      { at: 70, label: 'Composing BRD sections...' },
-      { at: 85, label: 'Generating UAT scenarios...' },
-      { at: 95, label: 'Finalizing document...' },
-    ];
+    setTheaterStageIdx(0);
+    setTheaterScene(THEATER_STAGES[0].scenes[0]);
+    setTheaterStartTime(Date.now());
 
     let progress = 0;
-    theaterTimerRef.current = setInterval(() => {
-      progress += Math.random() * 3 + 1;
+    let sceneIdx = 0;
+    const allScenes = THEATER_STAGES.flatMap(s => s.scenes);
+
+    theaterTimer.current = setInterval(() => {
+      progress += Math.random() * 3 + 1.5;
       if (progress >= 100) {
         progress = 100;
-        if (theaterTimerRef.current) clearInterval(theaterTimerRef.current);
-        // Generate BRD
-        const newBrd = generateMockBrd(genTemplate, genLanguage, brds);
-        setBrds(prev => [newBrd, ...prev]);
-        setTimeout(() => goViewer(newBrd), 600);
+        if (theaterTimer.current) clearInterval(theaterTimer.current);
+
+        const { entry, doc } = generateMockBrd(selectedTpl, selectedLang, history);
+        setHistory(prev => [entry, ...prev]);
+        setDocs(prev => ({ ...prev, [entry.id]: doc }));
+
+        setTimeout(() => {
+          goViewer(entry.id);
+          showToast('success', `✨ ${entry.id} generated — ${entry.reqs} requirements extracted`);
+        }, 600);
       }
+
+      const newSceneIdx = Math.min(Math.floor((progress / 100) * allScenes.length), allScenes.length - 1);
+      if (newSceneIdx !== sceneIdx) {
+        sceneIdx = newSceneIdx;
+        setTheaterScene(allScenes[sceneIdx]);
+      }
+
+      // Determine stage
+      let cumScenes = 0;
+      for (let i = 0; i < THEATER_STAGES.length; i++) {
+        cumScenes += THEATER_STAGES[i].scenes.length;
+        if (sceneIdx < cumScenes) { setTheaterStageIdx(i); break; }
+      }
+
       setTheaterProgress(Math.min(progress, 100));
-      const stage = [...stages].reverse().find(s => progress >= s.at);
-      if (stage) setTheaterStage(stage.label);
-    }, 120);
-  }, [genTemplate, genLanguage, brds, goViewer]);
+    }, 250);
+  }, [selectedTpl, selectedLang, history, goViewer]);
 
   useEffect(() => {
-    return () => { if (theaterTimerRef.current) clearInterval(theaterTimerRef.current); };
+    return () => { if (theaterTimer.current) clearInterval(theaterTimer.current); };
   }, []);
 
-  // Sort toggle
-  const toggleSort = useCallback((field: SortField) => {
-    if (sortField === field) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-    else { setSortField(field); setSortDir('asc'); }
-  }, [sortField]);
+  // ─── Sort toggle ─────────────────────────────────────────────
+  const toggleSort = useCallback((col: 'id' | 'title' | 'date') => {
+    if (sortCol === col) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortCol(col); setSortDir('asc'); }
+  }, [sortCol]);
 
-  // Select
-  const toggleSelect = useCallback((id: string) => {
-    setSelectedIds(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  }, []);
-
-  const toggleSelectAll = useCallback(() => {
-    if (selectedIds.size === filteredBrds.length) setSelectedIds(new Set());
-    else setSelectedIds(new Set(filteredBrds.map(b => b.id)));
-  }, [selectedIds.size, filteredBrds]);
+  // ─── Toast helper ────────────────────────────────────────────
+  function showToast(type: 'success' | 'error' | 'info', msg: string) {
+    toast[type](msg);
+  }
 
   // ═══════════════════════════════════════════════════════════════
   // RENDER
   // ═══════════════════════════════════════════════════════════════
 
   return (
-    <div className="flex flex-col h-full" style={{ background: 'var(--background)', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-      {screen === 'library' && renderLibrary()}
-      {screen === 'generate' && renderGenerate()}
-      {screen === 'theater' && renderTheater()}
-      {screen === 'viewer' && viewingBrd && renderViewer(viewingBrd)}
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', background: '#F8FAFC', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      {currentScreen === 'library' && <LibraryScreen />}
+      {currentScreen === 'generate' && <GenerateScreen />}
+      {currentScreen === 'theater' && <TheaterScreen />}
+      {currentScreen === 'viewer' && currentDoc && <ViewerScreen />}
     </div>
   );
 
@@ -443,261 +501,232 @@ export default function ReqFlowAIPage() {
   // SCREEN 1: LIBRARY
   // ═══════════════════════════════════════════════════════════════
 
-  function renderLibrary() {
+  function LibraryScreen() {
     return (
-      <div className="flex flex-col h-full overflow-hidden">
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
         {/* Header */}
-        <div className="flex-shrink-0 px-6 pt-5 pb-4" style={{ borderBottom: '1px solid hsl(var(--border))' }}>
-          <div className="flex items-center justify-between mb-3">
+        <div style={{ flexShrink: 0, padding: '20px 24px 16px', borderBottom: '1px solid #E2E8F0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
             <div>
-              <h1 className="font-semibold text-foreground" style={{ fontSize: '24px', lineHeight: '32px' }}>
-                ReqFlow AI
-              </h1>
-              <p className="text-muted-foreground" style={{ fontSize: '13px', marginTop: '2px' }}>
-                AI-powered Business Requirements Document generator
-              </p>
+              <h2 style={{ fontSize: '22px', fontWeight: 800, lineHeight: 1.2, color: '#0F172A', margin: 0 }}>ReqFlow AI</h2>
+              <p style={{ fontSize: '13px', color: '#64748B', marginTop: '2px' }}>AI-powered Business Requirements Document generator</p>
             </div>
             <button
               onClick={goGenerate}
-              className="inline-flex items-center gap-2 rounded-[10px] font-semibold text-white transition-all hover:-translate-y-0.5"
-              style={{
-                height: '36px', padding: '0 16px', fontSize: '13px',
-                background: '#2563EB',
-                boxShadow: '0 1px 3px rgba(37,99,235,0.3)',
-              }}
+              style={{ height: '36px', padding: '0 16px', fontSize: '13px', fontWeight: 600, color: '#FFF', background: '#2563EB', borderRadius: '8px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', boxShadow: '0 1px 3px rgba(37,99,235,0.3)' }}
             >
               <Sparkles size={14} />
-              Generate New BRD
+              ✨ Generate New BRD
             </button>
           </div>
 
           {/* Stats strip */}
-          <div className="flex items-center" style={{ gap: '16px', fontSize: '13px', fontWeight: 500 }}>
-            <span className="text-muted-foreground">
-              <span className="font-semibold text-foreground">{brds.length}</span> BRDs
-            </span>
-            <span style={{ color: 'hsl(var(--border))' }}>·</span>
-            <span className="text-muted-foreground">
-              <span className="font-semibold text-foreground">{totalReqs}</span> Requirements
-            </span>
-            <span style={{ color: 'hsl(var(--border))' }}>·</span>
-            <span className="text-muted-foreground">
-              <span className="font-semibold text-foreground">{totalEpics}</span> Epics
-            </span>
-            <span style={{ color: 'hsl(var(--border))' }}>·</span>
-            <span className="text-muted-foreground">
-              <span className="font-semibold text-foreground">{totalUat}</span> UAT Cases
-            </span>
+          <div style={{ display: 'flex', gap: '24px', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px 24px' }}>
+            {[
+              { icon: '📊', label: 'TOTAL BRDS', value: stats.total },
+              { icon: '📋', label: 'REQUIREMENTS', value: stats.reqs },
+              { icon: '🧪', label: 'UAT SCENARIOS', value: stats.uat },
+              { icon: '📈', label: 'AVG COVERAGE', value: stats.coverage + '%' },
+            ].map(s => (
+              <div key={s.label} style={{ flex: 1 }}>
+                <div style={{ fontSize: '10px', fontWeight: 500, textTransform: 'uppercase', color: '#94A3B8', letterSpacing: '0.6px', marginBottom: '4px' }}>{s.icon} {s.label}</div>
+                <div style={{ fontSize: '20px', fontWeight: 700, color: '#0F172A', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{s.value}</div>
+              </div>
+            ))}
           </div>
         </div>
 
         {/* Toolbar */}
-        <div className="flex-shrink-0 px-6 py-3 flex items-center gap-3" style={{ borderBottom: '1px solid hsl(var(--border))' }}>
-          <div className="relative flex-1" style={{ maxWidth: '320px' }}>
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <div style={{ flexShrink: 0, padding: '12px 24px', display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid #E2E8F0' }}>
+          <div style={{ position: 'relative', minWidth: '240px', flex: '0 1 320px' }}>
+            <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
             <input
+              id="reqflow-search"
               type="text"
-              value={search}
+              value={searchQuery}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Search BRDs... ( / )"
-              className="w-full rounded-md bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-              style={{
-                height: '32px', paddingLeft: '32px', paddingRight: '12px',
-                fontSize: '13px', border: '1px solid hsl(var(--border))',
-                borderRadius: '6px',
-              }}
+              placeholder="Search BRDs...  ( / )"
+              style={{ width: '100%', height: '36px', paddingLeft: '32px', paddingRight: '12px', fontSize: '13px', border: '1px solid #E2E8F0', borderRadius: '6px', outline: 'none', background: 'transparent', color: '#0F172A' }}
+              onFocus={e => (e.target.style.borderColor = '#2563EB')}
+              onBlur={e => (e.target.style.borderColor = '#E2E8F0')}
             />
           </div>
 
-          {/* Template filter */}
-          <div className="relative">
+          <div style={{ position: 'relative' }}>
             <select
-              value={templateFilter}
-              onChange={e => setTemplateFilter(Number(e.target.value))}
-              className="appearance-none cursor-pointer rounded-md bg-transparent text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-              style={{
-                height: '32px', padding: '0 28px 0 12px',
-                fontSize: '13px', fontWeight: 500, border: '1px solid hsl(var(--border))',
-                borderRadius: '6px',
-              }}
+              value={filterTpl === 'all' ? 'all' : filterTpl}
+              onChange={e => setFilterTpl(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+              style={{ height: '36px', padding: '0 28px 0 12px', fontSize: '13px', fontWeight: 500, border: '1px solid #E2E8F0', borderRadius: '6px', outline: 'none', appearance: 'none', background: 'transparent', cursor: 'pointer', color: '#0F172A' }}
             >
-              <option value={-1}>All Templates</option>
-              {TEMPLATES.map(t => (
-                <option key={t.id} value={t.id}>{t.name}</option>
-              ))}
+              <option value="all">All Templates</option>
+              {TEMPLATES.map((t, i) => <option key={i} value={i}>{t.name}</option>)}
             </select>
-            <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground" />
+            <ChevronDown size={12} style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#94A3B8' }} />
           </div>
 
-          {selectedIds.size > 0 && (
-            <button
-              onClick={handleBulkDelete}
-              className="inline-flex items-center gap-1.5 rounded-md text-destructive hover:bg-destructive/10 transition-colors"
-              style={{ height: '32px', padding: '0 12px', fontSize: '13px', fontWeight: 500, border: '1px solid hsl(var(--destructive) / 0.3)', borderRadius: '6px' }}
-            >
-              <Trash2 size={13} />
-              Delete Selected ({selectedIds.size})
-            </button>
+          {selectedRows.size > 0 && (
+            <>
+              <span style={{ fontSize: '13px', fontWeight: 500, color: '#334155' }}>{selectedRows.size} selected</span>
+              <button
+                onClick={handleBulkDelete}
+                style={{ height: '36px', padding: '0 12px', fontSize: '13px', fontWeight: 500, color: '#EF4444', background: '#FEF2F2', border: '1px solid #EF4444', borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <Trash2 size={13} />
+                Delete Selected
+              </button>
+            </>
           )}
         </div>
 
         {/* Table */}
-        <div className="flex-1 overflow-auto">
-          {filteredBrds.length === 0 ? (
-            brds.length === 0 ? (
-              /* Empty state — no BRDs at all */
-              <div className="flex flex-col items-center justify-center py-20 text-center">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: '#EFF6FF' }}>
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+          {filteredHistory.length === 0 ? (
+            history.length === 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '80px 24px', textAlign: 'center' }}>
+                <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
                   <FileText size={28} style={{ color: '#2563EB' }} />
                 </div>
-                <h3 className="font-semibold text-foreground" style={{ fontSize: '16px', marginBottom: '8px' }}>
-                  No BRDs yet
-                </h3>
-                <p className="text-muted-foreground" style={{ fontSize: '13px', maxWidth: '360px', marginBottom: '20px' }}>
-                  Generate your first Business Requirements Document using AI-powered analysis of your project documents.
-                </p>
+                <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0F172A', marginBottom: '8px' }}>📄 No BRDs generated yet</h3>
+                <p style={{ fontSize: '13px', color: '#64748B', maxWidth: '360px', marginBottom: '20px' }}>Generate your first Business Requirements Document using AI-powered analysis.</p>
                 <button
                   onClick={goGenerate}
-                  className="inline-flex items-center gap-2 rounded-[10px] font-semibold text-white transition-all hover:-translate-y-0.5"
-                  style={{ height: '36px', padding: '0 16px', fontSize: '13px', background: '#2563EB' }}
+                  style={{ height: '36px', padding: '0 16px', fontSize: '13px', fontWeight: 600, color: '#FFF', background: '#2563EB', borderRadius: '8px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
                   <Sparkles size={14} />
                   Generate New BRD
                 </button>
               </div>
             ) : (
-              /* Filter no-results */
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3" style={{ background: 'hsl(var(--muted))' }}>
-                  <Search size={20} className="text-muted-foreground" />
-                </div>
-                <h3 className="font-medium text-foreground" style={{ fontSize: '14px', marginBottom: '4px' }}>No results found</h3>
-                <p className="text-muted-foreground" style={{ fontSize: '13px' }}>Try adjusting your search or filter criteria.</p>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 24px', textAlign: 'center' }}>
+                <Search size={20} style={{ color: '#94A3B8', marginBottom: '12px' }} />
+                <p style={{ fontSize: '13px', color: '#64748B' }}>No BRDs match your search</p>
               </div>
             )
           ) : (
-            <table className="w-full" style={{ borderCollapse: 'collapse' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ background: 'hsl(var(--muted))' }}>
-                  <th style={{ width: '40px', height: '36px', padding: '0 12px' }}>
+                <tr style={{ background: '#F8FAFC' }}>
+                  <th style={{ width: '36px', height: '36px', padding: '0 12px', borderBottom: '2px solid #E2E8F0' }}>
                     <input
                       type="checkbox"
-                      checked={selectedIds.size === filteredBrds.length && filteredBrds.length > 0}
-                      onChange={toggleSelectAll}
-                      className="rounded"
-                      style={{ width: '14px', height: '14px' }}
+                      checked={selectedRows.size === filteredHistory.length && filteredHistory.length > 0}
+                      onChange={() => {
+                        if (selectedRows.size === filteredHistory.length) setSelectedRows(new Set());
+                        else setSelectedRows(new Set(filteredHistory.map(b => b.id)));
+                      }}
+                      style={{ width: '14px', height: '14px', cursor: 'pointer' }}
                     />
                   </th>
                   {[
-                    { field: 'title' as SortField, label: 'BRD', flex: true },
-                    { field: 'template' as SortField, label: 'TEMPLATE', width: '180px' },
-                    { field: 'status' as SortField, label: 'STATUS', width: '100px' },
-                    { field: 'created' as SortField, label: 'CREATED', width: '120px' },
-                  ].map(col => (
+                    { col: 'id' as const, label: 'ID', w: '80px' },
+                    { col: 'title' as const, label: 'TITLE', w: undefined },
+                    { col: null, label: 'TEMPLATE', w: '160px' },
+                    { col: null, label: 'STATS', w: '120px' },
+                    { col: null, label: 'UAT', w: '80px' },
+                    { col: 'date' as const, label: 'DATE', w: '100px' },
+                    { col: null, label: 'ACTIONS', w: '120px' },
+                  ].map((h, i) => (
                     <th
-                      key={col.field}
-                      onClick={() => toggleSort(col.field)}
-                      className="cursor-pointer select-none text-left"
+                      key={h.label}
+                      onClick={h.col ? () => toggleSort(h.col!) : undefined}
                       style={{
-                        height: '36px', padding: '0 12px',
-                        fontSize: '11px', fontWeight: 600, textTransform: 'uppercase',
-                        letterSpacing: '0.05em', color: 'hsl(var(--muted-foreground))',
-                        borderBottom: '1px solid hsl(var(--border))',
-                        width: col.width || undefined,
+                        height: '36px', padding: '0 12px', textAlign: 'left',
+                        fontSize: '9px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.6px',
+                        color: '#94A3B8', borderBottom: '2px solid #E2E8F0',
+                        width: h.w, cursor: h.col ? 'pointer' : undefined, userSelect: 'none',
                       }}
                     >
-                      <span className="inline-flex items-center gap-1">
-                        {col.label}
-                        {sortField === col.field && (sortDir === 'asc' ? <SortAsc size={11} /> : <SortDesc size={11} />)}
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        {h.label}
+                        {h.col && sortCol === h.col && (sortDir === 'asc' ? <SortAsc size={10} /> : <SortDesc size={10} />)}
                       </span>
                     </th>
                   ))}
-                  <th style={{ width: '100px', height: '36px', padding: '0 12px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'hsl(var(--muted-foreground))', borderBottom: '1px solid hsl(var(--border))' }}>
-                    REQS
-                  </th>
-                  <th style={{ width: '100px', height: '36px', padding: '0 12px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'hsl(var(--muted-foreground))', borderBottom: '1px solid hsl(var(--border))' }}>
-                    ACTIONS
-                  </th>
                 </tr>
               </thead>
               <tbody>
-                {filteredBrds.map(brd => {
-                  const tpl = TEMPLATES[brd.template];
+                {filteredHistory.map(entry => {
+                  const tplC = TPL_COLORS[entry.tpl] || TPL_COLORS[0];
                   return (
                     <tr
-                      key={brd.id}
-                      className="group cursor-pointer transition-colors hover:bg-accent/5"
-                      onClick={() => goViewer(brd)}
-                      style={{ borderBottom: '1px solid hsl(var(--border) / 0.5)' }}
+                      key={entry.id}
+                      onClick={() => goViewer(entry.id)}
+                      style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer', height: '36px' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     >
+                      {/* Checkbox */}
                       <td
-                        style={{ width: '40px', height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}
                         onClick={e => e.stopPropagation()}
+                        style={{ width: '36px', height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}
                       >
                         <input
                           type="checkbox"
-                          checked={selectedIds.has(brd.id)}
-                          onChange={() => toggleSelect(brd.id)}
-                          className="rounded"
-                          style={{ width: '14px', height: '14px' }}
+                          checked={selectedRows.has(entry.id)}
+                          onChange={() => {
+                            setSelectedRows(prev => {
+                              const n = new Set(prev);
+                              n.has(entry.id) ? n.delete(entry.id) : n.add(entry.id);
+                              return n;
+                            });
+                          }}
+                          style={{ width: '14px', height: '14px', cursor: 'pointer' }}
                         />
                       </td>
-                      <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}>
-                        <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
-                          <span className="font-mono text-muted-foreground" style={{ fontSize: '11px', flexShrink: 0 }}>{brd.id}</span>
-                          <input
-                            type="text"
-                            defaultValue={brd.title}
-                            onBlur={e => handleRename(brd.id, e.target.value)}
-                            onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
-                            className="bg-transparent border-none outline-none text-foreground hover:bg-accent/10 focus:bg-accent/10 rounded px-1 -mx-1 truncate w-full"
-                            style={{ fontSize: '14px', fontWeight: 500, height: '28px' }}
-                            onClick={e => e.stopPropagation()}
-                          />
-                        </div>
+
+                      {/* ID */}
+                      <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '11px', fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: '#2563EB' }}>
+                        {entry.id}
                       </td>
-                      <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}>
-                        <span
-                          className="inline-flex items-center rounded-full"
-                          style={{
-                            height: '22px', padding: '0 8px',
-                            fontSize: '11px', fontWeight: 500,
-                            background: tpl.bg, color: tpl.color,
-                          }}
-                        >
-                          {tpl.name}
-                        </span>
-                      </td>
-                      <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}>
-                        <span
-                          className="inline-flex items-center rounded-full capitalize"
-                          style={{
-                            height: '22px', padding: '0 8px',
-                            fontSize: '11px', fontWeight: 500,
-                            background: brd.status === 'approved' ? '#ECFDF5' : brd.status === 'review' ? '#FEF3C7' : '#F1F5F9',
-                            color: brd.status === 'approved' ? '#059669' : brd.status === 'review' ? '#D97706' : '#64748B',
-                          }}
-                        >
-                          {brd.status}
-                        </span>
-                      </td>
-                      <td className="text-muted-foreground" style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '13px' }}>
-                        {new Date(brd.created).toLocaleDateString()}
-                      </td>
-                      <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}>
-                        <span className="font-mono" style={{ fontSize: '13px', fontWeight: 500 }}>
-                          {brd.requirements.filter(r => r.type === 'functional').length}F + {brd.requirements.filter(r => r.type === 'non-functional').length}NF
-                        </span>
-                      </td>
+
+                      {/* Title — stopPropagation */}
                       <td
-                        style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}
                         onClick={e => e.stopPropagation()}
+                        style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}
                       >
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <button onClick={() => goViewer(brd)} className="p-1 rounded hover:bg-accent/10 text-muted-foreground hover:text-foreground" title="View"><Eye size={14} /></button>
-                          <button onClick={() => handleDuplicate(brd)} className="p-1 rounded hover:bg-accent/10 text-muted-foreground hover:text-foreground" title="Duplicate"><Copy size={14} /></button>
-                          <button onClick={() => handleExport(brd)} className="p-1 rounded hover:bg-accent/10 text-muted-foreground hover:text-foreground" title="Export"><Download size={14} /></button>
-                          <button onClick={() => handleDelete(brd.id)} className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive" title="Delete"><Trash2 size={14} /></button>
+                        <input
+                          type="text"
+                          defaultValue={entry.title}
+                          onBlur={e => handleRename(entry.id, e.target.value)}
+                          onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+                          onClick={e => e.stopPropagation()}
+                          onFocus={e => (e.target.style.borderBottom = '1px dashed #2563EB')}
+                          style={{ width: '100%', background: 'transparent', border: 'none', borderBottom: '1px dashed transparent', outline: 'none', fontSize: '13.5px', fontWeight: 500, color: '#0F172A', padding: '0', height: '28px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                        />
+                      </td>
+
+                      {/* Template badge */}
+                      <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', height: '22px', padding: '0 8px', borderRadius: '11px', fontSize: '11px', fontWeight: 500, background: tplC.bg, color: tplC.color }}>
+                          {TEMPLATES[entry.tpl]?.name || 'Unknown'}
+                        </span>
+                      </td>
+
+                      {/* Stats */}
+                      <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '11px', fontWeight: 400, color: '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>
+                        {entry.reqs}r · {entry.epics}e · {entry.stories}s
+                      </td>
+
+                      {/* UAT */}
+                      <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '11px', fontWeight: 400, color: '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>
+                        {entry.uatCount} · {entry.coverage}%
+                      </td>
+
+                      {/* Date */}
+                      <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '13px', color: '#64748B' }}>
+                        {timeAgo(entry.created)}
+                      </td>
+
+                      {/* Actions — stopPropagation */}
+                      <td
+                        onClick={e => e.stopPropagation()}
+                        style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                          <ActionBtn icon={<Eye size={14} />} title="View" onClick={() => goViewer(entry.id)} />
+                          <ActionBtn icon={<Copy size={14} />} title="Duplicate" onClick={() => handleDuplicate(entry)} />
+                          <ActionBtn icon={<Download size={14} />} title="Export" onClick={() => { const d = docs[entry.id]; if (d) handleExport(d); }} />
+                          <ActionBtn icon={<Trash2 size={14} />} title="Delete" onClick={() => handleDelete(entry.id)} danger />
                         </div>
                       </td>
                     </tr>
@@ -715,190 +744,165 @@ export default function ReqFlowAIPage() {
   // SCREEN 2: GENERATE
   // ═══════════════════════════════════════════════════════════════
 
-  function renderGenerate() {
-    const tpl = TEMPLATES[genTemplate];
-    const sections = TEMPLATE_SECTIONS[genTemplate] || [];
+  function GenerateScreen() {
+    const tpl = TEMPLATES[selectedTpl];
+    const tplC = TPL_COLORS[selectedTpl];
 
     return (
-      <div className="flex flex-col h-full overflow-auto">
-        {/* Back */}
-        <div className="flex-shrink-0 px-6 pt-4 pb-3" style={{ borderBottom: '1px solid hsl(var(--border))' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+        <div style={{ flexShrink: 0, padding: '12px 24px', borderBottom: '1px solid #E2E8F0' }}>
           <button
-            onClick={goLibrary}
-            className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
-            style={{ fontSize: '13px', fontWeight: 500 }}
+            onClick={() => setScreen('library')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', fontWeight: 500, color: '#64748B', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
           >
-            <ChevronLeft size={14} />
-            Back to Library
+            <ChevronLeft size={14} /> ← Back to Library
           </button>
         </div>
 
-        <div className="flex-1 overflow-auto px-6 py-6" style={{ maxWidth: '720px', margin: '0 auto', width: '100%' }}>
-          <h2 className="font-semibold text-foreground" style={{ fontSize: '20px', marginBottom: '4px' }}>
-            Generate New BRD
-          </h2>
-          <p className="text-muted-foreground" style={{ fontSize: '13px', marginBottom: '24px' }}>
-            Select a template methodology and provide your source document or text.
-          </p>
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '24px' }}>
+          <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+            <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#0F172A', marginBottom: '4px' }}>Generate New BRD</h2>
+            <p style={{ fontSize: '13px', color: '#64748B', marginBottom: '24px' }}>Select a template methodology and provide your source document or text.</p>
 
-          {/* Template selection */}
-          <div style={{ marginBottom: '24px' }}>
-            <label className="block font-medium text-foreground" style={{ fontSize: '13px', marginBottom: '8px' }}>
-              Template Methodology
-            </label>
-            <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
-              {TEMPLATES.map(t => (
-                <button
-                  key={t.id}
-                  onClick={() => setGenTemplate(t.id)}
-                  className={cn(
-                    'flex items-center gap-3 rounded-lg border text-left transition-all',
-                    genTemplate === t.id ? 'ring-2 ring-ring' : 'hover:border-ring/50'
-                  )}
-                  style={{
-                    padding: '10px 12px',
-                    borderColor: genTemplate === t.id ? '#2563EB' : 'hsl(var(--border))',
-                    background: genTemplate === t.id ? '#EFF6FF08' : 'transparent',
-                  }}
+            {/* Template select */}
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#0F172A', marginBottom: '8px' }}>Template Methodology</label>
+              <div style={{ position: 'relative' }}>
+                <select
+                  value={selectedTpl}
+                  onChange={e => setTpl(Number(e.target.value))}
+                  style={{ width: '100%', height: '36px', padding: '0 28px 0 12px', fontSize: '13px', border: '1px solid #E2E8F0', borderRadius: '6px', outline: 'none', appearance: 'none', background: '#FFF', cursor: 'pointer', color: '#0F172A' }}
                 >
-                  <span
-                    className="inline-flex items-center justify-center rounded-md flex-shrink-0"
-                    style={{ width: '32px', height: '32px', background: t.bg, color: t.color, fontSize: '11px', fontWeight: 700 }}
-                  >
-                    {t.sections}
+                  {TEMPLATES.map((t, i) => <option key={i} value={i}>{t.name} — {t.desc}</option>)}
+                </select>
+                <ChevronDown size={12} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#94A3B8' }} />
+              </div>
+            </div>
+
+            {/* Section chips */}
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'block', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#94A3B8', marginBottom: '6px' }}>
+                Sections ({tpl.sections.length})
+              </label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                {tpl.sections.map((s, i) => (
+                  <span key={i} style={{ display: 'inline-flex', alignItems: 'center', height: '22px', padding: '0 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 400, background: tplC.bg, color: tplC.color }}>
+                    {s}
                   </span>
-                  <div className="min-w-0">
-                    <div className="text-foreground truncate" style={{ fontSize: '13px', fontWeight: 500 }}>{t.name}</div>
-                    <div className="text-muted-foreground" style={{ fontSize: '11px' }}>{t.sections} sections</div>
-                  </div>
-                </button>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Section chips */}
-          <div style={{ marginBottom: '24px' }}>
-            <label className="block text-muted-foreground" style={{ fontSize: '11px', fontWeight: 500, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Sections ({sections.length})
-            </label>
-            <div className="flex flex-wrap gap-1.5">
-              {sections.map((s, i) => (
-                <span
-                  key={i}
-                  className="inline-flex items-center rounded"
-                  style={{ height: '22px', padding: '0 6px', fontSize: '11px', fontWeight: 400, background: tpl.bg, color: tpl.color }}
+            {/* Language */}
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#0F172A', marginBottom: '8px' }}>Language</label>
+              <div style={{ position: 'relative', maxWidth: '220px' }}>
+                <select
+                  value={selectedLang}
+                  onChange={e => setLang(e.target.value)}
+                  style={{ width: '100%', height: '36px', padding: '0 28px 0 12px', fontSize: '13px', border: '1px solid #E2E8F0', borderRadius: '6px', outline: 'none', appearance: 'none', background: '#FFF', cursor: 'pointer', color: '#0F172A' }}
                 >
-                  {s}
-                </span>
-              ))}
+                  {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
+                </select>
+                <ChevronDown size={12} style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: '#94A3B8' }} />
+              </div>
             </div>
-          </div>
 
-          {/* Language */}
-          <div style={{ marginBottom: '24px' }}>
-            <label className="block font-medium text-foreground" style={{ fontSize: '13px', marginBottom: '8px' }}>
-              Language
-            </label>
-            <div className="relative" style={{ maxWidth: '200px' }}>
-              <select
-                value={genLanguage}
-                onChange={e => setGenLanguage(e.target.value)}
-                className="w-full appearance-none rounded-md bg-transparent text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-                style={{ height: '36px', padding: '0 28px 0 12px', fontSize: '13px', border: '1px solid hsl(var(--border))', borderRadius: '6px' }}
+            {/* Input mode tabs */}
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 500, color: '#0F172A', marginBottom: '8px' }}>Input Source</label>
+              <div style={{ display: 'inline-flex', borderRadius: '8px', padding: '2px', background: '#F1F5F9', gap: '2px' }}>
+                {(['paste', 'upload'] as const).map(mode => (
+                  <button
+                    key={mode}
+                    onClick={() => setInputMode(mode)}
+                    style={{
+                      height: '32px', padding: '0 12px', fontSize: '13px', fontWeight: 500, borderRadius: '6px', border: 'none', cursor: 'pointer',
+                      display: 'inline-flex', alignItems: 'center', gap: '6px',
+                      background: inputMode === mode ? '#FFF' : 'transparent',
+                      color: inputMode === mode ? '#0F172A' : '#64748B',
+                      boxShadow: inputMode === mode ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+                    }}
+                  >
+                    {mode === 'paste' ? <><ClipboardPaste size={13} /> Paste Text</> : <><FileUp size={13} /> Upload File</>}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Input area */}
+            {inputMode === 'paste' ? (
+              <div>
+                <textarea
+                  value={pasteText}
+                  onChange={e => setPasteText(e.target.value)}
+                  placeholder="Paste your project brief, meeting notes, or business context here... (minimum 50 characters)"
+                  style={{ width: '100%', minHeight: '320px', padding: '12px', fontSize: '14px', lineHeight: 1.8, border: '1px solid #E2E8F0', borderRadius: '8px', outline: 'none', resize: 'none', fontFamily: "'Plus Jakarta Sans', sans-serif", color: '#0F172A', background: '#FFF' }}
+                  onFocus={e => (e.target.style.borderColor = '#2563EB')}
+                  onBlur={e => (e.target.style.borderColor = '#E2E8F0')}
+                />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '8px', fontSize: '12px' }}>
+                  {pasteText.length >= 50 ? (
+                    <><CheckCircle2 size={14} style={{ color: '#10B981' }} /><span style={{ color: '#10B981', fontWeight: 500 }}>✓ {pasteText.length} characters</span></>
+                  ) : (
+                    <span style={{ color: '#94A3B8' }}>{pasteText.length}/50 characters minimum</span>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div
+                onDragOver={e => e.preventDefault()}
+                onDrop={e => {
+                  e.preventDefault();
+                  const file = e.dataTransfer.files[0];
+                  if (file && (file.name.endsWith('.pdf') || file.name.endsWith('.docx'))) {
+                    setUploadFileName(file.name);
+                    showToast('success', `File loaded: ${file.name}`);
+                  } else {
+                    showToast('error', 'Only PDF and DOCX files are supported');
+                  }
+                }}
+                style={{ minHeight: '320px', padding: '32px', border: `2px dashed ${uploadFileName ? '#2563EB' : '#E2E8F0'}`, borderRadius: '8px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: uploadFileName ? '#EFF6FF08' : '#FFF' }}
               >
-                {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
-              </select>
-              <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground" />
-            </div>
-          </div>
+                {uploadFileName ? (
+                  <>
+                    <CheckCircle2 size={32} style={{ color: '#10B981', marginBottom: '12px' }} />
+                    <p style={{ fontSize: '14px', fontWeight: 500, color: '#0F172A' }}>{uploadFileName}</p>
+                    <button onClick={() => setUploadFileName('')} style={{ fontSize: '12px', color: '#64748B', marginTop: '8px', background: 'none', border: 'none', cursor: 'pointer' }}>Remove</button>
+                  </>
+                ) : (
+                  <>
+                    <Upload size={32} style={{ color: '#94A3B8', marginBottom: '12px' }} />
+                    <p style={{ fontSize: '14px', fontWeight: 500, color: '#0F172A', marginBottom: '4px' }}>Drop PDF or DOCX here</p>
+                    <p style={{ fontSize: '12px', color: '#64748B', marginBottom: '12px' }}>or click to browse</p>
+                    <label style={{ height: '32px', padding: '0 12px', fontSize: '13px', fontWeight: 500, color: '#FFF', background: '#2563EB', borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}>
+                      Browse Files
+                      <input type="file" accept=".pdf,.docx,.doc" style={{ display: 'none' }} onChange={e => {
+                        const file = e.target.files?.[0];
+                        if (file) { setUploadFileName(file.name); showToast('success', `File loaded: ${file.name}`); }
+                      }} />
+                    </label>
+                  </>
+                )}
+              </div>
+            )}
 
-          {/* Input mode tabs */}
-          <div style={{ marginBottom: '16px' }}>
-            <label className="block font-medium text-foreground" style={{ fontSize: '13px', marginBottom: '8px' }}>
-              Input Source
-            </label>
-            <div className="inline-flex rounded-lg p-0.5" style={{ background: 'hsl(var(--muted))', gap: '2px' }}>
+            {/* Generate button */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '24px' }}>
               <button
-                onClick={() => setGenInputMode('paste')}
-                className={cn('inline-flex items-center gap-1.5 rounded-md transition-all', genInputMode === 'paste' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground')}
-                style={{ height: '32px', padding: '0 12px', fontSize: '13px', fontWeight: 500 }}
+                onClick={startGeneration}
+                disabled={!canGenerate}
+                style={{
+                  height: '44px', padding: '0 24px', fontSize: '14px', fontWeight: 600, color: '#FFF',
+                  background: canGenerate ? '#2563EB' : '#94A3B8', borderRadius: '8px', border: 'none',
+                  cursor: canGenerate ? 'pointer' : 'not-allowed', display: 'inline-flex', alignItems: 'center', gap: '8px',
+                  boxShadow: canGenerate ? '0 2px 8px rgba(37,99,235,0.3)' : 'none', opacity: canGenerate ? 1 : 0.5,
+                }}
               >
-                <ClipboardPaste size={13} />
-                Paste Text
-              </button>
-              <button
-                onClick={() => setGenInputMode('upload')}
-                className={cn('inline-flex items-center gap-1.5 rounded-md transition-all', genInputMode === 'upload' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground')}
-                style={{ height: '32px', padding: '0 12px', fontSize: '13px', fontWeight: 500 }}
-              >
-                <FileUp size={13} />
-                Upload File
+                Generate BRD →
+                <ArrowRight size={16} />
               </button>
             </div>
-          </div>
-
-          {/* Input area */}
-          {genInputMode === 'paste' ? (
-            <textarea
-              value={genPasteText}
-              onChange={e => setGenPasteText(e.target.value)}
-              placeholder="Paste your project brief, meeting notes, or business context here... (minimum 20 characters)"
-              className="w-full rounded-lg bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring resize-none"
-              style={{
-                minHeight: '200px', padding: '12px', fontSize: '13px',
-                border: '1px solid hsl(var(--border))', borderRadius: '8px',
-                lineHeight: '1.6',
-              }}
-            />
-          ) : (
-            <div
-              onDragOver={e => e.preventDefault()}
-              onDrop={handleFileDrop}
-              className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
-              style={{
-                minHeight: '200px', padding: '32px',
-                borderColor: genFileName ? '#2563EB' : 'hsl(var(--border))',
-                background: genFileName ? '#EFF6FF08' : 'transparent',
-              }}
-            >
-              {genFileName ? (
-                <>
-                  <CheckCircle2 size={32} style={{ color: '#059669', marginBottom: '12px' }} />
-                  <p className="font-medium text-foreground" style={{ fontSize: '14px' }}>{genFileName}</p>
-                  <button onClick={() => setGenFileName('')} className="text-muted-foreground hover:text-foreground mt-2" style={{ fontSize: '12px' }}>Remove</button>
-                </>
-              ) : (
-                <>
-                  <Upload size={32} className="text-muted-foreground" style={{ marginBottom: '12px' }} />
-                  <p className="text-foreground" style={{ fontSize: '14px', fontWeight: 500, marginBottom: '4px' }}>
-                    Drop PDF or DOCX here
-                  </p>
-                  <p className="text-muted-foreground" style={{ fontSize: '12px', marginBottom: '12px' }}>
-                    or click to browse
-                  </p>
-                  <label className="cursor-pointer inline-flex items-center gap-1.5 rounded-md text-white" style={{ height: '32px', padding: '0 12px', fontSize: '13px', fontWeight: 500, background: '#2563EB' }}>
-                    Browse Files
-                    <input type="file" accept=".pdf,.docx,.doc" className="hidden" onChange={handleFileSelect} />
-                  </label>
-                </>
-              )}
-            </div>
-          )}
-
-          {/* Generate button */}
-          <div className="flex justify-end mt-6">
-            <button
-              onClick={startGeneration}
-              disabled={!canGenerate}
-              className={cn(
-                'inline-flex items-center gap-2 rounded-[10px] font-semibold text-white transition-all',
-                canGenerate ? 'hover:-translate-y-0.5' : 'opacity-50 cursor-not-allowed'
-              )}
-              style={{ height: '40px', padding: '0 24px', fontSize: '14px', background: '#2563EB', boxShadow: canGenerate ? '0 2px 8px rgba(37,99,235,0.3)' : 'none' }}
-            >
-              Generate BRD
-              <ArrowRight size={16} />
-            </button>
           </div>
         </div>
       </div>
@@ -906,83 +910,127 @@ export default function ReqFlowAIPage() {
   }
 
   // ═══════════════════════════════════════════════════════════════
-  // SCREEN 3: THEATER (Extraction Animation)
+  // SCREEN 3: THEATER
   // ═══════════════════════════════════════════════════════════════
 
-  function renderTheater() {
-    const tpl = TEMPLATES[genTemplate];
-    const sections = TEMPLATE_SECTIONS[genTemplate] || [];
-    const completedSections = Math.floor((theaterProgress / 100) * sections.length);
+  function TheaterScreen() {
+    const tplC = TPL_COLORS[selectedTpl];
+    const tpl = TEMPLATES[selectedTpl];
+    const allScenes = THEATER_STAGES.flatMap(s => s.scenes);
+    const completedSections = Math.floor((theaterProgress / 100) * tpl.sections.length);
+    const elapsed = Math.floor((Date.now() - theaterStartTime) / 1000);
+    const eta = theaterProgress > 5 ? Math.ceil((elapsed / theaterProgress) * (100 - theaterProgress)) : 30;
+
+    // Counters
+    const reqsDone = Math.floor((theaterProgress / 100) * 47);
+    const epicsDone = Math.floor((theaterProgress / 100) * 12);
+    const storiesDone = Math.floor((theaterProgress / 100) * 38);
+    const uatDone = Math.floor((theaterProgress / 100) * 65);
+    const risksDone = Math.floor((theaterProgress / 100) * 8);
 
     return (
-      <div className="flex flex-col h-full" style={{ background: 'linear-gradient(180deg, hsl(var(--background)) 0%, #EFF6FF 100%)' }}>
-        {/* Stage — flex column so card fills */}
-        <div className="flex-1 flex flex-col items-center justify-center px-6" style={{ minHeight: 0 }}>
-          {/* Card — fills stage */}
-          <div
-            className="w-full flex flex-col rounded-xl border bg-card shadow-lg"
-            style={{ maxWidth: '560px', flex: '1 1 auto', minHeight: '380px', maxHeight: '600px', margin: '24px 0' }}
-          >
-            {/* Card header */}
-            <div className="flex-shrink-0 px-6 pt-6 pb-4 text-center" style={{ borderBottom: '1px solid hsl(var(--border))' }}>
-              <div
-                className="w-12 h-12 rounded-xl mx-auto flex items-center justify-center mb-3"
-                style={{ background: tpl.bg }}
-              >
-                <Sparkles size={24} style={{ color: tpl.color }} />
-              </div>
-              <h2 className="font-semibold text-foreground" style={{ fontSize: '18px' }}>
-                Generating BRD
-              </h2>
-              <p className="text-muted-foreground mt-1" style={{ fontSize: '13px' }}>{tpl.name}</p>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'linear-gradient(180deg, #F8FAFC 0%, #EFF6FF 100%)' }}>
+        <div style={{ display: 'flex', flex: 1, minHeight: 0, gap: '20px', padding: '24px' }}>
+          {/* Main area */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+            {/* Pipeline */}
+            <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0', marginBottom: '20px' }}>
+              {THEATER_STAGES.map((stage, i) => (
+                <React.Fragment key={i}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                    <div style={{
+                      width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '11px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace",
+                      background: i < theaterStageIdx ? '#10B981' : i === theaterStageIdx ? '#2563EB' : 'transparent',
+                      color: i <= theaterStageIdx ? '#FFF' : '#94A3B8',
+                      border: i > theaterStageIdx ? '2px solid #E2E8F0' : 'none',
+                    }}>
+                      {i < theaterStageIdx ? <Check size={14} /> : i + 1}
+                    </div>
+                    <span style={{ fontSize: '10px', fontWeight: 500, color: i <= theaterStageIdx ? '#0F172A' : '#94A3B8', whiteSpace: 'nowrap' }}>{stage.name}</span>
+                  </div>
+                  {i < THEATER_STAGES.length - 1 && (
+                    <div style={{ width: '48px', height: '2px', background: i < theaterStageIdx ? '#10B981' : '#E2E8F0', margin: '0 8px', marginBottom: '20px' }} />
+                  )}
+                </React.Fragment>
+              ))}
             </div>
 
-            {/* Card body — fills remaining space */}
-            <div className="flex-1 flex flex-col justify-center px-6 py-6">
-              {/* Progress bar — 8px */}
-              <div className="w-full rounded-full overflow-hidden" style={{ height: '8px', background: 'hsl(var(--muted))', borderRadius: '4px' }}>
-                <div
-                  className="h-full rounded-full transition-all duration-300"
-                  style={{ width: `${theaterProgress}%`, background: `linear-gradient(90deg, ${tpl.color}, #2563EB)`, borderRadius: '4px' }}
-                />
+            {/* Masthead */}
+            <div style={{ flexShrink: 0, textAlign: 'center', marginBottom: '16px' }}>
+              <div style={{ fontSize: '32px', fontWeight: 800, fontFamily: "'JetBrains Mono', monospace", color: '#2563EB' }}>{Math.round(theaterProgress)}%</div>
+              <div style={{ width: '100%', maxWidth: '400px', margin: '8px auto', height: '8px', borderRadius: '4px', background: '#E2E8F0', overflow: 'hidden' }}>
+                <div style={{ height: '100%', borderRadius: '4px', background: `linear-gradient(90deg, ${tplC.color}, #2563EB)`, width: `${theaterProgress}%`, transition: 'width 300ms' }} />
               </div>
-
-              {/* Percentage */}
-              <div className="flex items-center justify-between mt-3">
-                <span className="text-muted-foreground" style={{ fontSize: '13px' }}>{theaterStage}</span>
-                <span className="font-semibold text-foreground" style={{ fontSize: '14px' }}>
-                  {Math.round(theaterProgress)}%
-                </span>
+              <div style={{ fontSize: '13px', color: '#64748B', marginTop: '4px' }}>
+                {theaterScene} <span style={{ color: '#94A3B8' }}>· {elapsed}s elapsed · ~{eta}s remaining</span>
               </div>
+            </div>
 
-              {/* Section progress */}
-              <div className="mt-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-muted-foreground" style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Sections
-                  </span>
-                  <span className="font-mono text-muted-foreground" style={{ fontSize: '11px' }}>
-                    {completedSections}/{sections.length}
-                  </span>
+            {/* Stage Card — flex:1, fills remaining space */}
+            <div style={{ flex: 1, minHeight: '380px', display: 'flex', flexDirection: 'column', background: '#FFF', border: '1px solid #E2E8F0', borderRadius: '12px', overflow: 'hidden' }}>
+              {/* 5px color stripe */}
+              <div style={{ height: '5px', background: `linear-gradient(90deg, ${tplC.color}, #2563EB)`, flexShrink: 0 }} />
+              {/* Card body */}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '24px' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', height: '22px', padding: '0 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, background: tplC.bg, color: tplC.color, marginBottom: '12px', alignSelf: 'flex-start' }}>
+                  {THEATER_STAGES[theaterStageIdx]?.name}
                 </div>
-                <div className="flex flex-wrap gap-1">
-                  {sections.map((s, i) => (
-                    <span
-                      key={i}
-                      className="inline-flex items-center rounded transition-all"
-                      style={{
-                        height: '20px', padding: '0 6px', fontSize: '10px', fontWeight: 500,
-                        background: i < completedSections ? tpl.bg : 'hsl(var(--muted))',
-                        color: i < completedSections ? tpl.color : 'hsl(var(--muted-foreground))',
-                        opacity: i < completedSections ? 1 : 0.5,
-                      }}
-                    >
-                      {i < completedSections && <CheckCircle2 size={9} className="mr-1" />}
-                      {s}
+                <h3 style={{ fontSize: '26px', fontWeight: 800, color: '#0F172A', marginBottom: '12px' }}>
+                  {theaterScene}
+                </h3>
+                <p style={{ fontSize: '14px', color: '#64748B', lineHeight: 1.6, maxWidth: '480px' }}>
+                  Analyzing document structure and extracting requirements using {tpl.name} methodology framework with <mark style={{ background: '#FEF3C7', padding: '0 2px', borderRadius: '2px' }}>AI-powered semantic analysis</mark>.
+                </p>
+
+                {/* Tags */}
+                <div style={{ display: 'flex', gap: '6px', marginTop: '16px', flexWrap: 'wrap' }}>
+                  {tpl.sections.slice(0, 5).map((s, i) => (
+                    <span key={i} style={{ height: '20px', padding: '0 6px', borderRadius: '4px', fontSize: '10px', fontWeight: 500, background: '#F1F5F9', color: '#64748B', display: 'inline-flex', alignItems: 'center' }}>
+                      {s.replace(/^§\d+\s+/, '')}
                     </span>
                   ))}
                 </div>
+
+                {/* Source footer */}
+                <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid #F1F5F9', fontSize: '11px', color: '#94A3B8' }}>
+                  Source: {inputMode === 'upload' ? uploadFileName : 'Pasted text'} · {tpl.sections.length} sections · {selectedLang}
+                </div>
               </div>
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div style={{ width: '260px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {/* Counters */}
+            {[
+              { label: 'Requirements', count: reqsDone, icon: '📋' },
+              { label: 'Epics', count: epicsDone, icon: '🏗' },
+              { label: 'Stories', count: storiesDone, icon: '📝' },
+              { label: 'UAT Cases', count: uatDone, icon: '🧪' },
+              { label: 'Risks', count: risksDone, icon: '⚠️' },
+            ].map(c => (
+              <div key={c.label} style={{ height: '52px', background: '#FFF', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '0 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '12px', fontWeight: 500, color: '#334155' }}>{c.icon} {c.label}</span>
+                <span style={{ fontSize: '16px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", color: '#0F172A' }}>{c.count}</span>
+              </div>
+            ))}
+
+            {/* Journey checklist */}
+            <div style={{ background: '#FFF', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '12px 16px', flex: 1 }}>
+              <div style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#94A3B8', marginBottom: '8px' }}>EXTRACTION JOURNEY</div>
+              {THEATER_STAGES.map((stage, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', height: '28px' }}>
+                  {i < theaterStageIdx ? (
+                    <CheckCircle2 size={14} style={{ color: '#10B981', flexShrink: 0 }} />
+                  ) : i === theaterStageIdx ? (
+                    <div style={{ width: '14px', height: '14px', borderRadius: '50%', border: '2px solid #2563EB', flexShrink: 0 }} />
+                  ) : (
+                    <div style={{ width: '14px', height: '14px', borderRadius: '50%', border: '2px solid #E2E8F0', flexShrink: 0 }} />
+                  )}
+                  <span style={{ fontSize: '12px', fontWeight: i <= theaterStageIdx ? 500 : 400, color: i <= theaterStageIdx ? '#0F172A' : '#94A3B8' }}>{stage.name}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -994,101 +1042,78 @@ export default function ReqFlowAIPage() {
   // SCREEN 4: VIEWER
   // ═══════════════════════════════════════════════════════════════
 
-  function renderViewer(brd: BrdDocument) {
-    const tpl = TEMPLATES[brd.template];
-    const funcReqs = brd.requirements.filter(r => r.type === 'functional');
-    const nfReqs = brd.requirements.filter(r => r.type === 'non-functional');
-    const totalStories = brd.epics.reduce((a, e) => a + e.stories.length, 0);
+  function ViewerScreen() {
+    const doc = currentDoc!;
+    const entry = currentEntry;
+    const tplC = TPL_COLORS[doc.template] || TPL_COLORS[0];
+    const tpl = TEMPLATES[doc.template];
+    const funcReqs = doc.requirements.filter(r => r.type === 'functional');
+    const nfReqs = doc.requirements.filter(r => r.type === 'non-functional');
+    const totalStories = doc.epics.reduce((a, e) => a + e.stories.length, 0);
 
-    // Filtered requirements
     const filteredReqs = reqSearch
-      ? brd.requirements.filter(r => r.description.toLowerCase().includes(reqSearch.toLowerCase()) || r.code.toLowerCase().includes(reqSearch.toLowerCase()))
-      : brd.requirements;
+      ? doc.requirements.filter(r => (r.description + r.code).toLowerCase().includes(reqSearch.toLowerCase()))
+      : doc.requirements;
 
     return (
-      <div className="flex flex-col h-full overflow-hidden">
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
         {/* Top bar */}
-        <div className="flex-shrink-0 px-6 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid hsl(var(--border))' }}>
-          <div className="flex items-center gap-3">
+        <div style={{ flexShrink: 0, padding: '0 24px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <button
-              onClick={goLibrary}
-              className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
-              style={{ fontSize: '13px', fontWeight: 500 }}
+              onClick={() => setScreen('library')}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13px', fontWeight: 500, color: '#64748B', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
             >
-              <ChevronLeft size={14} />
-              Back to Library
+              <ChevronLeft size={14} /> ← Back to Library
             </button>
-            <span style={{ color: 'hsl(var(--border))' }}>|</span>
-            <span className="font-mono text-muted-foreground" style={{ fontSize: '11px' }}>{brd.id}</span>
-            <span
-              className="inline-flex items-center rounded-full"
-              style={{ height: '22px', padding: '0 8px', fontSize: '11px', fontWeight: 500, background: tpl.bg, color: tpl.color }}
-            >
+            <span style={{ color: '#E2E8F0' }}>|</span>
+            <span style={{ fontSize: '11px', fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: '#64748B' }}>{doc.id}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', height: '22px', padding: '0 8px', borderRadius: '11px', fontSize: '11px', fontWeight: 500, background: tplC.bg, color: tplC.color }}>
               {tpl.name}
             </span>
           </div>
 
-          {/* Export bar — sticky */}
-          <div className="flex items-center gap-2">
+          {/* Export bar — sticky in the top bar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <SmallBtn icon={<Download size={13} />} label="Export BRD" onClick={() => handleExport(doc)} />
+            <SmallBtn icon={<Download size={13} />} label="Export UAT" onClick={() => handleExportUat(doc)} />
+            <SmallBtn icon={<Clipboard size={13} />} label="Copy All" onClick={() => handleCopyAll(doc)} />
             <button
-              onClick={() => handleExport(brd)}
-              className="inline-flex items-center gap-1.5 rounded-md text-foreground hover:bg-accent/10 transition-colors"
-              style={{ height: '32px', padding: '0 12px', fontSize: '13px', fontWeight: 500, border: '1px solid hsl(var(--border))', borderRadius: '6px' }}
+              onClick={() => showToast('success', 'Published to Jira — Epics and stories synced')}
+              style={{ height: '32px', padding: '0 12px', fontSize: '13px', fontWeight: 600, color: '#FFF', background: '#2563EB', borderRadius: '6px', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
-              <Download size={13} />
-              Export BRD
-            </button>
-            <button
-              onClick={() => handleExportUat(brd)}
-              className="inline-flex items-center gap-1.5 rounded-md text-foreground hover:bg-accent/10 transition-colors"
-              style={{ height: '32px', padding: '0 12px', fontSize: '13px', fontWeight: 500, border: '1px solid hsl(var(--border))', borderRadius: '6px' }}
-            >
-              <Download size={13} />
-              Export UAT
-            </button>
-            <button
-              onClick={() => handleCopyAll(brd)}
-              className="inline-flex items-center gap-1.5 rounded-md text-foreground hover:bg-accent/10 transition-colors"
-              style={{ height: '32px', padding: '0 12px', fontSize: '13px', fontWeight: 500, border: '1px solid hsl(var(--border))', borderRadius: '6px' }}
-            >
-              <Clipboard size={13} />
-              Copy All
-            </button>
-            <button
-              onClick={handleJiraPublish}
-              className="inline-flex items-center gap-1.5 rounded-md text-white transition-all hover:-translate-y-0.5"
-              style={{ height: '32px', padding: '0 12px', fontSize: '13px', fontWeight: 600, background: '#2563EB', borderRadius: '6px' }}
-            >
-              <ExternalLink size={13} />
-              Publish to Jira
+              <ExternalLink size={13} /> Publish to Jira
             </button>
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex-shrink-0 px-6 flex items-center gap-1" style={{ borderBottom: '1px solid hsl(var(--border))', background: 'hsl(var(--muted) / 0.3)' }}>
-          {[
-            { key: 'brd' as const, label: 'Full BRD', count: brd.sections.length },
-            { key: 'reqs' as const, label: 'Requirements', count: brd.requirements.length },
-            { key: 'epics' as const, label: 'Epics & Stories', count: `${brd.epics.length} + ${totalStories}` },
-            { key: 'uat' as const, label: 'UAT Cases', count: brd.uatCases.length },
-          ].map(tab => (
+        {/* Tab bar */}
+        <div style={{ flexShrink: 0, padding: '0 24px', display: 'flex', alignItems: 'center', gap: '4px', borderBottom: '1px solid #E2E8F0', background: '#FAFBFC' }}>
+          {([
+            { key: 'brd', label: 'Full BRD', count: doc.sections.length },
+            { key: 'reqs', label: 'Requirements', count: doc.requirements.length },
+            { key: 'epics', label: 'Epics & Stories', count: doc.epics.length + totalStories },
+            { key: 'uat', label: 'UAT Scenarios', count: doc.uatCases.length },
+          ] as const).map(tab => (
             <button
               key={tab.key}
-              onClick={() => setViewerTab(tab.key)}
-              className={cn('inline-flex items-center gap-2 transition-colors border-b-2', viewerTab === tab.key ? 'border-primary text-foreground' : 'border-transparent text-muted-foreground hover:text-foreground')}
-              style={{ height: '40px', padding: '0 16px', fontSize: '13px', fontWeight: 500 }}
+              onClick={() => setActiveTab(tab.key)}
+              style={{
+                height: '40px', padding: '0 16px', fontSize: '13px', fontWeight: activeTab === tab.key ? 600 : 500,
+                color: activeTab === tab.key ? '#2563EB' : '#64748B',
+                borderBottom: activeTab === tab.key ? '2px solid #2563EB' : '2px solid transparent',
+                background: 'none', border: 'none', borderBottomWidth: '2px', borderBottomStyle: 'solid',
+                borderBottomColor: activeTab === tab.key ? '#2563EB' : 'transparent',
+                cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
+              }}
             >
               {tab.label}
-              <span
-                className="inline-flex items-center justify-center rounded-full"
-                style={{
-                  minWidth: '20px', height: '18px', padding: '0 5px',
-                  fontSize: '10px', fontWeight: 600,
-                  background: viewerTab === tab.key ? '#2563EB' : 'hsl(var(--muted))',
-                  color: viewerTab === tab.key ? '#fff' : 'hsl(var(--muted-foreground))',
-                }}
-              >
+              <span style={{
+                fontSize: '9px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace",
+                padding: '1px 6px', borderRadius: '10px',
+                background: activeTab === tab.key ? '#2563EB' : '#E2E8F0',
+                color: activeTab === tab.key ? '#FFF' : '#64748B',
+              }}>
                 {tab.count}
               </span>
             </button>
@@ -1096,272 +1121,243 @@ export default function ReqFlowAIPage() {
         </div>
 
         {/* Tab content */}
-        <div className="flex-1 overflow-auto">
-          {viewerTab === 'brd' && renderBrdTab(brd)}
-          {viewerTab === 'reqs' && renderReqsTab(brd, filteredReqs, funcReqs, nfReqs)}
-          {viewerTab === 'epics' && renderEpicsTab(brd)}
-          {viewerTab === 'uat' && renderUatTab(brd)}
-        </div>
-      </div>
-    );
-  }
-
-  function renderBrdTab(brd: BrdDocument) {
-    return (
-      <div className="flex" style={{ minHeight: '100%' }}>
-        {/* TOC sidebar */}
-        <div className="flex-shrink-0 overflow-auto border-r" style={{ width: '240px', minWidth: '240px', borderColor: 'hsl(var(--border))', padding: '16px 0' }}>
-          <div className="px-4 mb-3" style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'hsl(var(--muted-foreground))' }}>
-            Table of Contents
-          </div>
-          {brd.sections.map((sec, i) => (
-            <button
-              key={sec.id}
-              onClick={() => {
-                document.getElementById(`sec-${i}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }}
-              className="w-full text-left px-4 py-1.5 text-muted-foreground hover:text-foreground hover:bg-accent/5 transition-colors truncate"
-              style={{ fontSize: '12px', lineHeight: '20px' }}
-            >
-              <span className="font-mono mr-1.5" style={{ fontSize: '10px', opacity: 0.5 }}>{i + 1}.</span>
-              {sec.title}
-            </button>
-          ))}
-        </div>
-
-        {/* BRD content */}
-        <div className="flex-1 overflow-auto px-8 py-6" style={{ maxWidth: '800px' }}>
-          {/* Cover */}
-          <div className="mb-8 pb-6" style={{ borderBottom: '2px solid #2563EB' }}>
-            <h1 className="font-bold text-foreground" style={{ fontSize: '28px', lineHeight: '36px', marginBottom: '8px' }}>
-              {brd.title}
-            </h1>
-            <div className="flex items-center gap-4 text-muted-foreground" style={{ fontSize: '12px' }}>
-              <span>{brd.id}</span>
-              <span>·</span>
-              <span>{TEMPLATES[brd.template].name}</span>
-              <span>·</span>
-              <span>{brd.requirements.length} Requirements ({brd.requirements.filter(r => r.type === 'functional').length}F + {brd.requirements.filter(r => r.type === 'non-functional').length}NF)</span>
-              <span>·</span>
-              <span>{new Date(brd.created).toLocaleDateString()}</span>
-            </div>
-          </div>
-
-          {/* Sections */}
-          {brd.sections.map((sec, i) => (
-            <div key={sec.id} id={`sec-${i}`} className="mb-8 group">
-              <div className="flex items-start justify-between">
-                <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#2563EB', marginBottom: '8px' }}>
-                  {i + 1}. {sec.title}
-                </h2>
-                <button
-                  onClick={() => handleCopySection(sec)}
-                  className="p-1 rounded opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-foreground hover:bg-accent/10 transition-all"
-                  title="Copy section"
-                >
-                  <Clipboard size={14} />
-                </button>
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+          {activeTab === 'brd' && (
+            <div style={{ display: 'flex', minHeight: '100%' }}>
+              {/* TOC sidebar — 240px sticky */}
+              <div style={{ width: '240px', minWidth: '240px', flexShrink: 0, borderRight: '1px solid #E2E8F0', padding: '16px 0', overflowY: 'auto' }}>
+                <div style={{ padding: '0 16px', marginBottom: '8px', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', color: '#94A3B8' }}>
+                  Table of Contents
+                </div>
+                {doc.sections.map((sec, i) => (
+                  <button
+                    key={sec.id}
+                    onClick={() => document.getElementById(`brd-sec-${i}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                    style={{ width: '100%', textAlign: 'left', padding: '4px 16px', fontSize: '12px', color: '#64748B', background: 'none', border: 'none', cursor: 'pointer', lineHeight: '20px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '10px', opacity: 0.5, marginRight: '6px' }}>{i + 1}.</span>
+                    {sec.title}
+                  </button>
+                ))}
               </div>
-              <p className="text-foreground leading-relaxed" style={{ fontSize: '14px', lineHeight: '1.7' }}>
-                {sec.content}
-              </p>
+
+              {/* BRD content */}
+              <div style={{ flex: 1, padding: '24px 32px', maxWidth: '800px' }}>
+                <div style={{ marginBottom: '32px', paddingBottom: '20px', borderBottom: '2px solid #2563EB' }}>
+                  <h1 style={{ fontSize: '36px', fontWeight: 900, lineHeight: 1.1, color: '#0F172A', marginBottom: '8px', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    {doc.title}
+                  </h1>
+                  <div style={{ fontSize: '12px', color: '#64748B', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <span>{doc.id}</span><span>·</span>
+                    <span>{tpl.name}</span><span>·</span>
+                    <span>{doc.requirements.length} Requirements ({funcReqs.length}F + {nfReqs.length}NF)</span><span>·</span>
+                    <span>{doc.epics.length} Epics · {totalStories} Stories</span><span>·</span>
+                    <span>{doc.uatCases.length} UAT</span><span>·</span>
+                    <span>{new Date(doc.created).toLocaleDateString()}</span>
+                  </div>
+                </div>
+
+                {doc.sections.map((sec, i) => (
+                  <div key={sec.id} id={`brd-sec-${i}`} style={{ marginBottom: '32px' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                      <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#2563EB', marginBottom: '8px' }}>
+                        {tpl.sections[i] || `${i + 1}. ${sec.title}`}
+                      </h2>
+                      <button
+                        onClick={() => handleCopySection(sec)}
+                        title="Copy section"
+                        style={{ padding: '4px', borderRadius: '4px', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', opacity: 0.5 }}
+                        onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = '#F1F5F9'; }}
+                        onMouseLeave={e => { e.currentTarget.style.opacity = '0.5'; e.currentTarget.style.background = 'none'; }}
+                      >
+                        <Clipboard size={14} />
+                      </button>
+                    </div>
+                    <p style={{ fontSize: '13.5px', lineHeight: 1.75, color: '#334155', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                      {sec.content}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
+          )}
 
-  function renderReqsTab(brd: BrdDocument, filteredReqs: BrdRequirement[], funcReqs: BrdRequirement[], nfReqs: BrdRequirement[]) {
-    return (
-      <div className="px-6 py-4">
-        {/* Search */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className="relative" style={{ maxWidth: '280px', flex: 1 }}>
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
-              value={reqSearch}
-              onChange={e => setReqSearch(e.target.value)}
-              placeholder="Search requirements..."
-              className="w-full rounded-md bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring"
-              style={{ height: '32px', paddingLeft: '32px', paddingRight: '12px', fontSize: '13px', border: '1px solid hsl(var(--border))', borderRadius: '6px' }}
-            />
-          </div>
-          <span className="text-muted-foreground" style={{ fontSize: '12px' }}>
-            {filteredReqs.length} of {brd.requirements.length}
-          </span>
-        </div>
+          {activeTab === 'reqs' && (
+            <div style={{ padding: '16px 24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                <div style={{ position: 'relative', flex: '0 1 280px' }}>
+                  <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+                  <input
+                    value={reqSearch}
+                    onChange={e => setReqSearch(e.target.value)}
+                    placeholder="Search requirements..."
+                    style={{ width: '100%', height: '32px', paddingLeft: '32px', paddingRight: '12px', fontSize: '13px', border: '1px solid #E2E8F0', borderRadius: '6px', outline: 'none', background: 'transparent', color: '#0F172A' }}
+                  />
+                </div>
+                <span style={{ fontSize: '12px', color: '#94A3B8' }}>{filteredReqs.length} of {doc.requirements.length}</span>
+              </div>
 
-        {/* Reqs table */}
-        <table className="w-full" style={{ borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: 'hsl(var(--muted))' }}>
-              {['CODE', 'TYPE', 'PRIORITY', 'DESCRIPTION'].map(h => (
-                <th key={h} className="text-left" style={{ height: '36px', padding: '0 12px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'hsl(var(--muted-foreground))', borderBottom: '1px solid hsl(var(--border))' }}>
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filteredReqs.map(req => (
-              <tr key={req.id} style={{ borderBottom: '1px solid hsl(var(--border) / 0.5)' }}>
-                <td className="font-mono" style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '12px', fontWeight: 500, color: '#2563EB' }}>
-                  {req.code}
-                </td>
-                <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}>
-                  <span className="inline-flex items-center rounded-full" style={{
-                    height: '20px', padding: '0 6px', fontSize: '10px', fontWeight: 500,
-                    background: req.type === 'functional' ? '#EFF6FF' : '#F5F3FF',
-                    color: req.type === 'functional' ? '#2563EB' : '#7C3AED',
-                  }}>
-                    {req.type === 'functional' ? 'Functional' : 'Non-Functional'}
-                  </span>
-                </td>
-                <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}>
-                  <span className="inline-flex items-center rounded-full uppercase" style={{
-                    height: '20px', padding: '0 6px', fontSize: '10px', fontWeight: 600,
-                    background: req.priority === 'must' ? '#FEF2F2' : req.priority === 'should' ? '#FEF3C7' : req.priority === 'could' ? '#ECFDF5' : '#F1F5F9',
-                    color: req.priority === 'must' ? '#B91C1C' : req.priority === 'should' ? '#D97706' : req.priority === 'could' ? '#059669' : '#64748B',
-                  }}>
-                    {req.priority}
-                  </span>
-                </td>
-                <td className="text-foreground" style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '13px' }}>
-                  {req.description}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
-  }
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ background: '#F8FAFC' }}>
+                    {['CODE', 'TYPE', 'PRIORITY', 'DESCRIPTION'].map(h => (
+                      <th key={h} style={{ height: '36px', padding: '0 12px', textAlign: 'left', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.6px', color: '#94A3B8', borderBottom: '2px solid #E2E8F0' }}>
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredReqs.map(req => (
+                    <tr key={req.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                      <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '11px', fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: '#2563EB' }}>{req.code}</td>
+                      <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px', borderRadius: '10px', fontSize: '10px', fontWeight: 500, background: req.type === 'functional' ? '#EFF6FF' : '#F5F3FF', color: req.type === 'functional' ? '#2563EB' : '#7C3AED' }}>
+                          {req.type === 'functional' ? 'Functional' : 'Non-Functional'}
+                        </span>
+                      </td>
+                      <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px', borderRadius: '10px', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', background: req.priority === 'must' ? '#FEF2F2' : req.priority === 'should' ? '#FEF3C7' : req.priority === 'could' ? '#ECFDF5' : '#F1F5F9', color: req.priority === 'must' ? '#B91C1C' : req.priority === 'should' ? '#D97706' : req.priority === 'could' ? '#059669' : '#64748B' }}>
+                          {req.priority}
+                        </span>
+                      </td>
+                      <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '13px', color: '#334155' }}>{req.description}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
-  function renderEpicsTab(brd: BrdDocument) {
-    if (brd.epics.length === 0) {
-      return (
-        <div className="flex flex-col items-center justify-center py-16">
-          <AlertCircle size={28} className="text-muted-foreground mb-3" />
-          <p className="text-muted-foreground" style={{ fontSize: '13px' }}>No epics generated for this BRD.</p>
-        </div>
-      );
-    }
-    return (
-      <div className="px-6 py-4 space-y-2">
-        {brd.epics.map(epic => {
-          const isExpanded = expandedEpics.has(epic.id);
-          return (
-            <div key={epic.id} className="border rounded-lg overflow-hidden" style={{ borderColor: 'hsl(var(--border))' }}>
-              <button
-                onClick={() => {
-                  setExpandedEpics(prev => {
-                    const next = new Set(prev);
-                    next.has(epic.id) ? next.delete(epic.id) : next.add(epic.id);
-                    return next;
-                  });
-                }}
-                className="w-full flex items-center gap-3 px-4 text-left hover:bg-accent/5 transition-colors"
-                style={{ height: '44px' }}
-              >
-                {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                <span className="font-medium text-foreground" style={{ fontSize: '14px' }}>{epic.title}</span>
-                <span className="text-muted-foreground ml-auto" style={{ fontSize: '12px' }}>
-                  {epic.stories.length} stories · {epic.stories.reduce((a, s) => a + s.points, 0)} pts
-                </span>
-              </button>
-              {isExpanded && (
-                <div style={{ borderTop: '1px solid hsl(var(--border))' }}>
-                  <table className="w-full" style={{ borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr style={{ background: 'hsl(var(--muted) / 0.5)' }}>
-                        {['ID', 'STORY', 'POINTS', 'PRIORITY'].map(h => (
-                          <th key={h} className="text-left" style={{ height: '32px', padding: '0 12px 0 16px', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'hsl(var(--muted-foreground))' }}>
-                            {h}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {epic.stories.map(story => (
-                        <tr key={story.id} style={{ borderBottom: '1px solid hsl(var(--border) / 0.3)' }}>
-                          <td className="font-mono" style={{ height: '36px', padding: '0 12px 0 16px', fontSize: '11px', color: '#2563EB' }}>{story.id}</td>
-                          <td style={{ height: '36px', padding: '0 12px', fontSize: '13px' }}>{story.title}</td>
-                          <td className="font-mono" style={{ height: '36px', padding: '0 12px', fontSize: '13px', fontWeight: 600 }}>{story.points}</td>
-                          <td style={{ height: '36px', padding: '0 12px' }}>
-                            <span className="inline-flex items-center rounded-full capitalize" style={{
-                              height: '20px', padding: '0 6px', fontSize: '10px', fontWeight: 500,
-                              background: story.priority === 'high' ? '#FEF2F2' : story.priority === 'medium' ? '#FEF3C7' : '#ECFDF5',
-                              color: story.priority === 'high' ? '#B91C1C' : story.priority === 'medium' ? '#D97706' : '#059669',
-                            }}>
-                              {story.priority}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+          {activeTab === 'epics' && (
+            <div style={{ padding: '16px 24px' }}>
+              {doc.epics.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '64px 0' }}>
+                  <AlertCircle size={28} style={{ color: '#94A3B8', marginBottom: '12px' }} />
+                  <p style={{ fontSize: '13px', color: '#64748B' }}>No epics generated for this BRD.</p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {doc.epics.map(epic => {
+                    const isExpanded = expandedEpics.has(epic.id);
+                    return (
+                      <div key={epic.id} style={{ border: '1px solid #E2E8F0', borderRadius: '8px', overflow: 'hidden' }}>
+                        <button
+                          onClick={() => setExpandedEpics(prev => { const n = new Set(prev); n.has(epic.id) ? n.delete(epic.id) : n.add(epic.id); return n; })}
+                          style={{ width: '100%', height: '44px', padding: '0 16px', display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+                          onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                        >
+                          {isExpanded ? <ChevronDown size={14} style={{ color: '#64748B' }} /> : <ChevronRight size={14} style={{ color: '#64748B' }} />}
+                          <span style={{ fontSize: '14px', fontWeight: 500, color: '#0F172A', flex: 1 }}>{epic.title}</span>
+                          <span style={{ fontSize: '12px', color: '#64748B' }}>{epic.stories.length} stories · {epic.stories.reduce((a, s) => a + s.points, 0)} pts</span>
+                        </button>
+                        {isExpanded && (
+                          <div style={{ borderTop: '1px solid #E2E8F0' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                              <thead>
+                                <tr style={{ background: '#FAFBFC' }}>
+                                  {['ID', 'STORY', 'POINTS', 'PRIORITY'].map(h => (
+                                    <th key={h} style={{ height: '32px', padding: '0 12px 0 16px', textAlign: 'left', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.6px', color: '#94A3B8' }}>{h}</th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {epic.stories.map(story => (
+                                  <tr key={story.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                                    <td style={{ height: '36px', padding: '0 12px 0 16px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", color: '#2563EB' }}>{story.id}</td>
+                                    <td style={{ height: '36px', padding: '0 12px', fontSize: '13px', color: '#334155' }}>{story.title}</td>
+                                    <td style={{ height: '36px', padding: '0 12px', fontSize: '13px', fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: '#0F172A' }}>{story.points}</td>
+                                    <td style={{ height: '36px', padding: '0 12px' }}>
+                                      <span style={{ display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px', borderRadius: '10px', fontSize: '10px', fontWeight: 500, textTransform: 'capitalize', background: story.priority === 'high' ? '#FEF2F2' : story.priority === 'medium' ? '#FEF3C7' : '#ECFDF5', color: story.priority === 'high' ? '#B91C1C' : story.priority === 'medium' ? '#D97706' : '#059669' }}>
+                                        {story.priority}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
-          );
-        })}
-      </div>
-    );
-  }
+          )}
 
-  function renderUatTab(brd: BrdDocument) {
-    if (brd.uatCases.length === 0) {
-      return (
-        <div className="flex flex-col items-center justify-center py-16">
-          <AlertCircle size={28} className="text-muted-foreground mb-3" />
-          <p className="text-muted-foreground" style={{ fontSize: '13px' }}>No UAT cases generated for this BRD.</p>
+          {activeTab === 'uat' && (
+            <div style={{ padding: '16px 24px' }}>
+              {doc.uatCases.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '64px 0' }}>
+                  <AlertCircle size={28} style={{ color: '#94A3B8', marginBottom: '12px' }} />
+                  <p style={{ fontSize: '13px', color: '#64748B' }}>No UAT cases generated for this BRD.</p>
+                </div>
+              ) : (
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ background: '#F8FAFC' }}>
+                      {['ID', 'SCENARIO', 'GIVEN', 'WHEN', 'THEN', 'PRIORITY'].map(h => (
+                        <th key={h} style={{ height: '36px', padding: '0 12px', textAlign: 'left', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.6px', color: '#94A3B8', borderBottom: '2px solid #E2E8F0' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {doc.uatCases.map(uat => (
+                      <tr key={uat.id} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                        <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#2563EB', whiteSpace: 'nowrap' }}>{uat.id}</td>
+                        <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '13px', color: '#334155', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{uat.scenario}</td>
+                        <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '12px', color: '#64748B', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{uat.given}</td>
+                        <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '12px', color: '#64748B', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{uat.when}</td>
+                        <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '12px', color: '#64748B', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{uat.then}</td>
+                        <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', height: '20px', padding: '0 6px', borderRadius: '10px', fontSize: '10px', fontWeight: 500, textTransform: 'capitalize', background: uat.priority === 'high' ? '#FEF2F2' : uat.priority === 'medium' ? '#FEF3C7' : '#ECFDF5', color: uat.priority === 'high' ? '#B91C1C' : uat.priority === 'medium' ? '#D97706' : '#059669' }}>
+                            {uat.priority}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          )}
         </div>
-      );
-    }
-    return (
-      <div className="px-6 py-4">
-        <table className="w-full" style={{ borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: 'hsl(var(--muted))' }}>
-              {['ID', 'SCENARIO', 'GIVEN', 'WHEN', 'THEN', 'PRIORITY'].map(h => (
-                <th key={h} className="text-left" style={{ height: '36px', padding: '0 12px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'hsl(var(--muted-foreground))', borderBottom: '1px solid hsl(var(--border))' }}>
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {brd.uatCases.map(uat => (
-              <tr key={uat.id} style={{ borderBottom: '1px solid hsl(var(--border) / 0.5)' }}>
-                <td className="font-mono" style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '11px', color: '#2563EB', whiteSpace: 'nowrap' }}>{uat.id}</td>
-                <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '13px', maxWidth: '200px' }}>
-                  <span className="truncate block">{uat.scenario}</span>
-                </td>
-                <td className="text-muted-foreground" style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '12px', maxWidth: '180px' }}>
-                  <span className="truncate block">{uat.given}</span>
-                </td>
-                <td className="text-muted-foreground" style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '12px', maxWidth: '180px' }}>
-                  <span className="truncate block">{uat.when}</span>
-                </td>
-                <td className="text-muted-foreground" style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle', fontSize: '12px', maxWidth: '180px' }}>
-                  <span className="truncate block">{uat.then}</span>
-                </td>
-                <td style={{ height: '36px', maxHeight: '36px', padding: '0 12px', verticalAlign: 'middle' }}>
-                  <span className="inline-flex items-center rounded-full capitalize" style={{
-                    height: '20px', padding: '0 6px', fontSize: '10px', fontWeight: 500,
-                    background: uat.priority === 'high' ? '#FEF2F2' : uat.priority === 'medium' ? '#FEF3C7' : '#ECFDF5',
-                    color: uat.priority === 'high' ? '#B91C1C' : uat.priority === 'medium' ? '#D97706' : uat.priority === 'low' ? '#059669' : '#64748B',
-                  }}>
-                    {uat.priority}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
     );
   }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SMALL COMPONENTS
+// ═══════════════════════════════════════════════════════════════
+
+function ActionBtn({ icon, title, onClick, danger }: { icon: React.ReactNode; title: string; onClick: () => void; danger?: boolean }) {
+  return (
+    <button
+      onClick={onClick}
+      title={title}
+      style={{ width: '28px', height: '28px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px', border: 'none', background: 'transparent', cursor: 'pointer', color: '#94A3B8' }}
+      onMouseEnter={e => { e.currentTarget.style.background = danger ? '#FEF2F2' : '#F1F5F9'; e.currentTarget.style.color = danger ? '#EF4444' : '#0F172A'; }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94A3B8'; }}
+    >
+      {icon}
+    </button>
+  );
+}
+
+function SmallBtn({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{ height: '32px', padding: '0 12px', fontSize: '13px', fontWeight: 500, color: '#334155', background: 'transparent', border: '1px solid #E2E8F0', borderRadius: '6px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+      onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+    >
+      {icon} {label}
+    </button>
+  );
 }
