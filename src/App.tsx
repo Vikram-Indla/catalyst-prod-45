@@ -327,6 +327,7 @@ import ForYouPage from "./pages/ForYouPage";
 import ProductRoadmapPage from "./pages/ProductRoadmapPage";
 import ProductRoadmapV2Page from "./pages/ProductRoadmapV2Page";
 import IndustryRoadmapPage from "./pages/industry/IndustryRoadmapPage";
+const ReqFlowAIPage = lazy(() => import("./pages/industry/ReqFlowAIPage"));
 
 import StrategicSnapshots from "./pages/enterprise/StrategicSnapshots";
 import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
@@ -492,6 +493,7 @@ const App = () => (
               <Route path="/industry/roadmaps" element={<ProductRoadmapV2Page />} />
               <Route path="/industry/roadmaps-v1" element={<IndustryRoadmapPage />} />
               <Route path="/industry/reports" element={<IndustryComingSoon />} />
+              <Route path="/industry/reqflow" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReqFlowAIPage /></Suspense>} />
               
               {/* Starred items page */}
               <Route path="/starred" element={<StarredPage />} />
