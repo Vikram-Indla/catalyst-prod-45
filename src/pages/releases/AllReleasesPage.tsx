@@ -166,11 +166,22 @@ export default function AllReleasesPage() {
   const exportRef = useRef<HTMLDivElement>(null);
 
   // ─── Fetch real data ──────────────────────────────────────────
+  const mappedSort = useMemo(() => {
+    const colMap: Record<string, 'name' | 'status' | 'progress' | 'health' | 'target_date'> = {
+      name: 'name', status: 'status', progress: 'progress', health: 'health', daysRemaining: 'target_date', defects: 'name',
+    };
+    return { column: colMap[sortField] || 'name', direction: sortDirection } as const;
+  }, [sortField, sortDirection]);
+
   const { data, isLoading, isError, error, refetch } = useAllReleases({
-    filter: { status: [], health: [], search: '' },
-    sort: { column: 'name', direction: 'asc' },
+    filter: {
+      status: statusFilter as ReleaseStatus[],
+      health: healthFilter.map(h => h === 'at-risk' ? 'at_risk' : h) as ReleaseHealth[],
+      search: searchQuery,
+    },
+    sort: mappedSort,
     page: 0,
-    pageSize: 100,
+    pageSize: 200,
   });
 
   // ─── Realtime subscription ─────────────────────────────────
@@ -225,6 +236,7 @@ export default function AllReleasesPage() {
 
   const bulkUpdateStatusMutation = useMutation({
     mutationFn: async ({ ids, status }: { ids: string[]; status: string }) => {
+      if (ids.length === 0) return;
       const dbStatus = status === 'planning' ? 'planned' : status;
       const { error } = await supabase
         .from('releases')
@@ -243,6 +255,7 @@ export default function AllReleasesPage() {
 
   const bulkDeleteMutation = useMutation({
     mutationFn: async (ids: string[]) => {
+      if (ids.length === 0) return;
       // Soft delete — set deleted_at instead of hard DELETE
       const { error } = await supabase
         .from('releases')
