@@ -545,7 +545,7 @@ export function IncidentListTable({
                               className={cn(
                                 "w-6 h-6 rounded flex items-center justify-center transition-opacity",
                                 "hover:bg-surface-hover text-text-muted",
-                                "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+                                "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[hsl(var(--brand-primary))]",
                                 isHovered ? "opacity-100" : "opacity-0"
                               )}
                             >
@@ -652,11 +652,14 @@ export function IncidentListTable({
                       key={pageNum}
                       onClick={() => onPageChange?.(pageNum)}
                       className={cn(
-                        "min-w-[32px] h-8 px-2 rounded text-sm font-medium transition-colors",
+                        "min-w-[32px] h-8 px-2 rounded text-sm font-medium transition-all duration-150",
                         page === pageNum
-                          ? "bg-brand-primary text-white"
+                          ? "text-white shadow-[0_2px_8px_rgba(37,99,235,0.18)]"
                           : "text-text-secondary hover:bg-surface-hover"
                       )}
+                      style={page === pageNum ? {
+                        background: 'linear-gradient(135deg, hsl(var(--brand-primary)), hsl(var(--brand-primary-hover)))',
+                      } : undefined}
                     >
                       {pageNum}
                     </button>
