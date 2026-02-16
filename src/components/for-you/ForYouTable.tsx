@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Star } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import type { WorkItem, WorkGroup } from '@/hooks/useForYouData';
 
 interface ForYouTableProps {
@@ -53,6 +54,7 @@ export function ForYouTable({
 }: ForYouTableProps) {
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   const tableRef = useRef<HTMLDivElement>(null);
+  const nameAvatarMap = useProfileAvatarsByName();
 
   // Flatten items for keyboard navigation
   const flatItems = React.useMemo(() => {
@@ -284,11 +286,22 @@ export function ForYouTable({
 
                 {/* Assignee — avatar + name */}
                 <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 min-w-0 flex-1">
-                    {/* Avatar — 24px circle, blue tint */}
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 bg-[hsl(217,92%,95%)] text-[hsl(217,91%,60%)]">
-                      {item.assignee.initials}
-                    </div>
+                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    {/* Avatar — rounded-xl square, profile photo with initials fallback (Capacity Planner style) */}
+                    {(() => {
+                      const avatarUrl = nameAvatarMap.get(item.assignee.name);
+                      return avatarUrl ? (
+                        <img 
+                          src={avatarUrl} 
+                          alt={item.assignee.name}
+                          className="w-7 h-7 rounded-xl object-cover shrink-0 border-2 border-[hsl(213,94%,83%)]"
+                        />
+                      ) : (
+                        <div className="w-7 h-7 rounded-xl flex items-center justify-center text-[10px] font-bold shrink-0 bg-[hsl(217,92%,95%)] text-[hsl(217,91%,60%)] border-2 border-[hsl(213,94%,83%)]">
+                          {item.assignee.initials}
+                        </div>
+                      );
+                    })()}
                     <span className="text-[13px] font-medium text-[hsl(215,25%,27%)] truncate">
                       {item.assignee.name}
                     </span>
