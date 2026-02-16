@@ -487,9 +487,10 @@ export default function ReqFlowAIPage() {
   }, []);
 
   const handleExportUat = useCallback((doc: BrdDocument) => {
-    const header = 'ID\tScenario\tGiven\tWhen\tThen\tPriority\n';
-    const rows = doc.uatCases.map(u => `${u.id}\t${u.scenario}\t${u.given}\t${u.when}\t${u.then}\t${u.priority}`).join('\n');
-    const blob = new Blob([header + rows], { type: 'text/csv' });
+    const esc = (v: string) => v.includes(',') || v.includes('"') || v.includes('\n') ? `"${v.replace(/"/g, '""')}"` : v;
+    const header = 'ID,Scenario,Given,When,Then,Priority\n';
+    const rows = doc.uatCases.map(u => [u.id, u.scenario, u.given, u.when, u.then, u.priority].map(esc).join(',')).join('\n');
+    const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = `${doc.id}_UAT.csv`;
@@ -1320,13 +1321,20 @@ export default function ReqFlowAIPage() {
                         {tpl.sections[i]?.replace(/^§\d+\s+/, '') || sec.title}
                       </h2>
                       <button
-                        onClick={() => handleCopySection(sec)}
+                        onClick={e => {
+                          handleCopySection(sec);
+                          const btn = e.currentTarget;
+                          btn.innerHTML = '✓';
+                          btn.style.color = '#10B981';
+                          btn.style.opacity = '1';
+                          setTimeout(() => { btn.innerHTML = ''; btn.style.color = '#94A3B8'; btn.style.opacity = '0.4'; const icon = document.createElement('span'); btn.textContent = '📋'; }, 2500);
+                        }}
                         title="Copy section"
-                        style={{ padding: '4px', borderRadius: '4px', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', opacity: 0.4, flexShrink: 0, marginTop: '4px' }}
+                        style={{ padding: '4px 6px', borderRadius: '4px', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', opacity: 0.4, flexShrink: 0, marginTop: '4px', fontSize: '12px', fontWeight: 600, minWidth: '24px', textAlign: 'center' }}
                         onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = '#F1F5F9'; }}
-                        onMouseLeave={e => { e.currentTarget.style.opacity = '0.4'; e.currentTarget.style.background = 'none'; }}
+                        onMouseLeave={e => { if (!e.currentTarget.textContent?.includes('✓')) { e.currentTarget.style.opacity = '0.4'; } e.currentTarget.style.background = 'none'; }}
                       >
-                        <Clipboard size={14} />
+                        📋
                       </button>
                     </div>
                     <p style={{ fontSize: '13.5px', lineHeight: 1.75, color: '#334155', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
@@ -1501,12 +1509,20 @@ export default function ReqFlowAIPage() {
                                         {story.priority}
                                       </span>
                                       <button
-                                        onClick={() => { navigator.clipboard.writeText(`${story.id}: ${story.title}\nPoints: ${story.points}\nPriority: ${story.priority}\n${(story.acceptance || []).join('\n')}`); showToast('success', `${story.id} copied`); }}
-                                        style={{ padding: '2px', borderRadius: '4px', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }}
-                                        onMouseEnter={e => (e.currentTarget.style.color = '#2563EB')}
-                                        onMouseLeave={e => (e.currentTarget.style.color = '#94A3B8')}
+                                        onClick={e => {
+                                          navigator.clipboard.writeText(`${story.id}: ${story.title}\nPoints: ${story.points}\nPriority: ${story.priority}\n${(story.acceptance || []).join('\n')}`);
+                                          showToast('success', `${story.id} copied`);
+                                          const btn = e.currentTarget;
+                                          btn.textContent = '✓ Copied';
+                                          btn.style.color = '#10B981';
+                                          btn.style.fontWeight = '600';
+                                          setTimeout(() => { btn.textContent = '📋 Copy'; btn.style.color = '#94A3B8'; btn.style.fontWeight = '400'; }, 2500);
+                                        }}
+                                        style={{ padding: '2px 4px', borderRadius: '4px', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', fontSize: '11px', whiteSpace: 'nowrap' }}
+                                        onMouseEnter={e => { if (!e.currentTarget.textContent?.includes('✓')) e.currentTarget.style.color = '#2563EB'; }}
+                                        onMouseLeave={e => { if (!e.currentTarget.textContent?.includes('✓')) e.currentTarget.style.color = '#94A3B8'; }}
                                       >
-                                        <Copy size={12} />
+                                        📋 Copy
                                       </button>
                                     </div>
                                   </div>
