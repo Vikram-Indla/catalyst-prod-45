@@ -28,6 +28,7 @@ interface InitiativeTableProps {
   onFavoriteToggle: (id: string, isFavorited: boolean) => void;
   onSelectionChange: (selectedIds: string[]) => void;
   onSortChange: (sorting: { id: string; desc: boolean }[]) => void;
+  onContextMenu?: (e: React.MouseEvent, initiative: Initiative) => void;
 }
 
 const col = createColumnHelper<Initiative>();
@@ -60,6 +61,7 @@ export function InitiativeTable({
   onFavoriteToggle,
   onSelectionChange,
   onSortChange,
+  onContextMenu,
 }: InitiativeTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -373,6 +375,7 @@ export function InitiativeTable({
                     ${isCancelled ? 'opacity-55' : ''}
                   `}
                   onClick={() => onRowClick(row.original)}
+                  onContextMenu={(e) => { e.preventDefault(); onContextMenu?.(e, row.original); }}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td
