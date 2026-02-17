@@ -418,94 +418,19 @@ export default function Auth() {
             />
           ) : (
             <>
-              {/* User Type Selector */}
-              <div className="flex justify-center mb-8">
-                <div className="inline-flex rounded-full p-1 bg-gray-100">
-                  <button
-                    type="button"
-                    onClick={() => setUserType("existing")}
-                    className={`font-body transition-all duration-200 px-6 py-2.5 rounded-full text-sm font-medium border-none cursor-pointer ${
-                      userType === "existing" 
-                        ? "bg-brand-primary text-white" 
-                        : "bg-transparent text-gray-600 hover:text-gray-800"
-                    }`}
-                  >
-                    Existing User
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setUserType("external")}
-                    className={`font-body transition-all duration-200 px-6 py-2.5 rounded-full text-sm font-medium border-none cursor-pointer ${
-                      userType === "external" 
-                        ? "bg-brand-primary text-white" 
-                        : "bg-transparent text-gray-600 hover:text-gray-800"
-                    }`}
-                  >
-                    External User
-                  </button>
-                </div>
-              </div>
-
-              {userType === "existing" ? (
-                <>
-                  {/* Sign In / Sign Up Toggle */}
-                  <div className="flex justify-center mb-6">
-                    <div className="inline-flex rounded-lg p-1 bg-gray-100">
-                      <button
-                        type="button"
-                        onClick={() => { setAuthMode("signin"); resetForm(); }}
-                        className={`font-body transition-all duration-200 px-5 py-2 rounded-md text-sm font-medium border-none cursor-pointer ${
-                          authMode === "signin" 
-                            ? "bg-brand-primary text-white" 
-                            : "bg-transparent text-gray-600 hover:text-gray-800"
-                        }`}
-                      >
-                        Sign In
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => { setAuthMode("signup"); resetForm(); }}
-                        className={`font-body transition-all duration-200 px-5 py-2 rounded-md text-sm font-medium border-none cursor-pointer ${
-                          authMode === "signup" 
-                            ? "bg-brand-primary text-white" 
-                            : "bg-transparent text-gray-600 hover:text-gray-800"
-                        }`}
-                      >
-                        Sign Up
-                      </button>
-                    </div>
-                  </div>
-
                   {/* Header */}
                   <h2 
                     className="text-center mb-2 font-display text-gray-900"
                     style={{ fontSize: "clamp(1.5rem, 3vw, 1.875rem)", fontWeight: 500 }}
                   >
-                    {authMode === "signin" ? "Welcome back" : "Create an account"}
+                    Welcome back
                   </h2>
                   <p className="text-center mb-6 font-body text-gray-500" style={{ fontSize: "clamp(0.9rem, 2vw, 1rem)" }}>
-                    {authMode === "signin" ? "Enter your credentials to access your account" : "Fill in your details to get started"}
+                    Sign in to your workspace
                   </p>
 
                   {/* Auth Form */}
-                  <form onSubmit={authMode === "signin" ? handleSignIn : handleSignUp} className="space-y-4">
-                    {authMode === "signup" && (
-                      <div>
-                        <label htmlFor="fullName" className="block mb-1.5 font-body text-sm font-medium text-gray-700">
-                          Full Name
-                        </label>
-                        <input 
-                          id="fullName" 
-                          type="text" 
-                          value={fullName} 
-                          onChange={e => { setFullName(e.target.value); setLoginError(null); }} 
-                          placeholder="John Doe" 
-                          required 
-                          className="w-full transition-all outline-none font-body text-base py-3.5 px-4 rounded-[10px] border-2 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/10 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400"
-                        />
-                      </div>
-                    )}
-
+                  <form onSubmit={handleSignIn} className="space-y-4">
                     <div>
                       <label htmlFor="email" className="block mb-1.5 font-body text-sm font-medium text-gray-700">
                         Email Address
@@ -531,57 +456,39 @@ export default function Auth() {
                         id="password"
                         value={password}
                         onChange={(val) => { setPassword(val); setLoginError(null); }}
-                        placeholder={authMode === "signin" ? "Enter your password" : "Create a password"}
+                        placeholder="Enter your password"
                         required
                         hasError={!!loginError}
                       />
                     </div>
 
-                    {authMode === "signup" && (
-                      <div>
-                        <label htmlFor="confirmPassword" className="block mb-1.5 font-body text-sm font-medium text-gray-700">
-                          Confirm Password
-                        </label>
-                        <PasswordInput
-                          id="confirmPassword"
-                          value={confirmPassword}
-                          onChange={(val) => { setConfirmPassword(val); setLoginError(null); }}
-                          placeholder="Confirm your password"
-                          required
-                          hasError={!!loginError && loginError.includes("match")}
-                        />
-                      </div>
-                    )}
-
                     {loginError && (
                       <p className="text-sm font-body text-red-600">{loginError}</p>
                     )}
 
-                    {authMode === "signin" && (
-                      <div className="flex items-center justify-between">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input 
-                            type="checkbox" 
-                            checked={rememberMe} 
-                            onChange={e => setRememberMe(e.target.checked)} 
-                            className="w-4 h-4 rounded border-2 cursor-pointer appearance-none transition-all checked:bg-brand-primary checked:border-brand-primary border-gray-300 bg-white"
-                            style={{
-                              backgroundImage: rememberMe ? "url(\"data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e\")" : "none",
-                              backgroundSize: "100% 100%",
-                              backgroundPosition: "center",
-                              backgroundRepeat: "no-repeat"
-                            }}
-                          />
-                          <span className="font-body text-sm text-gray-600">Remember me</span>
-                        </label>
-                        <button 
-                          type="button" 
-                          className="font-body text-sm font-medium text-brand-primary hover:text-brand-primary-hover transition-colors"
-                        >
-                          Forgot password?
-                        </button>
-                      </div>
-                    )}
+                    <div className="flex items-center justify-between">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input 
+                          type="checkbox" 
+                          checked={rememberMe} 
+                          onChange={e => setRememberMe(e.target.checked)} 
+                          className="w-4 h-4 rounded border-2 cursor-pointer appearance-none transition-all checked:bg-brand-primary checked:border-brand-primary border-gray-300 bg-white"
+                          style={{
+                            backgroundImage: rememberMe ? "url(\"data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e\")" : "none",
+                            backgroundSize: "100% 100%",
+                            backgroundPosition: "center",
+                            backgroundRepeat: "no-repeat"
+                          }}
+                        />
+                        <span className="font-body text-sm text-gray-600">Remember me</span>
+                      </label>
+                      <button 
+                        type="button" 
+                        className="font-body text-sm font-medium text-brand-primary hover:text-brand-primary-hover transition-colors"
+                      >
+                        Forgot password?
+                      </button>
+                    </div>
 
                     <button 
                       type="submit" 
@@ -590,7 +497,7 @@ export default function Auth() {
                     >
                       <span className="relative flex items-center justify-center gap-2">
                         {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-                        {authMode === "signin" ? "Sign In" : "Create Account"}
+                        Sign In
                       </span>
                     </button>
                   </form>
@@ -598,44 +505,6 @@ export default function Auth() {
                   <div className="mt-6">
                     <IntegrationBadge />
                   </div>
-                </>
-              ) : (
-                <>
-                  {/* External User Header */}
-                  <h2 
-                    className="text-center mb-2 font-display"
-                    style={{ fontSize: "clamp(1.5rem, 3vw, 1.875rem)", fontWeight: 500, color: 'var(--text-1)' }}
-                  >
-                    Submit a Request
-                  </h2>
-                  <p className="text-center mb-6 font-body" style={{ fontSize: "clamp(0.9rem, 2vw, 1rem)", color: 'var(--text-2)' }}>
-                    Log your business demand without an account
-                  </p>
-
-                  {/* Request Card */}
-                  <div className="flex flex-col items-center p-8 rounded-xl bg-brand-primary/5 border border-brand-primary/20">
-                    <div className="mb-5 p-4 rounded-full bg-brand-primary/10">
-                      <FileText className="w-10 h-10 text-brand-primary" />
-                    </div>
-
-                    <p className="text-center mb-6 font-body text-base leading-relaxed" style={{ color: 'var(--text-2)' }}>
-                      No account needed. Submit your business demand request and our team will review it promptly.
-                    </p>
-
-                    <button 
-                      type="button" 
-                      onClick={() => navigate('/submit-request')}
-                      className="w-full transition-all duration-300 font-body py-4 px-6 font-semibold rounded-[10px] text-base border-2 cursor-pointer bg-transparent text-brand-primary border-brand-primary hover:bg-brand-primary hover:text-white hover:-translate-y-0.5"
-                    >
-                      Log Demand Request
-                    </button>
-
-                    <p className="mt-4 text-center font-body text-xs" style={{ color: 'var(--text-3)' }}>
-                      Ticket ID will be generated upon submission
-                    </p>
-                  </div>
-                </>
-              )}
             </>
           )}
         </div>
