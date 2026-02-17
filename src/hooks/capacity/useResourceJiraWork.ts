@@ -151,7 +151,8 @@ export function useResourceJiraWork(resourceId: string | null) {
 
       // 3. Date boundaries
       const now = new Date();
-      const weekStart = startOfWeek(now, { weekStartsOn: 1 });
+      const weekStart = new Date(now);
+      weekStart.setDate(weekStart.getDate() - 7); // Rolling 7-day window
       const monthStart = startOfMonth(now);
       const lastMonthStart = startOfMonth(subMonths(now, 1));
       const lastMonthEnd = endOfMonth(subMonths(now, 1));
