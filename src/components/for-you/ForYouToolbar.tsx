@@ -3,21 +3,17 @@
  */
 
 import React from 'react';
-import { Search, ArrowUpDown, LayoutGrid } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ForYouToolbarProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  isAIPanelOpen: boolean;
-  onToggleAIPanel: () => void;
 }
 
 export function ForYouToolbar({
   searchQuery,
   onSearchChange,
-  isAIPanelOpen,
-  onToggleAIPanel,
 }: ForYouToolbarProps) {
   return (
     <div className="flex items-center gap-4 flex-1">
@@ -30,7 +26,7 @@ export function ForYouToolbar({
         <Search className="w-3.5 h-3.5 text-[hsl(215,20%,65%)] shrink-0" />
         <input
           type="text"
-          placeholder="Search resources..."
+          placeholder="Search work items..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           className="flex-1 min-w-0 text-[13px] text-[hsl(222,47%,11%)] placeholder:text-[hsl(215,20%,65%)] !bg-transparent !border-0 !p-0 !outline-none !shadow-none !ring-0 focus:!outline-none focus:!shadow-none focus:!ring-0"
@@ -45,19 +41,6 @@ export function ForYouToolbar({
         <span className="px-1.5 py-0.5 bg-[hsl(210,40%,96%)] border border-[hsl(214,32%,91%)] rounded text-[10px] font-semibold text-[hsl(215,20%,65%)]">
           ⌘K
         </span>
-      </div>
-
-      {/* Actions */}
-      <div className="ml-auto flex items-center gap-2">
-        <button className="flex items-center gap-1.5 px-3 h-8 border border-[hsl(214,32%,91%)] bg-white rounded-[7px] text-[13px] font-medium text-[hsl(215,25%,27%)] cursor-pointer transition-all hover:bg-[hsl(210,40%,96%)]">
-          <ArrowUpDown className="w-3.5 h-3.5" />
-          Sort
-        </button>
-
-        <button className="flex items-center gap-1.5 px-3 h-8 border border-[hsl(214,32%,91%)] bg-white rounded-[7px] text-[13px] font-medium text-[hsl(215,25%,27%)] cursor-pointer transition-all hover:bg-[hsl(210,40%,96%)]">
-          <LayoutGrid className="w-3.5 h-3.5" />
-          View
-        </button>
       </div>
     </div>
   );
