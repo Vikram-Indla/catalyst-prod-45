@@ -222,11 +222,14 @@ export function useForYouData() {
 
         setAssignedItems(assigned || []);
 
-        // Worked on: issues where user is assignee OR reporter (broader engagement)
+        // Worked on: recently updated issues assigned to user (last 14 days)
+        const fourteenDaysAgo = new Date();
+        fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
         const { data: worked } = await supabase
           .from('ph_issues')
           .select('issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, parent_key, parent_summary')
-          .or(jiraAccountIds.map(id => `assignee_account_id.eq.${id},reporter_account_id.eq.${id}`).join(','))
+          .in('assignee_account_id', jiraAccountIds)
+          .gte('jira_updated_at', fourteenDaysAgo.toISOString())
           .order('jira_updated_at', { ascending: false })
           .limit(200);
 
