@@ -139,9 +139,8 @@ export function JiraIssueTypeIcon({ issueType, size = 16, className }: JiraIssue
         <TooltipTrigger asChild>
           {icon}
         </TooltipTrigger>
-        <TooltipContent side="top" sideOffset={4} className="max-w-[220px]">
-          <p className="font-semibold text-xs">{config.label}</p>
-          <p className="text-[11px] text-muted-foreground mt-0.5">{config.description}</p>
+        <TooltipContent side="top" sideOffset={4}>
+          <p className="font-medium text-xs">{config.label}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
