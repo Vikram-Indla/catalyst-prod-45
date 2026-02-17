@@ -33,7 +33,14 @@ export function ForYouToolbar({
           placeholder="Search resources..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="flex-1 border-none bg-transparent text-[13px] text-[hsl(222,47%,11%)] outline-none placeholder:text-[hsl(215,20%,65%)]"
+          className="flex-1 min-w-0 text-[13px] text-[hsl(222,47%,11%)] placeholder:text-[hsl(215,20%,65%)] !bg-transparent !border-0 !p-0 !outline-none !shadow-none !ring-0 focus:!outline-none focus:!shadow-none focus:!ring-0"
+          style={{
+            WebkitAppearance: 'none',
+            MozAppearance: 'none' as never,
+            appearance: 'none',
+            backgroundColor: 'transparent',
+            WebkitBoxShadow: '0 0 0 1000px transparent inset',
+          }}
         />
         <span className="px-1.5 py-0.5 bg-[hsl(210,40%,96%)] border border-[hsl(214,32%,91%)] rounded text-[10px] font-semibold text-[hsl(215,20%,65%)]">
           ⌘K
