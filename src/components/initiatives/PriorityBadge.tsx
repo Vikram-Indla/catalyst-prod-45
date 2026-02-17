@@ -8,11 +8,11 @@ interface PriorityBadgeProps {
 
 export function PriorityBadge({ score, size = 'sm', showScore = true }: PriorityBadgeProps) {
   const p = getPriorityLevel(score);
-  const heightClass = size === 'md' ? 'h-7 text-[13px]' : 'h-6 text-[12px]';
+  const heightClass = size === 'md' ? 'h-7 text-[13px]' : 'h-[22px] text-[11px]';
 
   return (
     <span
-      className={`inline-flex items-center px-2.5 rounded-full border font-medium whitespace-nowrap ${heightClass}`}
+      className={`inline-flex items-center px-2 rounded-full border font-medium whitespace-nowrap ${heightClass}`}
       style={{ backgroundColor: p.bg, borderColor: p.border, color: p.text }}
     >
       {p.level}

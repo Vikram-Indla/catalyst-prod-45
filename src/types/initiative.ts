@@ -16,7 +16,7 @@ export type ViewMode = 'table' | 'board' | 'timeline' | 'cards';
 
 export interface Initiative {
   id: string;
-  initiative_key: string; // "MIM-042"
+  initiative_key: string;
   title: string;
   description: string | null;
   status: InitiativeStatus;
@@ -93,7 +93,22 @@ export function getPriorityLevel(score: number | null): { level: PriorityLevel; 
   return match || { level: 'Unscored', ...UNSCORED_STYLE };
 }
 
+/** Spec-defined deterministic avatar colors by first name */
+const AVATAR_COLOR_MAP: Record<string, string> = {
+  'Sarah': '#6366f1',
+  'Ahmed': '#10b981',
+  'Fatima': '#ec4899',
+  'Omar': '#f97316',
+  'Layla': '#06b6d4',
+  'Khalid': '#8b5cf6',
+  'Nora': '#f43f5e',
+  'Mohammed': '#0d9488',
+};
+
 export function getAvatarColor(name: string): string {
+  const firstName = name.split(' ')[0];
+  if (AVATAR_COLOR_MAP[firstName]) return AVATAR_COLOR_MAP[firstName];
+  // Fallback hash
   const colors = ['#6366f1', '#10b981', '#ec4899', '#f97316', '#06b6d4', '#8b5cf6', '#f43f5e', '#0d9488', '#84cc16', '#e11d48'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);

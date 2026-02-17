@@ -24,19 +24,19 @@ const DENSITY_LABELS: Record<Density, string> = { compact: 'Compact', standard: 
 const VIEW_TABS: { id: ViewMode; label: string; icon: React.ReactNode }[] = [
   {
     id: 'table', label: 'Table',
-    icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+    icon: <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
   },
   {
     id: 'board', label: 'Board',
-    icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="4" height="12" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="10" y="2" width="4" height="8" rx="1" stroke="currentColor" strokeWidth="1.5"/></svg>,
+    icon: <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="4" height="12" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="10" y="2" width="4" height="8" rx="1" stroke="currentColor" strokeWidth="1.5"/></svg>,
   },
   {
     id: 'timeline', label: 'Timeline',
-    icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 4h6M5 8h8M2 12h5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>,
+    icon: <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 4h6M5 8h8M2 12h5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>,
   },
   {
     id: 'cards', label: 'Cards',
-    icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5"/></svg>,
+    icon: <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.5"/></svg>,
   },
 ];
 
@@ -85,9 +85,11 @@ export function InitiativeToolbar({
   return (
     <div className="space-y-0">
 
-      {/* Row 1: Breadcrumb */}
-      <div className="text-[11px] uppercase tracking-[0.05em] text-zinc-400">
-        Product / <span className="text-zinc-600 font-medium">Product Backlog</span>
+      {/* Row 1: Breadcrumb — Fix 7: mixed case */}
+      <div className="text-[11px] tracking-[0.05em]">
+        <span className="uppercase text-zinc-400">PRODUCT</span>
+        <span className="text-zinc-400"> / </span>
+        <span className="text-zinc-600 font-medium">Product Backlog</span>
       </div>
 
       {/* Row 2: Title + Actions */}
@@ -128,20 +130,21 @@ export function InitiativeToolbar({
         </div>
       </div>
 
-      {/* Row 3: View Switcher + Search/Filters */}
+      {/* Row 3: View Switcher (segmented pill control — Fix 6) + Search/Filters */}
       <div className="flex items-center justify-between mb-2">
-        {/* View switcher */}
-        <div className="inline-flex bg-zinc-100 rounded-lg p-1">
+        {/* View switcher — segmented control */}
+        <div className="inline-flex items-center rounded-lg p-[3px] gap-[2px]" style={{ background: '#f4f4f5' }}>
           {VIEW_TABS.map((tab) => (
             <button
               key={tab.id}
               type="button"
               onClick={() => onViewChange(tab.id)}
-              className={`h-7 px-3 flex items-center gap-1.5 text-[13px] rounded-md transition-all ${
+              className={`h-[30px] px-3 inline-flex items-center gap-1.5 text-[13px] rounded-md transition-all whitespace-nowrap ${
                 activeView === tab.id
-                  ? 'bg-white shadow-sm text-zinc-900 font-medium'
-                  : 'text-zinc-500 hover:text-zinc-700'
+                  ? 'bg-white text-zinc-900 font-medium'
+                  : 'text-zinc-500 hover:text-zinc-700 hover:bg-white/50'
               }`}
+              style={activeView === tab.id ? { boxShadow: '0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.08)' } : undefined}
             >
               {tab.icon}
               {tab.label}
@@ -198,23 +201,23 @@ export function InitiativeToolbar({
         </div>
       </div>
 
-      {/* Row 4: Quick Filter Chips */}
+      {/* Row 4: Quick Filter Chips — Fix 12: zinc-100 bg on inactive */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-3">
         {QUICK_FILTERS.map((f) => (
           <button
             key={f.id}
             type="button"
             onClick={() => onQuickFilterChange(f.id)}
-            className={`h-[26px] px-3 text-xs rounded-full whitespace-nowrap transition-colors ${
+            className="h-[26px] px-3 text-xs rounded-full whitespace-nowrap transition-colors"
+            style={
               activeQuickFilter === f.id
-                ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                : 'bg-zinc-100 text-zinc-600 border border-transparent hover:bg-zinc-200'
-            }`}
+                ? { background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', fontWeight: 500 }
+                : { background: '#f4f4f5', color: '#52525b', border: '1px solid transparent' }
+            }
           >
             {f.label}
           </button>
         ))}
-
       </div>
     </div>
   );

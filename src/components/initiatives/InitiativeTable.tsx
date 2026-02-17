@@ -11,9 +11,9 @@ import {
 } from '@tanstack/react-table';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 import { format } from 'date-fns';
-import { Star, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
+import { Star, GripVertical, ChevronUp, ChevronDown, Check } from 'lucide-react';
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
-import { getPriorityLevel, PRIORITY_THRESHOLDS, UNSCORED_STYLE } from '@/types/initiative';
+import { getPriorityLevel } from '@/types/initiative';
 import { StatusBadge } from './StatusBadge';
 import { PriorityBadge } from './PriorityBadge';
 import { UserAvatar } from './UserAvatar';
@@ -41,6 +41,26 @@ const DENSITY_CONFIG: Record<Density, { rowH: string; text: string; avatarSize: 
   standard:    { rowH: 'h-10', text: 'text-table-base',  avatarSize: 24 },
   comfortable: { rowH: 'h-12', text: 'text-sm',         avatarSize: 28 },
 };
+
+/* Custom checkbox — Fix 16 */
+function CustomCheckbox({ checked, indeterminate, onChange }: { checked: boolean; indeterminate?: boolean; onChange: (e: any) => void }) {
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={indeterminate ? 'mixed' : checked}
+      onClick={(e) => { e.stopPropagation(); onChange(e); }}
+      className="w-4 h-4 rounded flex items-center justify-center flex-shrink-0 transition-all duration-100"
+      style={{
+        border: checked || indeterminate ? '1.5px solid #2563eb' : '1.5px solid #d4d4d8',
+        background: checked || indeterminate ? '#2563eb' : 'transparent',
+        cursor: 'pointer',
+      }}
+    >
+      {(checked || indeterminate) && <Check size={11} className="text-white" strokeWidth={3} />}
+    </button>
+  );
+}
 
 function ScoreCell({ score }: { score: number | null }) {
   if (score === null) return <span className="text-zinc-400">—</span>;
@@ -101,33 +121,28 @@ export function InitiativeTable({
 
   const columns = useMemo(
     () => [
+      /* Checkbox — Fix 16 */
       col.display({
         id: 'select',
-        size: 40,
-        minSize: 40,
-        maxSize: 40,
+        size: 44,
+        minSize: 44,
+        maxSize: 44,
         enableResizing: false,
         header: ({ table }) => (
-          <input
-            type="checkbox"
-            className="w-3.5 h-3.5 rounded border-zinc-300 accent-blue-600 cursor-pointer"
+          <CustomCheckbox
             checked={table.getIsAllRowsSelected()}
-            ref={(el) => {
-              if (el) el.indeterminate = table.getIsSomeRowsSelected();
-            }}
+            indeterminate={table.getIsSomeRowsSelected()}
             onChange={table.getToggleAllRowsSelectedHandler()}
           />
         ),
         cell: ({ row }) => (
-          <input
-            type="checkbox"
-            className="w-3.5 h-3.5 rounded border-zinc-300 accent-blue-600 cursor-pointer"
+          <CustomCheckbox
             checked={row.getIsSelected()}
             onChange={row.getToggleSelectedHandler()}
-            onClick={(e) => e.stopPropagation()}
           />
         ),
       }),
+      /* Drag handle — Fix 5 */
       col.display({
         id: 'drag',
         size: 28,
@@ -139,11 +154,12 @@ export function InitiativeTable({
           <GripVertical size={14} className="text-zinc-400 opacity-0 group-hover/row:opacity-100 cursor-grab transition-opacity" />
         ),
       }),
+      /* Star — Fix 10 */
       col.accessor('is_favorited', {
         id: 'favorite',
-        size: 32,
-        minSize: 32,
-        maxSize: 32,
+        size: 36,
+        minSize: 36,
+        maxSize: 36,
         enableResizing: false,
         enableSorting: false,
         header: () => null,
@@ -168,7 +184,7 @@ export function InitiativeTable({
       }),
       col.accessor('initiative_key', {
         id: 'initiative_key',
-        size: 88,
+        size: 90,
         minSize: 72,
         header: 'ID',
         cell: ({ getValue, row }) => (
@@ -204,7 +220,7 @@ export function InitiativeTable({
       }),
       col.accessor('status', {
         id: 'status',
-        size: 140,
+        size: 148,
         minSize: 120,
         header: 'Status',
         cell: ({ getValue, row }) => (
@@ -217,8 +233,8 @@ export function InitiativeTable({
       }),
       col.accessor('computed_score', {
         id: 'priority',
-        size: 110,
-        minSize: 90,
+        size: 118,
+        minSize: 100,
         header: 'Priority',
         cell: ({ row }) => <PriorityBadge score={row.original.computed_score} />,
       }),
@@ -228,12 +244,12 @@ export function InitiativeTable({
         minSize: 120,
         header: 'Assignee',
         cell: ({ getValue }) => (
-          <UserAvatar name={getValue()} size={dc.avatarSize} showName />
+          <UserAvatar name={getValue()} size={24} showName />
         ),
       }),
       col.accessor('department_name', {
         id: 'department_name',
-        size: 140,
+        size: 146,
         minSize: 100,
         header: 'Department',
         cell: ({ getValue }) => (
@@ -242,7 +258,7 @@ export function InitiativeTable({
       }),
       col.accessor('target_quarter', {
         id: 'target_quarter',
-        size: 100,
+        size: 96,
         minSize: 80,
         header: 'Quarter',
         cell: ({ getValue }) => (
@@ -277,14 +293,14 @@ export function InitiativeTable({
       }),
       col.accessor('computed_score', {
         id: 'computed_score',
-        size: 80,
+        size: 72,
         minSize: 60,
         header: 'Score',
         cell: ({ getValue }) => <ScoreCell score={getValue()} />,
       }),
       col.accessor('progress', {
         id: 'progress',
-        size: 100,
+        size: 108,
         minSize: 80,
         header: 'Progress',
         cell: ({ getValue, row }) => (
@@ -293,13 +309,13 @@ export function InitiativeTable({
       }),
       col.accessor('updated_at', {
         id: 'updated_at',
-        size: 100,
+        size: 88,
         minSize: 80,
         header: 'Updated',
         cell: ({ getValue }) => <RelativeDate date={getValue()} />,
       }),
     ],
-    [dc.avatarSize, onRowClick, onStatusChange, onFavoriteToggle]
+    [onRowClick, onStatusChange, onFavoriteToggle]
   );
 
   const table = useReactTable({
@@ -321,20 +337,32 @@ export function InitiativeTable({
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="border border-zinc-200 rounded-lg overflow-hidden">
+      {/* Fix 13: bordered rounded container */}
+      <div className="border border-zinc-200 rounded-lg overflow-hidden bg-white">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1200px]" style={{ tableLayout: 'fixed' }}>
-            {/* Colgroup for widths */}
+          <table className="w-full" style={{ tableLayout: 'fixed', minWidth: 1320 }}>
+            {/* Fix 18: explicit colgroup */}
             <colgroup>
-              {table.getVisibleFlatColumns().map((column) => (
-                <col key={column.id} style={{ width: column.getSize() }} />
-              ))}
+              <col style={{ width: 44 }} />
+              <col style={{ width: 28 }} />
+              <col style={{ width: 36 }} />
+              <col style={{ width: 90 }} />
+              <col />
+              <col style={{ width: 148 }} />
+              <col style={{ width: 118 }} />
+              <col style={{ width: 160 }} />
+              <col style={{ width: 146 }} />
+              <col style={{ width: 96 }} />
+              <col style={{ width: 128 }} />
+              <col style={{ width: 72 }} />
+              <col style={{ width: 108 }} />
+              <col style={{ width: 88 }} />
             </colgroup>
 
-            {/* Header */}
+            {/* Header — Fix 15: zinc-50 bg */}
             <thead>
               {table.getHeaderGroups().map((hg) => (
-                <tr key={hg.id} className="h-9 bg-zinc-50 border-b border-zinc-200 sticky top-0 z-10">
+                <tr key={hg.id} className="h-9 border-b border-zinc-200 sticky top-0 z-10" style={{ background: '#fafafa' }}>
                   {hg.headers.map((header) => {
                     const sorted = header.column.getIsSorted();
                     const canSort = header.column.getCanSort();
@@ -367,7 +395,6 @@ export function InitiativeTable({
                             )}
                           </div>
                         )}
-                        {/* Resize handle */}
                         {header.column.getCanResize() && (
                           <div
                             onMouseDown={header.getResizeHandler()}
@@ -396,16 +423,16 @@ export function InitiativeTable({
                             ref={dragProvided.innerRef}
                             {...dragProvided.draggableProps}
                             className={`
-                              group/row border-b border-zinc-100 transition-colors cursor-pointer
+                              group/row transition-colors cursor-pointer
                               ${dc.rowH} ${dc.text}
                               ${selected ? 'bg-blue-50 border-l-2 border-l-blue-600' : ''}
-                              ${!selected && idx % 2 === 1 ? 'bg-[rgba(250,250,250,0.5)]' : ''}
                               ${!selected ? 'hover:bg-zinc-50' : ''}
-                              ${isCancelled ? 'opacity-55' : ''}
+                              ${isCancelled ? 'opacity-[0.55]' : ''}
                               ${snapshot.isDragging ? 'bg-white shadow-lg opacity-90' : ''}
                             `}
                             style={{
                               ...dragProvided.draggableProps.style,
+                              borderBottom: '1px solid #f4f4f5',
                               display: snapshot.isDragging ? 'table' : undefined,
                               tableLayout: snapshot.isDragging ? 'fixed' : undefined,
                               width: snapshot.isDragging ? '100%' : undefined,

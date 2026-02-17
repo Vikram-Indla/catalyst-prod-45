@@ -7,31 +7,29 @@ interface ProgressBarProps {
 }
 
 function getFillColor(value: number, status?: InitiativeStatus): string {
-  if (status === 'delivered') return 'bg-emerald-500';
-  if (value >= 70) return 'bg-blue-500';
-  if (value >= 40) return 'bg-amber-500';
-  return 'bg-blue-500';
-}
-
-function getLabelColor(value: number): string {
-  if (value === 0) return 'text-zinc-400';
-  if (value >= 100) return 'text-emerald-600';
-  return 'text-zinc-600';
+  if (status === 'delivered' || value >= 100) return '#10b981';
+  if (value >= 40 && value < 70) return '#f59e0b';
+  return '#2563eb';
 }
 
 export function ProgressBar({ value, status, showLabel = true }: ProgressBarProps) {
   const clamped = Math.min(Math.max(value, 0), 100);
 
   return (
-    <div className="flex items-center gap-2.5">
-      <div className="w-24 h-1.5 rounded-full bg-zinc-200 flex-shrink-0">
+    <div className="inline-flex items-center gap-2">
+      <div className="flex-shrink-0 overflow-hidden" style={{ width: 40, height: 4, borderRadius: 2, background: '#e4e4e7' }}>
         <div
-          className={`h-full rounded-full transition-all duration-300 ${getFillColor(clamped, status)}`}
-          style={{ width: `${clamped}%` }}
+          style={{
+            width: `${clamped}%`,
+            height: '100%',
+            borderRadius: 2,
+            background: getFillColor(clamped, status),
+            transition: 'width 300ms ease',
+          }}
         />
       </div>
       {showLabel && (
-        <span className={`text-[13px] font-medium tabular-nums ${getLabelColor(clamped)}`}>
+        <span style={{ fontSize: 12, color: '#71717a', minWidth: 28 }} className="tabular-nums">
           {clamped}%
         </span>
       )}
