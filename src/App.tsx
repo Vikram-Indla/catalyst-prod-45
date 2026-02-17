@@ -1,4 +1,6 @@
 import React, { lazy, Suspense } from "react";
+import { AppShell as ProdHubAppShell } from "./components/producthub/AppShell";
+const InitiativeListingPage = lazy(() => import("./pages/producthub/InitiativeListingPage"));
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { Toaster as HotToaster } from 'react-hot-toast';
@@ -477,13 +479,18 @@ const App = () => (
                 <Route index element={<BrowsePage />} />
               </Route>
               
+              {/* ProdHub App Shell - standalone layout */}
+              <Route element={<ProtectedRoute><ProdHubAppShell /></ProtectedRoute>}>
+                <Route path="/producthub/backlog" element={<Suspense fallback={<div className="p-8">Loading...</div>}><InitiativeListingPage /></Suspense>} />
+              </Route>
+
               {/* All Routes - Catalyst Style */}
               <Route element={<ProtectedRoute><CatalystShell /></ProtectedRoute>}>
               <Route path="/for-you" element={<ForYouPage />} />
               <Route path="/home" element={<Navigate to="/for-you" replace />} />
               
               {/* Product Hub routes */}
-              <Route path="/producthub" element={<Navigate to="/producthub/ideas/hub" replace />} />
+              <Route path="/producthub" element={<Navigate to="/producthub/backlog" replace />} />
               <Route path="/producthub/table" element={<CatalystDemandTable />} />
               <Route path="/producthub/kanban" element={<CatalystDemandKanban />} />
               <Route path="/producthub/dashboard" element={<DemandSummaryPage />} />
