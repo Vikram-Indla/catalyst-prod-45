@@ -289,7 +289,7 @@ export function ForYouTable({
                   <div className="flex items-center gap-2.5 min-w-0">
                     {/* Avatar — rounded-xl square, profile photo with initials fallback (Capacity Planner style) */}
                     {(() => {
-                      const avatarUrl = nameAvatarMap.get(item.assignee.name);
+                      const avatarUrl = nameAvatarMap.get(item.assignee.name.toLowerCase());
                       return avatarUrl ? (
                         <img 
                           src={avatarUrl} 
