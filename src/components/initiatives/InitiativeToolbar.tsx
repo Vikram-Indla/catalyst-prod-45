@@ -84,21 +84,9 @@ export function InitiativeToolbar({
 
   return (
     <div className="space-y-0">
-      {/* Row 1: Breadcrumb */}
-      <div className="text-[11px] uppercase tracking-wider text-zinc-400">
-        Product / <span className="text-zinc-600 font-medium">Product Backlog</span>
-      </div>
 
-      {/* Row 2: Title + Actions */}
-      <div className="flex items-center justify-between mt-1 mb-3">
-        <h1 className="text-xl font-semibold text-zinc-900">
-          Product Backlog
-          {selectedCount > 0 && (
-            <span className="ml-2 text-sm font-normal text-zinc-500">
-              ({selectedCount} selected)
-            </span>
-          )}
-        </h1>
+      {/* Row 1: Actions (density, columns, more) */}
+      <div className="flex items-center justify-between mb-3">
 
         <div className="flex items-center gap-1.5">
           <TooltipProvider delayDuration={300}>
