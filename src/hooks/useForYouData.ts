@@ -94,6 +94,7 @@ function getInitials(name: string): string {
 function inferMode(projectKey: string, issueType: string): WorkMode {
   const type = issueType?.toLowerCase() || '';
   if (type.includes('incident') || type.includes('bug') || type.includes('production')) return 'OPS';
+  if (type === 'task') return 'PLN';
   // Default to DEL (delivery) for stories, epics, sub-tasks, etc.
   return 'DEL';
 }
@@ -317,12 +318,21 @@ export function useForYouData() {
     return groups;
   }, [filteredItems]);
 
-  // Counts for tabs
-  const tabCounts = useMemo(() => ({
-    worked: workedOnItems.length,
-    assigned: assignedItems.length,
-    starred: starredData.length,
-  }), [workedOnItems, assignedItems, starredData]);
+  // Counts for tabs - respect active mode filter
+  const tabCounts = useMemo(() => {
+    const filterByMode = (items: any[]) => {
+      if (activeMode === 'all') return items;
+      return items.filter(row => {
+        const mode = inferMode(row.project_key, row.issue_type);
+        return mode.toLowerCase() === activeMode;
+      });
+    };
+    return {
+      worked: filterByMode(workedOnItems).length,
+      assigned: filterByMode(assignedItems).length,
+      starred: filterByMode(starredData).length,
+    };
+  }, [workedOnItems, assignedItems, starredData, activeMode]);
 
   // AI Data (empty for now)
   const aiData = useMemo(() => ({
