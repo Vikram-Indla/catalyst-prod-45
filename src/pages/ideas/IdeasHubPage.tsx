@@ -55,12 +55,12 @@ export default function IdeasHubPage() {
         <div className="flex items-center gap-3">
           <Button 
             variant="outline" 
-            onClick={() => navigate('/industry/ideas/all')}
+            onClick={() => navigate('/producthub/ideas/all')}
           >
             View All Ideas
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
-          <Button onClick={() => navigate('/industry/ideas/submit')}>
+          <Button onClick={() => navigate('/producthub/ideas/submit')}>
             <Plus className="mr-2 h-4 w-4" />
             Submit Idea
           </Button>
@@ -137,7 +137,7 @@ export default function IdeasHubPage() {
             <Button 
               variant="ghost" 
               size="sm"
-              onClick={() => navigate('/industry/ideas/all?sort=votes')}
+              onClick={() => navigate('/producthub/ideas/all?sort=votes')}
             >
               See all
               <ArrowRight className="ml-1 h-3 w-3" />
@@ -147,7 +147,7 @@ export default function IdeasHubPage() {
             <TopIdeasList 
               ideas={topIdeas || []} 
               loading={topIdeasLoading}
-              onIdeaClick={(id) => navigate(`/industry/ideas/${id}`)}
+              onIdeaClick={(id) => navigate(`/producthub/ideas/${id}`)}
             />
           </CardContent>
         </Card>
@@ -167,7 +167,7 @@ export default function IdeasHubPage() {
             <Button 
               variant="ghost" 
               size="sm"
-              onClick={() => navigate('/industry/ideas/initiatives')}
+              onClick={() => navigate('/producthub/ideas/initiatives')}
             >
               Manage
               <ArrowRight className="ml-1 h-3 w-3" />
@@ -177,7 +177,7 @@ export default function IdeasHubPage() {
             <ActiveInitiativesList 
               initiatives={activeInitiatives}
               loading={initiativesLoading}
-              onInitiativeClick={(id) => navigate(`/industry/ideas/initiatives/${id}`)}
+              onInitiativeClick={(id) => navigate(`/producthub/ideas/initiatives/${id}`)}
             />
           </CardContent>
         </Card>
@@ -186,7 +186,7 @@ export default function IdeasHubPage() {
       {/* Quick Actions / CTA Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20 hover:shadow-md transition-shadow cursor-pointer"
-          onClick={() => navigate('/industry/ideas/submit')}
+          onClick={() => navigate('/producthub/ideas/submit')}
         >
           <CardContent className="flex items-center gap-4 p-5">
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -200,7 +200,7 @@ export default function IdeasHubPage() {
         </Card>
 
         <Card className="bg-gradient-to-br from-amber-500/5 to-amber-500/10 border-amber-500/20 hover:shadow-md transition-shadow cursor-pointer"
-          onClick={() => navigate('/industry/ideas/scoring')}
+          onClick={() => navigate('/producthub/ideas/scoring')}
         >
           <CardContent className="flex items-center gap-4 p-5">
             <div className="h-12 w-12 rounded-full bg-amber-500/10 flex items-center justify-center">
@@ -214,7 +214,7 @@ export default function IdeasHubPage() {
         </Card>
 
         <Card className="bg-gradient-to-br from-emerald-500/5 to-emerald-500/10 border-emerald-500/20 hover:shadow-md transition-shadow cursor-pointer"
-          onClick={() => navigate('/industry/ideas/matrix')}
+          onClick={() => navigate('/producthub/ideas/matrix')}
         >
           <CardContent className="flex items-center gap-4 p-5">
             <div className="h-12 w-12 rounded-full bg-emerald-500/10 flex items-center justify-center">

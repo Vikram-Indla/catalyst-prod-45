@@ -93,7 +93,7 @@ export default function IdeaDetailPageElevated() {
               <p className="text-muted-foreground mb-4">
                 The requested idea could not be loaded.
               </p>
-              <Button onClick={() => navigate('/industry/ideas/all')}>
+              <Button onClick={() => navigate('/producthub/ideas/all')}>
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Ideas
               </Button>
             </CardContent>
@@ -129,14 +129,14 @@ export default function IdeaDetailPageElevated() {
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm mb-6">
           <button 
-            onClick={() => navigate('/industry/ideas')}
+            onClick={() => navigate('/producthub/ideas')}
             className="text-slate-500 hover:text-blue-600 transition-colors"
           >
             Ideas Hub
           </button>
           <span className="text-slate-300">→</span>
           <button 
-            onClick={() => navigate('/industry/ideas/all')}
+            onClick={() => navigate('/producthub/ideas/all')}
             className="text-slate-500 hover:text-blue-600 transition-colors"
           >
             All Ideas

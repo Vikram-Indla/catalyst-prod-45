@@ -67,7 +67,7 @@ export function deriveWorkspaceType(pathname: string): WorkspaceType {
   }
   
   // Product tier routes
-  if (pathname.startsWith('/product') || pathname.startsWith('/industry') || pathname.startsWith('/mining')) {
+  if (pathname.startsWith('/product') || pathname.startsWith('/producthub') || pathname.startsWith('/mining')) {
     return 'product';
   }
   

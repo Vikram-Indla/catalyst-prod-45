@@ -97,7 +97,7 @@ function generateId(): string {
 const QUICK_NAV_ROUTES = [
   { label: 'Home (For you)', path: '/for-you' },
   { label: 'Strategy Room', path: '/strategyhub/strategy-room' },
-  { label: 'Product Backlog', path: '/industry/backlog' },
+  { label: 'Product Hub', path: '/producthub' },
 ];
 
 export default function ThemeAuditPage() {

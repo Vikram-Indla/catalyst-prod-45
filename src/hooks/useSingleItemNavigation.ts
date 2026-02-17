@@ -10,7 +10,7 @@ import { useCatalystContext } from '@/contexts/CatalystContext';
 
 // Route mapping for product lines
 const PRODUCT_LINE_ROUTES: Record<string, string> = {
-  'Industry': '/industry',
+  'Industry': '/producthub',
 };
 
 export interface SingleItemNavResult {

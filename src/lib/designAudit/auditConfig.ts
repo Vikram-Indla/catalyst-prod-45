@@ -11,7 +11,7 @@ export const auditRoutes = [
   { path: '/admin/activity', name: 'Audit Activity', category: 'admin' },
   { path: '/admin/users', name: 'Users Management', category: 'admin' },
   { path: '/admin/design-audit', name: 'Design Audit', category: 'admin' },
-  { path: '/industry', name: 'Industry/Demand Intake', category: 'table' },
+  { path: '/producthub', name: 'Product Hub', category: 'table' },
   { path: '/epics', name: 'Epics Backlog', category: 'table' },
   { path: '/features', name: 'Features List', category: 'table' },
   { path: '/risks', name: 'Risks Grid', category: 'table' },

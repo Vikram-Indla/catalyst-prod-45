@@ -53,7 +53,7 @@ export function CreateDropdown({ onClose, onCreateEpic, onCreateIncident }: Crea
     
     // Navigate to the respective page for other items
     const routeMap: Record<string, string> = {
-      'Business Request': '/industry/backlog?create=true',
+      'Business Request': '/producthub?create=true',
       'Themes': '/items/themes',
       'Epics': '/items/epics?create=true',
       'Features': '/features?create=true',

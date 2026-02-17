@@ -37,7 +37,7 @@ export function IndustryViewSwitchButton({ currentView }: IndustryViewSwitchButt
     // On List view: show Board/Kanban button to switch to Kanban
     return (
       <button
-        onClick={() => navigate('/industry/kanban')}
+        onClick={() => navigate('/producthub/kanban')}
         title="Board"
         className={cn(
           'h-10 w-10 flex items-center justify-center',
@@ -54,7 +54,7 @@ export function IndustryViewSwitchButton({ currentView }: IndustryViewSwitchButt
   // On Kanban view: show List button to switch to List
   return (
     <button
-      onClick={() => navigate('/industry/backlog')}
+      onClick={() => navigate('/producthub')}
       title="List"
       className={cn(
         'h-10 w-10 flex items-center justify-center',

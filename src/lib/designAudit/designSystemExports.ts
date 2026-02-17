@@ -16,8 +16,8 @@ import {
 // Page Layout Specifications
 export const pageLayouts = [
   {
-    name: 'Industry / Demand Intake',
-    route: '/industry',
+    name: 'Product Hub',
+    route: '/producthub',
     description: 'Table-based view with filter bar, bulk actions, and inline editing',
     layout: {
       header: '72px page header with title + actions',

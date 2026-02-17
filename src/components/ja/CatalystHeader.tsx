@@ -85,7 +85,7 @@ export function CatalystHeader() {
     } else if (createDialogType === 'product') {
       const key = entity.key || entity.name.toUpperCase().slice(0, 3);
       const path = key.toUpperCase() === 'IND' || key.toUpperCase() === 'INDUSTRY' 
-        ? '/industry' 
+        ? '/producthub' 
         : key.toUpperCase() === 'MIN' || key.toUpperCase() === 'MINING'
           ? '/mining'
           : `/product/${key.toLowerCase()}/room`;
@@ -149,7 +149,7 @@ export function CatalystHeader() {
   const allNavItems = [
     { label: "Home", path: "/for-you", moduleKey: "home", visibleToProductOwner: true },
     { label: "StrategyHub", path: "/strategyhub/strategy-room", moduleKey: "enterprise", requiresEnterpriseAccess: true, visibleToProductOwner: true },
-    { label: "ProductHub", path: "/industry", moduleKey: "product", visibleToProductOwner: true },
+    { label: "ProductHub", path: "/producthub", moduleKey: "product", visibleToProductOwner: true },
     { label: "ProjectHub", path: "/projecthub", moduleKey: "workhub", visibleToProductOwner: true },
     { label: "ReleaseHub", path: "/releasehub/command-center", moduleKey: "releases", visibleToProductOwner: false },
     { label: "TestHub", path: "/testhub/dashboard", moduleKey: "testhub", visibleToProductOwner: false },

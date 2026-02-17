@@ -88,13 +88,13 @@ export default function IdeasHubPageElevated() {
             <>
               <Button 
                 variant="outline" 
-                onClick={() => navigate('/industry/ideas/all')}
+                onClick={() => navigate('/producthub/ideas/all')}
                 className="gap-2 border-slate-200 bg-white hover:bg-slate-50"
               >
                 View All <Kbd>G</Kbd>
               </Button>
               <Button 
-                onClick={() => navigate('/industry/ideas/submit')}
+                onClick={() => navigate('/producthub/ideas/submit')}
                 className="gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-600/25"
               >
                 <Plus className="w-4 h-4" />
@@ -149,9 +149,9 @@ export default function IdeasHubPageElevated() {
             <QuickWinQueue
               items={quickWinItems}
               loading={metricsLoading}
-              onApprove={(id) => navigate(`/industry/ideas/${id}`)}
-              onViewAll={() => navigate('/industry/ideas/all?type=quick_win')}
-              onItemClick={(id) => navigate(`/industry/ideas/${id}`)}
+              onApprove={(id) => navigate(`/producthub/ideas/${id}`)}
+              onViewAll={() => navigate('/producthub/ideas/all?type=quick_win')}
+              onItemClick={(id) => navigate(`/producthub/ideas/${id}`)}
             />
 
             {/* Top Priority Ideas */}
@@ -169,7 +169,7 @@ export default function IdeasHubPageElevated() {
                   variant="ghost" 
                   size="sm"
                   className="text-slate-500 hover:text-blue-600"
-                  onClick={() => navigate('/industry/ideas/all?sort=votes')}
+                  onClick={() => navigate('/producthub/ideas/all?sort=votes')}
                 >
                   See all
                   <ArrowRight className="ml-1 h-3 w-3" />
@@ -194,7 +194,7 @@ export default function IdeasHubPageElevated() {
                       return (
                         <div
                           key={idea.id}
-                          onClick={() => navigate(`/industry/ideas/${idea.id}`)}
+                          onClick={() => navigate(`/producthub/ideas/${idea.id}`)}
                           className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 cursor-pointer transition-colors group"
                         >
                           {ideaType !== 'standard' && (
@@ -235,21 +235,21 @@ export default function IdeasHubPageElevated() {
                 title="Submit an Idea"
                 description="Share your improvement suggestion"
                 color="yellow"
-                onClick={() => navigate('/industry/ideas/submit')}
+                onClick={() => navigate('/producthub/ideas/submit')}
               />
               <QuickActionCard
                 icon={Target}
                 title="Score Ideas"
                 description={`${metrics?.pendingReview || 0} ideas pending`}
                 color="orange"
-                onClick={() => navigate('/industry/ideas/scoring')}
+                onClick={() => navigate('/producthub/ideas/scoring')}
               />
               <QuickActionCard
                 icon={BarChart3}
                 title="Priority Matrix"
                 description="View impact vs effort"
                 color="blue"
-                onClick={() => navigate('/industry/ideas/matrix')}
+                onClick={() => navigate('/producthub/ideas/matrix')}
               />
             </div>
           </div>
@@ -286,7 +286,7 @@ export default function IdeasHubPageElevated() {
                   variant="ghost" 
                   size="sm"
                   className="text-xs"
-                  onClick={() => navigate('/industry/ideas/initiatives')}
+                  onClick={() => navigate('/producthub/ideas/initiatives')}
                 >
                   Manage
                 </Button>
@@ -337,7 +337,7 @@ export default function IdeasHubPageElevated() {
                   variant="ghost" 
                   size="sm"
                   className="text-xs"
-                  onClick={() => navigate('/industry/ideas/all')}
+                  onClick={() => navigate('/producthub/ideas/all')}
                 >
                   View all
                 </Button>

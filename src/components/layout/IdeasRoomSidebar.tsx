@@ -34,12 +34,12 @@ const ideasSidebarConfig: SidebarConfig = {
   badge: 'Ideas',
   label: 'Improvement Ideas',
   items: [
-    { id: 'Ideas Hub', title: 'Ideas Hub', path: '/industry/ideas/hub', exact: true },
-    { id: 'All Ideas', title: 'All Ideas', path: '/industry/ideas/all', exact: false },
-    { id: 'Submit Idea', title: 'Submit Idea', path: '/industry/ideas/submit', exact: true },
-    { id: 'Initiatives', title: 'Initiatives', path: '/industry/ideas/initiatives', exact: false },
-    { id: 'Scoring', title: 'Scoring Queue', path: '/industry/ideas/scoring', exact: true },
-    { id: 'Priority Matrix', title: 'Priority Matrix', path: '/industry/ideas/matrix', exact: true },
+    { id: 'Ideas Hub', title: 'Ideas Hub', path: '/producthub/ideas/hub', exact: true },
+    { id: 'All Ideas', title: 'All Ideas', path: '/producthub/ideas/all', exact: false },
+    { id: 'Submit Idea', title: 'Submit Idea', path: '/producthub/ideas/submit', exact: true },
+    { id: 'Initiatives', title: 'Initiatives', path: '/producthub/ideas/initiatives', exact: false },
+    { id: 'Scoring', title: 'Scoring Queue', path: '/producthub/ideas/scoring', exact: true },
+    { id: 'Priority Matrix', title: 'Priority Matrix', path: '/producthub/ideas/matrix', exact: true },
   ],
 };
 

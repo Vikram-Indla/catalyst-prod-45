@@ -449,7 +449,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
 
   // Copy link handler
   const handleCopyLink = () => {
-    const url = `${window.location.origin}/industry?request=${requestId}`;
+    const url = `${window.location.origin}/producthub?request=${requestId}`;
     navigator.clipboard.writeText(url);
     toast.success('Link copied to clipboard');
   };

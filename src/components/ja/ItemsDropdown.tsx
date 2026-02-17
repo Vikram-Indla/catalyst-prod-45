@@ -53,7 +53,7 @@ const projectItems: ItemConfig[] = [
 
 // Product Items
 const productItems: ItemConfig[] = [
-  { label: "Business Requests", icon: Square, color: "text-brand-primary", path: "/industry/backlog", moduleCode: "PRODUCT" },
+  { label: "Business Requests", icon: Square, color: "text-brand-primary", path: "/producthub", moduleCode: "PRODUCT" },
 ];
 
 // Get context label

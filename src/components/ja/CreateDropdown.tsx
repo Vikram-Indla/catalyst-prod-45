@@ -117,7 +117,7 @@ export function CreateDropdown() {
     
     // Route to the appropriate page with create parameter
     const routeMap: Record<string, string> = {
-      'business-request': '/industry?create=true',
+      'business-request': '/producthub?create=true',
       'epic': '/items/epics?create=true',
       'feature': '/features?create=true',
       'story': '/stories?create=true',

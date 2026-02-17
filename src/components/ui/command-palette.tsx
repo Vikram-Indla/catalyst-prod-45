@@ -13,7 +13,7 @@ interface CommandPaletteProps {
 const navigationItems = [
   { name: "Home", path: "/for-you", icon: Home },
   { name: "Enterprise", path: "/strategyhub/strategy-room", icon: Building2 },
-  { name: "Product", path: "/industry", icon: Package },
+  { name: "Product", path: "/producthub", icon: Package },
   { name: "Program", path: "/program", icon: Briefcase },
   { name: "Project", path: "/project", icon: FolderKanban },
   { name: "Release", path: "/release", icon: Rocket },
@@ -21,7 +21,7 @@ const navigationItems = [
 
 // Quick actions
 const quickActions = [
-  { name: "Create Business Request", path: "/industry?create=true", icon: FileText },
+  { name: "Create Business Request", path: "/producthub?create=true", icon: FileText },
   { name: "Create Epic", path: "/items/epics?create=true", icon: Square },
   { name: "Create Objective", path: "/enterprise/okr-hub?create=true", icon: Target },
   { name: "Create Risk", path: "/enterprise/risks?create=true", icon: AlertTriangle },

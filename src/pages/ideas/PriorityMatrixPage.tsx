@@ -131,7 +131,7 @@ export default function PriorityMatrixPage() {
               ))}
             </SelectContent>
           </Select>
-          <Button variant="outline" onClick={() => navigate('/industry/ideas/scoring')}>
+          <Button variant="outline" onClick={() => navigate('/producthub/ideas/scoring')}>
             Score Ideas
             <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
@@ -145,7 +145,7 @@ export default function PriorityMatrixPage() {
           <p className="text-sm text-muted-foreground mb-4">
             Score some ideas first to see them in the priority matrix.
           </p>
-          <Button onClick={() => navigate('/industry/ideas/scoring')}>
+          <Button onClick={() => navigate('/producthub/ideas/scoring')}>
             Start Scoring
           </Button>
         </Card>

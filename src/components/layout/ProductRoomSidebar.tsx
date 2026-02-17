@@ -32,12 +32,12 @@ interface ProductRoomSidebarProps {
 
 // Ideas submenu items
 const IDEAS_MENU_ITEMS: SidebarMenuItem[] = [
-  { id: 'Ideas Hub', title: 'Ideas Hub', path: '/industry/ideas/hub', exact: true },
-  { id: 'All Ideas', title: 'All Ideas', path: '/industry/ideas/all', exact: false },
-  { id: 'Initiatives', title: 'Initiatives', path: '/industry/ideas/initiatives', exact: false },
-  { id: 'Priority Matrix', title: 'Priority Matrix', path: '/industry/ideas/matrix', exact: true },
-  { id: 'AI Insights', title: 'AI Insights', path: '/industry/ideas/insights', exact: true },
-  { id: 'Analytics', title: 'Analytics', path: '/industry/ideas/analytics', exact: true },
+  { id: 'Ideas Hub', title: 'Ideas Hub', path: '/producthub/ideas/hub', exact: true },
+  { id: 'All Ideas', title: 'All Ideas', path: '/producthub/ideas/all', exact: false },
+  { id: 'Initiatives', title: 'Initiatives', path: '/producthub/ideas/initiatives', exact: false },
+  { id: 'Priority Matrix', title: 'Priority Matrix', path: '/producthub/ideas/matrix', exact: true },
+  { id: 'AI Insights', title: 'AI Insights', path: '/producthub/ideas/insights', exact: true },
+  { id: 'Analytics', title: 'Analytics', path: '/producthub/ideas/analytics', exact: true },
 ];
 
 // Icons for Ideas submenu
@@ -59,7 +59,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
   const { isFavorite, toggleFavorite } = useFavorites();
   
   // Check if any Ideas route is active
-  const isIdeasRouteActive = location.pathname.includes('/industry/ideas') || 
+  const isIdeasRouteActive = location.pathname.includes('/producthub/ideas') || 
                               location.pathname.includes('/ideas/');
 
   // Check if specific item is active

@@ -146,7 +146,7 @@ export function BusinessScoreViewTab({ data, onChange, onDirtyChange, totalDeman
   const handleNavigateToFiltered = (filter: 'scored' | 'notScored') => {
     const programId = searchParams.get('programId');
     const separator = programId ? '&' : '?';
-    const baseUrl = programId ? `/industry?programId=${programId}` : '/industry';
+    const baseUrl = programId ? `/producthub?programId=${programId}` : '/producthub';
     navigate(`${baseUrl}${separator}scoringFilter=${filter}`);
   };
 

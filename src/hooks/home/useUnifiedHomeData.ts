@@ -149,16 +149,16 @@ function generateNavigation(
 
   if (context.industryView) {
     return {
-      path: `/industry/backlog?focusKey=${encodeURIComponent(key)}`,
-      fallbackPath: '/industry/backlog',
+      path: `/producthub?focusKey=${encodeURIComponent(key)}`,
+      fallbackPath: '/producthub',
       openBehavior: 'push',
     };
   }
 
-  // Default to industry backlog with focus
+  // Default to producthub with focus
   return {
-    path: `/industry/backlog?focusKey=${encodeURIComponent(key)}`,
-    fallbackPath: '/industry/backlog',
+    path: `/producthub?focusKey=${encodeURIComponent(key)}`,
+    fallbackPath: '/producthub',
     openBehavior: 'push',
   };
 }
