@@ -1,17 +1,18 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useInitiativesMock } from '@/hooks/useInitiativesMock';
 import { InitiativeToolbar } from '@/components/initiatives/InitiativeToolbar';
 import { InitiativeTable } from '@/components/initiatives/InitiativeTable';
 import { DetailPanel } from '@/components/initiatives/DetailPanel';
 import { BulkActionBar } from '@/components/initiatives/BulkActionBar';
 import { ContextMenu } from '@/components/initiatives/ContextMenu';
+import { Toaster, toast } from '@/components/ui/sonner';
 import type { Initiative, InitiativeStatus, Density, ViewMode } from '@/types/initiative';
 
 const TERMINAL_STATUSES: InitiativeStatus[] = ['delivered', 'closed', 'cancelled'];
 
 function applyQuickFilter(data: Initiative[], filter: string): Initiative[] {
   switch (filter) {
-    case 'my': return data.filter(i => i.assignee_name === 'Sarah Chen');
+    case 'my': return data.filter(i => ['Sarah K.', 'Fatima R.'].includes(i.assignee_name || ''));
     case 'quarter': return data.filter(i => i.target_quarter === 'Q1 2026');
     case 'high': return data.filter(i => i.computed_score !== null && i.computed_score >= 4.0);
     case 'unscored': return data.filter(i => i.computed_score === null);
@@ -41,13 +42,14 @@ export default function InitiativeListingPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [quickFilter, setQuickFilter] = useState('all');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [sorting, setSorting] = useState<{ id: string; desc: boolean }[]>([]);
 
-  // Detail panel state
   const [detailInitiative, setDetailInitiative] = useState<Initiative | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
 
-  // Context menu state
   const [contextMenu, setContextMenu] = useState<{ pos: { x: number; y: number }; initiative: Initiative } | null>(null);
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const allInitiatives = data?.data ?? [];
 
@@ -57,6 +59,23 @@ export default function InitiativeListingPage() {
     return result;
   }, [allInitiatives, quickFilter, searchQuery]);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (contextMenu) { setContextMenu(null); return; }
+        if (detailOpen) { setDetailOpen(false); return; }
+        if (selectedIds.length > 0) { setSelectedIds([]); return; }
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [contextMenu, detailOpen, selectedIds]);
+
   const handleRowClick = useCallback((initiative: Initiative) => {
     setDetailInitiative(initiative);
     setDetailOpen(true);
@@ -64,18 +83,20 @@ export default function InitiativeListingPage() {
 
   const handleStatusChange = useCallback((id: string, status: InitiativeStatus) => {
     console.log('Status change:', id, status);
+    toast.success(`Status updated to ${status.replace(/_/g, ' ')}`);
   }, []);
 
   const handleAssigneeChange = useCallback((id: string, assigneeId: string) => {
     console.log('Assignee change:', id, assigneeId);
+    toast.success('Assignee updated');
   }, []);
 
   const handleFavoriteToggle = useCallback((id: string, isFavorited: boolean) => {
     console.log('Favorite toggle:', id, isFavorited);
   }, []);
 
-  const handleSortChange = useCallback((sorting: { id: string; desc: boolean }[]) => {
-    console.log('Sort:', sorting);
+  const handleSortChange = useCallback((s: { id: string; desc: boolean }[]) => {
+    setSorting(s);
   }, []);
 
   const handleContextMenu = useCallback((e: React.MouseEvent, initiative: Initiative) => {
@@ -93,6 +114,10 @@ export default function InitiativeListingPage() {
       case 'change_status':
         handleStatusChange(init.id, value);
         break;
+      case 'copy_id':
+        navigator.clipboard.writeText(init.initiative_key);
+        toast.success('Copied!');
+        break;
       default:
         console.log('Context action:', action, value);
     }
@@ -100,18 +125,16 @@ export default function InitiativeListingPage() {
 
   const handleBulkAction = useCallback((action: string, value?: any) => {
     console.log('Bulk action:', action, selectedIds, value);
+    toast.success(`${selectedIds.length} items updated`);
   }, [selectedIds]);
-
-  const handleBulkCancel = useCallback(() => {
-    setSelectedIds([]);
-  }, []);
 
   const handleScoreSave = useCallback((id: string, scores: { strategic_alignment: number; business_impact: number; time_urgency: number; resource_feasibility: number }) => {
     console.log('Score save:', id, scores);
+    toast.success('Score saved');
   }, []);
 
   return (
-    <div className="p-6">
+    <div className="px-6 pt-4 pb-6">
       <InitiativeToolbar
         activeView={activeView}
         onViewChange={setActiveView}
@@ -124,28 +147,36 @@ export default function InitiativeListingPage() {
         filterCount={0}
         selectedCount={selectedIds.length}
         totalCount={filtered.length}
+        searchInputRef={searchInputRef}
       />
 
       {activeView === 'table' ? (
-        <InitiativeTable
-          data={filtered}
-          loading={isLoading}
-          density={density}
-          onRowClick={handleRowClick}
-          onStatusChange={handleStatusChange}
-          onAssigneeChange={handleAssigneeChange}
-          onFavoriteToggle={handleFavoriteToggle}
-          onSelectionChange={setSelectedIds}
-          onSortChange={handleSortChange}
-          onContextMenu={handleContextMenu}
-        />
+        <>
+          <InitiativeTable
+            data={filtered}
+            loading={isLoading}
+            density={density}
+            onRowClick={handleRowClick}
+            onStatusChange={handleStatusChange}
+            onAssigneeChange={handleAssigneeChange}
+            onFavoriteToggle={handleFavoriteToggle}
+            onSelectionChange={setSelectedIds}
+            onSortChange={handleSortChange}
+            onContextMenu={handleContextMenu}
+          />
+          <div className="h-11 flex items-center justify-between px-4 border-t border-zinc-200 text-xs text-zinc-500">
+            <span>Showing 1–{filtered.length} of {filtered.length}</span>
+          </div>
+        </>
       ) : (
-        <div className="flex items-center justify-center h-64 text-zinc-400 text-sm">
-          {activeView.charAt(0).toUpperCase() + activeView.slice(1)} View — Coming Soon
+        <div className="h-96 flex flex-col items-center justify-center gap-2 text-zinc-400">
+          <h3 className="text-base font-medium text-zinc-500">
+            {activeView.charAt(0).toUpperCase() + activeView.slice(1)} View
+          </h3>
+          <p className="text-sm">Coming Soon</p>
         </div>
       )}
 
-      {/* Detail Panel */}
       <DetailPanel
         initiative={detailInitiative}
         isOpen={detailOpen}
@@ -154,20 +185,20 @@ export default function InitiativeListingPage() {
         onScoreSave={handleScoreSave}
       />
 
-      {/* Bulk Action Bar */}
       <BulkActionBar
         selectedCount={selectedIds.length}
         onAction={handleBulkAction}
-        onCancel={handleBulkCancel}
+        onCancel={() => setSelectedIds([])}
       />
 
-      {/* Context Menu */}
       <ContextMenu
         position={contextMenu?.pos ?? null}
         initiative={contextMenu?.initiative ?? null}
         onAction={handleContextAction}
         onClose={() => setContextMenu(null)}
       />
+
+      <Toaster position="bottom-right" />
     </div>
   );
 }

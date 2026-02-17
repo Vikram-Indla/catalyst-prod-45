@@ -15,6 +15,7 @@ interface InitiativeToolbarProps {
   filterCount: number;
   selectedCount: number;
   totalCount: number;
+  searchInputRef?: React.RefObject<HTMLInputElement>;
 }
 
 const DENSITY_CYCLE: Density[] = ['standard', 'compact', 'comfortable'];
@@ -61,6 +62,7 @@ export function InitiativeToolbar({
   filterCount,
   selectedCount,
   totalCount,
+  searchInputRef,
 }: InitiativeToolbarProps) {
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
@@ -160,6 +162,7 @@ export function InitiativeToolbar({
           <div className="relative">
             <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" />
             <input
+              ref={searchInputRef}
               type="text"
               value={localSearch}
               onChange={(e) => handleSearchInput(e.target.value)}
