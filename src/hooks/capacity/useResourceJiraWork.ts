@@ -6,7 +6,7 @@
  */
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { startOfWeek, startOfMonth, subMonths, endOfMonth, format } from 'date-fns';
+import { startOfMonth, subMonths, endOfMonth, format } from 'date-fns';
 
 export interface JiraWorkItem {
   issue_key: string;
