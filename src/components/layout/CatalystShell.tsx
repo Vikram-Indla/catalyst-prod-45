@@ -84,8 +84,8 @@ function CatalystShellContent() {
   // Check if on PlanHub route
   const isPlanHubRoute = location.pathname.startsWith('/planhub');
   
-  // Check if on TaskHub route
-  const isTaskHubRoute = location.pathname.startsWith('/taskhub');
+  // Check if on TaskHub route (includes /priorities which is part of TaskHub)
+  const isTaskHubRoute = location.pathname.startsWith('/taskhub') || location.pathname.startsWith('/priorities');
   
   // Check if on TestHub route
   const isTestHubRoute = location.pathname.startsWith('/testhub');
