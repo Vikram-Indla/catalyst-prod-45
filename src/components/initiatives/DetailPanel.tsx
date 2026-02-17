@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Pencil, Paperclip, Copy, Link2, Target, Trash2 } from 'lucide-react';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
@@ -7,8 +7,6 @@ import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import { StatusBadge } from './StatusBadge';
 import { PriorityBadge } from './PriorityBadge';
 import { UserAvatar } from './UserAvatar';
-import { ProgressBar } from './ProgressBar';
-import { RelativeDate } from './RelativeDate';
 
 interface DetailPanelProps {
   initiative: Initiative | null;
@@ -29,20 +27,104 @@ const ACTION_BUTTONS = [
   { label: 'Score', icon: Target },
 ];
 
+/* ── V5 Spec: Avatar Colors (deterministic by first name) ── */
+const AVATAR_COLORS: Record<string, string> = {
+  'Sarah': '#6366f1',
+  'Ahmed': '#10b981',
+  'Fatima': '#ec4899',
+  'Omar': '#f97316',
+  'Layla': '#06b6d4',
+  'Khalid': '#8b5cf6',
+  'Nora': '#f43f5e',
+  'Mohammed': '#0d9488',
+};
+
+function getV5AvatarColor(name: string): string {
+  const firstName = name.split(' ')[0];
+  return AVATAR_COLORS[firstName] || '#6366f1';
+}
+
+function getInitials(name: string): string {
+  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+}
+
+/* ── V5 Spec: Inline Avatar (circle, white text) ── */
+function InlineAvatar({ name, size = 20 }: { name: string; size?: number }) {
+  const fontSize = size <= 20 ? 9 : size <= 24 ? 10 : size <= 28 ? 10 : 11;
+  return (
+    <div
+      className="rounded-full flex items-center justify-center text-white flex-shrink-0"
+      style={{
+        width: size,
+        height: size,
+        backgroundColor: getV5AvatarColor(name),
+        fontSize,
+        fontWeight: 600,
+        lineHeight: 1,
+      }}
+    >
+      {getInitials(name)}
+    </div>
+  );
+}
+
+/* ── V5 Spec: Field Label ── */
 function FieldLabel({ children }: { children: React.ReactNode }) {
-  return <div className="text-[11px] uppercase tracking-wider text-zinc-400/80 mb-1.5 font-medium">{children}</div>;
+  return (
+    <div style={{
+      fontSize: 11,
+      fontWeight: 500,
+      textTransform: 'uppercase' as const,
+      letterSpacing: '0.05em',
+      color: '#a1a1aa',
+      lineHeight: 1,
+      marginBottom: 4,
+    }}>
+      {children}
+    </div>
+  );
 }
 
+/* ── V5 Spec: Field Value ── */
 function FieldValue({ children }: { children: React.ReactNode }) {
-  return <div className="text-[14px] text-zinc-900 flex items-center gap-2">{children}</div>;
+  return (
+    <div style={{
+      fontSize: 13,
+      fontWeight: 400,
+      color: '#18181b',
+      lineHeight: 1.4,
+      display: 'flex',
+      alignItems: 'center',
+      gap: 6,
+    }}>
+      {children}
+    </div>
+  );
 }
 
+/* ── V5 Spec: Progress Bar (80px wide, 6px tall) ── */
+function DetailProgressBar({ value, status }: { value: number; status?: InitiativeStatus }) {
+  const clamped = Math.min(Math.max(value, 0), 100);
+  const fillColor = status === 'delivered' ? '#10b981' : '#2563eb';
+  return (
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ width: 80, height: 6, background: '#e4e4e7', borderRadius: 3, overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: `${clamped}%`, background: fillColor, borderRadius: 3 }} />
+      </div>
+      <span style={{ fontSize: 13, fontWeight: 500, color: '#18181b', fontVariantNumeric: 'tabular-nums' }}>
+        {clamped}%
+      </span>
+    </div>
+  );
+}
+
+/* ── V5 Spec: Radar Chart (160×160, SA/BI/TU/RF) ── */
 function RadarChart({ scores }: { scores: [number, number, number, number] }) {
   const size = 160;
   const cx = size / 2;
   const cy = size / 2;
   const r = 56;
-  const labels = ['Strategic', 'Impact', 'Urgency', 'Feasibility'];
+  const labels = ['SA', 'BI', 'TU', 'RF'];
   const angles = scores.map((_, i) => (Math.PI / 2) + (2 * Math.PI * i) / 4);
 
   const axisPoints = angles.map(a => ({ x: cx + r * Math.cos(a), y: cy - r * Math.sin(a) }));
@@ -53,17 +135,24 @@ function RadarChart({ scores }: { scores: [number, number, number, number] }) {
   const poly = dataPoints.map(p => `${p.x},${p.y}`).join(' ');
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="mx-auto">
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
       {[0.2, 0.4, 0.6, 0.8, 1].map((s, i) => (
         <polygon key={i} points={angles.map(a => `${cx + r * s * Math.cos(a)},${cy - r * s * Math.sin(a)}`).join(' ')} fill="none" stroke="#e4e4e7" strokeWidth="0.5" />
       ))}
       {axisPoints.map((p, i) => (
         <g key={i}>
           <line x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="#e4e4e7" strokeWidth="0.5" />
-          <text x={p.x + (p.x > cx ? 8 : p.x < cx ? -8 : 0)} y={p.y + (p.y > cy ? 14 : p.y < cy ? -6 : 0)} textAnchor="middle" className="fill-zinc-400 text-[9px]">{labels[i]}</text>
+          <text
+            x={p.x + (p.x > cx ? 8 : p.x < cx ? -8 : 0)}
+            y={p.y + (p.y > cy ? 14 : p.y < cy ? -6 : 0)}
+            textAnchor="middle"
+            style={{ fontSize: 9, fill: '#71717a' }}
+          >
+            {labels[i]}
+          </text>
         </g>
       ))}
-      <polygon points={poly} fill="rgba(37,99,235,0.12)" stroke="#2563eb" strokeWidth="1.5" />
+      <polygon points={poly} fill="rgba(37,99,235,0.10)" stroke="#2563eb" strokeWidth="1.5" />
       {dataPoints.map((p, i) => (
         <circle key={i} cx={p.x} cy={p.y} r="3" fill="#2563eb" />
       ))}
@@ -71,17 +160,23 @@ function RadarChart({ scores }: { scores: [number, number, number, number] }) {
   );
 }
 
+/* ── V5 Spec: Score Slider ── */
 function ScoreSlider({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
   const fillPercent = ((value - 1) / 4) * 100;
   return (
-    <div className="mb-5">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-[14px] font-medium text-zinc-800">{label}</span>
-        <span className="text-[14px] font-semibold text-zinc-900 tabular-nums">{value % 1 === 0 ? value : value.toFixed(1)}</span>
+    <div style={{ marginBottom: 28 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 12 }}>
+        <span style={{ fontSize: 13, fontWeight: 500, color: '#3f3f46' }}>{label}</span>
+        <span style={{ fontSize: 15, fontWeight: 700, color: '#18181b', fontVariantNumeric: 'tabular-nums', minWidth: 28, textAlign: 'right' }}>
+          {value % 1 === 0 ? value : value.toFixed(1)}
+        </span>
       </div>
-      <div className="relative w-full h-[6px]">
-        <div className="absolute inset-0 bg-zinc-200 rounded-full" />
-        <div className="absolute top-0 left-0 h-full bg-blue-600 rounded-full" style={{ width: `${fillPercent}%` }} />
+      <div style={{ position: 'relative', width: '100%', height: 28, display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+        {/* Rail */}
+        <div style={{ position: 'absolute', left: 0, right: 0, height: 6, background: '#e4e4e7', borderRadius: 3 }} />
+        {/* Fill */}
+        <div style={{ position: 'absolute', left: 0, height: 6, background: '#2563eb', borderRadius: 3, width: `${fillPercent}%`, pointerEvents: 'none' }} />
+        {/* Hidden input for interaction */}
         <input
           type="range"
           min="1"
@@ -89,18 +184,47 @@ function ScoreSlider({ label, value, onChange }: { label: string; value: number;
           step="0.5"
           value={value}
           onChange={(e) => onChange(parseFloat(e.target.value))}
-          className="absolute inset-0 w-full opacity-0 cursor-pointer z-10"
-          style={{ height: '24px', top: '-9px' }}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: 28, opacity: 0, cursor: 'pointer', zIndex: 10 }}
         />
-        <div
-          className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-blue-600 rounded-full shadow-sm pointer-events-none"
-          style={{ left: `calc(${fillPercent}% - 8px)` }}
-        />
+        {/* Thumb */}
+        <div style={{
+          position: 'absolute',
+          width: 18,
+          height: 18,
+          background: '#ffffff',
+          border: '2.5px solid #2563eb',
+          borderRadius: '50%',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+          transform: 'translateX(-50%)',
+          left: `${fillPercent}%`,
+          pointerEvents: 'none',
+          zIndex: 2,
+        }} />
       </div>
     </div>
   );
 }
 
+function formatAbsoluteDate(dateStr: string | null): string {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '—';
+  return format(d, 'MMM dd, yyyy');
+}
+
+const MOCK_COMMENTS: Record<string, { author: string; content: string; timeAgo: string }[]> = {
+  'MIM-001': [
+    { author: 'Ahmed M.', content: 'Reviewed the architecture proposal. Aligning with the cloud migration timeline is critical.', timeAgo: '2 days ago' },
+    { author: 'Sarah K.', content: "Agreed. I've updated the dependency map to reflect the Q1 milestones.", timeAgo: '1 day ago' },
+  ],
+  'MIM-002': [
+    { author: 'Ahmed M.', content: 'Migration plan finalized. Ready for stakeholder review.', timeAgo: '3 hours ago' },
+  ],
+};
+
+/* ════════════════════════════════════════════════════
+   MAIN DETAIL PANEL
+   ════════════════════════════════════════════════════ */
 export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onScoreSave }: DetailPanelProps) {
   const [activeTab, setActiveTab] = useState<Tab>('Details');
   const [scores, setScores] = useState({ sa: 3.0, bi: 3.0, tu: 3.0, rf: 3.0 });
@@ -134,52 +258,113 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* V5: Overlay — rgba(0,0,0,0.20), z-55 */}
           <motion.div
-            className="fixed inset-0 bg-black/15 z-40"
+            className="fixed inset-0 z-[55]"
+            style={{ background: 'rgba(0,0,0,0.20)' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            transition={{ duration: 0.2 }}
             onClick={onClose}
           />
-          {/* Panel */}
+          {/* V5: Drawer — 55%, min 560, max 840, z-60 */}
           <motion.div
             ref={panelRef}
-            className="fixed top-0 right-0 h-screen w-[55%] min-w-[500px] max-w-[720px] bg-white z-50 flex flex-col"
-            style={{ boxShadow: '-8px 0 24px rgba(0,0,0,0.12)' }}
+            className="fixed top-0 right-0 h-screen z-[60] flex flex-col overflow-hidden"
+            style={{
+              width: '55%',
+              maxWidth: 840,
+              minWidth: 560,
+              background: '#ffffff',
+              boxShadow: '-8px 0 24px rgba(0,0,0,0.12)',
+            }}
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
           >
-            {/* Header */}
-            <div className="p-5 pb-0 border-b border-zinc-200">
-              {/* Row 1: ID + Title + Status + Close */}
-              <div className="flex items-center gap-3 mb-3">
-                <span className="font-mono text-[12px] font-medium text-blue-600 bg-yellow-50 border border-yellow-200 px-2.5 py-1 rounded-md whitespace-nowrap flex-shrink-0">
+            {/* ── HEADER (flex-shrink: 0) ── */}
+            <div style={{ flexShrink: 0, padding: '20px 24px 0', background: '#ffffff' }}>
+
+              {/* Title Bar */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                <span style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: '#2563eb',
+                  background: '#eff6ff',
+                  border: '1px solid #bfdbfe',
+                  padding: '4px 10px',
+                  borderRadius: 6,
+                  flexShrink: 0,
+                  letterSpacing: '0.01em',
+                  lineHeight: 1,
+                }}>
                   {initiative.initiative_key}
                 </span>
-                <h2 className="text-[18px] font-semibold text-zinc-900 truncate flex-1 leading-snug">
+                <h2 style={{
+                  fontSize: 17,
+                  fontWeight: 600,
+                  color: '#18181b',
+                  lineHeight: 1.3,
+                  flex: 1,
+                  minWidth: 0,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  letterSpacing: '-0.01em',
+                  margin: 0,
+                }}>
                   {initiative.title}
                 </h2>
                 <StatusBadge status={initiative.status} />
                 <button
                   type="button"
                   onClick={onClose}
-                  className="w-8 h-8 flex items-center justify-center rounded-md text-zinc-400 hover:bg-zinc-100 hover:text-zinc-900 transition-colors flex-shrink-0"
+                  style={{
+                    width: 32,
+                    height: 32,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#a1a1aa',
+                    borderRadius: 6,
+                    flexShrink: 0,
+                    marginLeft: 'auto',
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = '#f4f4f5'; e.currentTarget.style.color = '#18181b'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#a1a1aa'; }}
                 >
-                  <X size={18} />
+                  <X size={16} />
                 </button>
               </div>
 
-              {/* Row 2: Actions */}
-              <div className="flex items-center gap-1 mb-3">
+              {/* Action Bar */}
+              <div style={{ display: 'flex', gap: 2, paddingBottom: 14, borderBottom: '1px solid #f4f4f5' }}>
                 {ACTION_BUTTONS.map(({ label, icon: Icon }) => (
                   <button
                     key={label}
                     type="button"
-                    className="h-[30px] px-2.5 flex items-center gap-1 text-xs text-zinc-600 rounded-md hover:bg-zinc-100 transition-colors"
+                    className="hover:bg-zinc-100"
+                    style={{
+                      height: 30,
+                      padding: '0 10px',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 5,
+                      fontSize: 12,
+                      fontWeight: 400,
+                      color: '#52525b',
+                      borderRadius: 6,
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                    }}
                   >
                     <Icon size={14} />
                     {label}
@@ -187,25 +372,48 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                 ))}
                 <button
                   type="button"
-                  className="h-[30px] px-2.5 flex items-center gap-1 text-xs text-red-600 rounded-md hover:bg-red-50 transition-colors ml-auto"
+                  className="hover:bg-red-50"
+                  style={{
+                    height: 30,
+                    padding: '0 10px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 5,
+                    fontSize: 12,
+                    fontWeight: 400,
+                    color: '#dc2626',
+                    borderRadius: 6,
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                    marginLeft: 'auto',
+                  }}
                 >
                   <Trash2 size={14} />
                   Delete
                 </button>
               </div>
 
-              {/* Row 3: Tabs */}
-              <div className="flex -mb-px">
+              {/* Tab Bar */}
+              <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #e4e4e7', margin: '14px -24px 0', padding: '0 24px' }}>
                 {TABS.map(tab => (
                   <button
                     key={tab}
                     type="button"
                     onClick={() => setActiveTab(tab)}
-                    className={`py-2.5 px-4 text-[14px] border-b-2 transition-colors ${
-                      activeTab === tab
-                        ? 'text-zinc-900 font-semibold border-blue-600'
-                        : 'text-zinc-400 hover:text-zinc-600 border-transparent'
-                    }`}
+                    style={{
+                      padding: '10px 14px',
+                      fontSize: 13,
+                      fontWeight: activeTab === tab ? 500 : 400,
+                      color: activeTab === tab ? '#18181b' : '#71717a',
+                      borderBottom: `2px solid ${activeTab === tab ? '#2563eb' : 'transparent'}`,
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      background: 'none',
+                      borderTop: 'none',
+                      borderLeft: 'none',
+                      borderRight: 'none',
+                    }}
                   >
                     {tab}
                   </button>
@@ -213,8 +421,8 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
               </div>
             </div>
 
-            {/* Body */}
-            <div className="flex-1 overflow-y-auto px-7 py-6">
+            {/* ── BODY (scrollable) ── */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
               {activeTab === 'Details' && (
                 <DetailsContent initiative={initiative} onStatusChange={onStatusChange} />
               )}
@@ -234,7 +442,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                 />
               )}
               {!['Details', 'Score'].includes(activeTab) && (
-                <div className="flex items-center justify-center h-48 text-zinc-400 text-sm">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 192, color: '#a1a1aa', fontSize: 13 }}>
                   {activeTab} — Coming Soon
                 </div>
               )}
@@ -246,83 +454,75 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
   );
 }
 
-function formatAbsoluteDate(dateStr: string | null): string {
-  if (!dateStr) return '—';
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return '—';
-  return format(d, 'MMM dd, yyyy');
-}
-
-const MOCK_COMMENTS: Record<string, { author: string; content: string; timeAgo: string }[]> = {
-  'MIM-001': [
-    { author: 'Ahmed M.', content: 'Reviewed the architecture proposal. Aligning with the cloud migration timeline is critical.', timeAgo: '2 days ago' },
-    { author: 'Sarah K.', content: "Agreed. I've updated the dependency map to reflect the Q1 milestones.", timeAgo: '1 day ago' },
-  ],
-  'MIM-002': [
-    { author: 'Ahmed M.', content: 'Migration plan finalized. Ready for stakeholder review.', timeAgo: '3 hours ago' },
-  ],
-};
-
+/* ════════════════════════════════════════════════════
+   DETAILS TAB
+   ════════════════════════════════════════════════════ */
 function DetailsContent({ initiative, onStatusChange }: { initiative: Initiative; onStatusChange: (id: string, s: InitiativeStatus) => void }) {
   const comments = MOCK_COMMENTS[initiative.initiative_key] || [];
-  const fields: [string, React.ReactNode][] = [
-    ['Status', <StatusBadge status={initiative.status} editable onChange={(s) => onStatusChange(initiative.id, s)} />],
-    ['EA Review', <span className="text-zinc-600">Not Required</span>],
-    ['Priority', <PriorityBadge score={initiative.computed_score} />],
-    ['Target Quarter', <span>{initiative.target_quarter || '—'}</span>],
-    ['Reporter', <UserAvatar name="Mohammed A." size={24} showName />],
-    ['Assignee', <UserAvatar name={initiative.assignee_name} size={24} showName />],
-    ['Department', <span>{initiative.department_name || '—'}</span>],
-    ['Business Owner', <UserAvatar name={initiative.business_owner_name} size={24} showName />],
-    ['Business Ask Date', <span className="text-zinc-600">{formatAbsoluteDate(initiative.business_ask_date)}</span>],
-    ['Kickoff Date', <span className="text-zinc-600">{formatAbsoluteDate(initiative.kickoff_date)}</span>],
-    ['Target Complete', <span className="text-zinc-600">{formatAbsoluteDate(initiative.target_complete)}</span>],
-    ['Progress', <ProgressBar value={initiative.progress} status={initiative.status} />],
-  ];
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-x-8 gap-y-5 pt-2">
-        {fields.map(([label, value]) => (
-          <div key={label as string}>
-            <FieldLabel>{label}</FieldLabel>
-            <FieldValue>{value}</FieldValue>
-          </div>
-        ))}
+      {/* Field Grid — V5: 2-col, 18px row-gap, 24px col-gap */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px 24px' }}>
+        <div><FieldLabel>Status</FieldLabel><FieldValue><StatusBadge status={initiative.status} editable onChange={(s) => onStatusChange(initiative.id, s)} /></FieldValue></div>
+        <div><FieldLabel>EA Review</FieldLabel><FieldValue>Not Required</FieldValue></div>
+        <div><FieldLabel>Priority</FieldLabel><FieldValue><PriorityBadge score={initiative.computed_score} /></FieldValue></div>
+        <div><FieldLabel>Target Quarter</FieldLabel><FieldValue>{initiative.target_quarter || '—'}</FieldValue></div>
+        <div><FieldLabel>Reporter</FieldLabel><FieldValue><InlineAvatar name="Mohammed A." size={20} /><span>Mohammed A.</span></FieldValue></div>
+        <div><FieldLabel>Assignee</FieldLabel><FieldValue>{initiative.assignee_name ? <><InlineAvatar name={initiative.assignee_name} size={20} /><span>{initiative.assignee_name}</span></> : <span style={{ color: '#a1a1aa', fontStyle: 'italic' }}>Unassigned</span>}</FieldValue></div>
+        <div><FieldLabel>Department</FieldLabel><FieldValue>{initiative.department_name || '—'}</FieldValue></div>
+        <div><FieldLabel>Business Owner</FieldLabel><FieldValue>{initiative.business_owner_name ? <><InlineAvatar name={initiative.business_owner_name} size={20} /><span>{initiative.business_owner_name}</span></> : '—'}</FieldValue></div>
+        <div><FieldLabel>Business Ask Date</FieldLabel><FieldValue>{formatAbsoluteDate(initiative.business_ask_date)}</FieldValue></div>
+        <div><FieldLabel>Kickoff Date</FieldLabel><FieldValue>{formatAbsoluteDate(initiative.kickoff_date)}</FieldValue></div>
+        <div><FieldLabel>Target Complete</FieldLabel><FieldValue>{formatAbsoluteDate(initiative.target_complete)}</FieldValue></div>
+        <div><FieldLabel>Progress</FieldLabel><FieldValue><DetailProgressBar value={initiative.progress} status={initiative.status} /></FieldValue></div>
       </div>
 
+      {/* Description — V5: mt 24px, 13px/1.65, zinc-600 */}
       {initiative.description && (
-        <div className="mt-8 pt-6 border-t border-zinc-100">
-          <h3 className="text-[15px] font-semibold text-zinc-900 mb-2">Description</h3>
-          <p className="text-[14px] leading-relaxed text-zinc-600">{initiative.description}</p>
+        <div style={{ marginTop: 24 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#18181b', marginBottom: 10, lineHeight: 1 }}>Description</div>
+          <p style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.65, color: '#52525b', margin: 0 }}>{initiative.description}</p>
         </div>
       )}
 
-      <div className="mt-8 pt-6 border-t border-zinc-100">
-        <h3 className="text-[15px] font-semibold text-zinc-900 mb-4">Comments ({comments.length})</h3>
-        {comments.length > 0 && (
-          <div className="space-y-5 mb-5">
-            {comments.map((c, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <UserAvatar name={c.author} size={36} showTooltip={false} />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-[14px] font-semibold text-zinc-900">{c.author}</span>
-                    <span className="text-[12px] text-zinc-400">{c.timeAgo}</span>
-                  </div>
-                  <p className="text-[14px] text-zinc-600 mt-1 leading-relaxed">{c.content}</p>
-                </div>
+      {/* Comments — V5: mt 24px */}
+      <div style={{ marginTop: 24 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: '#18181b', marginBottom: 10, lineHeight: 1 }}>
+          Comments ({comments.length})
+        </div>
+        {comments.map((c, i) => (
+          <div key={i} style={{ display: 'flex', gap: 10, padding: '12px 0', borderBottom: i < comments.length - 1 ? '1px solid #f4f4f5' : 'none' }}>
+            <InlineAvatar name={c.author} size={28} />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+                <span style={{ fontSize: 13, fontWeight: 500, color: '#18181b' }}>{c.author}</span>
+                <span style={{ fontSize: 11, fontWeight: 400, color: '#a1a1aa' }}>{c.timeAgo}</span>
               </div>
-            ))}
+              <p style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.5, color: '#52525b', margin: 0 }}>{c.content}</p>
+            </div>
           </div>
-        )}
-        {comments.length > 0 && <div className="border-t border-zinc-100 mb-4" />}
-        <div className="flex items-center gap-3">
-          <UserAvatar name="AK" size={36} showTooltip={false} />
+        ))}
+
+        {/* New comment input — V5: 36px h, 6px radius, zinc-200 border */}
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', paddingTop: 14 }}>
+          <InlineAvatar name="AK" size={28} />
           <input
             type="text"
             placeholder="Write a comment..."
-            className="flex-1 h-10 px-4 text-[14px] bg-white border border-zinc-200 rounded-lg outline-none placeholder:text-zinc-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
+            style={{
+              flex: 1,
+              height: 36,
+              border: '1px solid #e4e4e7',
+              borderRadius: 6,
+              padding: '0 12px',
+              fontSize: 13,
+              color: '#18181b',
+              outline: 'none',
+              background: 'transparent',
+            }}
+            onFocus={(e) => { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
+            onBlur={(e) => { e.target.style.borderColor = '#e4e4e7'; e.target.style.boxShadow = 'none'; }}
           />
         </div>
       </div>
@@ -330,8 +530,10 @@ function DetailsContent({ initiative, onStatusChange }: { initiative: Initiative
   );
 }
 
+/* ════════════════════════════════════════════════════
+   SCORE TAB
+   ════════════════════════════════════════════════════ */
 function ScoreContent({
-  initiative,
   scores,
   computedScore,
   priority,
@@ -346,9 +548,9 @@ function ScoreContent({
   onSave: () => void;
 }) {
   return (
-    <div className="flex gap-6 pt-2">
-      {/* Left: Sliders */}
-      <div className="flex-[3] min-w-0">
+    <div style={{ display: 'flex', gap: 24, minHeight: 400 }}>
+      {/* Left: Sliders (flex 3 ≈ 60%) */}
+      <div style={{ flex: 3, display: 'flex', flexDirection: 'column' }}>
         <ScoreSlider label="Strategic Alignment" value={scores.sa} onChange={(v) => onScoreChange({ ...scores, sa: v })} />
         <ScoreSlider label="Business Impact" value={scores.bi} onChange={(v) => onScoreChange({ ...scores, bi: v })} />
         <ScoreSlider label="Time & Urgency" value={scores.tu} onChange={(v) => onScoreChange({ ...scores, tu: v })} />
@@ -356,25 +558,66 @@ function ScoreContent({
         <button
           type="button"
           onClick={onSave}
-          className="w-full h-10 bg-blue-600 text-white text-[14px] font-semibold rounded-lg hover:bg-blue-700 transition-colors mt-3"
+          style={{
+            width: '100%',
+            height: 38,
+            background: '#2563eb',
+            color: '#ffffff',
+            fontSize: 13,
+            fontWeight: 500,
+            border: 'none',
+            borderRadius: 6,
+            cursor: 'pointer',
+            marginTop: 'auto',
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = '#1d4ed8'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = '#2563eb'; }}
         >
           Save Score
         </button>
       </div>
 
-      {/* Right: Summary */}
-      <div className="flex-[2] bg-zinc-50 rounded-xl p-6 flex flex-col items-center gap-2">
-        <div className="text-[48px] font-bold text-zinc-900 leading-none">{computedScore.toFixed(1)}</div>
-        <PriorityBadge score={computedScore} size="md" showScore={false} />
-        <div className="mt-2">
+      {/* Right: Summary (flex 2 ≈ 40%) — V5: zinc-50, border zinc-100, rounded 10px */}
+      <div style={{
+        flex: 2,
+        background: '#fafafa',
+        border: '1px solid #f4f4f5',
+        borderRadius: 10,
+        padding: '24px 20px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}>
+        {/* Big score */}
+        <div style={{
+          fontSize: 52,
+          fontWeight: 700,
+          color: '#18181b',
+          lineHeight: 1,
+          letterSpacing: '-0.02em',
+          fontVariantNumeric: 'tabular-nums',
+          marginBottom: 10,
+        }}>
+          {computedScore.toFixed(1)}
+        </div>
+
+        {/* Priority badge */}
+        <div style={{ marginBottom: 16 }}>
+          <PriorityBadge score={computedScore} size="md" showScore={false} />
+        </div>
+
+        {/* Radar chart */}
+        <div style={{ margin: '8px 0' }}>
           <RadarChart scores={[scores.sa, scores.bi, scores.tu, scores.rf]} />
         </div>
-        <div className="border-t border-zinc-200 w-full mt-2 pt-3">
-          <p className="text-[12px] text-zinc-500 text-center leading-relaxed">
-            {priority.level === 'High' && <>Score of {computedScore.toFixed(1)} falls in the <strong className="text-zinc-700">High</strong> range (4.0-5.0). This initiative is rated as high priority based on strong strategic alignment and significant business impact.</>}
-            {priority.level === 'Medium' && <>Score of {computedScore.toFixed(1)} falls in the <strong className="text-zinc-700">Medium</strong> range (3.0-3.9). This initiative has moderate priority with balanced scores across criteria.</>}
-            {priority.level === 'Low' && <>Score of {computedScore.toFixed(1)} falls in the <strong className="text-zinc-700">Low</strong> range (2.0-2.9). This initiative scores below the threshold for high prioritization.</>}
-            {priority.level === 'Rejected' && <>Score of {computedScore.toFixed(1)} falls in the <strong className="text-zinc-700">Rejected</strong> range (1.0-1.9). This initiative does not meet minimum priority thresholds.</>}
+
+        {/* Explanation */}
+        <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid #e4e4e7', width: '100%' }}>
+          <p style={{ fontSize: 12, fontWeight: 400, color: '#71717a', lineHeight: 1.55, textAlign: 'center', margin: 0 }}>
+            {priority.level === 'High' && <>Score of {computedScore.toFixed(1)} falls in the <strong style={{ color: '#3f3f46', fontWeight: 600 }}>High</strong> range (4.0-5.0). This initiative is rated as high priority based on strong strategic alignment and significant business impact.</>}
+            {priority.level === 'Medium' && <>Score of {computedScore.toFixed(1)} falls in the <strong style={{ color: '#3f3f46', fontWeight: 600 }}>Medium</strong> range (3.0-3.9). This initiative has moderate priority with balanced scores across criteria.</>}
+            {priority.level === 'Low' && <>Score of {computedScore.toFixed(1)} falls in the <strong style={{ color: '#3f3f46', fontWeight: 600 }}>Low</strong> range (2.0-2.9). This initiative scores below the threshold for high prioritization.</>}
+            {priority.level === 'Rejected' && <>Score of {computedScore.toFixed(1)} falls in the <strong style={{ color: '#3f3f46', fontWeight: 600 }}>Rejected</strong> range (1.0-1.9). This initiative does not meet minimum priority thresholds.</>}
             {priority.level === 'Unscored' && 'This initiative has not been scored yet.'}
           </p>
         </div>
