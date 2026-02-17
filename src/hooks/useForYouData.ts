@@ -122,6 +122,7 @@ function mapPlannerTaskToIssueRow(row: any) {
     jira_updated_at: row.updated_at,
     parent_key: null,
     parent_summary: null,
+    workstream_name: row.workstream_name || null,
   };
 }
 
@@ -135,7 +136,7 @@ function mapIssueToWorkItem(row: any, starredSet: Set<string>, projectNameMap: M
     summary: row.summary || '',
     mode: inferMode(projectKey, row.issue_type),
     level: row.issue_type || 'Task',
-    project: projectNameMap.get(projectKey) || projectKey,
+    project: row.workstream_name || projectNameMap.get(projectKey) || projectKey,
     issueType: row.issue_type || 'Task',
     updatedAt: row.jira_updated_at ? formatRelativeTime(row.jira_updated_at) : '-',
     assignee: {
@@ -265,6 +266,13 @@ export function useForYouData() {
             : { data: [] };
           const statusMap = new Map((statuses || []).map(s => [s.id, s.name]));
 
+          // Fetch workstream names
+          const wsIds = [...new Set(plannerRows.map(r => r.workstream_id).filter(Boolean))];
+          const { data: workstreams } = wsIds.length > 0
+            ? await supabase.from('planner_workstreams').select('id, name').in('id', wsIds)
+            : { data: [] };
+          const wsMap = new Map((workstreams || []).map(w => [w.id, w.name]));
+
           // Fetch assignee name
           const { data: profileData } = await supabase
             .from('profiles')
@@ -276,6 +284,7 @@ export function useForYouData() {
             ...row,
             assignee_name: profileData?.full_name || 'Unassigned',
             status_name: statusMap.get(row.status_id) || 'Backlog',
+            workstream_name: wsMap.get(row.workstream_id) || null,
           }));
         }
 
