@@ -30,19 +30,19 @@ const ACTION_BUTTONS = [
 ];
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
-  return <div className="text-[11px] uppercase tracking-wider text-zinc-400 mb-1">{children}</div>;
+  return <div className="text-[11px] uppercase tracking-wider text-zinc-400/80 mb-1.5 font-medium">{children}</div>;
 }
 
 function FieldValue({ children }: { children: React.ReactNode }) {
-  return <div className="text-[13px] text-zinc-900 flex items-center gap-1.5">{children}</div>;
+  return <div className="text-[14px] text-zinc-900 flex items-center gap-2">{children}</div>;
 }
 
 function RadarChart({ scores }: { scores: [number, number, number, number] }) {
-  const size = 140;
+  const size = 160;
   const cx = size / 2;
   const cy = size / 2;
-  const r = 52;
-  const labels = ['SA', 'BI', 'TU', 'RF'];
+  const r = 56;
+  const labels = ['Strategic', 'Impact', 'Urgency', 'Feasibility'];
   const angles = scores.map((_, i) => (Math.PI / 2) + (2 * Math.PI * i) / 4);
 
   const axisPoints = angles.map(a => ({ x: cx + r * Math.cos(a), y: cy - r * Math.sin(a) }));
@@ -60,7 +60,7 @@ function RadarChart({ scores }: { scores: [number, number, number, number] }) {
       {axisPoints.map((p, i) => (
         <g key={i}>
           <line x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="#e4e4e7" strokeWidth="0.5" />
-          <text x={p.x + (p.x > cx ? 6 : p.x < cx ? -6 : 0)} y={p.y + (p.y > cy ? 12 : p.y < cy ? -4 : 0)} textAnchor="middle" className="fill-zinc-400 text-[9px]">{labels[i]}</text>
+          <text x={p.x + (p.x > cx ? 8 : p.x < cx ? -8 : 0)} y={p.y + (p.y > cy ? 14 : p.y < cy ? -6 : 0)} textAnchor="middle" className="fill-zinc-400 text-[9px]">{labels[i]}</text>
         </g>
       ))}
       <polygon points={poly} fill="rgba(37,99,235,0.12)" stroke="#2563eb" strokeWidth="1.5" />
@@ -72,24 +72,31 @@ function RadarChart({ scores }: { scores: [number, number, number, number] }) {
 }
 
 function ScoreSlider({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
+  const fillPercent = ((value - 1) / 4) * 100;
   return (
     <div className="mb-5">
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[13px] font-medium text-zinc-700">{label}</span>
-        <span className="text-sm font-semibold text-zinc-900">{value.toFixed(1)}</span>
+        <span className="text-[14px] font-medium text-zinc-800">{label}</span>
+        <span className="text-[14px] font-semibold text-zinc-900 tabular-nums">{value % 1 === 0 ? value : value.toFixed(1)}</span>
       </div>
-      <input
-        type="range"
-        min="1"
-        max="5"
-        step="0.5"
-        value={value}
-        onChange={(e) => onChange(parseFloat(e.target.value))}
-        className="w-full h-1.5 bg-zinc-200 rounded-full appearance-none cursor-pointer
-          [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4
-          [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2
-          [&::-webkit-slider-thumb]:border-blue-600 [&::-webkit-slider-thumb]:shadow-sm [&::-webkit-slider-thumb]:cursor-pointer"
-      />
+      <div className="relative w-full h-[6px]">
+        <div className="absolute inset-0 bg-zinc-200 rounded-full" />
+        <div className="absolute top-0 left-0 h-full bg-blue-600 rounded-full" style={{ width: `${fillPercent}%` }} />
+        <input
+          type="range"
+          min="1"
+          max="5"
+          step="0.5"
+          value={value}
+          onChange={(e) => onChange(parseFloat(e.target.value))}
+          className="absolute inset-0 w-full opacity-0 cursor-pointer z-10"
+          style={{ height: '24px', top: '-9px' }}
+        />
+        <div
+          className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-blue-600 rounded-full shadow-sm pointer-events-none"
+          style={{ left: `calc(${fillPercent}% - 8px)` }}
+        />
+      </div>
     </div>
   );
 }
@@ -148,14 +155,15 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
           >
             {/* Header */}
             <div className="p-5 pb-0 border-b border-zinc-200">
-              {/* Row 1: ID + Title + Close */}
-              <div className="flex items-start gap-3 mb-3">
-                <span className="font-mono text-[12px] font-medium text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md whitespace-nowrap flex-shrink-0">
+              {/* Row 1: ID + Title + Status + Close */}
+              <div className="flex items-center gap-3 mb-3">
+                <span className="font-mono text-[12px] font-medium text-blue-600 bg-yellow-50 border border-yellow-200 px-2.5 py-1 rounded-md whitespace-nowrap flex-shrink-0">
                   {initiative.initiative_key}
                 </span>
-                <h2 className="text-lg font-semibold text-zinc-900 truncate flex-1 leading-snug pt-0.5">
+                <h2 className="text-[18px] font-semibold text-zinc-900 truncate flex-1 leading-snug">
                   {initiative.title}
                 </h2>
+                <StatusBadge status={initiative.status} />
                 <button
                   type="button"
                   onClick={onClose}
@@ -187,16 +195,16 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
               </div>
 
               {/* Row 3: Tabs */}
-              <div className="flex border-b border-zinc-200 -mb-px">
+              <div className="flex -mb-px">
                 {TABS.map(tab => (
                   <button
                     key={tab}
                     type="button"
                     onClick={() => setActiveTab(tab)}
-                    className={`py-2 px-4 text-[13px] border-b-2 transition-colors ${
+                    className={`py-2.5 px-4 text-[14px] border-b-2 transition-colors ${
                       activeTab === tab
-                        ? 'text-zinc-900 font-medium border-blue-600'
-                        : 'text-zinc-500 hover:text-zinc-700 border-transparent'
+                        ? 'text-zinc-900 font-semibold border-blue-600'
+                        : 'text-zinc-400 hover:text-zinc-600 border-transparent'
                     }`}
                   >
                     {tab}
@@ -206,7 +214,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto p-5">
+            <div className="flex-1 overflow-y-auto px-7 py-6">
               {activeTab === 'Details' && (
                 <DetailsContent initiative={initiative} onStatusChange={onStatusChange} />
               )}
@@ -274,7 +282,7 @@ function DetailsContent({ initiative, onStatusChange }: { initiative: Initiative
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+      <div className="grid grid-cols-2 gap-x-8 gap-y-5 pt-2">
         {fields.map(([label, value]) => (
           <div key={label as string}>
             <FieldLabel>{label}</FieldLabel>
@@ -284,36 +292,37 @@ function DetailsContent({ initiative, onStatusChange }: { initiative: Initiative
       </div>
 
       {initiative.description && (
-        <div className="mt-6">
-          <h3 className="text-[13px] font-semibold text-zinc-900 mb-2">Description</h3>
-          <p className="text-[13px] leading-relaxed text-zinc-700">{initiative.description}</p>
+        <div className="mt-8 pt-6 border-t border-zinc-100">
+          <h3 className="text-[15px] font-semibold text-zinc-900 mb-2">Description</h3>
+          <p className="text-[14px] leading-relaxed text-zinc-600">{initiative.description}</p>
         </div>
       )}
 
-      <div className="mt-6">
-        <h3 className="text-[13px] font-semibold text-zinc-900 mb-3">Comments ({comments.length})</h3>
+      <div className="mt-8 pt-6 border-t border-zinc-100">
+        <h3 className="text-[15px] font-semibold text-zinc-900 mb-4">Comments ({comments.length})</h3>
         {comments.length > 0 && (
-          <div className="space-y-4 mb-4">
+          <div className="space-y-5 mb-5">
             {comments.map((c, i) => (
-              <div key={i} className="flex items-start gap-2">
-                <UserAvatar name={c.author} size={28} showTooltip={false} />
+              <div key={i} className="flex items-start gap-3">
+                <UserAvatar name={c.author} size={36} showTooltip={false} />
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[13px] font-medium text-zinc-900">{c.author}</span>
-                    <span className="text-[11px] text-zinc-400">{c.timeAgo}</span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-[14px] font-semibold text-zinc-900">{c.author}</span>
+                    <span className="text-[12px] text-zinc-400">{c.timeAgo}</span>
                   </div>
-                  <p className="text-[13px] text-zinc-700 mt-0.5 leading-relaxed">{c.content}</p>
+                  <p className="text-[14px] text-zinc-600 mt-1 leading-relaxed">{c.content}</p>
                 </div>
               </div>
             ))}
           </div>
         )}
-        <div className="flex items-start gap-2">
-          <UserAvatar name="Current User" size={28} showTooltip={false} />
+        {comments.length > 0 && <div className="border-t border-zinc-100 mb-4" />}
+        <div className="flex items-center gap-3">
+          <UserAvatar name="AK" size={36} showTooltip={false} />
           <input
             type="text"
-            placeholder="Write a comment…"
-            className="flex-1 h-9 px-3 text-[13px] bg-zinc-50 border border-zinc-200 rounded-md outline-none placeholder:text-zinc-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
+            placeholder="Write a comment..."
+            className="flex-1 h-10 px-4 text-[14px] bg-white border border-zinc-200 rounded-lg outline-none placeholder:text-zinc-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
           />
         </div>
       </div>
@@ -337,34 +346,38 @@ function ScoreContent({
   onSave: () => void;
 }) {
   return (
-    <div className="flex gap-6">
+    <div className="flex gap-6 pt-2">
       {/* Left: Sliders */}
       <div className="flex-[3] min-w-0">
         <ScoreSlider label="Strategic Alignment" value={scores.sa} onChange={(v) => onScoreChange({ ...scores, sa: v })} />
         <ScoreSlider label="Business Impact" value={scores.bi} onChange={(v) => onScoreChange({ ...scores, bi: v })} />
-        <ScoreSlider label="Time Urgency" value={scores.tu} onChange={(v) => onScoreChange({ ...scores, tu: v })} />
-        <ScoreSlider label="Resource Feasibility" value={scores.rf} onChange={(v) => onScoreChange({ ...scores, rf: v })} />
+        <ScoreSlider label="Time & Urgency" value={scores.tu} onChange={(v) => onScoreChange({ ...scores, tu: v })} />
+        <ScoreSlider label="Resource & Feasibility" value={scores.rf} onChange={(v) => onScoreChange({ ...scores, rf: v })} />
         <button
           type="button"
           onClick={onSave}
-          className="w-full h-9 bg-blue-600 text-white text-[13px] font-medium rounded-md hover:bg-blue-700 transition-colors mt-2"
+          className="w-full h-10 bg-blue-600 text-white text-[14px] font-semibold rounded-lg hover:bg-blue-700 transition-colors mt-3"
         >
           Save Score
         </button>
       </div>
 
       {/* Right: Summary */}
-      <div className="flex-[2] bg-zinc-50 rounded-lg p-5 flex flex-col items-center gap-3">
-        <div className="text-5xl font-bold text-zinc-900">{computedScore.toFixed(1)}</div>
-        <PriorityBadge score={computedScore} size="md" />
-        <RadarChart scores={[scores.sa, scores.bi, scores.tu, scores.rf]} />
-        <p className="text-[12px] text-zinc-600 text-center leading-relaxed mt-1">
-          {priority.level === 'High' && `Score of ${computedScore.toFixed(1)} falls in the High range (4.0-5.0). This initiative is rated as high priority based on strong strategic alignment and significant business impact.`}
-          {priority.level === 'Medium' && `Score of ${computedScore.toFixed(1)} falls in the Medium range (3.0-3.9). This initiative has moderate priority with balanced scores across criteria.`}
-          {priority.level === 'Low' && `Score of ${computedScore.toFixed(1)} falls in the Low range (2.0-2.9). This initiative scores below the threshold for high prioritization.`}
-          {priority.level === 'Rejected' && `Score of ${computedScore.toFixed(1)} falls in the Rejected range (1.0-1.9). This initiative does not meet minimum priority thresholds.`}
-          {priority.level === 'Unscored' && 'This initiative has not been scored yet.'}
-        </p>
+      <div className="flex-[2] bg-zinc-50 rounded-xl p-6 flex flex-col items-center gap-2">
+        <div className="text-[48px] font-bold text-zinc-900 leading-none">{computedScore.toFixed(1)}</div>
+        <PriorityBadge score={computedScore} size="md" showScore={false} />
+        <div className="mt-2">
+          <RadarChart scores={[scores.sa, scores.bi, scores.tu, scores.rf]} />
+        </div>
+        <div className="border-t border-zinc-200 w-full mt-2 pt-3">
+          <p className="text-[12px] text-zinc-500 text-center leading-relaxed">
+            {priority.level === 'High' && <>Score of {computedScore.toFixed(1)} falls in the <strong className="text-zinc-700">High</strong> range (4.0-5.0). This initiative is rated as high priority based on strong strategic alignment and significant business impact.</>}
+            {priority.level === 'Medium' && <>Score of {computedScore.toFixed(1)} falls in the <strong className="text-zinc-700">Medium</strong> range (3.0-3.9). This initiative has moderate priority with balanced scores across criteria.</>}
+            {priority.level === 'Low' && <>Score of {computedScore.toFixed(1)} falls in the <strong className="text-zinc-700">Low</strong> range (2.0-2.9). This initiative scores below the threshold for high prioritization.</>}
+            {priority.level === 'Rejected' && <>Score of {computedScore.toFixed(1)} falls in the <strong className="text-zinc-700">Rejected</strong> range (1.0-1.9). This initiative does not meet minimum priority thresholds.</>}
+            {priority.level === 'Unscored' && 'This initiative has not been scored yet.'}
+          </p>
+        </div>
       </div>
     </div>
   );
