@@ -185,10 +185,9 @@
    ═══════════════════════════════════════════════════════════════════ */
 .form-panel-v10 {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   padding: 2rem 2.5rem;
-  padding-top: clamp(3rem, 8vh, 6rem);
   background: #fff;
   overflow-y: auto;
 }
