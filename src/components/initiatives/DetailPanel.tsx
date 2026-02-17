@@ -7,6 +7,18 @@ import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import { StatusBadge } from './StatusBadge';
 import { PriorityBadge } from './PriorityBadge';
 import { UserAvatar } from './UserAvatar';
+import { formatShortName } from '@/lib/format-name';
+import { showSuccess, showInfo } from '@/lib/toast-helpers';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface DetailPanelProps {
   initiative: Initiative | null;
@@ -19,14 +31,6 @@ interface DetailPanelProps {
 const TABS = ['Details', 'Score', 'Budget', 'Risks', 'Milestones', 'Links', 'Audit'] as const;
 type Tab = typeof TABS[number];
 
-const ACTION_BUTTONS = [
-  { label: 'Edit', icon: Pencil },
-  { label: 'Attach', icon: Paperclip },
-  { label: 'Clone', icon: Copy },
-  { label: 'Link', icon: Link2 },
-  { label: 'Score', icon: Target },
-];
-
 /* ── V5 Spec: Avatar Colors (deterministic by first name) ── */
 const AVATAR_COLORS: Record<string, string> = {
   'Sarah': '#6366f1',
@@ -37,6 +41,12 @@ const AVATAR_COLORS: Record<string, string> = {
   'Khalid': '#8b5cf6',
   'Nora': '#f43f5e',
   'Mohammed': '#0d9488',
+  'Ahmad': '#0d9488',
+  'Amira': '#6366f1',
+  'Tariq': '#f97316',
+  'Salman': '#10b981',
+  'Mansour': '#8b5cf6',
+  'Waleed': '#06b6d4',
 };
 
 function getV5AvatarColor(name: string): string {
@@ -172,11 +182,8 @@ function ScoreSlider({ label, value, onChange }: { label: string; value: number;
         </span>
       </div>
       <div style={{ position: 'relative', width: '100%', height: 28, display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-        {/* Rail */}
         <div style={{ position: 'absolute', left: 0, right: 0, height: 6, background: '#e4e4e7', borderRadius: 3 }} />
-        {/* Fill */}
         <div style={{ position: 'absolute', left: 0, height: 6, background: '#2563eb', borderRadius: 3, width: `${fillPercent}%`, pointerEvents: 'none' }} />
-        {/* Hidden input for interaction */}
         <input
           type="range"
           min="1"
@@ -186,7 +193,6 @@ function ScoreSlider({ label, value, onChange }: { label: string; value: number;
           onChange={(e) => onChange(parseFloat(e.target.value))}
           style={{ position: 'absolute', inset: 0, width: '100%', height: 28, opacity: 0, cursor: 'pointer', zIndex: 10 }}
         />
-        {/* Thumb */}
         <div style={{
           position: 'absolute',
           width: 18,
@@ -209,7 +215,7 @@ function formatAbsoluteDate(dateStr: string | null): string {
   if (!dateStr) return '—';
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return '—';
-  return format(d, 'MMM dd, yyyy');
+  return format(d, 'MMM d, yyyy');
 }
 
 const MOCK_COMMENTS: Record<string, { author: string; content: string; timeAgo: string }[]> = {
@@ -228,6 +234,7 @@ const MOCK_COMMENTS: Record<string, { author: string; content: string; timeAgo: 
 export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onScoreSave }: DetailPanelProps) {
   const [activeTab, setActiveTab] = useState<Tab>('Details');
   const [scores, setScores] = useState({ sa: 3.0, bi: 3.0, tu: 3.0, rf: 3.0 });
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -254,103 +261,140 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 
   if (!initiative) return null;
 
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* V5: Overlay — rgba(0,0,0,0.20), z-55 */}
-          <motion.div
-            className="fixed inset-0 z-[55]"
-            style={{ background: 'rgba(0,0,0,0.20)' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={onClose}
-          />
-          {/* V5: Drawer — 55%, min 560, max 840, z-60 */}
-          <motion.div
-            ref={panelRef}
-            className="fixed top-0 right-0 h-screen z-[60] flex flex-col overflow-hidden"
-            style={{
-              width: '55%',
-              maxWidth: 840,
-              minWidth: 560,
-              background: '#ffffff',
-              boxShadow: '-8px 0 24px rgba(0,0,0,0.12)',
-            }}
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-          >
-            {/* ── HEADER (flex-shrink: 0) ── */}
-            <div style={{ flexShrink: 0, padding: '20px 24px 0', background: '#ffffff' }}>
+  const handleActionClick = (label: string) => {
+    switch (label) {
+      case 'Edit':
+        showInfo('Edit mode coming soon');
+        break;
+      case 'Attach':
+        showInfo('Attachments coming soon');
+        break;
+      case 'Clone':
+        showSuccess('Initiative cloned successfully');
+        break;
+      case 'Link':
+        showInfo('Link management coming soon');
+        break;
+      case 'Score':
+        setActiveTab('Score');
+        panelRef.current?.querySelector('[data-body]')?.scrollTo(0, 0);
+        break;
+    }
+  };
 
-              {/* Title Bar */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                <span style={{
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: 12,
-                  fontWeight: 500,
-                  color: '#2563eb',
-                  background: '#eff6ff',
-                  border: '1px solid #bfdbfe',
-                  padding: '4px 10px',
-                  borderRadius: 6,
-                  flexShrink: 0,
-                  letterSpacing: '0.01em',
-                  lineHeight: 1,
-                }}>
-                  {initiative.initiative_key}
-                </span>
-                <h2 style={{
-                  fontSize: 17,
-                  fontWeight: 600,
-                  color: '#18181b',
-                  lineHeight: 1.3,
-                  flex: 1,
-                  minWidth: 0,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  letterSpacing: '-0.01em',
-                  margin: 0,
-                }}>
-                  {initiative.title}
-                </h2>
-                <StatusBadge status={initiative.status} />
-                <button
-                  type="button"
-                  onClick={onClose}
-                  style={{
-                    width: 32,
-                    height: 32,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#a1a1aa',
+  const ACTION_BUTTONS = [
+    { label: 'Edit', icon: Pencil },
+    { label: 'Attach', icon: Paperclip },
+    { label: 'Clone', icon: Copy },
+    { label: 'Link', icon: Link2 },
+    { label: 'Score', icon: Target },
+  ];
+
+  return (
+    <>
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            {/* V5: Overlay */}
+            <motion.div
+              className="fixed inset-0 z-[55]"
+              style={{ background: 'rgba(0,0,0,0.20)' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={onClose}
+            />
+            {/* V5: Drawer */}
+            <motion.div
+              ref={panelRef}
+              className="fixed top-0 right-0 h-screen z-[60] flex flex-col overflow-hidden"
+              style={{
+                width: '55%',
+                maxWidth: 840,
+                minWidth: 560,
+                background: '#ffffff',
+                boxShadow: '-8px 0 24px rgba(0,0,0,0.12)',
+              }}
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
+            >
+              {/* ── HEADER ── */}
+              <div style={{ flexShrink: 0, padding: '20px 24px 0', background: '#ffffff' }}>
+                {/* Title Bar */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                  <span style={{
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: 12,
+                    fontWeight: 500,
+                    color: '#2563eb',
+                    background: '#eff6ff',
+                    border: '1px solid #bfdbfe',
+                    padding: '4px 10px',
                     borderRadius: 6,
                     flexShrink: 0,
-                    marginLeft: 'auto',
-                    border: 'none',
-                    background: 'none',
-                    cursor: 'pointer',
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = '#f4f4f5'; e.currentTarget.style.color = '#18181b'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#a1a1aa'; }}
-                >
-                  <X size={16} />
-                </button>
-              </div>
-
-              {/* Action Bar */}
-              <div style={{ display: 'flex', gap: 2, paddingBottom: 14, borderBottom: '1px solid #f4f4f5' }}>
-                {ACTION_BUTTONS.map(({ label, icon: Icon }) => (
+                    letterSpacing: '0.01em',
+                    lineHeight: 1,
+                  }}>
+                    {initiative.initiative_key}
+                  </span>
+                  <h2 style={{
+                    fontSize: 17,
+                    fontWeight: 600,
+                    color: '#18181b',
+                    lineHeight: 1.3,
+                    flex: 1,
+                    minWidth: 0,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    letterSpacing: '-0.01em',
+                    margin: 0,
+                  }}>
+                    {initiative.title}
+                  </h2>
+                  <StatusBadge status={initiative.status} />
                   <button
-                    key={label}
                     type="button"
-                    className="hover:bg-zinc-100"
+                    onClick={onClose}
+                    className="w-8 h-8 inline-flex items-center justify-center text-zinc-400 rounded-md hover:bg-zinc-100 hover:text-zinc-900 flex-shrink-0 cursor-pointer transition-colors"
+                    style={{ border: 'none', background: 'none', marginLeft: 'auto' }}
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+
+                {/* Action Bar */}
+                <div style={{ display: 'flex', gap: 2, paddingBottom: 14, borderBottom: '1px solid #f4f4f5' }}>
+                  {ACTION_BUTTONS.map(({ label, icon: Icon }) => (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() => handleActionClick(label)}
+                      className="hover:bg-zinc-100 rounded-md transition-colors cursor-pointer"
+                      style={{
+                        height: 30,
+                        padding: '0 10px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 5,
+                        fontSize: 12,
+                        fontWeight: 400,
+                        color: '#52525b',
+                        border: 'none',
+                        background: 'none',
+                      }}
+                    >
+                      <Icon size={14} />
+                      {label}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setShowDeleteDialog(true)}
+                    className="hover:bg-red-50 rounded-md transition-colors cursor-pointer"
                     style={{
                       height: 30,
                       padding: '0 10px',
@@ -359,98 +403,102 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                       gap: 5,
                       fontSize: 12,
                       fontWeight: 400,
-                      color: '#52525b',
-                      borderRadius: 6,
+                      color: '#dc2626',
                       border: 'none',
                       background: 'none',
-                      cursor: 'pointer',
+                      marginLeft: 'auto',
                     }}
                   >
-                    <Icon size={14} />
-                    {label}
+                    <Trash2 size={14} />
+                    Delete
                   </button>
-                ))}
-                <button
-                  type="button"
-                  className="hover:bg-red-50"
-                  style={{
-                    height: 30,
-                    padding: '0 10px',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 5,
-                    fontSize: 12,
-                    fontWeight: 400,
-                    color: '#dc2626',
-                    borderRadius: 6,
-                    border: 'none',
-                    background: 'none',
-                    cursor: 'pointer',
-                    marginLeft: 'auto',
-                  }}
-                >
-                  <Trash2 size={14} />
-                  Delete
-                </button>
-              </div>
-
-              {/* Tab Bar */}
-              <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #e4e4e7', margin: '14px -24px 0', padding: '0 24px' }}>
-                {TABS.map(tab => (
-                  <button
-                    key={tab}
-                    type="button"
-                    onClick={() => setActiveTab(tab)}
-                    style={{
-                      padding: '10px 14px',
-                      fontSize: 13,
-                      fontWeight: activeTab === tab ? 500 : 400,
-                      color: activeTab === tab ? '#18181b' : '#71717a',
-                      borderBottom: `2px solid ${activeTab === tab ? '#2563eb' : 'transparent'}`,
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      background: 'none',
-                      borderTop: 'none',
-                      borderLeft: 'none',
-                      borderRight: 'none',
-                    }}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* ── BODY (scrollable) ── */}
-            <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
-              {activeTab === 'Details' && (
-                <DetailsContent initiative={initiative} onStatusChange={onStatusChange} />
-              )}
-              {activeTab === 'Score' && (
-                <ScoreContent
-                  initiative={initiative}
-                  scores={scores}
-                  computedScore={computedScore}
-                  priority={priority}
-                  onScoreChange={setScores}
-                  onSave={() => onScoreSave(initiative.id, {
-                    strategic_alignment: scores.sa,
-                    business_impact: scores.bi,
-                    time_urgency: scores.tu,
-                    resource_feasibility: scores.rf,
-                  })}
-                />
-              )}
-              {!['Details', 'Score'].includes(activeTab) && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 192, color: '#a1a1aa', fontSize: 13 }}>
-                  {activeTab} — Coming Soon
                 </div>
-              )}
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+
+                {/* Tab Bar */}
+                <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #e4e4e7', margin: '14px -24px 0', padding: '0 24px' }}>
+                  {TABS.map(tab => (
+                    <button
+                      key={tab}
+                      type="button"
+                      onClick={() => setActiveTab(tab)}
+                      style={{
+                        padding: '10px 14px',
+                        fontSize: 13,
+                        fontWeight: activeTab === tab ? 500 : 400,
+                        color: activeTab === tab ? '#18181b' : '#71717a',
+                        borderBottom: `2px solid ${activeTab === tab ? '#2563eb' : 'transparent'}`,
+                        cursor: 'pointer',
+                        whiteSpace: 'nowrap',
+                        background: 'none',
+                        borderTop: 'none',
+                        borderLeft: 'none',
+                        borderRight: 'none',
+                      }}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── BODY (scrollable) ── */}
+              <div data-body style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
+                {activeTab === 'Details' && (
+                  <DetailsContent initiative={initiative} onStatusChange={onStatusChange} />
+                )}
+                {activeTab === 'Score' && (
+                  <ScoreContent
+                    initiative={initiative}
+                    scores={scores}
+                    computedScore={computedScore}
+                    priority={priority}
+                    onScoreChange={setScores}
+                    onSave={() => onScoreSave(initiative.id, {
+                      strategic_alignment: scores.sa,
+                      business_impact: scores.bi,
+                      time_urgency: scores.tu,
+                      resource_feasibility: scores.rf,
+                    })}
+                  />
+                )}
+                {!['Details', 'Score'].includes(activeTab) && (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 192, color: '#a1a1aa', fontSize: 13 }}>
+                    {activeTab} — Coming Soon
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Initiative</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{initiative?.title}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="text-zinc-700 bg-white border border-zinc-300 hover:bg-zinc-50 px-4 h-9 rounded-md">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="text-white bg-red-600 hover:bg-red-700 px-4 h-9 rounded-md"
+              onClick={() => {
+                setShowDeleteDialog(false);
+                showSuccess('Initiative deleted');
+                onClose();
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
 
@@ -466,19 +514,19 @@ function DetailsContent({ initiative, onStatusChange }: { initiative: Initiative
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px 24px' }}>
         <div><FieldLabel>Status</FieldLabel><FieldValue><StatusBadge status={initiative.status} editable onChange={(s) => onStatusChange(initiative.id, s)} /></FieldValue></div>
         <div><FieldLabel>EA Review</FieldLabel><FieldValue>Not Required</FieldValue></div>
-        <div><FieldLabel>Priority</FieldLabel><FieldValue><PriorityBadge score={initiative.computed_score} /></FieldValue></div>
+        <div><FieldLabel>Priority</FieldLabel><FieldValue><PriorityBadge score={initiative.computed_score} showScore={true} /></FieldValue></div>
         <div><FieldLabel>Target Quarter</FieldLabel><FieldValue>{initiative.target_quarter || '—'}</FieldValue></div>
-        <div><FieldLabel>Reporter</FieldLabel><FieldValue><InlineAvatar name="Mohammed A." size={20} /><span>Mohammed A.</span></FieldValue></div>
-        <div><FieldLabel>Assignee</FieldLabel><FieldValue>{initiative.assignee_name ? <><InlineAvatar name={initiative.assignee_name} size={20} /><span>{initiative.assignee_name}</span></> : <span style={{ color: '#a1a1aa', fontStyle: 'italic' }}>Unassigned</span>}</FieldValue></div>
+        <div><FieldLabel>Reporter</FieldLabel><FieldValue><InlineAvatar name="Mohammed A." size={20} /><span>{formatShortName('Mohammed A.')}</span></FieldValue></div>
+        <div><FieldLabel>Assignee</FieldLabel><FieldValue>{initiative.assignee_name ? <><InlineAvatar name={initiative.assignee_name} size={20} /><span>{formatShortName(initiative.assignee_name)}</span></> : <span style={{ color: '#a1a1aa', fontStyle: 'italic' }}>Unassigned</span>}</FieldValue></div>
         <div><FieldLabel>Department</FieldLabel><FieldValue>{initiative.department_name || '—'}</FieldValue></div>
-        <div><FieldLabel>Business Owner</FieldLabel><FieldValue>{initiative.business_owner_name ? <><InlineAvatar name={initiative.business_owner_name} size={20} /><span>{initiative.business_owner_name}</span></> : '—'}</FieldValue></div>
+        <div><FieldLabel>Business Owner</FieldLabel><FieldValue>{initiative.business_owner_name ? <><InlineAvatar name={initiative.business_owner_name} size={20} /><span>{formatShortName(initiative.business_owner_name)}</span></> : '—'}</FieldValue></div>
         <div><FieldLabel>Business Ask Date</FieldLabel><FieldValue>{formatAbsoluteDate(initiative.business_ask_date)}</FieldValue></div>
         <div><FieldLabel>Kickoff Date</FieldLabel><FieldValue>{formatAbsoluteDate(initiative.kickoff_date)}</FieldValue></div>
         <div><FieldLabel>Target Complete</FieldLabel><FieldValue>{formatAbsoluteDate(initiative.target_complete)}</FieldValue></div>
         <div><FieldLabel>Progress</FieldLabel><FieldValue><DetailProgressBar value={initiative.progress} status={initiative.status} /></FieldValue></div>
       </div>
 
-      {/* Description — V5: mt 24px, 13px/1.65, zinc-600 */}
+      {/* Description */}
       {initiative.description && (
         <div style={{ marginTop: 24 }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: '#18181b', marginBottom: 10, lineHeight: 1 }}>Description</div>
@@ -486,7 +534,7 @@ function DetailsContent({ initiative, onStatusChange }: { initiative: Initiative
         </div>
       )}
 
-      {/* Comments — V5: mt 24px */}
+      {/* Comments */}
       <div style={{ marginTop: 24 }}>
         <div style={{ fontSize: 13, fontWeight: 600, color: '#18181b', marginBottom: 10, lineHeight: 1 }}>
           Comments ({comments.length})
@@ -496,7 +544,7 @@ function DetailsContent({ initiative, onStatusChange }: { initiative: Initiative
             <InlineAvatar name={c.author} size={28} />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
-                <span style={{ fontSize: 13, fontWeight: 500, color: '#18181b' }}>{c.author}</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: '#18181b' }}>{formatShortName(c.author)}</span>
                 <span style={{ fontSize: 11, fontWeight: 400, color: '#a1a1aa' }}>{c.timeAgo}</span>
               </div>
               <p style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.5, color: '#52525b', margin: 0 }}>{c.content}</p>
@@ -504,25 +552,14 @@ function DetailsContent({ initiative, onStatusChange }: { initiative: Initiative
           </div>
         ))}
 
-        {/* New comment input — V5: 36px h, 6px radius, zinc-200 border */}
+        {/* New comment input */}
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', paddingTop: 14 }}>
           <InlineAvatar name="AK" size={28} />
           <input
             type="text"
             placeholder="Write a comment..."
-            style={{
-              flex: 1,
-              height: 36,
-              border: '1px solid #e4e4e7',
-              borderRadius: 6,
-              padding: '0 12px',
-              fontSize: 13,
-              color: '#18181b',
-              outline: 'none',
-              background: 'transparent',
-            }}
-            onFocus={(e) => { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
-            onBlur={(e) => { e.target.style.borderColor = '#e4e4e7'; e.target.style.boxShadow = 'none'; }}
+            className="flex-1 h-9 border border-zinc-200 rounded-md px-3 text-[13px] text-zinc-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
+            style={{ background: 'transparent' }}
           />
         </div>
       </div>
@@ -558,26 +595,13 @@ function ScoreContent({
         <button
           type="button"
           onClick={onSave}
-          style={{
-            width: '100%',
-            height: 38,
-            background: '#2563eb',
-            color: '#ffffff',
-            fontSize: 13,
-            fontWeight: 500,
-            border: 'none',
-            borderRadius: 6,
-            cursor: 'pointer',
-            marginTop: 'auto',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = '#1d4ed8'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = '#2563eb'; }}
+          className="w-full h-[38px] bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-medium border-none rounded-md cursor-pointer mt-auto transition-colors"
         >
           Save Score
         </button>
       </div>
 
-      {/* Right: Summary (flex 2 ≈ 40%) — V5: zinc-50, border zinc-100, rounded 10px */}
+      {/* Right: Summary (flex 2 ≈ 40%) */}
       <div style={{
         flex: 2,
         background: '#fafafa',
