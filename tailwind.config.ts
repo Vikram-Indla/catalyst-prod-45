@@ -424,7 +424,7 @@ export default {
         sans: ['"Plus Jakarta Sans"', "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
         body: ['"Plus Jakarta Sans"', "-apple-system", "BlinkMacSystemFont", "sans-serif"],
         display: ['"Plus Jakarta Sans"', "-apple-system", "sans-serif"],
-        mono: ["SF Mono", "Monaco", "Consolas", "monospace"],
+        mono: ['"JetBrains Mono"', "SF Mono", "Monaco", "Consolas", "monospace"],
       },
       
       fontSize: {
@@ -450,6 +450,17 @@ export default {
         "body-sm": ["0.8125rem", { lineHeight: "1.125rem" }],
         caption: ["0.8125rem", { lineHeight: "1.125rem", fontWeight: "500" }],
         label: ["0.8125rem", { lineHeight: "1rem", fontWeight: "500" }],
+        
+        /* ProdHub table font sizes */
+        "table-xs": ["11px", { lineHeight: "1.2" }],
+        "table-sm": ["12px", { lineHeight: "1.4" }],
+        "table-base": ["13px", { lineHeight: "1.4" }],
+      },
+      
+      spacing: {
+        "row-compact": "32px",
+        "row-standard": "40px",
+        "row-comfortable": "48px",
       },
       
       borderRadius: {
