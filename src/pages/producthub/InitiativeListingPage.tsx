@@ -6,14 +6,14 @@ import { DetailPanel } from '@/components/initiatives/DetailPanel';
 import { BulkActionBar } from '@/components/initiatives/BulkActionBar';
 import { ContextMenu } from '@/components/initiatives/ContextMenu';
 import { Toaster, toast } from '@/components/ui/sonner';
-import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
+
 import type { Initiative, InitiativeStatus, Density, ViewMode } from '@/types/initiative';
 
 const TERMINAL_STATUSES: InitiativeStatus[] = ['delivered', 'closed', 'cancelled'];
 
 function applyQuickFilter(data: Initiative[], filter: string): Initiative[] {
   switch (filter) {
-    case 'my': return data.filter(i => ['Sarah K.', 'Fatima R.'].includes(i.assignee_name || ''));
+    case 'my': return data.filter(i => ['Sarah K.', 'Fatima R.', 'Nora A.'].includes(i.assignee_name || ''));
     case 'quarter': return data.filter(i => i.target_quarter === 'Q1 2026');
     case 'high': return data.filter(i => i.computed_score !== null && i.computed_score >= 4.0);
     case 'unscored': return data.filter(i => i.computed_score === null);
@@ -135,12 +135,7 @@ export default function InitiativeListingPage() {
   }, []);
 
   return (
-    <div className="flex flex-col h-full">
-      <CommandCenterHeader
-        title="Product Backlog"
-        subtitle="Strategic demand pipeline — prioritization, scoring & lifecycle tracking"
-      />
-      <div className="px-6 pt-4 pb-6">
+    <div className="px-6 pt-4 pb-6">
       <InitiativeToolbar
         activeView={activeView}
         onViewChange={setActiveView}
@@ -205,7 +200,6 @@ export default function InitiativeListingPage() {
       />
 
       <Toaster position="bottom-right" />
-      </div>
     </div>
   );
 }

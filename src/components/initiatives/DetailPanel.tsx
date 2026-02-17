@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Pencil, Paperclip, Copy, Link2, Target, Trash2 } from 'lucide-react';
@@ -237,15 +238,37 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
   );
 }
 
+function formatAbsoluteDate(dateStr: string | null): string {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '—';
+  return format(d, 'MMM dd, yyyy');
+}
+
+const MOCK_COMMENTS: Record<string, { author: string; content: string; timeAgo: string }[]> = {
+  'MIM-001': [
+    { author: 'Ahmed M.', content: 'Reviewed the architecture proposal. Aligning with the cloud migration timeline is critical.', timeAgo: '2 days ago' },
+    { author: 'Sarah K.', content: "Agreed. I've updated the dependency map to reflect the Q1 milestones.", timeAgo: '1 day ago' },
+  ],
+  'MIM-002': [
+    { author: 'Ahmed M.', content: 'Migration plan finalized. Ready for stakeholder review.', timeAgo: '3 hours ago' },
+  ],
+};
+
 function DetailsContent({ initiative, onStatusChange }: { initiative: Initiative; onStatusChange: (id: string, s: InitiativeStatus) => void }) {
+  const comments = MOCK_COMMENTS[initiative.initiative_key] || [];
   const fields: [string, React.ReactNode][] = [
     ['Status', <StatusBadge status={initiative.status} editable onChange={(s) => onStatusChange(initiative.id, s)} />],
+    ['EA Review', <span className="text-zinc-600">Not Required</span>],
     ['Priority', <PriorityBadge score={initiative.computed_score} />],
-    ['Assignee', <UserAvatar name={initiative.assignee_name} size={24} showName />],
-    ['Business Owner', <UserAvatar name={initiative.business_owner_name} size={24} showName />],
-    ['Department', <span>{initiative.department_name || '—'}</span>],
     ['Target Quarter', <span>{initiative.target_quarter || '—'}</span>],
-    ['Target Complete', <RelativeDate date={initiative.target_complete} />],
+    ['Reporter', <UserAvatar name="Mohammed A." size={24} showName />],
+    ['Assignee', <UserAvatar name={initiative.assignee_name} size={24} showName />],
+    ['Department', <span>{initiative.department_name || '—'}</span>],
+    ['Business Owner', <UserAvatar name={initiative.business_owner_name} size={24} showName />],
+    ['Business Ask Date', <span className="text-zinc-600">{formatAbsoluteDate(initiative.business_ask_date)}</span>],
+    ['Kickoff Date', <span className="text-zinc-600">{formatAbsoluteDate(initiative.kickoff_date)}</span>],
+    ['Target Complete', <span className="text-zinc-600">{formatAbsoluteDate(initiative.target_complete)}</span>],
     ['Progress', <ProgressBar value={initiative.progress} status={initiative.status} />],
   ];
 
@@ -268,12 +291,28 @@ function DetailsContent({ initiative, onStatusChange }: { initiative: Initiative
       )}
 
       <div className="mt-6">
-        <h3 className="text-[13px] font-semibold text-zinc-900 mb-3">Comments (0)</h3>
+        <h3 className="text-[13px] font-semibold text-zinc-900 mb-3">Comments ({comments.length})</h3>
+        {comments.length > 0 && (
+          <div className="space-y-4 mb-4">
+            {comments.map((c, i) => (
+              <div key={i} className="flex items-start gap-2">
+                <UserAvatar name={c.author} size={28} showTooltip={false} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[13px] font-medium text-zinc-900">{c.author}</span>
+                    <span className="text-[11px] text-zinc-400">{c.timeAgo}</span>
+                  </div>
+                  <p className="text-[13px] text-zinc-700 mt-0.5 leading-relaxed">{c.content}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         <div className="flex items-start gap-2">
           <UserAvatar name="Current User" size={28} showTooltip={false} />
           <input
             type="text"
-            placeholder="Add a comment…"
+            placeholder="Write a comment…"
             className="flex-1 h-9 px-3 text-[13px] bg-zinc-50 border border-zinc-200 rounded-md outline-none placeholder:text-zinc-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
           />
         </div>
@@ -320,11 +359,11 @@ function ScoreContent({
         <PriorityBadge score={computedScore} size="md" />
         <RadarChart scores={[scores.sa, scores.bi, scores.tu, scores.rf]} />
         <p className="text-[12px] text-zinc-600 text-center leading-relaxed mt-1">
-          {priority.level === 'High' && 'High-priority initiative with strong strategic value and feasibility.'}
-          {priority.level === 'Medium' && 'Moderate priority — consider resource allocation and timing.'}
-          {priority.level === 'Low' && 'Lower priority — may benefit from scope refinement.'}
-          {priority.level === 'Rejected' && 'Below threshold — review justification before proceeding.'}
-          {priority.level === 'Unscored' && 'Not yet scored — complete all dimensions to calculate priority.'}
+          {priority.level === 'High' && `Score of ${computedScore.toFixed(1)} falls in the High range (4.0-5.0). This initiative is rated as high priority based on strong strategic alignment and significant business impact.`}
+          {priority.level === 'Medium' && `Score of ${computedScore.toFixed(1)} falls in the Medium range (3.0-3.9). This initiative has moderate priority with balanced scores across criteria.`}
+          {priority.level === 'Low' && `Score of ${computedScore.toFixed(1)} falls in the Low range (2.0-2.9). This initiative scores below the threshold for high prioritization.`}
+          {priority.level === 'Rejected' && `Score of ${computedScore.toFixed(1)} falls in the Rejected range (1.0-1.9). This initiative does not meet minimum priority thresholds.`}
+          {priority.level === 'Unscored' && 'This initiative has not been scored yet.'}
         </p>
       </div>
     </div>

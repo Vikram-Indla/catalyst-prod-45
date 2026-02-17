@@ -9,6 +9,7 @@ import {
   type RowSelectionState,
   type ColumnResizeMode,
 } from '@tanstack/react-table';
+import { format } from 'date-fns';
 import { Star, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { getPriorityLevel, PRIORITY_THRESHOLDS, UNSCORED_STYLE } from '@/types/initiative';
@@ -245,12 +246,26 @@ export function InitiativeTable({
         size: 128,
         minSize: 100,
         header: 'Target',
-        cell: ({ getValue, row }) => (
-          <RelativeDate
-            date={getValue()}
-            isOverdue={isOverdue(getValue(), row.original.status)}
-          />
-        ),
+        cell: ({ getValue, row }) => {
+          const dateStr = getValue();
+          if (!dateStr) return <span className="text-zinc-400">—</span>;
+          const parsed = new Date(dateStr);
+          if (isNaN(parsed.getTime())) return <span className="text-zinc-400">—</span>;
+          const overdue = isOverdue(dateStr, row.original.status);
+          const formatted = format(parsed, 'MMM dd, yyyy');
+          return (
+            <span className={`inline-flex items-center gap-1 text-[12px] whitespace-nowrap ${overdue ? 'text-red-600 font-medium' : 'text-zinc-600'}`}>
+              {overdue && (
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="flex-shrink-0">
+                  <path d="M7 1L13 12H1L7 1Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                  <path d="M7 6V8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  <circle cx="7" cy="10.25" r="0.75" fill="currentColor" />
+                </svg>
+              )}
+              {formatted}
+            </span>
+          );
+        },
       }),
       col.accessor('computed_score', {
         id: 'computed_score',
