@@ -104,7 +104,7 @@ export default function SubmitIdeaPageElevated() {
       toast.success('Idea submitted successfully!', {
         description: 'Your idea will be reviewed by the team.',
       });
-      navigate('/industry/ideas/all');
+      navigate('/producthub/ideas/all');
     } catch (error) {
       toast.error('Failed to submit idea', {
         description: error instanceof Error ? error.message : 'Please try again.',

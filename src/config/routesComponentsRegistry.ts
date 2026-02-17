@@ -296,23 +296,13 @@ export const routesComponentsRegistry: RegistryEntry[] = [
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // PRODUCT/INDUSTRY ROUTES
+  // PRODUCT HUB ROUTES
   // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: 'product-backlog',
-    category: 'Product',
-    name: 'CatalystDemandList',
-    route: '/industry/backlog',
-    filePath: 'src/modules/product-backlog/pages/CatalystDemandList.tsx',
-    description: 'Product backlog (business requests list)',
-    type: 'Page',
-    tags: ['backlog', 'demand', 'business-requests']
-  },
   {
     id: 'product-kanban',
     category: 'Product',
     name: 'CatalystDemandKanban',
-    route: '/industry/kanban',
+    route: '/producthub/kanban',
     filePath: 'src/modules/kanban/pages/CatalystDemandKanban.tsx',
     description: 'Business requests Kanban board',
     type: 'Page',
@@ -322,7 +312,7 @@ export const routesComponentsRegistry: RegistryEntry[] = [
     id: 'demand-dashboard',
     category: 'Product',
     name: 'DemandSummaryPage',
-    route: '/industry/dashboard',
+    route: '/producthub/dashboard',
     filePath: 'src/pages/enterprise/DemandSummaryPage.tsx',
     description: 'Executive demand dashboard',
     type: 'Page',
@@ -332,7 +322,7 @@ export const routesComponentsRegistry: RegistryEntry[] = [
     id: 'product-roadmaps',
     category: 'Product',
     name: 'ExecutiveRoadmapPage',
-    route: '/industry/roadmaps',
+    route: '/producthub/roadmaps',
     filePath: 'src/pages/enterprise/ExecutiveRoadmapPage.tsx',
     description: 'Demand/product roadmap Gantt',
     type: 'Page',

@@ -67,7 +67,7 @@ export default function InitiativeDetailPage() {
           <p className="text-sm text-muted-foreground mb-4">
             The requested initiative could not be loaded.
           </p>
-          <Button onClick={() => navigate('/industry/ideas/initiatives')}>
+          <Button onClick={() => navigate('/producthub/ideas/initiatives')}>
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Initiatives
           </Button>
         </Card>
@@ -90,7 +90,7 @@ export default function InitiativeDetailPage() {
   return (
     <div className="flex flex-col gap-6 p-6">
       {/* Back Button */}
-      <Button variant="ghost" onClick={() => navigate('/industry/ideas/initiatives')} className="w-fit gap-2">
+      <Button variant="ghost" onClick={() => navigate('/producthub/ideas/initiatives')} className="w-fit gap-2">
         <ArrowLeft className="h-4 w-4" /> Back to Initiatives
       </Button>
 
@@ -213,7 +213,7 @@ export default function InitiativeDetailPage() {
                 <IdeaCard
                   key={idea.id}
                   idea={idea}
-                  onClick={() => navigate(`/industry/ideas/${idea.id}`)}
+                  onClick={() => navigate(`/producthub/ideas/${idea.id}`)}
                 />
               ))}
             </div>
@@ -241,7 +241,7 @@ export default function InitiativeDetailPage() {
                   <IdeaCard
                     key={idea.id}
                     idea={idea}
-                    onClick={() => navigate(`/industry/ideas/${idea.id}`)}
+                    onClick={() => navigate(`/producthub/ideas/${idea.id}`)}
                   />
                 ))}
             </div>
@@ -262,7 +262,7 @@ export default function InitiativeDetailPage() {
                   <IdeaCard
                     key={idea.id}
                     idea={idea}
-                    onClick={() => navigate(`/industry/ideas/${idea.id}`)}
+                    onClick={() => navigate(`/producthub/ideas/${idea.id}`)}
                   />
                 ))}
             </div>

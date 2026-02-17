@@ -127,7 +127,7 @@ export default function AIInsightsPage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => navigate(`/industry/ideas/${idea.id}`)}
+                    onClick={() => navigate(`/producthub/ideas/${idea.id}`)}
                   >
                     Triage
                     <ChevronRight className="ml-1 h-3 w-3" />
@@ -289,7 +289,7 @@ export default function AIInsightsPage() {
                   <div
                     key={idea.id}
                     className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 cursor-pointer"
-                    onClick={() => navigate(`/industry/ideas/${idea.id}`)}
+                    onClick={() => navigate(`/producthub/ideas/${idea.id}`)}
                   >
                     <div>
                       <Badge variant="outline" className="font-mono text-xs mb-1">

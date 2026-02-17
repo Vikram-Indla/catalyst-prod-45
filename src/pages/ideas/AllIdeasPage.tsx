@@ -146,7 +146,7 @@ export default function AllIdeasPage() {
             Browse and explore all submitted improvement ideas
           </p>
         </div>
-        <Button onClick={() => navigate('/industry/ideas/submit')}>
+        <Button onClick={() => navigate('/producthub/ideas/submit')}>
           <Plus className="mr-2 h-4 w-4" />
           Submit Idea
         </Button>
@@ -344,7 +344,7 @@ export default function AllIdeasPage() {
           {hasActiveFilters ? (
             <Button variant="outline" onClick={clearFilters}>Clear Filters</Button>
           ) : (
-            <Button onClick={() => navigate('/industry/ideas/submit')}>
+            <Button onClick={() => navigate('/producthub/ideas/submit')}>
               <Plus className="mr-2 h-4 w-4" />
               Submit Idea
             </Button>
@@ -356,7 +356,7 @@ export default function AllIdeasPage() {
             <IdeaCard
               key={idea.id}
               idea={idea}
-              onClick={() => navigate(`/industry/ideas/${idea.id}`)}
+              onClick={() => navigate(`/producthub/ideas/${idea.id}`)}
             />
           ))}
         </div>
@@ -366,7 +366,7 @@ export default function AllIdeasPage() {
             <IdeaListRow
               key={idea.id}
               idea={idea}
-              onClick={() => navigate(`/industry/ideas/${idea.id}`)}
+              onClick={() => navigate(`/producthub/ideas/${idea.id}`)}
             />
           ))}
         </div>

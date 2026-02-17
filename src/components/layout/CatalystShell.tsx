@@ -66,8 +66,8 @@ function CatalystShellContent() {
     enabled: !!activeProjectId && isProjectRoute,
   });
 
-  // Check if on product/industry route
-  const isProductRoute = location.pathname.startsWith('/industry') || location.pathname.startsWith('/product');
+  // Check if on product/producthub route
+  const isProductRoute = location.pathname.startsWith('/producthub') || location.pathname.startsWith('/product');
   
   // Check if on release route (Operations/Incidents)
   const isReleaseRoute = location.pathname.startsWith('/release');

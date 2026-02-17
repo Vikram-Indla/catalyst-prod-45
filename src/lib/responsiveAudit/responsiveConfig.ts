@@ -34,8 +34,8 @@ export const responsiveRoutes = [
   { path: '/admin/import-data', name: 'Import Data', category: 'admin', priority: 'high' },
   
   // Industry/Demand
-  { path: '/industry', name: 'Industry (Demand Intake)', category: 'table', priority: 'critical' },
-  { path: '/industry/roadmaps', name: 'Executive Roadmaps', category: 'visualization', priority: 'high' },
+  { path: '/producthub', name: 'Product Hub', category: 'table', priority: 'critical' },
+  { path: '/producthub/roadmaps', name: 'Executive Roadmaps', category: 'visualization', priority: 'high' },
   
   // Enterprise
   { path: '/strategyhub/strategy-room', name: 'Strategy Room', category: 'dashboard', priority: 'critical' },

@@ -308,7 +308,7 @@ export default function AllIdeasPageRebuilt() {
                 </Button>
               ) : (
                 <Button 
-                  onClick={() => navigate('/industry/ideas/submit')}
+                  onClick={() => navigate('/producthub/ideas/submit')}
                   className="bg-gradient-to-r from-blue-600 to-indigo-600"
                 >
                   <Plus className="mr-2 h-4 w-4" />

@@ -90,17 +90,17 @@ export function useRecentPlaceTracker() {
    */
   const getPageLabel = (path: string): { pageKey: string; label: string; cleanPath: string } => {
     // Product Room pages
-    if (path === "/industry" || path === "/industry/" || path === "/industry/backlog") {
-      return { pageKey: "backlog", label: "Backlog", cleanPath: "/industry/backlog" };
+    if (path === "/producthub" || path === "/producthub/") {
+      return { pageKey: "producthub", label: "Product Hub", cleanPath: "/producthub" };
     }
-    if (path === "/industry/roadmaps" || path.startsWith("/industry/roadmaps")) {
-      return { pageKey: "roadmaps", label: "Roadmaps", cleanPath: "/industry/roadmaps" };
+    if (path === "/producthub/roadmaps" || path.startsWith("/producthub/roadmaps")) {
+      return { pageKey: "roadmaps", label: "Roadmaps", cleanPath: "/producthub/roadmaps" };
     }
-    if (path.startsWith("/industry/risks")) {
-      return { pageKey: "risks", label: "Risks", cleanPath: "/industry/risks" };
+    if (path.startsWith("/producthub/risks")) {
+      return { pageKey: "risks", label: "Risks", cleanPath: "/producthub/risks" };
     }
-    if (path.startsWith("/industry/milestones")) {
-      return { pageKey: "milestones", label: "Milestones", cleanPath: "/industry/milestones" };
+    if (path.startsWith("/producthub/milestones")) {
+      return { pageKey: "milestones", label: "Milestones", cleanPath: "/producthub/milestones" };
     }
     
     // Default for other pages within a room
@@ -112,7 +112,7 @@ export function useRecentPlaceTracker() {
     const path = location.pathname;
 
     // Product Room - ALL pages within Product use the SAME room_id
-    if (path.startsWith("/industry")) {
+    if (path.startsWith("/producthub")) {
       const { pageKey, label, cleanPath } = getPageLabel(path);
       return {
         roomType: "product" as RoomType,

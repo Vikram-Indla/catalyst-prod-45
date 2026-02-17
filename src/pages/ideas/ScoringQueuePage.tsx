@@ -145,7 +145,7 @@ export default function ScoringQueuePage() {
         <Clock className="h-3 w-3" />
         {pendingIdeas.length} pending
       </Badge>
-      <Button variant="outline" onClick={() => navigate('/industry/ideas/matrix')} className="h-8 text-sm">
+      <Button variant="outline" onClick={() => navigate('/producthub/ideas/matrix')} className="h-8 text-sm">
         View Matrix
         <ChevronRight className="ml-1 h-4 w-4" />
       </Button>
@@ -185,7 +185,7 @@ export default function ScoringQueuePage() {
           <p className="text-sm text-muted-foreground mb-4">
             No ideas are waiting to be scored.
           </p>
-          <Button onClick={() => navigate('/industry/ideas/all')}>
+          <Button onClick={() => navigate('/producthub/ideas/all')}>
             Browse All Ideas
           </Button>
         </Card>

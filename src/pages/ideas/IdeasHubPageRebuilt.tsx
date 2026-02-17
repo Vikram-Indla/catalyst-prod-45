@@ -55,7 +55,7 @@ export default function IdeasHubPageRebuilt() {
       }
       if (e.key.toLowerCase() === 'g' && !e.metaKey && !e.ctrlKey) {
         e.preventDefault();
-        navigate('/industry/ideas/all');
+        navigate('/producthub/ideas/all');
       }
     };
     
@@ -197,7 +197,7 @@ export default function IdeasHubPageRebuilt() {
     <>
       <Button 
         variant="outline" 
-        onClick={() => navigate('/industry/ideas/all')}
+        onClick={() => navigate('/producthub/ideas/all')}
         className="gap-2 border-slate-200 bg-white hover:bg-slate-50 group h-8 text-sm"
       >
         <List className="w-4 h-4" />
@@ -239,23 +239,23 @@ export default function IdeasHubPageRebuilt() {
               items={quickWinItems}
               loading={isLoading}
               onApprove={handleApprove}
-              onViewAll={() => navigate('/industry/ideas/all?type=quick_win')}
-              onItemClick={(id) => navigate(`/industry/ideas/${id}`)}
+              onViewAll={() => navigate('/producthub/ideas/all?type=quick_win')}
+              onItemClick={(id) => navigate(`/producthub/ideas/${id}`)}
             />
 
             {/* Top Priority Ideas */}
             <TopPriorityIdeas
               ideas={topPriorityIdeas as any}
               loading={topIdeasLoading}
-              onIdeaClick={(id) => navigate(`/industry/ideas/${id}`)}
-              onViewAll={() => navigate('/industry/ideas/all?sort=votes')}
+              onIdeaClick={(id) => navigate(`/producthub/ideas/${id}`)}
+              onViewAll={() => navigate('/producthub/ideas/all?sort=votes')}
             />
 
             {/* Quick Actions Grid */}
             <QuickActionsGrid
               onSubmitClick={() => setShowSubmitModal(true)}
-              onScoreClick={() => navigate('/industry/ideas/all?status=submitted')}
-              onMatrixClick={() => navigate('/industry/ideas/matrix')}
+              onScoreClick={() => navigate('/producthub/ideas/all?status=submitted')}
+              onMatrixClick={() => navigate('/producthub/ideas/matrix')}
               pendingScoring={pendingScoring}
             />
           </div>
@@ -302,16 +302,16 @@ export default function IdeasHubPageRebuilt() {
                 total_votes: i.total_votes || 0,
               }))}
               loading={initiativesLoading}
-              onInitiativeClick={(id) => navigate(`/industry/ideas/initiatives/${id}`)}
-              onManageClick={() => navigate('/industry/ideas/initiatives')}
-              onCreateClick={() => navigate('/industry/ideas/initiatives/new')}
+              onInitiativeClick={(id) => navigate(`/producthub/ideas/initiatives/${id}`)}
+              onManageClick={() => navigate('/producthub/ideas/initiatives')}
+              onCreateClick={() => navigate('/producthub/ideas/initiatives/new')}
             />
 
             {/* Recent Activity */}
             <RecentActivityFeed
               activities={recentActivities}
               loading={false}
-              onViewAll={() => navigate('/industry/ideas/all')}
+              onViewAll={() => navigate('/producthub/ideas/all')}
             />
           </div>
         </div>

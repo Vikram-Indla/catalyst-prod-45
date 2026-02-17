@@ -1,6 +1,6 @@
 /**
  * IndustryHeaderToolbarV2 - Unified Toolbar Component
- * Used for both /industry/backlog and /industry/kanban routes
+ * Used for both /producthub and /producthub/kanban routes
  * 
  * Layout: [List | Board toggle] [Search] [Filters (count)] [Export] [+ Create]
  */
@@ -216,11 +216,11 @@ export function IndustryHeaderToolbarV2({
 
   const handleViewChange = (view: IndustryViewType) => {
     if (view === 'list') {
-      navigate('/industry/backlog');
+      navigate('/producthub');
     } else if (view === 'board') {
-      navigate('/industry/kanban');
+      navigate('/producthub/kanban');
     } else {
-      navigate('/industry/table');
+      navigate('/producthub/table');
     }
   };
 

@@ -57,24 +57,23 @@ export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   '/product/capacity': { section: 'PRODUCT', pageTitle: 'Capacity' },
   '/product/requirement-assist': { section: 'PRODUCT', pageTitle: 'Requirement Assist' },
   
-  // Product routes (Industry paths)
-  '/industry/backlog': { section: 'PRODUCT', pageTitle: 'Product Backlog' },
-  '/industry/kanban': { section: 'PRODUCT', pageTitle: 'Product Kanban' },
-  '/industry/table': { section: 'PRODUCT', pageTitle: 'Demand Table' },
-  '/industry/roadmaps': { section: 'PRODUCT', pageTitle: 'Product Roadmap' },
+  // Product Hub routes
+  '/producthub/kanban': { section: 'PRODUCT', pageTitle: 'Product Kanban' },
+  '/producthub/table': { section: 'PRODUCT', pageTitle: 'Demand Table' },
+  '/producthub/roadmaps': { section: 'PRODUCT', pageTitle: 'Product Roadmap' },
   
   // Ideas routes
-  '/industry/ideas': { section: 'IDEAS', pageTitle: 'Ideas Hub' },
-  '/industry/ideas/all': { section: 'IDEAS', pageTitle: 'All Ideas' },
-  '/industry/ideas/initiatives': { section: 'IDEAS', pageTitle: 'Initiatives' },
-  '/industry/ideas/initiatives/:id': { section: 'IDEAS', pageTitle: 'Initiative Details' },
-  '/industry/ideas/matrix': { section: 'IDEAS', pageTitle: 'Priority Matrix' },
-  '/industry/ideas/scoring': { section: 'IDEAS', pageTitle: 'Scoring Queue' },
-  '/industry/ideas/submit': { section: 'IDEAS', pageTitle: 'Submit Idea' },
-  '/industry/ideas/analytics': { section: 'IDEAS', pageTitle: 'Analytics' },
-  '/industry/ideas/ai-insights': { section: 'IDEAS', pageTitle: 'AI Insights' },
-  '/industry/ideas/admin': { section: 'IDEAS', pageTitle: 'Settings' },
-  '/industry/ideas/:id': { section: 'IDEAS', pageTitle: 'Idea Details' },
+  '/producthub/ideas': { section: 'IDEAS', pageTitle: 'Ideas Hub' },
+  '/producthub/ideas/all': { section: 'IDEAS', pageTitle: 'All Ideas' },
+  '/producthub/ideas/initiatives': { section: 'IDEAS', pageTitle: 'Initiatives' },
+  '/producthub/ideas/initiatives/:id': { section: 'IDEAS', pageTitle: 'Initiative Details' },
+  '/producthub/ideas/matrix': { section: 'IDEAS', pageTitle: 'Priority Matrix' },
+  '/producthub/ideas/scoring': { section: 'IDEAS', pageTitle: 'Scoring Queue' },
+  '/producthub/ideas/submit': { section: 'IDEAS', pageTitle: 'Submit Idea' },
+  '/producthub/ideas/analytics': { section: 'IDEAS', pageTitle: 'Analytics' },
+  '/producthub/ideas/ai-insights': { section: 'IDEAS', pageTitle: 'AI Insights' },
+  '/producthub/ideas/admin': { section: 'IDEAS', pageTitle: 'Settings' },
+  '/producthub/ideas/:id': { section: 'IDEAS', pageTitle: 'Idea Details' },
   
   // Spaces routes
   '/spaces': { section: 'SPACES', pageTitle: 'Spaces Directory' },

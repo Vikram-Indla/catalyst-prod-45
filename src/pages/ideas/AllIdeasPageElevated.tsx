@@ -151,7 +151,7 @@ export default function AllIdeasPageElevated() {
                 Export
               </Button>
               <Button 
-                onClick={() => navigate('/industry/ideas/submit')}
+                onClick={() => navigate('/producthub/ideas/submit')}
                 className="gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-600/25"
               >
                 <Plus className="w-4 h-4" />
@@ -285,7 +285,7 @@ export default function AllIdeasPageElevated() {
                   Clear Filters
                 </Button>
               ) : (
-                <Button onClick={() => navigate('/industry/ideas/submit')}>
+                <Button onClick={() => navigate('/producthub/ideas/submit')}>
                   <Plus className="mr-2 h-4 w-4" />
                   Submit Idea
                 </Button>
@@ -298,7 +298,7 @@ export default function AllIdeasPageElevated() {
               <IdeaCardElevated
                 key={idea.id}
                 idea={idea}
-                onClick={() => navigate(`/industry/ideas/${idea.id}`)}
+                onClick={() => navigate(`/producthub/ideas/${idea.id}`)}
               />
             ))}
           </div>
@@ -308,7 +308,7 @@ export default function AllIdeasPageElevated() {
               <IdeaListRowElevated
                 key={idea.id}
                 idea={idea}
-                onClick={() => navigate(`/industry/ideas/${idea.id}`)}
+                onClick={() => navigate(`/producthub/ideas/${idea.id}`)}
               />
             ))}
           </div>

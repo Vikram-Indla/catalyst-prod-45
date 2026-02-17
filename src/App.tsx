@@ -482,17 +482,16 @@ const App = () => (
               <Route path="/for-you" element={<ForYouPage />} />
               <Route path="/home" element={<Navigate to="/for-you" replace />} />
               
-              {/* Industry/Demand routes */}
-              <Route path="/industry" element={<Navigate to="/industry/backlog" replace />} />
-              <Route path="/industry1" element={<IndustryPage />} />
-              <Route path="/industry/industry" element={<IndustryPage />} />
-              <Route path="/industry/backlog" element={<CatalystDemandList />} />
-              <Route path="/industry/table" element={<CatalystDemandTable />} />
-              <Route path="/industry/kanban" element={<CatalystDemandKanban />} />
-              <Route path="/industry/dashboard" element={<DemandSummaryPage />} />
-              <Route path="/industry/roadmaps" element={<ProductRoadmapV2Page />} />
-              <Route path="/industry/roadmaps-v1" element={<IndustryRoadmapPage />} />
-              <Route path="/industry/reports" element={<IndustryComingSoon />} />
+              {/* Product Hub routes */}
+              <Route path="/producthub" element={<Navigate to="/producthub/ideas/hub" replace />} />
+              <Route path="/producthub/table" element={<CatalystDemandTable />} />
+              <Route path="/producthub/kanban" element={<CatalystDemandKanban />} />
+              <Route path="/producthub/dashboard" element={<DemandSummaryPage />} />
+              <Route path="/producthub/roadmaps" element={<ProductRoadmapV2Page />} />
+              <Route path="/producthub/roadmaps-v1" element={<IndustryRoadmapPage />} />
+              <Route path="/producthub/reports" element={<IndustryComingSoon />} />
+              {/* Legacy industry redirects */}
+              <Route path="/industry/*" element={<Navigate to="/producthub" replace />} />
               
               
               {/* Starred items page */}
@@ -643,21 +642,21 @@ const App = () => (
 <Route path="/product/capacity" element={<CapacityPlanningPage />} />
 
 
-              {/* Ideas Hub Module - under Industry/Product */}
-              <Route path="/industry/ideas" element={<Navigate to="/industry/ideas/hub" replace />} />
-              <Route path="/industry/ideas/hub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeasHubPage /></Suspense>} />
-              <Route path="/industry/ideas/all" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
-              <Route path="/industry/ideas/initiatives" element={<Suspense fallback={<div className="p-8">Loading...</div>}><InitiativesPage /></Suspense>} />
-              <Route path="/industry/ideas/initiatives/:initiativeId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><InitiativeDetailPage /></Suspense>} />
-              <Route path="/industry/ideas/submit" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SubmitIdeaPage /></Suspense>} />
-              <Route path="/industry/ideas/scoring" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ScoringQueuePage /></Suspense>} />
-              <Route path="/industry/ideas/matrix" element={<Suspense fallback={<div className="p-8">Loading...</div>}><PriorityMatrixPage /></Suspense>} />
-              <Route path="/industry/ideas/insights" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AIInsightsPage /></Suspense>} />
-              <Route path="/industry/ideas/analytics" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AnalyticsPage /></Suspense>} />
-              <Route path="/industry/ideas/:ideaId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeaDetailPage /></Suspense>} />
+              {/* Ideas Hub Module - under Product Hub */}
+              <Route path="/producthub/ideas" element={<Navigate to="/producthub/ideas/hub" replace />} />
+              <Route path="/producthub/ideas/hub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeasHubPage /></Suspense>} />
+              <Route path="/producthub/ideas/all" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
+              <Route path="/producthub/ideas/initiatives" element={<Suspense fallback={<div className="p-8">Loading...</div>}><InitiativesPage /></Suspense>} />
+              <Route path="/producthub/ideas/initiatives/:initiativeId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><InitiativeDetailPage /></Suspense>} />
+              <Route path="/producthub/ideas/submit" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SubmitIdeaPage /></Suspense>} />
+              <Route path="/producthub/ideas/scoring" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ScoringQueuePage /></Suspense>} />
+              <Route path="/producthub/ideas/matrix" element={<Suspense fallback={<div className="p-8">Loading...</div>}><PriorityMatrixPage /></Suspense>} />
+              <Route path="/producthub/ideas/insights" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AIInsightsPage /></Suspense>} />
+              <Route path="/producthub/ideas/analytics" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AnalyticsPage /></Suspense>} />
+              <Route path="/producthub/ideas/:ideaId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeaDetailPage /></Suspense>} />
 
               {/* Enterprise More Items */}
-              <Route path="/enterprise/ideation" element={<Navigate to="/industry/ideas/hub" replace />} />
+              <Route path="/enterprise/ideation" element={<Navigate to="/producthub/ideas/hub" replace />} />
               <Route path="/strategyhub/risks" element={<Suspense fallback={<div className="p-8">Loading...</div>}><EnterpriseRisks /></Suspense>} />
               <Route path="/enterprise/risks" element={<Navigate to="/strategyhub/risks" replace />} />
               <Route path="/enterprise/impediments" element={<EnterpriseComingSoon />} />

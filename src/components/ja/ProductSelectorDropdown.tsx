@@ -19,7 +19,7 @@ interface ProductSelectorDropdownProps {
 
 // Route mapping for product lines
 const PRODUCT_LINE_ROUTES: Record<string, string> = {
-  'Industry': '/industry',
+  'Industry': '/producthub',
   // Future product lines can be added here
 };
 

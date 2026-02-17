@@ -94,7 +94,7 @@ function DetailsCard({ idea }: { idea: any }) {
               Linked Initiative
             </label>
             <button 
-              onClick={() => navigate(`/industry/ideas/initiatives/${idea.initiative?.id}`)}
+              onClick={() => navigate(`/producthub/ideas/initiatives/${idea.initiative?.id}`)}
               className="mt-1.5 w-full p-3 rounded-lg bg-violet-50 border border-violet-100 text-left hover:bg-violet-100 transition-colors group"
             >
               <div className="flex items-center gap-2">
@@ -215,7 +215,7 @@ export default function IdeaDetailPageRebuilt() {
               <p className="text-red-600 mb-4">
                 The requested idea could not be loaded.
               </p>
-              <Button onClick={() => navigate('/industry/ideas/all')} variant="outline">
+              <Button onClick={() => navigate('/producthub/ideas/all')} variant="outline">
                 <ArrowLeft className="mr-2 h-4 w-4" /> Back to Ideas
               </Button>
             </CardContent>
