@@ -7505,7 +7505,6 @@ export type Database = {
           id: string
           name: string
           owner_id: string | null
-          status: Database["public"]["Enums"]["initiative_status"] | null
           target_pi_ids: Json | null
           theme_id: string
           updated_at: string | null
@@ -7518,7 +7517,6 @@ export type Database = {
           id?: string
           name: string
           owner_id?: string | null
-          status?: Database["public"]["Enums"]["initiative_status"] | null
           target_pi_ids?: Json | null
           theme_id: string
           updated_at?: string | null
@@ -7531,7 +7529,6 @@ export type Database = {
           id?: string
           name?: string
           owner_id?: string | null
-          status?: Database["public"]["Enums"]["initiative_status"] | null
           target_pi_ids?: Json | null
           theme_id?: string
           updated_at?: string | null
@@ -13326,6 +13323,145 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_departments: {
+        Row: {
+          code: string
+          id: string
+          name: string
+        }
+        Insert: {
+          code: string
+          id?: string
+          name: string
+        }
+        Update: {
+          code?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      ph_initiative_scores: {
+        Row: {
+          business_impact: number | null
+          computed_score: number | null
+          id: string
+          initiative_id: string
+          resource_feasibility: number | null
+          scored_at: string | null
+          scored_by: string | null
+          strategic_alignment: number | null
+          time_urgency: number | null
+        }
+        Insert: {
+          business_impact?: number | null
+          computed_score?: number | null
+          id?: string
+          initiative_id: string
+          resource_feasibility?: number | null
+          scored_at?: string | null
+          scored_by?: string | null
+          strategic_alignment?: number | null
+          time_urgency?: number | null
+        }
+        Update: {
+          business_impact?: number | null
+          computed_score?: number | null
+          id?: string
+          initiative_id?: string
+          resource_feasibility?: number | null
+          scored_at?: string | null
+          scored_by?: string | null
+          strategic_alignment?: number | null
+          time_urgency?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_initiative_scores_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: true
+            referencedRelation: "ph_initiatives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_initiatives: {
+        Row: {
+          assignee_id: string | null
+          business_ask_date: string | null
+          business_owner_id: string | null
+          created_at: string | null
+          department_id: string | null
+          description: string | null
+          id: string
+          initiative_key: string
+          is_archived: boolean | null
+          is_deleted: boolean | null
+          kickoff_date: string | null
+          progress: number | null
+          reporter_id: string | null
+          risk_count: number | null
+          sort_order: number | null
+          status: Database["public"]["Enums"]["initiative_status"]
+          target_complete: string | null
+          target_quarter: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          assignee_id?: string | null
+          business_ask_date?: string | null
+          business_owner_id?: string | null
+          created_at?: string | null
+          department_id?: string | null
+          description?: string | null
+          id?: string
+          initiative_key: string
+          is_archived?: boolean | null
+          is_deleted?: boolean | null
+          kickoff_date?: string | null
+          progress?: number | null
+          reporter_id?: string | null
+          risk_count?: number | null
+          sort_order?: number | null
+          status?: Database["public"]["Enums"]["initiative_status"]
+          target_complete?: string | null
+          target_quarter?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          assignee_id?: string | null
+          business_ask_date?: string | null
+          business_owner_id?: string | null
+          created_at?: string | null
+          department_id?: string | null
+          description?: string | null
+          id?: string
+          initiative_key?: string
+          is_archived?: boolean | null
+          is_deleted?: boolean | null
+          kickoff_date?: string | null
+          progress?: number | null
+          reporter_id?: string | null
+          risk_count?: number | null
+          sort_order?: number | null
+          status?: Database["public"]["Enums"]["initiative_status"]
+          target_complete?: string | null
+          target_quarter?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_initiatives_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "ph_departments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ph_issue_type_icons: {
         Row: {
           bg_color: string
@@ -13839,6 +13975,39 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_saved_views: {
+        Row: {
+          config: Json
+          created_at: string | null
+          id: string
+          is_default: boolean | null
+          is_shared: boolean | null
+          name: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          config: Json
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          is_shared?: boolean | null
+          name: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          is_shared?: boolean | null
+          name?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       ph_sync_log: {
         Row: {
           completed_at: string | null
@@ -13983,6 +14152,32 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_user_favorites: {
+        Row: {
+          created_at: string | null
+          initiative_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          initiative_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          initiative_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_user_favorites_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ph_user_mapping: {
         Row: {
           auto_matched: boolean | null
@@ -14019,6 +14214,36 @@ export type Database = {
           jira_display_name?: string | null
           jira_email?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      ph_user_preferences: {
+        Row: {
+          column_config: Json | null
+          default_view: string | null
+          density: string | null
+          id: string
+          page_size: number | null
+          user_id: string
+          view_id: string | null
+        }
+        Insert: {
+          column_config?: Json | null
+          default_view?: string | null
+          density?: string | null
+          id?: string
+          page_size?: number | null
+          user_id: string
+          view_id?: string | null
+        }
+        Update: {
+          column_config?: Json | null
+          default_view?: string | null
+          density?: string | null
+          id?: string
+          page_size?: number | null
+          user_id?: string
+          view_id?: string | null
         }
         Relationships: []
       }
@@ -41646,7 +41871,15 @@ export type Database = {
         | "resolved"
         | "converted"
         | "closed"
-      initiative_status: "proposed" | "active" | "done" | "cancelled"
+      initiative_status:
+        | "new_demand"
+        | "under_review"
+        | "approved"
+        | "in_progress"
+        | "on_hold"
+        | "delivered"
+        | "closed"
+        | "cancelled"
       injira_board_type: "kanban" | "scrum"
       injira_condition_type:
         | "user_in_group"
@@ -42322,7 +42555,16 @@ export const Constants = {
         "converted",
         "closed",
       ],
-      initiative_status: ["proposed", "active", "done", "cancelled"],
+      initiative_status: [
+        "new_demand",
+        "under_review",
+        "approved",
+        "in_progress",
+        "on_hold",
+        "delivered",
+        "closed",
+        "cancelled",
+      ],
       injira_board_type: ["kanban", "scrum"],
       injira_condition_type: [
         "user_in_group",
