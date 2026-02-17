@@ -30,7 +30,7 @@ const GROUP_LABELS: Record<WorkGroup, string> = {
 const MODE_STYLES: Record<string, { bg: string; text: string }> = {
   OPS: { bg: 'bg-[hsl(45,96%,89%)]', text: 'text-[hsl(26,90%,37%)]' },
   DEL: { bg: 'bg-[hsl(152,81%,96%)]', text: 'text-[hsl(164,82%,20%)]' },
-  PLN: { bg: 'bg-[hsl(217,92%,95%)]', text: 'text-[hsl(224,76%,48%)]' },
+  TSK: { bg: 'bg-[hsl(217,92%,95%)]', text: 'text-[hsl(224,76%,48%)]' },
   DEV: { bg: 'bg-[hsl(217,92%,95%)]', text: 'text-[hsl(224,76%,48%)]' },
   QA:  { bg: 'bg-[hsl(234,89%,94%)]', text: 'text-[hsl(234,43%,42%)]' },
 };

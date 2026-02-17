@@ -6,10 +6,10 @@ import { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
 
-export type WorkMode = 'OPS' | 'DEL' | 'PLN';
+export type WorkMode = 'OPS' | 'DEL' | 'TSK';
 export type WorkGroup = 'YESTERDAY' | 'THIS_WEEK' | 'EARLIER';
 export type TabType = 'worked' | 'assigned' | 'starred';
-export type ModeFilter = 'all' | 'ops' | 'del' | 'pln';
+export type ModeFilter = 'all' | 'ops' | 'del' | 'tsk';
 
 export interface WorkItemAssignee {
   id: string;
@@ -94,7 +94,7 @@ function getInitials(name: string): string {
 function inferMode(projectKey: string, issueType: string): WorkMode {
   const type = issueType?.toLowerCase() || '';
   if (type.includes('incident') || type.includes('bug') || type.includes('production')) return 'OPS';
-  if (type === 'task' || type === 'planner_task') return 'PLN';
+  if (type === 'task' || type === 'planner_task') return 'TSK';
   // Default to DEL (delivery) for stories, epics, sub-tasks, etc.
   return 'DEL';
 }
@@ -103,7 +103,7 @@ function inferMode(projectKey: string, issueType: string): WorkMode {
 function mapPlannerTaskToIssueRow(row: any) {
   return {
     issue_key: row.task_key,
-    project_key: row.task_key?.split('-')[0] || 'PLN',
+    project_key: row.task_key?.split('-')[0] || 'TSK',
     issue_type: 'planner_task',
     summary: row.title || '',
     status: row.status_name || 'Backlog',
