@@ -94,9 +94,28 @@ function getInitials(name: string): string {
 function inferMode(projectKey: string, issueType: string): WorkMode {
   const type = issueType?.toLowerCase() || '';
   if (type.includes('incident') || type.includes('bug') || type.includes('production')) return 'OPS';
-  if (type === 'task') return 'PLN';
+  if (type === 'task' || type === 'planner_task') return 'PLN';
   // Default to DEL (delivery) for stories, epics, sub-tasks, etc.
   return 'DEL';
+}
+
+// Map planner_tasks row to a ph_issues-compatible shape
+function mapPlannerTaskToIssueRow(row: any) {
+  return {
+    issue_key: row.task_key,
+    project_key: row.task_key?.split('-')[0] || 'PLN',
+    issue_type: 'planner_task',
+    summary: row.title || '',
+    status: row.status_name || 'Backlog',
+    status_category: null,
+    assignee_account_id: row.assignee_id,
+    assignee_display_name: row.assignee_name || 'Unassigned',
+    reporter_display_name: row.reporter_name || null,
+    priority: row.priority || 'medium',
+    jira_updated_at: row.updated_at,
+    parent_key: null,
+    parent_summary: null,
+  };
 }
 
 // Map ph_issues row to WorkItem
@@ -203,38 +222,78 @@ export function useForYouData() {
         return;
       }
 
-      // Wait for mapping resolution
-      if (jiraAccountIds.length === 0 && authUser?.id) {
-        // Check if mapping query has completed (give it a moment)
-        setIsLoading(false);
-        return;
-      }
-
       setIsLoading(true);
 
       try {
-        // Assigned: directly assigned to user
-        const { data: assigned } = await supabase
-          .from('ph_issues')
-          .select('issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, parent_key, parent_summary')
-          .in('assignee_account_id', jiraAccountIds)
-          .order('jira_updated_at', { ascending: false })
+        // --- Fetch planner_tasks (TaskHub) assigned to this user ---
+        const { data: plannerAssigned } = await supabase
+          .from('planner_tasks')
+          .select('task_key, title, priority, assignee_id, updated_at, status_id, workstream_id, reporter_id')
+          .eq('assignee_id', authUser.id)
+          .is('deleted_at', null)
+          .order('updated_at', { ascending: false })
           .limit(200);
 
-        setAssignedItems(assigned || []);
+        // Fetch assignee/reporter names for planner tasks
+        const plannerRows = plannerAssigned || [];
+        let plannerMapped: any[] = [];
+        if (plannerRows.length > 0) {
+          // Fetch status names
+          const statusIds = [...new Set(plannerRows.map(r => r.status_id).filter(Boolean))];
+          const { data: statuses } = statusIds.length > 0
+            ? await supabase.from('planner_statuses').select('id, name').in('id', statusIds)
+            : { data: [] };
+          const statusMap = new Map((statuses || []).map(s => [s.id, s.name]));
 
-        // Worked on: recently updated issues assigned to user (last 14 days)
-        const fourteenDaysAgo = new Date();
-        fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
-        const { data: worked } = await supabase
-          .from('ph_issues')
-          .select('issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, parent_key, parent_summary')
-          .in('assignee_account_id', jiraAccountIds)
-          .gte('jira_updated_at', fourteenDaysAgo.toISOString())
-          .order('jira_updated_at', { ascending: false })
-          .limit(200);
+          // Fetch assignee name
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('id, full_name')
+            .eq('id', authUser.id)
+            .single();
 
-        setWorkedOnItems(worked || []);
+          plannerMapped = plannerRows.map(row => mapPlannerTaskToIssueRow({
+            ...row,
+            assignee_name: profileData?.full_name || 'Unassigned',
+            status_name: statusMap.get(row.status_id) || 'Backlog',
+          }));
+        }
+
+        // --- Fetch Jira issues ---
+        let jiraAssigned: any[] = [];
+        let jiraWorked: any[] = [];
+
+        if (jiraAccountIds.length > 0) {
+          const { data: assigned } = await supabase
+            .from('ph_issues')
+            .select('issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, parent_key, parent_summary')
+            .in('assignee_account_id', jiraAccountIds)
+            .order('jira_updated_at', { ascending: false })
+            .limit(200);
+          jiraAssigned = assigned || [];
+
+          const fourteenDaysAgo = new Date();
+          fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+          const { data: worked } = await supabase
+            .from('ph_issues')
+            .select('issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, parent_key, parent_summary')
+            .in('assignee_account_id', jiraAccountIds)
+            .gte('jira_updated_at', fourteenDaysAgo.toISOString())
+            .order('jira_updated_at', { ascending: false })
+            .limit(200);
+          jiraWorked = worked || [];
+        }
+
+        // Merge Jira + planner tasks
+        setAssignedItems([...jiraAssigned, ...plannerMapped]);
+
+        // Worked on: Jira worked + recently updated planner tasks
+        const fourteenDaysAgo2 = new Date();
+        fourteenDaysAgo2.setDate(fourteenDaysAgo2.getDate() - 14);
+        const recentPlannerTasks = plannerMapped.filter(t => 
+          t.jira_updated_at && new Date(t.jira_updated_at) >= fourteenDaysAgo2
+        );
+        setWorkedOnItems([...jiraWorked, ...recentPlannerTasks]);
 
         // Starred: fetch from user_starred_items
         const { data: stars } = await supabase
@@ -247,7 +306,6 @@ export function useForYouData() {
           setStarredItems(starredKeys as any);
 
           // Fetch the actual starred issue data
-          // item_id might be UUID or issue_key, let's handle both
           const itemIds = stars.map(s => s.item_id);
           const { data: starredIssues } = await supabase
             .from('ph_issues')
@@ -255,7 +313,28 @@ export function useForYouData() {
             .in('issue_key', itemIds)
             .order('jira_updated_at', { ascending: false });
 
-          setStarredData(starredIssues || []);
+          // Also fetch starred planner tasks
+          const { data: starredPlannerTasks } = await supabase
+            .from('planner_tasks')
+            .select('task_key, title, priority, assignee_id, updated_at, status_id')
+            .in('task_key', itemIds)
+            .is('deleted_at', null);
+
+          let starredPlannerMapped: any[] = [];
+          if (starredPlannerTasks && starredPlannerTasks.length > 0) {
+            const stIds = [...new Set(starredPlannerTasks.map(r => r.status_id).filter(Boolean))];
+            const { data: sts } = stIds.length > 0
+              ? await supabase.from('planner_statuses').select('id, name').in('id', stIds)
+              : { data: [] };
+            const stMap = new Map((sts || []).map(s => [s.id, s.name]));
+            starredPlannerMapped = starredPlannerTasks.map(row => mapPlannerTaskToIssueRow({
+              ...row,
+              assignee_name: 'Unassigned',
+              status_name: stMap.get(row.status_id) || 'Backlog',
+            }));
+          }
+
+          setStarredData([...(starredIssues || []), ...starredPlannerMapped]);
         }
       } catch (err) {
         console.error('Error fetching ForYou data:', err);
