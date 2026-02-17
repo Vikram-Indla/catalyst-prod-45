@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import { Lock, ChevronDown, ChevronsLeft, ChevronsRight, Lightbulb, LayoutDashboard, List, Layers, Grid3X3, Sparkles, BarChart3, History, Star, FileText } from 'lucide-react';
+import { Lock, ChevronDown, ChevronsLeft, ChevronsRight, Lightbulb, LayoutDashboard, List, Layers, Grid3X3, Sparkles, BarChart3, History, Star, FileText, ClipboardList } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -157,6 +157,22 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
 
         {/* Navigation Menu */}
         <nav className="flex-1 overflow-y-auto" style={{ padding: '4px 8px' }}>
+
+          {/* INITIATIVES — Top-level nav item */}
+          <MenuItemButton
+            item={{
+              id: 'Initiatives Backlog',
+              title: 'Initiatives',
+              path: '/producthub/backlog',
+              exact: true,
+            }}
+            isActive={isActive('/producthub/backlog', true)}
+            expanded={expanded}
+            onClick={() => handleNavigation('/producthub/backlog')}
+            iconResolver={() => ClipboardList}
+            isFavorite={isFavorite}
+            toggleFavorite={toggleFavorite}
+          />
 
           {/* IDEAS COLLAPSIBLE GROUP — V10 styling */}
           <Collapsible defaultOpen={isIdeasRouteActive}>
