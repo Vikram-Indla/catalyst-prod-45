@@ -3,7 +3,7 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/comp
 
 interface UserAvatarProps {
   name: string | null;
-  size?: 16 | 20 | 24 | 28 | 32;
+  size?: 16 | 20 | 24 | 28 | 32 | 36;
   showName?: boolean;
   showTooltip?: boolean;
 }
@@ -14,6 +14,7 @@ const FONT_SIZE: Record<number, string> = {
   24: 'text-[10px]',
   28: 'text-[11px]',
   32: 'text-[12px]',
+  36: 'text-[13px]',
 };
 
 export function UserAvatar({ name, size = 24, showName = false, showTooltip = true }: UserAvatarProps) {
