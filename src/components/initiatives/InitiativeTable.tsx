@@ -9,6 +9,7 @@ import {
   type RowSelectionState,
   type ColumnResizeMode,
 } from '@tanstack/react-table';
+import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 import { format } from 'date-fns';
 import { Star, GripVertical, ChevronUp, ChevronDown } from 'lucide-react';
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
@@ -30,6 +31,7 @@ interface InitiativeTableProps {
   onSelectionChange: (selectedIds: string[]) => void;
   onSortChange: (sorting: { id: string; desc: boolean }[]) => void;
   onContextMenu?: (e: React.MouseEvent, initiative: Initiative) => void;
+  onReorder?: (sourceIndex: number, destinationIndex: number) => void;
 }
 
 const col = createColumnHelper<Initiative>();
@@ -63,10 +65,16 @@ export function InitiativeTable({
   onSelectionChange,
   onSortChange,
   onContextMenu,
+  onReorder,
 }: InitiativeTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const dc = DENSITY_CONFIG[density];
+
+  const handleDragEnd = useCallback((result: DropResult) => {
+    if (!result.destination || result.source.index === result.destination.index) return;
+    onReorder?.(result.source.index, result.destination.index);
+  }, [onReorder]);
 
   const handleSortingChange = useCallback(
     (updater: any) => {
@@ -312,101 +320,121 @@ export function InitiativeTable({
   });
 
   return (
-    <div className="border border-zinc-200 rounded-lg overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[1200px]" style={{ tableLayout: 'fixed' }}>
-          {/* Colgroup for widths */}
-          <colgroup>
-            {table.getVisibleFlatColumns().map((column) => (
-              <col key={column.id} style={{ width: column.getSize() }} />
-            ))}
-          </colgroup>
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <div className="border border-zinc-200 rounded-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[1200px]" style={{ tableLayout: 'fixed' }}>
+            {/* Colgroup for widths */}
+            <colgroup>
+              {table.getVisibleFlatColumns().map((column) => (
+                <col key={column.id} style={{ width: column.getSize() }} />
+              ))}
+            </colgroup>
 
-          {/* Header */}
-          <thead>
-            {table.getHeaderGroups().map((hg) => (
-              <tr key={hg.id} className="h-9 bg-zinc-50 border-b border-zinc-200 sticky top-0 z-10">
-                {hg.headers.map((header) => {
-                  const sorted = header.column.getIsSorted();
-                  const canSort = header.column.getCanSort();
-                  return (
-                    <th
-                      key={header.id}
-                      className="relative px-3 text-left text-[11px] uppercase font-semibold tracking-[0.05em] text-zinc-500 select-none whitespace-nowrap"
-                      style={{ width: header.getSize() }}
-                    >
-                      {header.isPlaceholder ? null : (
-                        <div
-                          className={`flex items-center gap-1 ${canSort ? 'cursor-pointer' : ''}`}
-                          onClick={header.column.getToggleSortingHandler()}
-                        >
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                          {canSort && (
-                            <span
-                              className={`transition-opacity ${
-                                sorted ? 'opacity-100' : 'opacity-0 group-hover/header:opacity-50'
-                              }`}
-                            >
-                              {sorted === 'asc' ? (
-                                <ChevronUp size={12} className="text-blue-600" />
-                              ) : sorted === 'desc' ? (
-                                <ChevronDown size={12} className="text-blue-600" />
-                              ) : (
-                                <ChevronUp size={12} className="text-zinc-400" />
-                              )}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                      {/* Resize handle */}
-                      {header.column.getCanResize() && (
-                        <div
-                          onMouseDown={header.getResizeHandler()}
-                          onTouchStart={header.getResizeHandler()}
-                          className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize bg-zinc-300 opacity-0 hover:opacity-100 transition-opacity"
-                        />
-                      )}
-                    </th>
-                  );
-                })}
-              </tr>
-            ))}
-          </thead>
-
-          {/* Body */}
-          <tbody>
-            {table.getRowModel().rows.map((row, idx) => {
-              const selected = row.getIsSelected();
-              const isCancelled = row.original.status === 'cancelled';
-              return (
-                <tr
-                  key={row.id}
-                  className={`
-                    group/row border-b border-zinc-100 transition-colors cursor-pointer
-                    ${dc.rowH} ${dc.text}
-                    ${selected ? 'bg-blue-50 border-l-2 border-l-blue-600' : ''}
-                    ${!selected && idx % 2 === 1 ? 'bg-[rgba(250,250,250,0.5)]' : ''}
-                    ${!selected ? 'hover:bg-zinc-50' : ''}
-                    ${isCancelled ? 'opacity-55' : ''}
-                  `}
-                  onClick={() => onRowClick(row.original)}
-                  onContextMenu={(e) => { e.preventDefault(); onContextMenu?.(e, row.original); }}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      className="px-3 align-middle whitespace-nowrap overflow-hidden text-ellipsis"
-                      style={{ width: cell.column.getSize() }}
-                    >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
+            {/* Header */}
+            <thead>
+              {table.getHeaderGroups().map((hg) => (
+                <tr key={hg.id} className="h-9 bg-zinc-50 border-b border-zinc-200 sticky top-0 z-10">
+                  {hg.headers.map((header) => {
+                    const sorted = header.column.getIsSorted();
+                    const canSort = header.column.getCanSort();
+                    return (
+                      <th
+                        key={header.id}
+                        className="relative px-3 text-left text-[11px] uppercase font-semibold tracking-[0.05em] text-zinc-500 select-none whitespace-nowrap"
+                        style={{ width: header.getSize() }}
+                      >
+                        {header.isPlaceholder ? null : (
+                          <div
+                            className={`flex items-center gap-1 ${canSort ? 'cursor-pointer' : ''}`}
+                            onClick={header.column.getToggleSortingHandler()}
+                          >
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {canSort && (
+                              <span
+                                className={`transition-opacity ${
+                                  sorted ? 'opacity-100' : 'opacity-0 group-hover/header:opacity-50'
+                                }`}
+                              >
+                                {sorted === 'asc' ? (
+                                  <ChevronUp size={12} className="text-blue-600" />
+                                ) : sorted === 'desc' ? (
+                                  <ChevronDown size={12} className="text-blue-600" />
+                                ) : (
+                                  <ChevronUp size={12} className="text-zinc-400" />
+                                )}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        {/* Resize handle */}
+                        {header.column.getCanResize() && (
+                          <div
+                            onMouseDown={header.getResizeHandler()}
+                            onTouchStart={header.getResizeHandler()}
+                            className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize bg-zinc-300 opacity-0 hover:opacity-100 transition-opacity"
+                          />
+                        )}
+                      </th>
+                    );
+                  })}
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              ))}
+            </thead>
+
+            {/* Body */}
+            <Droppable droppableId="initiative-table" type="ROW">
+              {(provided) => (
+                <tbody ref={provided.innerRef} {...provided.droppableProps}>
+                  {table.getRowModel().rows.map((row, idx) => {
+                    const selected = row.getIsSelected();
+                    const isCancelled = row.original.status === 'cancelled';
+                    return (
+                      <Draggable key={row.id} draggableId={row.id} index={idx}>
+                        {(dragProvided, snapshot) => (
+                          <tr
+                            ref={dragProvided.innerRef}
+                            {...dragProvided.draggableProps}
+                            className={`
+                              group/row border-b border-zinc-100 transition-colors cursor-pointer
+                              ${dc.rowH} ${dc.text}
+                              ${selected ? 'bg-blue-50 border-l-2 border-l-blue-600' : ''}
+                              ${!selected && idx % 2 === 1 ? 'bg-[rgba(250,250,250,0.5)]' : ''}
+                              ${!selected ? 'hover:bg-zinc-50' : ''}
+                              ${isCancelled ? 'opacity-55' : ''}
+                              ${snapshot.isDragging ? 'bg-white shadow-lg opacity-90' : ''}
+                            `}
+                            style={{
+                              ...dragProvided.draggableProps.style,
+                              display: snapshot.isDragging ? 'table' : undefined,
+                              tableLayout: snapshot.isDragging ? 'fixed' : undefined,
+                              width: snapshot.isDragging ? '100%' : undefined,
+                            }}
+                            onClick={() => onRowClick(row.original)}
+                            onContextMenu={(e) => { e.preventDefault(); onContextMenu?.(e, row.original); }}
+                          >
+                            {row.getVisibleCells().map((cell) => (
+                              <td
+                                key={cell.id}
+                                className="px-3 align-middle whitespace-nowrap overflow-hidden text-ellipsis"
+                                style={{ width: cell.column.getSize() }}
+                                {...(cell.column.id === 'drag' ? dragProvided.dragHandleProps : {})}
+                              >
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                              </td>
+                            ))}
+                          </tr>
+                        )}
+                      </Draggable>
+                    );
+                  })}
+                  {provided.placeholder}
+                </tbody>
+              )}
+            </Droppable>
+          </table>
+        </div>
       </div>
-    </div>
+    </DragDropContext>
   );
 }

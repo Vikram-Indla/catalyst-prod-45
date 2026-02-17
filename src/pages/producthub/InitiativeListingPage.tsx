@@ -44,6 +44,7 @@ export default function InitiativeListingPage() {
   const [quickFilter, setQuickFilter] = useState('all');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [sorting, setSorting] = useState<{ id: string; desc: boolean }[]>([]);
+  const [orderedData, setOrderedData] = useState<Initiative[] | null>(null);
 
   const [detailInitiative, setDetailInitiative] = useState<Initiative | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -52,13 +53,29 @@ export default function InitiativeListingPage() {
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const allInitiatives = data?.data ?? [];
+  const allInitiatives = orderedData ?? data?.data ?? [];
+
+  // Sync orderedData when source data loads
+  useEffect(() => {
+    if (data?.data && !orderedData) {
+      setOrderedData(data.data);
+    }
+  }, [data?.data, orderedData]);
 
   const filtered = useMemo(() => {
     let result = applyQuickFilter(allInitiatives, quickFilter);
     result = applySearch(result, searchQuery);
     return result;
   }, [allInitiatives, quickFilter, searchQuery]);
+
+  const handleReorder = useCallback((sourceIndex: number, destIndex: number) => {
+    setOrderedData(prev => {
+      const items = [...(prev ?? allInitiatives)];
+      const [moved] = items.splice(sourceIndex, 1);
+      items.splice(destIndex, 0, moved);
+      return items;
+    });
+  }, [allInitiatives]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -164,6 +181,7 @@ export default function InitiativeListingPage() {
             onSelectionChange={setSelectedIds}
             onSortChange={handleSortChange}
             onContextMenu={handleContextMenu}
+            onReorder={handleReorder}
           />
           <div className="h-11 flex items-center justify-between px-4 border-t border-zinc-200 text-xs text-zinc-500">
             <span>Showing 1–{filtered.length} of {filtered.length}</span>
