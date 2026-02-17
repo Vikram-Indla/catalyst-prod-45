@@ -169,52 +169,6 @@ export function LoginFormPanel({
   return (
     <main className="form-panel-v10" id="main-form">
       <div className="form-wrapper-v10">
-        {/* User Type Toggle */}
-        <div className="toggle-group-v10" role="tablist" aria-label="User type selection">
-          <button
-            type="button"
-            className={`toggle-btn-v10 ${userType === 'existing' ? 'active' : ''}`}
-            onClick={() => onUserTypeChange('existing')}
-            role="tab"
-            aria-selected={userType === 'existing'}
-          >
-            Existing User
-          </button>
-          <button
-            type="button"
-            className={`toggle-btn-v10 ${userType === 'external' ? 'active' : ''}`}
-            onClick={() => onUserTypeChange('external')}
-            role="tab"
-            aria-selected={userType === 'external'}
-          >
-            External User
-          </button>
-        </div>
-
-        {/* Auth Toggle - Only for Existing User */}
-        {showAuthToggle && (
-          <div className="toggle-group-v10 toggle-group-sm" role="tablist" aria-label="Authentication type">
-            <button
-              type="button"
-              className={`toggle-btn-v10 toggle-btn-sm ${authType === 'signin' ? 'active' : ''}`}
-              onClick={() => onAuthTypeChange('signin')}
-              role="tab"
-              aria-selected={authType === 'signin'}
-            >
-              Sign In
-            </button>
-            <button
-              type="button"
-              className={`toggle-btn-v10 toggle-btn-sm ${authType === 'signup' ? 'active' : ''}`}
-              onClick={() => onAuthTypeChange('signup')}
-              role="tab"
-              aria-selected={authType === 'signup'}
-            >
-              Sign Up
-            </button>
-          </div>
-        )}
-
         {/* Welcome Section */}
         <div className="welcome-section-v10" key={`${userType}-${authType}`}>
           <h2 className="welcome-title-v10">{welcome.title}</h2>
