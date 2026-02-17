@@ -204,11 +204,9 @@ export default function ForYouPage() {
               onTabChange={setActiveTab}
             />
 
-            <ForYouToolbar
+             <ForYouToolbar
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
-              isAIPanelOpen={isAIPanelOpen}
-              onToggleAIPanel={() => setIsAIPanelOpen(!isAIPanelOpen)}
             />
           </div>
 
