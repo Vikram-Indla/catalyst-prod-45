@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
 import { SidebarMenuItem } from './SidebarBase';
-import { PRODUCT_ROOM_NAV_ICONS } from '@/components/icons/ProductRoomNavIcons';
+
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import {
@@ -50,12 +50,6 @@ const IDEAS_NAV_ICONS: Record<string, React.ComponentType<{ className?: string }
   'Analytics': BarChart3,
 };
 
-// Main menu items (before Ideas)
-const MAIN_MENU_ITEMS: SidebarMenuItem[] = [
-  { id: 'Product Backlog', title: 'Product Backlog', path: '/industry/backlog', exact: false },
-  { id: 'Product Kanban', title: 'Product Kanban', path: '/industry/kanban', exact: true },
-  { id: 'Product Roadmap', title: 'Product Roadmap', path: '/industry/roadmaps-v1', exact: false },
-];
 
 
 export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoomSidebarProps) {
@@ -163,19 +157,6 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
 
         {/* Navigation Menu */}
         <nav className="flex-1 overflow-y-auto" style={{ padding: '4px 8px' }}>
-          {/* Main menu items before Ideas */}
-          {MAIN_MENU_ITEMS.map((item) => (
-            <MenuItemButton 
-              key={item.id}
-              item={item}
-              isActive={isActive(item.path, item.exact)}
-              expanded={expanded}
-              onClick={() => handleNavigation(item.path)}
-              iconResolver={(id) => PRODUCT_ROOM_NAV_ICONS[id]}
-              isFavorite={isFavorite}
-              toggleFavorite={toggleFavorite}
-            />
-          ))}
 
           {/* IDEAS COLLAPSIBLE GROUP — V10 styling */}
           <Collapsible defaultOpen={isIdeasRouteActive}>
