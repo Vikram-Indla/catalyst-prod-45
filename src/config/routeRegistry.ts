@@ -24,8 +24,8 @@ export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   '/strategyhub/okr-heatmap': { section: '', pageTitle: 'OKR Heatmap' },
   '/strategyhub/roadmaps': { section: '', pageTitle: 'Enterprise Roadmap' },
   '/strategyhub/risks': { section: '', pageTitle: 'Risks' },
-  '/strategyhub/capacity': { section: '', pageTitle: 'Capacity Planner' },
-  '/strategyhub/budget-planner': { section: '', pageTitle: 'Budget Planner' },
+  '/planhub/capacity': { section: '', pageTitle: 'Capacity Planner' },
+  '/planhub/budget-planner': { section: '', pageTitle: 'Budget Planner' },
   '/enterprise/work-tree': { section: '', pageTitle: 'Work Tree' },
   '/enterprise/kanban-boards': { section: '', pageTitle: 'Kanban Boards' },
   

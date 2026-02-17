@@ -11,10 +11,8 @@ import {
   Workflow, 
   Map, 
   Blocks, 
-  Users as UsersIcon, 
   TrendingUp,
   Settings,
-  Wallet,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
@@ -33,8 +31,6 @@ const enterpriseSidebarConfig: SidebarConfig = {
     { id: 'objective-tree', title: 'Strategy Tree', path: '/strategyhub/okr-hub', icon: Workflow, exact: false },
     { id: 'roadmaps', title: 'Strategy Roadmap', path: '/strategyhub/roadmaps', icon: Map, exact: false },
     { id: 'risks', title: 'Strategy Risks', path: '/strategyhub/risks', icon: Blocks, exact: false },
-    { id: 'capacity', title: 'Capacity Planner', path: '/strategyhub/capacity', icon: UsersIcon, exact: false },
-    { id: 'budget-planner', title: 'Budget Planner', path: '/strategyhub/budget-planner', icon: Wallet, exact: false },
     { id: 'reports', title: 'Strategy Reports', path: '/reports-discovery', icon: TrendingUp, exact: false },
   ],
   footerItem: {

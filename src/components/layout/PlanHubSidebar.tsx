@@ -15,6 +15,7 @@ import {
   Bot, 
   FileBarChart,
   Settings,
+  Wallet,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { SidebarBase, SidebarConfig, SidebarMenuItem } from './SidebarBase';
@@ -145,6 +146,10 @@ export function PlanHubSidebar({ expanded, onToggle, className }: PlanHubSidebar
     if (features?.report_center) {
       items.push({ id: 'reports', title: 'Report Center', path: '/planhub/reports', icon: FileBarChart });
     }
+
+    // Always show Capacity Planner and Budget Planner
+    items.push({ id: 'capacity', title: 'Capacity Planner', path: '/planhub/capacity', icon: Users });
+    items.push({ id: 'budget-planner', title: 'Budget Planner', path: '/planhub/budget-planner', icon: Wallet });
 
     return items;
   };

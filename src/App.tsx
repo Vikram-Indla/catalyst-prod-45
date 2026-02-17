@@ -402,7 +402,7 @@ const queryClient = new QueryClient();
 // Caty FAB on capacity planner and project hub routes
 function CatyWidgetRouteGuard() {
   const location = useLocation();
-  const showCaty = location.pathname.startsWith('/strategyhub/capacity') || location.pathname.startsWith('/enterprise/capacity') || location.pathname.startsWith('/projecthub');
+  const showCaty = location.pathname.startsWith('/planhub/capacity') || location.pathname.startsWith('/strategyhub/capacity') || location.pathname.startsWith('/enterprise/capacity') || location.pathname.startsWith('/projecthub');
   if (!showCaty) return null;
   return <CatyFabPlaceholder />;
 }
@@ -513,11 +513,11 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/programs" element={<PlaceholderPage />} />
               <Route path="/strategy-room" element={<StrategyRoomPage />} />
               <Route path="/strategyhub/strategy-room" element={<StrategyRoomPage />} />
-              <Route path="/strategyhub/strategy-room/capacity" element={<Navigate to="/strategyhub/capacity" replace />} />
-              <Route path="/strategyhub/capacity" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CapacityPlannerPage /></Suspense>} />
-              <Route path="/enterprise/capacity" element={<Navigate to="/strategyhub/capacity" replace />} />
+              <Route path="/strategyhub/strategy-room/capacity" element={<Navigate to="/planhub/capacity" replace />} />
+              <Route path="/strategyhub/capacity" element={<Navigate to="/planhub/capacity" replace />} />
+              <Route path="/enterprise/capacity" element={<Navigate to="/planhub/capacity" replace />} />
               <Route path="/enterprise/capacity-planner/budget" element={<Suspense fallback={<div className="p-8">Loading...</div>}><BudgetGovernancePage /></Suspense>} />
-              <Route path="/strategyhub/budget-planner" element={<Suspense fallback={<div className="p-8">Loading...</div>}><BudgetPlannerPage /></Suspense>} />
+              <Route path="/strategyhub/budget-planner" element={<Navigate to="/planhub/budget-planner" replace />} />
               <Route path="/strategyhub/snapshots" element={<StrategicSnapshots />} />
               <Route path="/strategyhub/backlog" element={<StrategicBacklog />} />
               <Route path="/strategyhub/okr-heatmap" element={<EnterpriseComingSoon />} />
@@ -631,6 +631,8 @@ const App = () => (
               <Route path="/planhub/resources" element={<PlanHubResourcesPage />} />
               <Route path="/planhub/ai" element={<PlanHubAIPage />} />
               <Route path="/planhub/reports" element={<PlanHubReportsPage />} />
+              <Route path="/planhub/capacity" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CapacityPlannerPage /></Suspense>} />
+              <Route path="/planhub/budget-planner" element={<Suspense fallback={<div className="p-8">Loading...</div>}><BudgetPlannerPage /></Suspense>} />
               
               {/* Mining */}
               <Route path="/mining" element={<MiningComingSoon />} />
