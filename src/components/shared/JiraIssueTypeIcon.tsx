@@ -94,6 +94,7 @@ const ICON_CONFIGS: Record<string, IconConfig> = {
   'API Requirement': { label: 'API Requirement', description: 'An API-related development requirement', bgColor: '#4BAEE8', render: renderSubtask },
   'Entity FIGMA': { label: 'Entity FIGMA', description: 'A design task linked to Figma', bgColor: '#4BAEE8', render: renderSubtask },
   'Figma': { label: 'Figma', description: 'A design task linked to Figma', bgColor: '#4BAEE8', render: renderSubtask },
+  'planner_task': { label: 'Task', description: 'A TaskHub task', bgColor: '#4BADE8', render: renderTask },
 };
 
 // Fallback: generic task icon
