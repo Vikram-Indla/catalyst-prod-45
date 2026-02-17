@@ -315,8 +315,8 @@ export function ForYouTable({
                         onStarToggle(item.id);
                       }}
                       className={cn(
-                        "shrink-0 p-1 rounded hover:bg-[hsl(210,40%,96%)] transition-colors opacity-0 group-hover:opacity-100",
-                        item.starred ? "text-[hsl(45,93%,47%)]" : "text-[hsl(215,16%,47%)]"
+                        "shrink-0 p-1 rounded hover:bg-[hsl(210,40%,96%)] transition-colors",
+                        item.starred ? "opacity-100 text-[hsl(45,93%,47%)]" : "opacity-0 group-hover:opacity-100 text-[hsl(215,16%,47%)]"
                       )}
                       aria-label={item.starred ? "Unstar item" : "Star item"}
                     >
