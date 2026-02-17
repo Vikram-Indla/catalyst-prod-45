@@ -1,4 +1,5 @@
 import { getAvatarColor, getInitials } from '@/types/initiative';
+import { formatShortName } from '@/lib/format-name';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 
 interface UserAvatarProps {
@@ -24,14 +25,16 @@ export function UserAvatar({ name, size = 24, showName = false, showTooltip = tr
     const unassigned = (
       <div className="flex items-center gap-2">
         <div
-          className="rounded-full border-2 border-dashed border-zinc-300 flex-shrink-0"
-          style={{ width: px, height: px }}
+          className="rounded-full flex-shrink-0"
+          style={{ width: px, height: px, border: '2px dashed #d4d4d8', background: 'transparent' }}
         />
         {showName && <span className="text-[13px] text-zinc-400 italic truncate">Unassigned</span>}
       </div>
     );
     return unassigned;
   }
+
+  const shortName = formatShortName(name);
 
   const avatar = (
     <div
@@ -45,7 +48,7 @@ export function UserAvatar({ name, size = 24, showName = false, showTooltip = tr
   const content = showName ? (
     <div className="flex items-center gap-2 min-w-0">
       {avatar}
-      <span className="text-[13px] text-zinc-900 truncate">{name}</span>
+      <span className="text-[13px] text-zinc-900 truncate">{shortName}</span>
     </div>
   ) : avatar;
 

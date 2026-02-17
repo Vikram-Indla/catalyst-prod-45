@@ -5,7 +5,9 @@ import { InitiativeTable } from '@/components/initiatives/InitiativeTable';
 import { DetailPanel } from '@/components/initiatives/DetailPanel';
 import { BulkActionBar } from '@/components/initiatives/BulkActionBar';
 import { ContextMenu } from '@/components/initiatives/ContextMenu';
-import { Toaster, toast } from '@/components/ui/sonner';
+import { Toaster } from '@/components/ui/sonner';
+import { showSuccess, showInfo } from '@/lib/toast-helpers';
+import { LayoutGrid, Calendar, Columns3, Table2 } from 'lucide-react';
 
 import type { Initiative, InitiativeStatus, Density, ViewMode } from '@/types/initiative';
 
@@ -35,6 +37,13 @@ function applySearch(data: Initiative[], query: string): Initiative[] {
     (i.department_name?.toLowerCase().includes(q))
   );
 }
+
+/* View placeholder icons */
+const VIEW_PLACEHOLDER_ICONS: Record<string, React.ReactNode> = {
+  board: <Columns3 size={48} className="text-zinc-300" />,
+  timeline: <Calendar size={48} className="text-zinc-300" />,
+  cards: <LayoutGrid size={48} className="text-zinc-300" />,
+};
 
 export default function InitiativeListingPage() {
   const { data, isLoading } = useInitiativesMock();
@@ -101,12 +110,12 @@ export default function InitiativeListingPage() {
 
   const handleStatusChange = useCallback((id: string, status: InitiativeStatus) => {
     console.log('Status change:', id, status);
-    toast.success(`Status updated to ${status.replace(/_/g, ' ')}`);
+    showSuccess(`Status updated to ${status.replace(/_/g, ' ')}`);
   }, []);
 
   const handleAssigneeChange = useCallback((id: string, assigneeId: string) => {
     console.log('Assignee change:', id, assigneeId);
-    toast.success('Assignee updated');
+    showSuccess('Assignee updated');
   }, []);
 
   const handleFavoriteToggle = useCallback((id: string, isFavorited: boolean) => {
@@ -134,7 +143,7 @@ export default function InitiativeListingPage() {
         break;
       case 'copy_id':
         navigator.clipboard.writeText(init.initiative_key);
-        toast.success('Copied!');
+        showSuccess('Copied!');
         break;
       default:
         console.log('Context action:', action, value);
@@ -143,12 +152,12 @@ export default function InitiativeListingPage() {
 
   const handleBulkAction = useCallback((action: string, value?: any) => {
     console.log('Bulk action:', action, selectedIds, value);
-    toast.success(`${selectedIds.length} items updated`);
+    showSuccess(`${selectedIds.length} items updated`);
   }, [selectedIds]);
 
   const handleScoreSave = useCallback((id: string, scores: { strategic_alignment: number; business_impact: number; time_urgency: number; resource_feasibility: number }) => {
     console.log('Score save:', id, scores);
-    toast.success('Score saved');
+    showSuccess('Score saved');
   }, []);
 
   return (
@@ -183,16 +192,23 @@ export default function InitiativeListingPage() {
             onContextMenu={handleContextMenu}
             onReorder={handleReorder}
           />
-          <div className="h-11 flex items-center justify-between px-4 border-t border-zinc-200 text-xs text-zinc-500">
-            <span>Showing 1–{filtered.length} of {filtered.length}</span>
-          </div>
+          {selectedIds.length === 0 && (
+            <div className="h-11 flex items-center justify-between px-4 border-t border-zinc-200 text-xs text-zinc-500">
+              <span>Showing 1–{filtered.length} of {filtered.length}</span>
+            </div>
+          )}
         </>
       ) : (
-        <div className="h-96 flex flex-col items-center justify-center gap-2 text-zinc-400">
-          <h3 className="text-base font-medium text-zinc-500">
+        /* View Placeholder — Prompt 5.4 */
+        <div className="h-96 flex flex-col items-center justify-center gap-1">
+          {VIEW_PLACEHOLDER_ICONS[activeView] || <Table2 size={48} className="text-zinc-300" />}
+          <h3 className="text-base font-semibold text-zinc-900 mt-4">
             {activeView.charAt(0).toUpperCase() + activeView.slice(1)} View
           </h3>
-          <p className="text-sm">Coming Soon</p>
+          <p className="text-sm text-zinc-500 mt-1">Coming Soon</p>
+          <p className="text-[13px] text-zinc-400 mt-2 max-w-[300px] text-center">
+            This view is under development and will be available shortly.
+          </p>
         </div>
       )}
 
