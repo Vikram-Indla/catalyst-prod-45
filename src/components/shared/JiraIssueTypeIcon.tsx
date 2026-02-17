@@ -16,6 +16,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 interface IconConfig {
   label: string;
+  description: string;
   bgColor: string;
   render: (size: number) => React.ReactNode;
 }
@@ -74,30 +75,31 @@ function renderIncident(size: number) {
 
 // The master config map
 const ICON_CONFIGS: Record<string, IconConfig> = {
-  'Epic': { label: 'Epic', bgColor: '#904EE2', render: renderEpic },
-  'Story': { label: 'Story', bgColor: '#63BA3C', render: renderStory },
-  'Task': { label: 'Task', bgColor: '#4BADE8', render: renderTask },
-  'Sub-task': { label: 'Sub-task', bgColor: '#4BAEE8', render: renderSubtask },
-  'Defect': { label: 'Defect', bgColor: '#E5493A', render: renderBug },
-  'Bug': { label: 'Bug', bgColor: '#E5493A', render: renderBug },
-  'QA Bug': { label: 'QA Bug', bgColor: '#E5493A', render: renderBug },
-  'Production Incident': { label: 'Incident', bgColor: '#FF5630', render: renderIncident },
-  'Business Request': { label: 'Business Request', bgColor: '#00B8D9', render: renderStory },
-  'Business Gap': { label: 'Business Gap', bgColor: '#00B8D9', render: renderStory },
-  'Change Request': { label: 'Change Request', bgColor: '#FF991F', render: renderStory },
+  'Epic': { label: 'Epic', description: 'A large body of work that spans multiple sprints or teams', bgColor: '#904EE2', render: renderEpic },
+  'Story': { label: 'Story', description: 'A user-facing feature or requirement to be delivered', bgColor: '#63BA3C', render: renderStory },
+  'Task': { label: 'Task', description: 'A unit of work that needs to be completed', bgColor: '#4BADE8', render: renderTask },
+  'Sub-task': { label: 'Sub-task', description: 'A smaller piece of work that is part of a parent issue', bgColor: '#4BAEE8', render: renderSubtask },
+  'Defect': { label: 'Defect', description: 'A software bug or issue that needs to be fixed', bgColor: '#E5493A', render: renderBug },
+  'Bug': { label: 'Bug', description: 'A software bug or issue found during testing', bgColor: '#E5493A', render: renderBug },
+  'QA Bug': { label: 'QA Bug', description: 'A bug found during QA testing', bgColor: '#E5493A', render: renderBug },
+  'Production Incident': { label: 'Incident', description: 'A live production issue requiring urgent attention', bgColor: '#FF5630', render: renderIncident },
+  'Business Request': { label: 'Business Request', description: 'A demand or requirement raised by the business', bgColor: '#00B8D9', render: renderStory },
+  'Business Gap': { label: 'Business Gap', description: 'An identified gap in business capabilities', bgColor: '#00B8D9', render: renderStory },
+  'Change Request': { label: 'Change Request', description: 'A formal request to modify existing functionality', bgColor: '#FF991F', render: renderStory },
   // Sub-task variants all use the subtask icon
-  'Frontend': { label: 'Frontend', bgColor: '#4BAEE8', render: renderSubtask },
-  'Backend': { label: 'Backend', bgColor: '#4BAEE8', render: renderSubtask },
-  'Integration': { label: 'Integration', bgColor: '#4BAEE8', render: renderSubtask },
-  'BRD Task': { label: 'BRD Task', bgColor: '#4BAEE8', render: renderSubtask },
-  'API Requirement': { label: 'API Requirement', bgColor: '#4BAEE8', render: renderSubtask },
-  'Entity FIGMA': { label: 'Entity FIGMA', bgColor: '#4BAEE8', render: renderSubtask },
-  'Figma': { label: 'Figma', bgColor: '#4BAEE8', render: renderSubtask },
+  'Frontend': { label: 'Frontend', description: 'A front-end development sub-task', bgColor: '#4BAEE8', render: renderSubtask },
+  'Backend': { label: 'Backend', description: 'A back-end development sub-task', bgColor: '#4BAEE8', render: renderSubtask },
+  'Integration': { label: 'Integration', description: 'An integration development sub-task', bgColor: '#4BAEE8', render: renderSubtask },
+  'BRD Task': { label: 'BRD Task', description: 'A task derived from a Business Requirements Document', bgColor: '#4BAEE8', render: renderSubtask },
+  'API Requirement': { label: 'API Requirement', description: 'An API-related development requirement', bgColor: '#4BAEE8', render: renderSubtask },
+  'Entity FIGMA': { label: 'Entity FIGMA', description: 'A design task linked to Figma', bgColor: '#4BAEE8', render: renderSubtask },
+  'Figma': { label: 'Figma', description: 'A design task linked to Figma', bgColor: '#4BAEE8', render: renderSubtask },
 };
 
 // Fallback: generic task icon
 const FALLBACK_CONFIG: IconConfig = {
   label: 'Unknown',
+  description: 'An unrecognized work item type',
   bgColor: '#6B778C',
   render: renderTask,
 };
@@ -137,8 +139,9 @@ export function JiraIssueTypeIcon({ issueType, size = 16, className }: JiraIssue
         <TooltipTrigger asChild>
           {icon}
         </TooltipTrigger>
-        <TooltipContent side="top" sideOffset={4}>
-          {config.label}
+        <TooltipContent side="top" sideOffset={4} className="max-w-[220px]">
+          <p className="font-semibold text-xs">{config.label}</p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">{config.description}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

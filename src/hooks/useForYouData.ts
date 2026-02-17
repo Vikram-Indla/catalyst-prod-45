@@ -24,6 +24,7 @@ export interface WorkItem {
   summary: string;
   mode: WorkMode;
   level: string;
+  project: string;
   updatedAt: string;
   assignee: WorkItemAssignee;
   reporter?: string;
@@ -119,14 +120,16 @@ function mapPlannerTaskToIssueRow(row: any) {
 }
 
 // Map ph_issues row to WorkItem
-function mapIssueToWorkItem(row: any, starredSet: Set<string>): WorkItem {
+function mapIssueToWorkItem(row: any, starredSet: Set<string>, projectNameMap: Map<string, string>): WorkItem {
   const assigneeName = row.assignee_display_name || 'Unassigned';
+  const projectKey = row.project_key || '';
   return {
     id: row.issue_key,
     key: row.issue_key,
     summary: row.summary || '',
-    mode: inferMode(row.project_key, row.issue_type),
+    mode: inferMode(projectKey, row.issue_type),
     level: row.issue_type || 'Task',
+    project: projectNameMap.get(projectKey) || projectKey,
     issueType: row.issue_type || 'Task',
     updatedAt: row.jira_updated_at ? formatRelativeTime(row.jira_updated_at) : '-',
     assignee: {
@@ -159,6 +162,7 @@ export function useForYouData() {
   const [starredData, setStarredData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [jiraAccountIds, setJiraAccountIds] = useState<string[]>([]);
+  const [projectNameMap, setProjectNameMap] = useState<Map<string, string>>(new Map());
 
   // Fetch actual user profile
   const { user: authUser } = useAuth();
@@ -225,6 +229,16 @@ export function useForYouData() {
       setIsLoading(true);
 
       try {
+        // Fetch Jira project names for display
+        const { data: jiraProjects } = await supabase
+          .from('ph_jira_projects')
+          .select('project_key, name');
+        if (jiraProjects) {
+          const pMap = new Map<string, string>();
+          jiraProjects.forEach(p => pMap.set(p.project_key, p.name));
+          setProjectNameMap(pMap);
+        }
+
         // --- Fetch planner_tasks (TaskHub) assigned to this user ---
         const { data: plannerAssigned } = await supabase
           .from('planner_tasks')
@@ -363,7 +377,7 @@ export function useForYouData() {
 
   // Filtered and grouped work items
   const filteredItems = useMemo(() => {
-    let items = sourceItems.map(row => mapIssueToWorkItem(row, starredItems));
+    let items = sourceItems.map(row => mapIssueToWorkItem(row, starredItems, projectNameMap));
 
     // Filter by mode
     if (activeMode !== 'all') {
@@ -380,7 +394,7 @@ export function useForYouData() {
     }
 
     return items;
-  }, [sourceItems, activeMode, searchQuery, starredItems]);
+  }, [sourceItems, activeMode, searchQuery, starredItems, projectNameMap]);
 
   // Group items
   const groupedItems = useMemo(() => {

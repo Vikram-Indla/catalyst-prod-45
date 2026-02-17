@@ -26,15 +26,6 @@ const GROUP_LABELS: Record<WorkGroup, string> = {
   EARLIER: 'Earlier',
 };
 
-// CATALYST10 v3 — Sophisticated muted enterprise tones
-const MODE_STYLES: Record<string, { bg: string; text: string }> = {
-  OPS: { bg: 'bg-[hsl(45,96%,89%)]', text: 'text-[hsl(26,90%,37%)]' },
-  DEL: { bg: 'bg-[hsl(152,81%,96%)]', text: 'text-[hsl(164,82%,20%)]' },
-  TSK: { bg: 'bg-[hsl(217,92%,95%)]', text: 'text-[hsl(224,76%,48%)]' },
-  DEV: { bg: 'bg-[hsl(217,92%,95%)]', text: 'text-[hsl(224,76%,48%)]' },
-  QA:  { bg: 'bg-[hsl(234,89%,94%)]', text: 'text-[hsl(234,43%,42%)]' },
-};
-
 // Priority color map — deep sophisticated tones
 const PRIORITY_COLORS: Record<string, string> = {
   Highest: 'hsl(0,72%,51%)',     // red-600 #dc2626
@@ -171,7 +162,7 @@ export function ForYouTable({
       )}
     >
       {/* Column Headers — 11px/600 slate-500 uppercase tracking-wide */}
-      <div className="grid grid-cols-[40px_120px_1fr_80px_80px_160px] gap-4 px-4 py-3 bg-[hsl(210,40%,98%)] border-b border-[hsl(214,32%,91%)]">
+      <div className="grid grid-cols-[40px_120px_1fr_160px_80px_160px] gap-4 px-4 py-3 bg-[hsl(210,40%,98%)] border-b border-[hsl(214,32%,91%)]">
         <div className="flex items-center">
           <Checkbox 
             checked={isAllSelected}
@@ -187,7 +178,7 @@ export function ForYouTable({
           Summary
         </span>
         <span className="text-[11px] font-semibold text-[hsl(215,16%,47%)] uppercase tracking-[0.06em] flex items-center">
-          Mode
+          Project
         </span>
         <span className="text-[11px] font-semibold text-[hsl(215,16%,47%)] uppercase tracking-[0.06em] flex items-center">
           Updated
@@ -224,7 +215,7 @@ export function ForYouTable({
                   onRowClick(item.id);
                 }}
                 className={cn(
-                  "relative grid grid-cols-[40px_120px_1fr_80px_80px_160px] gap-4 px-4 py-3 cursor-pointer transition-[background] duration-100 group",
+                  "relative grid grid-cols-[40px_120px_1fr_160px_80px_160px] gap-4 px-4 py-3 cursor-pointer transition-[background] duration-100 group",
                   "border-b border-[hsl(210,40%,96%)]",
                   indexInGroup === groupedItems[group].length - 1 && "border-b-0",
                   isSelected && "bg-[hsl(217,91%,95%)]",
@@ -268,14 +259,10 @@ export function ForYouTable({
                   {item.summary}
                 </div>
 
-                {/* Mode Badge — Muted enterprise tones */}
+                {/* Project Name */}
                 <div className="flex items-center">
-                  <span className={cn(
-                    "inline-flex items-center px-2 py-0.5 rounded-[5px] text-[11px] font-semibold",
-                    MODE_STYLES[item.mode]?.bg || 'bg-[hsl(210,40%,96%)]',
-                    MODE_STYLES[item.mode]?.text || 'text-[hsl(215,16%,47%)]',
-                  )}>
-                    {item.mode}
+                  <span className="text-[12px] font-medium text-[hsl(215,25%,27%)] truncate" title={item.project}>
+                    {item.project}
                   </span>
                 </div>
 
