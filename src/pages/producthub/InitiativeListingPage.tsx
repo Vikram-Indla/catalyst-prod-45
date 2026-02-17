@@ -2,6 +2,9 @@ import { useState, useCallback, useMemo } from 'react';
 import { useInitiativesMock } from '@/hooks/useInitiativesMock';
 import { InitiativeToolbar } from '@/components/initiatives/InitiativeToolbar';
 import { InitiativeTable } from '@/components/initiatives/InitiativeTable';
+import { DetailPanel } from '@/components/initiatives/DetailPanel';
+import { BulkActionBar } from '@/components/initiatives/BulkActionBar';
+import { ContextMenu } from '@/components/initiatives/ContextMenu';
 import type { Initiative, InitiativeStatus, Density, ViewMode } from '@/types/initiative';
 
 const TERMINAL_STATUSES: InitiativeStatus[] = ['delivered', 'closed', 'cancelled'];
@@ -39,6 +42,13 @@ export default function InitiativeListingPage() {
   const [quickFilter, setQuickFilter] = useState('all');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
+  // Detail panel state
+  const [detailInitiative, setDetailInitiative] = useState<Initiative | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+
+  // Context menu state
+  const [contextMenu, setContextMenu] = useState<{ pos: { x: number; y: number }; initiative: Initiative } | null>(null);
+
   const allInitiatives = data?.data ?? [];
 
   const filtered = useMemo(() => {
@@ -48,7 +58,8 @@ export default function InitiativeListingPage() {
   }, [allInitiatives, quickFilter, searchQuery]);
 
   const handleRowClick = useCallback((initiative: Initiative) => {
-    console.log('Row clicked:', initiative.initiative_key);
+    setDetailInitiative(initiative);
+    setDetailOpen(true);
   }, []);
 
   const handleStatusChange = useCallback((id: string, status: InitiativeStatus) => {
@@ -65,6 +76,38 @@ export default function InitiativeListingPage() {
 
   const handleSortChange = useCallback((sorting: { id: string; desc: boolean }[]) => {
     console.log('Sort:', sorting);
+  }, []);
+
+  const handleContextMenu = useCallback((e: React.MouseEvent, initiative: Initiative) => {
+    setContextMenu({ pos: { x: e.clientX, y: e.clientY }, initiative });
+  }, []);
+
+  const handleContextAction = useCallback((action: string, value?: any) => {
+    if (!contextMenu) return;
+    const init = contextMenu.initiative;
+    switch (action) {
+      case 'open':
+        setDetailInitiative(init);
+        setDetailOpen(true);
+        break;
+      case 'change_status':
+        handleStatusChange(init.id, value);
+        break;
+      default:
+        console.log('Context action:', action, value);
+    }
+  }, [contextMenu, handleStatusChange]);
+
+  const handleBulkAction = useCallback((action: string, value?: any) => {
+    console.log('Bulk action:', action, selectedIds, value);
+  }, [selectedIds]);
+
+  const handleBulkCancel = useCallback(() => {
+    setSelectedIds([]);
+  }, []);
+
+  const handleScoreSave = useCallback((id: string, scores: { strategic_alignment: number; business_impact: number; time_urgency: number; resource_feasibility: number }) => {
+    console.log('Score save:', id, scores);
   }, []);
 
   return (
@@ -94,12 +137,37 @@ export default function InitiativeListingPage() {
           onFavoriteToggle={handleFavoriteToggle}
           onSelectionChange={setSelectedIds}
           onSortChange={handleSortChange}
+          onContextMenu={handleContextMenu}
         />
       ) : (
         <div className="flex items-center justify-center h-64 text-zinc-400 text-sm">
           {activeView.charAt(0).toUpperCase() + activeView.slice(1)} View — Coming Soon
         </div>
       )}
+
+      {/* Detail Panel */}
+      <DetailPanel
+        initiative={detailInitiative}
+        isOpen={detailOpen}
+        onClose={() => setDetailOpen(false)}
+        onStatusChange={handleStatusChange}
+        onScoreSave={handleScoreSave}
+      />
+
+      {/* Bulk Action Bar */}
+      <BulkActionBar
+        selectedCount={selectedIds.length}
+        onAction={handleBulkAction}
+        onCancel={handleBulkCancel}
+      />
+
+      {/* Context Menu */}
+      <ContextMenu
+        position={contextMenu?.pos ?? null}
+        initiative={contextMenu?.initiative ?? null}
+        onAction={handleContextAction}
+        onClose={() => setContextMenu(null)}
+      />
     </div>
   );
 }
