@@ -6,6 +6,7 @@ import { DetailPanel } from '@/components/initiatives/DetailPanel';
 import { BulkActionBar } from '@/components/initiatives/BulkActionBar';
 import { ContextMenu } from '@/components/initiatives/ContextMenu';
 import { Toaster, toast } from '@/components/ui/sonner';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import type { Initiative, InitiativeStatus, Density, ViewMode } from '@/types/initiative';
 
 const TERMINAL_STATUSES: InitiativeStatus[] = ['delivered', 'closed', 'cancelled'];
@@ -134,7 +135,12 @@ export default function InitiativeListingPage() {
   }, []);
 
   return (
-    <div className="px-6 pt-4 pb-6">
+    <div className="flex flex-col h-full">
+      <CommandCenterHeader
+        title="Product Backlog"
+        subtitle="Strategic demand pipeline — prioritization, scoring & lifecycle tracking"
+      />
+      <div className="px-6 pt-4 pb-6">
       <InitiativeToolbar
         activeView={activeView}
         onViewChange={setActiveView}
@@ -199,6 +205,7 @@ export default function InitiativeListingPage() {
       />
 
       <Toaster position="bottom-right" />
+      </div>
     </div>
   );
 }
