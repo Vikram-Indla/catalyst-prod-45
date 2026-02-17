@@ -222,9 +222,15 @@ export function useForYouData() {
 
         setAssignedItems(assigned || []);
 
-        // Worked on: for now same as assigned (user's name appears as assignee)
-        // In future, can expand to check comments/changelog
-        setWorkedOnItems(assigned || []);
+        // Worked on: issues where user is assignee OR reporter (broader engagement)
+        const { data: worked } = await supabase
+          .from('ph_issues')
+          .select('issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, parent_key, parent_summary')
+          .or(jiraAccountIds.map(id => `assignee_account_id.eq.${id},reporter_account_id.eq.${id}`).join(','))
+          .order('jira_updated_at', { ascending: false })
+          .limit(200);
+
+        setWorkedOnItems(worked || []);
 
         // Starred: fetch from user_starred_items
         const { data: stars } = await supabase
