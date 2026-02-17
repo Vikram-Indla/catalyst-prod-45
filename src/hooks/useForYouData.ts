@@ -93,7 +93,7 @@ function getInitials(name: string): string {
 // Helper: infer mode from project_key or issue_type
 function inferMode(projectKey: string, issueType: string): WorkMode {
   const type = issueType?.toLowerCase() || '';
-  if (type.includes('incident') || type.includes('bug') || type.includes('production')) return 'OPS';
+  if (type.includes('incident') || type.includes('production')) return 'OPS';
   if (type === 'task' || type === 'planner_task') return 'TSK';
   // Default to DEL (delivery) for stories, epics, sub-tasks, etc.
   return 'DEL';
