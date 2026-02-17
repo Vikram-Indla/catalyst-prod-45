@@ -13383,6 +13383,13 @@ export type Database = {
             referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ph_initiative_scores_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: true
+            referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
         ]
       }
       ph_initiatives: {
@@ -14174,6 +14181,13 @@ export type Database = {
             columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "ph_initiatives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_user_favorites_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
           },
         ]
@@ -37258,6 +37272,46 @@ export type Database = {
           summary: string | null
         }
         Relationships: []
+      }
+      ph_initiatives_list: {
+        Row: {
+          assignee_id: string | null
+          business_ask_date: string | null
+          business_owner_id: string | null
+          computed_score: number | null
+          created_at: string | null
+          department_code: string | null
+          department_id: string | null
+          department_name: string | null
+          description: string | null
+          id: string | null
+          initiative_key: string | null
+          is_archived: boolean | null
+          is_deleted: boolean | null
+          kickoff_date: string | null
+          progress: number | null
+          reporter_id: string | null
+          risk_count: number | null
+          score_business_impact: number | null
+          score_resource_feasibility: number | null
+          score_strategic_alignment: number | null
+          score_time_urgency: number | null
+          sort_order: number | null
+          status: Database["public"]["Enums"]["initiative_status"] | null
+          target_complete: string | null
+          target_quarter: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_initiatives_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "ph_departments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ph_overview_stats: {
         Row: {
