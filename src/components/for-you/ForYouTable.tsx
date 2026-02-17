@@ -238,13 +238,8 @@ export function ForYouTable({
                   />
                 </div>
 
-                {/* Key with priority square + Jira icon */}
+                {/* Key with Jira icon */}
                 <div className="flex items-center gap-2">
-                  {/* Priority square — 8×8 deep tones */}
-                  <div 
-                    className="w-2 h-2 rounded-[2px] shrink-0"
-                    style={{ backgroundColor: priorityColor }}
-                  />
                   <JiraIssueTypeIcon issueType={item.issueType} size={14} />
                   <a 
                     className="text-[13px] font-medium text-[hsl(215,25%,27%)] tabular-nums font-[Inter,monospace] hover:underline cursor-pointer"

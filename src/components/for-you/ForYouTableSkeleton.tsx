@@ -41,7 +41,6 @@ export function ForYouTableSkeleton({ rowCount = 5 }: ForYouTableSkeletonProps) 
             <div className="w-[15px] h-[15px] bg-[hsl(210,40%,93%)] rounded animate-pulse" />
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-[hsl(210,40%,93%)] rounded-[2px] animate-pulse" />
             <div className="h-4 w-14 bg-[hsl(210,40%,93%)] rounded animate-pulse" />
           </div>
           <div className="flex items-center">
