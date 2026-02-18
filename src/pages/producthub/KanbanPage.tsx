@@ -8,6 +8,7 @@ import type { Initiative } from '@/types/initiative';
 import type { FilterChip } from '@/types/producthub/initiative';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 import type { SwimlaneField } from '@/components/producthub/kanban/KanbanColumn';
+import { KanbanDiagnostics } from '@/components/producthub/kanban/KanbanDiagnostics';
 
 /** Adapt Initiative → TimelineInitiative for the detail panel */
 function toTimelineInitiative(i: Initiative): TimelineInitiative {
@@ -158,6 +159,8 @@ export default function KanbanPage() {
           onClose={handleCloseDetail}
         />
       )}
+
+      <KanbanDiagnostics />
     </div>
   );
 }
