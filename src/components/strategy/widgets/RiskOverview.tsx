@@ -133,7 +133,7 @@ export function RiskOverview() {
       </div>
 
       {/* B) ROAM Distribution Bar */}
-      <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--catalyst-text-secondary)', marginBottom: 4 }}>ROAM Status</div>
+      <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--catalyst-text-primary)', marginBottom: 4 }}>ROAM Status</div>
       <div className="flex overflow-hidden mb-1" style={{ height: 12, borderRadius: 9999 }}>
         {roamTotal > 0 && (['Resolved', 'Owned', 'Accepted', 'Mitigated'] as const).map(method => {
           const count = roamCounts[method];
@@ -143,7 +143,7 @@ export function RiskOverview() {
           );
         })}
       </div>
-      <div className="flex flex-wrap gap-2 mb-3" style={{ fontSize: 9, color: 'var(--catalyst-text-tertiary)' }}>
+      <div className="flex flex-wrap gap-2 mb-3" style={{ fontSize: 9, color: 'var(--catalyst-text-secondary)' }}>
         {(['Resolved', 'Owned', 'Accepted', 'Mitigated'] as const).map(m => (
           <span key={m} className="flex items-center gap-1">
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: ROAM_COLORS[m] }} />
@@ -153,7 +153,7 @@ export function RiskOverview() {
       </div>
 
       {/* C) Impact Heatstrip */}
-      <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--catalyst-text-secondary)', marginBottom: 4 }}>By Impact</div>
+      <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--catalyst-text-primary)', marginBottom: 4 }}>By Impact</div>
       <div className="flex gap-1 mb-3">
         {(['Critical', 'High', 'Medium', 'Low'] as const).map(level => {
           const count = impactCounts[level];
@@ -172,7 +172,7 @@ export function RiskOverview() {
       </div>
 
       {/* D) Top Risks List */}
-      <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--catalyst-text-secondary)', marginBottom: 4 }}>Top Risks</div>
+      <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--catalyst-text-primary)', marginBottom: 4 }}>Top Risks</div>
       <div>
         {topRisks.map((risk, i) => {
           const isOverdue = risk.target_resolution_date && new Date(risk.target_resolution_date) < new Date();
@@ -194,9 +194,9 @@ export function RiskOverview() {
                   <span style={{ fontFamily: 'monospace', fontSize: 10, marginRight: 4 }}>R-{String(risk.risk_number).padStart(3, '0')}</span>
                   {risk.title}
                 </div>
-                <div style={{ fontSize: 9, color: 'var(--catalyst-text-tertiary)' }}>
+                <div style={{ fontSize: 9, color: 'var(--catalyst-text-secondary)' }}>
                   {risk.occurrence || '—'} occurrence · {risk.relationship || 'Enterprise'}
-                  {isOverdue && <span style={{ color: '#EF4444', marginLeft: 4 }}>⚠ Overdue</span>}
+                  {isOverdue && <span style={{ color: '#EF4444', fontWeight: 600, marginLeft: 4 }}>⚠ Overdue</span>}
                 </div>
               </div>
               <div style={{ flexShrink: 0 }}>
@@ -210,7 +210,7 @@ export function RiskOverview() {
       {openRisks.length > 3 && (
         <button
           onClick={() => navigate('/strategyhub/risks')}
-          style={{ fontSize: 10, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', marginTop: 4, padding: 0 }}
+          style={{ fontSize: 10, color: '#2563EB', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', marginTop: 4, padding: 0 }}
           onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }}
           onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}
         >

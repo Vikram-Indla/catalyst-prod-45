@@ -56,7 +56,7 @@ const LETTER_POS: Record<string, { x: number; y: number }> = {
 };
 
 const FONT_SIZES: Record<string, number> = {
-  mission: 26, vision: 30, themes: 34, goals: 36, krs: 38,
+  mission: 20, vision: 28, themes: 34, goals: 36, krs: 38,
 };
 
 export function StrategyPyramid() {
