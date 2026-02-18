@@ -8,6 +8,7 @@ import { useState, useMemo } from 'react';
 import { Drawer } from '../shared/Drawer';
 import { KrListItem } from '../shared/KrListItem';
 import { useOkrHeatmap } from '@/hooks/strategy/useStrategyData';
+import { formatThemeName } from '@/utils/strategy/formatThemeName';
 import type { OkrStatus } from '@/types/strategy';
 
 const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
@@ -133,7 +134,7 @@ export function OkrHeatmap() {
                 <td style={{ fontSize: 11, fontWeight: 600, color: 'var(--catalyst-text-primary)', padding: '6px 8px' }}>
                   <div className="flex items-center gap-2">
                     <span style={{ width: 6, height: 6, borderRadius: '50%', background: row.themeColor, flexShrink: 0 }} />
-                    {row.themeName.length > 16 ? row.themeName.substring(0, 14) + '.' : row.themeName}
+                    {formatThemeName(row.themeName)}
                   </div>
                 </td>
                 {QUARTERS.map(q => {

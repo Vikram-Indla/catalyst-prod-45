@@ -76,10 +76,10 @@ export function CapacityOverview() {
   }
 
   return (
-    <div onClick={() => navigate('/planhub/capacity')} style={{ cursor: 'pointer' }}>
+    <div onClick={() => navigate('/strategyhub/team-alignment')} style={{ cursor: 'pointer' }}>
       {/* Gauge + Meta */}
       <div className="flex items-center gap-5 mb-4">
-        <CircularGauge value={metrics.avgAlignment} size={100} strokeWidth={10} color="#0D9488" label="Avg Align." animated />
+        <CircularGauge value={metrics.avgAlignment} size={100} strokeWidth={10} color="#0D9488" label="Avg Health" animated />
         <div>
           <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--catalyst-text-primary)' }}>{metrics.totalItems}</div>
           <div style={{ fontSize: 11, color: 'var(--catalyst-text-tertiary)' }}>Total Work Items</div>

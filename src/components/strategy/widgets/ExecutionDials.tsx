@@ -1,56 +1,74 @@
 /**
- * ExecutionDials — Widget 4: 4 donut gauges for work item completion
+ * ExecutionDials — Widget 4: 4 donut gauges for average progress
  * Row 2, span 6
- * DATA SOURCE: es_dashboard_execution_dials view (falls back to direct counts)
+ * DATA SOURCE: es_initiatives, es_goals, es_key_results
  */
 
 import { useMemo } from 'react';
 import { CircularGauge } from '../shared/CircularGauge';
-import { useExecutionDials, useGoals, useKeyResults, useStrategicThemes, useEsInitiatives } from '@/hooks/strategy/useStrategyData';
+import { useGoals, useKeyResults, useEsInitiatives } from '@/hooks/strategy/useStrategyData';
 
 interface DialData {
   label: string;
-  completed: number;
-  total: number;
+  value: number;
+  subtitle: string;
   color: string;
 }
 
-const LABEL_MAP: Record<string, string> = {
-  'Business Requests': 'Initiatives',
-};
-
 export function ExecutionDials() {
-  const { data: viewData, isLoading: viewLoading } = useExecutionDials();
-  const { data: themes, isLoading: tL } = useStrategicThemes();
   const { data: goals, isLoading: gL } = useGoals();
   const { data: krs, isLoading: kL } = useKeyResults();
   const { data: initiatives, isLoading: iL } = useEsInitiatives();
 
-  const isLoading = viewLoading && tL && gL && kL && iL;
+  const isLoading = gL && kL && iL;
 
   const dials: DialData[] = useMemo(() => {
-    // If the view has data, use it
-    if (viewData && viewData.length > 0) {
-      return viewData.map(d => ({
-        label: LABEL_MAP[d.link_type as string] || (d.link_type as string) || 'Unknown',
-        completed: Number(d.completed_items) || 0,
-        total: Number(d.total_items) || 0,
-        color: '#2563EB',
-      }));
-    }
+    const avgProgress = (items: any[] | undefined, field = 'progress_pct') => {
+      if (!items || items.length === 0) return 0;
+      return Math.round(items.reduce((sum, i) => sum + (Number(i[field]) || 0), 0) / items.length);
+    };
 
-    // Fallback: compute from actual data
-    const completedGoals = goals?.filter(g => g.status === 'on_track' || g.status === 'completed').length || 0;
-    const completedKrs = krs?.filter(kr => Number(kr.progress_pct) >= 70).length || 0;
-    const completedInit = initiatives?.filter(i => i.status === 'completed' || i.status === 'in_progress').length || 0;
+    const initAvg = avgProgress(initiatives);
+    const goalAvg = avgProgress(goals);
+    const krAvg = avgProgress(krs);
+    const totalItems = (initiatives?.length || 0) + (goals?.length || 0) + (krs?.length || 0);
+    const overallAvg = totalItems > 0
+      ? Math.round(
+          ((initiatives?.reduce((s, i) => s + (Number(i.progress_pct) || 0), 0) || 0) +
+           (goals?.reduce((s, g) => s + (Number(g.progress_pct) || 0), 0) || 0) +
+           (krs?.reduce((s, kr) => s + (Number(kr.progress_pct) || 0), 0) || 0)) / totalItems
+        )
+      : 0;
+
+    const onTrackGoals = goals?.filter(g => g.status === 'on_track' || g.status === 'completed').length || 0;
 
     return [
-      { label: 'Initiatives', completed: completedInit, total: initiatives?.length || 0, color: '#2563EB' },
-      { label: 'Themes', completed: themes?.filter(t => t.status === 'active').length || 0, total: themes?.length || 0, color: '#D97706' },
-      { label: 'Goals', completed: completedGoals, total: goals?.length || 0, color: '#0D9488' },
-      { label: 'Key Results', completed: completedKrs, total: krs?.length || 0, color: '#0D9488' },
+      {
+        label: 'Initiatives',
+        value: initAvg,
+        subtitle: `${initiatives?.length || 0} tracked`,
+        color: '#2563EB',
+      },
+      {
+        label: 'Goals',
+        value: goalAvg,
+        subtitle: `${onTrackGoals}/${goals?.length || 0} on track`,
+        color: '#0D9488',
+      },
+      {
+        label: 'Key Results',
+        value: krAvg,
+        subtitle: `${krs?.length || 0} measured`,
+        color: '#D97706',
+      },
+      {
+        label: 'Execution',
+        value: overallAvg,
+        subtitle: 'Overall velocity',
+        color: '#16A34A',
+      },
     ];
-  }, [viewData, themes, goals, krs, initiatives]);
+  }, [goals, krs, initiatives]);
 
   if (isLoading) {
     return (
@@ -70,28 +88,25 @@ export function ExecutionDials() {
       className="grid gap-4"
       style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}
     >
-      {dials.map(dial => {
-        const pct = dial.total > 0 ? Math.round((dial.completed / dial.total) * 100) : 0;
-        return (
-          <div key={dial.label} className="flex flex-col items-center">
-            <div style={{ opacity: 0.9 }}>
-              <CircularGauge
-                value={pct}
-                size={100}
-                strokeWidth={8}
-                color={dial.color}
-                animated
-              />
-            </div>
-            <span style={{ fontSize: 11, color: 'var(--catalyst-text-secondary)', marginTop: 6, textAlign: 'center' }}>
-              {dial.label}
-            </span>
-            <span style={{ fontSize: 10, color: 'var(--catalyst-text-secondary)' }}>
-              {dial.completed} / {dial.total}
-            </span>
+      {dials.map(dial => (
+        <div key={dial.label} className="flex flex-col items-center">
+          <div style={{ opacity: 0.9 }}>
+            <CircularGauge
+              value={dial.value}
+              size={100}
+              strokeWidth={8}
+              color={dial.color}
+              animated
+            />
           </div>
-        );
-      })}
+          <span style={{ fontSize: 11, color: 'var(--catalyst-text-secondary)', marginTop: 6, textAlign: 'center' }}>
+            {dial.label}
+          </span>
+          <span style={{ fontSize: 10, color: 'var(--catalyst-text-secondary)' }}>
+            {dial.subtitle}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }
