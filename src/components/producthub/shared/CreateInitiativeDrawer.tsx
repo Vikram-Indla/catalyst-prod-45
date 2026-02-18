@@ -1,5 +1,6 @@
 /**
  * CreateInitiativeDrawer — Slide-in form for creating a new initiative.
+ * Uses custom dropdown components (no native selects).
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,34 +9,16 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { catalystToast } from '@/lib/catalystToast';
-import type { InitiativeStatus } from '@/types/initiative';
-import { STATUS_DISPLAY } from '@/types/initiative';
-import { EditableField } from './EditableField';
 import { useDepartmentOptions, useProfileOptions } from '@/hooks/useInitiativeLookups';
+import { StatusSelect } from './StatusSelect';
+import { QuarterSelect } from './QuarterSelect';
+import { PeopleSelect } from './PeopleSelect';
+import { DepartmentSelect } from './DepartmentSelect';
 
 interface CreateInitiativeDrawerProps {
   open: boolean;
   onClose: () => void;
 }
-
-const STATUS_OPTIONS = Object.entries(STATUS_DISPLAY).map(([value, cfg]) => ({
-  value,
-  label: cfg.label,
-  color: cfg.dot,
-}));
-
-function generateQuarterOptions(): { value: string; label: string }[] {
-  const opts: { value: string; label: string }[] = [];
-  for (const year of [2025, 2026, 2027]) {
-    for (let q = 1; q <= 4; q++) {
-      const val = `Q${q} ${year}`;
-      opts.push({ value: val, label: val });
-    }
-  }
-  return opts;
-}
-
-const QUARTER_OPTIONS = generateQuarterOptions();
 
 function useNextInitiativeKey() {
   return useQuery({
@@ -102,14 +85,13 @@ function useCreateInitiative() {
 export function CreateInitiativeDrawer({ open, onClose }: CreateInitiativeDrawerProps) {
   const { data: nextKey } = useNextInitiativeKey();
   const createMutation = useCreateInitiative();
-
   const { data: departmentOptions } = useDepartmentOptions();
   const { data: profileOptions } = useProfileOptions();
 
   const [form, setForm] = useState({
     title: '',
     description: '',
-    status: 'new_demand' as string,
+    status: 'new_demand',
     department_id: '',
     assignee_id: '',
     business_owner_id: '',
@@ -121,27 +103,18 @@ export function CreateInitiativeDrawer({ open, onClose }: CreateInitiativeDrawer
   });
   const [titleError, setTitleError] = useState(false);
 
-  // Reset form on open
   useEffect(() => {
     if (open) {
       setForm({
-        title: '',
-        description: '',
-        status: 'new_demand',
-        department_id: '',
-        assignee_id: '',
-        business_owner_id: '',
-        reporter_id: '',
-        target_quarter: '',
-        kickoff_date: '',
-        target_complete: '',
-        business_ask_date: '',
+        title: '', description: '', status: 'new_demand',
+        department_id: '', assignee_id: '', business_owner_id: '',
+        reporter_id: '', target_quarter: '', kickoff_date: '',
+        target_complete: '', business_ask_date: '',
       });
       setTitleError(false);
     }
   }, [open]);
 
-  // Escape key
   useEffect(() => {
     if (!open) return;
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -170,29 +143,23 @@ export function CreateInitiativeDrawer({ open, onClose }: CreateInitiativeDrawer
     <AnimatePresence>
       {open && (
         <>
-          {/* Overlay */}
           <motion.div
             className="fixed inset-0 z-[55]"
             style={{ background: 'rgba(0,0,0,0.20)' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={onClose}
           />
-          {/* Drawer */}
           <motion.div
             className="fixed top-0 right-0 h-screen z-[60] flex flex-col overflow-hidden bg-white"
             style={{ width: '55%', maxWidth: 840, minWidth: 480, boxShadow: '-8px 0 24px rgba(0,0,0,0.12)' }}
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
+            initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200">
+            {/* Sticky Header */}
+            <div className="flex-shrink-0 bg-white border-b border-zinc-200 px-6 py-4 flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-zinc-900">🆕 New Initiative</h2>
+                <h2 className="text-lg font-semibold text-zinc-900">New Initiative</h2>
                 {nextKey && (
                   <span className="text-xs font-mono text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded mt-1 inline-block">
                     {nextKey}
@@ -217,7 +184,7 @@ export function CreateInitiativeDrawer({ open, onClose }: CreateInitiativeDrawer
                   )}
                 >
                   {createMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                  Create
+                  + Create
                 </button>
                 <button
                   onClick={onClose}
@@ -228,7 +195,7 @@ export function CreateInitiativeDrawer({ open, onClose }: CreateInitiativeDrawer
               </div>
             </div>
 
-            {/* Body */}
+            {/* Scrollable Body */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
               {/* Title */}
               <div>
@@ -250,86 +217,108 @@ export function CreateInitiativeDrawer({ open, onClose }: CreateInitiativeDrawer
               </div>
 
               {/* Description */}
-              <EditableField
-                label="Description"
-                value={form.description}
-                isEditing={true}
-                type="textarea"
-                onChange={v => updateField('description', v)}
-                placeholder="Describe the initiative…"
-              />
+              <div>
+                <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">
+                  Description
+                </div>
+                <textarea
+                  value={form.description}
+                  onChange={e => updateField('description', e.target.value)}
+                  placeholder="Describe the initiative…"
+                  rows={4}
+                  className="w-full border border-zinc-300 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-y"
+                />
+              </div>
 
-              {/* 2-col grid */}
+              {/* 2-col grid with custom dropdowns */}
               <div className="grid grid-cols-2 gap-4 gap-x-8">
-                <EditableField
-                  label="Status"
-                  value={form.status}
-                  isEditing={true}
-                  type="select"
-                  options={STATUS_OPTIONS}
-                  onChange={v => updateField('status', v)}
-                />
-                <EditableField
-                  label="Department"
-                  value={form.department_id}
-                  isEditing={true}
-                  type="select"
-                  options={departmentOptions || []}
-                  onChange={v => updateField('department_id', v)}
-                />
-                <EditableField
-                  label="Assignee"
-                  value={form.assignee_id}
-                  isEditing={true}
-                  type="select"
-                  options={profileOptions || []}
-                  onChange={v => updateField('assignee_id', v)}
-                />
-                <EditableField
-                  label="Business Owner"
-                  value={form.business_owner_id}
-                  isEditing={true}
-                  type="select"
-                  options={profileOptions || []}
-                  onChange={v => updateField('business_owner_id', v)}
-                />
-                <EditableField
-                  label="Reporter"
-                  value={form.reporter_id}
-                  isEditing={true}
-                  type="select"
-                  options={profileOptions || []}
-                  onChange={v => updateField('reporter_id', v)}
-                />
-                <EditableField
-                  label="Quarter"
-                  value={form.target_quarter}
-                  isEditing={true}
-                  type="select"
-                  options={QUARTER_OPTIONS}
-                  onChange={v => updateField('target_quarter', v)}
-                />
-                <EditableField
-                  label="Target Date"
-                  value={form.target_complete}
-                  isEditing={true}
-                  type="date"
-                  onChange={v => updateField('target_complete', v)}
-                />
-                <EditableField
-                  label="Kickoff Date"
-                  value={form.kickoff_date}
-                  isEditing={true}
-                  type="date"
-                  onChange={v => updateField('kickoff_date', v)}
-                />
-                <EditableField
-                  label="Business Ask Date"
-                  value={form.business_ask_date}
-                  isEditing={true}
-                  type="date"
-                  onChange={v => updateField('business_ask_date', v)}
-                />
+                {/* Status */}
+                <div>
+                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Status</div>
+                  <StatusSelect value={form.status} onChange={v => updateField('status', v)} />
+                </div>
+
+                {/* Department */}
+                <div>
+                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Department</div>
+                  <DepartmentSelect
+                    value={form.department_id}
+                    onChange={v => updateField('department_id', v)}
+                    departments={departmentOptions || []}
+                  />
+                </div>
+
+                {/* Assignee */}
+                <div>
+                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Assignee</div>
+                  <PeopleSelect
+                    value={form.assignee_id}
+                    onChange={v => updateField('assignee_id', v)}
+                    profiles={profileOptions || []}
+                    placeholder="Select assignee"
+                  />
+                </div>
+
+                {/* Business Owner */}
+                <div>
+                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Business Owner</div>
+                  <PeopleSelect
+                    value={form.business_owner_id}
+                    onChange={v => updateField('business_owner_id', v)}
+                    profiles={profileOptions || []}
+                    placeholder="Select business owner"
+                  />
+                </div>
+
+                {/* Reporter */}
+                <div>
+                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Reporter</div>
+                  <PeopleSelect
+                    value={form.reporter_id}
+                    onChange={v => updateField('reporter_id', v)}
+                    profiles={profileOptions || []}
+                    placeholder="Select reporter"
+                  />
+                </div>
+
+                {/* Quarter */}
+                <div>
+                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Target Quarter</div>
+                  <QuarterSelect value={form.target_quarter} onChange={v => updateField('target_quarter', v)} />
+                </div>
+
+                {/* Kickoff Date */}
+                <div>
+                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Kickoff Date</div>
+                  <input
+                    type="date"
+                    value={form.kickoff_date}
+                    onChange={e => updateField('kickoff_date', e.target.value)}
+                    className="w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  />
+                </div>
+
+                {/* Target Complete */}
+                <div>
+                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Target Complete</div>
+                  <input
+                    type="date"
+                    value={form.target_complete}
+                    onChange={e => updateField('target_complete', e.target.value)}
+                    className="w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  />
+                </div>
+
+                {/* Business Ask Date */}
+                <div>
+                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Business Ask Date</div>
+                  <input
+                    type="date"
+                    value={form.business_ask_date}
+                    onChange={e => updateField('business_ask_date', e.target.value)}
+                    className="w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  />
+                </div>
               </div>
 
               {/* Tip */}
