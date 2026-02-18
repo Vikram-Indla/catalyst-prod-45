@@ -1,37 +1,32 @@
 import { CAPABILITY_CONFIGS } from '@/types/requirement-assist';
 import { CapabilityCard } from '@/components/requirement-assist/CapabilityCard';
 import { DocumentTable } from '@/components/requirement-assist/DocumentTable';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import type { RaDocumentType } from '@/types/requirement-assist';
 
 const CAPABILITY_ORDER: RaDocumentType[] = ['brd', 'translation', 'epic', 'uat'];
 
 export default function RequirementAssistWorkspace() {
   return (
-    <div className="p-6 max-w-[1400px] mx-auto">
-      {/* Breadcrumb */}
-      <div className="mb-4">
-        <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
-          ProductHub &gt; Requirement Assist
-        </span>
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      <CommandCenterHeader
+        title="Req Assist™"
+        subtitle="AI-powered BRD generation, translation, epic decomposition, and UAT scenario creation"
+      />
 
-      {/* Page header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Requirement Assist</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          AI-powered BRD generation, translation, epic decomposition, and UAT scenario creation
-        </p>
-      </div>
+      <div className="flex-1 overflow-y-auto p-6">
+        {/* Capability cards */}
+        <div className="grid grid-cols-4 gap-4 mb-8 max-w-[1400px]">
+          {CAPABILITY_ORDER.map((key) => (
+            <CapabilityCard key={key} config={CAPABILITY_CONFIGS[key]} />
+          ))}
+        </div>
 
-      {/* Capability cards */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
-        {CAPABILITY_ORDER.map((key) => (
-          <CapabilityCard key={key} config={CAPABILITY_CONFIGS[key]} />
-        ))}
+        {/* Document table */}
+        <div className="max-w-[1400px]">
+          <DocumentTable />
+        </div>
       </div>
-
-      {/* Document table */}
-      <DocumentTable />
     </div>
   );
 }
