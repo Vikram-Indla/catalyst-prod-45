@@ -1,6 +1,6 @@
 /**
  * StrategyDashboardGrid — 12-column CSS grid layout for Strategy Room widgets
- * Matches the approved HTML demo exactly: 5 rows, 12 widgets.
+ * All 12 widgets wired in from Stage C.
  */
 
 import { useNavigate } from 'react-router-dom';
@@ -16,44 +16,21 @@ import {
   Camera,
   LayoutGrid,
   Activity,
-  Zap,
-  LucideIcon,
+  ShieldAlert,
 } from 'lucide-react';
 import { WidgetCard } from './WidgetCard';
-
-function WidgetPlaceholder({ icon: Icon }: { icon: LucideIcon }) {
-  return (
-    <div
-      className="flex flex-col items-center justify-center h-full"
-      style={{ minHeight: '120px' }}
-    >
-      <div
-        className="flex items-center justify-center"
-        style={{
-          width: '48px',
-          height: '48px',
-          borderRadius: '12px',
-          background: 'var(--catalyst-bg-surface-2, #F1F5F9)',
-          marginBottom: '12px',
-        }}
-      >
-        <Icon
-          size={20}
-          style={{ color: 'var(--catalyst-text-tertiary, #94A3B8)' }}
-        />
-      </div>
-      <span
-        style={{
-          fontSize: '12px',
-          color: 'var(--catalyst-text-tertiary, #94A3B8)',
-          fontWeight: 500,
-        }}
-      >
-        Building in Stage C
-      </span>
-    </div>
-  );
-}
+import { StrategyPyramid } from './widgets/StrategyPyramid';
+import { OkrHeatmap } from './widgets/OkrHeatmap';
+import { OkrTree } from './widgets/OkrTree';
+import { ExecutionDials } from './widgets/ExecutionDials';
+import { BudgetOverview } from './widgets/BudgetOverview';
+import { CapacityOverview } from './widgets/CapacityOverview';
+import { AiHealthScore } from './widgets/AiHealthScore';
+import { InvestmentAllocation } from './widgets/InvestmentAllocation';
+import { TeamSnapshot } from './widgets/TeamSnapshot';
+import { AlignmentMatrix } from './widgets/AlignmentMatrix';
+import { ActivityFeed } from './widgets/ActivityFeed';
+import { RiskOverview } from './widgets/RiskOverview';
 
 export function StrategyDashboardGrid() {
   const navigate = useNavigate();
@@ -70,24 +47,24 @@ export function StrategyDashboardGrid() {
       {/* ═══ Row 1 — 2 large widgets ═══ */}
       <div className="col-span-12 lg:col-span-6" style={{ minHeight: '360px' }}>
         <WidgetCard title="Strategy Pyramid" icon={TrendingUp} ariaLabel="Strategy Pyramid widget" className="h-full">
-          <WidgetPlaceholder icon={TrendingUp} />
+          <StrategyPyramid />
         </WidgetCard>
       </div>
       <div className="col-span-12 lg:col-span-6" style={{ minHeight: '360px' }}>
         <WidgetCard title="OKR Heatmap" icon={Grid3X3} ariaLabel="OKR Heatmap widget" className="h-full">
-          <WidgetPlaceholder icon={Grid3X3} />
+          <OkrHeatmap />
         </WidgetCard>
       </div>
 
       {/* ═══ Row 2 — 2 medium widgets ═══ */}
       <div className="col-span-12 lg:col-span-6" style={{ minHeight: '280px' }}>
         <WidgetCard title="OKR Tree" icon={GitBranch} ariaLabel="OKR Tree widget" className="h-full">
-          <WidgetPlaceholder icon={GitBranch} />
+          <OkrTree />
         </WidgetCard>
       </div>
       <div className="col-span-12 lg:col-span-6" style={{ minHeight: '280px' }}>
         <WidgetCard title="Execution Dials" icon={Gauge} ariaLabel="Execution Dials widget" className="h-full">
-          <WidgetPlaceholder icon={Gauge} />
+          <ExecutionDials />
         </WidgetCard>
       </div>
 
@@ -104,7 +81,7 @@ export function StrategyDashboardGrid() {
             onClick: () => navigate('/planhub/budget-planner'),
           }}
         >
-          <WidgetPlaceholder icon={DollarSign} />
+          <BudgetOverview />
         </WidgetCard>
       </div>
       <div className="col-span-12 lg:col-span-6" style={{ minHeight: '280px' }}>
@@ -119,41 +96,50 @@ export function StrategyDashboardGrid() {
             onClick: () => navigate('/planhub/capacity'),
           }}
         >
-          <WidgetPlaceholder icon={Users2} />
+          <CapacityOverview />
         </WidgetCard>
       </div>
 
       {/* ═══ Row 4 — 4 analytics widgets ═══ */}
       <div className="col-span-12 sm:col-span-6 xl:col-span-3" style={{ minHeight: '240px' }}>
         <WidgetCard title="AI Health Score" icon={Sparkles} ariaLabel="AI Health Score widget" className="h-full">
-          <WidgetPlaceholder icon={Sparkles} />
+          <AiHealthScore />
         </WidgetCard>
       </div>
       <div className="col-span-12 sm:col-span-6 xl:col-span-3" style={{ minHeight: '240px' }}>
         <WidgetCard title="Investment Allocation" icon={PieChart} ariaLabel="Investment Allocation widget" className="h-full">
-          <WidgetPlaceholder icon={PieChart} />
+          <InvestmentAllocation />
         </WidgetCard>
       </div>
       <div className="col-span-12 sm:col-span-6 xl:col-span-3" style={{ minHeight: '240px' }}>
         <WidgetCard title="Team Snapshot" icon={Camera} ariaLabel="Team Snapshot widget" className="h-full">
-          <WidgetPlaceholder icon={Camera} />
+          <TeamSnapshot />
         </WidgetCard>
       </div>
       <div className="col-span-12 sm:col-span-6 xl:col-span-3" style={{ minHeight: '240px' }}>
         <WidgetCard title="Alignment Matrix" icon={LayoutGrid} ariaLabel="Alignment Matrix widget" className="h-full">
-          <WidgetPlaceholder icon={LayoutGrid} />
+          <AlignmentMatrix />
         </WidgetCard>
       </div>
 
-      {/* ═══ Row 5 — Activity + Quick Actions ═══ */}
+      {/* ═══ Row 5 — Activity Feed + Risk Radar ═══ */}
       <div className="col-span-12 lg:col-span-8" style={{ minHeight: '260px' }}>
         <WidgetCard title="Activity Feed" icon={Activity} ariaLabel="Activity Feed widget" className="h-full">
-          <WidgetPlaceholder icon={Activity} />
+          <ActivityFeed />
         </WidgetCard>
       </div>
       <div className="col-span-12 lg:col-span-4" style={{ minHeight: '260px' }}>
-        <WidgetCard title="Quick Actions" icon={Zap} ariaLabel="Quick Actions widget" className="h-full">
-          <WidgetPlaceholder icon={Zap} />
+        <WidgetCard
+          title="Risk Radar"
+          icon={ShieldAlert}
+          ariaLabel="Risk Radar widget"
+          className="h-full"
+          headerLink={{
+            label: 'View All →',
+            onClick: () => navigate('/strategyhub/risks'),
+          }}
+        >
+          <RiskOverview />
         </WidgetCard>
       </div>
     </div>
