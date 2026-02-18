@@ -17,7 +17,7 @@ function getCellStyle(status: OkrStatus): { bg: string; text: string } {
     case 'on_track': return { bg: 'rgba(13,148,136,0.10)', text: '#0D9488' };
     case 'at_risk': return { bg: 'rgba(217,119,6,0.10)', text: '#D97706' };
     case 'off_track': return { bg: 'rgba(239,68,68,0.10)', text: '#EF4444' };
-    default: return { bg: 'transparent', text: 'var(--catalyst-text-tertiary, #94A3B8)' };
+    default: return { bg: 'transparent', text: 'var(--catalyst-text-secondary, #334155)' };
   }
 }
 

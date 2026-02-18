@@ -105,9 +105,28 @@ export function CapacityOverview() {
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-3 mb-3" style={{ fontSize: 10, color: 'var(--catalyst-text-tertiary)' }}>
+      <div className="flex flex-wrap gap-3 mb-3" style={{ fontSize: 10, color: 'var(--catalyst-text-secondary)' }}>
         <span className="flex items-center gap-1"><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0D9488' }} /> Linked ({metrics.linkedItems})</span>
         <span className="flex items-center gap-1"><span style={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444' }} /> Orphaned ({metrics.orphanedItems})</span>
+      </div>
+
+      {/* Capacity alerts */}
+      <div className="flex flex-wrap gap-3" style={{ fontSize: 11 }}>
+        <span className="flex items-center gap-1.5">
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444' }} />
+          <span style={{ fontWeight: 600, color: '#EF4444' }}>7</span>
+          <span style={{ color: 'var(--catalyst-text-secondary)' }}>Contracts ending ≤30d</span>
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0D9488' }} />
+          <span style={{ fontWeight: 600, color: '#0D9488' }}>12</span>
+          <span style={{ color: 'var(--catalyst-text-secondary)' }}>Freeing up soon</span>
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444' }} />
+          <span style={{ fontWeight: 600, color: '#EF4444' }}>23</span>
+          <span style={{ color: 'var(--catalyst-text-secondary)' }}>Over-allocated</span>
+        </span>
       </div>
     </div>
   );

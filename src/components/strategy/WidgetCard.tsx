@@ -132,20 +132,17 @@ export function WidgetCard({
           </button>
           <button
             className="flex items-center justify-center rounded-md focus-visible:outline-2 focus-visible:outline-offset-2"
+            disabled
+            title="Options coming soon"
             style={{
               width: '28px',
               height: '28px',
               background: 'transparent',
               border: 'none',
-              cursor: 'pointer',
+              cursor: 'not-allowed',
               color: 'var(--catalyst-text-tertiary)',
+              opacity: 0.4,
               transition: `background var(--catalyst-duration-fast)`,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--catalyst-bg-hover)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'transparent';
             }}
             aria-label={`More options for ${title}`}
           >

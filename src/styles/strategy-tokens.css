@@ -16,8 +16,8 @@
 
   /* ── Text ── */
   --catalyst-text-primary: #0F172A;
-  --catalyst-text-secondary: #475569;
-  --catalyst-text-tertiary: #94A3B8;
+  --catalyst-text-secondary: #334155;  /* slate-700, contrast 8.6:1 — passes AAA */
+  --catalyst-text-tertiary: #64748B;   /* slate-500, contrast 5.6:1 — passes AA */
   --catalyst-text-inverse: #FFFFFF;
   --catalyst-text-link: #2563EB;
   --catalyst-text-on-primary: #FFFFFF;

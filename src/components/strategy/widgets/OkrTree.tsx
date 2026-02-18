@@ -125,7 +125,18 @@ export function OkrTree() {
               {isOpen && (
                 <div style={{ paddingLeft: 20 }}>
                   {theme.goals.map(goal => (
-                    <div key={goal.id} className="flex items-center gap-2" style={{ padding: '6px 0' }}>
+                    <div
+                      key={goal.id}
+                      className="flex items-center gap-2"
+                      style={{
+                        padding: '6px 4px',
+                        cursor: 'pointer',
+                        borderRadius: 4,
+                        transition: 'background-color 120ms ease',
+                      }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--catalyst-bg-surface-2, #F1F5F9)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                    >
                       <span style={{ width: 6, height: 6, borderRadius: '50%', background: getProgressColor(goal.progress), flexShrink: 0 }} />
                       <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--catalyst-text-primary)', flex: 1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {goal.name}

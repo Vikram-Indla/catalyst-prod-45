@@ -64,10 +64,10 @@ export function AiHealthScore() {
 
       {/* Recommendations */}
       <div className="w-full space-y-2">
-        {topRecs.length > 0 ? topRecs.map((rec) => (
+        {topRecs.length > 0 ? topRecs.map((rec, idx) => (
           <div key={rec.id} className="flex gap-2" style={{ fontSize: 10, color: 'var(--catalyst-text-secondary)', lineHeight: 1.4 }}>
             <Sparkles size={10} style={{ color: '#7C3AED', flexShrink: 0, marginTop: 2 }} />
-            <span style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' }}>
+            <span style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden', fontWeight: idx === 0 ? 500 : 400 }}>
               {rec.description || rec.title}
             </span>
           </div>

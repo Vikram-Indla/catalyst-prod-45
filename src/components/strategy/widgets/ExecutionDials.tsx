@@ -86,7 +86,7 @@ export function ExecutionDials() {
             <span style={{ fontSize: 11, color: 'var(--catalyst-text-secondary)', marginTop: 6, textAlign: 'center' }}>
               {dial.label}
             </span>
-            <span style={{ fontSize: 10, color: 'var(--catalyst-text-tertiary)' }}>
+            <span style={{ fontSize: 10, color: 'var(--catalyst-text-secondary)' }}>
               {dial.completed} / {dial.total}
             </span>
           </div>
