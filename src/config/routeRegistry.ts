@@ -15,14 +15,7 @@ export interface RouteConfig {
  * Key: route path (use exact paths, dynamic params use :param syntax)
  */
 export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
-  // Strategy Hub routes - Core (no section breadcrumb per Command Center header standard)
-  '/strategyhub/strategy-room': { section: '', pageTitle: 'Strategy Room' },
-  '/strategyhub/snapshots': { section: '', pageTitle: 'Strategic Snapshots' },
-  '/strategyhub/backlog': { section: '', pageTitle: 'Strategic Backlog' },
-  '/strategyhub/okr-hub': { section: '', pageTitle: 'Objectives Tree' },
-  '/strategyhub/okr-tree': { section: '', pageTitle: 'Objective Tree' },
-  '/strategyhub/okr-heatmap': { section: '', pageTitle: 'OKR Heatmap' },
-  '/strategyhub/roadmaps': { section: '', pageTitle: 'Enterprise Roadmap' },
+  // Strategy Hub routes - Core (only risks remains)
   '/strategyhub/risks': { section: '', pageTitle: 'Risks' },
   '/planhub/capacity': { section: '', pageTitle: 'Capacity Planner' },
   '/planhub/budget-planner': { section: '', pageTitle: 'Budget Planner' },

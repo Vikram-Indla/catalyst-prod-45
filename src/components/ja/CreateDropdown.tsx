@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { useEnabledModules } from "@/hooks/useModules";
 import { useCreateMenuVisibility } from "@/hooks/useCreateMenuVisibility";
 import { WorkItemIcon } from "@/components/ja/icons/WorkItemIcon";
-import { CatalystCreateTheme } from "@/components/strategic-backlog/CatalystCreateTheme";
+// CatalystCreateTheme removed
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,7 +49,7 @@ const otherItems = getWorkItemsByCategory('other').map(item => ({
 export function CreateDropdown() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [themeDialogOpen, setThemeDialogOpen] = useState(false);
+  const [themeDialogOpen, setThemeDialogOpen] = useState(false); // unused, kept for type safety
   const { isModuleEnabled } = useEnabledModules();
   const { isWorkItemVisible } = useCreateMenuVisibility();
 
@@ -97,17 +97,8 @@ export function CreateDropdown() {
   const handleItemClick = (type: string) => {
     setOpen(false);
     
-    // Handle theme creation - open dialog directly
-    if (type === 'theme') {
-      setThemeDialogOpen(true);
-      return;
-    }
+    // Theme and snapshot creation removed
     
-    // Handle snapshot creation - route to backlog with snapshots tab and create param
-    if (type === 'snapshot') {
-      navigate('/strategyhub/backlog?tab=snapshots&create=true');
-      return;
-    }
     
     // Handle incident creation - route to create page
     if (type === 'incident') {
@@ -193,11 +184,7 @@ export function CreateDropdown() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Theme Create Dialog */}
-      <CatalystCreateTheme
-        open={themeDialogOpen}
-        onOpenChange={setThemeDialogOpen}
-      />
+      {/* Theme Create Dialog removed */}
     </>
   );
 }

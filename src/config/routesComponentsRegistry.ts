@@ -84,76 +84,7 @@ export const routesComponentsRegistry: RegistryEntry[] = [
   // ═══════════════════════════════════════════════════════════════════════════
   // ENTERPRISE ROUTES
   // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: 'strategy-room',
-    category: 'Enterprise',
-    name: 'StrategyRoomPage',
-    route: '/strategyhub/strategy-room',
-    filePath: 'src/pages/enterprise/StrategyRoomPage.tsx',
-    description: 'Executive strategy dashboard with widgets',
-    type: 'Page',
-    tags: ['strategy', 'executive', 'dashboard']
-  },
-  {
-    id: 'strategic-snapshots',
-    category: 'Enterprise',
-    name: 'StrategicSnapshots',
-    route: '/enterprise/snapshots',
-    filePath: 'src/pages/enterprise/StrategicSnapshots.tsx',
-    description: 'Strategy snapshot management',
-    type: 'Page',
-    tags: ['strategy', 'snapshots']
-  },
-  {
-    id: 'strategic-backlog',
-    category: 'Enterprise',
-    name: 'StrategicBacklog',
-    route: '/enterprise/backlog',
-    filePath: 'src/pages/enterprise/StrategicBacklog.tsx',
-    description: 'Strategic backlog with themes/objectives tabs',
-    type: 'Page',
-    tags: ['backlog', 'themes', 'objectives']
-  },
-  {
-    id: 'okr-heatmap',
-    category: 'Enterprise',
-    name: 'OKRHeatmap',
-    route: '/enterprise/okr-heatmap',
-    filePath: 'src/pages/enterprise/OKRHeatmap.tsx',
-    description: 'OKR heatmap visualization',
-    type: 'Page',
-    tags: ['okr', 'heatmap', 'visualization']
-  },
-  {
-    id: 'okr-tree',
-    category: 'Enterprise',
-    name: 'OKRTree',
-    route: '/enterprise/okr-tree',
-    filePath: 'src/pages/enterprise/OKRTree.tsx',
-    description: 'OKR tree view',
-    type: 'Page',
-    tags: ['okr', 'tree']
-  },
-  {
-    id: 'okr-hub',
-    category: 'Enterprise',
-    name: 'OKRHub',
-    route: '/enterprise/okr-hub',
-    filePath: 'src/pages/enterprise/OKRHub.tsx',
-    description: 'OKR hub v2 with strategy tree',
-    type: 'Page',
-    tags: ['okr', 'hub', 'strategy']
-  },
-  {
-    id: 'enterprise-roadmaps',
-    category: 'Enterprise',
-    name: 'RoadmapsPage',
-    route: '/enterprise/roadmaps',
-    filePath: 'src/pages/enterprise/Roadmaps.tsx',
-    description: 'Theme/epic roadmap with Gantt view',
-    type: 'Page',
-    tags: ['roadmap', 'gantt', 'themes']
-  },
+  // Strategy Room, Backlog, Snapshots, OKR, Roadmap entries removed
   {
     id: 'enterprise-risks',
     category: 'Enterprise',
