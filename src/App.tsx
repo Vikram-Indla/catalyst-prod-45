@@ -7,6 +7,7 @@ const RequirementAssistWorkspace = lazy(() => import("./pages/producthub/require
 const RequirementAssistCompose = lazy(() => import("./pages/producthub/requirement-assist/compose"));
 const RequirementAssistCategories = lazy(() => import("./pages/producthub/requirement-assist/categories"));
 const RequirementAssistOutput = lazy(() => import("./pages/producthub/requirement-assist/output"));
+const ProductCardsPage = lazy(() => import("./pages/producthub/CardsPage"));
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { Toaster as HotToaster } from 'react-hot-toast';
@@ -502,6 +503,7 @@ const App = () => (
               <Route path="/producthub/roadmaps-v1" element={<IndustryRoadmapPage />} />
               <Route path="/producthub/reports" element={<IndustryComingSoon />} />
               <Route path="/producthub/roadmap" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RoadmapPage /></Suspense>} />
+              <Route path="/producthub/cards" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ProductCardsPage /></Suspense>} />
               {/* Requirement Assist routes */}
               <Route path="/producthub/requirement-assist" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistWorkspace /></Suspense>} />
               <Route path="/producthub/requirement-assist/compose" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistCompose /></Suspense>} />

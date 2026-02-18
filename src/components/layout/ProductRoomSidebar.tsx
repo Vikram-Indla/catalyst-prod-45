@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import { Lock, ChevronDown, ChevronsLeft, ChevronsRight, Lightbulb, LayoutDashboard, List, Layers, Grid3X3, Sparkles, BarChart3, History, Star, FileText, ClipboardList, Columns3, GanttChart, Zap } from 'lucide-react';
+import { Lock, ChevronDown, ChevronsLeft, ChevronsRight, Lightbulb, LayoutDashboard, LayoutGrid, List, Layers, Grid3X3, Sparkles, BarChart3, History, Star, FileText, ClipboardList, Columns3, GanttChart, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -212,7 +212,22 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
             toggleFavorite={toggleFavorite}
           />
 
-          {/* IDEAS COLLAPSIBLE GROUP — V10 styling */}
+          {/* PRODUCT CARDS */}
+          <MenuItemButton
+            item={{
+              id: 'Product Cards',
+              title: 'Product Cards',
+              path: '/producthub/cards',
+              exact: true,
+            }}
+            isActive={location.pathname === '/producthub/cards'}
+            expanded={expanded}
+            onClick={() => handleNavigation('/producthub/cards')}
+            iconResolver={() => LayoutGrid}
+            isFavorite={isFavorite}
+            toggleFavorite={toggleFavorite}
+          />
+
           <Collapsible defaultOpen={isIdeasRouteActive}>
             {/* Group Header */}
             <CollapsibleTrigger asChild>
