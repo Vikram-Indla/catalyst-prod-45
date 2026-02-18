@@ -47,8 +47,12 @@ export function ContextMenu({ position, initiative, onAction, onClose }: Context
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) onClose();
     };
     document.addEventListener('keydown', handleKey);
-    document.addEventListener('mousedown', handleClick);
+    // Delay attaching mousedown so the current click event that opened the menu doesn't immediately close it
+    const raf = requestAnimationFrame(() => {
+      document.addEventListener('mousedown', handleClick);
+    });
     return () => {
+      cancelAnimationFrame(raf);
       document.removeEventListener('keydown', handleKey);
       document.removeEventListener('mousedown', handleClick);
     };
