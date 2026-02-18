@@ -161,7 +161,7 @@ export default function InitiativeListingPage() {
   }, []);
 
   return (
-    <div className="px-6 pt-4 pb-6">
+    <div>
       <InitiativeToolbar
         activeView={activeView}
         onViewChange={setActiveView}
