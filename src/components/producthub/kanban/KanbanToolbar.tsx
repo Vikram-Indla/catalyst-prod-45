@@ -5,6 +5,7 @@ import {
   Table2, Kanban, Clock, LayoutGrid, ArrowUpDown,
   Rows3, Download, Plus, ChevronDown,
 } from 'lucide-react';
+import type { SwimlaneField } from './KanbanColumn';
 
 const VIEWS = [
   { key: 'table', label: 'Table', icon: Table2, route: '/producthub/backlog' },
@@ -20,37 +21,48 @@ const SORT_OPTIONS = [
   { key: 'target', label: 'Target Date' },
 ];
 
+const SWIMLANE_OPTIONS: { key: SwimlaneField; label: string }[] = [
+  { key: 'none', label: 'None' },
+  { key: 'department', label: 'Department' },
+  { key: 'assignee', label: 'Assignee' },
+  { key: 'quarter', label: 'Quarter' },
+  { key: 'priority', label: 'Priority' },
+];
+
 interface KanbanToolbarProps {
   sortBy: string;
   onSortChange: (sort: string) => void;
+  swimlane: SwimlaneField;
+  onSwimlaneChange: (value: SwimlaneField) => void;
   onNewInitiative: () => void;
 }
 
 export const KanbanToolbar: React.FC<KanbanToolbarProps> = ({
   sortBy,
   onSortChange,
+  swimlane,
+  onSwimlaneChange,
   onNewInitiative,
 }) => {
   const navigate = useNavigate();
   const [showSort, setShowSort] = useState(false);
+  const [showSwimlane, setShowSwimlane] = useState(false);
 
   const sortLabel = SORT_OPTIONS.find(s => s.key === sortBy)?.label ?? 'Score';
+  const swimlaneLabel = SWIMLANE_OPTIONS.find(s => s.key === swimlane)?.label ?? 'None';
 
   return (
     <div className="flex items-center justify-between px-5 py-2.5 border-b border-zinc-200 bg-white">
-      {/* Left: View Switcher + Tools */}
       <div className="flex items-center gap-3">
         {/* View Switcher */}
         <div className="flex items-center bg-zinc-100 rounded-lg p-1 gap-0.5">
           {VIEWS.map(v => (
             <button
               key={v.key}
-              onClick={() => {
-                if (v.route && v.key !== 'board') navigate(v.route);
-              }}
+              onClick={() => { if (v.route && v.key !== 'board') navigate(v.route); }}
               disabled={v.key === 'cards'}
               className={cn(
-                'flex items-center gap-1.5 px-3 h-8 text-sm rounded-md transition-all',
+                'flex items-center gap-1.5 px-3 h-8 text-sm rounded-md transition-all focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1',
                 v.key === 'board'
                   ? 'bg-white text-zinc-900 font-semibold shadow-sm'
                   : v.key === 'cards'
@@ -64,21 +76,44 @@ export const KanbanToolbar: React.FC<KanbanToolbarProps> = ({
           ))}
         </div>
 
-        {/* Separator */}
         <div className="w-px h-5 bg-zinc-300" />
 
-        {/* Swimlane (placeholder) */}
-        <button className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-md hover:bg-zinc-50 hover:border-zinc-400 transition-colors">
-          <Rows3 className="w-4 h-4 text-zinc-500" />
-          <span>Swimlane: None</span>
-          <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
-        </button>
+        {/* Swimlane dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setShowSwimlane(!showSwimlane)}
+            className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-md hover:bg-zinc-50 hover:border-zinc-400 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500"
+          >
+            <Rows3 className="w-4 h-4 text-zinc-500" />
+            <span>Swimlane: {swimlaneLabel}</span>
+            <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
+          </button>
+          {showSwimlane && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setShowSwimlane(false)} />
+              <div className="absolute top-full left-0 mt-1 w-44 bg-white border border-zinc-200 rounded-lg shadow-lg z-50 py-1">
+                {SWIMLANE_OPTIONS.map(opt => (
+                  <button
+                    key={opt.key}
+                    onClick={() => { onSwimlaneChange(opt.key); setShowSwimlane(false); }}
+                    className={cn(
+                      'w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 transition-colors',
+                      swimlane === opt.key ? 'text-blue-600 font-semibold bg-blue-50/50' : 'text-zinc-700'
+                    )}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
 
-        {/* Sort */}
+        {/* Sort dropdown */}
         <div className="relative">
           <button
             onClick={() => setShowSort(!showSort)}
-            className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-md hover:bg-zinc-50 hover:border-zinc-400 transition-colors"
+            className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-md hover:bg-zinc-50 hover:border-zinc-400 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500"
           >
             <ArrowUpDown className="w-4 h-4 text-zinc-500" />
             <span>Sort: {sortLabel}</span>
@@ -106,15 +141,14 @@ export const KanbanToolbar: React.FC<KanbanToolbarProps> = ({
         </div>
       </div>
 
-      {/* Right: Export + New */}
       <div className="flex items-center gap-2">
-        <button className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-md hover:bg-zinc-50 hover:border-zinc-400 transition-colors">
+        <button className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-md hover:bg-zinc-50 hover:border-zinc-400 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500">
           <Download className="w-4 h-4 text-zinc-500" />
           <span>Export</span>
         </button>
         <button
           onClick={onNewInitiative}
-          className="flex items-center gap-1.5 px-4 h-9 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-1.5 px-4 h-9 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
         >
           <Plus className="w-4 h-4" />
           <span>New Initiative</span>
