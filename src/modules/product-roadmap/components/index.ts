@@ -13,4 +13,6 @@ export { RoadmapEmptyState } from './RoadmapEmptyState';
 export { RoadmapLoadingSkeleton } from './RoadmapLoadingSkeleton';
 export { RoadmapFilterDialog } from './RoadmapFilterDialog';
 export { RoadmapExportDialog } from './RoadmapExportDialog';
+export { RoadmapDetailPanel } from './RoadmapDetailPanel';
+export { RoadmapScoreTab } from './RoadmapScoreTab';
 export { ProductRoadmap } from './ProductRoadmap';

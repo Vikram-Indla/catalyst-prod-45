@@ -143,6 +143,7 @@ export interface RoadmapGroup {
 
 // Status config for display
 export const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: string }> = {
+  new_request: { label: 'New Request', color: '#3b82f6', bgColor: 'rgba(59, 130, 246, 0.1)' },
   draft: { label: 'Draft', color: '#737373', bgColor: 'rgba(115, 115, 115, 0.1)' },
   submitted: { label: 'Submitted', color: '#3b82f6', bgColor: 'rgba(59, 130, 246, 0.1)' },
   in_review: { label: 'In Review', color: '#f59e0b', bgColor: 'rgba(245, 158, 11, 0.1)' },

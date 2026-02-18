@@ -15,6 +15,7 @@ import { format, parseISO } from 'date-fns';
 
 // Status-to-bar color mapping
 const BAR_STATUS_COLORS: Record<string, { border: string; bg: string; fill: string }> = {
+  new_request: { border: '#3B82F6', bg: 'rgba(59,130,246,0.15)',  fill: 'rgba(59,130,246,0.40)' },
   draft:       { border: '#737373', bg: 'rgba(115,115,115,0.15)', fill: 'rgba(115,115,115,0.40)' },
   submitted:   { border: '#3B82F6', bg: 'rgba(59,130,246,0.15)',  fill: 'rgba(59,130,246,0.40)' },
   in_review:   { border: '#8B5CF6', bg: 'rgba(139,92,246,0.15)', fill: 'rgba(139,92,246,0.40)' },
