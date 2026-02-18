@@ -27,10 +27,10 @@ export const TimelineLeftRow: React.FC<TimelineLeftRowProps> = ({ initiative }) 
     <button
       onClick={() => openDetail(initiative.id)}
       className={cn(
-        'w-full flex items-center gap-2.5 px-4 border-b border-border/30 transition-colors duration-100 text-left',
+        'w-full flex items-center gap-2.5 px-4 border-b border-border/30 transition-colors duration-100 text-left shrink-0 overflow-hidden',
         isSelected ? 'bg-blue-50 dark:bg-blue-950/20' : 'hover:bg-muted/50'
       )}
-      style={{ height: rowHeight }}
+      style={{ height: rowHeight, minHeight: rowHeight, maxHeight: rowHeight }}
     >
       {/* ID badge */}
       <span
