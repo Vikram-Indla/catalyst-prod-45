@@ -17,7 +17,7 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
-import { Check, ChevronUp, ChevronDown, Pencil, Star, MoreVertical } from 'lucide-react';
+import { Check, ChevronUp, ChevronDown, ChevronsUpDown, Pencil, Star, MoreVertical } from 'lucide-react';
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';
@@ -325,8 +325,8 @@ export function InitiativeTable({
                     return (
                       <th
                         key={header.id}
-                        className="relative px-3 text-left text-[11px] uppercase font-semibold tracking-[0.05em] select-none whitespace-nowrap"
-                        style={{ color: '#71717a', width: header.getSize() }}
+                        className="group/th relative px-3 text-left text-[11px] uppercase font-semibold tracking-[0.05em] select-none whitespace-nowrap transition-colors duration-[120ms]"
+                        style={{ color: sorted ? '#2563eb' : '#71717a', width: header.getSize() }}
                       >
                         {header.isPlaceholder ? null : (
                           <div
@@ -334,10 +334,12 @@ export function InitiativeTable({
                             onClick={header.column.getToggleSortingHandler()}
                           >
                             {flexRender(header.column.columnDef.header, header.getContext())}
-                            {canSort && sorted && (
-                              sorted === 'asc'
-                                ? <ChevronUp size={12} className="text-blue-600" />
-                                : <ChevronDown size={12} className="text-blue-600" />
+                            {canSort && (
+                              sorted
+                                ? (sorted === 'asc'
+                                  ? <ChevronUp size={12} className="text-blue-600" />
+                                  : <ChevronDown size={12} className="text-blue-600" />)
+                                : <ChevronsUpDown size={12} className="text-zinc-300 opacity-0 group-hover/th:opacity-100 transition-opacity duration-100" />
                             )}
                           </div>
                         )}
@@ -452,32 +454,30 @@ export function InitiativeTable({
 
                               {/* Hover Actions */}
                               <td className="relative" style={{ width: 0, padding: 0, border: 'none' }}>
-                                <div className="absolute right-3 top-0 bottom-0 flex items-center gap-1 opacity-0 group-hover/row:opacity-100 transition-opacity duration-100 z-20"
-                                  style={{ width: 'auto' }}
-                                >
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover/row:opacity-100 transition-opacity duration-100 flex items-center gap-0.5 bg-white shadow-sm border border-zinc-200 rounded-md px-1 py-0.5 z-20">
                                   <button
                                     type="button"
                                     onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onRowClick(row.original); }}
-                                    className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
+                                    className="w-6 h-6 rounded flex items-center justify-center text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors"
                                     title="Edit"
                                   >
-                                    <Pencil size={13} className="text-zinc-500" />
+                                    <Pencil size={14} />
                                   </button>
                                   <button
                                     type="button"
                                     onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onFavoriteToggle(row.original.id, row.original.is_favorited); }}
-                                    className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
+                                    className={`w-6 h-6 rounded flex items-center justify-center hover:bg-zinc-100 transition-colors ${row.original.is_favorited ? 'text-amber-400' : 'text-zinc-400 hover:text-amber-500'}`}
                                     title="Star"
                                   >
-                                    <Star size={13} className={row.original.is_favorited ? 'text-amber-400 fill-amber-400' : 'text-zinc-500'} />
+                                    <Star size={14} className={row.original.is_favorited ? 'fill-amber-400' : ''} />
                                   </button>
                                   <button
                                     type="button"
                                     onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onContextMenu?.(e, row.original); }}
-                                    className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
-                                    title="More"
+                                    className="w-6 h-6 rounded flex items-center justify-center text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors"
+                                    title="More actions"
                                   >
-                                    <MoreVertical size={13} className="text-zinc-500" />
+                                    <MoreVertical size={14} />
                                   </button>
                                 </div>
                               </td>
