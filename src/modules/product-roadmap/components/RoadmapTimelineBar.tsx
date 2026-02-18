@@ -1,21 +1,37 @@
 /**
  * Timeline bar representing a demand on the timeline
- * Enterprise-grade styling with Catalyst colors and dark mode support
+ * Status-colored bars with inline labels and portal tooltip
  */
 
-import React from 'react';
+import React, { useState, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { cn } from '@/lib/utils';
-import { Progress } from '@/components/ui/progress';
 import { Calendar } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import type { RoadmapDemand } from '../types/roadmap';
+import { STATUS_CONFIG } from '../types/roadmap';
 import { catalystTokens } from '../lib/design-tokens';
 import { useRoadmapTheme } from '../lib/useRoadmapTheme';
 import { format, parseISO } from 'date-fns';
+
+// Status-to-bar color mapping
+const BAR_STATUS_COLORS: Record<string, { border: string; bg: string; fill: string }> = {
+  draft:       { border: '#737373', bg: 'rgba(115,115,115,0.15)', fill: 'rgba(115,115,115,0.40)' },
+  submitted:   { border: '#3B82F6', bg: 'rgba(59,130,246,0.15)',  fill: 'rgba(59,130,246,0.40)' },
+  in_review:   { border: '#8B5CF6', bg: 'rgba(139,92,246,0.15)', fill: 'rgba(139,92,246,0.40)' },
+  approved:    { border: '#06B6D4', bg: 'rgba(6,182,212,0.15)',   fill: 'rgba(6,182,212,0.40)' },
+  in_progress: { border: '#F59E0B', bg: 'rgba(245,158,11,0.15)', fill: 'rgba(245,158,11,0.40)' },
+  completed:   { border: '#10B981', bg: 'rgba(16,185,129,0.15)', fill: 'rgba(16,185,129,0.40)' },
+  rejected:    { border: '#EF4444', bg: 'rgba(239,68,68,0.15)',  fill: 'rgba(239,68,68,0.40)' },
+  cancelled:   { border: '#EF4444', bg: 'rgba(239,68,68,0.15)',  fill: 'rgba(239,68,68,0.40)' },
+};
+
+const DEFAULT_BAR_COLOR = { border: '#6B7280', bg: 'rgba(107,114,128,0.15)', fill: 'rgba(107,114,128,0.40)' };
+
+function getBarColors(status: string | null) {
+  if (!status) return DEFAULT_BAR_COLOR;
+  const key = status.toLowerCase().replace(/ /g, '_');
+  return BAR_STATUS_COLORS[key] || DEFAULT_BAR_COLOR;
+}
 
 interface RoadmapTimelineBarProps {
   item: RoadmapDemand;
@@ -32,115 +48,195 @@ export function RoadmapTimelineBar({
   isSelected,
   onClick,
 }: RoadmapTimelineBarProps) {
-  const { tokens } = useRoadmapTheme();
-  const productColor = item.product?.color || catalystTokens.brand.primary;
-  
-  // Format dates for tooltip
+  const [isHovered, setIsHovered] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+  const tooltipTimer = useRef<ReturnType<typeof setTimeout>>();
+
+  const barColors = getBarColors(item.process_step);
+
+  // Check overdue: end_date < today, progress < 100, not completed/cancelled
+  const isOverdue = (() => {
+    if (!item.end_date) return false;
+    if (['completed', 'cancelled'].includes(item.process_step || '')) return false;
+    if (item.progress >= 100) return false;
+    return new Date(item.end_date) < new Date();
+  })();
+
+  const borderColor = isOverdue ? '#EF4444' : barColors.border;
+  const bgColor = isOverdue ? 'rgba(239,68,68,0.08)' : barColors.bg;
+  const fillColor = isOverdue ? 'rgba(239,68,68,0.25)' : barColors.fill;
+
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return 'Not set';
-    try {
-      return format(parseISO(dateStr), 'MMM d, yyyy');
-    } catch {
-      return dateStr;
-    }
+    try { return format(parseISO(dateStr), 'MMM d, yyyy'); } catch { return dateStr; }
   };
 
-  // Calculate a slightly darker color for the progress overlay
-  const progressOpacity = item.progress > 0 && item.progress < 100 ? 0.25 : 0;
+  const handleMouseEnter = useCallback((e: React.MouseEvent) => {
+    setIsHovered(true);
+    const rect = e.currentTarget.getBoundingClientRect();
+    const tw = 310, th = 180;
+    let x = rect.left + rect.width / 2 - tw / 2;
+    let y = rect.top - th - 8;
+    if (y < 60) y = rect.bottom + 8;
+    if (x < 10) x = 10;
+    if (x + tw > window.innerWidth - 10) x = window.innerWidth - tw - 10;
+    setTooltipPos({ x, y });
+    tooltipTimer.current = setTimeout(() => setShowTooltip(true), 200);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setIsHovered(false);
+    setShowTooltip(false);
+    if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
+  }, []);
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
+    <>
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={onClick}
+        onKeyDown={(e) => e.key === 'Enter' && onClick()}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        className={cn(
+          'absolute top-1/2 -translate-y-1/2 h-7 rounded-md cursor-pointer',
+          'transition-all duration-150 ease-out',
+          'hover:brightness-95 hover:-translate-y-[calc(50%+2px)] hover:shadow-lg',
+          'focus:outline-none focus:ring-2 focus:ring-offset-1',
+          isSelected && 'ring-2 shadow-lg z-10'
+        )}
+        style={{
+          left: `${left}%`,
+          width: `${Math.max(width, 3)}%`,
+          display: 'flex',
+          alignItems: 'center',
+          overflow: 'hidden',
+          isolation: 'isolate',
+          borderLeft: `3px solid ${borderColor}`,
+          background: bgColor,
+          '--tw-ring-color': borderColor,
+        } as React.CSSProperties}
+      >
+        {/* Progress fill — absolute background layer */}
+        {item.progress > 0 && (
+          <div
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: `${Math.min(100, item.progress)}%`,
+              background: fillColor,
+              borderRadius: '6px 0 0 6px',
+              zIndex: 0,
+            }}
+          />
+        )}
+
+        {/* Label — normal flex child above fill */}
+        {width > 6 && (
+          <span
+            style={{
+              zIndex: 1,
+              fontSize: '12px',
+              fontWeight: 500,
+              color: '#3f3f46',
+              paddingLeft: '8px',
+              paddingRight: '8px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              lineHeight: '28px',
+              pointerEvents: 'none',
+            }}
+          >
+            {width > 12 ? item.title : item.request_key}
+          </span>
+        )}
+
+        {/* Completed indicator */}
+        {item.progress === 100 && (
+          <div
+            className="absolute -right-1 -top-1 w-4 h-4 rounded-full flex items-center justify-center border-2"
+            style={{
+              backgroundColor: catalystTokens.status.success.base,
+              borderColor: 'var(--background)',
+              zIndex: 2,
+            }}
+          >
+            <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+        )}
+      </div>
+
+      {/* Tooltip — portal to body */}
+      {showTooltip && createPortal(
         <div
-          role="button"
-          tabIndex={0}
-          onClick={onClick}
-          onKeyDown={(e) => e.key === 'Enter' && onClick()}
-          className={cn(
-            'absolute top-1/2 -translate-y-1/2 h-7 rounded-md cursor-pointer',
-            'flex items-center px-2 overflow-hidden',
-            'transition-all duration-150 ease-out',
-            'hover:brightness-95 hover:-translate-y-[calc(50%+2px)] hover:shadow-lg',
-            'focus:outline-none focus:ring-2 focus:ring-offset-1',
-            isSelected && 'ring-2 shadow-lg z-10'
-          )}
           style={{
-            left: `${left}%`,
-            width: `${Math.max(width, 3)}%`, // Minimum 3% width for visibility
-            backgroundColor: productColor,
-            '--tw-ring-color': catalystTokens.brand.primary,
-          } as React.CSSProperties}
+            position: 'fixed',
+            left: `${tooltipPos.x}px`,
+            top: `${tooltipPos.y}px`,
+            zIndex: 9999,
+            background: '#ffffff',
+            border: '1px solid #e4e4e7',
+            borderRadius: '10px',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06)',
+            pointerEvents: 'none',
+            maxWidth: '340px',
+            minWidth: '280px',
+            padding: '12px',
+          }}
         >
-          {/* Progress overlay - darker section showing completion */}
-          {progressOpacity > 0 && (
-            <div 
-              className="absolute inset-0 rounded-md"
-              style={{
-                background: `linear-gradient(90deg, rgba(0,0,0,${progressOpacity}) 0%, rgba(0,0,0,${progressOpacity}) ${item.progress}%, transparent ${item.progress}%)`,
-              }}
-            />
-          )}
-
-          {/* Content - only show if bar is wide enough */}
-          {width > 6 && (
-            <span className="text-xs font-medium text-white truncate drop-shadow-sm relative z-10">
-              {width > 12 ? item.title : item.request_key}
-            </span>
-          )}
-
-          {/* Completed indicator */}
-          {item.progress === 100 && (
-            <div 
-              className="absolute -right-1 -top-1 w-4 h-4 rounded-full flex items-center justify-center border-2"
-              style={{
-                backgroundColor: catalystTokens.status.success.base,
-                borderColor: 'var(--background)'
-              }}
-            >
-              <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-              </svg>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ fontWeight: 600, fontSize: '14px', color: '#18181b' }}>
+              {item.request_key}: {item.title}
             </div>
-          )}
-
-          {/* Resize handles */}
-          <div className="absolute left-0 top-0 bottom-0 w-1.5 cursor-ew-resize hover:bg-white/30 rounded-l-md opacity-0 hover:opacity-100 transition-opacity" />
-          <div className="absolute right-0 top-0 bottom-0 w-1.5 cursor-ew-resize hover:bg-white/30 rounded-r-md opacity-0 hover:opacity-100 transition-opacity" />
-        </div>
-      </TooltipTrigger>
-      <TooltipContent side="top" className="max-w-xs">
-        <div className="space-y-1.5">
-          <div className="font-semibold" style={{ color: tokens.text.primary }}>
-            {item.request_key}: {item.title}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#71717a' }}>
+              <Calendar className="w-3 h-3" />
+              {formatDate(item.start_date)} → {formatDate(item.end_date)}
+            </div>
+            {item.process_step && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: '2px 8px',
+                    fontSize: '11px',
+                    fontWeight: 500,
+                    borderRadius: '12px',
+                    backgroundColor: barColors.bg,
+                    color: barColors.border,
+                  }}
+                >
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: barColors.border }} />
+                  {STATUS_CONFIG[item.process_step]?.label || item.process_step}
+                </span>
+              </div>
+            )}
+            {item.progress > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ width: '80px', height: '6px', backgroundColor: '#f4f4f5', borderRadius: '9999px', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${item.progress}%`, backgroundColor: barColors.border, borderRadius: '9999px' }} />
+                </div>
+                <span style={{ fontSize: '12px', fontWeight: 500, color: '#18181b' }}>{item.progress}%</span>
+              </div>
+            )}
           </div>
-          <div className="text-xs flex items-center gap-1.5" style={{ color: tokens.text.secondary }}>
-            <Calendar className="w-3 h-3" />
-            {formatDate(item.start_date)} → {formatDate(item.end_date)}
-          </div>
-          {item.product && (
-            <div className="flex items-center gap-1.5 text-xs" style={{ color: tokens.text.secondary }}>
-              <div 
-                className="w-2 h-2 rounded-full" 
-                style={{ backgroundColor: item.product.color || catalystTokens.brand.primary }}
-              />
-              {item.product.name}
-            </div>
-          )}
-          {item.progress > 0 && (
-            <div className="flex items-center gap-2 pt-1">
-              <Progress value={item.progress} className="w-20 h-1.5" />
-              <span className="text-xs font-medium">{item.progress}%</span>
-            </div>
-          )}
-        </div>
-      </TooltipContent>
-    </Tooltip>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }
 
 /**
  * Unscheduled indicator for items without dates
- * Shows actionable button to set dates with dark mode support
  */
 interface RoadmapUnscheduledIndicatorProps {
   item: RoadmapDemand;
@@ -149,40 +245,16 @@ interface RoadmapUnscheduledIndicatorProps {
 
 export function RoadmapUnscheduledIndicator({ item, onSetDates }: RoadmapUnscheduledIndicatorProps) {
   const { tokens } = useRoadmapTheme();
-  const productColor = item.product?.color || catalystTokens.secondary.grey.base;
-  
+  const barColors = getBarColors(item.process_step);
+
   return (
     <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-      {/* Color indicator */}
-      <div 
-        className="w-2 h-2 rounded-full flex-shrink-0" 
-        style={{ backgroundColor: productColor }}
-      />
-      
-      {/* No dates text */}
-      <span 
-        className="text-sm italic"
-        style={{ color: tokens.text.muted }}
-      >
-        No dates set
-      </span>
-      
-      {/* Set dates action button */}
+      <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: barColors.border }} />
+      <span className="text-sm italic" style={{ color: tokens.text.muted }}>No dates set</span>
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onSetDates?.();
-        }}
+        onClick={(e) => { e.stopPropagation(); onSetDates?.(); }}
         className="text-xs font-medium transition-colors hover:underline"
-        style={{ 
-          color: catalystTokens.brand.primary,
-        }}
-        onMouseEnter={(e) => {
-          (e.target as HTMLElement).style.color = catalystTokens.brand.primaryHover;
-        }}
-        onMouseLeave={(e) => {
-          (e.target as HTMLElement).style.color = catalystTokens.brand.primary;
-        }}
+        style={{ color: catalystTokens.brand.primary }}
       >
         + Set dates
       </button>
