@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useInitiativesMock } from '@/hooks/useInitiativesMock';
 import { InitiativeToolbar } from '@/components/initiatives/InitiativeToolbar';
 import { InitiativeTable } from '@/components/initiatives/InitiativeTable';
@@ -48,8 +49,10 @@ const VIEW_PLACEHOLDER_ICONS: Record<string, React.ReactNode> = {
 
 export default function InitiativeListingPage() {
   const { data, isLoading } = useInitiativesMock();
+  const location = useLocation();
+  const initialView = new URLSearchParams(location.search).get('view') as ViewMode | null;
   const [density, setDensity] = useState<Density>('standard');
-  const [activeView, setActiveView] = useState<ViewMode>('table');
+  const [activeView, setActiveView] = useState<ViewMode>(initialView === 'board' ? 'board' : 'table');
   const [searchQuery, setSearchQuery] = useState('');
   const [quickFilter, setQuickFilter] = useState('all');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -205,6 +208,7 @@ export default function InitiativeListingPage() {
           )}
         </>
       ) : activeView === 'board' ? (
+        <div className="mt-4">
         <KanbanBoard
           data={filtered}
           density={density}
@@ -212,6 +216,7 @@ export default function InitiativeListingPage() {
           onStatusChange={handleStatusChange}
           onFavoriteToggle={handleFavoriteToggle}
         />
+        </div>
       ) : (
         /* View Placeholder — Timeline & Cards */
         <div className="h-96 flex flex-col items-center justify-center gap-1">
