@@ -60,16 +60,24 @@ export function RiskOverview() {
     Low: openRisks.filter(r => r.impact === 'Low').length,
   }), [openRisks]);
 
-  const topRisks = useMemo(() =>
-    [...openRisks]
+  const topRisks = useMemo(() => {
+    return [...openRisks]
       .sort((a, b) => {
-        const rankDiff = (SEVERITY_RANK[a.impact || 'Low'] || 3) - (SEVERITY_RANK[b.impact || 'Low'] || 3);
-        if (rankDiff !== 0) return rankDiff;
-        return (a.target_resolution_date || '9999').localeCompare(b.target_resolution_date || '9999');
+        const aRank = SEVERITY_RANK[a.impact || 'Low'] ?? 3;
+        const bRank = SEVERITY_RANK[b.impact || 'Low'] ?? 3;
+        if (aRank !== bRank) return aRank - bRank;
+
+        const today = new Date().toISOString().split('T')[0];
+        const aOverdue = a.target_resolution_date && a.target_resolution_date < today ? 0 : 1;
+        const bOverdue = b.target_resolution_date && b.target_resolution_date < today ? 0 : 1;
+        if (aOverdue !== bOverdue) return aOverdue - bOverdue;
+
+        const aDate = a.target_resolution_date || '9999-12-31';
+        const bDate = b.target_resolution_date || '9999-12-31';
+        return aDate.localeCompare(bDate);
       })
-      .slice(0, 3),
-    [openRisks]
-  );
+      .slice(0, 3);
+  }, [openRisks]);
 
   if (isLoading) return null; // WidgetCard handles loading state
 
