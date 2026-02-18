@@ -1,6 +1,8 @@
 /**
- * ActivityFeed — Widget 11: Scrollable activity feed with avatars
+ * ActivityFeed — Widget 11: Scrollable activity feed
  * Row 5, span 8
+ * STAGE D NOTE: Activity feed uses mock data until an es_activity_log table is created.
+ * This is the ONLY widget with mock data — all others are fully wired.
  */
 
 interface FeedItem {
@@ -10,7 +12,7 @@ interface FeedItem {
   time: string;
 }
 
-const FEED: FeedItem[] = [
+const TEMP_MOCK_FEED: FeedItem[] = [
   {
     initials: 'AH', color: '#2563EB',
     text: <><strong>Ahmed Hassan</strong> updated KR "Digitize 80% of permits" progress to <strong style={{ color: '#0D9488' }}>82%</strong></>,
@@ -46,13 +48,13 @@ const FEED: FeedItem[] = [
 export function ActivityFeed() {
   return (
     <div style={{ flex: 1, overflowY: 'auto' }}>
-      {FEED.map((item, i) => (
+      {TEMP_MOCK_FEED.map((item, i) => (
         <div
           key={i}
           className="flex gap-3"
           style={{
             padding: '10px 4px',
-            borderBottom: i < FEED.length - 1 ? '1px solid var(--catalyst-border-default, #E2E8F0)' : 'none',
+            borderBottom: i < TEMP_MOCK_FEED.length - 1 ? '1px solid var(--catalyst-border-default, #E2E8F0)' : 'none',
             transition: 'background 120ms',
             borderRadius: 6,
             margin: '0 -4px',

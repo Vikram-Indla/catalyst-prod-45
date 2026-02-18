@@ -1,23 +1,63 @@
 /**
  * InvestmentAllocation — Widget 8: Donut chart + legend
  * Row 4, span 3
+ * DATA SOURCE: es_investment_allocations + es_strategic_themes
  */
 
-interface Segment {
-  name: string;
-  pct: number;
-  amount: string;
-  color: string;
+import { useMemo } from 'react';
+import { useInvestmentAllocations, useStrategicThemes } from '@/hooks/strategy/useStrategyData';
+
+function formatSAR(amount: number): string {
+  if (amount >= 1_000_000_000) return `${(amount / 1_000_000_000).toFixed(1)}B`;
+  if (amount >= 1_000_000) return `${(amount / 1_000_000).toFixed(0)}M`;
+  if (amount >= 1_000) return `${(amount / 1_000).toFixed(0)}K`;
+  return amount.toString();
 }
 
-const SEGMENTS: Segment[] = [
-  { name: 'Digital Transform.', pct: 35, amount: '840M', color: '#2563EB' },
-  { name: 'Workforce Dev.', pct: 25, amount: '600M', color: '#0D9488' },
-  { name: 'Supply Chain', pct: 24, amount: '576M', color: '#D97706' },
-  { name: 'Sustainability', pct: 16, amount: '384M', color: '#16A34A' },
-];
-
 export function InvestmentAllocation() {
+  const { data: allocations, isLoading: aL } = useInvestmentAllocations();
+  const { data: themes, isLoading: tL } = useStrategicThemes();
+  const isLoading = aL || tL;
+
+  const segments = useMemo(() => {
+    if (!allocations || !themes) return [];
+    return allocations.map(a => {
+      const theme = themes.find(t => t.id === a.theme_id);
+      return {
+        name: theme?.title ? (theme.title.length > 18 ? theme.title.substring(0, 16) + '.' : theme.title) : 'Unknown',
+        pct: Number(a.allocated_pct) || 0,
+        amount: formatSAR(Number(a.allocated_amount) || 0),
+        color: theme?.color || '#2563EB',
+      };
+    });
+  }, [allocations, themes]);
+
+  const total = useMemo(() =>
+    allocations?.reduce((s, a) => s + (Number(a.allocated_amount) || 0), 0) || 0,
+    [allocations]
+  );
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center animate-pulse">
+        <div style={{ width: 100, height: 100, borderRadius: '50%', background: 'var(--catalyst-bg-hover)' }} />
+        <div className="w-full mt-3 space-y-2">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} style={{ height: 16, background: 'var(--catalyst-bg-hover)', borderRadius: 4 }} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (segments.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'var(--catalyst-text-tertiary)' }}>
+        <span style={{ fontSize: 12 }}>No investment data</span>
+      </div>
+    );
+  }
+
   const size = 100;
   const cx = size / 2;
   const cy = size / 2;
@@ -31,7 +71,7 @@ export function InvestmentAllocation() {
     <div className="flex flex-col items-center">
       {/* Donut */}
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
-        {SEGMENTS.map(seg => {
+        {segments.map(seg => {
           const dashArray = (seg.pct / 100) * circumference;
           const dashOffset = -cumulativeOffset;
           cumulativeOffset += dashArray;
@@ -51,7 +91,7 @@ export function InvestmentAllocation() {
           );
         })}
         <text x={cx} y={cy - 4} textAnchor="middle" dominantBaseline="central" style={{ fontSize: 12, fontWeight: 700, fill: 'var(--catalyst-text-primary)' }}>
-          SAR 2.4B
+          SAR {formatSAR(total)}
         </text>
         <text x={cx} y={cy + 10} textAnchor="middle" dominantBaseline="central" style={{ fontSize: 10, fill: 'var(--catalyst-text-tertiary)' }}>
           Total
@@ -60,7 +100,7 @@ export function InvestmentAllocation() {
 
       {/* Legend */}
       <div className="w-full mt-3 space-y-1.5">
-        {SEGMENTS.map(seg => (
+        {segments.map(seg => (
           <div key={seg.name} className="flex items-center gap-2">
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: seg.color, flexShrink: 0 }} />
             <span style={{ flex: 1, fontSize: 11, color: 'var(--catalyst-text-secondary)' }}>{seg.name}</span>

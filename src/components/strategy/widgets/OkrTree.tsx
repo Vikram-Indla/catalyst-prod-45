@@ -1,46 +1,13 @@
 /**
  * OkrTree — Widget 3: Collapsible theme/goal tree
  * Row 2, span 6
+ * DATA SOURCE: es_strategic_themes + es_goals
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { ProgressBar } from '../shared/ProgressBar';
-
-interface GoalItem {
-  name: string;
-  progress: number;
-}
-
-interface ThemeSection {
-  name: string;
-  color: string;
-  progress: number;
-  goals: GoalItem[];
-}
-
-const MOCK: ThemeSection[] = [
-  { name: 'Digital Transformation', color: '#2563EB', progress: 75, goals: [
-    { name: 'Digitize 80% of permits', progress: 82 },
-    { name: 'Launch AI analytics platform', progress: 65 },
-    { name: 'Integrate 5 ministry systems', progress: 78 },
-  ]},
-  { name: 'Workforce Development', color: '#0D9488', progress: 83, goals: [
-    { name: 'Train 10K engineers', progress: 91 },
-    { name: 'Saudization rate → 45%', progress: 85 },
-    { name: 'STEM scholarship pipeline', progress: 72 },
-  ]},
-  { name: 'Supply Chain Excellence', color: '#D97706', progress: 58, goals: [
-    { name: 'Reduce import dependency 30%', progress: 76 },
-    { name: '3 new logistics hubs', progress: 41 },
-    { name: 'Supplier quality certification', progress: 56 },
-  ]},
-  { name: 'Sustainability & ESG', color: '#16A34A', progress: 77, goals: [
-    { name: 'Carbon reduction 25%', progress: 88 },
-    { name: 'ESG compliance framework', progress: 63 },
-    { name: 'Renewable energy adoption 40%', progress: 80 },
-  ]},
-];
+import { useStrategicThemes, useGoals } from '@/hooks/strategy/useStrategyData';
 
 function getProgressColor(v: number) {
   if (v >= 70) return '#0D9488';
@@ -49,13 +16,71 @@ function getProgressColor(v: number) {
 }
 
 export function OkrTree() {
-  const [expanded, setExpanded] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(MOCK.map(t => [t.name, true]))
-  );
+  const { data: themes, isLoading: tL } = useStrategicThemes();
+  const { data: goals, isLoading: gL } = useGoals();
+
+  const isLoading = tL || gL;
+
+  const treeData = useMemo(() => {
+    if (!themes || !goals) return [];
+    return themes.map(theme => {
+      const themeGoals = goals.filter(g => g.theme_id === theme.id);
+      const avgProgress = themeGoals.length
+        ? Math.round(themeGoals.reduce((s, g) => s + (Number(g.progress_pct) || 0), 0) / themeGoals.length)
+        : 0;
+      return {
+        id: theme.id,
+        name: theme.title,
+        color: theme.color || '#2563EB',
+        progress: avgProgress,
+        goals: themeGoals.map(g => ({
+          id: g.id,
+          name: g.title,
+          progress: Number(g.progress_pct) || 0,
+        })),
+      };
+    });
+  }, [themes, goals]);
+
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
+  // Initialize expanded state when data loads
+  useMemo(() => {
+    if (treeData.length > 0 && Object.keys(expanded).length === 0) {
+      const init: Record<string, boolean> = {};
+      treeData.forEach(t => { init[t.id] = true; });
+      setExpanded(init);
+    }
+  }, [treeData]);
+
+  if (isLoading) {
+    return (
+      <div className="animate-pulse space-y-3">
+        {[1, 2, 3, 4].map(i => (
+          <div key={i}>
+            <div style={{ height: 32, background: 'var(--catalyst-bg-hover)', borderRadius: 6 }} />
+            <div className="ml-5 mt-1 space-y-1">
+              {[1, 2, 3].map(j => (
+                <div key={j} style={{ height: 24, background: 'var(--catalyst-bg-hover)', borderRadius: 4 }} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (treeData.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'var(--catalyst-text-tertiary)' }}>
+        <span style={{ fontSize: 12 }}>No strategic themes defined</span>
+      </div>
+    );
+  }
 
   const toggleAll = () => {
     const allExpanded = Object.values(expanded).every(Boolean);
-    setExpanded(Object.fromEntries(MOCK.map(t => [t.name, !allExpanded])));
+    setExpanded(Object.fromEntries(treeData.map(t => [t.id, !allExpanded])));
   };
 
   return (
@@ -69,16 +94,16 @@ export function OkrTree() {
         </button>
       </div>
       <div style={{ maxHeight: 280, overflowY: 'auto' }}>
-        {MOCK.map(theme => {
-          const isOpen = expanded[theme.name] ?? true;
+        {treeData.map(theme => {
+          const isOpen = expanded[theme.id] ?? true;
           const Chevron = isOpen ? ChevronDown : ChevronRight;
           return (
-            <div key={theme.name} style={{ marginBottom: 8 }}>
+            <div key={theme.id} style={{ marginBottom: 8 }}>
               <button
                 role="button"
                 tabIndex={0}
                 aria-expanded={isOpen}
-                onClick={() => setExpanded(p => ({ ...p, [theme.name]: !p[theme.name] }))}
+                onClick={() => setExpanded(p => ({ ...p, [theme.id]: !p[theme.id] }))}
                 className="flex items-center gap-2 w-full"
                 style={{
                   padding: '8px 6px', borderRadius: 6, background: 'none', border: 'none', cursor: 'pointer',
@@ -100,7 +125,7 @@ export function OkrTree() {
               {isOpen && (
                 <div style={{ paddingLeft: 20 }}>
                   {theme.goals.map(goal => (
-                    <div key={goal.name} className="flex items-center gap-2" style={{ padding: '6px 0' }}>
+                    <div key={goal.id} className="flex items-center gap-2" style={{ padding: '6px 0' }}>
                       <span style={{ width: 6, height: 6, borderRadius: '50%', background: getProgressColor(goal.progress), flexShrink: 0 }} />
                       <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--catalyst-text-primary)', flex: 1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {goal.name}
