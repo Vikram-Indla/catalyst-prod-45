@@ -1,18 +1,20 @@
 import { format } from 'date-fns';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Pencil, Paperclip, Copy, Link2, Target, Trash2, Save, Loader2, ChevronLeft } from 'lucide-react';
+import { X, Pencil, Paperclip, Copy, Link2, Target, Trash2, Save, Loader2, ChevronLeft, ClipboardList, AlertTriangle, Flag, ExternalLink, Activity, Plus, Wallet } from 'lucide-react';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import { StatusBadge } from './StatusBadge';
 import { PriorityBadge } from './PriorityBadge';
-import { UserAvatar } from './UserAvatar';
 import { formatShortName } from '@/lib/format-name';
 import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { EditableField } from '@/components/producthub/shared/EditableField';
 import { useDepartmentOptions, useProfileOptions } from '@/hooks/useInitiativeLookups';
+import { StatusSelect } from '@/components/producthub/shared/StatusSelect';
+import { QuarterSelect } from '@/components/producthub/shared/QuarterSelect';
+import { PeopleSelect } from '@/components/producthub/shared/PeopleSelect';
+import { DepartmentSelect } from '@/components/producthub/shared/DepartmentSelect';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,24 +36,6 @@ interface DetailPanelProps {
 
 const TABS = ['Details', 'Score', 'Budget', 'Risks', 'Milestones', 'Links', 'Audit'] as const;
 type Tab = typeof TABS[number];
-
-const STATUS_OPTIONS = Object.entries(STATUS_DISPLAY).map(([value, cfg]) => ({
-  value,
-  label: cfg.label,
-  color: cfg.dot,
-}));
-
-function generateQuarterOptions(): { value: string; label: string }[] {
-  const opts: { value: string; label: string }[] = [];
-  for (const year of [2025, 2026, 2027]) {
-    for (let q = 1; q <= 4; q++) {
-      const val = `Q${q} ${year}`;
-      opts.push({ value: val, label: val });
-    }
-  }
-  return opts;
-}
-const QUARTER_OPTIONS = generateQuarterOptions();
 
 const AVATAR_COLORS: Record<string, string> = {
   'Sarah': '#6366f1', 'Ahmed': '#10b981', 'Fatima': '#ec4899', 'Omar': '#f97316',
@@ -80,15 +64,7 @@ function InlineAvatar({ name, size = 20 }: { name: string; size?: number }) {
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#a1a1aa', lineHeight: 1, marginBottom: 6 }}>
-      {children}
-    </div>
-  );
-}
-
-function FieldValue({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{ fontSize: 13, fontWeight: 400, color: '#18181b', lineHeight: 1.4, display: 'flex', alignItems: 'center', gap: 6 }}>
+    <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">
       {children}
     </div>
   );
@@ -98,11 +74,11 @@ function DetailProgressBar({ value, status }: { value: number; status?: Initiati
   const clamped = Math.min(Math.max(value, 0), 100);
   const fillColor = status === 'delivered' ? '#10b981' : '#2563eb';
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-      <div style={{ width: 80, height: 6, background: '#e4e4e7', borderRadius: 3, overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${clamped}%`, background: fillColor, borderRadius: 3 }} />
+    <div className="inline-flex items-center gap-2">
+      <div className="w-20 h-1.5 bg-zinc-200 rounded-full overflow-hidden">
+        <div className="h-full rounded-full" style={{ width: `${clamped}%`, background: fillColor }} />
       </div>
-      <span style={{ fontSize: 13, fontWeight: 500, color: '#18181b', fontVariantNumeric: 'tabular-nums' }}>{clamped}%</span>
+      <span className="text-[13px] font-medium text-zinc-900 tabular-nums">{clamped}%</span>
     </div>
   );
 }
@@ -138,18 +114,19 @@ function ScoreSlider({ label, value, onChange }: { label: string; value: number;
   const fillPercent = ((value - 1) / 4) * 100;
   return (
     <div style={{ marginBottom: 28 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 12 }}>
-        <span style={{ fontSize: 13, fontWeight: 500, color: '#3f3f46' }}>{label}</span>
-        <span style={{ fontSize: 15, fontWeight: 700, color: '#18181b', fontVariantNumeric: 'tabular-nums', minWidth: 28, textAlign: 'right' }}>
+      <div className="flex justify-between items-baseline mb-3">
+        <span className="text-[13px] font-medium text-zinc-600">{label}</span>
+        <span className="text-[15px] font-bold text-zinc-900 tabular-nums min-w-[28px] text-right">
           {value % 1 === 0 ? value : value.toFixed(1)}
         </span>
       </div>
-      <div style={{ position: 'relative', width: '100%', height: 28, display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-        <div style={{ position: 'absolute', left: 0, right: 0, height: 6, background: '#e4e4e7', borderRadius: 3 }} />
-        <div style={{ position: 'absolute', left: 0, height: 6, background: '#2563eb', borderRadius: 3, width: `${fillPercent}%`, pointerEvents: 'none' }} />
+      <div className="relative w-full h-7 flex items-center cursor-pointer">
+        <div className="absolute left-0 right-0 h-1.5 bg-zinc-200 rounded-full" />
+        <div className="absolute left-0 h-1.5 bg-blue-600 rounded-full pointer-events-none" style={{ width: `${fillPercent}%` }} />
         <input type="range" min="1" max="5" step="0.5" value={value} onChange={(e) => onChange(parseFloat(e.target.value))}
-          style={{ position: 'absolute', inset: 0, width: '100%', height: 28, opacity: 0, cursor: 'pointer', zIndex: 10 }} />
-        <div style={{ position: 'absolute', width: 18, height: 18, background: '#ffffff', border: '2.5px solid #2563eb', borderRadius: '50%', boxShadow: '0 1px 3px rgba(0,0,0,0.12)', transform: 'translateX(-50%)', left: `${fillPercent}%`, pointerEvents: 'none', zIndex: 2 }} />
+          className="absolute inset-0 w-full h-7 opacity-0 cursor-pointer z-10" />
+        <div className="absolute w-[18px] h-[18px] bg-white border-[2.5px] border-blue-600 rounded-full shadow-sm pointer-events-none z-[2]"
+          style={{ left: `${fillPercent}%`, transform: 'translateX(-50%)' }} />
       </div>
     </div>
   );
@@ -171,6 +148,179 @@ const MOCK_COMMENTS: Record<string, { author: string; content: string; timeAgo: 
     { author: 'Ahmed M.', content: 'Migration plan finalized. Ready for stakeholder review.', timeAgo: '3 hours ago' },
   ],
 };
+
+/* ════════════════════════════════════════════════════
+   EMPTY STATE COMPONENT
+   ════════════════════════════════════════════════════ */
+function TabEmptyState({ icon: Icon, title, description, ctaLabel, onCta }: {
+  icon: React.ElementType;
+  title: string;
+  description: string;
+  ctaLabel: string;
+  onCta: () => void;
+}) {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 text-center">
+      <div className="w-12 h-12 rounded-full bg-zinc-100 flex items-center justify-center mb-4">
+        <Icon className="w-6 h-6 text-zinc-400" />
+      </div>
+      <h4 className="text-sm font-medium text-zinc-600 mb-1">{title}</h4>
+      <p className="text-xs text-zinc-400 mb-5 max-w-xs">{description}</p>
+      <button
+        type="button"
+        onClick={onCta}
+        className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-colors"
+      >
+        <Plus className="w-3.5 h-3.5" />
+        {ctaLabel}
+      </button>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════
+   BUDGET TAB
+   ════════════════════════════════════════════════════ */
+function BudgetTab() {
+  const summaryCards = [
+    { label: 'Allocated', amount: 0 },
+    { label: 'Spent', amount: 0 },
+    { label: 'Remaining', amount: 0 },
+  ];
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-sm font-semibold text-zinc-900">Budget Summary</h3>
+      </div>
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        {summaryCards.map(card => (
+          <div key={card.label} className="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
+            <div className="text-xs font-medium text-zinc-500 uppercase tracking-wide mb-2">{card.label}</div>
+            <div className="text-xl font-bold text-zinc-900 tabular-nums">SAR {card.amount.toLocaleString()}</div>
+            <div className="mt-2 h-1.5 bg-zinc-200 rounded-full overflow-hidden">
+              <div className="h-full bg-blue-600 rounded-full" style={{ width: '0%' }} />
+            </div>
+          </div>
+        ))}
+      </div>
+      <TabEmptyState
+        icon={Wallet}
+        title="No budget items yet"
+        description="Add budget line items to track spending and allocation for this initiative."
+        ctaLabel="Add Budget Item"
+        onCta={() => catalystToast.info('Budget tracking coming soon')}
+      />
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════
+   RISKS TAB
+   ════════════════════════════════════════════════════ */
+function RisksTab() {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-sm font-semibold text-zinc-900">Risk Register</h3>
+      </div>
+      <TabEmptyState
+        icon={AlertTriangle}
+        title="No risks identified"
+        description="Add risks to track and mitigate potential issues that may impact this initiative."
+        ctaLabel="Add Risk"
+        onCta={() => catalystToast.info('Risk management coming soon')}
+      />
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════
+   MILESTONES TAB
+   ════════════════════════════════════════════════════ */
+function MilestonesTab() {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-sm font-semibold text-zinc-900">Milestones</h3>
+      </div>
+      <TabEmptyState
+        icon={Flag}
+        title="No milestones set"
+        description="Add milestones to track key deliverables and deadlines for this initiative."
+        ctaLabel="Add Milestone"
+        onCta={() => catalystToast.info('Milestone tracking coming soon')}
+      />
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════
+   LINKS TAB
+   ════════════════════════════════════════════════════ */
+function LinksTab() {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-sm font-semibold text-zinc-900">Related Links</h3>
+      </div>
+      <TabEmptyState
+        icon={ExternalLink}
+        title="No links added"
+        description="Add links to related documents, designs, and resources for this initiative."
+        ctaLabel="Add Link"
+        onCta={() => catalystToast.info('Link management coming soon')}
+      />
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════
+   AUDIT TAB
+   ════════════════════════════════════════════════════ */
+function AuditTab({ initiative }: { initiative: Initiative }) {
+  const entries = [
+    ...(initiative.updated_at && initiative.updated_at !== initiative.created_at ? [{
+      action: 'Last updated',
+      detail: `Initiative details were modified`,
+      date: initiative.updated_at,
+      actor: 'System',
+    }] : []),
+    {
+      action: 'Initiative created',
+      detail: `${initiative.initiative_key} was created`,
+      date: initiative.created_at,
+      actor: 'System',
+    },
+  ];
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-sm font-semibold text-zinc-900">Activity Log</h3>
+      </div>
+      {entries.length === 0 ? (
+        <TabEmptyState
+          icon={Activity}
+          title="No activity recorded"
+          description="Changes to this initiative will appear here automatically."
+          ctaLabel="Refresh"
+          onCta={() => {}}
+        />
+      ) : (
+        <div className="relative pl-6 border-l-2 border-zinc-200">
+          {entries.map((entry, i) => (
+            <div key={i} className="relative pb-6 last:pb-0">
+              <div className="absolute -left-[25px] top-1 w-3 h-3 rounded-full bg-blue-500 border-2 border-white" />
+              <div className="text-sm font-medium text-zinc-900 mb-0.5">{entry.action}</div>
+              <div className="text-xs text-zinc-500 mb-1">{entry.detail}</div>
+              <div className="text-xs text-zinc-400">{formatAbsoluteDate(entry.date)}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 /* ════════════════════════════════════════════════════
    MAIN DETAIL PANEL
@@ -228,11 +378,6 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
     setEditForm({});
     onClose();
   }, [onClose]);
-
-  const handleCancelEdit = useCallback(() => {
-    setIsEditing(false);
-    setEditForm({});
-  }, []);
 
   const getFieldValue = useCallback((field: string, original: any) => {
     return field in editForm ? editForm[field] : original;
@@ -293,7 +438,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
         catalystToast.success('Initiative cloned successfully');
         break;
       case 'Link':
-        catalystToast.info('Link management coming soon');
+        setActiveTab('Links');
         break;
       case 'Score':
         setActiveTab('Score');
@@ -325,7 +470,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 
               {/* STICKY HEADER */}
               <div className="flex-shrink-0 bg-white sticky top-0 z-10">
-                {/* Top bar: Back + actions */}
+                {/* Top bar */}
                 <div className="flex items-center justify-between px-6 py-3 border-b border-zinc-100">
                   <button onClick={handleAttemptClose}
                     className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 transition-colors">
@@ -380,29 +525,29 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 
                 {/* Action bar — hidden in edit mode */}
                 {!isEditing && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '12px 24px', borderBottom: '1px solid #f4f4f5' }}>
+                  <div className="flex items-center gap-1 px-6 py-3 border-b border-zinc-100">
                     {ACTION_BUTTONS.map(({ label, icon: Icon }) => (
                       <button key={label} type="button" onClick={() => handleActionClick(label)}
-                        className="hover:bg-zinc-100 rounded-md transition-colors cursor-pointer"
-                        style={{ height: 32, padding: '0 12px', display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 400, color: '#52525b', border: 'none', background: 'none' }}>
+                        className="h-8 px-3 inline-flex items-center gap-1.5 text-[13px] text-zinc-500 hover:bg-zinc-100 rounded-md transition-colors">
                         <Icon size={14} />{label}
                       </button>
                     ))}
                     <button type="button" onClick={() => setShowDeleteDialog(true)}
-                      className="hover:bg-red-50 rounded-md transition-colors cursor-pointer"
-                      style={{ height: 32, padding: '0 12px', display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 400, color: '#dc2626', border: 'none', background: 'none', marginLeft: 'auto' }}>
+                      className="h-8 px-3 inline-flex items-center gap-1.5 text-[13px] text-red-600 hover:bg-red-50 rounded-md transition-colors ml-auto">
                       <Trash2 size={14} />Delete
                     </button>
                   </div>
                 )}
 
                 {/* Tab Bar */}
-                <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #e4e4e7', padding: '0 24px' }}>
+                <div className="flex gap-0 border-b border-zinc-200 px-6">
                   {TABS.map(tab => (
                     <button key={tab} type="button" onClick={() => setActiveTab(tab)}
-                      style={{ padding: '12px 14px', fontSize: 13, fontWeight: activeTab === tab ? 500 : 400, color: activeTab === tab ? '#18181b' : '#71717a',
-                        borderBottom: `2px solid ${activeTab === tab ? '#2563eb' : 'transparent'}`, cursor: 'pointer', whiteSpace: 'nowrap',
-                        background: 'none', borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
+                      className={`px-3.5 py-3 text-[13px] whitespace-nowrap border-b-2 transition-colors ${
+                        activeTab === tab
+                          ? 'font-medium text-zinc-900 border-blue-600'
+                          : 'font-normal text-zinc-500 border-transparent hover:text-zinc-700'
+                      }`}>
                       {tab}
                     </button>
                   ))}
@@ -410,7 +555,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
               </div>
 
               {/* BODY */}
-              <div data-body style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
+              <div data-body className="flex-1 overflow-y-auto p-6">
                 {activeTab === 'Details' && (
                   <DetailsContent
                     initiative={initiative}
@@ -426,11 +571,11 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                     onScoreChange={setScores}
                     onSave={() => onScoreSave(initiative.id, { strategic_alignment: scores.sa, business_impact: scores.bi, time_urgency: scores.tu, resource_feasibility: scores.rf })} />
                 )}
-                {!['Details', 'Score'].includes(activeTab) && (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 192, color: '#a1a1aa', fontSize: 13 }}>
-                    {activeTab} — Coming Soon
-                  </div>
-                )}
+                {activeTab === 'Budget' && <BudgetTab />}
+                {activeTab === 'Risks' && <RisksTab />}
+                {activeTab === 'Milestones' && <MilestonesTab />}
+                {activeTab === 'Links' && <LinksTab />}
+                {activeTab === 'Audit' && <AuditTab initiative={initiative} />}
               </div>
             </motion.div>
           </>
@@ -499,7 +644,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 }
 
 /* ════════════════════════════════════════════════════
-   DETAILS TAB — Now supports edit mode
+   DETAILS TAB — Custom dropdowns, no native selects
    ════════════════════════════════════════════════════ */
 function DetailsContent({
   initiative,
@@ -523,154 +668,228 @@ function DetailsContent({
 
   return (
     <>
-      {/* Title (full width, edit mode only here — also in header) */}
-
       {/* Description */}
-      <div style={{ marginBottom: 20 }}>
-        <EditableField
-          label="Description"
-          value={getVal('description', initiative.description)}
-          isEditing={isEditing}
-          type="textarea"
-          onChange={v => onFieldChange('description', v)}
-          onQuickEdit={v => onQuickEdit('description', v)}
-          placeholder="No description provided"
-        />
+      <div className="mb-5">
+        <FieldLabel>Description</FieldLabel>
+        {isEditing ? (
+          <textarea
+            value={getVal('description', initiative.description) ?? ''}
+            onChange={e => onFieldChange('description', e.target.value)}
+            rows={4}
+            placeholder="Describe this initiative..."
+            className="w-full border border-zinc-300 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-y"
+          />
+        ) : (
+          <p className="text-[13px] text-zinc-700 leading-relaxed">{initiative.description || <span className="text-zinc-400 italic">No description provided</span>}</p>
+        )}
       </div>
 
       {/* Field Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px 48px' }}>
-        <EditableField
-          label="Status"
-          value={getVal('status', initiative.status)}
-          isEditing={isEditing}
-          type="select"
-          options={STATUS_OPTIONS}
-          onChange={v => onFieldChange('status', v)}
-          onQuickEdit={v => { onStatusChange(initiative.id, v); onQuickEdit('status', v); }}
-        />
+      <div className="grid grid-cols-2 gap-4 gap-x-8">
+        {/* Status */}
+        <div>
+          <FieldLabel>Status</FieldLabel>
+          {isEditing ? (
+            <StatusSelect
+              value={getVal('status', initiative.status)}
+              onChange={v => onFieldChange('status', v)}
+            />
+          ) : (
+            <StatusBadge status={initiative.status} />
+          )}
+        </div>
 
-        <EditableField
-          label="Priority / Score"
-          value={initiative.computed_score !== null ? `${initiative.computed_score.toFixed(1)} / 5.0` : null}
-          isEditing={false}
-          type="text"
-          onChange={() => {}}
-          readOnly
-          tooltip="Scores are calculated from the Score tab"
-        />
+        {/* Priority / Score (read-only) */}
+        <div>
+          <FieldLabel>Priority / Score</FieldLabel>
+          <div className="text-[13px] text-zinc-500 italic px-2 py-1.5 -mx-2" title="Scores are calculated from the Score tab">
+            {initiative.computed_score !== null ? `${initiative.computed_score.toFixed(1)} / 5.0` : '—'}
+          </div>
+        </div>
 
-        <EditableField
-          label="Department"
-          value={getVal('department_id', initiative.department_id)}
-          isEditing={isEditing}
-          type="select"
-          options={departmentOptions || []}
-          onChange={v => onFieldChange('department_id', v)}
-          onQuickEdit={v => onQuickEdit('department_id', v)}
-        />
+        {/* Department */}
+        <div>
+          <FieldLabel>Department</FieldLabel>
+          {isEditing ? (
+            <DepartmentSelect
+              value={getVal('department_id', initiative.department_id) ?? ''}
+              onChange={v => onFieldChange('department_id', v)}
+              departments={departmentOptions || []}
+            />
+          ) : (
+            <div className="text-[13px] text-zinc-900">{initiative.department_name || <span className="text-zinc-400">—</span>}</div>
+          )}
+        </div>
 
-        <EditableField
-          label="Target Quarter"
-          value={getVal('target_quarter', initiative.target_quarter)}
-          isEditing={isEditing}
-          type="select"
-          options={QUARTER_OPTIONS}
-          onChange={v => onFieldChange('target_quarter', v)}
-          onQuickEdit={v => onQuickEdit('target_quarter', v)}
-        />
+        {/* Quarter */}
+        <div>
+          <FieldLabel>Target Quarter</FieldLabel>
+          {isEditing ? (
+            <QuarterSelect
+              value={getVal('target_quarter', initiative.target_quarter) ?? ''}
+              onChange={v => onFieldChange('target_quarter', v)}
+            />
+          ) : (
+            <div className="text-[13px] text-zinc-900">{initiative.target_quarter || <span className="text-zinc-400">—</span>}</div>
+          )}
+        </div>
 
-        <EditableField
-          label="Assignee"
-          value={getVal('assignee_id', initiative.assignee_id)}
-          isEditing={isEditing}
-          type="select"
-          options={profileOptions || []}
-          onChange={v => onFieldChange('assignee_id', v)}
-          onQuickEdit={v => onQuickEdit('assignee_id', v)}
-        />
+        {/* Assignee */}
+        <div>
+          <FieldLabel>Assignee</FieldLabel>
+          {isEditing ? (
+            <PeopleSelect
+              value={getVal('assignee_id', initiative.assignee_id) ?? ''}
+              onChange={v => onFieldChange('assignee_id', v)}
+              profiles={profileOptions || []}
+              placeholder="Select assignee"
+            />
+          ) : (
+            <div className="text-[13px] text-zinc-900 flex items-center gap-2">
+              {initiative.assignee_name ? (
+                <>
+                  <InlineAvatar name={initiative.assignee_name} size={20} />
+                  {initiative.assignee_name}
+                </>
+              ) : <span className="text-zinc-400">—</span>}
+            </div>
+          )}
+        </div>
 
-        <EditableField
-          label="Business Owner"
-          value={getVal('business_owner_id', initiative.business_owner_id)}
-          isEditing={isEditing}
-          type="select"
-          options={profileOptions || []}
-          onChange={v => onFieldChange('business_owner_id', v)}
-          onQuickEdit={v => onQuickEdit('business_owner_id', v)}
-        />
+        {/* Business Owner */}
+        <div>
+          <FieldLabel>Business Owner</FieldLabel>
+          {isEditing ? (
+            <PeopleSelect
+              value={getVal('business_owner_id', initiative.business_owner_id) ?? ''}
+              onChange={v => onFieldChange('business_owner_id', v)}
+              profiles={profileOptions || []}
+              placeholder="Select business owner"
+            />
+          ) : (
+            <div className="text-[13px] text-zinc-900 flex items-center gap-2">
+              {initiative.business_owner_name ? (
+                <>
+                  <InlineAvatar name={initiative.business_owner_name} size={20} />
+                  {initiative.business_owner_name}
+                </>
+              ) : <span className="text-zinc-400">—</span>}
+            </div>
+          )}
+        </div>
 
-        <EditableField
-          label="Reporter"
-          value={getVal('reporter_id', initiative.reporter_id)}
-          isEditing={isEditing}
-          type="select"
-          options={profileOptions || []}
-          onChange={v => onFieldChange('reporter_id', v)}
-          onQuickEdit={v => onQuickEdit('reporter_id', v)}
-        />
+        {/* Reporter */}
+        <div>
+          <FieldLabel>Reporter</FieldLabel>
+          {isEditing ? (
+            <PeopleSelect
+              value={getVal('reporter_id', initiative.reporter_id) ?? ''}
+              onChange={v => onFieldChange('reporter_id', v)}
+              profiles={profileOptions || []}
+              placeholder="Select reporter"
+            />
+          ) : (
+            <div className="text-[13px] text-zinc-900 flex items-center gap-2">
+              {initiative.reporter_id ? (
+                <>
+                  {(() => {
+                    const rp = profileOptions?.find(p => p.value === initiative.reporter_id);
+                    const name = rp?.label || initiative.reporter_id || '';
+                    return <><InlineAvatar name={name} size={20} />{name}</>;
+                  })()}
+                </>
+              ) : <span className="text-zinc-400">—</span>}
+            </div>
+          )}
+        </div>
 
-        <EditableField
-          label="Progress"
-          value={getVal('progress', initiative.progress)}
-          isEditing={isEditing}
-          type="range"
-          onChange={v => onFieldChange('progress', v)}
-          onQuickEdit={v => onQuickEdit('progress', v)}
-        />
+        {/* Progress */}
+        <div>
+          <FieldLabel>Progress</FieldLabel>
+          {isEditing ? (
+            <div className="flex items-center gap-3">
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={Number(getVal('progress', initiative.progress)) || 0}
+                onChange={e => onFieldChange('progress', Number(e.target.value))}
+                className="flex-1 accent-blue-600"
+              />
+              <span className="text-sm font-medium text-zinc-700 tabular-nums w-10 text-right">{getVal('progress', initiative.progress) ?? 0}%</span>
+            </div>
+          ) : (
+            <DetailProgressBar value={initiative.progress} status={initiative.status} />
+          )}
+        </div>
 
-        <EditableField
-          label="Business Ask Date"
-          value={getVal('business_ask_date', initiative.business_ask_date)}
-          isEditing={isEditing}
-          type="date"
-          onChange={v => onFieldChange('business_ask_date', v)}
-          onQuickEdit={v => onQuickEdit('business_ask_date', v)}
-        />
+        {/* Business Ask Date */}
+        <div>
+          <FieldLabel>Business Ask Date</FieldLabel>
+          {isEditing ? (
+            <input type="date"
+              value={getVal('business_ask_date', initiative.business_ask_date) ? String(getVal('business_ask_date', initiative.business_ask_date)).slice(0, 10) : ''}
+              onChange={e => onFieldChange('business_ask_date', e.target.value || null)}
+              className="w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            />
+          ) : (
+            <div className="text-[13px] text-zinc-900">{formatAbsoluteDate(initiative.business_ask_date)}</div>
+          )}
+        </div>
 
-        <EditableField
-          label="Kickoff Date"
-          value={getVal('kickoff_date', initiative.kickoff_date)}
-          isEditing={isEditing}
-          type="date"
-          onChange={v => onFieldChange('kickoff_date', v)}
-          onQuickEdit={v => onQuickEdit('kickoff_date', v)}
-        />
+        {/* Kickoff Date */}
+        <div>
+          <FieldLabel>Kickoff Date</FieldLabel>
+          {isEditing ? (
+            <input type="date"
+              value={getVal('kickoff_date', initiative.kickoff_date) ? String(getVal('kickoff_date', initiative.kickoff_date)).slice(0, 10) : ''}
+              onChange={e => onFieldChange('kickoff_date', e.target.value || null)}
+              className="w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            />
+          ) : (
+            <div className="text-[13px] text-zinc-900">{formatAbsoluteDate(initiative.kickoff_date)}</div>
+          )}
+        </div>
 
-        <EditableField
-          label="Target Complete"
-          value={getVal('target_complete', initiative.target_complete)}
-          isEditing={isEditing}
-          type="date"
-          onChange={v => onFieldChange('target_complete', v)}
-          onQuickEdit={v => onQuickEdit('target_complete', v)}
-        />
+        {/* Target Complete */}
+        <div>
+          <FieldLabel>Target Complete</FieldLabel>
+          {isEditing ? (
+            <input type="date"
+              value={getVal('target_complete', initiative.target_complete) ? String(getVal('target_complete', initiative.target_complete)).slice(0, 10) : ''}
+              onChange={e => onFieldChange('target_complete', e.target.value || null)}
+              className="w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            />
+          ) : (
+            <div className="text-[13px] text-zinc-900">{formatAbsoluteDate(initiative.target_complete)}</div>
+          )}
+        </div>
       </div>
 
       {/* Comments */}
-      <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #f4f4f5' }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: '#18181b', marginBottom: 16, lineHeight: 1 }}>
+      <div className="mt-6 pt-5 border-t border-zinc-100">
+        <div className="text-[13px] font-semibold text-zinc-900 mb-4">
           Comments ({comments.length})
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+        <div className="flex flex-col">
           {comments.map((c, i) => (
-            <div key={i} style={{ display: 'flex', gap: 12, padding: '12px 0', borderBottom: i < comments.length - 1 ? '1px solid #fafafa' : 'none' }}>
+            <div key={i} className="flex gap-3 py-3" style={{ borderBottom: i < comments.length - 1 ? '1px solid #fafafa' : 'none' }}>
               <InlineAvatar name={c.author} size={28} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: '#18181b' }}>{formatShortName(c.author)}</span>
-                  <span style={{ fontSize: 12, fontWeight: 400, color: '#a1a1aa' }}>{c.timeAgo}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[13px] font-medium text-zinc-900">{formatShortName(c.author)}</span>
+                  <span className="text-xs text-zinc-400">{c.timeAgo}</span>
                 </div>
-                <p style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.55, color: '#52525b', margin: 0 }}>{c.content}</p>
+                <p className="text-[13px] text-zinc-600 leading-relaxed">{c.content}</p>
               </div>
             </div>
           ))}
         </div>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center', paddingTop: 16, marginTop: 16, borderTop: '1px solid #f4f4f5' }}>
+        <div className="flex gap-3 items-center pt-4 mt-4 border-t border-zinc-100">
           <InlineAvatar name="AK" size={28} />
           <input type="text" placeholder="Write a comment..."
-            className="flex-1 h-10 border border-zinc-200 rounded-md px-3 text-[13px] text-zinc-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
-            style={{ background: '#fafafa' }} />
+            className="flex-1 h-10 border border-zinc-200 rounded-md px-3 text-[13px] text-zinc-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 bg-zinc-50"
+          />
         </div>
       </div>
     </>
@@ -691,29 +910,29 @@ function ScoreContent({
   onSave: () => void;
 }) {
   return (
-    <div style={{ display: 'flex', gap: 24, minHeight: 400 }}>
-      <div style={{ flex: 3, display: 'flex', flexDirection: 'column' }}>
+    <div className="flex gap-6 min-h-[400px]">
+      <div className="flex-[3] flex flex-col">
         <ScoreSlider label="Strategic Alignment" value={scores.sa} onChange={(v) => onScoreChange({ ...scores, sa: v })} />
         <ScoreSlider label="Business Impact" value={scores.bi} onChange={(v) => onScoreChange({ ...scores, bi: v })} />
         <ScoreSlider label="Time & Urgency" value={scores.tu} onChange={(v) => onScoreChange({ ...scores, tu: v })} />
         <ScoreSlider label="Resource & Feasibility" value={scores.rf} onChange={(v) => onScoreChange({ ...scores, rf: v })} />
         <button type="button" onClick={onSave}
-          className="w-full h-[38px] bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-medium border-none rounded-md cursor-pointer mt-auto transition-colors">
+          className="w-full h-[38px] bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-medium rounded-md mt-auto transition-colors">
           Save Score
         </button>
       </div>
-      <div style={{ flex: 2, background: '#fafafa', border: '1px solid #f4f4f5', borderRadius: 10, padding: '24px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <div style={{ fontSize: 52, fontWeight: 700, color: '#18181b', lineHeight: 1, letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums', marginBottom: 10 }}>
+      <div className="flex-[2] bg-zinc-50 border border-zinc-100 rounded-xl p-5 flex flex-col items-center">
+        <div className="text-[52px] font-bold text-zinc-900 leading-none tracking-tight tabular-nums mb-2.5">
           {computedScore.toFixed(1)}
         </div>
-        <div style={{ marginBottom: 16 }}><PriorityBadge score={computedScore} size="md" showScore={false} /></div>
-        <div style={{ margin: '8px 0' }}><RadarChart scores={[scores.sa, scores.bi, scores.tu, scores.rf]} /></div>
-        <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid #e4e4e7', width: '100%' }}>
-          <p style={{ fontSize: 12, fontWeight: 400, color: '#71717a', lineHeight: 1.55, textAlign: 'center', margin: 0 }}>
-            {priority.level === 'High' && <>Score of {computedScore.toFixed(1)} falls in the <strong style={{ color: '#3f3f46', fontWeight: 600 }}>High</strong> range (4.0-5.0).</>}
-            {priority.level === 'Medium' && <>Score of {computedScore.toFixed(1)} falls in the <strong style={{ color: '#3f3f46', fontWeight: 600 }}>Medium</strong> range (3.0-3.9).</>}
-            {priority.level === 'Low' && <>Score of {computedScore.toFixed(1)} falls in the <strong style={{ color: '#3f3f46', fontWeight: 600 }}>Low</strong> range (2.0-2.9).</>}
-            {priority.level === 'Rejected' && <>Score of {computedScore.toFixed(1)} falls in the <strong style={{ color: '#3f3f46', fontWeight: 600 }}>Rejected</strong> range (1.0-1.9).</>}
+        <div className="mb-4"><PriorityBadge score={computedScore} size="md" showScore={false} /></div>
+        <div className="my-2"><RadarChart scores={[scores.sa, scores.bi, scores.tu, scores.rf]} /></div>
+        <div className="mt-3.5 pt-3.5 border-t border-zinc-200 w-full">
+          <p className="text-xs text-zinc-500 leading-relaxed text-center">
+            {priority.level === 'High' && <>Score of {computedScore.toFixed(1)} falls in the <strong className="text-zinc-700">High</strong> range (4.0-5.0).</>}
+            {priority.level === 'Medium' && <>Score of {computedScore.toFixed(1)} falls in the <strong className="text-zinc-700">Medium</strong> range (3.0-3.9).</>}
+            {priority.level === 'Low' && <>Score of {computedScore.toFixed(1)} falls in the <strong className="text-zinc-700">Low</strong> range (2.0-2.9).</>}
+            {priority.level === 'Rejected' && <>Score of {computedScore.toFixed(1)} falls in the <strong className="text-zinc-700">Rejected</strong> range (1.0-1.9).</>}
             {priority.level === 'Unscored' && 'This initiative has not been scored yet.'}
           </p>
         </div>
