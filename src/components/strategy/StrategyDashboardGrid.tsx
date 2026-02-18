@@ -17,6 +17,7 @@ import {
   LayoutGrid,
   Activity,
   ShieldAlert,
+  FileWarning,
 } from 'lucide-react';
 import { WidgetCard } from './WidgetCard';
 import { StrategyPyramid } from './widgets/StrategyPyramid';
@@ -24,7 +25,8 @@ import { OkrHeatmap } from './widgets/OkrHeatmap';
 import { OkrTree } from './widgets/OkrTree';
 import { ExecutionDials } from './widgets/ExecutionDials';
 import { BudgetOverview } from './widgets/BudgetOverview';
-import { CapacityOverview } from './widgets/CapacityOverview';
+import { WorkforceOverview } from './widgets/WorkforceOverview';
+import { ContractOverview } from './widgets/ContractOverview';
 import { AiHealthScore } from './widgets/AiHealthScore';
 import { InvestmentAllocation } from './widgets/InvestmentAllocation';
 import { TeamSnapshot } from './widgets/TeamSnapshot';
@@ -68,8 +70,8 @@ export function StrategyDashboardGrid() {
         </WidgetCard>
       </div>
 
-      {/* ═══ Row 3 — Snapshot widgets (Budget + Capacity) ═══ */}
-      <div className="col-span-12 lg:col-span-6" style={{ minHeight: '280px' }}>
+      {/* ═══ Row 3 — 3 snapshot widgets (Budget + Workforce + Contracts) ═══ */}
+      <div className="col-span-12 md:col-span-6 xl:col-span-4" style={{ minHeight: '280px' }}>
         <WidgetCard
           title="Budget Overview"
           icon={DollarSign}
@@ -84,19 +86,34 @@ export function StrategyDashboardGrid() {
           <BudgetOverview />
         </WidgetCard>
       </div>
-      <div className="col-span-12 lg:col-span-6" style={{ minHeight: '280px' }}>
+      <div className="col-span-12 md:col-span-6 xl:col-span-4" style={{ minHeight: '280px' }}>
         <WidgetCard
-          title="Capacity Overview"
+          title="Workforce Overview"
           icon={Users2}
-          ariaLabel="Capacity Overview widget"
+          ariaLabel="Workforce Overview widget"
           className="h-full"
           accentGradient="linear-gradient(90deg, #2563EB, #60A5FA)"
           headerLink={{
-            label: 'View Capacity Planner →',
+            label: 'View Workforce →',
             onClick: () => navigate('/planhub/capacity'),
           }}
         >
-          <CapacityOverview />
+          <WorkforceOverview />
+        </WidgetCard>
+      </div>
+      <div className="col-span-12 md:col-span-12 xl:col-span-4" style={{ minHeight: '280px' }}>
+        <WidgetCard
+          title="Contract Radar"
+          icon={FileWarning}
+          ariaLabel="Contract Radar widget"
+          className="h-full"
+          accentGradient="linear-gradient(90deg, #D97706, #F59E0B)"
+          headerLink={{
+            label: 'View Details →',
+            onClick: () => navigate('/planhub/capacity'),
+          }}
+        >
+          <ContractOverview />
         </WidgetCard>
       </div>
 

@@ -15,9 +15,9 @@ const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
 
 function getCellStyle(status: OkrStatus): { bg: string; text: string } {
   switch (status) {
-    case 'on_track': return { bg: 'rgba(13,148,136,0.10)', text: '#0D9488' };
-    case 'at_risk': return { bg: 'rgba(217,119,6,0.10)', text: '#D97706' };
-    case 'off_track': return { bg: 'rgba(239,68,68,0.10)', text: '#EF4444' };
+    case 'on_track': return { bg: 'rgba(13,148,136,0.18)', text: '#0D9488' };
+    case 'at_risk': return { bg: 'rgba(217,119,6,0.18)', text: '#B45309' };
+    case 'off_track': return { bg: 'rgba(239,68,68,0.15)', text: '#DC2626' };
     default: return { bg: 'transparent', text: 'var(--catalyst-text-secondary, #334155)' };
   }
 }
@@ -176,10 +176,10 @@ export function OkrHeatmap() {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 mt-3" style={{ fontSize: 10, color: 'var(--catalyst-text-tertiary)' }}>
+      <div className="flex items-center gap-4 mt-3" style={{ fontSize: 11, color: 'var(--catalyst-text-secondary)' }}>
         <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#0D9488' }} /> On Track (≥70%)</span>
-        <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#D97706' }} /> At Risk (40–69%)</span>
-        <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#EF4444' }} /> Off Track (&lt;40%)</span>
+        <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#B45309' }} /> At Risk (40–69%)</span>
+        <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#DC2626' }} /> Off Track (&lt;40%)</span>
       </div>
 
       <Drawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} title={drawerInfo ? `${drawerInfo.theme} — ${drawerInfo.quarter}` : ''}>

@@ -156,10 +156,10 @@ export function BudgetOverview() {
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap mb-4" style={{ gap: 10, fontSize: 10 }}>
+      <div className="grid grid-cols-2 gap-x-3 gap-y-1 mb-4" style={{ fontSize: 10 }}>
         {categoriesWithPct.map(cat => (
-          <span key={cat.label} className="flex items-center" style={{ gap: 4 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: cat.color, flexShrink: 0 }} />
+          <span key={cat.label} className="flex items-center" style={{ gap: 3 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: cat.color, flexShrink: 0 }} />
             <span style={{ color: 'var(--catalyst-text-secondary)', fontWeight: 500 }}>{cat.label}</span>
             <span style={{ color: 'var(--catalyst-text-primary)', fontWeight: 700 }}>{formatSAR(cat.amount)}</span>
             <span style={{ color: 'var(--catalyst-text-tertiary)' }}>({cat.pct}%)</span>
@@ -184,7 +184,7 @@ export function BudgetOverview() {
               onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
-              <span style={{ width: 80, fontSize: 11, textAlign: 'right', color: 'var(--catalyst-text-secondary)', flexShrink: 0, fontWeight: 500 }}>
+              <span style={{ width: 75, fontSize: 10, textAlign: 'right', color: 'var(--catalyst-text-secondary)', flexShrink: 0, fontWeight: 500 }}>
                 {dept.name === 'Technical Support' ? 'Tech Support' : dept.name}
               </span>
               <div className="flex-1 overflow-hidden" style={{ height: 10, borderRadius: 5, background: hasCTC ? '#F1F5F9' : 'transparent' }}>
