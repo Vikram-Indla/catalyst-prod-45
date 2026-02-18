@@ -157,7 +157,7 @@ export const TimelineGrid: React.FC<TimelineGridProps> = ({
           {columns.map((_, i) => (
             <div
               key={i}
-              className="absolute top-0 bottom-0 border-r border-border/30"
+              className="absolute top-0 bottom-0 border-r border-border"
               style={{ left: (i + 1) * colWidth }}
             />
           ))}
