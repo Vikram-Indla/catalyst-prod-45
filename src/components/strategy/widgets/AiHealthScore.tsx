@@ -28,9 +28,9 @@ export function AiHealthScore() {
       {/* Recommendations */}
       <div className="w-full space-y-2">
         {RECOMMENDATIONS.map((rec, i) => (
-          <div key={i} className="flex gap-2" style={{ fontSize: 11, color: 'var(--catalyst-text-secondary)', lineHeight: 1.5 }}>
-            <Sparkles size={12} style={{ color: '#7C3AED', flexShrink: 0, marginTop: 2 }} />
-            <span>{rec}</span>
+          <div key={i} className="flex gap-2" style={{ fontSize: 10, color: 'var(--catalyst-text-secondary)', lineHeight: 1.4 }}>
+            <Sparkles size={10} style={{ color: '#7C3AED', flexShrink: 0, marginTop: 2 }} />
+            <span style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' }}>{rec}</span>
           </div>
         ))}
       </div>

@@ -33,7 +33,7 @@ export function BudgetOverview() {
     <div onClick={() => navigate('/planhub/budget-planner')} style={{ cursor: 'pointer' }}>
       {/* Primary amount */}
       <div className="text-center mb-4">
-        <div style={{ fontSize: 24, fontWeight: 800, color: '#2563EB' }}>SAR 4.2M</div>
+        <div style={{ fontSize: 22, fontWeight: 800, color: '#2563EB' }}>SAR 4.2M</div>
         <div style={{ fontSize: 11, color: 'var(--catalyst-text-tertiary)' }}>Total Budget</div>
         <div style={{ fontSize: 10, color: 'var(--catalyst-text-tertiary)' }}>FY 2026</div>
       </div>

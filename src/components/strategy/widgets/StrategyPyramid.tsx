@@ -36,7 +36,7 @@ const SEPARATORS = [
 
 // Centroids for each layer letter
 const LETTER_POS: Record<string, { x: number; y: number }> = {
-  mission: { x: 100, y: 30 },
+  mission: { x: 100, y: 38 },
   vision: { x: 100, y: 84 },
   themes: { x: 100, y: 140 },
   goals: { x: 100, y: 196 },
@@ -185,7 +185,7 @@ export function StrategyPyramid() {
                   dominantBaseline="central"
                   fill="white"
                   opacity={0.3}
-                  style={{ fontSize: 24, fontWeight: 700, pointerEvents: 'none' }}
+                  style={{ fontSize: layer.key === 'mission' ? 26 : layer.key === 'vision' ? 30 : layer.key === 'themes' ? 34 : layer.key === 'goals' ? 36 : 38, fontWeight: 800, pointerEvents: 'none' }}
                 >
                   {layer.letter}
                 </text>

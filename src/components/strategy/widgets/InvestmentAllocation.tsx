@@ -22,7 +22,7 @@ export function InvestmentAllocation() {
   const cx = size / 2;
   const cy = size / 2;
   const radius = 38;
-  const strokeWidth = 12;
+  const strokeWidth = 10;
   const circumference = 2 * Math.PI * radius;
 
   let cumulativeOffset = 0;
@@ -41,6 +41,7 @@ export function InvestmentAllocation() {
               cx={cx} cy={cy} r={radius}
               fill="none"
               stroke={seg.color}
+              opacity={0.9}
               strokeWidth={strokeWidth}
               strokeDasharray={`${dashArray} ${circumference - dashArray}`}
               strokeDashoffset={dashOffset}
@@ -49,10 +50,10 @@ export function InvestmentAllocation() {
             />
           );
         })}
-        <text x={cx} y={cx - 4} textAnchor="middle" dominantBaseline="central" style={{ fontSize: 12, fontWeight: 700, fill: 'var(--catalyst-text-primary)' }}>
+        <text x={cx} y={cy - 4} textAnchor="middle" dominantBaseline="central" style={{ fontSize: 12, fontWeight: 700, fill: 'var(--catalyst-text-primary)' }}>
           SAR 2.4B
         </text>
-        <text x={cx} y={cx + 10} textAnchor="middle" dominantBaseline="central" style={{ fontSize: 10, fill: 'var(--catalyst-text-tertiary)' }}>
+        <text x={cx} y={cy + 10} textAnchor="middle" dominantBaseline="central" style={{ fontSize: 10, fill: 'var(--catalyst-text-tertiary)' }}>
           Total
         </text>
       </svg>
