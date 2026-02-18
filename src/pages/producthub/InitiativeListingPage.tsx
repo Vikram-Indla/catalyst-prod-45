@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useInitiativesMock } from '@/hooks/useInitiativesMock';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { InitiativeToolbar } from '@/components/initiatives/InitiativeToolbar';
 import { InitiativeTable } from '@/components/initiatives/InitiativeTable';
 import { KanbanBoard } from '@/components/initiatives/KanbanBoard';
@@ -169,21 +170,30 @@ export default function InitiativeListingPage() {
   }, []);
 
   return (
-    <div>
-      <InitiativeToolbar
-        activeView={activeView}
-        onViewChange={setActiveView}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        activeQuickFilter={quickFilter}
-        onQuickFilterChange={setQuickFilter}
-        density={density}
-        onDensityChange={setDensity}
-        filterCount={0}
-        selectedCount={selectedIds.length}
-        totalCount={filtered.length}
-        searchInputRef={searchInputRef}
+    <div className="flex flex-col h-full">
+      {/* Catalyst Header — matches Strategy Hub pattern */}
+      <CommandCenterHeader
+        title="Product Backlog"
+        subtitle="Strategic initiative portfolio & prioritization"
       />
+
+      {/* Toolbar area with consistent padding */}
+      <div className="px-6 pt-4 pb-0">
+        <InitiativeToolbar
+          activeView={activeView}
+          onViewChange={setActiveView}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          activeQuickFilter={quickFilter}
+          onQuickFilterChange={setQuickFilter}
+          density={density}
+          onDensityChange={setDensity}
+          filterCount={0}
+          selectedCount={selectedIds.length}
+          totalCount={filtered.length}
+          searchInputRef={searchInputRef}
+        />
+      </div>
 
       {activeView === 'table' ? (
         <>
