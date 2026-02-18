@@ -209,6 +209,9 @@ export interface CapacityLiveData {
   freeingSoon: number;
   vendorBreakdown: { name: string; headcount: number; annualCost: number }[];
   countryBreakdown: { name: string; code: string; headcount: number }[];
+  fixedCount: number;
+  variableCount: number;
+  freelanceCount: number;
 }
 
 export function useCapacityLive() {
@@ -336,6 +339,11 @@ export function useCapacityLive() {
           return (da?.sort_order || 0) - (db?.sort_order || 0);
         });
 
+      // Workforce composition
+      const fixedCount = resources.filter(r => r.resource_type === 'Fixed').length;
+      const variableCount = resources.filter(r => r.resource_type === 'Variable').length;
+      const freelanceCount = resources.filter(r => r.resource_type === 'Freelance').length;
+
       return {
         departments: deptArray,
         totalHeadcount: resources.length,
@@ -346,6 +354,9 @@ export function useCapacityLive() {
         overAllocated: totalOverAllocated,
         contractsEnding30d,
         freeingSoon,
+        fixedCount,
+        variableCount,
+        freelanceCount,
         vendorBreakdown: Array.from(vendorAgg.entries())
           .map(([name, v]) => ({ name, ...v }))
           .sort((a, b) => b.headcount - a.headcount),
