@@ -1,6 +1,6 @@
 /**
  * ListingToolbar — Table-specific toolbar with view switcher, density, columns, export, grouping
- * Catalyst V5 Design System
+ * Catalyst V5 Design System — Enterprise contrast standards
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -116,12 +116,17 @@ export function ListingToolbar({
   const groupLabel = GROUP_OPTIONS.find(g => g.id === groupBy)?.label ?? 'None';
   const groupBtnRect = groupBtnRef.current?.getBoundingClientRect();
 
+  /* ── Shared button style for toolbar actions ── */
+  const toolbarBtnClass = 'h-8 px-3 flex items-center gap-1.5 text-[13px] font-medium rounded-md border transition-colors';
+  const toolbarBtnDefault = `${toolbarBtnClass} text-zinc-700 border-zinc-300 bg-white hover:bg-zinc-50 hover:border-zinc-400`;
+
   return (
     <div className="space-y-0 px-6 pt-4 pb-0">
       {/* Row 1: View Switcher + Actions */}
       <div className="flex items-center justify-between mb-2">
         {/* Left: View Switcher + Density + Columns + Group */}
         <div className="flex items-center gap-3">
+          {/* ── View Switcher (pill container) ── */}
           <div className="inline-flex items-center bg-zinc-100 rounded-lg p-1">
             {VIEW_TABS.map(v => (
               <button
@@ -129,8 +134,8 @@ export function ListingToolbar({
                 onClick={() => handleViewChange(v.id)}
                 className={`px-3 py-1.5 text-[13px] rounded-md transition-all ${
                   activeView === v.id
-                    ? 'bg-white text-zinc-900 font-medium shadow-sm'
-                    : 'text-zinc-500 hover:text-zinc-700'
+                    ? 'bg-white text-zinc-900 font-semibold shadow-sm'
+                    : 'text-zinc-600 font-medium hover:text-zinc-800 hover:bg-zinc-50'
                 }`}
               >
                 {v.label}
@@ -138,56 +143,70 @@ export function ListingToolbar({
             ))}
           </div>
 
-          <div className="w-px h-5 bg-zinc-200" />
+          {/* ── Separator ── */}
+          <div className="w-px h-5 bg-zinc-300" />
 
+          {/* ── Density ── */}
           <button
             type="button"
             onClick={cycleDensity}
-            className="h-7 px-2.5 flex items-center gap-1.5 text-[12px] text-zinc-600 rounded-md hover:bg-zinc-100 transition-colors"
+            className={`${toolbarBtnClass} text-zinc-700 border-zinc-300 bg-white hover:bg-zinc-50 hover:border-zinc-400`}
           >
-            {DENSITY_ICONS[density]}
+            <span className="text-zinc-500">{DENSITY_ICONS[density]}</span>
             {DENSITY_LABELS[density]}
           </button>
 
-          <div className="w-px h-5 bg-zinc-200" />
+          {/* ── Separator ── */}
+          <div className="w-px h-5 bg-zinc-300" />
 
+          {/* ── Columns ── */}
           <button
             ref={columnsButtonRef}
             type="button"
             onClick={onColumnsClick}
-            className="h-7 px-2.5 flex items-center gap-1.5 text-[12px] text-zinc-600 rounded-md hover:bg-zinc-100 transition-colors"
+            className={toolbarBtnDefault}
           >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="4" height="12" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="8" y="2" width="4" height="12" rx="1" stroke="currentColor" strokeWidth="1.2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-zinc-500"><rect x="2" y="2" width="4" height="12" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="8" y="2" width="4" height="12" rx="1" stroke="currentColor" strokeWidth="1.2"/></svg>
             Columns
           </button>
 
+          {/* ── Group By ── */}
           <button
             ref={groupBtnRef}
             type="button"
             onClick={() => setGroupDropdownOpen(prev => !prev)}
-            className={`h-7 px-2.5 flex items-center gap-1.5 text-[12px] rounded-md transition-colors ${
-              groupBy !== 'none' ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' : 'text-zinc-600 hover:bg-zinc-100'
+            className={`${toolbarBtnClass} ${
+              groupBy !== 'none'
+                ? 'text-blue-700 bg-blue-50 border-blue-300 hover:bg-blue-100'
+                : 'text-zinc-700 border-zinc-300 bg-white hover:bg-zinc-50 hover:border-zinc-400'
             }`}
           >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="4" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="2" y="10" width="12" height="4" rx="1" stroke="currentColor" strokeWidth="1.2"/></svg>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className={groupBy !== 'none' ? 'text-blue-600' : 'text-zinc-500'}><rect x="2" y="2" width="12" height="4" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="2" y="10" width="12" height="4" rx="1" stroke="currentColor" strokeWidth="1.2"/></svg>
             Group: {groupLabel}
           </button>
         </div>
 
         {/* Right: Export + New */}
         <div className="flex items-center gap-2">
+          {/* ── Export ── */}
           <button
             ref={exportButtonRef}
             type="button"
             onClick={onExportClick}
-            className="h-8 px-3 flex items-center gap-1.5 text-[13px] text-zinc-600 border border-zinc-200 rounded-md hover:bg-zinc-50 transition-colors"
+            className={toolbarBtnDefault}
           >
-            <Download size={14} />
+            <Download size={14} className="text-zinc-500" />
             Export
           </button>
-          <div className="w-px h-5 bg-zinc-200" />
-          <button type="button" className="h-8 px-3 flex items-center gap-1.5 text-[13px] font-medium rounded-md transition-colors border"
-            style={{ color: '#2563eb', borderColor: '#2563eb' }}>
+
+          {/* ── Separator ── */}
+          <div className="w-px h-5 bg-zinc-300" />
+
+          {/* ── Primary CTA: New Initiative (Solid Blue) ── */}
+          <button
+            type="button"
+            className="h-8 px-3 flex items-center gap-1.5 text-[13px] font-medium rounded-md bg-blue-600 text-white shadow-sm hover:bg-blue-700 transition-colors"
+          >
             <Plus size={14} />
             New Initiative
           </button>
@@ -196,7 +215,8 @@ export function ListingToolbar({
 
       {/* Row 2: Search + Filter Chips */}
       <div className="flex items-center gap-3 pb-3">
-        <div className="relative w-60">
+        {/* ── Search Input ── */}
+        <div className="relative w-56">
           <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" />
           <input
             ref={searchInputRef}
@@ -204,7 +224,7 @@ export function ListingToolbar({
             value={localSearch}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder="Search initiatives…"
-            className="w-full h-[30px] pl-8 pr-8 text-[13px] bg-zinc-50 border border-zinc-200 rounded-md outline-none transition-all placeholder:text-zinc-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
+            className="w-full h-8 pl-8 pr-8 text-[13px] bg-white border border-zinc-300 rounded-md outline-none transition-all placeholder:text-zinc-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
           />
           {localSearch && (
             <button type="button" onClick={() => handleSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600">
@@ -213,22 +233,25 @@ export function ListingToolbar({
           )}
         </div>
 
+        {/* ── Quick Filter Chips ── */}
         <div className="flex items-center gap-1.5">
-          {QUICK_FILTERS.map(f => (
-            <button
-              key={f.id}
-              type="button"
-              onClick={() => onQuickFilterChange(f.id)}
-              className="h-[26px] px-3 text-[12px] font-medium rounded-full whitespace-nowrap transition-colors"
-              style={
-                activeQuickFilter === f.id
-                  ? { background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe' }
-                  : { background: '#f4f4f5', color: '#52525b', border: '1px solid transparent' }
-              }
-            >
-              {f.label}
-            </button>
-          ))}
+          {QUICK_FILTERS.map(f => {
+            const isActive = activeQuickFilter === f.id;
+            return (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => onQuickFilterChange(f.id)}
+                className={`h-7 px-3 text-[12px] font-medium rounded-full whitespace-nowrap border transition-colors ${
+                  isActive
+                    ? 'bg-blue-50 text-blue-700 border-blue-300 font-semibold'
+                    : 'bg-white text-zinc-600 border-zinc-300 hover:bg-zinc-50 hover:border-zinc-400 hover:text-zinc-700'
+                }`}
+              >
+                {f.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -241,7 +264,7 @@ export function ListingToolbar({
             top: groupBtnRect.bottom + 4,
             left: groupBtnRect.left,
             width: 180,
-            border: '1px solid #e4e4e7',
+            border: '1px solid #d4d4d8',
             boxShadow: '0 8px 24px rgba(0,0,0,0.14)',
             background: '#ffffff',
             zIndex: 500,
