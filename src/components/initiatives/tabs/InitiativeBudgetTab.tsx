@@ -1,5 +1,6 @@
 /**
  * InitiativeBudgetTab — Summary cards, CapEx/OpEx split, line items, inline add form.
+ * Fixed: allocated budget input, remaining card color, fiscal quarter dropdown, placeholder.
  */
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -10,13 +11,16 @@ import { Plus, Wallet, ChevronDown } from 'lucide-react';
 interface InitiativeBudgetTabProps {
   initiativeId: string;
   budgetAllocated: number;
+  onBudgetAllocatedChange?: (value: string) => void;
 }
 
 const BUDGET_CATEGORIES = ['development', 'infrastructure', 'consulting', 'licensing', 'training', 'operations', 'contingency', 'other'];
+const FISCAL_QUARTERS = ['Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026', 'Q1 2027', 'Q2 2027', 'Q3 2027', 'Q4 2027'];
 
-export function InitiativeBudgetTab({ initiativeId, budgetAllocated }: InitiativeBudgetTabProps) {
+export function InitiativeBudgetTab({ initiativeId, budgetAllocated, onBudgetAllocatedChange }: InitiativeBudgetTabProps) {
   const [showAddBudget, setShowAddBudget] = useState(false);
   const [showCatDropdown, setShowCatDropdown] = useState(false);
+  const [showQtrDropdown, setShowQtrDropdown] = useState(false);
   const [budgetForm, setBudgetForm] = useState({
     category: 'development', description: '', expense_type: 'opex',
     planned_amount: '', vendor: '', po_number: '', fiscal_quarter: '',
@@ -39,7 +43,7 @@ export function InitiativeBudgetTab({ initiativeId, budgetAllocated }: Initiativ
   const totalPlanned = budgetItems.reduce((sum: number, i: any) => sum + (Number(i.planned_amount) || 0), 0);
   const totalActual = budgetItems.reduce((sum: number, i: any) => sum + (Number(i.actual_amount) || 0), 0);
   const remaining = budgetAllocated - totalActual;
-  const remainingPct = budgetAllocated > 0 ? (remaining / budgetAllocated) * 100 : 100;
+  const noBudgetSet = budgetAllocated === 0;
 
   const handleCreateBudgetItem = async () => {
     if (!budgetForm.description.trim() || !budgetForm.planned_amount) return;
@@ -58,10 +62,22 @@ export function InitiativeBudgetTab({ initiativeId, budgetAllocated }: Initiativ
     setBudgetForm({ category: 'development', description: '', expense_type: 'opex', planned_amount: '', vendor: '', po_number: '', fiscal_quarter: '' });
   };
 
+  // Remaining card color: neutral when no budget set
+  const remainingPct = budgetAllocated > 0 ? (remaining / budgetAllocated) * 100 : 0;
+  const remainingCardClass = noBudgetSet
+    ? 'bg-zinc-50 border-zinc-200'
+    : remainingPct > 20 ? 'bg-emerald-50 border-emerald-200' : remainingPct > 5 ? 'bg-amber-50 border-amber-200' : 'bg-red-50 border-red-200';
+  const remainingTextClass = noBudgetSet
+    ? 'text-zinc-500'
+    : remainingPct > 20 ? 'text-emerald-600' : remainingPct > 5 ? 'text-amber-600' : 'text-red-600';
+  const remainingValueClass = noBudgetSet
+    ? 'text-zinc-900'
+    : remainingPct > 20 ? 'text-emerald-900' : remainingPct > 5 ? 'text-amber-900' : 'text-red-900';
+
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-sm font-semibold text-zinc-900">Budget</h3>
           <p className="text-xs text-zinc-400 mt-0.5">{budgetItems.length} line item{budgetItems.length !== 1 ? 's' : ''}</p>
@@ -71,6 +87,23 @@ export function InitiativeBudgetTab({ initiativeId, budgetAllocated }: Initiativ
           <Plus className="w-3.5 h-3.5" /> Add Item
         </button>
       </div>
+
+      {/* Total Allocated Budget Input */}
+      {onBudgetAllocatedChange && (
+        <div className="flex items-center gap-3 mb-4">
+          <label className="text-xs font-medium text-zinc-500 uppercase tracking-wide">Total Allocated Budget</label>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-zinc-400">SAR</span>
+            <input
+              type="number"
+              value={budgetAllocated || ''}
+              onChange={(e) => onBudgetAllocatedChange(e.target.value)}
+              className="w-40 px-3 py-1.5 text-sm font-semibold border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Enter total budget"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Summary Cards */}
       <div className="grid grid-cols-3 gap-3 mb-6">
@@ -83,15 +116,15 @@ export function InitiativeBudgetTab({ initiativeId, budgetAllocated }: Initiativ
           <p className="text-lg font-bold text-zinc-900 mt-1">SAR {totalActual.toLocaleString()}</p>
           {budgetAllocated > 0 && <p className="text-[10px] text-zinc-400 mt-0.5">{Math.round((totalActual / budgetAllocated) * 100)}% of allocated</p>}
         </div>
-        <div className={`border rounded-lg p-3 ${remainingPct > 20 ? 'bg-emerald-50 border-emerald-200' : remainingPct > 5 ? 'bg-amber-50 border-amber-200' : 'bg-red-50 border-red-200'}`}>
-          <p className={`text-[10px] font-medium uppercase tracking-wide ${remainingPct > 20 ? 'text-emerald-600' : remainingPct > 5 ? 'text-amber-600' : 'text-red-600'}`}>Remaining</p>
-          <p className={`text-lg font-bold mt-1 ${remainingPct > 20 ? 'text-emerald-900' : remainingPct > 5 ? 'text-amber-900' : 'text-red-900'}`}>
+        <div className={`border rounded-lg p-3 ${remainingCardClass}`}>
+          <p className={`text-[10px] font-medium uppercase tracking-wide ${remainingTextClass}`}>Remaining</p>
+          <p className={`text-lg font-bold mt-1 ${remainingValueClass}`}>
             SAR {remaining.toLocaleString()}
           </p>
         </div>
       </div>
 
-      {/* CapEx / OpEx Split */}
+      {/* CapEx / OpEx Split — always show when items exist */}
       {budgetItems.length > 0 && (() => {
         const capexItems = budgetItems.filter((i: any) => i.expense_type === 'capex');
         const opexItems = budgetItems.filter((i: any) => i.expense_type === 'opex');
@@ -123,7 +156,7 @@ export function InitiativeBudgetTab({ initiativeId, budgetAllocated }: Initiativ
 
       {/* Inline Add Form */}
       {showAddBudget && (
-        <div className="border border-blue-200 rounded-lg p-4 bg-blue-50/30 space-y-4 mb-6">
+        <div className="border border-zinc-200 rounded-lg p-5 bg-zinc-50 space-y-4 mb-6">
           <h4 className="text-xs font-semibold text-zinc-700">New Budget Item</h4>
           <div className="grid grid-cols-2 gap-4">
             <div className="relative">
@@ -149,7 +182,7 @@ export function InitiativeBudgetTab({ initiativeId, budgetAllocated }: Initiativ
                 <button type="button" onClick={() => setBudgetForm(f => ({ ...f, expense_type: 'capex' }))}
                   className={`px-4 py-2 text-xs font-medium transition-colors ${budgetForm.expense_type === 'capex' ? 'bg-blue-600 text-white' : 'bg-white text-zinc-600 hover:bg-zinc-50'}`}>CapEx</button>
                 <button type="button" onClick={() => setBudgetForm(f => ({ ...f, expense_type: 'opex' }))}
-                  className={`px-4 py-2 text-xs font-medium transition-colors ${budgetForm.expense_type === 'opex' ? 'bg-teal-600 text-white' : 'bg-white text-zinc-600 hover:bg-zinc-50'}`}>OpEx</button>
+                  className={`px-4 py-2 text-xs font-medium transition-colors ${budgetForm.expense_type === 'opex' ? 'bg-blue-600 text-white' : 'bg-white text-zinc-600 hover:bg-zinc-50'}`}>OpEx</button>
               </div>
             </div>
           </div>
@@ -162,12 +195,24 @@ export function InitiativeBudgetTab({ initiativeId, budgetAllocated }: Initiativ
             <div>
               <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide mb-1 block">Planned Amount (SAR) *</label>
               <input type="number" value={budgetForm.planned_amount} onChange={e => setBudgetForm(f => ({ ...f, planned_amount: e.target.value }))}
-                placeholder="0.00" className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
+                placeholder="Enter amount" className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
             </div>
-            <div>
+            <div className="relative">
               <label className="text-[10px] font-medium text-zinc-500 uppercase tracking-wide mb-1 block">Fiscal Quarter</label>
-              <input value={budgetForm.fiscal_quarter} onChange={e => setBudgetForm(f => ({ ...f, fiscal_quarter: e.target.value }))}
-                placeholder="Q1 2026" className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
+              <button type="button" onClick={() => setShowQtrDropdown(v => !v)}
+                className="w-full flex items-center justify-between border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-700 bg-white hover:bg-zinc-50">
+                <span>{budgetForm.fiscal_quarter || 'Select quarter'}</span><ChevronDown className="w-4 h-4 text-zinc-400" />
+              </button>
+              {showQtrDropdown && (
+                <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-zinc-200 rounded-lg shadow-lg z-50 py-1 max-h-48 overflow-y-auto">
+                  {FISCAL_QUARTERS.map(q => (
+                    <button key={q} onClick={() => { setBudgetForm(f => ({ ...f, fiscal_quarter: q })); setShowQtrDropdown(false); }}
+                      className={`w-full text-left px-3 py-1.5 text-xs transition-colors ${budgetForm.fiscal_quarter === q ? 'bg-blue-50 text-blue-700 font-medium' : 'text-zinc-600 hover:bg-zinc-50'}`}>
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -183,9 +228,10 @@ export function InitiativeBudgetTab({ initiativeId, budgetAllocated }: Initiativ
             </div>
           </div>
           <div className="flex items-center gap-2 pt-2">
-            <button onClick={() => setShowAddBudget(false)} className="px-3 py-1.5 text-xs text-zinc-600 hover:bg-zinc-100 rounded-md">Cancel</button>
+            <button onClick={() => setShowAddBudget(false)}
+              className="px-3 py-1.5 text-xs text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg transition-colors">Cancel</button>
             <button onClick={handleCreateBudgetItem} disabled={!budgetForm.description.trim() || !budgetForm.planned_amount}
-              className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50">Save Item</button>
+              className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors">Save Item</button>
           </div>
         </div>
       )}

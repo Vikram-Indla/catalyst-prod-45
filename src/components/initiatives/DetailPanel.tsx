@@ -1,11 +1,9 @@
 import { format } from 'date-fns';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Pencil, Paperclip, Copy, Link2, Target, Trash2, Save, Loader2, ChevronLeft, ClipboardList, AlertTriangle, Flag, ExternalLink, Activity, Plus, Wallet, FileText, GitBranch, Layout, ArrowRight, TrendingUp } from 'lucide-react';
+import { X, Pencil, Copy, Target, Trash2, Save, Loader2, ChevronLeft, AlertTriangle, Plus, Activity, ArrowRight, TrendingUp } from 'lucide-react';
 import { InitiativeRisksTab } from './tabs/InitiativeRisksTab';
-import { InitiativeMilestonesTab } from './tabs/InitiativeMilestonesTab';
 import { InitiativeBudgetTab } from './tabs/InitiativeBudgetTab';
-import { InitiativeLinksTab } from './tabs/InitiativeLinksTab';
 import { InitiativeAuditTab } from './tabs/InitiativeAuditTab';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
@@ -39,7 +37,7 @@ interface DetailPanelProps {
   onScoreSave: (id: string, scores: { strategic_alignment: number; business_impact: number; time_urgency: number; resource_feasibility: number }) => void;
 }
 
-const TABS = ['Details', 'Score', 'Budget', 'Risks', 'Milestones', 'Links', 'Audit'] as const;
+const TABS = ['Details', 'Score', 'Budget', 'Risks', 'Audit'] as const;
 type Tab = typeof TABS[number];
 
 const AVATAR_COLORS: Record<string, string> = {
@@ -155,338 +153,6 @@ const MOCK_COMMENTS: Record<string, { author: string; content: string; timeAgo: 
 };
 
 /* ════════════════════════════════════════════════════
-   EMPTY STATE COMPONENT
-   ════════════════════════════════════════════════════ */
-function TabEmptyState({ icon: Icon, title, description, ctaLabel, onCta }: {
-  icon: React.ElementType;
-  title: string;
-  description: string;
-  ctaLabel: string;
-  onCta: () => void;
-}) {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-      <div className="w-12 h-12 rounded-full bg-zinc-100 flex items-center justify-center mb-4">
-        <Icon className="w-6 h-6 text-zinc-400" />
-      </div>
-      <h4 className="text-sm font-medium text-zinc-600 mb-1">{title}</h4>
-      <p className="text-xs text-zinc-400 mb-5 max-w-xs">{description}</p>
-      <button
-        type="button"
-        onClick={onCta}
-        className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-colors"
-      >
-        <Plus className="w-3.5 h-3.5" />
-        {ctaLabel}
-      </button>
-    </div>
-  );
-}
-
-/* ════════════════════════════════════════════════════
-   BUDGET TAB
-   ════════════════════════════════════════════════════ */
-function BudgetTab() {
-  const summaryCards = [
-    { label: 'Allocated', amount: 0 },
-    { label: 'Spent', amount: 0 },
-    { label: 'Remaining', amount: 0 },
-  ];
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="text-sm font-semibold text-zinc-900">Budget Summary</h3>
-      </div>
-      <div className="grid grid-cols-3 gap-3 mb-6">
-        {summaryCards.map(card => (
-          <div key={card.label} className="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
-            <div className="text-xs font-medium text-zinc-500 uppercase tracking-wide mb-2">{card.label}</div>
-            <div className="text-xl font-bold text-zinc-900 tabular-nums">SAR {card.amount.toLocaleString()}</div>
-            <div className="mt-2 h-1.5 bg-zinc-200 rounded-full overflow-hidden">
-              <div className="h-full bg-blue-600 rounded-full" style={{ width: '0%' }} />
-            </div>
-          </div>
-        ))}
-      </div>
-      <TabEmptyState
-        icon={Wallet}
-        title="No budget items yet"
-        description="Add budget line items to track spending and allocation for this initiative."
-        ctaLabel="Add Budget Item"
-        onCta={() => catalystToast.info('Budget tracking coming soon')}
-      />
-    </div>
-  );
-}
-
-/* ════════════════════════════════════════════════════
-   RISKS TAB
-   ════════════════════════════════════════════════════ */
-function RisksTab() {
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="text-sm font-semibold text-zinc-900">Risk Register</h3>
-      </div>
-      <TabEmptyState
-        icon={AlertTriangle}
-        title="No risks identified"
-        description="Add risks to track and mitigate potential issues that may impact this initiative."
-        ctaLabel="Add Risk"
-        onCta={() => catalystToast.info('Risk management coming soon')}
-      />
-    </div>
-  );
-}
-
-/* ════════════════════════════════════════════════════
-   MILESTONES TAB
-   ════════════════════════════════════════════════════ */
-function MilestonesTab() {
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-sm font-semibold text-zinc-900">Milestones</h3>
-          <p className="text-xs text-zinc-400 mt-0.5">Key deliverables and checkpoints</p>
-        </div>
-        <button
-          onClick={() => catalystToast.info('Milestone tracking will be available soon')}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          Add Milestone
-        </button>
-      </div>
-
-      {/* Progress Summary */}
-      <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-zinc-500">Overall Progress</span>
-          <span className="text-xs font-semibold text-zinc-700">0 of 0 completed</span>
-        </div>
-        <div className="h-2 bg-zinc-200 rounded-full overflow-hidden">
-          <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: '0%' }} />
-        </div>
-        <div className="flex items-center gap-4 mt-3">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full" />
-            <span className="text-xs text-zinc-500">Completed (0)</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 bg-blue-500 rounded-full" />
-            <span className="text-xs text-zinc-500">In Progress (0)</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 bg-zinc-300 rounded-full" />
-            <span className="text-xs text-zinc-500">Upcoming (0)</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Empty State */}
-      <div className="border border-zinc-200 rounded-lg px-4 py-12 text-center">
-        <div className="mx-auto w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center mb-3">
-          <Flag className="w-6 h-6 text-zinc-400" />
-        </div>
-        <p className="text-sm font-medium text-zinc-600">No milestones set</p>
-        <p className="text-xs text-zinc-400 mt-1">Add milestones to track key deliverables and deadlines</p>
-        <button
-          onClick={() => catalystToast.info('Milestone tracking will be available soon')}
-          className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Add Milestone
-        </button>
-      </div>
-    </div>
-  );
-}
-
-/* ════════════════════════════════════════════════════
-   LINKS TAB
-   ════════════════════════════════════════════════════ */
-function LinksTab() {
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-sm font-semibold text-zinc-900">Related Links</h3>
-          <p className="text-xs text-zinc-400 mt-0.5">Documents, references, and external resources</p>
-        </div>
-        <button
-          onClick={() => catalystToast.info('Link management will be available soon')}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          Add Link
-        </button>
-      </div>
-
-      {/* Link Categories */}
-      <div className="grid grid-cols-4 gap-2">
-        <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-3 text-center">
-          <FileText className="w-5 h-5 text-zinc-400 mx-auto" />
-          <p className="text-[10px] font-medium text-zinc-500 mt-1.5">Documents</p>
-          <p className="text-lg font-bold text-zinc-900">0</p>
-        </div>
-        <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-3 text-center">
-          <GitBranch className="w-5 h-5 text-zinc-400 mx-auto" />
-          <p className="text-[10px] font-medium text-zinc-500 mt-1.5">Repositories</p>
-          <p className="text-lg font-bold text-zinc-900">0</p>
-        </div>
-        <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-3 text-center">
-          <Layout className="w-5 h-5 text-zinc-400 mx-auto" />
-          <p className="text-[10px] font-medium text-zinc-500 mt-1.5">Designs</p>
-          <p className="text-lg font-bold text-zinc-900">0</p>
-        </div>
-        <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-3 text-center">
-          <ExternalLink className="w-5 h-5 text-zinc-400 mx-auto" />
-          <p className="text-[10px] font-medium text-zinc-500 mt-1.5">Other</p>
-          <p className="text-lg font-bold text-zinc-900">0</p>
-        </div>
-      </div>
-
-      {/* Empty State */}
-      <div className="border border-zinc-200 rounded-lg px-4 py-12 text-center">
-        <div className="mx-auto w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center mb-3">
-          <Link2 className="w-6 h-6 text-zinc-400" />
-        </div>
-        <p className="text-sm font-medium text-zinc-600">No links added</p>
-        <p className="text-xs text-zinc-400 mt-1">Add links to related documents, repos, designs, and resources</p>
-        <button
-          onClick={() => catalystToast.info('Link management will be available soon')}
-          className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Add Link
-        </button>
-      </div>
-    </div>
-  );
-}
-
-/* ════════════════════════════════════════════════════
-   AUDIT TAB
-   ════════════════════════════════════════════════════ */
-function AuditTab({ initiative }: { initiative: Initiative }) {
-  const statusLabel = initiative.status
-    ?.replace(/_/g, ' ')
-    .replace(/\b\w/g, (c: string) => c.toUpperCase()) || 'Unknown';
-
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h3 className="text-sm font-semibold text-zinc-900">Activity Log</h3>
-        <p className="text-xs text-zinc-400 mt-0.5">All changes to this initiative</p>
-      </div>
-
-      {/* Timeline */}
-      <div className="relative">
-        {/* Vertical line */}
-        <div className="absolute left-4 top-6 bottom-6 w-px bg-zinc-200" />
-
-        {/* Entry: Last Updated */}
-        {initiative.updated_at && initiative.updated_at !== initiative.created_at && (
-          <div className="relative flex gap-4 pb-6">
-            <div className="relative z-10 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
-              <Pencil className="w-3.5 h-3.5 text-blue-600" />
-            </div>
-            <div className="pt-1">
-              <p className="text-sm text-zinc-900">
-                <span className="font-medium">Initiative updated</span>
-              </p>
-              <p className="text-xs text-zinc-500 mt-0.5">Fields were modified on this initiative</p>
-              <p className="text-xs text-zinc-400 mt-1">
-                {new Date(initiative.updated_at).toLocaleDateString('en-US', {
-                  month: 'short', day: 'numeric', year: 'numeric',
-                  hour: '2-digit', minute: '2-digit',
-                })}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Entry: Status set */}
-        <div className="relative flex gap-4 pb-6">
-          <div className="relative z-10 w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center shrink-0">
-            <ArrowRight className="w-3.5 h-3.5 text-amber-600" />
-          </div>
-          <div className="pt-1">
-            <p className="text-sm text-zinc-900">
-              <span className="font-medium">Status set to </span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-amber-50 text-amber-700 rounded-full">
-                {statusLabel}
-              </span>
-            </p>
-            <p className="text-xs text-zinc-400 mt-1">
-              {initiative.updated_at
-                ? new Date(initiative.updated_at).toLocaleDateString('en-US', {
-                    month: 'short', day: 'numeric', year: 'numeric',
-                  })
-                : 'Unknown date'}
-            </p>
-          </div>
-        </div>
-
-        {/* Entry: Progress update */}
-        {initiative.progress != null && initiative.progress > 0 && (
-          <div className="relative flex gap-4 pb-6">
-            <div className="relative z-10 w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center shrink-0">
-              <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
-            </div>
-            <div className="pt-1">
-              <p className="text-sm text-zinc-900">
-                <span className="font-medium">Progress updated to </span>
-                <span className="font-semibold text-emerald-700">{initiative.progress}%</span>
-              </p>
-              <p className="text-xs text-zinc-400 mt-1">
-                {initiative.updated_at
-                  ? new Date(initiative.updated_at).toLocaleDateString('en-US', {
-                      month: 'short', day: 'numeric', year: 'numeric',
-                    })
-                  : 'Unknown date'}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Entry: Created */}
-        <div className="relative flex gap-4">
-          <div className="relative z-10 w-8 h-8 bg-zinc-100 rounded-full flex items-center justify-center shrink-0">
-            <Plus className="w-3.5 h-3.5 text-zinc-500" />
-          </div>
-          <div className="pt-1">
-            <p className="text-sm text-zinc-900">
-              <span className="font-medium">Initiative created</span>
-            </p>
-            <p className="text-xs text-zinc-500 mt-0.5">{initiative.initiative_key} was created</p>
-            <p className="text-xs text-zinc-400 mt-1">
-              {initiative.created_at
-                ? new Date(initiative.created_at).toLocaleDateString('en-US', {
-                    month: 'short', day: 'numeric', year: 'numeric',
-                    hour: '2-digit', minute: '2-digit',
-                  })
-                : 'Unknown date'}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Note */}
-      <div className="bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-3">
-        <p className="text-xs text-zinc-500">
-          Full audit trail with field-level change tracking will be available in a future update. Currently showing key events.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-/* ════════════════════════════════════════════════════
    MAIN DETAIL PANEL
    ════════════════════════════════════════════════════ */
 export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onScoreSave }: DetailPanelProps) {
@@ -497,6 +163,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState<Record<string, any>>({});
   const [isSaving, setIsSaving] = useState(false);
+  const [budgetAllocated, setBudgetAllocated] = useState(0);
   const panelRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
@@ -510,6 +177,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
         tu: initiative.score_time_urgency ?? 3.0,
         rf: initiative.score_resource_feasibility ?? 3.0,
       });
+      setBudgetAllocated((initiative as any).budget_allocated ?? 0);
       setActiveTab('Details');
       setIsEditing(false);
       setEditForm({});
@@ -590,19 +258,82 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 
   if (!initiative) return null;
 
+  const handleClone = async () => {
+    try {
+      // Generate next key
+      const { data: existing } = await (supabase as any)
+        .from('ph_initiatives')
+        .select('initiative_key')
+        .order('created_at', { ascending: false })
+        .limit(100);
+      const maxNum = (existing || []).reduce((max: number, r: any) => {
+        const num = parseInt(r.initiative_key?.replace(/[A-Z]+-/, '') || '0');
+        return num > max ? num : max;
+      }, 0);
+      const prefix = initiative.initiative_key?.replace(/-\d+$/, '') || 'MIM';
+      const nextKey = `${prefix}-${String(maxNum + 1).padStart(3, '0')}`;
+
+      // Clone initiative
+      const { data: newInit, error: cloneErr } = await (supabase as any)
+        .from('ph_initiatives')
+        .insert({
+          title: `${initiative.title} (Copy)`,
+          initiative_key: nextKey,
+          description: initiative.description,
+          status: 'backlog',
+          progress: 0,
+          department_id: initiative.department_id,
+          assignee_id: initiative.assignee_id,
+          business_owner_id: initiative.business_owner_id,
+          target_quarter: initiative.target_quarter,
+          budget_allocated: (initiative as any).budget_allocated || 0,
+        })
+        .select()
+        .single();
+
+      if (cloneErr) throw new Error(cloneErr.message);
+
+      // Clone budget items
+      const { data: budgetItems } = await (supabase as any)
+        .from('ph_initiative_budget_items')
+        .select('*')
+        .eq('initiative_id', initiative.id);
+      if (budgetItems?.length) {
+        await (supabase as any).from('ph_initiative_budget_items').insert(
+          budgetItems.map(({ id, initiative_id, created_at, updated_at, ...item }: any) => ({
+            ...item, initiative_id: newInit.id
+          }))
+        );
+      }
+
+      // Clone risks
+      const { data: risks } = await (supabase as any)
+        .from('ph_initiative_risks')
+        .select('*')
+        .eq('initiative_id', initiative.id);
+      if (risks?.length) {
+        await (supabase as any).from('ph_initiative_risks').insert(
+          risks.map(({ id, initiative_id, created_at, updated_at, risk_score, ...item }: any) => ({
+            ...item, initiative_id: newInit.id, risk_score: item.probability * item.impact,
+          }))
+        );
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['ph-initiatives-mock'] });
+      catalystToast.success(`Cloned as ${nextKey} with all data`);
+    } catch (err: any) {
+      catalystToast.error('Failed to clone: ' + err.message);
+    }
+  };
+
   const handleActionClick = (label: string) => {
     switch (label) {
       case 'Edit':
         setIsEditing(true);
         break;
-      case 'Attach':
-        catalystToast.info('Attachments coming soon');
-        break;
       case 'Clone':
-        catalystToast.success('Initiative cloned successfully');
-        break;
-      case 'Link':
-        setActiveTab('Links');
+        handleClone();
         break;
       case 'Score':
         setActiveTab('Score');
@@ -613,11 +344,20 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 
   const ACTION_BUTTONS = [
     { label: 'Edit', icon: Pencil },
-    { label: 'Attach', icon: Paperclip },
     { label: 'Clone', icon: Copy },
-    { label: 'Link', icon: Link2 },
     { label: 'Score', icon: Target },
   ];
+
+  const handleUpdateBudgetAllocated = async (value: string) => {
+    if (!initiative) return;
+    const amount = parseFloat(value) || 0;
+    setBudgetAllocated(amount);
+    await (supabase as any)
+      .from('ph_initiatives')
+      .update({ budget_allocated: amount, updated_at: new Date().toISOString() })
+      .eq('id', initiative.id);
+    queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
+  };
 
   return (
     <>
@@ -647,19 +387,33 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                       <Trash2 className="w-3.5 h-3.5" />
                       Delete
                     </button>
-                    {hasChanges && (
-                      <button onClick={handleSave} disabled={isSaving}
-                        className="px-3 h-8 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition-colors flex items-center gap-1.5 disabled:opacity-50">
-                        {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                        Save Changes
-                      </button>
-                    )}
                     <button onClick={handleAttemptClose}
                       className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-md">
                       <X size={16} />
                     </button>
                   </div>
                 </div>
+
+                {/* Edit mode banner */}
+                {isEditing && (
+                  <div className="flex items-center justify-between px-6 py-2.5 bg-blue-50 border-b border-blue-200">
+                    <div className="flex items-center gap-2">
+                      <Pencil className="w-3.5 h-3.5 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-700">Editing Initiative</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => { setIsEditing(false); setEditForm({}); }}
+                        className="px-3 py-1.5 text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg transition-colors">
+                        Cancel
+                      </button>
+                      <button onClick={handleSave} disabled={isSaving || !hasChanges}
+                        className="px-4 py-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition-colors flex items-center gap-1.5 disabled:opacity-50">
+                        {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                        Save Changes
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Initiative identity */}
                 <div className="px-6 pt-4 pb-3">
@@ -687,7 +441,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                   </div>
                 </div>
 
-                {/* Action bar — hidden in edit mode */}
+                {/* Action bar — visible when NOT editing */}
                 {!isEditing && (
                   <div className="flex items-center gap-1 px-6 py-3 border-b border-zinc-100">
                     {ACTION_BUTTONS.map(({ label, icon: Icon }) => (
@@ -703,11 +457,11 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                   </div>
                 )}
 
-                {/* Tab Bar */}
+                {/* Tab Bar — 5 tabs only */}
                 <div className="flex gap-0 border-b border-zinc-200 px-6">
                   {TABS.map(tab => (
                     <button key={tab} type="button" onClick={() => setActiveTab(tab)}
-                      className={`px-3.5 py-3 text-[13px] whitespace-nowrap border-b-2 transition-colors ${
+                      className={`px-3.5 py-3 text-[13px] whitespace-nowrap border-b-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                         activeTab === tab
                           ? 'font-medium text-zinc-900 border-blue-600'
                           : 'font-normal text-zinc-500 border-transparent hover:text-zinc-700'
@@ -735,10 +489,14 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                     onScoreChange={setScores}
                     onSave={() => onScoreSave(initiative.id, { strategic_alignment: scores.sa, business_impact: scores.bi, time_urgency: scores.tu, resource_feasibility: scores.rf })} />
                 )}
-                {activeTab === 'Budget' && <InitiativeBudgetTab initiativeId={initiative.id} budgetAllocated={0} />}
+                {activeTab === 'Budget' && (
+                  <InitiativeBudgetTab
+                    initiativeId={initiative.id}
+                    budgetAllocated={budgetAllocated}
+                    onBudgetAllocatedChange={handleUpdateBudgetAllocated}
+                  />
+                )}
                 {activeTab === 'Risks' && <InitiativeRisksTab initiativeId={initiative.id} />}
-                {activeTab === 'Milestones' && <InitiativeMilestonesTab initiativeId={initiative.id} />}
-                {activeTab === 'Links' && <InitiativeLinksTab initiativeId={initiative.id} />}
                 {activeTab === 'Audit' && <InitiativeAuditTab initiativeId={initiative.id} />}
               </div>
             </motion.div>
@@ -746,7 +504,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
         )}
       </AnimatePresence>
 
-      {/* Delete Confirmation */}
+      {/* Delete Confirmation — soft delete */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -808,7 +566,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 }
 
 /* ════════════════════════════════════════════════════
-   DETAILS TAB — Custom dropdowns, no native selects
+   DETAILS TAB — No score/priority field, custom dropdowns
    ════════════════════════════════════════════════════ */
 function DetailsContent({
   initiative,
@@ -848,7 +606,7 @@ function DetailsContent({
         )}
       </div>
 
-      {/* Field Grid */}
+      {/* Field Grid — NO score/priority field */}
       <div className="grid grid-cols-2 gap-4 gap-x-8">
         {/* Status */}
         <div>
@@ -862,8 +620,6 @@ function DetailsContent({
             <StatusBadge status={initiative.status} />
           )}
         </div>
-
-        {/* Priority / Score removed — handled by Score tab */}
 
         {/* Department */}
         <div>
