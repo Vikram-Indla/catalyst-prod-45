@@ -109,10 +109,15 @@ export default function InitiativeListingPage() {
     setDetailOpen(true);
   }, []);
 
-  const handleStatusChange = useCallback((id: string, status: InitiativeStatus) => {
-    console.log('Status change:', id, status);
-    showSuccess(`Status updated to ${status.replace(/_/g, ' ')}`);
-  }, []);
+  const handleStatusChange = useCallback((id: string, newStatus: InitiativeStatus) => {
+    setOrderedData(prev => {
+      const items = prev ?? allInitiatives;
+      return items.map(item =>
+        item.id === id ? { ...item, status: newStatus } : item
+      );
+    });
+    showSuccess(`Status updated to ${newStatus.replace(/_/g, ' ')}`);
+  }, [allInitiatives]);
 
   const handleAssigneeChange = useCallback((id: string, assigneeId: string) => {
     console.log('Assignee change:', id, assigneeId);
