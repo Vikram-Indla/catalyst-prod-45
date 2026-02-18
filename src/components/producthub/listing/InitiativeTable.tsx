@@ -426,7 +426,12 @@ export function InitiativeTable({
                                 ${isFocused ? 'ring-2 ring-blue-500 ring-inset' : ''}
                               `}
                               style={{ ...dragProvided.draggableProps.style, borderBottom: '1px solid #f4f4f5', outline: 'none' }}
-                              onClick={() => handleRowSingleClick(row.original)}
+                              onClick={(e) => {
+                                // Don't trigger row click if user clicked on a button (checkbox, icon, etc.)
+                                const target = e.target as HTMLElement;
+                                if (target.closest('button') || target.closest('[role="checkbox"]')) return;
+                                handleRowSingleClick(row.original);
+                              }}
                               onContextMenu={(e) => { e.preventDefault(); onContextMenu?.(e, row.original); }}
                               onFocus={() => onFocusedRowChange?.(idx)}
                             >
@@ -446,33 +451,35 @@ export function InitiativeTable({
                               })}
 
                               {/* Hover Actions */}
-                              <td className="absolute right-3 top-0 bottom-0 flex items-center gap-1 opacity-0 group-hover/row:opacity-100 transition-opacity duration-100 pointer-events-none group-hover/row:pointer-events-auto"
-                                style={{ width: 'auto' }}
-                              >
-                                <button
-                                  type="button"
-                                  onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onRowClick(row.original); }}
-                                  className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
-                                  title="Edit"
+                              <td className="relative" style={{ width: 0, padding: 0, border: 'none' }}>
+                                <div className="absolute right-3 top-0 bottom-0 flex items-center gap-1 opacity-0 group-hover/row:opacity-100 transition-opacity duration-100 z-20"
+                                  style={{ width: 'auto' }}
                                 >
-                                  <Pencil size={13} className="text-zinc-500" />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onFavoriteToggle(row.original.id, row.original.is_favorited); }}
-                                  className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
-                                  title="Star"
-                                >
-                                  <Star size={13} className={row.original.is_favorited ? 'text-amber-400 fill-amber-400' : 'text-zinc-500'} />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } e.preventDefault(); onContextMenu?.(e, row.original); }}
-                                  className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
-                                  title="More"
-                                >
-                                  <MoreVertical size={13} className="text-zinc-500" />
-                                </button>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onRowClick(row.original); }}
+                                    className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
+                                    title="Edit"
+                                  >
+                                    <Pencil size={13} className="text-zinc-500" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onFavoriteToggle(row.original.id, row.original.is_favorited); }}
+                                    className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
+                                    title="Star"
+                                  >
+                                    <Star size={13} className={row.original.is_favorited ? 'text-amber-400 fill-amber-400' : 'text-zinc-500'} />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onContextMenu?.(e, row.original); }}
+                                    className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
+                                    title="More"
+                                  >
+                                    <MoreVertical size={13} className="text-zinc-500" />
+                                  </button>
+                                </div>
                               </td>
                             </tr>
                           </>
