@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useInitiativesMock } from '@/hooks/useInitiativesMock';
 import { InitiativeToolbar } from '@/components/initiatives/InitiativeToolbar';
 import { InitiativeTable } from '@/components/initiatives/InitiativeTable';
+import { KanbanBoard } from '@/components/initiatives/KanbanBoard';
 import { DetailPanel } from '@/components/initiatives/DetailPanel';
 import { BulkActionBar } from '@/components/initiatives/BulkActionBar';
 import { ContextMenu } from '@/components/initiatives/ContextMenu';
@@ -198,8 +199,16 @@ export default function InitiativeListingPage() {
             </div>
           )}
         </>
+      ) : activeView === 'board' ? (
+        <KanbanBoard
+          data={filtered}
+          density={density}
+          onRowClick={handleRowClick}
+          onStatusChange={handleStatusChange}
+          onFavoriteToggle={handleFavoriteToggle}
+        />
       ) : (
-        /* View Placeholder — Prompt 5.4 */
+        /* View Placeholder — Timeline & Cards */
         <div className="h-96 flex flex-col items-center justify-center gap-1">
           {VIEW_PLACEHOLDER_ICONS[activeView] || <Table2 size={48} className="text-zinc-300" />}
           <h3 className="text-base font-semibold text-zinc-900 mt-4">
