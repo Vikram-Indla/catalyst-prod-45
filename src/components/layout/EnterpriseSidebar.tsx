@@ -9,13 +9,11 @@ import {
   LayoutDashboard,
   TrendingUp,
   Target,
-  FileText,
   PieChart,
   Calendar,
   Sparkles,
   Users,
   Settings,
-  Blocks,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
@@ -35,7 +33,6 @@ const enterpriseSidebarConfig: SidebarConfig = {
         { id: 'strategy-room', title: 'Strategy Room', path: '/strategyhub', icon: LayoutDashboard, exact: true },
         { id: 'themes', title: 'Strategic Themes', path: '/strategyhub/themes', icon: TrendingUp, exact: false },
         { id: 'goals', title: 'Goals & Key Results', path: '/strategyhub/goals', icon: Target, exact: false, badge: 12, badgeVariant: 'info' },
-        { id: 'initiatives', title: 'Initiatives', path: '/strategyhub/initiatives', icon: FileText, exact: false },
         { id: 'investment', title: 'Investment Allocation', path: '/strategyhub/investment', icon: PieChart, exact: false },
         { id: 'snapshots', title: 'Snapshots', path: '/strategyhub/snapshots', icon: Calendar, exact: false },
       ],
@@ -45,12 +42,6 @@ const enterpriseSidebarConfig: SidebarConfig = {
       items: [
         { id: 'ai-insights', title: 'AI Insights', path: '/strategyhub/ai-insights', icon: Sparkles, exact: false, badge: 3, badgeVariant: 'info' },
         { id: 'team-alignment', title: 'Team Alignment', path: '/strategyhub/team-alignment', icon: Users, exact: false },
-      ],
-    },
-    {
-      title: '',
-      items: [
-        { id: 'risks', title: 'Strategy Risks', path: '/strategyhub/risks', icon: Blocks, exact: false },
       ],
     },
   ],
