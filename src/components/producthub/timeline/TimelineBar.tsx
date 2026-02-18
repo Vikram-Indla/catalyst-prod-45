@@ -9,6 +9,7 @@ import { STATUS_CONFIG, DENSITY_MAP } from '@/types/producthub/initiative';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
 import { getBarPosition, isOverdue } from './timelineUtils';
 import { TimelineBarTooltip } from './TimelineBarTooltip';
+import { TimelineContextMenu } from './TimelineContextMenu';
 
 interface TimelineBarProps {
   initiative: TimelineInitiative;
@@ -19,6 +20,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
   const { granularity, density, openDetail } = useTimelineState();
   const [isHovered, setIsHovered] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const tooltipTimer = useRef<ReturnType<typeof setTimeout>>();
   const barRef = useRef<HTMLDivElement>(null);
 
@@ -48,6 +50,13 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
     openDetail(initiative.id);
   }, [initiative.id, openDetail]);
 
+  const handleContextMenu = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowTooltip(false);
+    setContextMenu({ x: e.clientX, y: e.clientY });
+  }, []);
+
   return (
     <>
       <div
@@ -68,6 +77,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
           boxShadow: isHovered ? '0 4px 12px rgba(0,0,0,0.12)' : 'none',
         }}
         onClick={handleClick}
+        onContextMenu={handleContextMenu}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         role="button"
@@ -109,6 +119,16 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
             top: topOffset - 8,
             transform: 'translateY(-100%)',
           }}
+        />
+      )}
+
+      {/* Context menu */}
+      {contextMenu && (
+        <TimelineContextMenu
+          initiative={initiative}
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={() => setContextMenu(null)}
         />
       )}
     </>

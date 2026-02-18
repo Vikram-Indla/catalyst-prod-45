@@ -147,6 +147,7 @@ export const TimelineGrid: React.FC<TimelineGridProps> = ({
       {/* Grid body */}
       <div
         ref={bodyRef}
+        data-timeline-body
         className="flex-1 overflow-auto min-h-0"
         onScroll={handleScroll}
         onMouseMove={handleMouseMove}
