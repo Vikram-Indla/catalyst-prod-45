@@ -425,8 +425,8 @@ function renderMenuItem(
       {expanded && (
         <>
           <span 
-            className="flex-1 text-left truncate"
-            style={{ lineHeight: '44px' }}
+            className="flex-1 text-left"
+            style={{ lineHeight: '44px', whiteSpace: 'nowrap' }}
           >
             {item.title}
           </span>
