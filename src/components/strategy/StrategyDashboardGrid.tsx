@@ -122,13 +122,8 @@ export function StrategyDashboardGrid() {
         </WidgetCard>
       </div>
 
-      {/* ═══ Row 5 — Activity Feed + Risk Radar ═══ */}
+      {/* ═══ Row 5 — Risk Radar + Activity Feed ═══ */}
       <div className="col-span-12 lg:col-span-8" style={{ minHeight: '260px' }}>
-        <WidgetCard title="Activity Feed" icon={Activity} ariaLabel="Activity Feed widget" className="h-full">
-          <ActivityFeed />
-        </WidgetCard>
-      </div>
-      <div className="col-span-12 lg:col-span-4" style={{ minHeight: '260px' }}>
         <WidgetCard
           title="Risk Radar"
           icon={ShieldAlert}
@@ -140,6 +135,11 @@ export function StrategyDashboardGrid() {
           }}
         >
           <RiskOverview />
+        </WidgetCard>
+      </div>
+      <div className="col-span-12 lg:col-span-4" style={{ minHeight: '260px' }}>
+        <WidgetCard title="Activity Feed" icon={Activity} ariaLabel="Activity Feed widget" className="h-full">
+          <ActivityFeed />
         </WidgetCard>
       </div>
     </div>
