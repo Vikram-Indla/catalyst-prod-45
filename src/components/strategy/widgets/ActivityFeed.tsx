@@ -45,7 +45,7 @@ const FEED: FeedItem[] = [
 
 export function ActivityFeed() {
   return (
-    <div style={{ maxHeight: 220, overflowY: 'auto' }}>
+    <div style={{ maxHeight: 240, overflowY: 'auto' }}>
       {FEED.map((item, i) => (
         <div
           key={i}
