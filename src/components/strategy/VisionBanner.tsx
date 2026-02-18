@@ -378,32 +378,35 @@ export function VisionBanner() {
                 >
                   {formatUpdatedAt(vision.updated_at)}
                 </span>
-                {isOwner && (
-                  <button
-                    onClick={startEdit}
-                    aria-label="Edit vision statement"
-                    className="focus-visible:outline-2 focus-visible:outline-offset-2"
-                    style={{
-                      color: 'rgba(255,255,255,0.4)',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: 4,
-                      borderRadius: 4,
-                      transition: 'all 150ms ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = 'rgba(255,255,255,1)';
-                      e.currentTarget.style.transform = 'scale(1.1)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.color = 'rgba(255,255,255,0.4)';
-                      e.currentTarget.style.transform = 'scale(1)';
-                    }}
-                  >
-                    <Pencil size={14} />
-                  </button>
-                )}
+                <button
+                  onClick={startEdit}
+                  aria-label="Edit vision statement"
+                  title="Edit vision statement"
+                  className="flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2"
+                  style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: 6,
+                    color: 'rgba(255,255,255,0.4)',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                    transition: 'all 150ms ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = 'rgba(255,255,255,1)';
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                    e.currentTarget.style.transform = 'scale(1.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = 'rgba(255,255,255,0.4)';
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                >
+                  <Pencil size={14} />
+                </button>
               </div>
             </>
           )}
