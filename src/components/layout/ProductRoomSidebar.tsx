@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import { Lock, ChevronDown, ChevronsLeft, ChevronsRight, Lightbulb, LayoutDashboard, List, Layers, Grid3X3, Sparkles, BarChart3, History, Star, FileText, ClipboardList } from 'lucide-react';
+import { Lock, ChevronDown, ChevronsLeft, ChevronsRight, Lightbulb, LayoutDashboard, List, Layers, Grid3X3, Sparkles, BarChart3, History, Star, FileText, ClipboardList, Columns3, GanttChart } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -61,6 +61,12 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
   // Check if any Ideas route is active
   const isIdeasRouteActive = location.pathname.includes('/producthub/ideas') || 
                               location.pathname.includes('/ideas/');
+
+  // Determine if board view is active via URL param
+  const searchParams = new URLSearchParams(location.search);
+  const viewParam = searchParams.get('view');
+  const isBacklogRoute = location.pathname === '/producthub/backlog' || location.pathname === '/producthub';
+  const isBoardView = isBacklogRoute && viewParam === 'board';
 
   // Check if specific item is active
   const isActive = (path: string, exact: boolean = false) => {
@@ -158,18 +164,50 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
         {/* Navigation Menu */}
         <nav className="flex-1 overflow-y-auto" style={{ padding: '4px 8px' }}>
 
-          {/* INITIATIVES — Top-level nav item */}
+          {/* PRODUCT BACKLOG — Top-level nav item */}
           <MenuItemButton
             item={{
-              id: 'Initiatives Backlog',
-              title: 'Initiatives',
+              id: 'Product Backlog',
+              title: 'Product Backlog',
               path: '/producthub/backlog',
               exact: true,
             }}
-            isActive={isActive('/producthub/backlog', true)}
+            isActive={isBacklogRoute && !isBoardView}
             expanded={expanded}
             onClick={() => handleNavigation('/producthub/backlog')}
             iconResolver={() => ClipboardList}
+            isFavorite={isFavorite}
+            toggleFavorite={toggleFavorite}
+          />
+
+          {/* PRODUCT KANBAN */}
+          <MenuItemButton
+            item={{
+              id: 'Product Kanban',
+              title: 'Product Kanban',
+              path: '/producthub/backlog?view=board',
+              exact: true,
+            }}
+            isActive={isBoardView}
+            expanded={expanded}
+            onClick={() => handleNavigation('/producthub/backlog?view=board')}
+            iconResolver={() => Columns3}
+            isFavorite={isFavorite}
+            toggleFavorite={toggleFavorite}
+          />
+
+          {/* PRODUCT ROADMAP */}
+          <MenuItemButton
+            item={{
+              id: 'Product Roadmap',
+              title: 'Product Roadmap',
+              path: '/producthub/roadmaps',
+              exact: true,
+            }}
+            isActive={isActive('/producthub/roadmaps', false)}
+            expanded={expanded}
+            onClick={() => handleNavigation('/producthub/roadmaps')}
+            iconResolver={() => GanttChart}
             isFavorite={isFavorite}
             toggleFavorite={toggleFavorite}
           />
