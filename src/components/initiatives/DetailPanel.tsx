@@ -735,7 +735,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                     onScoreChange={setScores}
                     onSave={() => onScoreSave(initiative.id, { strategic_alignment: scores.sa, business_impact: scores.bi, time_urgency: scores.tu, resource_feasibility: scores.rf })} />
                 )}
-                {activeTab === 'Budget' && <InitiativeBudgetTab initiativeId={initiative.id} budgetAllocated={Number(initiative.budget_allocated) || 0} />}
+                {activeTab === 'Budget' && <InitiativeBudgetTab initiativeId={initiative.id} budgetAllocated={0} />}
                 {activeTab === 'Risks' && <InitiativeRisksTab initiativeId={initiative.id} />}
                 {activeTab === 'Milestones' && <InitiativeMilestonesTab initiativeId={initiative.id} />}
                 {activeTab === 'Links' && <InitiativeLinksTab initiativeId={initiative.id} />}
