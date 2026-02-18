@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Search, X, SlidersHorizontal, Download, MoreHorizontal, Columns3 } from 'lucide-react';
+import { Search, X, SlidersHorizontal, Download, Columns3 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import type { ViewMode, Density } from '@/types/initiative';
 
@@ -85,52 +85,7 @@ export function InitiativeToolbar({
   return (
     <div className="space-y-0">
 
-      {/* Row 1: Breadcrumb — Fix 7: mixed case */}
-      <div className="text-[11px] tracking-[0.05em]">
-        <span className="uppercase text-zinc-400">PRODUCT</span>
-        <span className="text-zinc-400"> / </span>
-        <span className="text-zinc-600 font-medium">Product Backlog</span>
-      </div>
-
-      {/* Row 2: Title + Actions */}
-      <div className="flex items-center justify-between mt-1 mb-3">
-        <h1 className="text-xl font-semibold text-zinc-900">Product Backlog</h1>
-        <div className="flex items-center gap-1.5">
-          <TooltipProvider delayDuration={300}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={cycleDensity}
-                  className="w-7 h-7 flex items-center justify-center rounded-md text-zinc-500 hover:bg-zinc-100 transition-colors"
-                >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M3 4h10M3 8h10M3 12h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                  </svg>
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>Density: {DENSITY_LABELS[density]}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <button
-            type="button"
-            className="h-7 px-2 flex items-center gap-1 text-xs text-zinc-600 bg-zinc-50 border border-zinc-200 rounded-md hover:bg-zinc-100 transition-colors"
-          >
-            <Columns3 size={14} />
-            Columns
-          </button>
-
-          <button
-            type="button"
-            className="w-7 h-7 flex items-center justify-center rounded-md text-zinc-500 hover:bg-zinc-100 transition-colors"
-          >
-            <MoreHorizontal size={16} />
-          </button>
-        </div>
-      </div>
-
-      {/* Row 3: View Switcher (segmented pill control — Fix 6) + Search/Filters */}
+      {/* Row 1: View Switcher (segmented pill control) + Search/Filters + Actions */}
       <div className="flex items-center justify-between mb-2">
         {/* View Switcher */}
         <div className="inline-flex items-center bg-zinc-100 rounded-lg p-1">
@@ -173,6 +128,31 @@ export function InitiativeToolbar({
               </button>
             )}
           </div>
+
+          <TooltipProvider delayDuration={300}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  onClick={cycleDensity}
+                  className="w-7 h-7 flex items-center justify-center rounded-md text-zinc-500 hover:bg-zinc-100 transition-colors"
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M3 4h10M3 8h10M3 12h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>Density: {DENSITY_LABELS[density]}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <button
+            type="button"
+            className="h-7 px-2 flex items-center gap-1 text-xs text-zinc-600 bg-zinc-50 border border-zinc-200 rounded-md hover:bg-zinc-100 transition-colors"
+          >
+            <Columns3 size={14} />
+            Columns
+          </button>
 
           {/* Filters */}
           <button
