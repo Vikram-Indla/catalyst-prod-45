@@ -8,7 +8,7 @@ import { StatusBadge } from './StatusBadge';
 import { PriorityBadge } from './PriorityBadge';
 import { UserAvatar } from './UserAvatar';
 import { formatShortName } from '@/lib/format-name';
-import { showSuccess, showInfo } from '@/lib/toast-helpers';
+import { catalystToast } from '@/lib/catalystToast';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -88,7 +88,7 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
       letterSpacing: '0.05em',
       color: '#a1a1aa',
       lineHeight: 1,
-      marginBottom: 4,
+      marginBottom: 6,
     }}>
       {children}
     </div>
@@ -264,16 +264,16 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
   const handleActionClick = (label: string) => {
     switch (label) {
       case 'Edit':
-        showInfo('Edit mode coming soon');
+        catalystToast.info('Edit mode coming soon');
         break;
       case 'Attach':
-        showInfo('Attachments coming soon');
+        catalystToast.info('Attachments coming soon');
         break;
       case 'Clone':
-        showSuccess('Initiative cloned successfully');
+        catalystToast.success('Initiative cloned successfully');
         break;
       case 'Link':
-        showInfo('Link management coming soon');
+        catalystToast.info('Link management coming soon');
         break;
       case 'Score':
         setActiveTab('Score');
@@ -323,8 +323,8 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
             >
               {/* ── HEADER ── */}
               <div className="flex-shrink-0 bg-white">
-                {/* Panel Header */}
-                <div className="px-6 pt-5 pb-3">
+                {/* Panel Header — generous padding */}
+                <div style={{ padding: '24px 24px 16px 24px' }}>
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3 min-w-0">
                       <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-medium font-mono shrink-0">
@@ -338,18 +338,16 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                       onClick={onClose}
                       className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-md shrink-0 ml-3"
                     >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
+                      <X size={16} />
                     </button>
                   </div>
-                  <div className="mt-2">
+                  <div className="mt-3">
                     <StatusBadge status={initiative.status} />
                   </div>
                 </div>
 
-                {/* Action Bar */}
-                <div style={{ display: 'flex', gap: 2, paddingBottom: 14, borderBottom: '1px solid #f4f4f5' }}>
+                {/* Action Bar — px-6, py-3, gap-4, border-b */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '12px 24px', borderBottom: '1px solid #f4f4f5' }}>
                   {ACTION_BUTTONS.map(({ label, icon: Icon }) => (
                     <button
                       key={label}
@@ -357,12 +355,12 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                       onClick={() => handleActionClick(label)}
                       className="hover:bg-zinc-100 rounded-md transition-colors cursor-pointer"
                       style={{
-                        height: 30,
-                        padding: '0 10px',
+                        height: 32,
+                        padding: '0 12px',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: 5,
-                        fontSize: 12,
+                        gap: 6,
+                        fontSize: 13,
                         fontWeight: 400,
                         color: '#52525b',
                         border: 'none',
@@ -378,12 +376,12 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                     onClick={() => setShowDeleteDialog(true)}
                     className="hover:bg-red-50 rounded-md transition-colors cursor-pointer"
                     style={{
-                      height: 30,
-                      padding: '0 10px',
+                      height: 32,
+                      padding: '0 12px',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: 5,
-                      fontSize: 12,
+                      gap: 6,
+                      fontSize: 13,
                       fontWeight: 400,
                       color: '#dc2626',
                       border: 'none',
@@ -396,15 +394,15 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                   </button>
                 </div>
 
-                {/* Tab Bar */}
-                <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #e4e4e7', margin: '14px -24px 0', padding: '0 24px' }}>
+                {/* Tab Bar — px-6, py-3, border-b */}
+                <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #e4e4e7', padding: '0 24px' }}>
                   {TABS.map(tab => (
                     <button
                       key={tab}
                       type="button"
                       onClick={() => setActiveTab(tab)}
                       style={{
-                        padding: '10px 14px',
+                        padding: '12px 14px',
                         fontSize: 13,
                         fontWeight: activeTab === tab ? 500 : 400,
                         color: activeTab === tab ? '#18181b' : '#71717a',
@@ -471,7 +469,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
               className="text-white bg-red-600 hover:bg-red-700 px-4 h-9 rounded-md"
               onClick={() => {
                 setShowDeleteDialog(false);
-                showSuccess('Initiative deleted');
+                catalystToast.success('Initiative deleted');
                 onClose();
               }}
             >
@@ -492,8 +490,8 @@ function DetailsContent({ initiative, onStatusChange }: { initiative: Initiative
 
   return (
     <>
-      {/* Field Grid — V5: 2-col, 18px row-gap, 24px col-gap */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px 24px' }}>
+      {/* Field Grid — V5: 2-col, generous spacing */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px 48px' }}>
         <div><FieldLabel>Status</FieldLabel><FieldValue><StatusBadge status={initiative.status} editable onChange={(s) => onStatusChange(initiative.id, s)} /></FieldValue></div>
         <div><FieldLabel>EA Review</FieldLabel><FieldValue>Not Required</FieldValue></div>
         <div><FieldLabel>Priority</FieldLabel><FieldValue><PriorityBadge score={initiative.computed_score} showScore={true} /></FieldValue></div>
@@ -508,40 +506,42 @@ function DetailsContent({ initiative, onStatusChange }: { initiative: Initiative
         <div><FieldLabel>Progress</FieldLabel><FieldValue><DetailProgressBar value={initiative.progress} status={initiative.status} /></FieldValue></div>
       </div>
 
-      {/* Description */}
+      {/* Description — clear section break */}
       {initiative.description && (
-        <div style={{ marginTop: 24 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: '#18181b', marginBottom: 10, lineHeight: 1 }}>Description</div>
+        <div style={{ marginTop: 24, paddingTop: 24, borderTop: '1px solid #f4f4f5' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#18181b', marginBottom: 12, lineHeight: 1 }}>Description</div>
           <p style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.65, color: '#52525b', margin: 0 }}>{initiative.description}</p>
         </div>
       )}
 
-      {/* Comments */}
-      <div style={{ marginTop: 24 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: '#18181b', marginBottom: 10, lineHeight: 1 }}>
+      {/* Comments — breathing room */}
+      <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid #f4f4f5' }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: '#18181b', marginBottom: 16, lineHeight: 1 }}>
           Comments ({comments.length})
         </div>
-        {comments.map((c, i) => (
-          <div key={i} style={{ display: 'flex', gap: 10, padding: '12px 0', borderBottom: i < comments.length - 1 ? '1px solid #f4f4f5' : 'none' }}>
-            <InlineAvatar name={c.author} size={28} />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
-                <span style={{ fontSize: 13, fontWeight: 500, color: '#18181b' }}>{formatShortName(c.author)}</span>
-                <span style={{ fontSize: 11, fontWeight: 400, color: '#a1a1aa' }}>{c.timeAgo}</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          {comments.map((c, i) => (
+            <div key={i} style={{ display: 'flex', gap: 12, padding: '12px 0', borderBottom: i < comments.length - 1 ? '1px solid #fafafa' : 'none' }}>
+              <InlineAvatar name={c.author} size={28} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: '#18181b' }}>{formatShortName(c.author)}</span>
+                  <span style={{ fontSize: 12, fontWeight: 400, color: '#a1a1aa' }}>{c.timeAgo}</span>
+                </div>
+                <p style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.55, color: '#52525b', margin: 0 }}>{c.content}</p>
               </div>
-              <p style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.5, color: '#52525b', margin: 0 }}>{c.content}</p>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
 
         {/* New comment input */}
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center', paddingTop: 14 }}>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center', paddingTop: 16, marginTop: 16, borderTop: '1px solid #f4f4f5' }}>
           <InlineAvatar name="AK" size={28} />
           <input
             type="text"
             placeholder="Write a comment..."
-            className="flex-1 h-9 border border-zinc-200 rounded-md px-3 text-[13px] text-zinc-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
-            style={{ background: 'transparent' }}
+            className="flex-1 h-10 border border-zinc-200 rounded-md px-3 text-[13px] text-zinc-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
+            style={{ background: '#fafafa' }}
           />
         </div>
       </div>
