@@ -45,25 +45,9 @@ function useActiveVision() {
   return { vision, loading, error, refetch: fetch, setVision };
 }
 
-function useStrategyRole() {
-  const [isOwner, setIsOwner] = useState(false);
+// Re-export from shared RoleContext
+import { useStrategyRole } from '@/contexts/strategy/RoleContext';
 
-  useEffect(() => {
-    (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data } = await supabase
-        .from('es_strategy_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .eq('role', 'strategy_owner')
-        .maybeSingle();
-      setIsOwner(!!data);
-    })();
-  }, []);
-
-  return { isOwner };
-}
 
 function formatUpdatedAt(dateStr: string): string {
   const d = new Date(dateStr);
