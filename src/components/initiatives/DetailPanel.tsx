@@ -2,6 +2,11 @@ import { format } from 'date-fns';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Pencil, Paperclip, Copy, Link2, Target, Trash2, Save, Loader2, ChevronLeft, ClipboardList, AlertTriangle, Flag, ExternalLink, Activity, Plus, Wallet, FileText, GitBranch, Layout, ArrowRight, TrendingUp } from 'lucide-react';
+import { InitiativeRisksTab } from './tabs/InitiativeRisksTab';
+import { InitiativeMilestonesTab } from './tabs/InitiativeMilestonesTab';
+import { InitiativeBudgetTab } from './tabs/InitiativeBudgetTab';
+import { InitiativeLinksTab } from './tabs/InitiativeLinksTab';
+import { InitiativeAuditTab } from './tabs/InitiativeAuditTab';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import { StatusBadge } from './StatusBadge';
@@ -730,11 +735,11 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                     onScoreChange={setScores}
                     onSave={() => onScoreSave(initiative.id, { strategic_alignment: scores.sa, business_impact: scores.bi, time_urgency: scores.tu, resource_feasibility: scores.rf })} />
                 )}
-                {activeTab === 'Budget' && <BudgetTab />}
-                {activeTab === 'Risks' && <RisksTab />}
-                {activeTab === 'Milestones' && <MilestonesTab />}
-                {activeTab === 'Links' && <LinksTab />}
-                {activeTab === 'Audit' && <AuditTab initiative={initiative} />}
+                {activeTab === 'Budget' && <InitiativeBudgetTab initiativeId={initiative.id} budgetAllocated={Number(initiative.budget_allocated) || 0} />}
+                {activeTab === 'Risks' && <InitiativeRisksTab initiativeId={initiative.id} />}
+                {activeTab === 'Milestones' && <InitiativeMilestonesTab initiativeId={initiative.id} />}
+                {activeTab === 'Links' && <InitiativeLinksTab initiativeId={initiative.id} />}
+                {activeTab === 'Audit' && <InitiativeAuditTab initiativeId={initiative.id} />}
               </div>
             </motion.div>
           </>
@@ -858,13 +863,7 @@ function DetailsContent({
           )}
         </div>
 
-        {/* Priority / Score (read-only) */}
-        <div>
-          <FieldLabel>Priority / Score</FieldLabel>
-          <div className="text-[13px] text-zinc-500 italic px-2 py-1.5 -mx-2" title="Scores are calculated from the Score tab">
-            {initiative.computed_score !== null ? `${initiative.computed_score.toFixed(1)} / 5.0` : '—'}
-          </div>
-        </div>
+        {/* Priority / Score removed — handled by Score tab */}
 
         {/* Department */}
         <div>
