@@ -15,24 +15,24 @@ export const WipIndicator: React.FC<WipIndicatorProps> = ({ count, limit }) => {
     );
   }
 
-  const atLimit = count === limit;
-  const overLimit = count > limit;
+  const overLimit = count >= limit;
+  const approaching = !overLimit && count >= limit - 1;
 
   return (
     <span
       className={cn(
         'text-xs font-semibold tabular-nums rounded-full px-2 py-0.5',
         overLimit
-          ? 'text-red-700 bg-red-50 font-bold animate-pulse'
-          : atLimit
-            ? 'text-amber-700 bg-amber-50 font-bold'
+          ? 'text-red-700 bg-red-50 font-bold'
+          : approaching
+            ? 'text-amber-700 bg-amber-50 font-semibold'
             : 'text-zinc-500 bg-zinc-100'
       )}
     >
       {count}
       <span className={cn(
         'ml-0.5',
-        overLimit ? 'text-red-500' : atLimit ? 'text-amber-500' : 'text-zinc-400'
+        overLimit ? 'text-red-500' : approaching ? 'text-amber-500' : 'text-zinc-400'
       )}>
         /{limit}
       </span>
