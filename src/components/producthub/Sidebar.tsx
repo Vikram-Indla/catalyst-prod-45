@@ -59,7 +59,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Product Backlog', path: '/producthub/backlog', icon: <TableIcon /> },
   { label: 'Product Kanban', path: '/producthub/kanban', icon: <KanbanIcon /> },
   { label: 'Product Roadmap', path: '/producthub/roadmap', icon: <TimelineIcon /> },
-  { label: 'Ideas', path: '/producthub/ideas', icon: <StarIcon />, hasChevron: true },
+  
 ];
 
 export function Sidebar() {
