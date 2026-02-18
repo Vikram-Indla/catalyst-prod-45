@@ -7,8 +7,7 @@ import { KanbanBoard } from '@/components/initiatives/KanbanBoard';
 import { DetailPanel } from '@/components/initiatives/DetailPanel';
 import { BulkActionBar } from '@/components/initiatives/BulkActionBar';
 import { ContextMenu } from '@/components/initiatives/ContextMenu';
-import { Toaster } from '@/components/ui/sonner';
-import { showSuccess, showInfo } from '@/lib/toast-helpers';
+import { catalystToast } from '@/lib/catalystToast';
 import { LayoutGrid, Calendar, Columns3, Table2 } from 'lucide-react';
 
 import type { Initiative, InitiativeStatus, Density, ViewMode } from '@/types/initiative';
@@ -119,12 +118,12 @@ export default function InitiativeListingPage() {
         item.id === id ? { ...item, status: newStatus } : item
       );
     });
-    showSuccess(`Status updated to ${newStatus.replace(/_/g, ' ')}`);
+    catalystToast.success(`Status updated to ${newStatus.replace(/_/g, ' ')}`);
   }, [allInitiatives]);
 
   const handleAssigneeChange = useCallback((id: string, assigneeId: string) => {
     console.log('Assignee change:', id, assigneeId);
-    showSuccess('Assignee updated');
+    catalystToast.success('Assignee updated');
   }, []);
 
   const handleFavoriteToggle = useCallback((id: string, isFavorited: boolean) => {
@@ -152,7 +151,7 @@ export default function InitiativeListingPage() {
         break;
       case 'copy_id':
         navigator.clipboard.writeText(init.initiative_key);
-        showSuccess('Copied!');
+        catalystToast.success('Copied!');
         break;
       default:
         console.log('Context action:', action, value);
@@ -161,12 +160,12 @@ export default function InitiativeListingPage() {
 
   const handleBulkAction = useCallback((action: string, value?: any) => {
     console.log('Bulk action:', action, selectedIds, value);
-    showSuccess(`${selectedIds.length} items updated`);
+    catalystToast.success(`${selectedIds.length} items updated`);
   }, [selectedIds]);
 
   const handleScoreSave = useCallback((id: string, scores: { strategic_alignment: number; business_impact: number; time_urgency: number; resource_feasibility: number }) => {
     console.log('Score save:', id, scores);
-    showSuccess('Score saved');
+    catalystToast.success('Score saved');
   }, []);
 
   return (
@@ -252,7 +251,7 @@ export default function InitiativeListingPage() {
         onClose={() => setContextMenu(null)}
       />
 
-      <Toaster position="bottom-right" />
+      
     </div>
   );
 }
