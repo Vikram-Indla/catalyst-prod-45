@@ -1,5 +1,5 @@
 /**
- * ListingToolbar — Table-specific toolbar with view switcher, density, actions
+ * ListingToolbar — Table-specific toolbar with view switcher, density, columns, export
  * Catalyst V5 Design System
  */
 
@@ -21,6 +21,10 @@ interface Props {
   onDensityChange: (d: Density) => void;
   totalCount: number;
   searchInputRef?: React.RefObject<HTMLInputElement>;
+  columnsButtonRef?: React.RefObject<HTMLButtonElement>;
+  onColumnsClick?: () => void;
+  exportButtonRef?: React.RefObject<HTMLButtonElement>;
+  onExportClick?: () => void;
 }
 
 const DENSITY_CYCLE: Density[] = ['standard', 'compact', 'comfortable'];
@@ -51,7 +55,8 @@ const QUICK_FILTERS = [
 export function ListingToolbar({
   activeView, onViewChange, searchQuery, onSearchChange,
   activeQuickFilter, onQuickFilterChange, density, onDensityChange,
-  totalCount, searchInputRef,
+  totalCount, searchInputRef, columnsButtonRef, onColumnsClick,
+  exportButtonRef, onExportClick,
 }: Props) {
   const navigate = useNavigate();
   const [localSearch, setLocalSearch] = useState(searchQuery);
@@ -113,7 +118,12 @@ export function ListingToolbar({
 
           <div className="w-px h-5 bg-zinc-200" />
 
-          <button type="button" className="h-7 px-2.5 flex items-center gap-1.5 text-[12px] text-zinc-600 rounded-md hover:bg-zinc-100 transition-colors">
+          <button
+            ref={columnsButtonRef}
+            type="button"
+            onClick={onColumnsClick}
+            className="h-7 px-2.5 flex items-center gap-1.5 text-[12px] text-zinc-600 rounded-md hover:bg-zinc-100 transition-colors"
+          >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="4" height="12" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="8" y="2" width="4" height="12" rx="1" stroke="currentColor" strokeWidth="1.2"/></svg>
             Columns
           </button>
@@ -126,7 +136,12 @@ export function ListingToolbar({
 
         {/* Right: Export + New */}
         <div className="flex items-center gap-2">
-          <button type="button" className="h-8 px-3 flex items-center gap-1.5 text-[13px] text-zinc-600 border border-zinc-200 rounded-md hover:bg-zinc-50 transition-colors">
+          <button
+            ref={exportButtonRef}
+            type="button"
+            onClick={onExportClick}
+            className="h-8 px-3 flex items-center gap-1.5 text-[13px] text-zinc-600 border border-zinc-200 rounded-md hover:bg-zinc-50 transition-colors"
+          >
             <Download size={14} />
             Export
           </button>

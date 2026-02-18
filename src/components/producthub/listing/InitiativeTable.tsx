@@ -1,9 +1,10 @@
 /**
- * InitiativeTable — Data-dense enterprise table with TanStack Table
+ * InitiativeTable — Data-dense enterprise table with inline editing,
+ * column management, hover actions, keyboard navigation
  * Catalyst V5 Design System
  */
 
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useRef, useEffect } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -13,19 +14,23 @@ import {
   type SortingState,
   type RowSelectionState,
   type ColumnResizeMode,
+  type VisibilityState,
 } from '@tanstack/react-table';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
-import { Star, GripVertical, ChevronUp, ChevronDown, Check } from 'lucide-react';
+import { Check, ChevronUp, ChevronDown, Pencil, Star, MoreVertical } from 'lucide-react';
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import {
   StatusCell, PriorityCell, ScoreCell, AssigneeCell,
   DateCell, ProgressCell, EACell, QuarterCell, IDCell,
 } from './CellRenderers';
+import { InlineCellEditor, EDITABLE_COLUMNS, COLUMN_TO_FIELD } from './InlineCellEditor';
+import type { ColumnConfig } from './ColumnManager';
 
 interface Props {
   data: Initiative[];
   loading?: boolean;
   density: Density;
+  columnConfigs: ColumnConfig[];
   onRowClick: (initiative: Initiative) => void;
   onStatusChange: (id: string, status: InitiativeStatus) => void;
   onFavoriteToggle: (id: string, isFavorited: boolean) => void;
@@ -33,6 +38,9 @@ interface Props {
   onSortChange: (sorting: { id: string; desc: boolean }[]) => void;
   onContextMenu?: (e: React.MouseEvent, initiative: Initiative) => void;
   onReorder?: (sourceIndex: number, destinationIndex: number) => void;
+  onInlineEdit?: (id: string, field: string, value: string | number | null) => void;
+  focusedRowIndex?: number;
+  onFocusedRowChange?: (index: number) => void;
 }
 
 const col = createColumnHelper<Initiative>();
@@ -63,33 +71,74 @@ function Checkbox({ checked, indeterminate, onChange }: { checked: boolean; inde
 }
 
 export function InitiativeTable({
-  data, loading = false, density, onRowClick, onStatusChange,
+  data, loading = false, density, columnConfigs, onRowClick, onStatusChange,
   onFavoriteToggle, onSelectionChange, onSortChange, onContextMenu, onReorder,
+  onInlineEdit, focusedRowIndex = -1, onFocusedRowChange,
 }: Props) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [editingCell, setEditingCell] = useState<{ rowId: string; columnId: string; rect: DOMRect } | null>(null);
+  const [flashCell, setFlashCell] = useState<string | null>(null);
   const rowH = DENSITY_ROW[density];
+  const tbodyRef = useRef<HTMLTableSectionElement>(null);
 
   const handleDragEnd = useCallback((result: DropResult) => {
     if (!result.destination || result.source.index === result.destination.index) return;
     onReorder?.(result.source.index, result.destination.index);
   }, [onReorder]);
 
-  const handleSortingChange = useCallback((updater: any) => {
+  const handleSortingChange = useCallback((updater: React.SetStateAction<SortingState>) => {
     setSorting((old) => {
       const next = typeof updater === 'function' ? updater(old) : updater;
-      onSortChange(next);
+      onSortChange(next as { id: string; desc: boolean }[]);
       return next;
     });
   }, [onSortChange]);
 
-  const handleSelectionChange = useCallback((updater: any) => {
+  const handleSelectionChange = useCallback((updater: React.SetStateAction<RowSelectionState>) => {
     setRowSelection((old) => {
       const next = typeof updater === 'function' ? updater(old) : updater;
       onSelectionChange(Object.keys(next).filter(k => next[k]));
       return next;
     });
   }, [onSelectionChange]);
+
+  const handleDoubleClick = useCallback((e: React.MouseEvent, rowId: string, columnId: string) => {
+    if (!EDITABLE_COLUMNS[columnId]) return;
+    e.stopPropagation();
+    const td = (e.target as HTMLElement).closest('td');
+    if (!td) return;
+    setEditingCell({ rowId, columnId, rect: td.getBoundingClientRect() });
+  }, []);
+
+  const handleInlineSave = useCallback((value: string | number | null) => {
+    if (!editingCell || !onInlineEdit) return;
+    const field = COLUMN_TO_FIELD[editingCell.columnId];
+    if (field) {
+      onInlineEdit(editingCell.rowId, field, value);
+      // Flash green
+      const flashKey = `${editingCell.rowId}-${editingCell.columnId}`;
+      setFlashCell(flashKey);
+      setTimeout(() => setFlashCell(null), 300);
+    }
+    setEditingCell(null);
+  }, [editingCell, onInlineEdit]);
+
+  const getEditValue = useCallback(() => {
+    if (!editingCell) return null;
+    const row = data.find(d => d.id === editingCell.rowId);
+    if (!row) return null;
+    const field = COLUMN_TO_FIELD[editingCell.columnId];
+    if (!field) return null;
+    return (row as unknown as Record<string, unknown>)[field] as string | number | null;
+  }, [editingCell, data]);
+
+  // Column visibility from configs
+  const columnVisibility = useMemo<VisibilityState>(() => {
+    const vis: VisibilityState = {};
+    columnConfigs.forEach(c => { vis[c.id] = c.visible; });
+    return vis;
+  }, [columnConfigs]);
 
   const columns = useMemo(() => [
     col.display({
@@ -159,7 +208,7 @@ export function InitiativeTable({
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, rowSelection },
+    state: { sorting, rowSelection, columnVisibility },
     onSortingChange: handleSortingChange,
     onRowSelectionChange: handleSelectionChange,
     getCoreRowModel: getCoreRowModel(),
@@ -202,10 +251,10 @@ export function InitiativeTable({
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="flex-1 overflow-hidden border border-zinc-200 rounded-lg bg-white">
-        <div className="overflow-x-auto h-full">
+        <div className="overflow-x-auto overflow-y-auto h-full" style={{ scrollbarWidth: 'thin', scrollbarColor: '#d4d4d8 transparent' }}>
           <table className="w-full" style={{ tableLayout: 'fixed', minWidth: 1400 }}>
             <colgroup>
-              {table.getAllColumns().map(column => (
+              {table.getVisibleFlatColumns().map(column => (
                 <col key={column.id} style={{ width: column.getSize() }} />
               ))}
             </colgroup>
@@ -253,10 +302,11 @@ export function InitiativeTable({
             {/* Body */}
             <Droppable droppableId="initiative-table" type="ROW">
               {(provided) => (
-                <tbody ref={provided.innerRef} {...provided.droppableProps}>
+                <tbody ref={(el) => { provided.innerRef(el); (tbodyRef as React.MutableRefObject<HTMLTableSectionElement | null>).current = el; }} {...provided.droppableProps}>
                   {table.getRowModel().rows.map((row, idx) => {
                     const selected = row.getIsSelected();
                     const isCancelled = row.original.status === 'cancelled';
+                    const isFocused = idx === focusedRowIndex;
                     return (
                       <Draggable key={row.id} draggableId={row.id} index={idx}>
                         {(dragProvided, snapshot) => (
@@ -264,26 +314,65 @@ export function InitiativeTable({
                             ref={dragProvided.innerRef}
                             {...dragProvided.draggableProps}
                             {...dragProvided.dragHandleProps}
+                            tabIndex={0}
+                            data-row-index={idx}
                             className={`
-                              group/row transition-colors cursor-pointer ${rowH}
+                              group/row transition-colors duration-[80ms] cursor-pointer ${rowH} relative
                               ${selected ? 'bg-blue-50/60' : idx % 2 === 0 ? '' : 'bg-zinc-50/50'}
                               ${!selected ? 'hover:bg-blue-50/30' : ''}
                               ${isCancelled ? 'opacity-[0.55]' : ''}
                               ${snapshot.isDragging ? 'bg-white shadow-lg opacity-90' : ''}
+                              ${isFocused ? 'ring-2 ring-blue-500 ring-inset' : ''}
                             `}
                             style={{ ...dragProvided.draggableProps.style, borderBottom: '1px solid #f4f4f5' }}
                             onClick={() => onRowClick(row.original)}
                             onContextMenu={(e) => { e.preventDefault(); onContextMenu?.(e, row.original); }}
+                            onFocus={() => onFocusedRowChange?.(idx)}
                           >
-                            {row.getVisibleCells().map(cell => (
-                              <td
-                                key={cell.id}
-                                className="px-3 align-middle whitespace-nowrap overflow-hidden text-ellipsis"
-                                style={{ width: cell.column.getSize() }}
+                            {row.getVisibleCells().map(cell => {
+                              const cellKey = `${row.id}-${cell.column.id}`;
+                              const isFlashing = flashCell === cellKey;
+                              return (
+                                <td
+                                  key={cell.id}
+                                  className={`px-3 align-middle whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-200 ${isFlashing ? 'bg-green-50' : ''}`}
+                                  style={{ width: cell.column.getSize() }}
+                                  onDoubleClick={(e) => handleDoubleClick(e, row.id, cell.column.id)}
+                                >
+                                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </td>
+                              );
+                            })}
+
+                            {/* Hover Actions */}
+                            <td className="absolute right-3 top-0 bottom-0 flex items-center gap-1 opacity-0 group-hover/row:opacity-100 transition-opacity duration-100 pointer-events-none group-hover/row:pointer-events-auto"
+                              style={{ width: 'auto' }}
+                            >
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); onRowClick(row.original); }}
+                                className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
+                                title="Edit"
                               >
-                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                              </td>
-                            ))}
+                                <Pencil size={13} className="text-zinc-500" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); onFavoriteToggle(row.original.id, row.original.is_favorited); }}
+                                className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
+                                title="Star"
+                              >
+                                <Star size={13} className={row.original.is_favorited ? 'text-amber-400 fill-amber-400' : 'text-zinc-500'} />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); e.preventDefault(); onContextMenu?.(e, row.original); }}
+                                className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
+                                title="More"
+                              >
+                                <MoreVertical size={13} className="text-zinc-500" />
+                              </button>
+                            </td>
                           </tr>
                         )}
                       </Draggable>
@@ -296,6 +385,17 @@ export function InitiativeTable({
           </table>
         </div>
       </div>
+
+      {/* Inline Editor Portal */}
+      {editingCell && (
+        <InlineCellEditor
+          type={EDITABLE_COLUMNS[editingCell.columnId]}
+          value={getEditValue()}
+          cellRect={editingCell.rect}
+          onSave={handleInlineSave}
+          onCancel={() => setEditingCell(null)}
+        />
+      )}
     </DragDropContext>
   );
 }

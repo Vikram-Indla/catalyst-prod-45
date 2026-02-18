@@ -1,6 +1,6 @@
 /**
  * Initiative Listing Page — /producthub/backlog
- * Catalyst V5 Data-Dense Table View
+ * Catalyst V5 Data-Dense Table View — Prompt 2 Enhanced
  */
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
@@ -13,6 +13,8 @@ import { Pagination } from '@/components/producthub/listing/Pagination';
 import { DetailPanel } from '@/components/initiatives/DetailPanel';
 import { ContextMenu } from '@/components/initiatives/ContextMenu';
 import { KanbanBoard } from '@/components/initiatives/KanbanBoard';
+import { ColumnManager, DEFAULT_COLUMNS, type ColumnConfig } from '@/components/producthub/listing/ColumnManager';
+import { ExportDropdown } from '@/components/producthub/listing/ExportDropdown';
 import { catalystToast } from '@/lib/catalystToast';
 import { LayoutGrid, Columns3 } from 'lucide-react';
 
@@ -21,6 +23,25 @@ import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 type ViewMode = 'table' | 'board' | 'timeline' | 'cards';
 
 const TERMINAL_STATUSES: InitiativeStatus[] = ['delivered', 'closed', 'cancelled'];
+
+const COLUMN_STORAGE_KEY = 'ph-backlog-columns';
+const DENSITY_STORAGE_KEY = 'ph-backlog-density';
+
+function loadColumns(): ColumnConfig[] {
+  try {
+    const raw = localStorage.getItem(COLUMN_STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch { /* ignore */ }
+  return DEFAULT_COLUMNS.map(c => ({ ...c }));
+}
+
+function loadDensity(): Density {
+  try {
+    const raw = localStorage.getItem(DENSITY_STORAGE_KEY);
+    if (raw && ['compact', 'standard', 'comfortable'].includes(raw)) return raw as Density;
+  } catch { /* ignore */ }
+  return 'standard';
+}
 
 function applyQuickFilter(data: Initiative[], filter: string): Initiative[] {
   switch (filter) {
@@ -49,7 +70,7 @@ function applySearch(data: Initiative[], query: string): Initiative[] {
 
 export default function InitiativeListingPage() {
   const { data, isLoading } = useInitiativesMock();
-  const [density, setDensity] = useState<Density>('standard');
+  const [density, setDensity] = useState<Density>(loadDensity);
   const [activeView, setActiveView] = useState<ViewMode>('table');
   const [searchQuery, setSearchQuery] = useState('');
   const [quickFilter, setQuickFilter] = useState('all');
@@ -58,10 +79,20 @@ export default function InitiativeListingPage() {
   const [orderedData, setOrderedData] = useState<Initiative[] | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
+  const [focusedRow, setFocusedRow] = useState(-1);
 
   const [detailInitiative, setDetailInitiative] = useState<Initiative | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ pos: { x: number; y: number }; initiative: Initiative } | null>(null);
+
+  // Column management
+  const [columnConfigs, setColumnConfigs] = useState<ColumnConfig[]>(loadColumns);
+  const [columnManagerOpen, setColumnManagerOpen] = useState(false);
+  const columnsButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Export
+  const [exportOpen, setExportOpen] = useState(false);
+  const exportButtonRef = useRef<HTMLButtonElement>(null);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const allInitiatives = orderedData ?? data?.data ?? [];
@@ -70,13 +101,22 @@ export default function InitiativeListingPage() {
     if (data?.data && !orderedData) setOrderedData(data.data);
   }, [data?.data, orderedData]);
 
+  // Persist columns
+  useEffect(() => {
+    localStorage.setItem(COLUMN_STORAGE_KEY, JSON.stringify(columnConfigs));
+  }, [columnConfigs]);
+
+  // Persist density
+  useEffect(() => {
+    localStorage.setItem(DENSITY_STORAGE_KEY, density);
+  }, [density]);
+
   const filtered = useMemo(() => {
     let result = applyQuickFilter(allInitiatives, quickFilter);
     result = applySearch(result, searchQuery);
     return result;
   }, [allInitiatives, quickFilter, searchQuery]);
 
-  // Pagination
   const paginatedData = useMemo(() => {
     const start = (page - 1) * pageSize;
     return filtered.slice(start, start + pageSize);
@@ -91,22 +131,78 @@ export default function InitiativeListingPage() {
     });
   }, [allInitiatives]);
 
-  // Keyboard
+  // Keyboard navigation
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      // Escape cascade
       if (e.key === 'Escape') {
+        if (columnManagerOpen) { setColumnManagerOpen(false); return; }
+        if (exportOpen) { setExportOpen(false); return; }
         if (contextMenu) { setContextMenu(null); return; }
         if (detailOpen) { setDetailOpen(false); return; }
         if (selectedIds.length > 0) { setSelectedIds([]); return; }
       }
+
+      // Cmd+K → focus search
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         searchInputRef.current?.focus();
+        return;
+      }
+
+      // Cmd+A → select all
+      if ((e.metaKey || e.ctrlKey) && e.key === 'a' && activeView === 'table') {
+        const active = document.activeElement;
+        if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement) return;
+        e.preventDefault();
+        setSelectedIds(paginatedData.map(d => d.id));
+        return;
+      }
+
+      // Arrow up/down
+      if (e.key === 'ArrowDown' && activeView === 'table') {
+        e.preventDefault();
+        setFocusedRow(prev => Math.min(prev + 1, paginatedData.length - 1));
+        return;
+      }
+      if (e.key === 'ArrowUp' && activeView === 'table') {
+        e.preventDefault();
+        setFocusedRow(prev => Math.max(prev - 1, 0));
+        return;
+      }
+
+      // Enter → open detail
+      if (e.key === 'Enter' && focusedRow >= 0 && focusedRow < paginatedData.length && activeView === 'table') {
+        const active = document.activeElement;
+        if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement) return;
+        setDetailInitiative(paginatedData[focusedRow]);
+        setDetailOpen(true);
+        return;
+      }
+
+      // Space → toggle checkbox
+      if (e.key === ' ' && focusedRow >= 0 && focusedRow < paginatedData.length && activeView === 'table') {
+        const active = document.activeElement;
+        if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement) return;
+        e.preventDefault();
+        const id = paginatedData[focusedRow].id;
+        setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+        return;
+      }
+
+      // Delete/Backspace → bulk delete confirm
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedIds.length > 0) {
+        const active = document.activeElement;
+        if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement) return;
+        e.preventDefault();
+        if (confirm(`Delete ${selectedIds.length} initiative(s)? This cannot be undone.`)) {
+          handleBulkAction('delete');
+        }
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [contextMenu, detailOpen, selectedIds]);
+  }, [contextMenu, detailOpen, selectedIds, columnManagerOpen, exportOpen, activeView, focusedRow, paginatedData]);
 
   const handleRowClick = useCallback((initiative: Initiative) => {
     setDetailInitiative(initiative);
@@ -121,9 +217,13 @@ export default function InitiativeListingPage() {
     catalystToast.success(`Status updated to ${newStatus.replace(/_/g, ' ')}`);
   }, [allInitiatives]);
 
-  const handleFavoriteToggle = useCallback((id: string, _isFavorited: boolean) => {
-    console.log('Favorite toggle:', id);
-  }, []);
+  const handleFavoriteToggle = useCallback((id: string, isFavorited: boolean) => {
+    setOrderedData(prev => {
+      const items = prev ?? allInitiatives;
+      return items.map(item => item.id === id ? { ...item, is_favorited: !isFavorited } : item);
+    });
+    catalystToast.success(isFavorited ? 'Removed from favorites' : 'Added to favorites');
+  }, [allInitiatives]);
 
   const handleSortChange = useCallback((s: { id: string; desc: boolean }[]) => {
     setSorting(s);
@@ -138,6 +238,7 @@ export default function InitiativeListingPage() {
     const init = contextMenu.initiative;
     switch (action) {
       case 'open':
+      case 'edit':
         setDetailInitiative(init);
         setDetailOpen(true);
         break;
@@ -146,14 +247,61 @@ export default function InitiativeListingPage() {
         break;
       case 'copy_id':
         navigator.clipboard.writeText(init.initiative_key);
-        catalystToast.success('Copied!');
+        catalystToast.success(`Copied ${init.initiative_key}`);
+        break;
+      case 'clone':
+        setOrderedData(prev => {
+          const items = prev ?? allInitiatives;
+          const clone: Initiative = {
+            ...init,
+            id: `clone-${Date.now()}`,
+            initiative_key: `${init.initiative_key}-C`,
+            title: `${init.title} (Copy)`,
+            is_favorited: false,
+            progress: 0,
+          };
+          return [...items, clone];
+        });
+        catalystToast.success('Initiative cloned');
+        break;
+      case 'archive':
+        setOrderedData(prev => (prev ?? allInitiatives).filter(i => i.id !== init.id));
+        catalystToast.success('Archived');
+        break;
+      case 'delete':
+        if (confirm(`Delete ${init.initiative_key}? This cannot be undone.`)) {
+          setOrderedData(prev => (prev ?? allInitiatives).filter(i => i.id !== init.id));
+          catalystToast.success('Deleted');
+        }
         break;
     }
-  }, [contextMenu, handleStatusChange]);
+  }, [contextMenu, handleStatusChange, allInitiatives]);
+
+  const handleInlineEdit = useCallback((id: string, field: string, value: string | number | null) => {
+    setOrderedData(prev => {
+      const items = prev ?? allInitiatives;
+      return items.map(item => item.id === id ? { ...item, [field]: value } : item);
+    });
+    catalystToast.success('Updated');
+  }, [allInitiatives]);
 
   const handleBulkAction = useCallback((action: string) => {
-    catalystToast.success(`${selectedIds.length} items — ${action}`);
-  }, [selectedIds]);
+    switch (action) {
+      case 'archive':
+        setOrderedData(prev => (prev ?? allInitiatives).filter(i => !selectedIds.includes(i.id)));
+        catalystToast.success(`${selectedIds.length} items archived`);
+        setSelectedIds([]);
+        break;
+      case 'delete':
+        setOrderedData(prev => (prev ?? allInitiatives).filter(i => !selectedIds.includes(i.id)));
+        catalystToast.success(`${selectedIds.length} items deleted`);
+        setSelectedIds([]);
+        break;
+      default:
+        catalystToast.success(`${selectedIds.length} items — ${action}`);
+        break;
+    }
+  }, [selectedIds, allInitiatives]);
 
   const handleScoreSave = useCallback((id: string, scores: { strategic_alignment: number; business_impact: number; time_urgency: number; resource_feasibility: number }) => {
     catalystToast.success('Score saved');
@@ -177,9 +325,13 @@ export default function InitiativeListingPage() {
         onDensityChange={setDensity}
         totalCount={filtered.length}
         searchInputRef={searchInputRef}
+        columnsButtonRef={columnsButtonRef}
+        onColumnsClick={() => setColumnManagerOpen(prev => !prev)}
+        exportButtonRef={exportButtonRef}
+        onExportClick={() => setExportOpen(prev => !prev)}
       />
 
-      {/* Bulk Action Bar — replaces space above table when active */}
+      {/* Bulk Action Bar */}
       <BulkActionBar
         selectedCount={selectedIds.length}
         onAction={handleBulkAction}
@@ -192,6 +344,7 @@ export default function InitiativeListingPage() {
             data={paginatedData}
             loading={isLoading}
             density={density}
+            columnConfigs={columnConfigs}
             onRowClick={handleRowClick}
             onStatusChange={handleStatusChange}
             onFavoriteToggle={handleFavoriteToggle}
@@ -199,6 +352,9 @@ export default function InitiativeListingPage() {
             onSortChange={handleSortChange}
             onContextMenu={handleContextMenu}
             onReorder={handleReorder}
+            onInlineEdit={handleInlineEdit}
+            focusedRowIndex={focusedRow}
+            onFocusedRowChange={setFocusedRow}
           />
         </div>
       ) : activeView === 'board' ? (
@@ -221,7 +377,7 @@ export default function InitiativeListingPage() {
         </div>
       )}
 
-      {/* Pagination — only for table view */}
+      {/* Pagination */}
       {activeView === 'table' && (
         <Pagination
           total={filtered.length}
@@ -245,6 +401,21 @@ export default function InitiativeListingPage() {
         initiative={contextMenu?.initiative ?? null}
         onAction={handleContextAction}
         onClose={() => setContextMenu(null)}
+      />
+
+      <ColumnManager
+        columns={columnConfigs}
+        onChange={setColumnConfigs}
+        anchorRef={columnsButtonRef}
+        isOpen={columnManagerOpen}
+        onClose={() => setColumnManagerOpen(false)}
+      />
+
+      <ExportDropdown
+        data={filtered}
+        anchorRef={exportButtonRef}
+        isOpen={exportOpen}
+        onClose={() => setExportOpen(false)}
       />
     </div>
   );
