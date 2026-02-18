@@ -31,7 +31,7 @@ export function WidgetCard({
 }: WidgetCardProps) {
   return (
     <div
-      className={`widget-card relative overflow-hidden ${className}`}
+      className={`widget-card relative overflow-hidden flex flex-col ${className}`}
       aria-label={ariaLabel}
       style={{
         background: 'var(--catalyst-bg-surface-0)',
@@ -155,7 +155,9 @@ export function WidgetCard({
       </div>
 
       {/* Widget body */}
-      {children}
+      <div className="flex-1 flex flex-col min-h-0">
+        {children}
+      </div>
     </div>
   );
 }
