@@ -81,6 +81,8 @@ export function InitiativeTable({
   const [flashCell, setFlashCell] = useState<string | null>(null);
   const rowH = DENSITY_ROW[density];
   const tbodyRef = useRef<HTMLTableSectionElement>(null);
+  // Single-click delay to differentiate from double-click
+  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleDragEnd = useCallback((result: DropResult) => {
     if (!result.destination || result.source.index === result.destination.index) return;
@@ -103,7 +105,22 @@ export function InitiativeTable({
     });
   }, [onSelectionChange]);
 
+  // Delayed single-click handler — cancelled if double-click fires
+  const handleRowSingleClick = useCallback((initiative: Initiative) => {
+    if (editingCell) return; // Don't open detail while editing
+    if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+    clickTimerRef.current = setTimeout(() => {
+      clickTimerRef.current = null;
+      onRowClick(initiative);
+    }, 250);
+  }, [onRowClick, editingCell]);
+
   const handleDoubleClick = useCallback((e: React.MouseEvent, rowId: string, columnId: string) => {
+    // Cancel pending single-click
+    if (clickTimerRef.current) {
+      clearTimeout(clickTimerRef.current);
+      clickTimerRef.current = null;
+    }
     if (!EDITABLE_COLUMNS[columnId]) return;
     e.stopPropagation();
     const td = (e.target as HTMLElement).closest('td');
@@ -116,7 +133,6 @@ export function InitiativeTable({
     const field = COLUMN_TO_FIELD[editingCell.columnId];
     if (field) {
       onInlineEdit(editingCell.rowId, field, value);
-      // Flash green
       const flashKey = `${editingCell.rowId}-${editingCell.columnId}`;
       setFlashCell(flashKey);
       setTimeout(() => setFlashCell(null), 300);
@@ -132,6 +148,15 @@ export function InitiativeTable({
     if (!field) return null;
     return (row as unknown as Record<string, unknown>)[field] as string | number | null;
   }, [editingCell, data]);
+
+  // Move DOM focus when focusedRowIndex changes via keyboard
+  useEffect(() => {
+    if (focusedRowIndex < 0 || !tbodyRef.current) return;
+    const row = tbodyRef.current.querySelector(`[data-row-index="${focusedRowIndex}"]`) as HTMLElement | null;
+    if (row && document.activeElement !== row) {
+      row.focus({ preventScroll: false });
+    }
+  }, [focusedRowIndex]);
 
   // Column visibility from configs
   const columnVisibility = useMemo<VisibilityState>(() => {
@@ -219,6 +244,13 @@ export function InitiativeTable({
     getRowId: (row) => row.id,
   });
 
+  // Cleanup click timer on unmount
+  useEffect(() => {
+    return () => {
+      if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+    };
+  }, []);
+
   if (loading) {
     return (
       <div className="flex-1 overflow-hidden">
@@ -248,11 +280,14 @@ export function InitiativeTable({
     );
   }
 
+  // Get the total table width from TanStack (accounts for resize)
+  const totalSize = table.getTotalSize();
+
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="flex-1 overflow-hidden border border-zinc-200 rounded-lg bg-white">
         <div className="overflow-x-auto overflow-y-auto h-full" style={{ scrollbarWidth: 'thin', scrollbarColor: '#d4d4d8 transparent' }}>
-          <table className="w-full" style={{ tableLayout: 'fixed', minWidth: 1400 }}>
+          <table className="w-full" style={{ tableLayout: 'fixed', minWidth: Math.max(1400, totalSize) }}>
             <colgroup>
               {table.getVisibleFlatColumns().map(column => (
                 <col key={column.id} style={{ width: column.getSize() }} />
@@ -285,11 +320,15 @@ export function InitiativeTable({
                             )}
                           </div>
                         )}
+                        {/* Resize handle */}
                         {header.column.getCanResize() && (
                           <div
                             onMouseDown={header.getResizeHandler()}
                             onTouchStart={header.getResizeHandler()}
-                            className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400 transition-colors"
+                            onDoubleClick={() => header.column.resetSize()}
+                            className={`absolute right-0 top-0 bottom-0 w-[4px] cursor-col-resize select-none touch-none transition-colors ${
+                              header.column.getIsResizing() ? 'bg-blue-600' : 'hover:bg-blue-400'
+                            }`}
                           />
                         )}
                       </th>
@@ -324,8 +363,8 @@ export function InitiativeTable({
                               ${snapshot.isDragging ? 'bg-white shadow-lg opacity-90' : ''}
                               ${isFocused ? 'ring-2 ring-blue-500 ring-inset' : ''}
                             `}
-                            style={{ ...dragProvided.draggableProps.style, borderBottom: '1px solid #f4f4f5' }}
-                            onClick={() => onRowClick(row.original)}
+                            style={{ ...dragProvided.draggableProps.style, borderBottom: '1px solid #f4f4f5', outline: 'none' }}
+                            onClick={() => handleRowSingleClick(row.original)}
                             onContextMenu={(e) => { e.preventDefault(); onContextMenu?.(e, row.original); }}
                             onFocus={() => onFocusedRowChange?.(idx)}
                           >
@@ -350,7 +389,7 @@ export function InitiativeTable({
                             >
                               <button
                                 type="button"
-                                onClick={(e) => { e.stopPropagation(); onRowClick(row.original); }}
+                                onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onRowClick(row.original); }}
                                 className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
                                 title="Edit"
                               >
@@ -358,7 +397,7 @@ export function InitiativeTable({
                               </button>
                               <button
                                 type="button"
-                                onClick={(e) => { e.stopPropagation(); onFavoriteToggle(row.original.id, row.original.is_favorited); }}
+                                onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onFavoriteToggle(row.original.id, row.original.is_favorited); }}
                                 className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
                                 title="Star"
                               >
@@ -366,7 +405,7 @@ export function InitiativeTable({
                               </button>
                               <button
                                 type="button"
-                                onClick={(e) => { e.stopPropagation(); e.preventDefault(); onContextMenu?.(e, row.original); }}
+                                onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } e.preventDefault(); onContextMenu?.(e, row.original); }}
                                 className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
                                 title="More"
                               >
