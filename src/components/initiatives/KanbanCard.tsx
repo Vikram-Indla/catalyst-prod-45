@@ -162,7 +162,7 @@ export function KanbanCard({ initiative, density, isDragOverlay, isGhost, onClic
             <AlertTriangle size={12} className="text-red-500" />
           )}
           {initiative.target_quarter && (
-            <span className="text-[10px] font-medium text-zinc-400 bg-zinc-100 px-1.5 py-0.5 rounded">
+            <span className="text-[10px] font-medium text-zinc-400">
               {initiative.target_quarter}
             </span>
           )}
