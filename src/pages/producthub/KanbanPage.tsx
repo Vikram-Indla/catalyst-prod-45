@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { KanbanToolbar } from '@/components/producthub/kanban/KanbanToolbar';
 import { KanbanFilterBar } from '@/components/producthub/kanban/KanbanFilterBar';
 import { KanbanBoard } from '@/components/producthub/kanban/KanbanBoard';
@@ -44,7 +43,6 @@ function toTimelineInitiative(i: Initiative): TimelineInitiative {
 }
 
 export default function KanbanPage() {
-  const navigate = useNavigate();
   const { data, isLoading } = useInitiativesMock();
   const initiatives = data?.data ?? [];
 
@@ -116,21 +114,14 @@ export default function KanbanPage() {
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-[#f8f9fb]">
       {/* Header */}
-      <div className="px-5 pt-5 pb-3 bg-white border-b border-zinc-200">
-        <nav className="flex items-center gap-1.5 text-xs text-zinc-400 mb-1">
-          <span className="hover:text-zinc-600 cursor-pointer" onClick={() => navigate('/producthub')}>ProductHub</span>
-          <span>›</span>
-          <span className="hover:text-zinc-600 cursor-pointer" onClick={() => navigate('/producthub/backlog')}>Initiatives</span>
-          <span>›</span>
-          <span className="text-zinc-600">Kanban</span>
-        </nav>
-        <div className="flex items-center gap-2">
-          <h1 className="text-xl font-bold text-zinc-900">Product Kanban</h1>
-          <span className="text-xs font-semibold bg-zinc-100 text-zinc-500 rounded-full px-2.5 py-0.5 tabular-nums">
+      <div className="px-6 py-4 bg-white border-b border-zinc-200">
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-zinc-900">Product Kanban</h1>
+          <span className="bg-zinc-100 text-zinc-600 text-sm font-semibold px-2.5 py-0.5 rounded-full tabular-nums">
             {filtered.length}
           </span>
         </div>
-        <p className="text-sm text-zinc-500 mt-0.5">Drag initiatives across status columns</p>
+        <p className="text-sm text-zinc-500 mt-1">Drag initiatives between status columns to update workflow</p>
       </div>
 
       {/* Toolbar */}

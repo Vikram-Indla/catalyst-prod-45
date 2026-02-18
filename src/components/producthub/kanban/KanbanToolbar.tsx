@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import {
-  Table2, Kanban, Clock, LayoutGrid, ArrowUpDown,
+  ArrowUpDown,
   Rows3, Download, Plus, ChevronDown,
 } from 'lucide-react';
 import type { SwimlaneField } from './KanbanColumn';
 
-const VIEWS = [
-  { key: 'table', label: 'Table', icon: Table2, route: '/producthub/backlog' },
-  { key: 'board', label: 'Board', icon: Kanban, route: '/producthub/kanban' },
-  { key: 'timeline', label: 'Timeline', icon: Clock, route: '/producthub/roadmap' },
-  { key: 'cards', label: 'Cards', icon: LayoutGrid, route: '' },
-] as const;
 
 const SORT_OPTIONS = [
   { key: 'score', label: 'Score' },
@@ -44,7 +37,6 @@ export const KanbanToolbar: React.FC<KanbanToolbarProps> = ({
   onSwimlaneChange,
   onNewInitiative,
 }) => {
-  const navigate = useNavigate();
   const [showSort, setShowSort] = useState(false);
   const [showSwimlane, setShowSwimlane] = useState(false);
 
@@ -54,30 +46,6 @@ export const KanbanToolbar: React.FC<KanbanToolbarProps> = ({
   return (
     <div className="flex items-center justify-between px-5 py-2.5 border-b border-zinc-200 bg-white">
       <div className="flex items-center gap-3">
-        {/* View Switcher */}
-        <div className="flex items-center bg-zinc-100 rounded-lg p-1 gap-0.5">
-          {VIEWS.map(v => (
-            <button
-              key={v.key}
-              onClick={() => { if (v.route && v.key !== 'board') navigate(v.route); }}
-              disabled={v.key === 'cards'}
-              className={cn(
-                'flex items-center gap-1.5 px-3 h-8 text-sm rounded-md transition-all focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1',
-                v.key === 'board'
-                  ? 'bg-white text-zinc-900 font-semibold shadow-sm'
-                  : v.key === 'cards'
-                    ? 'text-zinc-400 cursor-not-allowed'
-                    : 'text-zinc-600 font-medium hover:text-zinc-800 hover:bg-zinc-50'
-              )}
-            >
-              <v.icon className="w-4 h-4" />
-              <span>{v.label}</span>
-            </button>
-          ))}
-        </div>
-
-        <div className="w-px h-5 bg-zinc-300" />
-
         {/* Swimlane dropdown */}
         <div className="relative">
           <button
