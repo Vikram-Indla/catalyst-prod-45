@@ -1,12 +1,15 @@
 /**
- * ListingToolbar — Table-specific toolbar with view switcher, density, columns, export
+ * ListingToolbar — Table-specific toolbar with view switcher, density, columns, export, grouping
  * Catalyst V5 Design System
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, X, Download, Plus } from 'lucide-react';
+import { Search, X, Download, Plus, Check } from 'lucide-react';
+import { createPortal } from 'react-dom';
 import type { Density } from '@/types/initiative';
+
+export type GroupByField = 'none' | 'status' | 'priority' | 'department' | 'quarter' | 'assignee';
 
 type ViewMode = 'table' | 'board' | 'timeline' | 'cards';
 
@@ -25,6 +28,8 @@ interface Props {
   onColumnsClick?: () => void;
   exportButtonRef?: React.RefObject<HTMLButtonElement>;
   onExportClick?: () => void;
+  groupBy: GroupByField;
+  onGroupByChange: (g: GroupByField) => void;
 }
 
 const DENSITY_CYCLE: Density[] = ['standard', 'compact', 'comfortable'];
@@ -52,15 +57,27 @@ const QUICK_FILTERS = [
   { id: 'starred', label: '★ Starred' },
 ];
 
+const GROUP_OPTIONS: { id: GroupByField; label: string }[] = [
+  { id: 'none', label: 'None' },
+  { id: 'status', label: 'Status' },
+  { id: 'priority', label: 'Priority' },
+  { id: 'department', label: 'Department' },
+  { id: 'quarter', label: 'Quarter' },
+  { id: 'assignee', label: 'Assignee' },
+];
+
 export function ListingToolbar({
   activeView, onViewChange, searchQuery, onSearchChange,
   activeQuickFilter, onQuickFilterChange, density, onDensityChange,
   totalCount, searchInputRef, columnsButtonRef, onColumnsClick,
-  exportButtonRef, onExportClick,
+  exportButtonRef, onExportClick, groupBy, onGroupByChange,
 }: Props) {
   const navigate = useNavigate();
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const [groupDropdownOpen, setGroupDropdownOpen] = useState(false);
+  const groupBtnRef = useRef<HTMLButtonElement>(null);
+  const groupPanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { setLocalSearch(searchQuery); }, [searchQuery]);
 
@@ -83,11 +100,27 @@ export function ListingToolbar({
     onViewChange(view);
   }, [navigate, onViewChange]);
 
+  // Close group dropdown on outside click
+  useEffect(() => {
+    if (!groupDropdownOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (groupPanelRef.current && !groupPanelRef.current.contains(e.target as Node) &&
+          groupBtnRef.current && !groupBtnRef.current.contains(e.target as Node)) {
+        setGroupDropdownOpen(false);
+      }
+    };
+    const raf = requestAnimationFrame(() => document.addEventListener('mousedown', handler));
+    return () => { cancelAnimationFrame(raf); document.removeEventListener('mousedown', handler); };
+  }, [groupDropdownOpen]);
+
+  const groupLabel = GROUP_OPTIONS.find(g => g.id === groupBy)?.label ?? 'None';
+  const groupBtnRect = groupBtnRef.current?.getBoundingClientRect();
+
   return (
     <div className="space-y-0 px-6 pt-4 pb-0">
       {/* Row 1: View Switcher + Actions */}
       <div className="flex items-center justify-between mb-2">
-        {/* Left: View Switcher + Density + Columns */}
+        {/* Left: View Switcher + Density + Columns + Group */}
         <div className="flex items-center gap-3">
           <div className="inline-flex items-center bg-zinc-100 rounded-lg p-1">
             {VIEW_TABS.map(v => (
@@ -128,9 +161,16 @@ export function ListingToolbar({
             Columns
           </button>
 
-          <button type="button" className="h-7 px-2.5 flex items-center gap-1.5 text-[12px] text-zinc-600 rounded-md hover:bg-zinc-100 transition-colors">
+          <button
+            ref={groupBtnRef}
+            type="button"
+            onClick={() => setGroupDropdownOpen(prev => !prev)}
+            className={`h-7 px-2.5 flex items-center gap-1.5 text-[12px] rounded-md transition-colors ${
+              groupBy !== 'none' ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' : 'text-zinc-600 hover:bg-zinc-100'
+            }`}
+          >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="4" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="2" y="10" width="12" height="4" rx="1" stroke="currentColor" strokeWidth="1.2"/></svg>
-            Group: None
+            Group: {groupLabel}
           </button>
         </div>
 
@@ -191,6 +231,44 @@ export function ListingToolbar({
           ))}
         </div>
       </div>
+
+      {/* Group By Dropdown Portal */}
+      {groupDropdownOpen && groupBtnRect && createPortal(
+        <div
+          ref={groupPanelRef}
+          className="fixed rounded-lg p-1"
+          style={{
+            top: groupBtnRect.bottom + 4,
+            left: groupBtnRect.left,
+            width: 180,
+            border: '1px solid #e4e4e7',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.14)',
+            background: '#ffffff',
+            zIndex: 500,
+          }}
+        >
+          {GROUP_OPTIONS.map(opt => (
+            <button
+              key={opt.id}
+              type="button"
+              onClick={() => { onGroupByChange(opt.id); setGroupDropdownOpen(false); }}
+              className="w-full flex items-center gap-2 px-3 py-1.5 text-[13px] rounded-sm transition-colors text-left"
+              style={{
+                color: groupBy === opt.id ? '#2563eb' : '#3f3f46',
+                background: groupBy === opt.id ? '#eff6ff' : 'transparent',
+              }}
+              onMouseEnter={(e) => { if (groupBy !== opt.id) (e.currentTarget).style.background = '#f4f4f5'; }}
+              onMouseLeave={(e) => { if (groupBy !== opt.id) (e.currentTarget).style.background = 'transparent'; }}
+            >
+              <span className="w-4 flex items-center justify-center">
+                {groupBy === opt.id && <Check size={13} className="text-blue-600" />}
+              </span>
+              {opt.label}
+            </button>
+          ))}
+        </div>,
+        document.body
+      )}
     </div>
   );
 }
