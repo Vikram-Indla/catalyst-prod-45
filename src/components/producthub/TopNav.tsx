@@ -54,7 +54,7 @@ export function TopNav() {
   const isActive = (path: string) => {
     if (path === '/producthub') return location.pathname.startsWith('/producthub');
     if (path === '/planhub') return location.pathname.startsWith('/planhub');
-    if (path === '/strategyhub') return location.pathname.startsWith('/strategyhub') || location.pathname.startsWith('/strategy/');
+    if (path === '/strategyhub') return location.pathname.startsWith('/strategyhub') || location.pathname.startsWith('/strategy');
     return location.pathname.startsWith(path);
   };
 

@@ -35,8 +35,6 @@ import SearchPage from "./pages/SearchPage";
 import PlaceholderPage from "./pages/jira-align/PlaceholderPage";
 // StrategyRoom removed - use StrategyRoomPage instead
 import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
-const StrategyRoomV2 = lazy(() => import("./pages/strategy/StrategyRoom"));
-const StrategyComingSoon = lazy(() => import("./pages/strategy/StrategyComingSoon"));
 const CapacityPlannerPage = lazy(() => import("./pages/enterprise/CapacityPlannerPage"));
 const BudgetGovernancePage = lazy(() => import("./pages/enterprise/BudgetGovernancePage"));
 const BudgetPlannerPage = lazy(() => import("./pages/enterprise/BudgetPlannerPage"));
@@ -521,18 +519,6 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/capacity" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/programs" element={<PlaceholderPage />} />
               <Route path="/strategy-room" element={<StrategyRoomPage />} />
-
-              {/* Strategy Hub V2 — New /strategy/* routes */}
-              <Route path="/strategy" element={<Navigate to="/strategy/room" replace />} />
-              <Route path="/strategy/room" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyRoomV2 /></Suspense>} />
-              <Route path="/strategy/themes" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon /></Suspense>} />
-              <Route path="/strategy/goals" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon /></Suspense>} />
-              <Route path="/strategy/initiatives" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon /></Suspense>} />
-              <Route path="/strategy/investment" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon /></Suspense>} />
-              <Route path="/strategy/snapshots" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon /></Suspense>} />
-              <Route path="/strategy/ai-insights" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon /></Suspense>} />
-              <Route path="/strategy/team-alignment" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon /></Suspense>} />
-              <Route path="/strategy/settings" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon /></Suspense>} />
               <Route path="/strategyhub/strategy-room" element={<StrategyRoomPage />} />
               <Route path="/strategyhub/strategy-room/capacity" element={<Navigate to="/planhub/capacity" replace />} />
               <Route path="/strategyhub/capacity" element={<Navigate to="/planhub/capacity" replace />} />
