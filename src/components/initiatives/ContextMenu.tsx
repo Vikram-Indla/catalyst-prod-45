@@ -74,11 +74,14 @@ export function ContextMenu({ position, initiative, onAction, onClose }: Context
   return createPortal(
     <div
       ref={menuRef}
-      className="fixed min-w-[200px] bg-white border border-zinc-200 rounded-lg p-1 z-[99999]"
+      className="fixed min-w-[200px] rounded-lg p-1"
       style={{
         top: adjustedPos?.y ?? position.y,
         left: adjustedPos?.x ?? position.x,
-        boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+        boxShadow: '0 10px 40px rgba(0,0,0,0.18)',
+        border: '1px solid #e4e4e7',
+        background: '#ffffff',
+        zIndex: 99999,
       }}
     >
       <MenuItem icon={<ExternalLink size={14} />} onClick={() => act('open')}>Open</MenuItem>
@@ -200,10 +203,10 @@ function Submenu({ children, parentRef }: { children: React.ReactNode; parentRef
   return (
     <div
       ref={subRef}
-      className={`absolute top-0 min-w-[180px] bg-white border border-zinc-200 rounded-lg p-1 z-[99999] ${
+      className={`absolute top-0 min-w-[180px] rounded-lg p-1 ${
         side === 'right' ? 'left-full ml-1' : 'right-full mr-1'
       }`}
-      style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}
+      style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.18)', border: '1px solid #e4e4e7', background: '#ffffff', zIndex: 99999 }}
     >
       {children}
     </div>
