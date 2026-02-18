@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Pencil, Paperclip, Copy, Link2, Target, Trash2, Save, Loader2 } from 'lucide-react';
+import { X, Pencil, Paperclip, Copy, Link2, Target, Trash2, Save, Loader2, ChevronLeft } from 'lucide-react';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import { StatusBadge } from './StatusBadge';
@@ -322,52 +322,55 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}>
 
-              {/* HEADER */}
-              <div className="flex-shrink-0 bg-white">
-                <div style={{ padding: '24px 24px 16px 24px' }}>
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-medium font-mono shrink-0">
-                        {initiative.initiative_key}
-                      </span>
-                      {isEditing ? (
-                        <input
-                          type="text"
-                          value={getFieldValue('title', initiative.title)}
-                          onChange={e => updateEditField('title', e.target.value)}
-                          className="text-lg font-semibold text-zinc-900 border border-zinc-300 rounded-lg px-3 py-1 flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                        />
-                      ) : (
-                        <h2 className="text-lg font-semibold text-zinc-900 truncate">{initiative.title}</h2>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0 ml-3">
-                      {isEditing ? (
-                        <>
-                          <button onClick={handleCancelEdit}
-                            className="px-3 h-8 text-xs font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-colors">
-                            Cancel
-                          </button>
-                          <button onClick={handleSave} disabled={isSaving || !hasChanges}
-                            className="px-3 h-8 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition-colors flex items-center gap-1.5 disabled:opacity-50">
-                            {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                            Save Changes
-                            {hasChanges && <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />}
-                          </button>
-                        </>
-                      ) : (
-                        <button onClick={() => setIsEditing(true)}
-                          className="px-3 h-8 text-xs font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-colors flex items-center gap-1.5">
-                          <Pencil className="w-3.5 h-3.5" />
-                          Edit
-                        </button>
-                      )}
-                      <button onClick={handleAttemptClose}
-                        className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-md">
-                        <X size={16} />
+              {/* STICKY HEADER */}
+              <div className="flex-shrink-0 bg-white sticky top-0 z-10">
+                {/* Top bar: Back + actions */}
+                <div className="flex items-center justify-between px-6 py-3 border-b border-zinc-100">
+                  <button onClick={handleAttemptClose}
+                    className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 transition-colors">
+                    <ChevronLeft className="w-4 h-4" />
+                    Back to list
+                  </button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setShowDeleteDialog(true)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Delete
+                    </button>
+                    {hasChanges && (
+                      <button onClick={handleSave} disabled={isSaving}
+                        className="px-3 h-8 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition-colors flex items-center gap-1.5 disabled:opacity-50">
+                        {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                        Save Changes
                       </button>
-                    </div>
+                    )}
+                    <button onClick={handleAttemptClose}
+                      className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-md">
+                      <X size={16} />
+                    </button>
                   </div>
+                </div>
+
+                {/* Initiative identity */}
+                <div className="px-6 pt-4 pb-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-medium font-mono shrink-0">
+                      {initiative.initiative_key}
+                    </span>
+                    {initiative.is_favorited && (
+                      <span className="text-amber-500 text-sm">★</span>
+                    )}
+                  </div>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={getFieldValue('title', initiative.title)}
+                      onChange={e => updateEditField('title', e.target.value)}
+                      className="w-full text-lg font-semibold text-zinc-900 border border-zinc-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    />
+                  ) : (
+                    <h2 className="text-lg font-semibold text-zinc-900 leading-tight">{initiative.title}</h2>
+                  )}
                   <div className="mt-3">
                     <StatusBadge status={getFieldValue('status', initiative.status) as InitiativeStatus} editable={isEditing}
                       onChange={(s) => { if (isEditing) updateEditField('status', s); else { onStatusChange(initiative.id, s); handleQuickEdit('status', s); } }} />
@@ -437,17 +440,41 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>🗑️ Delete Initiative?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete <strong>{initiative?.initiative_key}: {initiative?.title}</strong>?
-              This can be undone from the archive.
+            <AlertDialogTitle className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <Trash2 className="w-5 h-5 text-red-600" />
+              </div>
+              Delete Initiative?
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div>
+                <p className="text-sm text-zinc-500 mb-1">Are you sure you want to delete:</p>
+                <p className="text-sm font-medium text-zinc-900">{initiative?.initiative_key}: {initiative?.title}</p>
+                <p className="text-xs text-zinc-400 mt-2">This can be undone from the archive.</p>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="text-zinc-700 bg-white border border-zinc-300 hover:bg-zinc-50 px-4 h-9 rounded-md">Cancel</AlertDialogCancel>
-            <AlertDialogAction className="text-white bg-red-600 hover:bg-red-700 px-4 h-9 rounded-md"
-              onClick={() => { setShowDeleteDialog(false); catalystToast.success('Initiative deleted'); onClose(); }}>
-              🗑️ Delete
+            <AlertDialogAction className="text-white bg-red-600 hover:bg-red-700 px-4 h-9 rounded-md flex items-center gap-1.5"
+              onClick={async () => {
+                if (!initiative?.id) return;
+                try {
+                  const { error } = await (supabase as any)
+                    .from('ph_initiatives')
+                    .update({ is_deleted: true })
+                    .eq('id', initiative.id);
+                  if (error) throw new Error(error.message);
+                  queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
+                  queryClient.invalidateQueries({ queryKey: ['ph-initiatives-mock'] });
+                  catalystToast.success(`${initiative.initiative_key} deleted`);
+                  onClose();
+                } catch (err: any) {
+                  catalystToast.error('Failed to delete: ' + err.message);
+                }
+              }}>
+              <Trash2 className="w-3.5 h-3.5" />
+              Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

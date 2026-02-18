@@ -12,6 +12,7 @@ import { BulkActionBar } from '@/components/producthub/listing/BulkActionBar';
 import { Pagination } from '@/components/producthub/listing/Pagination';
 import { DetailPanel } from '@/components/initiatives/DetailPanel';
 import { ContextMenu } from '@/components/initiatives/ContextMenu';
+import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateInitiativeDrawer';
 
 import { ColumnManager, DEFAULT_COLUMNS, type ColumnConfig } from '@/components/producthub/listing/ColumnManager';
 import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';
@@ -97,6 +98,7 @@ export default function InitiativeListingPage() {
   const [detailInitiative, setDetailInitiative] = useState<Initiative | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ pos: { x: number; y: number }; initiative: Initiative } | null>(null);
+  const [showCreateDrawer, setShowCreateDrawer] = useState(false);
 
   // Column management
   const [columnConfigs, setColumnConfigs] = useState<ColumnConfig[]>(loadColumns);
@@ -358,6 +360,7 @@ export default function InitiativeListingPage() {
         onExportClick={() => setExportOpen(prev => !prev)}
         groupBy={groupBy}
         onGroupByChange={setGroupBy}
+        onNewInitiative={() => setShowCreateDrawer(true)}
       />
 
       {/* Bulk Action Bar */}
@@ -425,6 +428,8 @@ export default function InitiativeListingPage() {
         isOpen={exportOpen}
         onClose={() => setExportOpen(false)}
       />
+
+      <CreateInitiativeDrawer open={showCreateDrawer} onClose={() => setShowCreateDrawer(false)} />
     </div>
   );
 }
