@@ -11,6 +11,7 @@ import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { StrategyRoomActions } from '@/components/strategy/StrategyRoomActions';
 import { VisionBanner } from '@/components/strategy/VisionBanner';
 import { StrategyDashboardGrid } from '@/components/strategy/StrategyDashboardGrid';
+import { StrategyRoleProvider } from '@/contexts/strategy/RoleContext';
 
 export default function StrategyRoom() {
   const { density, setDensity } = useStrategyPreferences();
@@ -23,7 +24,7 @@ export default function StrategyRoom() {
   };
 
   return (
-    <>
+    <StrategyRoleProvider>
       {/* Skip to content link */}
       <a
         href="#dashboard-main"
@@ -38,7 +39,6 @@ export default function StrategyRoom() {
         data-density={density}
         style={{ background: 'var(--catalyst-bg-app)', minHeight: '100%' }}
       >
-        {/* CommandCenterHeader — locked shared component, configured via props only */}
         <CommandCenterHeader
           title="Strategy Room"
           subtitle="Executive dashboard — Ministry of Industry, Saudi Arabia"
@@ -47,7 +47,6 @@ export default function StrategyRoom() {
           actions={<StrategyRoomActions density={density} setDensity={setDensity} />}
         />
 
-        {/* Content area */}
         <main
           role="main"
           id="dashboard-main"
@@ -58,6 +57,6 @@ export default function StrategyRoom() {
           <StrategyDashboardGrid />
         </main>
       </div>
-    </>
+    </StrategyRoleProvider>
   );
 }
