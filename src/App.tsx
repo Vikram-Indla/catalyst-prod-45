@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from "react";
 // ProdHubAppShell removed — /producthub/* now uses CatalystShell
 const InitiativeListingPage = lazy(() => import("./pages/producthub/InitiativeListingPage"));
 const RoadmapPage = lazy(() => import("./pages/producthub/RoadmapPage"));
+const ProductKanbanPage = lazy(() => import("./pages/producthub/KanbanPage"));
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { Toaster as HotToaster } from 'react-hot-toast';
@@ -491,7 +492,7 @@ const App = () => (
               <Route path="/producthub" element={<Navigate to="/producthub/backlog" replace />} />
               <Route path="/producthub/backlog" element={<Suspense fallback={<div className="p-8">Loading...</div>}><InitiativeListingPage /></Suspense>} />
               <Route path="/producthub/table" element={<CatalystDemandTable />} />
-              <Route path="/producthub/kanban" element={<CatalystDemandKanban />} />
+              <Route path="/producthub/kanban" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ProductKanbanPage /></Suspense>} />
               <Route path="/producthub/dashboard" element={<DemandSummaryPage />} />
               <Route path="/producthub/roadmaps" element={<Navigate to="/producthub/roadmap" replace />} />
               <Route path="/producthub/roadmaps-v1" element={<IndustryRoadmapPage />} />
