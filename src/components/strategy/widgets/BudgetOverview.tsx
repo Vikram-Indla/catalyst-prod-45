@@ -122,12 +122,36 @@ export function BudgetOverview() {
       </div>
 
       {/* Allocation summary */}
-      <div className="flex flex-wrap gap-3 mt-3" style={{ fontSize: 10, color: 'var(--catalyst-text-tertiary)' }}>
+      <div className="flex flex-wrap gap-3 mt-3" style={{ fontSize: 10, color: 'var(--catalyst-text-secondary)' }}>
         {themeAllocations.map(a => (
           <span key={a.name} className="flex items-center gap-1">
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: a.color }} /> {a.pct}%
           </span>
         ))}
+      </div>
+
+      {/* Data quality alerts */}
+      <div className="flex flex-wrap gap-3 mt-3" style={{ fontSize: 11 }}>
+        <span className="flex items-center gap-1.5">
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0D9488' }} />
+          <span style={{ fontWeight: 600, color: '#0D9488' }}>94%</span>
+          <span style={{ color: 'var(--catalyst-text-secondary)' }}>Data Quality</span>
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444' }} />
+          <span style={{ fontWeight: 600, color: '#EF4444' }}>3</span>
+          <span style={{ color: 'var(--catalyst-text-secondary)' }}>Missing CTC</span>
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#D97706' }} />
+          <span style={{ fontWeight: 600, color: '#D97706' }}>2</span>
+          <span style={{ color: 'var(--catalyst-text-secondary)' }}>Unpaid Invoices</span>
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#D97706' }} />
+          <span style={{ fontWeight: 600, color: '#D97706' }}>4</span>
+          <span style={{ color: 'var(--catalyst-text-secondary)' }}>Renewals ≤90d</span>
+        </span>
       </div>
     </div>
   );

@@ -299,7 +299,7 @@ export function StrategyPyramid() {
               <div style={{ width: 3, height: 28, borderRadius: 2, background: layer.color, flexShrink: 0 }} />
               <div className="flex-1 min-w-0">
                 <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--catalyst-text-primary)' }}>{layer.label}</div>
-                <div style={{ fontSize: 10, color: 'var(--catalyst-text-tertiary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div style={{ fontSize: 10, color: 'var(--catalyst-text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {layer.description}
                 </div>
               </div>
