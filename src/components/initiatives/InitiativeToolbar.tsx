@@ -132,22 +132,20 @@ export function InitiativeToolbar({
 
       {/* Row 3: View Switcher (segmented pill control — Fix 6) + Search/Filters */}
       <div className="flex items-center justify-between mb-2">
-        {/* View switcher — segmented control */}
-        <div className="inline-flex items-center rounded-lg p-[3px] gap-[2px]" style={{ background: '#f4f4f5' }}>
-          {VIEW_TABS.map((tab) => (
+        {/* View Switcher */}
+        <div className="inline-flex items-center bg-zinc-100 rounded-lg p-1">
+          {VIEW_TABS.map(view => (
             <button
-              key={tab.id}
-              type="button"
-              onClick={() => onViewChange(tab.id)}
-              className={`h-[30px] px-3 inline-flex items-center gap-1.5 text-[13px] rounded-md transition-all whitespace-nowrap ${
-                activeView === tab.id
-                  ? 'bg-white text-zinc-900 font-medium'
-                  : 'text-zinc-500 hover:text-zinc-700 hover:bg-white/50'
+              key={view.id}
+              onClick={() => onViewChange(view.id)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-[13px] rounded-md transition-all ${
+                activeView === view.id
+                  ? 'bg-white text-zinc-900 font-medium shadow-sm'
+                  : 'text-zinc-500 hover:text-zinc-700'
               }`}
-              style={activeView === tab.id ? { boxShadow: '0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.08)' } : undefined}
             >
-              {tab.icon}
-              {tab.label}
+              {view.icon}
+              {view.label}
             </button>
           ))}
         </div>
