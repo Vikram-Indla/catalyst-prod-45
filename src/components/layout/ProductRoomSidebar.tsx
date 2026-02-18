@@ -303,8 +303,8 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
 
           <MenuItemButton
             item={{
-              id: 'Requirement Assist',
-              title: 'Requirement Assist',
+              id: 'Req Assist',
+              title: 'Req Assist™',
               path: '/producthub/requirement-assist',
               exact: false,
             }}
