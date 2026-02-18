@@ -101,3 +101,15 @@ verify_jwt = false
 
 [functions.generate-test-plan]
 verify_jwt = false
+
+[functions.ra-generate-brd]
+verify_jwt = false
+
+[functions.ra-translate-brd]
+verify_jwt = false
+
+[functions.ra-generate-epics]
+verify_jwt = false
+
+[functions.ra-generate-uat]
+verify_jwt = false
