@@ -8,6 +8,13 @@ const CAPABILITY_ORDER: RaDocumentType[] = ['brd', 'translation', 'epic', 'uat']
 export default function RequirementAssistWorkspace() {
   return (
     <div className="p-6 max-w-[1400px] mx-auto">
+      {/* Breadcrumb */}
+      <div className="mb-4">
+        <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
+          ProductHub &gt; Requirement Assist
+        </span>
+      </div>
+
       {/* Page header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-foreground">Requirement Assist</h1>

@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { CAPABILITY_CONFIGS, type RaDocumentType, type RaMethodology } from '@/types/requirement-assist';
 import { useCreateRaDocument } from '@/hooks/useRaDocuments';
 import { useRaSourceBrds } from '@/hooks/useRaDocuments';
+import { useRaGenerate } from '@/hooks/useRaGenerate';
 import { RaBadge } from '@/components/requirement-assist/RaBadge';
 import { Zap, Upload } from 'lucide-react';
 import { toast } from 'sonner';
@@ -26,6 +27,7 @@ export default function RequirementAssistCompose() {
   const [sourceBrdId, setSourceBrdId] = useState<string>('');
 
   const createDoc = useCreateRaDocument();
+  const generate = useRaGenerate();
   const { data: sourceBrds } = useRaSourceBrds();
 
   const canGenerate = title.trim().length > 0 && (
@@ -43,6 +45,19 @@ export default function RequirementAssistCompose() {
         source_doc_id: sourceBrdId || null,
         content: inputText ? { rawInput: inputText } : undefined,
       });
+
+      // Trigger AI generation pipeline (fire-and-forget — overlay will track progress)
+      generate.mutate({
+        documentId: doc.id,
+        type: capabilityKey,
+        input: {
+          text: inputText || undefined,
+          methodology: config.showMethodology ? methodology : undefined,
+          language: capabilityKey === 'translation' ? 'ar' : 'en',
+          source_doc_id: sourceBrdId || undefined,
+        },
+      });
+
       navigate(`/producthub/requirement-assist/${doc.id}`);
     } catch (err: any) {
       toast.error(err.message || 'Failed to create document');
@@ -53,6 +68,13 @@ export default function RequirementAssistCompose() {
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto">
+      {/* Breadcrumb */}
+      <div className="mb-4">
+        <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
+          ProductHub &gt; Requirement Assist &gt; Compose
+        </span>
+      </div>
+
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-foreground">{config.title}</h1>
