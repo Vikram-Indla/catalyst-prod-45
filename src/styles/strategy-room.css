@@ -1082,3 +1082,89 @@ html.dark .strategy-room-content {
 @keyframes sr-spin {
   to { transform: rotate(360deg); }
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   STRATEGY ROOM V2 — New Dashboard Grid Tokens (scoped to .strategy-room)
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.strategy-room {
+  /* ── Surfaces ── */
+  --surface-primary: #FFFFFF;
+  --surface-secondary: #F8FAFC;
+  --surface-tertiary: #F1F5F9;
+
+  /* ── Text ── */
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-tertiary: #94A3B8;
+
+  /* ── Borders ── */
+  --border-default: #E2E8F0;
+  --border-focus: #2563EB;
+
+  /* ── Brand Colors ── */
+  --color-primary: #2563EB;
+  --color-primary-hover: #1D4ED8;
+  --color-teal: #0D9488;
+  --color-warning: #D97706;
+  --color-danger: #EF4444;
+  --color-ai-purple: #7C3AED;
+  --color-success: #16A34A;
+
+  /* ── Theme Colors (Strategic Themes) ── */
+  --theme-digital: #2563EB;
+  --theme-workforce: #0D9488;
+  --theme-supply-chain: #D97706;
+  --theme-esg: #16A34A;
+
+  /* ── Radius ── */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.15);
+
+  /* ── Spacing ── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+
+  /* ── Density ── */
+  --density-padding: 20px;
+  --density-gap: 24px;
+  --density-font-scale: 1;
+}
+
+/* Dark Mode */
+.strategy-room[data-theme="dark"] {
+  --surface-primary: #0F172A;
+  --surface-secondary: #1E293B;
+  --surface-tertiary: #334155;
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-tertiary: #64748B;
+  --border-default: #334155;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Density: Compact */
+.strategy-room[data-density="compact"] {
+  --density-padding: 14px;
+  --density-gap: 16px;
+  --density-font-scale: 0.9;
+}
+
+/* Density: Comfortable */
+.strategy-room[data-density="comfortable"] {
+  --density-padding: 28px;
+  --density-gap: 32px;
+  --density-font-scale: 1.05;
+}
