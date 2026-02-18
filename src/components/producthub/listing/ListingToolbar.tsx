@@ -25,6 +25,7 @@ interface Props {
   onExportClick?: () => void;
   groupBy: GroupByField;
   onGroupByChange: (g: GroupByField) => void;
+  onNewInitiative?: () => void;
 }
 
 const DENSITY_CYCLE: Density[] = ['standard', 'compact', 'comfortable'];
@@ -59,7 +60,7 @@ export function ListingToolbar({
   searchQuery, onSearchChange,
   activeQuickFilter, onQuickFilterChange, density, onDensityChange,
   totalCount, searchInputRef, columnsButtonRef, onColumnsClick,
-  exportButtonRef, onExportClick, groupBy, onGroupByChange,
+  exportButtonRef, onExportClick, groupBy, onGroupByChange, onNewInitiative,
 }: Props) {
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
@@ -165,6 +166,7 @@ export function ListingToolbar({
           {/* ── Primary CTA: New Initiative (Solid Blue) ── */}
           <button
             type="button"
+            onClick={onNewInitiative}
             className="h-8 px-3 flex items-center gap-1.5 text-[13px] font-medium rounded-md bg-blue-600 text-white shadow-sm hover:bg-blue-700 transition-colors"
           >
             <Plus size={14} />

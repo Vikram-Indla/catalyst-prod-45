@@ -2,10 +2,13 @@
 // PRODUCT ROADMAP PAGE — Initiative Timeline (Gantt)
 // =====================================================
 
-import React from 'react';
+import React, { useState } from 'react';
 import { TimelineShell } from '@/components/producthub/timeline/TimelineShell';
+import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateInitiativeDrawer';
 
 export const RoadmapPage: React.FC = () => {
+  const [showCreateDrawer, setShowCreateDrawer] = useState(false);
+
   return (
     <div className="flex flex-col h-full">
       <div className="px-6 py-4 border-b bg-card">
@@ -13,6 +16,7 @@ export const RoadmapPage: React.FC = () => {
         <p className="text-sm text-zinc-500 mt-1">Initiative timeline &amp; delivery planning</p>
       </div>
       <TimelineShell />
+      <CreateInitiativeDrawer open={showCreateDrawer} onClose={() => setShowCreateDrawer(false)} />
     </div>
   );
 };
