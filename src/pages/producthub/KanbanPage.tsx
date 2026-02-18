@@ -8,6 +8,7 @@ import { useInitiativesMock } from '@/hooks/useInitiativesMock';
 import type { Initiative } from '@/types/initiative';
 import type { FilterChip } from '@/types/producthub/initiative';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
+import type { SwimlaneField } from '@/components/producthub/kanban/KanbanColumn';
 
 /** Adapt Initiative → TimelineInitiative for the detail panel */
 function toTimelineInitiative(i: Initiative): TimelineInitiative {
@@ -50,13 +51,13 @@ export default function KanbanPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterChip>('all');
   const [sortBy, setSortBy] = useState('score');
+  const [swimlane, setSwimlane] = useState<SwimlaneField>('none');
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   // Filter logic
   const filtered = useMemo(() => {
     let result = initiatives;
 
-    // Search
     if (searchTerm) {
       const q = searchTerm.toLowerCase();
       result = result.filter(
@@ -67,7 +68,6 @@ export default function KanbanPage() {
       );
     }
 
-    // Chip filters
     switch (activeFilter) {
       case 'high':
         result = result.filter(i => (i.computed_score ?? 0) >= 4.0);
@@ -137,6 +137,8 @@ export default function KanbanPage() {
       <KanbanToolbar
         sortBy={sortBy}
         onSortChange={setSortBy}
+        swimlane={swimlane}
+        onSwimlaneChange={setSwimlane}
         onNewInitiative={() => {}}
       />
 
@@ -152,7 +154,9 @@ export default function KanbanPage() {
       <KanbanBoard
         initiatives={filtered}
         sortBy={sortBy}
+        swimlane={swimlane}
         onCardClick={handleCardClick}
+        totalCount={initiatives.length}
       />
 
       {/* Detail Panel */}
