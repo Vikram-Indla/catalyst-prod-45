@@ -3,6 +3,7 @@ import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { CardsToolbar } from '@/components/producthub/cards/CardsToolbar';
 import { CardsGrid } from '@/components/producthub/cards/CardsGrid';
 import { KanbanFilterBar } from '@/components/producthub/kanban/KanbanFilterBar';
+import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateInitiativeDrawer';
 import { useInitiativesMock } from '@/hooks/useInitiativesMock';
 import type { Initiative } from '@/types/initiative';
 import type { FilterChip } from '@/types/producthub/initiative';
@@ -75,6 +76,7 @@ const CardsPage: React.FC = () => {
   const [sortBy, setSortBy] = useState<SortOption>('score');
   const [gridSize, setGridSize] = useState<GridSize>('medium');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showCreateDrawer, setShowCreateDrawer] = useState(false);
 
   const filtered = useMemo(
     () => applySort(applyFilter(initiatives, activeFilter, searchTerm), sortBy),
@@ -102,6 +104,7 @@ const CardsPage: React.FC = () => {
         onSortByChange={setSortBy}
         gridSize={gridSize}
         onGridSizeChange={setGridSize}
+        onNewInitiative={() => setShowCreateDrawer(true)}
       />
 
       <KanbanFilterBar
@@ -130,6 +133,8 @@ const CardsPage: React.FC = () => {
           </>
         )}
       </div>
+
+      <CreateInitiativeDrawer open={showCreateDrawer} onClose={() => setShowCreateDrawer(false)} />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { KanbanToolbar } from '@/components/producthub/kanban/KanbanToolbar';
+import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateInitiativeDrawer';
 import { KanbanFilterBar } from '@/components/producthub/kanban/KanbanFilterBar';
 import { KanbanBoard } from '@/components/producthub/kanban/KanbanBoard';
 import { InitiativeDetailPanel } from '@/components/producthub/timeline/InitiativeDetailPanel';
@@ -52,6 +53,7 @@ export default function KanbanPage() {
   const [sortBy, setSortBy] = useState('score');
   const [swimlane, setSwimlane] = useState<SwimlaneField>('none');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showCreateDrawer, setShowCreateDrawer] = useState(false);
 
   // Filter logic
   const filtered = useMemo(() => {
@@ -131,7 +133,7 @@ export default function KanbanPage() {
         onSortChange={setSortBy}
         swimlane={swimlane}
         onSwimlaneChange={setSwimlane}
-        onNewInitiative={() => {}}
+        onNewInitiative={() => setShowCreateDrawer(true)}
       />
 
       {/* Filter Bar */}
@@ -161,6 +163,8 @@ export default function KanbanPage() {
       )}
 
       <KanbanDiagnostics />
+
+      <CreateInitiativeDrawer open={showCreateDrawer} onClose={() => setShowCreateDrawer(false)} />
     </div>
   );
 }
