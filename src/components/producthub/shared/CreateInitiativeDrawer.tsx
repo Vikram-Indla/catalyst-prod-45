@@ -11,6 +11,7 @@ import { catalystToast } from '@/lib/catalystToast';
 import type { InitiativeStatus } from '@/types/initiative';
 import { STATUS_DISPLAY } from '@/types/initiative';
 import { EditableField } from './EditableField';
+import { useDepartmentOptions, useProfileOptions } from '@/hooks/useInitiativeLookups';
 
 interface CreateInitiativeDrawerProps {
   open: boolean;
@@ -70,6 +71,7 @@ function useCreateInitiative() {
           department_id: newInit.department_id || null,
           assignee_id: newInit.assignee_id || null,
           business_owner_id: newInit.business_owner_id || null,
+          reporter_id: newInit.reporter_id || null,
           target_quarter: newInit.target_quarter || null,
           kickoff_date: newInit.kickoff_date || null,
           target_complete: newInit.target_complete || null,
@@ -101,6 +103,9 @@ export function CreateInitiativeDrawer({ open, onClose }: CreateInitiativeDrawer
   const { data: nextKey } = useNextInitiativeKey();
   const createMutation = useCreateInitiative();
 
+  const { data: departmentOptions } = useDepartmentOptions();
+  const { data: profileOptions } = useProfileOptions();
+
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -108,6 +113,7 @@ export function CreateInitiativeDrawer({ open, onClose }: CreateInitiativeDrawer
     department_id: '',
     assignee_id: '',
     business_owner_id: '',
+    reporter_id: '',
     target_quarter: '',
     kickoff_date: '',
     target_complete: '',
@@ -125,6 +131,7 @@ export function CreateInitiativeDrawer({ open, onClose }: CreateInitiativeDrawer
         department_id: '',
         assignee_id: '',
         business_owner_id: '',
+        reporter_id: '',
         target_quarter: '',
         kickoff_date: '',
         target_complete: '',
@@ -266,25 +273,33 @@ export function CreateInitiativeDrawer({ open, onClose }: CreateInitiativeDrawer
                   label="Department"
                   value={form.department_id}
                   isEditing={true}
-                  type="text"
+                  type="select"
+                  options={departmentOptions || []}
                   onChange={v => updateField('department_id', v)}
-                  placeholder="Department name"
                 />
                 <EditableField
                   label="Assignee"
                   value={form.assignee_id}
                   isEditing={true}
-                  type="text"
+                  type="select"
+                  options={profileOptions || []}
                   onChange={v => updateField('assignee_id', v)}
-                  placeholder="Search people…"
                 />
                 <EditableField
                   label="Business Owner"
                   value={form.business_owner_id}
                   isEditing={true}
-                  type="text"
+                  type="select"
+                  options={profileOptions || []}
                   onChange={v => updateField('business_owner_id', v)}
-                  placeholder="Search people…"
+                />
+                <EditableField
+                  label="Reporter"
+                  value={form.reporter_id}
+                  isEditing={true}
+                  type="select"
+                  options={profileOptions || []}
+                  onChange={v => updateField('reporter_id', v)}
                 />
                 <EditableField
                   label="Quarter"
