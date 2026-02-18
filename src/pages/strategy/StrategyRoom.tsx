@@ -1,24 +1,26 @@
 /**
  * StrategyRoom — Executive dashboard for Strategy Hub
  * Renders inside the existing CatalystShell (AppShell).
- * Uses scoped strategy-tokens.css for Catalyst V11 design tokens.
+ * Uses CommandCenterHeader (locked shared component) + scoped strategy-tokens.css.
  */
 
+import { useState } from 'react';
 import '@/styles/strategy-tokens.css';
 import { useStrategyPreferences } from '@/hooks/useStrategyPreferences';
-import { Breadcrumbs } from '@/components/strategy/Breadcrumbs';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
+import { StrategyRoomActions } from '@/components/strategy/StrategyRoomActions';
 import { VisionBanner } from '@/components/strategy/VisionBanner';
-import { StrategyRoomHeader } from '@/components/strategy/StrategyRoomHeader';
 import { StrategyDashboardGrid } from '@/components/strategy/StrategyDashboardGrid';
-
-const breadcrumbItems = [
-  { label: 'Catalyst', path: '/' },
-  { label: 'StrategyHub', path: '/strategyhub' },
-  { label: 'Strategy Room' },
-];
 
 export default function StrategyRoom() {
   const { density, setDensity } = useStrategyPreferences();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    // Will trigger Supabase re-fetch in Stage D
+    setTimeout(() => setIsRefreshing(false), 1500);
+  };
 
   return (
     <>
@@ -26,27 +28,33 @@ export default function StrategyRoom() {
       <a
         href="#dashboard-main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:rounded-md focus:text-sm focus:font-medium"
-        style={{
-          background: 'var(--catalyst-primary, #2563EB)',
-          color: '#FFFFFF',
-        }}
+        style={{ background: '#2563EB', color: '#FFFFFF' }}
       >
         Skip to dashboard content
       </a>
 
       <div
-        className="strategy-room h-full"
+        className="strategy-room h-full flex flex-col"
         data-density={density}
-        style={{
-          background: 'var(--catalyst-bg-app)',
-          padding: 'var(--catalyst-density-padding-card)',
-          minHeight: '100%',
-        }}
+        style={{ background: 'var(--catalyst-bg-app)', minHeight: '100%' }}
       >
-        <main role="main" id="dashboard-main">
-          <Breadcrumbs items={breadcrumbItems} />
+        {/* CommandCenterHeader — locked shared component, configured via props only */}
+        <CommandCenterHeader
+          title="Strategy Room"
+          subtitle="Executive dashboard — Ministry of Industry, Saudi Arabia"
+          onRefresh={handleRefresh}
+          isRefreshing={isRefreshing}
+          actions={<StrategyRoomActions density={density} setDensity={setDensity} />}
+        />
+
+        {/* Content area */}
+        <main
+          role="main"
+          id="dashboard-main"
+          style={{ padding: 'var(--catalyst-density-padding-card, 20px)' }}
+          className="flex-1 overflow-auto"
+        >
           <VisionBanner />
-          <StrategyRoomHeader density={density} onDensityChange={setDensity} />
           <StrategyDashboardGrid />
         </main>
       </div>
