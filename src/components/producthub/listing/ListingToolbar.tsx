@@ -4,18 +4,13 @@
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Search, X, Download, Plus, Check } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import type { Density } from '@/types/initiative';
 
 export type GroupByField = 'none' | 'status' | 'priority' | 'department' | 'quarter' | 'assignee';
 
-type ViewMode = 'table' | 'board' | 'timeline' | 'cards';
-
 interface Props {
-  activeView: ViewMode;
-  onViewChange: (view: ViewMode) => void;
   searchQuery: string;
   onSearchChange: (q: string) => void;
   activeQuickFilter: string;
@@ -40,12 +35,6 @@ const DENSITY_ICONS: Record<Density, React.ReactNode> = {
   comfortable: <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 5h10M3 11h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>,
 };
 
-const VIEW_TABS: { id: ViewMode; label: string }[] = [
-  { id: 'table', label: 'Table' },
-  { id: 'board', label: 'Board' },
-  { id: 'timeline', label: 'Timeline' },
-  { id: 'cards', label: 'Cards' },
-];
 
 const QUICK_FILTERS = [
   { id: 'all', label: 'All' },
@@ -67,12 +56,11 @@ const GROUP_OPTIONS: { id: GroupByField; label: string }[] = [
 ];
 
 export function ListingToolbar({
-  activeView, onViewChange, searchQuery, onSearchChange,
+  searchQuery, onSearchChange,
   activeQuickFilter, onQuickFilterChange, density, onDensityChange,
   totalCount, searchInputRef, columnsButtonRef, onColumnsClick,
   exportButtonRef, onExportClick, groupBy, onGroupByChange,
 }: Props) {
-  const navigate = useNavigate();
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const [groupDropdownOpen, setGroupDropdownOpen] = useState(false);
@@ -91,14 +79,6 @@ export function ListingToolbar({
     const idx = DENSITY_CYCLE.indexOf(density);
     onDensityChange(DENSITY_CYCLE[(idx + 1) % DENSITY_CYCLE.length]);
   }, [density, onDensityChange]);
-
-  const handleViewChange = useCallback((view: ViewMode) => {
-    if (view === 'timeline') {
-      navigate('/producthub/roadmap');
-      return;
-    }
-    onViewChange(view);
-  }, [navigate, onViewChange]);
 
   // Close group dropdown on outside click
   useEffect(() => {
@@ -122,30 +102,10 @@ export function ListingToolbar({
 
   return (
     <div className="space-y-0 px-6 pt-4 pb-0">
-      {/* Row 1: View Switcher + Actions */}
+      {/* Row 1: Actions */}
       <div className="flex items-center justify-between mb-2">
-        {/* Left: View Switcher + Density + Columns + Group */}
+        {/* Left: Density + Columns + Group */}
         <div className="flex items-center gap-3">
-          {/* ── View Switcher (pill container) ── */}
-          <div className="inline-flex items-center bg-zinc-100 rounded-lg p-1">
-            {VIEW_TABS.map(v => (
-              <button
-                key={v.id}
-                onClick={() => handleViewChange(v.id)}
-                className={`px-3 py-1.5 text-[13px] rounded-md transition-all ${
-                  activeView === v.id
-                    ? 'bg-white text-zinc-900 font-semibold shadow-sm'
-                    : 'text-zinc-600 font-medium hover:text-zinc-800 hover:bg-zinc-50'
-                }`}
-              >
-                {v.label}
-              </button>
-            ))}
-          </div>
-
-          {/* ── Separator ── */}
-          <div className="w-px h-5 bg-zinc-300" />
-
           {/* ── Density ── */}
           <button
             type="button"

@@ -185,12 +185,12 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
             item={{
               id: 'Product Kanban',
               title: 'Product Kanban',
-              path: '/producthub/backlog?view=board',
+              path: '/producthub/kanban',
               exact: true,
             }}
-            isActive={isBoardView}
+            isActive={location.pathname === '/producthub/kanban'}
             expanded={expanded}
-            onClick={() => handleNavigation('/producthub/backlog?view=board')}
+            onClick={() => handleNavigation('/producthub/kanban')}
             iconResolver={() => Columns3}
             isFavorite={isFavorite}
             toggleFavorite={toggleFavorite}

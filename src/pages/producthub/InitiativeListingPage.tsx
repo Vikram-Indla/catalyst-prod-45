@@ -12,17 +12,17 @@ import { BulkActionBar } from '@/components/producthub/listing/BulkActionBar';
 import { Pagination } from '@/components/producthub/listing/Pagination';
 import { DetailPanel } from '@/components/initiatives/DetailPanel';
 import { ContextMenu } from '@/components/initiatives/ContextMenu';
-import { KanbanBoard } from '@/components/initiatives/KanbanBoard';
+
 import { ColumnManager, DEFAULT_COLUMNS, type ColumnConfig } from '@/components/producthub/listing/ColumnManager';
 import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';
 import { ExportDropdown } from '@/components/producthub/listing/ExportDropdown';
 import { catalystToast } from '@/lib/catalystToast';
-import { LayoutGrid, Columns3 } from 'lucide-react';
+
 
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { getPriorityLevel } from '@/types/initiative';
 
-type ViewMode = 'table' | 'board' | 'timeline' | 'cards';
+
 
 const TERMINAL_STATUSES: InitiativeStatus[] = ['delivered', 'closed', 'cancelled'];
 
@@ -84,7 +84,6 @@ function getGroupSortKey(item: Initiative, groupBy: GroupByField): string {
 export default function InitiativeListingPage() {
   const { data, isLoading } = useInitiativesMock();
   const [density, setDensity] = useState<Density>(loadDensity);
-  const [activeView, setActiveView] = useState<ViewMode>('table');
   const [searchQuery, setSearchQuery] = useState('');
   const [quickFilter, setQuickFilter] = useState('all');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -173,7 +172,7 @@ export default function InitiativeListingPage() {
       }
 
       // Cmd+A → select all
-      if ((e.metaKey || e.ctrlKey) && e.key === 'a' && activeView === 'table') {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
         const active = document.activeElement;
         if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement) return;
         e.preventDefault();
@@ -182,19 +181,19 @@ export default function InitiativeListingPage() {
       }
 
       // Arrow up/down
-      if (e.key === 'ArrowDown' && activeView === 'table') {
+      if (e.key === 'ArrowDown') {
         e.preventDefault();
         setFocusedRow(prev => Math.min(prev + 1, paginatedData.length - 1));
         return;
       }
-      if (e.key === 'ArrowUp' && activeView === 'table') {
+      if (e.key === 'ArrowUp') {
         e.preventDefault();
         setFocusedRow(prev => Math.max(prev - 1, 0));
         return;
       }
 
       // Enter → open detail
-      if (e.key === 'Enter' && focusedRow >= 0 && focusedRow < paginatedData.length && activeView === 'table') {
+      if (e.key === 'Enter' && focusedRow >= 0 && focusedRow < paginatedData.length) {
         const active = document.activeElement;
         if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement) return;
         setDetailInitiative(paginatedData[focusedRow]);
@@ -203,7 +202,7 @@ export default function InitiativeListingPage() {
       }
 
       // Space → toggle checkbox
-      if (e.key === ' ' && focusedRow >= 0 && focusedRow < paginatedData.length && activeView === 'table') {
+      if (e.key === ' ' && focusedRow >= 0 && focusedRow < paginatedData.length) {
         const active = document.activeElement;
         if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement) return;
         e.preventDefault();
@@ -224,7 +223,7 @@ export default function InitiativeListingPage() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [contextMenu, detailOpen, selectedIds, columnManagerOpen, exportOpen, activeView, focusedRow, paginatedData]);
+  }, [contextMenu, detailOpen, selectedIds, columnManagerOpen, exportOpen, focusedRow, paginatedData]);
 
   const handleRowClick = useCallback((initiative: Initiative) => {
     setDetailInitiative(initiative);
@@ -331,32 +330,20 @@ export default function InitiativeListingPage() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Breadcrumb + Title */}
+      {/* Title */}
       <div className="px-6 py-4 border-b bg-card" style={{ minHeight: 72 }}>
-        <nav className="flex items-center gap-1.5 text-xs mb-1" style={{ color: '#a1a1aa' }}>
-          <span className="hover:text-zinc-600 cursor-pointer transition-colors">ProductHub</span>
-          <span>›</span>
-          <span className="hover:text-zinc-600 cursor-pointer transition-colors">Initiatives</span>
-          <span>›</span>
-          <span style={{ color: '#52525b' }}>Backlog</span>
-        </nav>
-        <div className="flex items-center gap-2">
-          <h1 className="text-xl font-bold" style={{ color: 'var(--text-1, #0f172a)', margin: 0 }}>
-            Product Backlog
-          </h1>
-          <span className="text-xs font-medium rounded-full px-2.5 py-0.5 tabular-nums"
-            style={{ background: '#f4f4f5', color: '#71717a' }}>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-bold text-zinc-900">Product Backlog</h1>
+          <span className="bg-zinc-100 text-zinc-600 text-sm font-semibold px-2.5 py-0.5 rounded-full tabular-nums">
             {filtered.length}
           </span>
         </div>
-        <p className="text-sm mt-0.5" style={{ color: 'var(--text-2, #64748b)', margin: '2px 0 0' }}>
+        <p className="text-sm text-zinc-500 mt-1">
           Strategic initiative portfolio &amp; prioritization
         </p>
       </div>
 
       <ListingToolbar
-        activeView={activeView}
-        onViewChange={setActiveView}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         activeQuickFilter={quickFilter}
@@ -380,56 +367,34 @@ export default function InitiativeListingPage() {
         onCancel={() => setSelectedIds([])}
       />
 
-      {activeView === 'table' ? (
-        <div className="flex-1 flex flex-col px-6 pb-0 min-h-0">
-          <InitiativeTable
-            data={paginatedData}
-            loading={isLoading}
-            density={density}
-            columnConfigs={columnConfigs}
-            groupBy={groupBy}
-            onRowClick={handleRowClick}
-            onStatusChange={handleStatusChange}
-            onFavoriteToggle={handleFavoriteToggle}
-            onSelectionChange={setSelectedIds}
-            onSortChange={handleSortChange}
-            onContextMenu={handleContextMenu}
-            onReorder={handleReorder}
-            onInlineEdit={handleInlineEdit}
-            focusedRowIndex={focusedRow}
-            onFocusedRowChange={setFocusedRow}
-          />
-        </div>
-      ) : activeView === 'board' ? (
-        <div className="flex-1 px-6 pt-2 overflow-auto">
-          <KanbanBoard
-            data={filtered}
-            density={density}
-            onRowClick={handleRowClick}
-            onStatusChange={handleStatusChange}
-            onFavoriteToggle={handleFavoriteToggle}
-          />
-        </div>
-      ) : (
-        <div className="flex-1 flex flex-col items-center justify-center gap-1">
-          {activeView === 'cards' ? <LayoutGrid size={48} className="text-zinc-300" /> : <Columns3 size={48} className="text-zinc-300" />}
-          <h3 className="text-sm font-semibold mt-4" style={{ color: '#18181b' }}>
-            {activeView.charAt(0).toUpperCase() + activeView.slice(1)} View
-          </h3>
-          <p className="text-[13px] mt-1" style={{ color: '#71717a' }}>Coming Soon</p>
-        </div>
-      )}
+      <div className="flex-1 flex flex-col px-6 pb-0 min-h-0">
+        <InitiativeTable
+          data={paginatedData}
+          loading={isLoading}
+          density={density}
+          columnConfigs={columnConfigs}
+          groupBy={groupBy}
+          onRowClick={handleRowClick}
+          onStatusChange={handleStatusChange}
+          onFavoriteToggle={handleFavoriteToggle}
+          onSelectionChange={setSelectedIds}
+          onSortChange={handleSortChange}
+          onContextMenu={handleContextMenu}
+          onReorder={handleReorder}
+          onInlineEdit={handleInlineEdit}
+          focusedRowIndex={focusedRow}
+          onFocusedRowChange={setFocusedRow}
+        />
+      </div>
 
       {/* Pagination */}
-      {activeView === 'table' && (
-        <Pagination
-          total={filtered.length}
-          page={page}
-          pageSize={pageSize}
-          onPageChange={setPage}
-          onPageSizeChange={setPageSize}
-        />
-      )}
+      <Pagination
+        total={filtered.length}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
+      />
 
       <DetailPanel
         initiative={detailInitiative}
