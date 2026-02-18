@@ -1,48 +1,14 @@
 /**
  * OkrHeatmap — Widget 2: Theme × Quarter heatmap table
  * Row 1, span 6
+ * DATA SOURCE: es_dashboard_okr_heatmap view
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Drawer } from '../shared/Drawer';
 import { KrListItem } from '../shared/KrListItem';
+import { useOkrHeatmap } from '@/hooks/strategy/useStrategyData';
 import type { OkrStatus } from '@/types/strategy';
-
-interface CellData {
-  pct: number | null;
-  status: OkrStatus;
-}
-
-interface ThemeRow {
-  id: string;
-  name: string;
-  color: string;
-  quarters: Record<string, CellData>;
-  overall: CellData;
-}
-
-const MOCK_DATA: ThemeRow[] = [
-  {
-    id: 'dt', name: 'Digital Trans.', color: '#2563EB',
-    quarters: { Q1: { pct: 82, status: 'on_track' }, Q2: { pct: 78, status: 'on_track' }, Q3: { pct: 65, status: 'at_risk' }, Q4: { pct: null, status: 'not_started' } },
-    overall: { pct: 75, status: 'on_track' },
-  },
-  {
-    id: 'wd', name: 'Workforce Dev.', color: '#0D9488',
-    quarters: { Q1: { pct: 91, status: 'on_track' }, Q2: { pct: 85, status: 'on_track' }, Q3: { pct: 72, status: 'on_track' }, Q4: { pct: null, status: 'not_started' } },
-    overall: { pct: 83, status: 'on_track' },
-  },
-  {
-    id: 'sc', name: 'Supply Chain', color: '#D97706',
-    quarters: { Q1: { pct: 76, status: 'on_track' }, Q2: { pct: 58, status: 'at_risk' }, Q3: { pct: 41, status: 'off_track' }, Q4: { pct: null, status: 'not_started' } },
-    overall: { pct: 58, status: 'off_track' },
-  },
-  {
-    id: 'esg', name: 'Sustainability', color: '#16A34A',
-    quarters: { Q1: { pct: 88, status: 'on_track' }, Q2: { pct: 80, status: 'on_track' }, Q3: { pct: 63, status: 'at_risk' }, Q4: { pct: null, status: 'not_started' } },
-    overall: { pct: 77, status: 'on_track' },
-  },
-];
 
 const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
 
@@ -55,15 +21,95 @@ function getCellStyle(status: OkrStatus): { bg: string; text: string } {
   }
 }
 
+function pctToStatus(pct: number | null): OkrStatus {
+  if (pct === null || pct === undefined) return 'not_started';
+  if (pct >= 70) return 'on_track';
+  if (pct >= 40) return 'at_risk';
+  return 'off_track';
+}
+
+interface HeatmapRow {
+  themeId: string;
+  themeName: string;
+  themeColor: string;
+  quarters: Record<string, { pct: number | null; status: OkrStatus }>;
+  overall: { pct: number | null; status: OkrStatus };
+}
+
 export function OkrHeatmap() {
+  const { data: rawData, isLoading } = useOkrHeatmap();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerInfo, setDrawerInfo] = useState<{ theme: string; quarter: string; pct: number } | null>(null);
+
+  // Build heatmap rows by grouping raw data by theme
+  const rows: HeatmapRow[] = useMemo(() => {
+    if (!rawData || rawData.length === 0) return [];
+
+    // Group by theme
+    const themeMap = new Map<string, typeof rawData>();
+    for (const row of rawData) {
+      const tid = row.theme_id as string;
+      if (!themeMap.has(tid)) themeMap.set(tid, []);
+      themeMap.get(tid)!.push(row);
+    }
+
+    return Array.from(themeMap.entries()).map(([themeId, items]) => {
+      const first = items[0];
+      // Calculate quarterly averages
+      const qGroups: Record<string, number[]> = { Q1: [], Q2: [], Q3: [], Q4: [] };
+      for (const item of items) {
+        const q = item.quarter as number;
+        const pct = Number(item.progress_pct) || 0;
+        if (q >= 1 && q <= 4) qGroups[`Q${q}`].push(pct);
+      }
+
+      const quarters: Record<string, { pct: number | null; status: OkrStatus }> = {};
+      for (const qKey of QUARTERS) {
+        const vals = qGroups[qKey];
+        if (vals.length === 0) {
+          quarters[qKey] = { pct: null, status: 'not_started' };
+        } else {
+          const avg = Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+          quarters[qKey] = { pct: avg, status: pctToStatus(avg) };
+        }
+      }
+
+      const allVals = Object.values(quarters).filter(q => q.pct !== null).map(q => q.pct!);
+      const overallPct = allVals.length > 0 ? Math.round(allVals.reduce((a, b) => a + b, 0) / allVals.length) : null;
+
+      return {
+        themeId,
+        themeName: (first.theme_title as string) || 'Unknown',
+        themeColor: (first.theme_color as string) || '#2563EB',
+        quarters,
+        overall: { pct: overallPct, status: pctToStatus(overallPct) },
+      };
+    });
+  }, [rawData]);
 
   const openCell = (themeName: string, quarter: string, pct: number | null) => {
     if (pct === null) return;
     setDrawerInfo({ theme: themeName, quarter, pct });
     setDrawerOpen(true);
   };
+
+  if (isLoading) {
+    return (
+      <div className="animate-pulse space-y-2">
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} style={{ height: 36, background: 'var(--catalyst-bg-hover)', borderRadius: 6 }} />
+        ))}
+      </div>
+    );
+  }
+
+  if (rows.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'var(--catalyst-text-tertiary)' }}>
+        <span style={{ fontSize: 12 }}>No OKR data available</span>
+      </div>
+    );
+  }
 
   const thCss: React.CSSProperties = {
     fontSize: 10, fontWeight: 600, color: 'var(--catalyst-text-tertiary)',
@@ -82,12 +128,12 @@ export function OkrHeatmap() {
             </tr>
           </thead>
           <tbody>
-            {MOCK_DATA.map(row => (
-              <tr key={row.id}>
+            {rows.map(row => (
+              <tr key={row.themeId}>
                 <td style={{ fontSize: 11, fontWeight: 600, color: 'var(--catalyst-text-primary)', padding: '6px 8px' }}>
                   <div className="flex items-center gap-2">
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: row.color, flexShrink: 0 }} />
-                    {row.name}
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: row.themeColor, flexShrink: 0 }} />
+                    {row.themeName.length > 16 ? row.themeName.substring(0, 14) + '.' : row.themeName}
                   </div>
                 </td>
                 {QUARTERS.map(q => {
@@ -97,8 +143,8 @@ export function OkrHeatmap() {
                     <td
                       key={q}
                       tabIndex={cell.pct !== null ? 0 : undefined}
-                      onClick={() => openCell(row.name, q, cell.pct)}
-                      onKeyDown={(e) => { if (e.key === 'Enter' && cell.pct !== null) openCell(row.name, q, cell.pct); }}
+                      onClick={() => openCell(row.themeName, q, cell.pct)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' && cell.pct !== null) openCell(row.themeName, q, cell.pct); }}
                       style={{
                         textAlign: 'center', padding: '8px 6px', borderRadius: 6,
                         background: style.bg, color: style.text,
@@ -120,7 +166,7 @@ export function OkrHeatmap() {
                   fontSize: 13, fontWeight: 600,
                   borderLeft: '2px solid var(--catalyst-border-strong, #CBD5E1)',
                 }}>
-                  {row.overall.pct}
+                  {row.overall.pct ?? '—'}
                 </td>
               </tr>
             ))}
@@ -131,8 +177,8 @@ export function OkrHeatmap() {
       {/* Legend */}
       <div className="flex items-center gap-4 mt-3" style={{ fontSize: 10, color: 'var(--catalyst-text-tertiary)' }}>
         <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#0D9488' }} /> On Track (≥70%)</span>
-        <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#D97706' }} /> At Risk (50–69%)</span>
-        <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#EF4444' }} /> Off Track (&lt;50%)</span>
+        <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#D97706' }} /> At Risk (40–69%)</span>
+        <span className="flex items-center gap-1"><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#EF4444' }} /> Off Track (&lt;40%)</span>
       </div>
 
       <Drawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} title={drawerInfo ? `${drawerInfo.theme} — ${drawerInfo.quarter}` : ''}>
@@ -144,9 +190,19 @@ export function OkrHeatmap() {
             <p style={{ fontSize: 13, color: 'var(--catalyst-text-secondary)', marginBottom: 16, lineHeight: 1.6 }}>
               Progress tracked across key results for this theme during {drawerInfo.quarter}. Below are the individual contributing KRs.
             </p>
-            <KrListItem status="on_track" title="Permit digitization milestone" meta="Target: 12,500 · Current: 10,250" progress={82} />
-            <KrListItem status="at_risk" title="System integration phase" meta="Target: 2 systems · Current: 1" progress={50} />
-            <KrListItem status="on_track" title="User adoption rate" meta="Target: 80% · Current: 76%" progress={95} />
+            {/* Show KRs from the heatmap data for this theme+quarter */}
+            {rawData?.filter(r =>
+              (r.theme_title as string) === drawerInfo.theme &&
+              (r.quarter as number) === parseInt(drawerInfo.quarter.replace('Q', ''))
+            ).map((kr, i) => (
+              <KrListItem
+                key={i}
+                status={pctToStatus(Number(kr.progress_pct))}
+                title={(kr.kr_title as string) || 'Key Result'}
+                meta={`Progress: ${kr.progress_pct ?? 0}%`}
+                progress={Number(kr.progress_pct) || 0}
+              />
+            ))}
           </div>
         )}
       </Drawer>

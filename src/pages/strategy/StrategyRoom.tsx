@@ -5,6 +5,7 @@
  */
 
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import '@/styles/strategy-tokens.css';
 import { useStrategyPreferences } from '@/hooks/useStrategyPreferences';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
@@ -16,11 +17,13 @@ import { StrategyRoleProvider } from '@/contexts/strategy/RoleContext';
 export default function StrategyRoom() {
   const { density, setDensity } = useStrategyPreferences();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const queryClient = useQueryClient();
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setIsRefreshing(true);
-    // Will trigger Supabase re-fetch in Stage D
-    setTimeout(() => setIsRefreshing(false), 1500);
+    await queryClient.invalidateQueries({ queryKey: ['strategy'] });
+    await queryClient.invalidateQueries({ queryKey: ['risks'] });
+    setIsRefreshing(false);
   };
 
   return (

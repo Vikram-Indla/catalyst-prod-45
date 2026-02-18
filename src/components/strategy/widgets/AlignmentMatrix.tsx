@@ -1,47 +1,63 @@
 /**
  * AlignmentMatrix — Widget 10: 7 horizontal bars for workstream alignment
  * Row 4, span 3
+ * DATA SOURCE: es_team_alignment
  */
 
-interface WorkstreamBar {
-  name: string;
-  score: number;
-  color: string;
-}
-
-const WORKSTREAMS: WorkstreamBar[] = [
-  { name: 'Senaie', score: 88, color: '#06B6D4' },
-  { name: 'Catalyst', score: 92, color: '#8B5CF6' },
-  { name: 'Tahommona', score: 76, color: '#6366F1' },
-  { name: 'Delivery', score: 81, color: '#F97316' },
-  { name: 'MIM', score: 69, color: '#EC4899' },
-  { name: 'Standalone', score: 84, color: '#84CC16' },
-  { name: 'Data & AI', score: 95, color: '#14B8A6' },
-];
+import { useTeamAlignment } from '@/hooks/strategy/useStrategyData';
 
 export function AlignmentMatrix() {
+  const { data: workstreams, isLoading } = useTeamAlignment();
+
+  if (isLoading) {
+    return (
+      <div className="animate-pulse space-y-2">
+        {[1, 2, 3, 4, 5, 6, 7].map(i => (
+          <div key={i} className="flex items-center gap-2">
+            <div style={{ width: 60, height: 12, background: 'var(--catalyst-bg-hover)', borderRadius: 4 }} />
+            <div className="flex-1" style={{ height: 6, background: 'var(--catalyst-bg-hover)', borderRadius: 3 }} />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (!workstreams || workstreams.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'var(--catalyst-text-tertiary)' }}>
+        <span style={{ fontSize: 12 }}>No alignment data</span>
+      </div>
+    );
+  }
+
+  const sorted = [...workstreams].sort((a, b) => (Number(b.alignment_score) || 0) - (Number(a.alignment_score) || 0));
+
   return (
     <div className="space-y-1.5">
-      {WORKSTREAMS.map(ws => (
-        <div key={ws.name} className="flex items-center gap-2">
-          <span style={{ width: 60, fontSize: 10, textAlign: 'right', color: 'var(--catalyst-text-secondary)', flexShrink: 0, whiteSpace: 'nowrap' }}>
-            {ws.name}
-          </span>
-          <div className="flex-1" style={{ height: 6, borderRadius: 3, background: '#F8FAFC', overflow: 'hidden' }}>
-            <div style={{
-              width: `${ws.score}%`,
-              height: '100%',
-              borderRadius: 3,
-              background: ws.color,
-              opacity: 0.85,
-              transition: 'width 800ms ease-out',
-            }} />
+      {sorted.map(ws => {
+        const score = Number(ws.alignment_score) || 0;
+        const name = ws.workstream === 'Stand-Alone' ? 'Standalone' : ws.workstream;
+        return (
+          <div key={ws.id} className="flex items-center gap-2">
+            <span style={{ width: 60, fontSize: 10, textAlign: 'right', color: 'var(--catalyst-text-secondary)', flexShrink: 0, whiteSpace: 'nowrap' }}>
+              {name}
+            </span>
+            <div className="flex-1" style={{ height: 6, borderRadius: 3, background: '#F8FAFC', overflow: 'hidden' }}>
+              <div style={{
+                width: `${score}%`,
+                height: '100%',
+                borderRadius: 3,
+                background: ws.workstream_color || '#2563EB',
+                opacity: 0.85,
+                transition: 'width 800ms ease-out',
+              }} />
+            </div>
+            <span style={{ width: 30, fontSize: 11, fontWeight: 600, textAlign: 'right', color: 'var(--catalyst-text-primary)', flexShrink: 0 }}>
+              {score}%
+            </span>
           </div>
-          <span style={{ width: 30, fontSize: 11, fontWeight: 600, textAlign: 'right', color: 'var(--catalyst-text-primary)', flexShrink: 0 }}>
-            {ws.score}%
-          </span>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

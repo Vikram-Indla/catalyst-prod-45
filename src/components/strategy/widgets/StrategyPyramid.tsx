@@ -1,15 +1,20 @@
 /**
  * StrategyPyramid — Widget 1: Interactive SVG pyramid + label cards
  * Row 1, span 6
+ * DATA SOURCE: es_missions, es_visions, es_strategic_themes, es_goals, es_key_results
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { RefreshCw } from 'lucide-react';
 import { Drawer } from '../shared/Drawer';
 import { KrListItem } from '../shared/KrListItem';
 import { SectionTitle } from '../shared/SectionTitle';
 import { ProgressBar } from '../shared/ProgressBar';
+import {
+  useMission, useVision, useStrategicThemes, useGoals, useKeyResults,
+} from '@/hooks/strategy/useStrategyData';
 
-interface LayerData {
+interface LayerDisplay {
   key: string;
   label: string;
   description: string;
@@ -19,13 +24,21 @@ interface LayerData {
   points: string;
 }
 
-const LAYERS: LayerData[] = [
-  { key: 'mission', label: 'Mission', description: "Transform SA's Industrial Sector into a Global Leader", color: '#1D4ED8', letter: 'M', points: '100,0 120,56 80,56' },
-  { key: 'vision', label: 'Vision', description: 'Top-10 Global Manufacturing Hub by 2030', color: '#2563EB', letter: 'V', points: '80,56 120,56 140,112 60,112' },
-  { key: 'themes', label: 'Strategic Themes', description: 'Digital · Workforce · Supply Chain · ESG', color: '#0D9488', letter: 'S', count: 4, points: '60,112 140,112 160,168 40,168' },
-  { key: 'goals', label: 'Goals', description: '3 per theme · owner-assigned · quarterly cadence', color: '#D97706', letter: 'G', count: 12, points: '40,168 160,168 180,224 20,224' },
-  { key: 'krs', label: 'Key Results', description: 'Measurable outcomes · progress-tracked', color: '#16A34A', letter: 'K', count: 32, points: '20,224 180,224 200,280 0,280' },
-];
+const LAYER_COLORS: Record<string, string> = {
+  mission: '#1D4ED8',
+  vision: '#2563EB',
+  themes: '#0D9488',
+  goals: '#D97706',
+  krs: '#16A34A',
+};
+
+const LAYER_POINTS: Record<string, string> = {
+  mission: '100,0 120,56 80,56',
+  vision: '80,56 120,56 140,112 60,112',
+  themes: '60,112 140,112 160,168 40,168',
+  goals: '40,168 160,168 180,224 20,224',
+  krs: '20,224 180,224 200,280 0,280',
+};
 
 const SEPARATORS = [
   { y: 56, x1: 80, x2: 120 },
@@ -34,7 +47,6 @@ const SEPARATORS = [
   { y: 224, x1: 20, x2: 180 },
 ];
 
-// Centroids for each layer letter
 const LETTER_POS: Record<string, { x: number; y: number }> = {
   mission: { x: 100, y: 38 },
   vision: { x: 100, y: 84 },
@@ -43,10 +55,57 @@ const LETTER_POS: Record<string, { x: number; y: number }> = {
   krs: { x: 100, y: 252 },
 };
 
+const FONT_SIZES: Record<string, number> = {
+  mission: 26, vision: 30, themes: 34, goals: 36, krs: 38,
+};
+
 export function StrategyPyramid() {
+  const { data: mission, isLoading: mL } = useMission();
+  const { data: vision, isLoading: vL } = useVision();
+  const { data: themes, isLoading: tL } = useStrategicThemes();
+  const { data: goals, isLoading: gL } = useGoals();
+  const { data: keyResults, isLoading: kL } = useKeyResults();
+
+  const isLoading = mL || vL || tL || gL || kL;
+
   const [hoveredLayer, setHoveredLayer] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerLayer, setDrawerLayer] = useState<string | null>(null);
+
+  const layers: LayerDisplay[] = useMemo(() => {
+    const themeNames = themes?.map(t => t.title).join(' · ') || '';
+    const goalsPerTheme = themes?.length ? Math.round((goals?.length || 0) / themes.length) : 0;
+    return [
+      {
+        key: 'mission', label: 'Mission',
+        description: mission?.title || 'No mission defined',
+        color: LAYER_COLORS.mission, letter: 'M', points: LAYER_POINTS.mission,
+      },
+      {
+        key: 'vision', label: 'Vision',
+        description: vision?.title || 'No vision defined',
+        color: LAYER_COLORS.vision, letter: 'V', points: LAYER_POINTS.vision,
+      },
+      {
+        key: 'themes', label: 'Strategic Themes',
+        description: themeNames || 'No themes defined',
+        color: LAYER_COLORS.themes, letter: 'S', count: themes?.length || 0,
+        points: LAYER_POINTS.themes,
+      },
+      {
+        key: 'goals', label: 'Goals',
+        description: `${goalsPerTheme} per theme · owner-assigned · quarterly cadence`,
+        color: LAYER_COLORS.goals, letter: 'G', count: goals?.length || 0,
+        points: LAYER_POINTS.goals,
+      },
+      {
+        key: 'krs', label: 'Key Results',
+        description: 'Measurable outcomes · progress-tracked',
+        color: LAYER_COLORS.krs, letter: 'K', count: keyResults?.length || 0,
+        points: LAYER_POINTS.krs,
+      },
+    ];
+  }, [mission, vision, themes, goals, keyResults]);
 
   const openDrawer = (key: string) => {
     setDrawerLayer(key);
@@ -59,12 +118,10 @@ export function StrategyPyramid() {
         return (
           <div>
             <p style={{ fontSize: 18, fontWeight: 600, color: 'var(--catalyst-text-primary)', marginBottom: 12 }}>
-              Transform SA's Industrial Sector into a Global Leader
+              {mission?.title || 'No mission defined'}
             </p>
             <p style={{ fontSize: 13, color: 'var(--catalyst-text-secondary)', lineHeight: 1.7 }}>
-              Drive the transformation of Saudi Arabia's industrial sector through strategic initiatives
-              spanning digital innovation, workforce development, supply chain optimization, and
-              sustainable practices aligned with Vision 2030.
+              {mission?.description || 'Set a mission statement to define your organization\'s purpose.'}
             </p>
           </div>
         );
@@ -72,78 +129,88 @@ export function StrategyPyramid() {
         return (
           <div>
             <p style={{ fontSize: 18, fontWeight: 600, color: 'var(--catalyst-text-primary)', marginBottom: 16 }}>
-              Top-10 Global Manufacturing Hub by 2030
+              {vision?.title || 'No vision defined'}
             </p>
-            <SectionTitle title="Progress Indicators" />
-            <KrListItem status="on_track" title="Manufacturing GDP Share" meta="Target: 20% · Current: 16.2%" progress={81} />
-            <KrListItem status="at_risk" title="Global Ranking" meta="Target: Top 10 · Current: #15" progress={65} />
-            <KrListItem status="on_track" title="Foreign Direct Investment" meta="Target: $20B · Current: $15.8B" progress={79} />
+            {goals && goals.length > 0 && (
+              <>
+                <SectionTitle title="Progress Indicators" />
+                {goals.slice(0, 3).map(g => (
+                  <KrListItem
+                    key={g.id}
+                    status={g.status === 'on_track' ? 'on_track' : g.status === 'at_risk' ? 'at_risk' : 'off_track'}
+                    title={g.title}
+                    meta={`Progress: ${g.progress_pct ?? 0}%`}
+                    progress={Number(g.progress_pct) || 0}
+                  />
+                ))}
+              </>
+            )}
           </div>
         );
       case 'themes':
         return (
           <div>
-            <SectionTitle title="Strategic Themes (4)" />
-            {[
-              { name: 'Digital Transformation', color: '#2563EB', goals: 3, krs: 8, budget: '840M', progress: 75, status: 'at_risk' as const },
-              { name: 'Workforce Development', color: '#0D9488', goals: 3, krs: 8, budget: '600M', progress: 83, status: 'on_track' as const },
-              { name: 'Supply Chain Excellence', color: '#D97706', goals: 3, krs: 8, budget: '576M', progress: 58, status: 'off_track' as const },
-              { name: 'Sustainability & ESG', color: '#16A34A', goals: 3, krs: 8, budget: '384M', progress: 77, status: 'at_risk' as const },
-            ].map(t => (
-              <div key={t.name} style={{ padding: '12px 0', borderBottom: '1px solid var(--catalyst-border-default, #E2E8F0)' }}>
-                <div className="flex items-center gap-2 mb-1">
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: t.color, flexShrink: 0 }} />
-                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--catalyst-text-primary)' }}>{t.name}</span>
-                  <span style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: t.progress >= 70 ? '#0D9488' : t.progress >= 50 ? '#D97706' : '#EF4444' }}>{t.progress}%</span>
+            <SectionTitle title={`Strategic Themes (${themes?.length || 0})`} />
+            {themes?.map(t => {
+              const themeGoals = goals?.filter(g => g.theme_id === t.id) || [];
+              const themeKrs = keyResults?.filter(kr => themeGoals.some(g => g.id === kr.goal_id)) || [];
+              const avgProgress = themeGoals.length
+                ? Math.round(themeGoals.reduce((s, g) => s + (Number(g.progress_pct) || 0), 0) / themeGoals.length)
+                : 0;
+              return (
+                <div key={t.id} style={{ padding: '12px 0', borderBottom: '1px solid var(--catalyst-border-default, #E2E8F0)' }}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: t.color || '#2563EB', flexShrink: 0 }} />
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--catalyst-text-primary)' }}>{t.title}</span>
+                    <span style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: avgProgress >= 70 ? '#0D9488' : avgProgress >= 50 ? '#D97706' : '#EF4444' }}>{avgProgress}%</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--catalyst-text-tertiary)', marginBottom: 6, paddingLeft: 16 }}>
+                    {themeGoals.length} Goals · {themeKrs.length} KRs
+                  </div>
+                  <div style={{ paddingLeft: 16 }}>
+                    <ProgressBar value={avgProgress} height={4} />
+                  </div>
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--catalyst-text-tertiary)', marginBottom: 6, paddingLeft: 16 }}>
-                  {t.goals} Goals · {t.krs} KRs · Budget: SAR {t.budget}
-                </div>
-                <div style={{ paddingLeft: 16 }}>
-                  <ProgressBar value={t.progress} height={4} />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         );
       case 'goals':
         return (
           <div>
-            {[
-              { theme: 'Digital Transformation', color: '#2563EB', goals: [
-                { name: 'Digitize 80% of permits', owner: 'Ahmed H.', progress: 82 },
-                { name: 'Launch AI analytics platform', owner: 'Sara R.', progress: 65 },
-                { name: 'Integrate 5 ministry systems', owner: 'Khalid O.', progress: 78 },
-              ]},
-              { theme: 'Workforce Development', color: '#0D9488', goals: [
-                { name: 'Train 10K engineers', owner: 'Mohammed K.', progress: 91 },
-                { name: 'Saudization rate → 45%', owner: 'Fatima N.', progress: 85 },
-                { name: 'STEM scholarship pipeline', owner: 'Sara R.', progress: 72 },
-              ]},
-            ].map(group => (
-              <div key={group.theme} style={{ marginBottom: 16 }}>
-                <SectionTitle title={group.theme} />
-                {group.goals.map(g => (
-                  <KrListItem
-                    key={g.name}
-                    status={g.progress >= 70 ? 'on_track' : g.progress >= 50 ? 'at_risk' : 'off_track'}
-                    title={g.name}
-                    meta={`Owner: ${g.owner}`}
-                    progress={g.progress}
-                  />
-                ))}
-              </div>
-            ))}
+            {themes?.map(t => {
+              const themeGoals = goals?.filter(g => g.theme_id === t.id) || [];
+              if (themeGoals.length === 0) return null;
+              return (
+                <div key={t.id} style={{ marginBottom: 16 }}>
+                  <SectionTitle title={t.title} />
+                  {themeGoals.map(g => (
+                    <KrListItem
+                      key={g.id}
+                      status={Number(g.progress_pct) >= 70 ? 'on_track' : Number(g.progress_pct) >= 50 ? 'at_risk' : 'off_track'}
+                      title={g.title}
+                      meta={`Q${g.quarter || '?'} · ${g.status}`}
+                      progress={Number(g.progress_pct) || 0}
+                    />
+                  ))}
+                </div>
+              );
+            })}
           </div>
         );
       case 'krs':
         return (
           <div>
-            <SectionTitle title="Sample Key Results" />
-            <KrListItem status="on_track" title="Process 50K permits digitally by Q3" meta="Target: 50,000 · Current: 41,000" progress={82} />
-            <KrListItem status="at_risk" title="Deploy ML models to 3 ministries" meta="Target: 3 · Current: 2" progress={67} />
-            <KrListItem status="on_track" title="Achieve 98% system uptime" meta="Target: 98% · Current: 99.2%" progress={100} />
-            <KrListItem status="off_track" title="3 new logistics hubs operational" meta="Target: 3 · Current: 1" progress={33} />
+            <SectionTitle title="Key Results" />
+            {keyResults?.slice(0, 6).map(kr => (
+              <KrListItem
+                key={kr.id}
+                status={kr.status === 'on_track' ? 'on_track' : kr.status === 'at_risk' ? 'at_risk' : 'off_track'}
+                title={kr.title}
+                meta={`${kr.current_value ?? 0} / ${kr.target_value ?? 0} ${kr.unit || ''}`}
+                progress={Number(kr.progress_pct) || 0}
+              />
+            ))}
           </div>
         );
       default:
@@ -151,7 +218,22 @@ export function StrategyPyramid() {
     }
   };
 
-  const drawerTitle = drawerLayer ? LAYERS.find(l => l.key === drawerLayer)?.label || '' : '';
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center" style={{ minHeight: 280 }}>
+        <div className="animate-pulse flex gap-4 w-full">
+          <div style={{ width: 180, height: 280, background: 'var(--catalyst-bg-hover)', borderRadius: 8 }} />
+          <div className="flex-1 space-y-3">
+            {[1, 2, 3, 4, 5].map(i => (
+              <div key={i} style={{ height: 40, background: 'var(--catalyst-bg-hover)', borderRadius: 6 }} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const drawerTitle = drawerLayer ? layers.find(l => l.key === drawerLayer)?.label || '' : '';
 
   return (
     <>
@@ -159,7 +241,7 @@ export function StrategyPyramid() {
         {/* SVG Pyramid */}
         <div style={{ width: 180, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <svg viewBox="0 0 200 280" width="180" height="280" aria-hidden="true">
-            {LAYERS.map(layer => (
+            {layers.map(layer => (
               <polygon
                 key={layer.key}
                 points={layer.points}
@@ -174,7 +256,7 @@ export function StrategyPyramid() {
             {SEPARATORS.map((s, i) => (
               <line key={i} x1={s.x1} y1={s.y} x2={s.x2} y2={s.y} stroke="white" strokeWidth={1} style={{ pointerEvents: 'none' }} />
             ))}
-            {LAYERS.map(layer => {
+            {layers.map(layer => {
               const pos = LETTER_POS[layer.key];
               return (
                 <text
@@ -185,7 +267,7 @@ export function StrategyPyramid() {
                   dominantBaseline="central"
                   fill="white"
                   opacity={0.3}
-                  style={{ fontSize: layer.key === 'mission' ? 26 : layer.key === 'vision' ? 30 : layer.key === 'themes' ? 34 : layer.key === 'goals' ? 36 : 38, fontWeight: 800, pointerEvents: 'none' }}
+                  style={{ fontSize: FONT_SIZES[layer.key], fontWeight: 800, pointerEvents: 'none' }}
                 >
                   {layer.letter}
                 </text>
@@ -196,7 +278,7 @@ export function StrategyPyramid() {
 
         {/* Label Cards */}
         <div className="flex flex-col justify-center flex-1 gap-1">
-          {LAYERS.map(layer => (
+          {layers.map(layer => (
             <div
               key={layer.key}
               role="button"
@@ -221,7 +303,7 @@ export function StrategyPyramid() {
                   {layer.description}
                 </div>
               </div>
-              {layer.count && (
+              {layer.count !== undefined && layer.count > 0 && (
                 <span style={{
                   fontSize: 10, fontWeight: 600, background: '#EFF6FF', color: '#2563EB',
                   padding: '1px 8px', borderRadius: 9999, flexShrink: 0,
