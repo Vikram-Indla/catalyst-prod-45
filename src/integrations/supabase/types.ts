@@ -4310,6 +4310,7 @@ export type Database = {
           quarters: string[] | null
           report_color: string | null
           reporter_id: string | null
+          source_ra_doc_id: string | null
           start_date: string | null
           state: Database["public"]["Enums"]["epic_state"] | null
           status: Database["public"]["Enums"]["epic_status"] | null
@@ -4368,6 +4369,7 @@ export type Database = {
           quarters?: string[] | null
           report_color?: string | null
           reporter_id?: string | null
+          source_ra_doc_id?: string | null
           start_date?: string | null
           state?: Database["public"]["Enums"]["epic_state"] | null
           status?: Database["public"]["Enums"]["epic_status"] | null
@@ -4426,6 +4428,7 @@ export type Database = {
           quarters?: string[] | null
           report_color?: string | null
           reporter_id?: string | null
+          source_ra_doc_id?: string | null
           start_date?: string | null
           state?: Database["public"]["Enums"]["epic_state"] | null
           status?: Database["public"]["Enums"]["epic_status"] | null
@@ -4443,6 +4446,13 @@ export type Database = {
             columns: ["primary_program_id"]
             isOneToOne: false
             referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epics_source_ra_doc_id_fkey"
+            columns: ["source_ra_doc_id"]
+            isOneToOne: false
+            referencedRelation: "ra_documents"
             referencedColumns: ["id"]
           },
           {
@@ -7505,6 +7515,7 @@ export type Database = {
           id: string
           name: string
           owner_id: string | null
+          source_ra_doc_id: string | null
           target_pi_ids: Json | null
           theme_id: string
           updated_at: string | null
@@ -7517,6 +7528,7 @@ export type Database = {
           id?: string
           name: string
           owner_id?: string | null
+          source_ra_doc_id?: string | null
           target_pi_ids?: Json | null
           theme_id: string
           updated_at?: string | null
@@ -7529,12 +7541,20 @@ export type Database = {
           id?: string
           name?: string
           owner_id?: string | null
+          source_ra_doc_id?: string | null
           target_pi_ids?: Json | null
           theme_id?: string
           updated_at?: string | null
           wsjf_score?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "initiatives_source_ra_doc_id_fkey"
+            columns: ["source_ra_doc_id"]
+            isOneToOne: false
+            referencedRelation: "ra_documents"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "initiatives_theme_id_fkey"
             columns: ["theme_id"]
@@ -18659,6 +18679,238 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ra_agent_runs: {
+        Row: {
+          agent_name: string
+          agent_order: number
+          completed_at: string | null
+          document_id: string
+          error_message: string | null
+          id: string
+          input_tokens: number | null
+          metadata: Json | null
+          output_tokens: number | null
+          retry_count: number
+          started_at: string
+          status: string
+        }
+        Insert: {
+          agent_name: string
+          agent_order: number
+          completed_at?: string | null
+          document_id: string
+          error_message?: string | null
+          id?: string
+          input_tokens?: number | null
+          metadata?: Json | null
+          output_tokens?: number | null
+          retry_count?: number
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          agent_name?: string
+          agent_order?: number
+          completed_at?: string | null
+          document_id?: string
+          error_message?: string | null
+          id?: string
+          input_tokens?: number | null
+          metadata?: Json | null
+          output_tokens?: number | null
+          retry_count?: number
+          started_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ra_agent_runs_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "ra_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ra_categories: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          parent_id: string | null
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          name: string
+          parent_id?: string | null
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          parent_id?: string | null
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ra_categories_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ra_categories_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ra_categories_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ra_categories_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ra_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "ra_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ra_documents: {
+        Row: {
+          brd_number: string | null
+          category_id: string | null
+          content: Json | null
+          created_at: string
+          created_by: string
+          id: string
+          language: string
+          methodology: string | null
+          parent_version_id: string | null
+          project_id: string | null
+          quality_breakdown: Json | null
+          quality_score: number | null
+          source_doc_id: string | null
+          status: string
+          title: string
+          type: string
+          updated_at: string
+          verdict: string | null
+          version: number
+        }
+        Insert: {
+          brd_number?: string | null
+          category_id?: string | null
+          content?: Json | null
+          created_at?: string
+          created_by: string
+          id?: string
+          language?: string
+          methodology?: string | null
+          parent_version_id?: string | null
+          project_id?: string | null
+          quality_breakdown?: Json | null
+          quality_score?: number | null
+          source_doc_id?: string | null
+          status?: string
+          title: string
+          type: string
+          updated_at?: string
+          verdict?: string | null
+          version?: number
+        }
+        Update: {
+          brd_number?: string | null
+          category_id?: string | null
+          content?: Json | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          language?: string
+          methodology?: string | null
+          parent_version_id?: string | null
+          project_id?: string | null
+          quality_breakdown?: Json | null
+          quality_score?: number | null
+          source_doc_id?: string | null
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          verdict?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ra_documents_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "ra_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ra_documents_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ra_documents_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ra_documents_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ra_documents_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ra_documents_parent_version_id_fkey"
+            columns: ["parent_version_id"]
+            isOneToOne: false
+            referencedRelation: "ra_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ra_documents_source_doc_id_fkey"
+            columns: ["source_doc_id"]
+            isOneToOne: false
+            referencedRelation: "ra_documents"
             referencedColumns: ["id"]
           },
         ]
@@ -33488,6 +33740,7 @@ export type Database = {
           project_id: string
           release_id: string | null
           release_version_id: string | null
+          source_ra_doc_id: string | null
           status: Database["public"]["Enums"]["tm_case_status"] | null
           test_format: string | null
           title: string
@@ -33527,6 +33780,7 @@ export type Database = {
           project_id: string
           release_id?: string | null
           release_version_id?: string | null
+          source_ra_doc_id?: string | null
           status?: Database["public"]["Enums"]["tm_case_status"] | null
           test_format?: string | null
           title: string
@@ -33566,6 +33820,7 @@ export type Database = {
           project_id?: string
           release_id?: string | null
           release_version_id?: string | null
+          source_ra_doc_id?: string | null
           status?: Database["public"]["Enums"]["tm_case_status"] | null
           test_format?: string | null
           title?: string
@@ -33711,6 +33966,13 @@ export type Database = {
             columns: ["release_version_id"]
             isOneToOne: false
             referencedRelation: "release_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_source_ra_doc_id_fkey"
+            columns: ["source_ra_doc_id"]
+            isOneToOne: false
+            referencedRelation: "ra_documents"
             referencedColumns: ["id"]
           },
         ]

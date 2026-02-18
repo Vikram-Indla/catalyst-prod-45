@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import { Lock, ChevronDown, ChevronsLeft, ChevronsRight, Lightbulb, LayoutDashboard, List, Layers, Grid3X3, Sparkles, BarChart3, History, Star, FileText, ClipboardList, Columns3, GanttChart } from 'lucide-react';
+import { Lock, ChevronDown, ChevronsLeft, ChevronsRight, Lightbulb, LayoutDashboard, List, Layers, Grid3X3, Sparkles, BarChart3, History, Star, FileText, ClipboardList, Columns3, GanttChart, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -293,6 +293,34 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
             </CollapsibleContent>
           </Collapsible>
 
+          {/* Intelligence Section */}
+          <div 
+            className="text-[10px] font-bold uppercase tracking-[0.08em] px-4 pt-5 pb-1.5"
+            style={{ color: 'var(--text-4, #94A3B8)' }}
+          >
+            {expanded ? 'Intelligence' : ''}
+          </div>
+
+          <MenuItemButton
+            item={{
+              id: 'Requirement Assist',
+              title: 'Requirement Assist',
+              path: '/producthub/requirement-assist',
+              exact: false,
+            }}
+            isActive={location.pathname.startsWith('/producthub/requirement-assist')}
+            expanded={expanded}
+            onClick={() => handleNavigation('/producthub/requirement-assist')}
+            iconResolver={() => Zap}
+            isFavorite={isFavorite}
+            toggleFavorite={toggleFavorite}
+            badge={
+              <span className="text-[8px] font-bold px-[5px] py-[1px] rounded-[10px] bg-blue-100 text-blue-600 ml-auto">
+                AI
+              </span>
+            }
+          />
+
         </nav>
 
         {/* Footer Item (Settings for admins) */}
@@ -338,6 +366,7 @@ function MenuItemButton({
   isFooter = false,
   isFavorite,
   toggleFavorite,
+  badge,
 }: {
   item: SidebarMenuItem;
   isActive: boolean;
@@ -348,6 +377,7 @@ function MenuItemButton({
   isFooter?: boolean;
   isFavorite: (path: string) => boolean;
   toggleFavorite: (path: string) => void;
+  badge?: React.ReactNode;
 }) {
   const CustomIcon = iconResolver(item.id) || item.icon;
   const starred = isFavorite(item.path);
@@ -410,7 +440,8 @@ function MenuItemButton({
             style={{ lineHeight: isChild ? '32px' : '36px' }}
           >
             {item.title}
-          </span>
+            </span>
+            {badge}
           {/* Star button - show on hover (hide for footer items) */}
           {!isFooter && (
             <button

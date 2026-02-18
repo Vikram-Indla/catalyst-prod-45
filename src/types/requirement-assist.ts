@@ -307,3 +307,163 @@ export interface DetailPanelProps {
   onEdit: (id: string) => void;
   onRegenerate: (id: string) => void;
 }
+
+// =====================================================
+// REQUIREMENT ASSIST V4 — New ra_documents Schema Types
+// =====================================================
+
+export type RaDocumentType = 'brd' | 'translation' | 'epic' | 'uat';
+export type RaMethodology = 'kpmg' | 'mckinsey' | 'deloitte';
+export type RaLanguage = 'en' | 'ar' | 'mixed';
+export type RaStatus = 'pending' | 'generating' | 'complete' | 'failed';
+export type RaVerdict = 'pass' | 'review' | null;
+
+export interface QualityBreakdown {
+  typography: number;
+  dataDensity: number;
+  completeness: number;
+  traceability: number;
+}
+
+export interface RaDocument {
+  id: string;
+  type: RaDocumentType;
+  title: string;
+  brd_number: string | null;
+  methodology: RaMethodology | null;
+  language: RaLanguage;
+  content: Record<string, unknown> | null;
+  quality_score: number | null;
+  quality_breakdown: QualityBreakdown | null;
+  status: RaStatus;
+  verdict: RaVerdict;
+  source_doc_id: string | null;
+  project_id: string | null;
+  category_id: string | null;
+  version: number;
+  parent_version_id: string | null;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export type RaAgentName =
+  | 'REC-PARSE' | 'REC-TRANSLATE' | 'REC-CONTEXT'
+  | 'REC-BRD-ARCH' | 'REC-EXTRACT' | 'REC-QA-VALID'
+  | 'REC-EPIC-DECOMPOSE' | 'REC-UAT-GENERATE';
+
+export type RaAgentStatus = 'running' | 'complete' | 'failed';
+
+export interface RaAgentRun {
+  id: string;
+  document_id: string;
+  agent_name: RaAgentName;
+  agent_order: number;
+  status: RaAgentStatus;
+  started_at: string;
+  completed_at: string | null;
+  input_tokens: number;
+  output_tokens: number;
+  retry_count: number;
+  error_message: string | null;
+  metadata: Record<string, unknown> | null;
+}
+
+export interface RaCategory {
+  id: string;
+  name: string;
+  parent_id: string | null;
+  sort_order: number;
+  created_by: string;
+  created_at: string;
+  children?: RaCategory[];
+}
+
+export interface CapabilityConfig {
+  key: RaDocumentType;
+  title: string;
+  description: string;
+  icon: string;
+  accentColor: string;
+  bgColor: string;
+  showMethodology: boolean;
+  showSourceBrd: boolean;
+  showTextInput: boolean;
+  showUpload: boolean;
+  textLabel: string;
+  textPlaceholder: string;
+  pipeline: RaAgentName[];
+  estimatedTime: string;
+  pipelineDisplay: string;
+}
+
+export const CAPABILITY_CONFIGS: Record<RaDocumentType, CapabilityConfig> = {
+  brd: {
+    key: 'brd',
+    title: 'Generate BRD',
+    description: 'Create business requirements from text or documents using KPMG, McKinsey, or Deloitte frameworks',
+    icon: '📄',
+    accentColor: 'var(--cap-brd)',
+    bgColor: 'var(--primary-50)',
+    showMethodology: true,
+    showSourceBrd: false,
+    showTextInput: true,
+    showUpload: true,
+    textLabel: 'Input Text',
+    textPlaceholder: 'Paste your requirements, brief, or scope document…',
+    pipeline: ['REC-PARSE', 'REC-CONTEXT', 'REC-BRD-ARCH', 'REC-EXTRACT', 'REC-QA-VALID'],
+    estimatedTime: '~35s',
+    pipelineDisplay: 'PARSE → CONTEXT → BRD-ARCH → EXTRACT → QA',
+  },
+  translation: {
+    key: 'translation',
+    title: 'Translate BRD',
+    description: 'Translate Arabic BRDs to English with MIM domain glossary matching',
+    icon: '🌐',
+    accentColor: 'var(--cap-translate)',
+    bgColor: 'var(--teal-50)',
+    showMethodology: false,
+    showSourceBrd: false,
+    showTextInput: true,
+    showUpload: true,
+    textLabel: 'Arabic Input',
+    textPlaceholder: 'الصق نص متطلبات العمل بالعربية هنا…',
+    pipeline: ['REC-PARSE', 'REC-TRANSLATE', 'REC-QA-VALID'],
+    estimatedTime: '~25s',
+    pipelineDisplay: 'PARSE → TRANSLATE → QA-VALID',
+  },
+  epic: {
+    key: 'epic',
+    title: 'Generate Epics',
+    description: 'Decompose BRDs into epics with user stories, Given/When/Then, and INVEST validation',
+    icon: '🧩',
+    accentColor: 'var(--cap-epic)',
+    bgColor: 'var(--violet-50)',
+    showMethodology: false,
+    showSourceBrd: true,
+    showTextInput: false,
+    showUpload: false,
+    textLabel: '',
+    textPlaceholder: '',
+    pipeline: ['REC-CONTEXT', 'REC-EPIC-DECOMPOSE', 'REC-QA-VALID'],
+    estimatedTime: '~20s',
+    pipelineDisplay: 'CONTEXT → EPIC-DECOMPOSE → QA-VALID',
+  },
+  uat: {
+    key: 'uat',
+    title: 'Generate UAT',
+    description: 'Generate UAT test scenarios with coverage matrix and traceability',
+    icon: '🧪',
+    accentColor: 'var(--cap-uat)',
+    bgColor: 'var(--warning-50)',
+    showMethodology: false,
+    showSourceBrd: true,
+    showTextInput: false,
+    showUpload: false,
+    textLabel: '',
+    textPlaceholder: '',
+    pipeline: ['REC-CONTEXT', 'REC-UAT-GENERATE', 'REC-QA-VALID'],
+    estimatedTime: '~20s',
+    pipelineDisplay: 'CONTEXT → UAT-GENERATE → QA-VALID',
+  },
+};
