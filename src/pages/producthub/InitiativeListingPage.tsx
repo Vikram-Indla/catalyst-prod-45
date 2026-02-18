@@ -1,17 +1,24 @@
+/**
+ * Initiative Listing Page — /producthub/backlog
+ * Catalyst V5 Data-Dense Table View
+ */
+
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
 import { useInitiativesMock } from '@/hooks/useInitiativesMock';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
-import { InitiativeToolbar } from '@/components/initiatives/InitiativeToolbar';
-import { InitiativeTable } from '@/components/initiatives/InitiativeTable';
-import { KanbanBoard } from '@/components/initiatives/KanbanBoard';
+import { ListingToolbar } from '@/components/producthub/listing/ListingToolbar';
+import { InitiativeTable } from '@/components/producthub/listing/InitiativeTable';
+import { BulkActionBar } from '@/components/producthub/listing/BulkActionBar';
+import { Pagination } from '@/components/producthub/listing/Pagination';
 import { DetailPanel } from '@/components/initiatives/DetailPanel';
-import { BulkActionBar } from '@/components/initiatives/BulkActionBar';
 import { ContextMenu } from '@/components/initiatives/ContextMenu';
+import { KanbanBoard } from '@/components/initiatives/KanbanBoard';
 import { catalystToast } from '@/lib/catalystToast';
-import { LayoutGrid, Calendar, Columns3, Table2 } from 'lucide-react';
+import { LayoutGrid, Columns3 } from 'lucide-react';
 
-import type { Initiative, InitiativeStatus, Density, ViewMode } from '@/types/initiative';
+import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
+
+type ViewMode = 'table' | 'board' | 'timeline' | 'cards';
 
 const TERMINAL_STATUSES: InitiativeStatus[] = ['delivered', 'closed', 'cancelled'];
 
@@ -40,39 +47,27 @@ function applySearch(data: Initiative[], query: string): Initiative[] {
   );
 }
 
-/* View placeholder icons */
-const VIEW_PLACEHOLDER_ICONS: Record<string, React.ReactNode> = {
-  board: <Columns3 size={48} className="text-zinc-300" />,
-  timeline: <Calendar size={48} className="text-zinc-300" />,
-  cards: <LayoutGrid size={48} className="text-zinc-300" />,
-};
-
 export default function InitiativeListingPage() {
   const { data, isLoading } = useInitiativesMock();
-  const location = useLocation();
-  const initialView = new URLSearchParams(location.search).get('view') as ViewMode | null;
   const [density, setDensity] = useState<Density>('standard');
-  const [activeView, setActiveView] = useState<ViewMode>(initialView === 'board' ? 'board' : 'table');
+  const [activeView, setActiveView] = useState<ViewMode>('table');
   const [searchQuery, setSearchQuery] = useState('');
   const [quickFilter, setQuickFilter] = useState('all');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [sorting, setSorting] = useState<{ id: string; desc: boolean }[]>([]);
   const [orderedData, setOrderedData] = useState<Initiative[] | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   const [detailInitiative, setDetailInitiative] = useState<Initiative | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
-
   const [contextMenu, setContextMenu] = useState<{ pos: { x: number; y: number }; initiative: Initiative } | null>(null);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
-
   const allInitiatives = orderedData ?? data?.data ?? [];
 
-  // Sync orderedData when source data loads
   useEffect(() => {
-    if (data?.data && !orderedData) {
-      setOrderedData(data.data);
-    }
+    if (data?.data && !orderedData) setOrderedData(data.data);
   }, [data?.data, orderedData]);
 
   const filtered = useMemo(() => {
@@ -80,6 +75,12 @@ export default function InitiativeListingPage() {
     result = applySearch(result, searchQuery);
     return result;
   }, [allInitiatives, quickFilter, searchQuery]);
+
+  // Pagination
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page, pageSize]);
 
   const handleReorder = useCallback((sourceIndex: number, destIndex: number) => {
     setOrderedData(prev => {
@@ -90,7 +91,7 @@ export default function InitiativeListingPage() {
     });
   }, [allInitiatives]);
 
-  // Keyboard shortcuts
+  // Keyboard
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -115,20 +116,13 @@ export default function InitiativeListingPage() {
   const handleStatusChange = useCallback((id: string, newStatus: InitiativeStatus) => {
     setOrderedData(prev => {
       const items = prev ?? allInitiatives;
-      return items.map(item =>
-        item.id === id ? { ...item, status: newStatus } : item
-      );
+      return items.map(item => item.id === id ? { ...item, status: newStatus } : item);
     });
     catalystToast.success(`Status updated to ${newStatus.replace(/_/g, ' ')}`);
   }, [allInitiatives]);
 
-  const handleAssigneeChange = useCallback((id: string, assigneeId: string) => {
-    console.log('Assignee change:', id, assigneeId);
-    catalystToast.success('Assignee updated');
-  }, []);
-
-  const handleFavoriteToggle = useCallback((id: string, isFavorited: boolean) => {
-    console.log('Favorite toggle:', id, isFavorited);
+  const handleFavoriteToggle = useCallback((id: string, _isFavorited: boolean) => {
+    console.log('Favorite toggle:', id);
   }, []);
 
   const handleSortChange = useCallback((s: { id: string; desc: boolean }[]) => {
@@ -139,7 +133,7 @@ export default function InitiativeListingPage() {
     setContextMenu({ pos: { x: e.clientX, y: e.clientY }, initiative });
   }, []);
 
-  const handleContextAction = useCallback((action: string, value?: any) => {
+  const handleContextAction = useCallback((action: string, value?: unknown) => {
     if (!contextMenu) return;
     const init = contextMenu.initiative;
     switch (action) {
@@ -148,96 +142,94 @@ export default function InitiativeListingPage() {
         setDetailOpen(true);
         break;
       case 'change_status':
-        handleStatusChange(init.id, value);
+        handleStatusChange(init.id, value as InitiativeStatus);
         break;
       case 'copy_id':
         navigator.clipboard.writeText(init.initiative_key);
         catalystToast.success('Copied!');
         break;
-      default:
-        console.log('Context action:', action, value);
     }
   }, [contextMenu, handleStatusChange]);
 
-  const handleBulkAction = useCallback((action: string, value?: any) => {
-    console.log('Bulk action:', action, selectedIds, value);
-    catalystToast.success(`${selectedIds.length} items updated`);
+  const handleBulkAction = useCallback((action: string) => {
+    catalystToast.success(`${selectedIds.length} items — ${action}`);
   }, [selectedIds]);
 
   const handleScoreSave = useCallback((id: string, scores: { strategic_alignment: number; business_impact: number; time_urgency: number; resource_feasibility: number }) => {
-    console.log('Score save:', id, scores);
     catalystToast.success('Score saved');
   }, []);
 
   return (
     <div className="flex flex-col h-full">
-      {/* Catalyst Header — matches Strategy Hub pattern */}
       <CommandCenterHeader
         title="Product Backlog"
         subtitle="Strategic initiative portfolio & prioritization"
       />
 
-      {/* Toolbar area with consistent padding */}
-      <div className="px-6 pt-4 pb-0">
-        <InitiativeToolbar
-          activeView={activeView}
-          onViewChange={setActiveView}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          activeQuickFilter={quickFilter}
-          onQuickFilterChange={setQuickFilter}
-          density={density}
-          onDensityChange={setDensity}
-          filterCount={0}
-          selectedCount={selectedIds.length}
-          totalCount={filtered.length}
-          searchInputRef={searchInputRef}
-        />
-      </div>
+      <ListingToolbar
+        activeView={activeView}
+        onViewChange={setActiveView}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        activeQuickFilter={quickFilter}
+        onQuickFilterChange={setQuickFilter}
+        density={density}
+        onDensityChange={setDensity}
+        totalCount={filtered.length}
+        searchInputRef={searchInputRef}
+      />
+
+      {/* Bulk Action Bar — replaces space above table when active */}
+      <BulkActionBar
+        selectedCount={selectedIds.length}
+        onAction={handleBulkAction}
+        onCancel={() => setSelectedIds([])}
+      />
 
       {activeView === 'table' ? (
-        <>
+        <div className="flex-1 flex flex-col px-6 pb-0 min-h-0">
           <InitiativeTable
-            data={filtered}
+            data={paginatedData}
             loading={isLoading}
             density={density}
             onRowClick={handleRowClick}
             onStatusChange={handleStatusChange}
-            onAssigneeChange={handleAssigneeChange}
             onFavoriteToggle={handleFavoriteToggle}
             onSelectionChange={setSelectedIds}
             onSortChange={handleSortChange}
             onContextMenu={handleContextMenu}
             onReorder={handleReorder}
           />
-          {selectedIds.length === 0 && (
-            <div className="h-11 flex items-center justify-between px-4 border-t border-zinc-200 text-xs text-zinc-500">
-              <span>Showing 1–{filtered.length} of {filtered.length}</span>
-            </div>
-          )}
-        </>
+        </div>
       ) : activeView === 'board' ? (
-        <div className="mt-4">
-        <KanbanBoard
-          data={filtered}
-          density={density}
-          onRowClick={handleRowClick}
-          onStatusChange={handleStatusChange}
-          onFavoriteToggle={handleFavoriteToggle}
-        />
+        <div className="flex-1 px-6 pt-2 overflow-auto">
+          <KanbanBoard
+            data={filtered}
+            density={density}
+            onRowClick={handleRowClick}
+            onStatusChange={handleStatusChange}
+            onFavoriteToggle={handleFavoriteToggle}
+          />
         </div>
       ) : (
-        /* View Placeholder — Timeline & Cards */
-        <div className="h-96 flex flex-col items-center justify-center gap-1">
-          {VIEW_PLACEHOLDER_ICONS[activeView] || <Table2 size={48} className="text-zinc-300" />}
-          <h3 className="text-base font-semibold text-zinc-900 mt-4">
+        <div className="flex-1 flex flex-col items-center justify-center gap-1">
+          {activeView === 'cards' ? <LayoutGrid size={48} className="text-zinc-300" /> : <Columns3 size={48} className="text-zinc-300" />}
+          <h3 className="text-sm font-semibold mt-4" style={{ color: '#18181b' }}>
             {activeView.charAt(0).toUpperCase() + activeView.slice(1)} View
           </h3>
-          <p className="text-sm text-zinc-500 mt-1">Coming Soon</p>
-          <p className="text-[13px] text-zinc-400 mt-2 max-w-[300px] text-center">
-            This view is under development and will be available shortly.
-          </p>
+          <p className="text-[13px] mt-1" style={{ color: '#71717a' }}>Coming Soon</p>
         </div>
+      )}
+
+      {/* Pagination — only for table view */}
+      {activeView === 'table' && (
+        <Pagination
+          total={filtered.length}
+          page={page}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={setPageSize}
+        />
       )}
 
       <DetailPanel
@@ -248,20 +240,12 @@ export default function InitiativeListingPage() {
         onScoreSave={handleScoreSave}
       />
 
-      <BulkActionBar
-        selectedCount={selectedIds.length}
-        onAction={handleBulkAction}
-        onCancel={() => setSelectedIds([])}
-      />
-
       <ContextMenu
         position={contextMenu?.pos ?? null}
         initiative={contextMenu?.initiative ?? null}
         onAction={handleContextAction}
         onClose={() => setContextMenu(null)}
       />
-
-      
     </div>
   );
 }
