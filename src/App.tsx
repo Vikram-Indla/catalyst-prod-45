@@ -493,7 +493,7 @@ const App = () => (
               <Route path="/producthub/table" element={<CatalystDemandTable />} />
               <Route path="/producthub/kanban" element={<CatalystDemandKanban />} />
               <Route path="/producthub/dashboard" element={<DemandSummaryPage />} />
-              <Route path="/producthub/roadmaps" element={<ProductRoadmapV2Page />} />
+              <Route path="/producthub/roadmaps" element={<Navigate to="/producthub/roadmap" replace />} />
               <Route path="/producthub/roadmaps-v1" element={<IndustryRoadmapPage />} />
               <Route path="/producthub/reports" element={<IndustryComingSoon />} />
               <Route path="/producthub/roadmap" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RoadmapPage /></Suspense>} />
