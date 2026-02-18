@@ -14,6 +14,7 @@ import { RoadmapEmptyState } from './RoadmapEmptyState';
 import { RoadmapFilterDialog } from './RoadmapFilterDialog';
 import { RoadmapExportDialog } from './RoadmapExportDialog';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
+import { RoadmapDetailPanel } from './RoadmapDetailPanel';
 import { useRoadmapDemands, useReorderDemands, useUpdateDemandDates } from '../hooks/useRoadmapDemands';
 import { useRoadmapFilters } from '../hooks/useRoadmapFilters';
 import { useRoadmapDragDrop } from '../hooks/useRoadmapDragDrop';
@@ -39,6 +40,7 @@ export function ProductRoadmap() {
   
   // Drawer state
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
   const [drawerRequestId, setDrawerRequestId] = useState<string | null>(null);
   
   // Dialog states
@@ -144,9 +146,9 @@ export function ProductRoadmap() {
     if (index !== -1) {
       setFocusedIndex(index);
     }
-    // Open drawer on click
-    handleOpenDrawer(id);
-  }, [items, setFocusedIndex, handleOpenDrawer]);
+    // Open detail panel instead of drawer
+    setIsDetailPanelOpen(true);
+  }, [items, setFocusedIndex]);
 
   const handleToggleGroup = useCallback((key: string) => {
     setExpandedGroups(prev => {
@@ -261,12 +263,19 @@ export function ProductRoadmap() {
             timelineConfig={timelineConfig}
           />
 
-          {/* Business Request Drawer */}
+          {/* Business Request Drawer (for edit actions) */}
           <BusinessRequestDrawer
             isOpen={isDrawerOpen}
             onClose={handleCloseDrawer}
             requestId={drawerRequestId}
             onRequestChange={handleDrawerRequestChange}
+          />
+
+          {/* Detail Panel */}
+          <RoadmapDetailPanel
+            item={items.find(i => i.id === selectedItemId) || null}
+            isOpen={isDetailPanelOpen}
+            onClose={() => setIsDetailPanelOpen(false)}
           />
         </div>
       </DragDropContext>
