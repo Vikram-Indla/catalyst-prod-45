@@ -2,20 +2,53 @@
 // TIMELINE SHELL — Layout orchestrator
 // =====================================================
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { TimelineToolbar } from './TimelineToolbar';
 import { TimelineFilterBar } from './TimelineFilterBar';
 import { TimelineLeftPanel } from './TimelineLeftPanel';
 import { TimelineGrid } from './TimelineGrid';
+import { InitiativeDetailPanel } from './InitiativeDetailPanel';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
 import { useTimelineInitiatives, useFilteredInitiatives } from '@/hooks/producthub/useTimelineInitiatives';
-import { DENSITY_MAP } from '@/types/producthub/initiative';
+import { useTimelineRealtime } from '@/hooks/producthub/useTimelineRealtime';
 
 export const TimelineShell: React.FC = () => {
-  const { activeFilter, searchTerm, groupBy, density } = useTimelineState();
+  const { activeFilter, searchTerm, groupBy, selectedInitiativeId, isDetailOpen, closeDetail } = useTimelineState();
   const { data: initiatives, isLoading, error } = useTimelineInitiatives();
   const { flat, groups } = useFilteredInitiatives(initiatives, activeFilter, searchTerm, groupBy);
   const leftScrollRef = useRef<HTMLDivElement>(null);
+
+  // Realtime subscription
+  useTimelineRealtime();
+
+  // Keyboard: Cmd+K to focus search, Shift+scroll for horizontal
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        const searchInput = document.querySelector<HTMLInputElement>('input[placeholder="Search initiatives…"]');
+        searchInput?.focus();
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, []);
+
+  // Shift+wheel for horizontal scroll
+  useEffect(() => {
+    const handler = (e: WheelEvent) => {
+      if (!e.shiftKey) return;
+      const gridBody = document.querySelector<HTMLElement>('[data-timeline-body]');
+      if (gridBody) {
+        e.preventDefault();
+        gridBody.scrollLeft += e.deltaY;
+      }
+    };
+    document.addEventListener('wheel', handler, { passive: false });
+    return () => document.removeEventListener('wheel', handler);
+  }, []);
+
+  const selectedInitiative = flat.find(i => i.id === selectedInitiativeId) ?? null;
 
   if (error) {
     return (
@@ -63,6 +96,15 @@ export const TimelineShell: React.FC = () => {
           leftScrollRef={leftScrollRef}
         />
       </div>
+
+      {/* Detail panel */}
+      {isDetailOpen && selectedInitiative && (
+        <InitiativeDetailPanel
+          initiative={selectedInitiative}
+          initiatives={flat}
+          onClose={closeDetail}
+        />
+      )}
     </div>
   );
 };
