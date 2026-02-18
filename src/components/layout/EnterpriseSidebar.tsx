@@ -11,6 +11,7 @@ import {
   Target,
   PieChart,
   Calendar,
+  ShieldAlert,
   Sparkles,
   Users,
   Settings,
@@ -35,6 +36,7 @@ const enterpriseSidebarConfig: SidebarConfig = {
         { id: 'goals', title: 'Goals & Key Results', path: '/strategyhub/goals', icon: Target, exact: false, badge: 12, badgeVariant: 'info' },
         { id: 'investment', title: 'Investment Allocation', path: '/strategyhub/investment', icon: PieChart, exact: false },
         { id: 'snapshots', title: 'Snapshots', path: '/strategyhub/snapshots', icon: Calendar, exact: false },
+        { id: 'risks', title: 'Risks', path: '/strategyhub/risks', icon: ShieldAlert, exact: false },
       ],
     },
     {
