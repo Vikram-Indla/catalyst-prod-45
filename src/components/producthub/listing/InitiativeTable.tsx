@@ -96,7 +96,7 @@ export function InitiativeTable({
   onFavoriteToggle, onSelectionChange, onSortChange, onContextMenu, onReorder,
   onInlineEdit, focusedRowIndex = -1, onFocusedRowChange,
 }: Props) {
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([{ id: 'initiative_key', desc: false }]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [editingCell, setEditingCell] = useState<{ rowId: string; columnId: string; rect: DOMRect } | null>(null);
   const [flashCell, setFlashCell] = useState<string | null>(null);
@@ -416,7 +416,6 @@ export function InitiativeTable({
                             <tr
                               ref={dragProvided.innerRef}
                               {...dragProvided.draggableProps}
-                              {...dragProvided.dragHandleProps}
                               tabIndex={0}
                               data-row-index={idx}
                               className={`
@@ -431,21 +430,25 @@ export function InitiativeTable({
                               onClick={(e) => {
                                 // Don't trigger row click if user clicked on a button (checkbox, icon, etc.)
                                 const target = e.target as HTMLElement;
-                                if (target.closest('button') || target.closest('[role="checkbox"]')) return;
+                                if (target.closest('button') || target.closest('[role="checkbox"]') || target.closest('[data-drag-handle]')) return;
                                 handleRowSingleClick(row.original);
                               }}
                               onContextMenu={(e) => { e.preventDefault(); onContextMenu?.(e, row.original); }}
                               onFocus={() => onFocusedRowChange?.(idx)}
                             >
-                              {row.getVisibleCells().map(cell => {
+                              {row.getVisibleCells().map((cell, cellIdx) => {
                                 const cellKey = `${row.id}-${cell.column.id}`;
                                 const isFlashing = flashCell === cellKey;
+                                // Put drag handle on the ID column (second visible column, index 1)
+                                const dragHandleProps = cellIdx === 1 ? dragProvided.dragHandleProps : undefined;
                                 return (
                                   <td
                                     key={cell.id}
-                                    className={`px-3 align-middle whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-200 ${isFlashing ? 'bg-green-50' : ''}`}
+                                    className={`px-3 align-middle whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-200 ${isFlashing ? 'bg-green-50' : ''} ${cellIdx === 1 ? 'cursor-grab' : ''}`}
                                     style={{ width: cell.column.getSize() }}
                                     onDoubleClick={(e) => handleDoubleClick(e, row.id, cell.column.id)}
+                                    {...dragHandleProps}
+                                    data-drag-handle={cellIdx === 1 ? true : undefined}
                                   >
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                   </td>

@@ -50,10 +50,11 @@ export function PriorityCell({ score }: { score: number | null }) {
 /* ── Score Cell ── */
 export function ScoreCell({ score }: { score: number | null }) {
   const getScoreColor = (s: number | null) => {
-    if (s === null) return '#a1a1aa';
+    if (s === null || s === undefined) return '#a1a1aa';
     if (s >= 4.0) return '#059669';
     if (s >= 3.0) return '#2563eb';
-    return '#d97706';
+    if (s > 0) return '#d97706';
+    return '#a1a1aa';
   };
   if (score === null) return <span style={{ color: '#a1a1aa' }}>—</span>;
   return (

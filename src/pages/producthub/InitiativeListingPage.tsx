@@ -88,7 +88,7 @@ export default function InitiativeListingPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [quickFilter, setQuickFilter] = useState('all');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [sorting, setSorting] = useState<{ id: string; desc: boolean }[]>([]);
+  const [sorting, setSorting] = useState<{ id: string; desc: boolean }[]>([{ id: 'initiative_key', desc: false }]);
   const [orderedData, setOrderedData] = useState<Initiative[] | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
