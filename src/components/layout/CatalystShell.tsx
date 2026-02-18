@@ -14,6 +14,7 @@ import { ReleaseHubSidebar } from './ReleaseHubSidebar';
 import { PlanHubSidebar } from './PlanHubSidebar';
 import { TaskHubSidebar } from './TaskHubSidebar';
 import { TestHubSidebar } from './TestHubSidebar';
+import { StrategyHubSidebar } from './StrategyHubSidebar';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
 import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
@@ -89,6 +90,9 @@ function CatalystShellContent() {
   
   // Check if on TestHub route
   const isTestHubRoute = location.pathname.startsWith('/testhub');
+
+  // Check if on Strategy Hub route (new /strategy/* routes)
+  const isStrategyHubRoute = location.pathname.startsWith('/strategy/');
 
   // Check if on WorkHub/ProjectHub route (v4.5)
   const isWorkHubRoute = location.pathname.startsWith('/workhub') || location.pathname.startsWith('/projecthub');
@@ -202,6 +206,16 @@ function CatalystShellContent() {
     if (isTaskHubRoute) {
       return (
         <TaskHubSidebar
+          expanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+      );
+    }
+
+    // Strategy Hub sidebar (new /strategy/* routes)
+    if (isStrategyHubRoute) {
+      return (
+        <StrategyHubSidebar
           expanded={sidebarExpanded}
           onToggle={() => setSidebarExpanded(!sidebarExpanded)}
         />
