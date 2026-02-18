@@ -12,6 +12,7 @@ import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { EditableField } from '@/components/producthub/shared/EditableField';
+import { useDepartmentOptions, useProfileOptions } from '@/hooks/useInitiativeLookups';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -515,6 +516,8 @@ function DetailsContent({
   onQuickEdit: (field: string, value: any) => void;
   onStatusChange: (id: string, s: InitiativeStatus) => void;
 }) {
+  const { data: departmentOptions } = useDepartmentOptions();
+  const { data: profileOptions } = useProfileOptions();
   const comments = MOCK_COMMENTS[initiative.initiative_key] || [];
   const getVal = (field: string, original: any) => field in editForm ? editForm[field] : original;
 
@@ -559,12 +562,12 @@ function DetailsContent({
 
         <EditableField
           label="Department"
-          value={getVal('department_name', initiative.department_name)}
+          value={getVal('department_id', initiative.department_id)}
           isEditing={isEditing}
-          type="text"
-          onChange={v => onFieldChange('department_name', v)}
-          onQuickEdit={v => onQuickEdit('department_name', v)}
-          placeholder="—"
+          type="select"
+          options={departmentOptions || []}
+          onChange={v => onFieldChange('department_id', v)}
+          onQuickEdit={v => onQuickEdit('department_id', v)}
         />
 
         <EditableField
@@ -579,32 +582,32 @@ function DetailsContent({
 
         <EditableField
           label="Assignee"
-          value={getVal('assignee_name', initiative.assignee_name)}
+          value={getVal('assignee_id', initiative.assignee_id)}
           isEditing={isEditing}
-          type="text"
-          onChange={v => onFieldChange('assignee_name', v)}
-          onQuickEdit={v => onQuickEdit('assignee_name', v)}
-          placeholder="Unassigned"
+          type="select"
+          options={profileOptions || []}
+          onChange={v => onFieldChange('assignee_id', v)}
+          onQuickEdit={v => onQuickEdit('assignee_id', v)}
         />
 
         <EditableField
           label="Business Owner"
-          value={getVal('business_owner_name', initiative.business_owner_name)}
+          value={getVal('business_owner_id', initiative.business_owner_id)}
           isEditing={isEditing}
-          type="text"
-          onChange={v => onFieldChange('business_owner_name', v)}
-          onQuickEdit={v => onQuickEdit('business_owner_name', v)}
-          placeholder="—"
+          type="select"
+          options={profileOptions || []}
+          onChange={v => onFieldChange('business_owner_id', v)}
+          onQuickEdit={v => onQuickEdit('business_owner_id', v)}
         />
 
         <EditableField
           label="Reporter"
-          value={getVal('reporter_id', 'Mohammed A.')}
+          value={getVal('reporter_id', initiative.reporter_id)}
           isEditing={isEditing}
-          type="text"
+          type="select"
+          options={profileOptions || []}
           onChange={v => onFieldChange('reporter_id', v)}
           onQuickEdit={v => onQuickEdit('reporter_id', v)}
-          placeholder="—"
         />
 
         <EditableField
