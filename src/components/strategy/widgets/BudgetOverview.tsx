@@ -7,6 +7,7 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInvestmentAllocations, useStrategicThemes } from '@/hooks/strategy/useStrategyData';
+import { formatThemeName } from '@/utils/strategy/formatThemeName';
 
 function formatSAR(amount: number): string {
   if (amount >= 1_000_000_000) return `${(amount / 1_000_000_000).toFixed(1)}B`;
@@ -101,7 +102,7 @@ export function BudgetOverview() {
           return (
             <div key={item.name} className="flex items-center gap-2">
               <span style={{ width: 72, fontSize: 10, textAlign: 'right', color: 'var(--catalyst-text-secondary)', flexShrink: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {item.name.length > 12 ? item.name.substring(0, 11) + '.' : item.name}
+                {formatThemeName(item.name)}
               </span>
               <div className="flex flex-1 overflow-hidden" style={{ height: 14, borderRadius: 7, background: '#F1F5F9' }}>
                 <div
@@ -122,10 +123,11 @@ export function BudgetOverview() {
       </div>
 
       {/* Allocation summary */}
-      <div className="flex flex-wrap gap-3 mt-3" style={{ fontSize: 10, color: 'var(--catalyst-text-secondary)' }}>
+      <div className="flex flex-wrap mt-3" style={{ fontSize: 10, color: 'var(--catalyst-text-secondary)', gap: 12 }}>
         {themeAllocations.map(a => (
-          <span key={a.name} className="flex items-center gap-1">
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: a.color }} /> {a.pct}%
+          <span key={a.name} className="flex items-center" style={{ gap: 4 }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: a.color, flexShrink: 0 }} />
+            {formatThemeName(a.name)} {a.pct}%
           </span>
         ))}
       </div>

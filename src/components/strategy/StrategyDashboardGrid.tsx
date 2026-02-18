@@ -86,14 +86,14 @@ export function StrategyDashboardGrid() {
       </div>
       <div className="col-span-12 lg:col-span-6" style={{ minHeight: '280px' }}>
         <WidgetCard
-          title="Capacity Overview"
+          title="Workstream Health"
           icon={Users2}
-          ariaLabel="Capacity Overview widget"
+          ariaLabel="Workstream Health widget"
           className="h-full"
           accentGradient="linear-gradient(90deg, #2563EB, #60A5FA)"
           headerLink={{
-            label: 'View Capacity Planner →',
-            onClick: () => navigate('/planhub/capacity'),
+            label: 'View Details →',
+            onClick: () => navigate('/strategyhub/team-alignment'),
           }}
         >
           <CapacityOverview />
@@ -112,7 +112,7 @@ export function StrategyDashboardGrid() {
         </WidgetCard>
       </div>
       <div className="col-span-12 sm:col-span-6 xl:col-span-3" style={{ minHeight: '240px' }}>
-        <WidgetCard title="Team Snapshot" icon={Camera} ariaLabel="Team Snapshot widget" className="h-full">
+        <WidgetCard title="Strategy Snapshot" icon={Camera} ariaLabel="Strategy Snapshot widget" className="h-full">
           <TeamSnapshot />
         </WidgetCard>
       </div>

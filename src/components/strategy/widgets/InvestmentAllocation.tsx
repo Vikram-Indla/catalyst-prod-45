@@ -6,6 +6,7 @@
 
 import { useMemo } from 'react';
 import { useInvestmentAllocations, useStrategicThemes } from '@/hooks/strategy/useStrategyData';
+import { formatThemeName } from '@/utils/strategy/formatThemeName';
 
 function formatSAR(amount: number): string {
   if (amount >= 1_000_000_000) return `${(amount / 1_000_000_000).toFixed(1)}B`;
@@ -24,7 +25,7 @@ export function InvestmentAllocation() {
     return allocations.map(a => {
       const theme = themes.find(t => t.id === a.theme_id);
       return {
-        name: theme?.title ? (theme.title.length > 18 ? theme.title.substring(0, 16) + '.' : theme.title) : 'Unknown',
+        name: theme?.title ? formatThemeName(theme.title) : 'Unknown',
         pct: Number(a.allocated_pct) || 0,
         amount: formatSAR(Number(a.allocated_amount) || 0),
         color: theme?.color || '#2563EB',
