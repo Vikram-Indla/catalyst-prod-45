@@ -331,10 +331,28 @@ export default function InitiativeListingPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <CommandCenterHeader
-        title="Product Backlog"
-        subtitle="Strategic initiative portfolio & prioritization"
-      />
+      {/* Breadcrumb + Title */}
+      <div className="px-6 py-4 border-b bg-card" style={{ minHeight: 72 }}>
+        <nav className="flex items-center gap-1.5 text-xs mb-1" style={{ color: '#a1a1aa' }}>
+          <span className="hover:text-zinc-600 cursor-pointer transition-colors">ProductHub</span>
+          <span>›</span>
+          <span className="hover:text-zinc-600 cursor-pointer transition-colors">Initiatives</span>
+          <span>›</span>
+          <span style={{ color: '#52525b' }}>Backlog</span>
+        </nav>
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl font-bold" style={{ color: 'var(--text-1, #0f172a)', margin: 0 }}>
+            Product Backlog
+          </h1>
+          <span className="text-xs font-medium rounded-full px-2.5 py-0.5 tabular-nums"
+            style={{ background: '#f4f4f5', color: '#71717a' }}>
+            {filtered.length}
+          </span>
+        </div>
+        <p className="text-sm mt-0.5" style={{ color: 'var(--text-2, #64748b)', margin: '2px 0 0' }}>
+          Strategic initiative portfolio &amp; prioritization
+        </p>
+      </div>
 
       <ListingToolbar
         activeView={activeView}

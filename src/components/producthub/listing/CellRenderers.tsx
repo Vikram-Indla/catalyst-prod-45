@@ -49,10 +49,15 @@ export function PriorityCell({ score }: { score: number | null }) {
 
 /* ── Score Cell ── */
 export function ScoreCell({ score }: { score: number | null }) {
+  const getScoreColor = (s: number | null) => {
+    if (s === null) return '#a1a1aa';
+    if (s >= 4.0) return '#059669';
+    if (s >= 3.0) return '#2563eb';
+    return '#d97706';
+  };
   if (score === null) return <span style={{ color: '#a1a1aa' }}>—</span>;
-  const p = getPriorityLevel(score);
   return (
-    <span className="font-mono text-[12px] font-semibold tabular-nums" style={{ color: p.text }}>
+    <span className="font-mono text-[12px] font-semibold tabular-nums" style={{ color: getScoreColor(score) }}>
       {score.toFixed(1)}
     </span>
   );
