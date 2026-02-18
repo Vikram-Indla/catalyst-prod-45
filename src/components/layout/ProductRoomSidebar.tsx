@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import { Lock, ChevronDown, ChevronsLeft, ChevronsRight, Lightbulb, LayoutDashboard, LayoutGrid, List, Layers, Grid3X3, Sparkles, BarChart3, History, Star, FileText, ClipboardList, Columns3, GanttChart, Zap } from 'lucide-react';
+import { Lock, ChevronDown, ChevronsLeft, ChevronsRight, LayoutDashboard, LayoutGrid, List, Layers, History, Star, FileText, ClipboardList, Columns3, GanttChart, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -30,25 +30,7 @@ interface ProductRoomSidebarProps {
   className?: string;
 }
 
-// Ideas submenu items
-const IDEAS_MENU_ITEMS: SidebarMenuItem[] = [
-  { id: 'Ideas Hub', title: 'Ideas Hub', path: '/producthub/ideas/hub', exact: true },
-  { id: 'All Ideas', title: 'All Ideas', path: '/producthub/ideas/all', exact: false },
-  { id: 'Initiatives', title: 'Initiatives', path: '/producthub/ideas/initiatives', exact: false },
-  { id: 'Priority Matrix', title: 'Priority Matrix', path: '/producthub/ideas/matrix', exact: true },
-  { id: 'AI Insights', title: 'AI Insights', path: '/producthub/ideas/insights', exact: true },
-  { id: 'Analytics', title: 'Analytics', path: '/producthub/ideas/analytics', exact: true },
-];
-
-// Icons for Ideas submenu
-const IDEAS_NAV_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  'Ideas Hub': LayoutDashboard,
-  'All Ideas': List,
-  'Initiatives': Layers,
-  'Priority Matrix': Grid3X3,
-  'AI Insights': Sparkles,
-  'Analytics': BarChart3,
-};
+// Ideas module removed — will be rebuilt
 
 
 
@@ -58,9 +40,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
   const navigate = useNavigate();
   const { isFavorite, toggleFavorite } = useFavorites();
   
-  // Check if any Ideas route is active
-  const isIdeasRouteActive = location.pathname.includes('/producthub/ideas') || 
-                              location.pathname.includes('/ideas/');
+  
 
   // Determine if board view is active via URL param
   const searchParams = new URLSearchParams(location.search);
@@ -228,85 +208,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
             toggleFavorite={toggleFavorite}
           />
 
-          <Collapsible defaultOpen={isIdeasRouteActive}>
-            {/* Group Header */}
-            <CollapsibleTrigger asChild>
-              <button
-                className={cn(
-                  "group w-full flex items-center rounded-md border-none cursor-pointer transition-all relative",
-                  expanded ? "px-3 justify-start" : "justify-center",
-                  isIdeasRouteActive 
-                    ? "bg-blue-500/12 text-blue-600 font-medium" 
-                    : "bg-transparent text-foreground hover:bg-blue-500/6 font-normal"
-                )}
-                style={{
-                  height: '36px',
-                  gap: '12px',
-                  marginBottom: '1px',
-                  marginTop: '6px',
-                  fontSize: '13px',
-                  fontFamily: 'inherit',
-                  outline: 'none',
-                }}
-              >
-                {isIdeasRouteActive && (
-                  <span 
-                    style={{
-                      position: 'absolute',
-                      left: 0,
-                      top: expanded ? '4px' : '6px',
-                      bottom: expanded ? '4px' : '6px',
-                      width: '3px',
-                      background: 'var(--nav-accent-bar, #2563eb)',
-                      borderRadius: '0 2px 2px 0',
-                    }}
-                  />
-                )}
-                <span 
-                  className="flex items-center justify-center flex-shrink-0"
-                  style={{ width: '17px', height: '17px' }}
-                >
-                  <Lightbulb 
-                    className="h-[17px] w-[17px]" 
-                    style={{ 
-                      color: isIdeasRouteActive ? '#2563EB' : 'var(--nav-text-secondary, #3F3F46)',
-                      strokeWidth: 1.4,
-                    }}
-                  />
-                </span>
-                {expanded && (
-                  <>
-                    <span className="flex-1 text-left" style={{ lineHeight: '36px' }}>
-                      Ideas
-                    </span>
-                    <ChevronDown 
-                      className="h-3.5 w-3.5 transition-transform group-data-[state=open]:rotate-180" 
-                      style={{ color: 'var(--text-4)' }}
-                    />
-                  </>
-                )}
-              </button>
-            </CollapsibleTrigger>
-
-            {/* Collapsible Content - Ideas submenu */}
-            <CollapsibleContent>
-              <div style={{ paddingLeft: expanded ? '12px' : '0' }}>
-                {IDEAS_MENU_ITEMS.map((item) => (
-                  <MenuItemButton
-                    key={item.id}
-                    item={item}
-                    isActive={isActive(item.path, item.exact)}
-                    expanded={expanded}
-                    onClick={() => handleNavigation(item.path)}
-                    iconResolver={(id) => IDEAS_NAV_ICONS[id]}
-                    isChild
-                    isFavorite={isFavorite}
-                    toggleFavorite={toggleFavorite}
-                  />
-                ))}
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
+          {/* Ideas module removed — will be rebuilt */}
 
           {/* Intelligence Section */}
           <div 

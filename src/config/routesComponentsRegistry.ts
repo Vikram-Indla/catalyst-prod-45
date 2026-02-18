@@ -265,16 +265,6 @@ export const routesComponentsRegistry: RegistryEntry[] = [
     tags: ['pi', 'program-increment']
   },
   {
-    id: 'enterprise-ideation',
-    category: 'Enterprise',
-    name: 'EnterpriseIdeation',
-    route: '/enterprise/ideation',
-    filePath: 'src/pages/enterprise/EnterpriseIdeation.tsx',
-    description: 'Innovation/ideation management',
-    type: 'Page',
-    tags: ['ideation', 'innovation']
-  },
-  {
     id: 'enterprise-impediments',
     category: 'Enterprise',
     name: 'EnterpriseImpediments',

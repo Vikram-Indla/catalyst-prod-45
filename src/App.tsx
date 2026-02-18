@@ -122,20 +122,8 @@ import {
 
 import Defects from "./pages/Defects";
 import Tasks from "./pages/Tasks";
-import Ideation from "./pages/Ideation";
-const IdeasHubPage = lazy(() => import("./pages/ideas/IdeasHubPageRebuilt"));
-const AllIdeasPage = lazy(() => import("./pages/ideas/AllIdeasPageRebuilt"));
-const IdeaDetailPage = lazy(() => import("./pages/ideas/IdeaDetailPageRebuilt"));
-const InitiativesPage = lazy(() => import("./pages/ideas/InitiativesPage"));
-const InitiativeDetailPage = lazy(() => import("./pages/ideas/InitiativeDetailPage"));
-const SubmitIdeaPage = lazy(() => import("./pages/ideas/SubmitIdeaPageElevated"));
-const ScoringQueuePage = lazy(() => import("./pages/ideas/ScoringQueuePage"));
-const PriorityMatrixPage = lazy(() => import("./pages/ideas/PriorityMatrixPage"));
-const AIInsightsPage = lazy(() => import("./pages/ideas/AIInsightsPage"));
-const AnalyticsPage = lazy(() => import("./pages/ideas/AnalyticsPage"));
-const IdeasAdminSettingsPage = lazy(() => import("./pages/ideas/IdeasAdminSettingsPage"));
-import ManageIdeationUsersPage from "./components/ideation/ManageIdeationUsersPage";
-import ManageEnhancementRequests from "./pages/ManageEnhancementRequests";
+// Ideation module removed — will be rebuilt
+
 import Impediments from "./pages/Impediments";
 import ReleaseVehicles from "./pages/ReleaseVehicles";
 import SuccessCriteria from "./pages/SuccessCriteria";
@@ -662,21 +650,8 @@ const App = () => (
 <Route path="/product/capacity" element={<CapacityPlanningPage />} />
 
 
-              {/* Ideas Hub Module - under Product Hub */}
-              <Route path="/producthub/ideas" element={<Navigate to="/producthub/ideas/hub" replace />} />
-              <Route path="/producthub/ideas/hub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeasHubPage /></Suspense>} />
-              <Route path="/producthub/ideas/all" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AllIdeasPage /></Suspense>} />
-              <Route path="/producthub/ideas/initiatives" element={<Suspense fallback={<div className="p-8">Loading...</div>}><InitiativesPage /></Suspense>} />
-              <Route path="/producthub/ideas/initiatives/:initiativeId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><InitiativeDetailPage /></Suspense>} />
-              <Route path="/producthub/ideas/submit" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SubmitIdeaPage /></Suspense>} />
-              <Route path="/producthub/ideas/scoring" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ScoringQueuePage /></Suspense>} />
-              <Route path="/producthub/ideas/matrix" element={<Suspense fallback={<div className="p-8">Loading...</div>}><PriorityMatrixPage /></Suspense>} />
-              <Route path="/producthub/ideas/insights" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AIInsightsPage /></Suspense>} />
-              <Route path="/producthub/ideas/analytics" element={<Suspense fallback={<div className="p-8">Loading...</div>}><AnalyticsPage /></Suspense>} />
-              <Route path="/producthub/ideas/:ideaId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeaDetailPage /></Suspense>} />
+              {/* Ideas module removed — will be rebuilt */}
 
-              {/* Enterprise More Items */}
-              <Route path="/enterprise/ideation" element={<Navigate to="/producthub/ideas/hub" replace />} />
               <Route path="/strategyhub/risks" element={<Suspense fallback={<div className="p-8">Loading...</div>}><EnterpriseRisks /></Suspense>} />
               <Route path="/enterprise/risks" element={<Navigate to="/strategyhub/risks" replace />} />
               <Route path="/enterprise/impediments" element={<EnterpriseComingSoon />} />
@@ -746,9 +721,6 @@ const App = () => (
               
               <Route path="/items/defects" element={<Defects />} />
               <Route path="/items/tasks" element={<Tasks />} />
-              <Route path="/items/ideation" element={<Ideation />} />
-              <Route path="/items/ideation/manage-users" element={<ManageIdeationUsersPage />} />
-              <Route path="/items/ideation/manage-backlog" element={<ManageEnhancementRequests />} />
               <Route path="/items/impediments" element={<Impediments />} />
               <Route path="/items/release-vehicles" element={<ReleaseVehicles />} />
               <Route path="/items/success-criteria" element={<SuccessCriteria />} />
@@ -1118,8 +1090,6 @@ const App = () => (
                 <Route path="planhub/audit" element={<PlanHubActivityLog />} />
                 {/* Catch-all for unknown planhub admin sub-routes */}
                 <Route path="planhub/*" element={<Navigate to="/admin/planhub/general" replace />} />
-                {/* Ideas Admin Settings */}
-                <Route path="ideas" element={<Suspense fallback={<div className="p-8">Loading...</div>}><IdeasAdminSettingsPage /></Suspense>} />
                 {/* Slack Integration */}
                 <Route path="slack" element={<Suspense fallback={<div className="p-8">Loading...</div>}><SlackIntegrationPage /></Suspense>} />
                 {/* Enhanced Task List */}
