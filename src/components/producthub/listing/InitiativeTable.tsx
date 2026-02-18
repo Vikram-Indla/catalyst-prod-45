@@ -19,6 +19,8 @@ import {
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
 import { Check, ChevronUp, ChevronDown, Pencil, Star, MoreVertical } from 'lucide-react';
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
+import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
+import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';
 import {
   StatusCell, PriorityCell, ScoreCell, AssigneeCell,
   DateCell, ProgressCell, EACell, QuarterCell, IDCell,
@@ -31,6 +33,7 @@ interface Props {
   loading?: boolean;
   density: Density;
   columnConfigs: ColumnConfig[];
+  groupBy?: GroupByField;
   onRowClick: (initiative: Initiative) => void;
   onStatusChange: (id: string, status: InitiativeStatus) => void;
   onFavoriteToggle: (id: string, isFavorited: boolean) => void;
@@ -41,6 +44,24 @@ interface Props {
   onInlineEdit?: (id: string, field: string, value: string | number | null) => void;
   focusedRowIndex?: number;
   onFocusedRowChange?: (index: number) => void;
+}
+
+function getGroupKey(item: Initiative, groupBy: GroupByField): string {
+  switch (groupBy) {
+    case 'status': return item.status;
+    case 'priority': return getPriorityLevel(item.computed_score).level;
+    case 'department': return item.department_name || 'Unassigned';
+    case 'quarter': return item.target_quarter || 'No Quarter';
+    case 'assignee': return item.assignee_name || 'Unassigned';
+    default: return '';
+  }
+}
+
+function getGroupLabel(groupBy: GroupByField, key: string): string {
+  if (groupBy === 'status') {
+    return STATUS_DISPLAY[key as InitiativeStatus]?.label ?? key;
+  }
+  return key;
 }
 
 const col = createColumnHelper<Initiative>();
@@ -71,7 +92,7 @@ function Checkbox({ checked, indeterminate, onToggle }: { checked: boolean; inde
 }
 
 export function InitiativeTable({
-  data, loading = false, density, columnConfigs, onRowClick, onStatusChange,
+  data, loading = false, density, columnConfigs, groupBy = 'none', onRowClick, onStatusChange,
   onFavoriteToggle, onSelectionChange, onSortChange, onContextMenu, onReorder,
   onInlineEdit, focusedRowIndex = -1, onFocusedRowChange,
 }: Props) {
@@ -340,86 +361,129 @@ export function InitiativeTable({
 
             {/* Body */}
             <Droppable droppableId="initiative-table" type="ROW">
-              {(provided) => (
+              {(provided) => {
+                const rows = table.getRowModel().rows;
+                // Compute group boundaries
+                const groupHeaders = new Map<number, { label: string; count: number }>();
+                if (groupBy && groupBy !== 'none') {
+                  let lastKey = '';
+                  rows.forEach((row, idx) => {
+                    const key = getGroupKey(row.original, groupBy);
+                    if (key !== lastKey) {
+                      // Count items in this group
+                      let count = 0;
+                      for (let j = idx; j < rows.length; j++) {
+                        if (getGroupKey(rows[j].original, groupBy) === key) count++;
+                        else break;
+                      }
+                      groupHeaders.set(idx, { label: getGroupLabel(groupBy, key), count });
+                      lastKey = key;
+                    }
+                  });
+                }
+                const visibleColCount = table.getVisibleFlatColumns().length;
+
+                return (
                 <tbody ref={(el) => { provided.innerRef(el); (tbodyRef as React.MutableRefObject<HTMLTableSectionElement | null>).current = el; }} {...provided.droppableProps}>
-                  {table.getRowModel().rows.map((row, idx) => {
+                  {rows.map((row, idx) => {
                     const selected = row.getIsSelected();
                     const isCancelled = row.original.status === 'cancelled';
                     const isFocused = idx === focusedRowIndex;
+                    const groupHeader = groupHeaders.get(idx);
                     return (
                       <Draggable key={row.id} draggableId={row.id} index={idx}>
                         {(dragProvided, snapshot) => (
-                          <tr
-                            ref={dragProvided.innerRef}
-                            {...dragProvided.draggableProps}
-                            {...dragProvided.dragHandleProps}
-                            tabIndex={0}
-                            data-row-index={idx}
-                            className={`
-                              group/row transition-colors duration-[80ms] cursor-pointer ${rowH} relative
-                              ${selected ? 'bg-blue-50/60' : idx % 2 === 0 ? '' : 'bg-zinc-50/50'}
-                              ${!selected ? 'hover:bg-blue-50/30' : ''}
-                              ${isCancelled ? 'opacity-[0.55]' : ''}
-                              ${snapshot.isDragging ? 'bg-white shadow-lg opacity-90' : ''}
-                              ${isFocused ? 'ring-2 ring-blue-500 ring-inset' : ''}
-                            `}
-                            style={{ ...dragProvided.draggableProps.style, borderBottom: '1px solid #f4f4f5', outline: 'none' }}
-                            onClick={() => handleRowSingleClick(row.original)}
-                            onContextMenu={(e) => { e.preventDefault(); onContextMenu?.(e, row.original); }}
-                            onFocus={() => onFocusedRowChange?.(idx)}
-                          >
-                            {row.getVisibleCells().map(cell => {
-                              const cellKey = `${row.id}-${cell.column.id}`;
-                              const isFlashing = flashCell === cellKey;
-                              return (
+                          <>
+                            {groupHeader && (
+                              <tr
+                                className="h-8"
+                                style={{ background: '#f0f4ff', borderBottom: '1px solid #dbeafe' }}
+                              >
                                 <td
-                                  key={cell.id}
-                                  className={`px-3 align-middle whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-200 ${isFlashing ? 'bg-green-50' : ''}`}
-                                  style={{ width: cell.column.getSize() }}
-                                  onDoubleClick={(e) => handleDoubleClick(e, row.id, cell.column.id)}
+                                  colSpan={visibleColCount}
+                                  className="px-4 text-[12px] font-semibold uppercase tracking-wide"
+                                  style={{ color: '#1e40af' }}
                                 >
-                                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                  {groupHeader.label}
+                                  <span className="ml-2 text-[11px] font-normal" style={{ color: '#6b7280' }}>
+                                    ({groupHeader.count})
+                                  </span>
                                 </td>
-                              );
-                            })}
-
-                            {/* Hover Actions */}
-                            <td className="absolute right-3 top-0 bottom-0 flex items-center gap-1 opacity-0 group-hover/row:opacity-100 transition-opacity duration-100 pointer-events-none group-hover/row:pointer-events-auto"
-                              style={{ width: 'auto' }}
+                              </tr>
+                            )}
+                            <tr
+                              ref={dragProvided.innerRef}
+                              {...dragProvided.draggableProps}
+                              {...dragProvided.dragHandleProps}
+                              tabIndex={0}
+                              data-row-index={idx}
+                              className={`
+                                group/row transition-colors duration-[80ms] cursor-pointer ${rowH} relative
+                                ${selected ? 'bg-blue-50/60' : idx % 2 === 0 ? '' : 'bg-zinc-50/50'}
+                                ${!selected ? 'hover:bg-blue-50/30' : ''}
+                                ${isCancelled ? 'opacity-[0.55]' : ''}
+                                ${snapshot.isDragging ? 'bg-white shadow-lg opacity-90' : ''}
+                                ${isFocused ? 'ring-2 ring-blue-500 ring-inset' : ''}
+                              `}
+                              style={{ ...dragProvided.draggableProps.style, borderBottom: '1px solid #f4f4f5', outline: 'none' }}
+                              onClick={() => handleRowSingleClick(row.original)}
+                              onContextMenu={(e) => { e.preventDefault(); onContextMenu?.(e, row.original); }}
+                              onFocus={() => onFocusedRowChange?.(idx)}
                             >
-                              <button
-                                type="button"
-                                onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onRowClick(row.original); }}
-                                className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
-                                title="Edit"
+                              {row.getVisibleCells().map(cell => {
+                                const cellKey = `${row.id}-${cell.column.id}`;
+                                const isFlashing = flashCell === cellKey;
+                                return (
+                                  <td
+                                    key={cell.id}
+                                    className={`px-3 align-middle whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-200 ${isFlashing ? 'bg-green-50' : ''}`}
+                                    style={{ width: cell.column.getSize() }}
+                                    onDoubleClick={(e) => handleDoubleClick(e, row.id, cell.column.id)}
+                                  >
+                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                  </td>
+                                );
+                              })}
+
+                              {/* Hover Actions */}
+                              <td className="absolute right-3 top-0 bottom-0 flex items-center gap-1 opacity-0 group-hover/row:opacity-100 transition-opacity duration-100 pointer-events-none group-hover/row:pointer-events-auto"
+                                style={{ width: 'auto' }}
                               >
-                                <Pencil size={13} className="text-zinc-500" />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onFavoriteToggle(row.original.id, row.original.is_favorited); }}
-                                className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
-                                title="Star"
-                              >
-                                <Star size={13} className={row.original.is_favorited ? 'text-amber-400 fill-amber-400' : 'text-zinc-500'} />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } e.preventDefault(); onContextMenu?.(e, row.original); }}
-                                className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
-                                title="More"
-                              >
-                                <MoreVertical size={13} className="text-zinc-500" />
-                              </button>
-                            </td>
-                          </tr>
+                                <button
+                                  type="button"
+                                  onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onRowClick(row.original); }}
+                                  className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
+                                  title="Edit"
+                                >
+                                  <Pencil size={13} className="text-zinc-500" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onFavoriteToggle(row.original.id, row.original.is_favorited); }}
+                                  className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
+                                  title="Star"
+                                >
+                                  <Star size={13} className={row.original.is_favorited ? 'text-amber-400 fill-amber-400' : 'text-zinc-500'} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } e.preventDefault(); onContextMenu?.(e, row.original); }}
+                                  className="w-6 h-6 rounded-sm flex items-center justify-center hover:bg-zinc-200 transition-colors"
+                                  title="More"
+                                >
+                                  <MoreVertical size={13} className="text-zinc-500" />
+                                </button>
+                              </td>
+                            </tr>
+                          </>
                         )}
                       </Draggable>
                     );
                   })}
                   {provided.placeholder}
                 </tbody>
-              )}
+                );
+              }}
             </Droppable>
           </table>
         </div>

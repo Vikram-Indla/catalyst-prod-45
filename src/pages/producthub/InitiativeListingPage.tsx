@@ -14,11 +14,13 @@ import { DetailPanel } from '@/components/initiatives/DetailPanel';
 import { ContextMenu } from '@/components/initiatives/ContextMenu';
 import { KanbanBoard } from '@/components/initiatives/KanbanBoard';
 import { ColumnManager, DEFAULT_COLUMNS, type ColumnConfig } from '@/components/producthub/listing/ColumnManager';
+import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';
 import { ExportDropdown } from '@/components/producthub/listing/ExportDropdown';
 import { catalystToast } from '@/lib/catalystToast';
 import { LayoutGrid, Columns3 } from 'lucide-react';
 
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
+import { getPriorityLevel } from '@/types/initiative';
 
 type ViewMode = 'table' | 'board' | 'timeline' | 'cards';
 
@@ -68,6 +70,17 @@ function applySearch(data: Initiative[], query: string): Initiative[] {
   );
 }
 
+function getGroupSortKey(item: Initiative, groupBy: GroupByField): string {
+  switch (groupBy) {
+    case 'status': return item.status;
+    case 'priority': return getPriorityLevel(item.computed_score).level;
+    case 'department': return item.department_name || 'zzz_unassigned';
+    case 'quarter': return item.target_quarter || 'zzz_none';
+    case 'assignee': return item.assignee_name || 'zzz_unassigned';
+    default: return '';
+  }
+}
+
 export default function InitiativeListingPage() {
   const { data, isLoading } = useInitiativesMock();
   const [density, setDensity] = useState<Density>(loadDensity);
@@ -80,6 +93,7 @@ export default function InitiativeListingPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [focusedRow, setFocusedRow] = useState(-1);
+  const [groupBy, setGroupBy] = useState<GroupByField>('none');
 
   const [detailInitiative, setDetailInitiative] = useState<Initiative | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -114,8 +128,16 @@ export default function InitiativeListingPage() {
   const filtered = useMemo(() => {
     let result = applyQuickFilter(allInitiatives, quickFilter);
     result = applySearch(result, searchQuery);
+    // Sort by group field so group headers appear contiguously
+    if (groupBy !== 'none') {
+      result = [...result].sort((a, b) => {
+        const aKey = getGroupSortKey(a, groupBy);
+        const bKey = getGroupSortKey(b, groupBy);
+        return aKey.localeCompare(bKey);
+      });
+    }
     return result;
-  }, [allInitiatives, quickFilter, searchQuery]);
+  }, [allInitiatives, quickFilter, searchQuery, groupBy]);
 
   const paginatedData = useMemo(() => {
     const start = (page - 1) * pageSize;
@@ -329,6 +351,8 @@ export default function InitiativeListingPage() {
         onColumnsClick={() => setColumnManagerOpen(prev => !prev)}
         exportButtonRef={exportButtonRef}
         onExportClick={() => setExportOpen(prev => !prev)}
+        groupBy={groupBy}
+        onGroupByChange={setGroupBy}
       />
 
       {/* Bulk Action Bar */}
@@ -345,6 +369,7 @@ export default function InitiativeListingPage() {
             loading={isLoading}
             density={density}
             columnConfigs={columnConfigs}
+            groupBy={groupBy}
             onRowClick={handleRowClick}
             onStatusChange={handleStatusChange}
             onFavoriteToggle={handleFavoriteToggle}
