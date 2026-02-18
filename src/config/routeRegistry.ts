@@ -15,8 +15,17 @@ export interface RouteConfig {
  * Key: route path (use exact paths, dynamic params use :param syntax)
  */
 export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
-  // Strategy Hub routes - Core (only risks remains)
-  '/strategyhub/risks': { section: '', pageTitle: 'Risks' },
+  // Strategy Hub routes
+  '/strategyhub': { section: '', pageTitle: 'Strategy Room' },
+  '/strategyhub/themes': { section: '', pageTitle: 'Strategic Themes' },
+  '/strategyhub/goals': { section: '', pageTitle: 'Goals & Key Results' },
+  '/strategyhub/initiatives': { section: '', pageTitle: 'Initiatives' },
+  '/strategyhub/investment': { section: '', pageTitle: 'Investment Allocation' },
+  '/strategyhub/snapshots': { section: '', pageTitle: 'Snapshots' },
+  '/strategyhub/ai-insights': { section: '', pageTitle: 'AI Insights' },
+  '/strategyhub/team-alignment': { section: '', pageTitle: 'Team Alignment' },
+  '/strategyhub/settings': { section: '', pageTitle: 'Settings' },
+  '/strategyhub/risks': { section: '', pageTitle: 'Strategy Risks' },
   '/planhub/capacity': { section: '', pageTitle: 'Capacity Planner' },
   '/planhub/budget-planner': { section: '', pageTitle: 'Budget Planner' },
   '/enterprise/work-tree': { section: '', pageTitle: 'Work Tree' },

@@ -69,7 +69,7 @@ export function MobileNavigationMenu() {
             <Button
               variant="ghost"
               className="w-full justify-start px-6 py-3 text-base font-medium"
-              onClick={() => handleNavigate('/strategyhub/risks')}
+              onClick={() => handleNavigate('/strategyhub')}
             >
               Enterprise
             </Button>
