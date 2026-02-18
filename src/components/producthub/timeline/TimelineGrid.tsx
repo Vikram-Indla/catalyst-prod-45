@@ -33,11 +33,11 @@ export const TimelineGrid: React.FC<TimelineGridProps> = ({
 }) => {
   const { granularity, density, groupBy, collapsedGroups } = useTimelineState();
   const bodyRef = useRef<HTMLDivElement>(null);
+  const isSyncing = useRef(false);
   const [scrollLeft, setScrollLeft] = useState(0);
   const [cursorX, setCursorX] = useState(0);
   const [cursorDate, setCursorDate] = useState(new Date());
   const [showCursor, setShowCursor] = useState(false);
-  const rafRef = useRef<number>(0);
 
   const totalWidth = useMemo(() => getTotalWidth(granularity), [granularity]);
   const columns = useMemo(() => getColumns(granularity), [granularity]);
@@ -68,27 +68,32 @@ export const TimelineGrid: React.FC<TimelineGridProps> = ({
     return rowList.reduce((h, row) => h + (row.type === 'group' ? 36 : rowHeight), 0);
   }, [rowList, rowHeight]);
 
-  // Scroll sync: body → left panel (vertical) & header (horizontal)
+  // Scroll sync: timeline body → left panel (vertical) & header (horizontal)
   const handleScroll = useCallback(() => {
     if (!bodyRef.current) return;
     const { scrollLeft: sl, scrollTop } = bodyRef.current;
     setScrollLeft(sl);
 
-    // Sync left panel vertical scroll
+    if (isSyncing.current) return;
+    isSyncing.current = true;
     if (leftScrollRef.current) {
       leftScrollRef.current.scrollTop = scrollTop;
     }
+    requestAnimationFrame(() => { isSyncing.current = false; });
   }, [leftScrollRef]);
 
-  // Sync left panel scroll → body
+  // Scroll sync: left panel → timeline body (vertical)
   useEffect(() => {
     const leftEl = leftScrollRef.current;
     if (!leftEl) return;
 
     const syncFromLeft = () => {
+      if (isSyncing.current) return;
+      isSyncing.current = true;
       if (bodyRef.current) {
         bodyRef.current.scrollTop = leftEl.scrollTop;
       }
+      requestAnimationFrame(() => { isSyncing.current = false; });
     };
 
     leftEl.addEventListener('scroll', syncFromLeft, { passive: true });

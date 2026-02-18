@@ -45,8 +45,8 @@ export const TimelineLeftPanel: React.FC<TimelineLeftPanelProps> = ({
 
   return (
     <div className="w-[340px] bg-card border-r border-border flex flex-col shrink-0">
-      {/* Header */}
-      <div className="h-10 flex items-center justify-between px-4 border-b border-border shrink-0">
+      {/* Header — must match TimelineTimeHeader height (64px) */}
+      <div className="h-16 flex items-center justify-between px-4 border-b border-border shrink-0">
         <div className="flex items-center gap-2">
           <span className="text-[12px] font-semibold text-foreground uppercase tracking-wide">
             Initiatives
@@ -63,38 +63,45 @@ export const TimelineLeftPanel: React.FC<TimelineLeftPanelProps> = ({
         </button>
       </div>
 
-      {/* Scrollable body */}
-      <div ref={scrollRef as any} className="flex-1 overflow-y-auto min-h-0">
-        {isLoading ? (
-          <>
-            {Array.from({ length: 5 }).map((_, i) => (
-              <SkeletonRow key={i} />
-            ))}
-          </>
-        ) : totalCount === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-3">
-              <ArrowUpDown className="w-5 h-5 text-muted-foreground" />
+      {/* Scrollable body — scrollbar hidden, synced with timeline grid */}
+      <div
+        ref={scrollRef as React.RefObject<HTMLDivElement>}
+        className="flex-1 overflow-y-scroll min-h-0"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' } as React.CSSProperties}
+      >
+        <style>{`[data-left-panel-body]::-webkit-scrollbar { display: none; }`}</style>
+        <div data-left-panel-body>
+          {isLoading ? (
+            <>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <SkeletonRow key={i} />
+              ))}
+            </>
+          ) : totalCount === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-3">
+                <ArrowUpDown className="w-5 h-5 text-muted-foreground" />
+              </div>
+              <p className="text-[13px] font-medium text-foreground mb-1">No initiatives found</p>
+              <p className="text-[12px] text-muted-foreground">Try adjusting your filters</p>
             </div>
-            <p className="text-[13px] font-medium text-foreground mb-1">No initiatives found</p>
-            <p className="text-[12px] text-muted-foreground">Try adjusting your filters</p>
-          </div>
-        ) : isGrouped ? (
-          groups.map(group => (
-            <div key={group.name}>
-              <TimelineGroupHeader name={group.name} count={group.count} />
-              {!collapsedGroups.has(group.name) &&
-                group.items.map(item => (
-                  <TimelineLeftRow key={item.id} initiative={item} />
-                ))
-              }
-            </div>
-          ))
-        ) : (
-          initiatives.map(item => (
-            <TimelineLeftRow key={item.id} initiative={item} />
-          ))
-        )}
+          ) : isGrouped ? (
+            groups.map(group => (
+              <div key={group.name}>
+                <TimelineGroupHeader name={group.name} count={group.count} />
+                {!collapsedGroups.has(group.name) &&
+                  group.items.map(item => (
+                    <TimelineLeftRow key={item.id} initiative={item} />
+                  ))
+                }
+              </div>
+            ))
+          ) : (
+            initiatives.map(item => (
+              <TimelineLeftRow key={item.id} initiative={item} />
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
