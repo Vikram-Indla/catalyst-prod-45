@@ -73,7 +73,7 @@ export function OkrTree() {
           const isOpen = expanded[theme.name] ?? true;
           const Chevron = isOpen ? ChevronDown : ChevronRight;
           return (
-            <div key={theme.name} style={{ marginBottom: 4 }}>
+            <div key={theme.name} style={{ marginBottom: 8 }}>
               <button
                 role="button"
                 tabIndex={0}
@@ -87,11 +87,11 @@ export function OkrTree() {
                 onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--catalyst-bg-hover, #F8FAFC)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: theme.color, flexShrink: 0 }} />
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--catalyst-text-primary)', flex: 1, textAlign: 'left' }}>
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: theme.color, flexShrink: 0 }} />
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--catalyst-text-primary)', flex: 1, textAlign: 'left' }}>
                   {theme.name}
                 </span>
-                <span style={{ fontSize: 12, fontWeight: 600, color: getProgressColor(theme.progress), marginRight: 4 }}>
+                <span style={{ fontSize: 11, fontWeight: 600, color: getProgressColor(theme.progress), marginRight: 4 }}>
                   {theme.progress}%
                 </span>
                 <Chevron size={14} style={{ color: 'var(--catalyst-text-tertiary)', transition: 'transform 150ms' }} />
@@ -102,11 +102,11 @@ export function OkrTree() {
                   {theme.goals.map(goal => (
                     <div key={goal.name} className="flex items-center gap-2" style={{ padding: '6px 0' }}>
                       <span style={{ width: 6, height: 6, borderRadius: '50%', background: getProgressColor(goal.progress), flexShrink: 0 }} />
-                      <span style={{ fontSize: 12, color: 'var(--catalyst-text-primary)', flex: 1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--catalyst-text-primary)', flex: 1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {goal.name}
                       </span>
                       <div style={{ width: 80 }}>
-                        <ProgressBar value={goal.progress} height={6} showLabel />
+                        <ProgressBar value={goal.progress} height={4} showLabel />
                       </div>
                     </div>
                   ))}

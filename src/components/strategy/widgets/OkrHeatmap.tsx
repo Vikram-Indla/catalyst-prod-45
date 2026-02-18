@@ -48,9 +48,9 @@ const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
 
 function getCellStyle(status: OkrStatus): { bg: string; text: string } {
   switch (status) {
-    case 'on_track': return { bg: 'rgba(13,148,136,0.15)', text: '#0D9488' };
-    case 'at_risk': return { bg: 'rgba(217,119,6,0.15)', text: '#D97706' };
-    case 'off_track': return { bg: 'rgba(239,68,68,0.15)', text: '#EF4444' };
+    case 'on_track': return { bg: 'rgba(13,148,136,0.10)', text: '#0D9488' };
+    case 'at_risk': return { bg: 'rgba(217,119,6,0.10)', text: '#D97706' };
+    case 'off_track': return { bg: 'rgba(239,68,68,0.10)', text: '#EF4444' };
     default: return { bg: 'transparent', text: 'var(--catalyst-text-tertiary, #94A3B8)' };
   }
 }
@@ -78,7 +78,7 @@ export function OkrHeatmap() {
             <tr>
               <th style={{ ...thCss, textAlign: 'left', width: 120 }} />
               {QUARTERS.map(q => <th key={q} style={thCss}>{q}</th>)}
-              <th style={thCss}>Overall</th>
+              <th style={{ ...thCss, borderLeft: '2px solid var(--catalyst-border-strong, #CBD5E1)' }}>Overall</th>
             </tr>
           </thead>
           <tbody>
@@ -117,7 +117,8 @@ export function OkrHeatmap() {
                   textAlign: 'center', padding: '8px 6px', borderRadius: 6,
                   background: getCellStyle(row.overall.status).bg,
                   color: getCellStyle(row.overall.status).text,
-                  fontSize: 13, fontWeight: 700,
+                  fontSize: 13, fontWeight: 600,
+                  borderLeft: '2px solid var(--catalyst-border-strong, #CBD5E1)',
                 }}>
                   {row.overall.pct}
                 </td>

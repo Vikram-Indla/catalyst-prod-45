@@ -15,7 +15,7 @@ const WORKSTREAMS: WorkstreamBar[] = [
   { name: 'Tahommona', score: 76, color: '#6366F1' },
   { name: 'Delivery', score: 81, color: '#F97316' },
   { name: 'MIM', score: 69, color: '#EC4899' },
-  { name: 'Stand-Alone', score: 84, color: '#84CC16' },
+  { name: 'Standalone', score: 84, color: '#84CC16' },
   { name: 'Data & AI', score: 95, color: '#14B8A6' },
 ];
 
@@ -24,15 +24,16 @@ export function AlignmentMatrix() {
     <div className="space-y-1.5">
       {WORKSTREAMS.map(ws => (
         <div key={ws.name} className="flex items-center gap-2">
-          <span style={{ width: 60, fontSize: 11, textAlign: 'right', color: 'var(--catalyst-text-secondary)', flexShrink: 0 }}>
+          <span style={{ width: 60, fontSize: 10, textAlign: 'right', color: 'var(--catalyst-text-secondary)', flexShrink: 0, whiteSpace: 'nowrap' }}>
             {ws.name}
           </span>
-          <div className="flex-1" style={{ height: 8, borderRadius: 4, background: 'var(--catalyst-bg-hover, #F1F5F9)', overflow: 'hidden' }}>
+          <div className="flex-1" style={{ height: 6, borderRadius: 3, background: '#F8FAFC', overflow: 'hidden' }}>
             <div style={{
               width: `${ws.score}%`,
               height: '100%',
-              borderRadius: 4,
+              borderRadius: 3,
               background: ws.color,
+              opacity: 0.85,
               transition: 'width 800ms ease-out',
             }} />
           </div>

@@ -13,7 +13,7 @@ interface DialData {
 }
 
 const DIALS: DialData[] = [
-  { label: 'Business Requests', completed: 134, total: 200, color: '#2563EB' },
+  { label: 'Initiatives', completed: 134, total: 200, color: '#2563EB' },
   { label: 'Epics', completed: 27, total: 50, color: '#D97706' },
   { label: 'Features', completed: 142, total: 200, color: '#0D9488' },
   { label: 'Stories', completed: 415, total: 500, color: '#0D9488' },
@@ -29,13 +29,15 @@ export function ExecutionDials() {
         const pct = Math.round((dial.completed / dial.total) * 100);
         return (
           <div key={dial.label} className="flex flex-col items-center">
-            <CircularGauge
-              value={pct}
-              size={100}
-              strokeWidth={10}
-              color={dial.color}
-              animated
-            />
+            <div style={{ opacity: 0.9 }}>
+              <CircularGauge
+                value={pct}
+                size={100}
+                strokeWidth={8}
+                color={dial.color}
+                animated
+              />
+            </div>
             <span style={{ fontSize: 11, color: 'var(--catalyst-text-secondary)', marginTop: 6, textAlign: 'center' }}>
               {dial.label}
             </span>
