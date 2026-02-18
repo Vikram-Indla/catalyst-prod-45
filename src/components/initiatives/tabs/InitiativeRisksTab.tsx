@@ -130,8 +130,8 @@ export function InitiativeRisksTab({ initiativeId }: InitiativeRisksTabProps) {
         })}
       </div>
 
-      {/* Risk Matrix */}
-      {risks.length > 0 && (
+      {/* Risk Matrix — always visible */}
+      {(
         <div className="border border-zinc-200 rounded-lg p-4 bg-zinc-50 mb-6">
           <p className="text-xs font-medium text-zinc-500 uppercase tracking-wide mb-3">Risk Matrix</p>
           <div className="flex gap-2">

@@ -145,8 +145,8 @@ export function InitiativeAuditTab({ initiativeId }: InitiativeAuditTabProps) {
           <div className="mx-auto w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center mb-3">
             <History className="w-6 h-6 text-zinc-400" />
           </div>
-          <p className="text-sm font-medium text-zinc-600">No activity recorded</p>
-          <p className="text-xs text-zinc-400 mt-1">Changes to this initiative will appear here automatically</p>
+          <p className="text-sm font-medium text-zinc-600">Audit tracking is active</p>
+          <p className="text-xs text-zinc-400 mt-1">Changes made to this initiative from now on will be logged automatically.</p>
         </div>
       ) : (
         <div className="space-y-6">
