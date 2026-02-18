@@ -33,7 +33,9 @@ import DependencyMapsPage from "./pages/reports/DependencyMapsPage";
 import SearchPage from "./pages/SearchPage";
 // Home removed - using ForYouPage
 import PlaceholderPage from "./pages/jira-align/PlaceholderPage";
-// Strategy Room, Backlog, Snapshots, OKR, Roadmap pages removed
+// Strategy Hub pages
+const StrategyRoom = lazy(() => import("./pages/strategy/StrategyRoom"));
+const StrategyComingSoon = lazy(() => import("./pages/strategy/StrategyComingSoon"));
 const CapacityPlannerPage = lazy(() => import("./pages/enterprise/CapacityPlannerPage"));
 const BudgetGovernancePage = lazy(() => import("./pages/enterprise/BudgetGovernancePage"));
 const BudgetPlannerPage = lazy(() => import("./pages/enterprise/BudgetPlannerPage"));
@@ -513,19 +515,19 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/forecast" element={<Forecast />} />
               <Route path="/portfolio/:portfolioId/capacity" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/programs" element={<PlaceholderPage />} />
-              <Route path="/strategy-room" element={<Navigate to="/strategyhub/risks" replace />} />
-              <Route path="/strategyhub/strategy-room" element={<Navigate to="/strategyhub/risks" replace />} />
-              <Route path="/strategyhub/strategy-room/capacity" element={<Navigate to="/planhub/capacity" replace />} />
-              <Route path="/strategyhub/capacity" element={<Navigate to="/planhub/capacity" replace />} />
-              <Route path="/enterprise/capacity" element={<Navigate to="/planhub/capacity" replace />} />
-              <Route path="/enterprise/capacity-planner/budget" element={<Suspense fallback={<div className="p-8">Loading...</div>}><BudgetGovernancePage /></Suspense>} />
-              <Route path="/strategyhub/budget-planner" element={<Navigate to="/planhub/budget-planner" replace />} />
-              <Route path="/strategyhub/snapshots" element={<Navigate to="/strategyhub/risks" replace />} />
-              <Route path="/strategyhub/backlog" element={<Navigate to="/strategyhub/risks" replace />} />
-              <Route path="/strategyhub/okr-heatmap" element={<Navigate to="/strategyhub/risks" replace />} />
-              <Route path="/strategyhub/okr-tree" element={<Navigate to="/strategyhub/risks" replace />} />
-              <Route path="/strategyhub/okr-hub" element={<Navigate to="/strategyhub/risks" replace />} />
-              <Route path="/enterprise/okr-hub" element={<Navigate to="/strategyhub/risks" replace />} />
+              {/* ═══ Strategy Hub Routes ═══ */}
+              <Route path="/strategyhub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyRoom /></Suspense>} />
+              <Route path="/strategyhub/themes" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Strategic Themes" /></Suspense>} />
+              <Route path="/strategyhub/goals" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Goals & Key Results" /></Suspense>} />
+              <Route path="/strategyhub/initiatives" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Initiatives" /></Suspense>} />
+              <Route path="/strategyhub/investment" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Investment Allocation" /></Suspense>} />
+              <Route path="/strategyhub/snapshots" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Snapshots" /></Suspense>} />
+              <Route path="/strategyhub/ai-insights" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="AI Insights" /></Suspense>} />
+              <Route path="/strategyhub/team-alignment" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Team Alignment" /></Suspense>} />
+              <Route path="/strategyhub/settings" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Settings" /></Suspense>} />
+              {/* Legacy strategy redirects */}
+              <Route path="/strategy-room" element={<Navigate to="/strategyhub" replace />} />
+              <Route path="/strategyhub/strategy-room" element={<Navigate to="/strategyhub" replace />} />
               <Route path="/portfolio/:portfolioId/okr-hub" element={<PlaceholderPage />} />
               <Route path="/program/:programId/okr-hub" element={<PlaceholderPage />} />
               <Route path="/program" element={<ProgramRedirect />} />
