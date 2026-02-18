@@ -72,7 +72,8 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
   const [collapsedLanes, setCollapsedLanes] = useState<Record<string, boolean>>({});
   const [showMenu, setShowMenu] = useState(false);
 
-  const overWip = config.wip !== null && items.length > config.wip;
+  const overWip = config.wip !== null && items.length >= config.wip;
+  const approachingWip = config.wip !== null && !overWip && items.length >= config.wip - 1;
 
   const grouped = useMemo(() => groupBySwimlane(items, swimlane), [items, swimlane]);
   const laneKeys = Object.keys(grouped).sort();
@@ -111,8 +112,9 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
       className={cn(
         'flex-shrink-0 w-[300px] min-w-[300px] rounded-xl border flex flex-col bg-white shadow-sm transition-all',
         isOver && 'border-blue-400 bg-blue-50/30',
-        overWip && !isOver && 'border-amber-400 shadow-[0_0_0_2px_rgba(251,191,36,0.3)]',
-        !isOver && !overWip && 'border-zinc-200'
+        !isOver && overWip && 'border-red-300 shadow-[0_0_0_2px_rgba(239,68,68,0.15)]',
+        !isOver && !overWip && approachingWip && 'border-amber-300 shadow-[0_0_0_2px_rgba(251,191,36,0.15)]',
+        !isOver && !overWip && !approachingWip && 'border-zinc-200'
       )}
       aria-label={`${config.label} column with ${items.length} items`}
     >
@@ -164,7 +166,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
         ref={setNodeRef}
         className={cn(
           'flex-1 overflow-y-auto p-2 space-y-2 scrollbar-thin scrollbar-thumb-zinc-200',
-          isOver && 'border-2 border-dashed border-blue-400 rounded-lg bg-blue-50/20 m-1'
+          isOver && 'bg-blue-50/20'
         )}
         style={{ maxHeight: 'calc(100vh - 280px)' }}
         role="listbox"
