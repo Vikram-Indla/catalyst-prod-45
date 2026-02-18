@@ -144,14 +144,14 @@ export function CreateInitiativeDrawer({ open, onClose }: CreateInitiativeDrawer
       {open && (
         <>
           <motion.div
-            className="fixed inset-0 z-[55]"
+            className="fixed inset-0 z-[200]"
             style={{ background: 'rgba(0,0,0,0.20)' }}
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={onClose}
           />
           <motion.div
-            className="fixed top-0 right-0 h-screen z-[60] flex flex-col overflow-hidden bg-white"
+            className="fixed top-0 right-0 h-screen z-[201] flex flex-col overflow-hidden bg-white"
             style={{ width: '55%', maxWidth: 840, minWidth: 480, boxShadow: '-8px 0 24px rgba(0,0,0,0.12)' }}
             initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
