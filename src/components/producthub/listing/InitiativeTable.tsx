@@ -51,13 +51,13 @@ const DENSITY_ROW: Record<Density, string> = {
   comfortable: 'h-12',
 };
 
-function Checkbox({ checked, indeterminate, onChange }: { checked: boolean; indeterminate?: boolean; onChange: (e: React.MouseEvent) => void }) {
+function Checkbox({ checked, indeterminate, onToggle }: { checked: boolean; indeterminate?: boolean; onToggle: () => void }) {
   return (
     <button
       type="button"
       role="checkbox"
       aria-checked={indeterminate ? 'mixed' : checked}
-      onClick={(e) => { e.stopPropagation(); onChange(e); }}
+      onClick={(e) => { e.stopPropagation(); onToggle(); }}
       className="w-4 h-4 rounded flex items-center justify-center shrink-0 transition-all duration-100 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
       style={{
         border: checked || indeterminate ? '1.5px solid #2563eb' : '1.5px solid #d4d4d8',
@@ -169,10 +169,10 @@ export function InitiativeTable({
     col.display({
       id: 'select', size: 40, minSize: 40, maxSize: 40, enableResizing: false,
       header: ({ table }) => (
-        <Checkbox checked={table.getIsAllRowsSelected()} indeterminate={table.getIsSomeRowsSelected()} onChange={table.getToggleAllRowsSelectedHandler()} />
+        <Checkbox checked={table.getIsAllRowsSelected()} indeterminate={table.getIsSomeRowsSelected()} onToggle={() => table.toggleAllRowsSelected()} />
       ),
       cell: ({ row }) => (
-        <Checkbox checked={row.getIsSelected()} onChange={row.getToggleSelectedHandler()} />
+        <Checkbox checked={row.getIsSelected()} onToggle={() => row.toggleSelected()} />
       ),
     }),
     col.accessor('initiative_key', {
