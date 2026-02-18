@@ -27,6 +27,19 @@
   --app-header-h: 56px;
   --app-top-offset: calc(var(--app-safe-top) + var(--app-header-h));
 
+  /* ═══ Requirement Assist Capability Accents ═══ */
+  --cap-brd: #2563EB;
+  --cap-translate: #0D9488;
+  --cap-epic: #7C3AED;
+  --cap-uat: #D97706;
+  --quality-high: #059669;
+  --quality-mid: #D97706;
+  --quality-low: #DC2626;
+  --primary-50: #EFF6FF;
+  --teal-50: #F0FDFA;
+  --violet-50: #F5F3FF;
+  --warning-50: #FFFBEB;
+
   /* ═══ CATALYST10 Typography Tokens ═══ */
   /* UI Scale */
   --c10-text-ui-2xs: 10px;

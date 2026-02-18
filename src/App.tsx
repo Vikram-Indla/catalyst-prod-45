@@ -3,6 +3,10 @@ import React, { lazy, Suspense } from "react";
 const InitiativeListingPage = lazy(() => import("./pages/producthub/InitiativeListingPage"));
 const RoadmapPage = lazy(() => import("./pages/producthub/RoadmapPage"));
 const ProductKanbanPage = lazy(() => import("./pages/producthub/KanbanPage"));
+const RequirementAssistWorkspace = lazy(() => import("./pages/producthub/requirement-assist/index"));
+const RequirementAssistCompose = lazy(() => import("./pages/producthub/requirement-assist/compose"));
+const RequirementAssistCategories = lazy(() => import("./pages/producthub/requirement-assist/categories"));
+const RequirementAssistOutput = lazy(() => import("./pages/producthub/requirement-assist/output"));
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { Toaster as HotToaster } from 'react-hot-toast';
@@ -498,6 +502,12 @@ const App = () => (
               <Route path="/producthub/roadmaps-v1" element={<IndustryRoadmapPage />} />
               <Route path="/producthub/reports" element={<IndustryComingSoon />} />
               <Route path="/producthub/roadmap" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RoadmapPage /></Suspense>} />
+              {/* Requirement Assist routes */}
+              <Route path="/producthub/requirement-assist" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistWorkspace /></Suspense>} />
+              <Route path="/producthub/requirement-assist/compose" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistCompose /></Suspense>} />
+              <Route path="/producthub/requirement-assist/categories" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistCategories /></Suspense>} />
+              <Route path="/producthub/requirement-assist/:id" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RequirementAssistOutput /></Suspense>} />
+
               {/* Legacy industry redirects */}
               <Route path="/industry/*" element={<Navigate to="/producthub" replace />} />
               
