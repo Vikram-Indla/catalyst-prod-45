@@ -519,7 +519,7 @@ const App = () => (
               <Route path="/strategyhub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyRoom /></Suspense>} />
               <Route path="/strategyhub/themes" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Strategic Themes" /></Suspense>} />
               <Route path="/strategyhub/goals" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Goals & Key Results" /></Suspense>} />
-              <Route path="/strategyhub/initiatives" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Initiatives" /></Suspense>} />
+              <Route path="/strategyhub/initiatives" element={<Navigate to="/producthub/backlog" replace />} />
               <Route path="/strategyhub/investment" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Investment Allocation" /></Suspense>} />
               <Route path="/strategyhub/snapshots" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Snapshots" /></Suspense>} />
               <Route path="/strategyhub/ai-insights" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="AI Insights" /></Suspense>} />
