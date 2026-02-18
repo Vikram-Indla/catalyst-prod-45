@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Pencil, Paperclip, Copy, Link2, Target, Trash2, Save, Loader2, ChevronLeft, ClipboardList, AlertTriangle, Flag, ExternalLink, Activity, Plus, Wallet } from 'lucide-react';
+import { X, Pencil, Paperclip, Copy, Link2, Target, Trash2, Save, Loader2, ChevronLeft, ClipboardList, AlertTriangle, Flag, ExternalLink, Activity, Plus, Wallet, FileText, GitBranch, Layout, ArrowRight, TrendingUp } from 'lucide-react';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import { StatusBadge } from './StatusBadge';
@@ -239,17 +239,62 @@ function RisksTab() {
    ════════════════════════════════════════════════════ */
 function MilestonesTab() {
   return (
-    <div>
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="text-sm font-semibold text-zinc-900">Milestones</h3>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-semibold text-zinc-900">Milestones</h3>
+          <p className="text-xs text-zinc-400 mt-0.5">Key deliverables and checkpoints</p>
+        </div>
+        <button
+          onClick={() => catalystToast.info('Milestone tracking will be available soon')}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          Add Milestone
+        </button>
       </div>
-      <TabEmptyState
-        icon={Flag}
-        title="No milestones set"
-        description="Add milestones to track key deliverables and deadlines for this initiative."
-        ctaLabel="Add Milestone"
-        onCta={() => catalystToast.info('Milestone tracking coming soon')}
-      />
+
+      {/* Progress Summary */}
+      <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs font-medium text-zinc-500">Overall Progress</span>
+          <span className="text-xs font-semibold text-zinc-700">0 of 0 completed</span>
+        </div>
+        <div className="h-2 bg-zinc-200 rounded-full overflow-hidden">
+          <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: '0%' }} />
+        </div>
+        <div className="flex items-center gap-4 mt-3">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full" />
+            <span className="text-xs text-zinc-500">Completed (0)</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 bg-blue-500 rounded-full" />
+            <span className="text-xs text-zinc-500">In Progress (0)</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 bg-zinc-300 rounded-full" />
+            <span className="text-xs text-zinc-500">Upcoming (0)</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Empty State */}
+      <div className="border border-zinc-200 rounded-lg px-4 py-12 text-center">
+        <div className="mx-auto w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center mb-3">
+          <Flag className="w-6 h-6 text-zinc-400" />
+        </div>
+        <p className="text-sm font-medium text-zinc-600">No milestones set</p>
+        <p className="text-xs text-zinc-400 mt-1">Add milestones to track key deliverables and deadlines</p>
+        <button
+          onClick={() => catalystToast.info('Milestone tracking will be available soon')}
+          className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          Add Milestone
+        </button>
+      </div>
     </div>
   );
 }
@@ -259,17 +304,61 @@ function MilestonesTab() {
    ════════════════════════════════════════════════════ */
 function LinksTab() {
   return (
-    <div>
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="text-sm font-semibold text-zinc-900">Related Links</h3>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-semibold text-zinc-900">Related Links</h3>
+          <p className="text-xs text-zinc-400 mt-0.5">Documents, references, and external resources</p>
+        </div>
+        <button
+          onClick={() => catalystToast.info('Link management will be available soon')}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          Add Link
+        </button>
       </div>
-      <TabEmptyState
-        icon={ExternalLink}
-        title="No links added"
-        description="Add links to related documents, designs, and resources for this initiative."
-        ctaLabel="Add Link"
-        onCta={() => catalystToast.info('Link management coming soon')}
-      />
+
+      {/* Link Categories */}
+      <div className="grid grid-cols-4 gap-2">
+        <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-3 text-center">
+          <FileText className="w-5 h-5 text-zinc-400 mx-auto" />
+          <p className="text-[10px] font-medium text-zinc-500 mt-1.5">Documents</p>
+          <p className="text-lg font-bold text-zinc-900">0</p>
+        </div>
+        <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-3 text-center">
+          <GitBranch className="w-5 h-5 text-zinc-400 mx-auto" />
+          <p className="text-[10px] font-medium text-zinc-500 mt-1.5">Repositories</p>
+          <p className="text-lg font-bold text-zinc-900">0</p>
+        </div>
+        <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-3 text-center">
+          <Layout className="w-5 h-5 text-zinc-400 mx-auto" />
+          <p className="text-[10px] font-medium text-zinc-500 mt-1.5">Designs</p>
+          <p className="text-lg font-bold text-zinc-900">0</p>
+        </div>
+        <div className="bg-zinc-50 border border-zinc-200 rounded-lg p-3 text-center">
+          <ExternalLink className="w-5 h-5 text-zinc-400 mx-auto" />
+          <p className="text-[10px] font-medium text-zinc-500 mt-1.5">Other</p>
+          <p className="text-lg font-bold text-zinc-900">0</p>
+        </div>
+      </div>
+
+      {/* Empty State */}
+      <div className="border border-zinc-200 rounded-lg px-4 py-12 text-center">
+        <div className="mx-auto w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center mb-3">
+          <Link2 className="w-6 h-6 text-zinc-400" />
+        </div>
+        <p className="text-sm font-medium text-zinc-600">No links added</p>
+        <p className="text-xs text-zinc-400 mt-1">Add links to related documents, repos, designs, and resources</p>
+        <button
+          onClick={() => catalystToast.info('Link management will be available soon')}
+          className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          Add Link
+        </button>
+      </div>
     </div>
   );
 }
@@ -278,46 +367,116 @@ function LinksTab() {
    AUDIT TAB
    ════════════════════════════════════════════════════ */
 function AuditTab({ initiative }: { initiative: Initiative }) {
-  const entries = [
-    ...(initiative.updated_at && initiative.updated_at !== initiative.created_at ? [{
-      action: 'Last updated',
-      detail: `Initiative details were modified`,
-      date: initiative.updated_at,
-      actor: 'System',
-    }] : []),
-    {
-      action: 'Initiative created',
-      detail: `${initiative.initiative_key} was created`,
-      date: initiative.created_at,
-      actor: 'System',
-    },
-  ];
+  const statusLabel = initiative.status
+    ?.replace(/_/g, ' ')
+    .replace(/\b\w/g, (c: string) => c.toUpperCase()) || 'Unknown';
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-5">
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
         <h3 className="text-sm font-semibold text-zinc-900">Activity Log</h3>
+        <p className="text-xs text-zinc-400 mt-0.5">All changes to this initiative</p>
       </div>
-      {entries.length === 0 ? (
-        <TabEmptyState
-          icon={Activity}
-          title="No activity recorded"
-          description="Changes to this initiative will appear here automatically."
-          ctaLabel="Refresh"
-          onCta={() => {}}
-        />
-      ) : (
-        <div className="relative pl-6 border-l-2 border-zinc-200">
-          {entries.map((entry, i) => (
-            <div key={i} className="relative pb-6 last:pb-0">
-              <div className="absolute -left-[25px] top-1 w-3 h-3 rounded-full bg-blue-500 border-2 border-white" />
-              <div className="text-sm font-medium text-zinc-900 mb-0.5">{entry.action}</div>
-              <div className="text-xs text-zinc-500 mb-1">{entry.detail}</div>
-              <div className="text-xs text-zinc-400">{formatAbsoluteDate(entry.date)}</div>
+
+      {/* Timeline */}
+      <div className="relative">
+        {/* Vertical line */}
+        <div className="absolute left-4 top-6 bottom-6 w-px bg-zinc-200" />
+
+        {/* Entry: Last Updated */}
+        {initiative.updated_at && initiative.updated_at !== initiative.created_at && (
+          <div className="relative flex gap-4 pb-6">
+            <div className="relative z-10 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
+              <Pencil className="w-3.5 h-3.5 text-blue-600" />
             </div>
-          ))}
+            <div className="pt-1">
+              <p className="text-sm text-zinc-900">
+                <span className="font-medium">Initiative updated</span>
+              </p>
+              <p className="text-xs text-zinc-500 mt-0.5">Fields were modified on this initiative</p>
+              <p className="text-xs text-zinc-400 mt-1">
+                {new Date(initiative.updated_at).toLocaleDateString('en-US', {
+                  month: 'short', day: 'numeric', year: 'numeric',
+                  hour: '2-digit', minute: '2-digit',
+                })}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Entry: Status set */}
+        <div className="relative flex gap-4 pb-6">
+          <div className="relative z-10 w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center shrink-0">
+            <ArrowRight className="w-3.5 h-3.5 text-amber-600" />
+          </div>
+          <div className="pt-1">
+            <p className="text-sm text-zinc-900">
+              <span className="font-medium">Status set to </span>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-amber-50 text-amber-700 rounded-full">
+                {statusLabel}
+              </span>
+            </p>
+            <p className="text-xs text-zinc-400 mt-1">
+              {initiative.updated_at
+                ? new Date(initiative.updated_at).toLocaleDateString('en-US', {
+                    month: 'short', day: 'numeric', year: 'numeric',
+                  })
+                : 'Unknown date'}
+            </p>
+          </div>
         </div>
-      )}
+
+        {/* Entry: Progress update */}
+        {initiative.progress != null && initiative.progress > 0 && (
+          <div className="relative flex gap-4 pb-6">
+            <div className="relative z-10 w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center shrink-0">
+              <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
+            </div>
+            <div className="pt-1">
+              <p className="text-sm text-zinc-900">
+                <span className="font-medium">Progress updated to </span>
+                <span className="font-semibold text-emerald-700">{initiative.progress}%</span>
+              </p>
+              <p className="text-xs text-zinc-400 mt-1">
+                {initiative.updated_at
+                  ? new Date(initiative.updated_at).toLocaleDateString('en-US', {
+                      month: 'short', day: 'numeric', year: 'numeric',
+                    })
+                  : 'Unknown date'}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Entry: Created */}
+        <div className="relative flex gap-4">
+          <div className="relative z-10 w-8 h-8 bg-zinc-100 rounded-full flex items-center justify-center shrink-0">
+            <Plus className="w-3.5 h-3.5 text-zinc-500" />
+          </div>
+          <div className="pt-1">
+            <p className="text-sm text-zinc-900">
+              <span className="font-medium">Initiative created</span>
+            </p>
+            <p className="text-xs text-zinc-500 mt-0.5">{initiative.initiative_key} was created</p>
+            <p className="text-xs text-zinc-400 mt-1">
+              {initiative.created_at
+                ? new Date(initiative.created_at).toLocaleDateString('en-US', {
+                    month: 'short', day: 'numeric', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit',
+                  })
+                : 'Unknown date'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Note */}
+      <div className="bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-3">
+        <p className="text-xs text-zinc-500">
+          Full audit trail with field-level change tracking will be available in a future update. Currently showing key events.
+        </p>
+      </div>
     </div>
   );
 }
