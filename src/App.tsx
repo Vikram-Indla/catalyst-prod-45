@@ -33,8 +33,7 @@ import DependencyMapsPage from "./pages/reports/DependencyMapsPage";
 import SearchPage from "./pages/SearchPage";
 // Home removed - using ForYouPage
 import PlaceholderPage from "./pages/jira-align/PlaceholderPage";
-// StrategyRoom removed - use StrategyRoomPage instead
-import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
+// Strategy Room, Backlog, Snapshots, OKR, Roadmap pages removed
 const CapacityPlannerPage = lazy(() => import("./pages/enterprise/CapacityPlannerPage"));
 const BudgetGovernancePage = lazy(() => import("./pages/enterprise/BudgetGovernancePage"));
 const BudgetPlannerPage = lazy(() => import("./pages/enterprise/BudgetPlannerPage"));
@@ -266,7 +265,7 @@ import RoutesComponentsRegistry from "./pages/admin/RoutesComponentsRegistry";
 import EpicStatuses from "./pages/admin/EpicStatuses";
 import FeatureStatuses from "./pages/admin/FeatureStatuses";
 import ThemeStatuses from "./pages/admin/ThemeStatuses";
-import SnapshotsAdmin from "./pages/admin/SnapshotsAdmin";
+// SnapshotsAdmin removed
 import {
   IncidentWorkgroups,
   IncidentFieldsConfig,
@@ -317,17 +316,13 @@ import { CapacityPage as WorkHubCapacityPage } from "./components/workhub/capaci
 import { AnalyticsPage as WorkHubAnalyticsPage } from "./components/workhub/analytics/AnalyticsPage";
 import { CatyPage as WorkHubCatyPage } from "./components/workhub/caty/CatyPage";
 import { AdminGuard } from "./components/admin/AdminGuard";
-import OKRTree from "./pages/enterprise/OKRTree";
-import OKRHub from "./pages/enterprise/OKRHub";
-// OKR v2 is now the single source - no separate portfolio/program/team OKR hubs
-import CatalystEnterpriseRoadmap from "./pages/enterprise/CatalystEnterpriseRoadmap";
+// OKRTree, OKRHub, CatalystEnterpriseRoadmap removed
 import ForYouPage from "./pages/ForYouPage";
 import ProductRoadmapPage from "./pages/ProductRoadmapPage";
 import ProductRoadmapV2Page from "./pages/ProductRoadmapV2Page";
 import IndustryRoadmapPage from "./pages/industry/IndustryRoadmapPage";
 
-import StrategicSnapshots from "./pages/enterprise/StrategicSnapshots";
-import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
+// StrategicSnapshots, StrategicBacklog removed
 import EnterpriseEpics from "./pages/enterprise/EnterpriseEpics";
 import { WorkTreePage } from "./pages/work-tree";
 import WorkManager from "./pages/WorkManager";
@@ -350,7 +345,7 @@ import IndustryComingSoon from "./pages/enterprise/IndustryComingSoon";
 import DemandSummaryPage from "./pages/enterprise/DemandSummaryPage";
 import ProductRoomPage from "./pages/ProductRoomPage";
 import CapacityPlanningPage from "./pages/CapacityPlanningPage";
-import ExecutiveRoadmapPage from "./pages/enterprise/ExecutiveRoadmapPage";
+// ExecutiveRoadmapPage removed
 import CatalystDemandKanban from "./modules/kanban/pages/CatalystDemandKanban";
 import CatalystDemandList from "./modules/product-backlog/pages/CatalystDemandList";
 import CatalystDemandTable from "./modules/product-backlog/pages/CatalystDemandTable";
@@ -513,26 +508,26 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/epics" element={<EpicsPage />} />
               <Route path="/portfolio/:portfolioId/backlog" element={<EpicBacklogWithSidebar />} />
               <Route path="/portfolio/:portfolioId/roadmaps" element={<PlaceholderPage />} />
-              <Route path="/portfolio/:portfolioId/objective-tree" element={<OKRHub />} />
+              <Route path="/portfolio/:portfolioId/objective-tree" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/work-tree" element={<WorkTreePage />} />
               <Route path="/portfolio/:portfolioId/forecast" element={<Forecast />} />
               <Route path="/portfolio/:portfolioId/capacity" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/programs" element={<PlaceholderPage />} />
-              <Route path="/strategy-room" element={<StrategyRoomPage />} />
-              <Route path="/strategyhub/strategy-room" element={<StrategyRoomPage />} />
+              <Route path="/strategy-room" element={<Navigate to="/strategyhub/risks" replace />} />
+              <Route path="/strategyhub/strategy-room" element={<Navigate to="/strategyhub/risks" replace />} />
               <Route path="/strategyhub/strategy-room/capacity" element={<Navigate to="/planhub/capacity" replace />} />
               <Route path="/strategyhub/capacity" element={<Navigate to="/planhub/capacity" replace />} />
               <Route path="/enterprise/capacity" element={<Navigate to="/planhub/capacity" replace />} />
               <Route path="/enterprise/capacity-planner/budget" element={<Suspense fallback={<div className="p-8">Loading...</div>}><BudgetGovernancePage /></Suspense>} />
               <Route path="/strategyhub/budget-planner" element={<Navigate to="/planhub/budget-planner" replace />} />
-              <Route path="/strategyhub/snapshots" element={<StrategicSnapshots />} />
-              <Route path="/strategyhub/backlog" element={<StrategicBacklog />} />
-              <Route path="/strategyhub/okr-heatmap" element={<EnterpriseComingSoon />} />
-              <Route path="/strategyhub/okr-tree" element={<OKRTree />} />
-              <Route path="/strategyhub/okr-hub" element={<OKRHub />} />
-              <Route path="/enterprise/okr-hub" element={<Navigate to="/strategyhub/okr-hub" replace />} />
-              <Route path="/portfolio/:portfolioId/okr-hub" element={<OKRHub />} />
-              <Route path="/program/:programId/okr-hub" element={<OKRHub />} />
+              <Route path="/strategyhub/snapshots" element={<Navigate to="/strategyhub/risks" replace />} />
+              <Route path="/strategyhub/backlog" element={<Navigate to="/strategyhub/risks" replace />} />
+              <Route path="/strategyhub/okr-heatmap" element={<Navigate to="/strategyhub/risks" replace />} />
+              <Route path="/strategyhub/okr-tree" element={<Navigate to="/strategyhub/risks" replace />} />
+              <Route path="/strategyhub/okr-hub" element={<Navigate to="/strategyhub/risks" replace />} />
+              <Route path="/enterprise/okr-hub" element={<Navigate to="/strategyhub/risks" replace />} />
+              <Route path="/portfolio/:portfolioId/okr-hub" element={<PlaceholderPage />} />
+              <Route path="/program/:programId/okr-hub" element={<PlaceholderPage />} />
               <Route path="/program" element={<ProgramRedirect />} />
               <Route path="/program/:programId/work-tree" element={<ExecutionWorkbenchPage />} />
               <Route path="/program/:programId/room" element={<ProgramRoom />} />
@@ -544,16 +539,16 @@ const App = () => (
               <Route path="/program/:programId/dependencies" element={<DependenciesPage />} />
               <Route path="/program/:programId/roadmaps" element={<ProgramRoadmapPage />} />
               <Route path="/program/:programId/roadmaps-test" element={<RoadmapsTestPage />} />
-              <Route path="/program/:programId/objectives-tree" element={<OKRHub />} />
+              <Route path="/program/:programId/objectives-tree" element={<PlaceholderPage />} />
               <Route path="/program/:programId/forecast" element={<PlaceholderPage />} />
               <Route path="/program/:programId/capacity" element={<CapacityWithSidebar />} />
               <Route path="/program/:programId/quarters" element={<QuartersPage />} />
               <Route path="/program/:programId/epic-balancing" element={<EpicBalancingPage />} />
               {/* Execution Workbench now at /program/:programId/work-tree */}
               <Route path="/program/:programId/reports" element={<PlaceholderPage />} />
-              <Route path="/team/:teamId/okr-hub" element={<OKRHub />} />
-              <Route path="/strategyhub/roadmaps" element={<CatalystEnterpriseRoadmap />} />
-              <Route path="/enterprise/roadmaps" element={<Navigate to="/strategyhub/roadmaps" replace />} />
+              <Route path="/team/:teamId/okr-hub" element={<PlaceholderPage />} />
+              <Route path="/strategyhub/roadmaps" element={<Navigate to="/strategyhub/risks" replace />} />
+              <Route path="/enterprise/roadmaps" element={<Navigate to="/strategyhub/risks" replace />} />
               <Route path="/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/kanban-boards" element={<EnterpriseComingSoon />} />
@@ -737,7 +732,7 @@ const App = () => (
               <Route path="/programs/:programId/backlog" element={<BacklogWithSidebar />} />
               <Route path="/programs/:programId/epic-backlog" element={<EpicBacklogWithSidebar />} />
               <Route path="/programs/:programId/roadmaps" element={<ProgramRoadmapPage />} />
-              <Route path="/programs/:programId/objective-tree" element={<OKRHub />} />
+              <Route path="/programs/:programId/objective-tree" element={<PlaceholderPage />} />
               <Route path="/programs/:programId/work-tree" element={<WorkTreePage />} />
               <Route path="/programs/:programId/program-board" element={<PlaceholderPage />} />
               <Route path="/programs/:programId/forecast" element={<PlaceholderPage />} />
@@ -815,7 +810,7 @@ const App = () => (
               <Route path="/teams/:teamId/work-tree" element={<WorkTreePage />} />
               <Route path="/teams/:teamId/backlog" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/board" element={<TeamComingSoon />} />
-              <Route path="/teams/:teamId/objective-tree" element={<OKRHub />} />
+              <Route path="/teams/:teamId/objective-tree" element={<PlaceholderPage />} />
               <Route path="/teams/:teamId/roadmaps" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/sprints" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/velocity" element={<TeamComingSoon />} />
@@ -837,7 +832,7 @@ const App = () => (
 
               {/* Portfolio Routes with :portfolioId */}
               <Route path="/portfolio/:portfolioId/room" element={<PlaceholderPage />} />
-              <Route path="/portfolio/:portfolioId/objective-tree" element={<OKRHub />} />
+              <Route path="/portfolio/:portfolioId/objective-tree" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/work-tree" element={<WorkTreePage />} />
               <Route path="/portfolio/:portfolioId/backlog" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/roadmaps" element={<Roadmaps />} />
@@ -867,7 +862,7 @@ const App = () => (
               {/* Program Routes with :programId */}
               <Route path="/programs/:programId/room" element={<ProgramRoom />} />
               <Route path="/programs/:programId/program-board" element={<PlaceholderPage />} />
-              <Route path="/programs/:programId/objective-tree" element={<OKRHub />} />
+              <Route path="/programs/:programId/objective-tree" element={<PlaceholderPage />} />
               <Route path="/programs/:programId/work-tree" element={<WorkTreePage />} />
               <Route path="/programs/:programId/backlog" element={<BacklogWithSidebar />} />
               <Route path="/programs/:programId/roadmaps" element={<ProgramRoadmapPage />} />
@@ -900,7 +895,7 @@ const App = () => (
               <Route path="/team/:teamId/backlog" element={<TeamComingSoon />} />
               <Route path="/team/:teamId/stories" element={<TeamComingSoon />} />
               <Route path="/team/:teamId/roadmaps" element={<TeamComingSoon />} />
-              <Route path="/team/:teamId/objective-tree" element={<OKRHub />} />
+              <Route path="/team/:teamId/objective-tree" element={<PlaceholderPage />} />
               <Route path="/team/:teamId/work-tree" element={<WorkTreePage />} />
               <Route path="/team/:teamId/meetings" element={<TeamComingSoon />} />
               
@@ -1072,7 +1067,7 @@ const App = () => (
                 <Route path="resource-utilization" element={<Suspense fallback={<div>Loading...</div>}><ResourceUtilizationPage /></Suspense>} />
                 <Route path="software-licenses" element={<Suspense fallback={<div>Loading...</div>}><SoftwareLicensesPage /></Suspense>} />
                 <Route path="routes-registry" element={<RoutesComponentsRegistry />} />
-                <Route path="snapshots" element={<SnapshotsAdmin />} />
+                <Route path="snapshots" element={<PlaceholderPage />} />
                 <Route path="incidents/workgroups" element={<IncidentWorkgroups />} />
                 <Route path="incidents/fields" element={<IncidentFieldsConfig />} />
                 <Route path="incidents/sla" element={<IncidentSLAPolicies />} />

@@ -40,7 +40,7 @@ import {
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { useCatalystContext, TierType } from '@/contexts/CatalystContext';
-import { useStrategicSnapshots } from '@/hooks/useStrategicSnapshots';
+// useStrategicSnapshots removed
 
 
 interface MenuItem {
@@ -105,12 +105,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
   const { isModuleEnabled } = useEnabledModules();
   const { canViewInNav } = useModuleAccess();
   
-  // Fetch snapshots from database
-  const { data: snapshotsData } = useStrategicSnapshots(false);
-  const snapshots = useMemo(() => 
-    (snapshotsData || []).map(s => ({ id: s.id, name: s.name })),
-    [snapshotsData]
-  );
+  // Snapshots removed
+  const snapshots: { id: string; name: string }[] = [];
 
   // Sync snapshot from URL param
   useEffect(() => {

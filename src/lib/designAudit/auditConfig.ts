@@ -16,8 +16,7 @@ export const auditRoutes = [
   { path: '/features', name: 'Features List', category: 'table' },
   { path: '/risks', name: 'Risks Grid', category: 'table' },
   { path: '/roadmaps', name: 'Roadmaps', category: 'visualization' },
-  { path: '/strategyhub/strategy-room', name: 'Strategy Room', category: 'dashboard' },
-  { path: '/enterprise/okr-heatmap', name: 'OKR Heatmap', category: 'visualization' },
+  { path: '/strategyhub/risks', name: 'Strategy Risks', category: 'table' },
   { path: '/program-board', name: 'Program Board', category: 'board' },
   { path: '/dependencies', name: 'Dependencies', category: 'table' },
   // Capacity & Allocation
