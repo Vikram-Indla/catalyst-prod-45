@@ -322,48 +322,30 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
               transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
             >
               {/* ── HEADER ── */}
-              <div style={{ flexShrink: 0, padding: '20px 24px 0', background: '#ffffff' }}>
-                {/* Title Bar */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                  <span style={{
-                    fontFamily: "'JetBrains Mono', monospace",
-                    fontSize: 12,
-                    fontWeight: 500,
-                    color: '#2563eb',
-                    background: '#eff6ff',
-                    border: '1px solid #bfdbfe',
-                    padding: '4px 10px',
-                    borderRadius: 6,
-                    flexShrink: 0,
-                    letterSpacing: '0.01em',
-                    lineHeight: 1,
-                  }}>
-                    {initiative.initiative_key}
-                  </span>
-                  <h2 style={{
-                    fontSize: 17,
-                    fontWeight: 600,
-                    color: '#18181b',
-                    lineHeight: 1.3,
-                    flex: 1,
-                    minWidth: 0,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    letterSpacing: '-0.01em',
-                    margin: 0,
-                  }}>
-                    {initiative.title}
-                  </h2>
-                  <StatusBadge status={initiative.status} />
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    className="w-8 h-8 inline-flex items-center justify-center text-zinc-400 rounded-md hover:bg-zinc-100 hover:text-zinc-900 flex-shrink-0 cursor-pointer transition-colors"
-                    style={{ border: 'none', background: 'none', marginLeft: 'auto' }}
-                  >
-                    <X size={16} />
-                  </button>
+              <div className="flex-shrink-0 bg-white">
+                {/* Panel Header */}
+                <div className="px-6 pt-5 pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-medium font-mono shrink-0">
+                        {initiative.initiative_key}
+                      </span>
+                      <h2 className="text-lg font-semibold text-zinc-900 truncate">
+                        {initiative.title}
+                      </h2>
+                    </div>
+                    <button
+                      onClick={onClose}
+                      className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-md shrink-0 ml-3"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div className="mt-2">
+                    <StatusBadge status={initiative.status} />
+                  </div>
                 </div>
 
                 {/* Action Bar */}
