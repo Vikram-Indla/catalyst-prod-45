@@ -2,11 +2,11 @@
 // TIMELINE TOOLBAR — Granularity, Group By, Zoom, Density, View Switcher
 // =====================================================
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
-import type { Granularity, GroupByOption, GROUP_BY_OPTIONS } from '@/types/producthub/initiative';
+import type { Granularity, GroupByOption } from '@/types/producthub/initiative';
 import { Calendar, Minus, Plus, AlignJustify, Table, Kanban, GanttChart, LayoutGrid, ChevronDown } from 'lucide-react';
 import {
   DropdownMenu,
@@ -14,6 +14,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
+const GRANULARITY_ORDER: Granularity[] = ['quarter', 'month', 'week', 'day'];
 
 const GRANULARITIES: { value: Granularity; label: string }[] = [
   { value: 'day', label: 'Day' },
@@ -43,6 +45,23 @@ export const TimelineToolbar: React.FC = () => {
   const { granularity, setGranularity, groupBy, setGroupBy, cycleDensity } = useTimelineState();
 
   const activeGroupLabel = GROUP_OPTIONS.find(g => g.value === groupBy)?.label ?? 'None';
+
+  const granIdx = GRANULARITY_ORDER.indexOf(granularity);
+  const canZoomIn = granIdx < GRANULARITY_ORDER.length - 1;
+  const canZoomOut = granIdx > 0;
+
+  const handleZoomIn = useCallback(() => {
+    if (canZoomIn) setGranularity(GRANULARITY_ORDER[granIdx + 1]);
+  }, [canZoomIn, granIdx, setGranularity]);
+
+  const handleZoomOut = useCallback(() => {
+    if (canZoomOut) setGranularity(GRANULARITY_ORDER[granIdx - 1]);
+  }, [canZoomOut, granIdx, setGranularity]);
+
+  const handleToday = useCallback(() => {
+    // Dispatch a custom event that TimelineGrid listens for
+    window.dispatchEvent(new CustomEvent('timeline-scroll-today'));
+  }, []);
 
   return (
     <div className="h-[52px] bg-card border-b border-border flex items-center justify-between px-4 shrink-0">
@@ -95,7 +114,10 @@ export const TimelineToolbar: React.FC = () => {
         <div className="w-px h-5 bg-border mx-1" />
 
         {/* Today button */}
-        <button className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors">
+        <button
+          onClick={handleToday}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors"
+        >
           <Calendar className="w-3.5 h-3.5" />
           <span>Today</span>
         </button>
@@ -104,10 +126,28 @@ export const TimelineToolbar: React.FC = () => {
       {/* RIGHT */}
       <div className="flex items-center gap-2">
         {/* Zoom */}
-        <button className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors">
+        <button
+          onClick={handleZoomOut}
+          disabled={!canZoomOut}
+          className={cn(
+            'w-8 h-8 flex items-center justify-center rounded-md transition-colors',
+            canZoomOut
+              ? 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              : 'text-muted-foreground/30 cursor-not-allowed'
+          )}
+        >
           <Minus className="w-4 h-4" />
         </button>
-        <button className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors">
+        <button
+          onClick={handleZoomIn}
+          disabled={!canZoomIn}
+          className={cn(
+            'w-8 h-8 flex items-center justify-center rounded-md transition-colors',
+            canZoomIn
+              ? 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              : 'text-muted-foreground/30 cursor-not-allowed'
+          )}
+        >
           <Plus className="w-4 h-4" />
         </button>
 
