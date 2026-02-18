@@ -4478,6 +4478,790 @@ export type Database = {
           },
         ]
       }
+      es_ai_recommendations: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          category: string | null
+          created_at: string
+          description: string
+          dismissed_at: string | null
+          dismissed_by: string | null
+          health_score_id: string | null
+          id: string
+          linked_entity_id: string | null
+          linked_entity_type: string | null
+          organization_id: string | null
+          priority: string | null
+          status: string
+          title: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          category?: string | null
+          created_at?: string
+          description: string
+          dismissed_at?: string | null
+          dismissed_by?: string | null
+          health_score_id?: string | null
+          id?: string
+          linked_entity_id?: string | null
+          linked_entity_type?: string | null
+          organization_id?: string | null
+          priority?: string | null
+          status?: string
+          title: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string
+          dismissed_at?: string | null
+          dismissed_by?: string | null
+          health_score_id?: string | null
+          id?: string
+          linked_entity_id?: string | null
+          linked_entity_type?: string | null
+          organization_id?: string | null
+          priority?: string | null
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_ai_recommendations_health_score_id_fkey"
+            columns: ["health_score_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_health_composite"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_ai_recommendations_health_score_id_fkey"
+            columns: ["health_score_id"]
+            isOneToOne: false
+            referencedRelation: "es_health_scores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      es_goals: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          department_id: string | null
+          description: string | null
+          id: string
+          owner_id: string | null
+          progress_override: boolean | null
+          progress_pct: number | null
+          quarter: number | null
+          scope: string | null
+          status: string
+          target_date: string | null
+          theme_id: string
+          title: string
+          updated_at: string
+          updated_by: string | null
+          year: number | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          department_id?: string | null
+          description?: string | null
+          id?: string
+          owner_id?: string | null
+          progress_override?: boolean | null
+          progress_pct?: number | null
+          quarter?: number | null
+          scope?: string | null
+          status?: string
+          target_date?: string | null
+          theme_id: string
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+          year?: number | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          department_id?: string | null
+          description?: string | null
+          id?: string
+          owner_id?: string | null
+          progress_override?: boolean | null
+          progress_pct?: number | null
+          quarter?: number | null
+          scope?: string | null
+          status?: string
+          target_date?: string | null
+          theme_id?: string
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_tree"
+            referencedColumns: ["theme_id"]
+          },
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_strategic_themes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      es_health_scores: {
+        Row: {
+          checkin_frequency_score: number | null
+          composite_score: number
+          computed_at: string
+          computed_by: string | null
+          created_at: string
+          dependency_resolution_score: number | null
+          execution_alignment_score: number | null
+          id: string
+          okr_velocity_score: number | null
+          organization_id: string | null
+          period_end: string | null
+          period_start: string | null
+          team_alignment_score: number | null
+        }
+        Insert: {
+          checkin_frequency_score?: number | null
+          composite_score: number
+          computed_at?: string
+          computed_by?: string | null
+          created_at?: string
+          dependency_resolution_score?: number | null
+          execution_alignment_score?: number | null
+          id?: string
+          okr_velocity_score?: number | null
+          organization_id?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          team_alignment_score?: number | null
+        }
+        Update: {
+          checkin_frequency_score?: number | null
+          composite_score?: number
+          computed_at?: string
+          computed_by?: string | null
+          created_at?: string
+          dependency_resolution_score?: number | null
+          execution_alignment_score?: number | null
+          id?: string
+          okr_velocity_score?: number | null
+          organization_id?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          team_alignment_score?: number | null
+        }
+        Relationships: []
+      }
+      es_initiative_epics: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          epic_id: string | null
+          id: string
+          initiative_id: string
+          link_type: string | null
+          planner_task_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          epic_id?: string | null
+          id?: string
+          initiative_id: string
+          link_type?: string | null
+          planner_task_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          epic_id?: string | null
+          id?: string
+          initiative_id?: string
+          link_type?: string | null
+          planner_task_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_initiative_epics_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_tree"
+            referencedColumns: ["initiative_id"]
+          },
+          {
+            foreignKeyName: "es_initiative_epics_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "es_initiatives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      es_initiatives: {
+        Row: {
+          budget_allocated: number | null
+          budget_spent: number | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          key_result_id: string | null
+          owner_id: string | null
+          progress_pct: number | null
+          start_date: string | null
+          status: string
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          budget_allocated?: number | null
+          budget_spent?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          key_result_id?: string | null
+          owner_id?: string | null
+          progress_pct?: number | null
+          start_date?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          budget_allocated?: number | null
+          budget_spent?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          key_result_id?: string | null
+          owner_id?: string | null
+          progress_pct?: number | null
+          start_date?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_initiatives_key_result_id_fkey"
+            columns: ["key_result_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_heatmap"
+            referencedColumns: ["kr_id"]
+          },
+          {
+            foreignKeyName: "es_initiatives_key_result_id_fkey"
+            columns: ["key_result_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_tree"
+            referencedColumns: ["kr_id"]
+          },
+          {
+            foreignKeyName: "es_initiatives_key_result_id_fkey"
+            columns: ["key_result_id"]
+            isOneToOne: false
+            referencedRelation: "es_key_results"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      es_investment_allocations: {
+        Row: {
+          allocated_amount: number | null
+          allocated_pct: number | null
+          created_at: string
+          created_by: string | null
+          fiscal_year: number
+          id: string
+          organization_id: string | null
+          spent_amount: number | null
+          status: string | null
+          theme_id: string
+          updated_at: string
+          updated_by: string | null
+          variance_amount: number | null
+        }
+        Insert: {
+          allocated_amount?: number | null
+          allocated_pct?: number | null
+          created_at?: string
+          created_by?: string | null
+          fiscal_year: number
+          id?: string
+          organization_id?: string | null
+          spent_amount?: number | null
+          status?: string | null
+          theme_id: string
+          updated_at?: string
+          updated_by?: string | null
+          variance_amount?: number | null
+        }
+        Update: {
+          allocated_amount?: number | null
+          allocated_pct?: number | null
+          created_at?: string
+          created_by?: string | null
+          fiscal_year?: number
+          id?: string
+          organization_id?: string | null
+          spent_amount?: number | null
+          status?: string | null
+          theme_id?: string
+          updated_at?: string
+          updated_by?: string | null
+          variance_amount?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_investment_allocations_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_tree"
+            referencedColumns: ["theme_id"]
+          },
+          {
+            foreignKeyName: "es_investment_allocations_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_strategic_themes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      es_key_results: {
+        Row: {
+          confidence_level: string | null
+          created_at: string
+          created_by: string | null
+          current_value: number | null
+          description: string | null
+          due_date: string | null
+          goal_id: string
+          id: string
+          metric_type: string
+          owner_id: string | null
+          progress_pct: number | null
+          scoring_method: string | null
+          start_value: number | null
+          status: string
+          target_value: number
+          title: string
+          unit: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          confidence_level?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_value?: number | null
+          description?: string | null
+          due_date?: string | null
+          goal_id: string
+          id?: string
+          metric_type?: string
+          owner_id?: string | null
+          progress_pct?: number | null
+          scoring_method?: string | null
+          start_value?: number | null
+          status?: string
+          target_value: number
+          title: string
+          unit?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          confidence_level?: string | null
+          created_at?: string
+          created_by?: string | null
+          current_value?: number | null
+          description?: string | null
+          due_date?: string | null
+          goal_id?: string
+          id?: string
+          metric_type?: string
+          owner_id?: string | null
+          progress_pct?: number | null
+          scoring_method?: string | null
+          start_value?: number | null
+          status?: string
+          target_value?: number
+          title?: string
+          unit?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_key_results_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_heatmap"
+            referencedColumns: ["goal_id"]
+          },
+          {
+            foreignKeyName: "es_key_results_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_tree"
+            referencedColumns: ["goal_id"]
+          },
+          {
+            foreignKeyName: "es_key_results_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "es_goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      es_kr_checkins: {
+        Row: {
+          author_id: string | null
+          check_in_date: string
+          created_at: string
+          id: string
+          key_result_id: string
+          notes: string | null
+          previous_value: number | null
+          value: number
+        }
+        Insert: {
+          author_id?: string | null
+          check_in_date?: string
+          created_at?: string
+          id?: string
+          key_result_id: string
+          notes?: string | null
+          previous_value?: number | null
+          value: number
+        }
+        Update: {
+          author_id?: string | null
+          check_in_date?: string
+          created_at?: string
+          id?: string
+          key_result_id?: string
+          notes?: string | null
+          previous_value?: number | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_kr_checkins_key_result_id_fkey"
+            columns: ["key_result_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_heatmap"
+            referencedColumns: ["kr_id"]
+          },
+          {
+            foreignKeyName: "es_kr_checkins_key_result_id_fkey"
+            columns: ["key_result_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_tree"
+            referencedColumns: ["kr_id"]
+          },
+          {
+            foreignKeyName: "es_kr_checkins_key_result_id_fkey"
+            columns: ["key_result_id"]
+            isOneToOne: false
+            referencedRelation: "es_key_results"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      es_missions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          organization_id: string | null
+          status: string
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          organization_id?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          organization_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      es_snapshots: {
+        Row: {
+          avg_progress: number | null
+          created_at: string
+          created_by: string | null
+          data_json: Json
+          description: string | null
+          health_score: number | null
+          id: string
+          organization_id: string | null
+          snapshot_date: string
+          snapshot_type: string | null
+          title: string
+          total_goals: number | null
+          total_krs: number | null
+        }
+        Insert: {
+          avg_progress?: number | null
+          created_at?: string
+          created_by?: string | null
+          data_json: Json
+          description?: string | null
+          health_score?: number | null
+          id?: string
+          organization_id?: string | null
+          snapshot_date?: string
+          snapshot_type?: string | null
+          title: string
+          total_goals?: number | null
+          total_krs?: number | null
+        }
+        Update: {
+          avg_progress?: number | null
+          created_at?: string
+          created_by?: string | null
+          data_json?: Json
+          description?: string | null
+          health_score?: number | null
+          id?: string
+          organization_id?: string | null
+          snapshot_date?: string
+          snapshot_type?: string | null
+          title?: string
+          total_goals?: number | null
+          total_krs?: number | null
+        }
+        Relationships: []
+      }
+      es_strategic_themes: {
+        Row: {
+          bsc_perspective: string | null
+          color: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          fiscal_year: number | null
+          id: string
+          sort_order: number | null
+          status: string
+          title: string
+          type: string | null
+          updated_at: string
+          updated_by: string | null
+          vision_id: string
+        }
+        Insert: {
+          bsc_perspective?: string | null
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          fiscal_year?: number | null
+          id?: string
+          sort_order?: number | null
+          status?: string
+          title: string
+          type?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          vision_id: string
+        }
+        Update: {
+          bsc_perspective?: string | null
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          fiscal_year?: number | null
+          id?: string
+          sort_order?: number | null
+          status?: string
+          title?: string
+          type?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          vision_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_strategic_themes_vision_id_fkey"
+            columns: ["vision_id"]
+            isOneToOne: false
+            referencedRelation: "es_visions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      es_strategy_roles: {
+        Row: {
+          created_at: string
+          granted_at: string
+          granted_by: string | null
+          id: string
+          organization_id: string | null
+          role: string
+          scope_entity_id: string | null
+          scope_type: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          organization_id?: string | null
+          role: string
+          scope_entity_id?: string | null
+          scope_type?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          organization_id?: string | null
+          role?: string
+          scope_entity_id?: string | null
+          scope_type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      es_team_alignment: {
+        Row: {
+          alignment_score: number | null
+          computed_at: string
+          created_at: string
+          id: string
+          linked_items: number | null
+          organization_id: string | null
+          orphaned_items: number | null
+          total_items: number | null
+          workstream: string
+          workstream_color: string | null
+        }
+        Insert: {
+          alignment_score?: number | null
+          computed_at?: string
+          created_at?: string
+          id?: string
+          linked_items?: number | null
+          organization_id?: string | null
+          orphaned_items?: number | null
+          total_items?: number | null
+          workstream: string
+          workstream_color?: string | null
+        }
+        Update: {
+          alignment_score?: number | null
+          computed_at?: string
+          created_at?: string
+          id?: string
+          linked_items?: number | null
+          organization_id?: string | null
+          orphaned_items?: number | null
+          total_items?: number | null
+          workstream?: string
+          workstream_color?: string | null
+        }
+        Relationships: []
+      }
+      es_visions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          mission_id: string
+          status: string
+          target_year: number | null
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          mission_id: string
+          status?: string
+          target_year?: number | null
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          mission_id?: string
+          status?: string
+          target_year?: number | null
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_visions_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "es_missions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       estimation_conversions: {
         Row: {
           created_at: string | null
@@ -37438,6 +38222,139 @@ export type Database = {
       }
     }
     Views: {
+      es_dashboard_execution_dials: {
+        Row: {
+          completed_items: number | null
+          completion_pct: number | null
+          in_progress_items: number | null
+          link_type: string | null
+          not_started_items: number | null
+          total_items: number | null
+        }
+        Relationships: []
+      }
+      es_dashboard_health_composite: {
+        Row: {
+          checkin_frequency_score: number | null
+          composite_score: number | null
+          computed_at: string | null
+          dependency_resolution_score: number | null
+          execution_alignment_score: number | null
+          health_status: string | null
+          id: string | null
+          okr_velocity_score: number | null
+          pending_recommendations: Json | null
+          period_end: string | null
+          period_start: string | null
+          team_alignment_score: number | null
+        }
+        Relationships: []
+      }
+      es_dashboard_okr_heatmap: {
+        Row: {
+          confidence_level: string | null
+          due_date: string | null
+          goal_id: string | null
+          goal_title: string | null
+          health_color: string | null
+          kr_id: string | null
+          kr_status: string | null
+          kr_title: string | null
+          owner_id: string | null
+          progress_pct: number | null
+          quarter: number | null
+          theme_color: string | null
+          theme_id: string | null
+          theme_title: string | null
+          year: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_tree"
+            referencedColumns: ["theme_id"]
+          },
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_strategic_themes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      es_dashboard_okr_tree: {
+        Row: {
+          confidence_level: string | null
+          epic_id: string | null
+          goal_id: string | null
+          goal_owner: string | null
+          goal_progress: number | null
+          goal_status: string | null
+          goal_title: string | null
+          initiative_id: string | null
+          initiative_progress: number | null
+          initiative_status: string | null
+          initiative_title: string | null
+          kr_id: string | null
+          kr_owner: string | null
+          kr_progress: number | null
+          kr_status: string | null
+          kr_title: string | null
+          link_id: string | null
+          link_type: string | null
+          planner_task_id: string | null
+          sort_order: number | null
+          theme_color: string | null
+          theme_id: string | null
+          theme_title: string | null
+        }
+        Relationships: []
+      }
+      es_dashboard_pyramid_summary: {
+        Row: {
+          avg_progress: number | null
+          item_count: number | null
+          layer: string | null
+          layer_order: number | null
+        }
+        Relationships: []
+      }
+      es_dashboard_team_alignment: {
+        Row: {
+          alignment_score: number | null
+          alignment_status: string | null
+          computed_at: string | null
+          linked_items: number | null
+          orphaned_items: number | null
+          total_items: number | null
+          workstream: string | null
+          workstream_color: string | null
+        }
+        Insert: {
+          alignment_score?: number | null
+          alignment_status?: never
+          computed_at?: string | null
+          linked_items?: number | null
+          orphaned_items?: number | null
+          total_items?: number | null
+          workstream?: string | null
+          workstream_color?: string | null
+        }
+        Update: {
+          alignment_score?: number | null
+          alignment_status?: never
+          computed_at?: string | null
+          linked_items?: number | null
+          orphaned_items?: number | null
+          total_items?: number | null
+          workstream?: string | null
+          workstream_color?: string | null
+        }
+        Relationships: []
+      }
       license_allocation_totals: {
         Row: {
           allocation_status: string | null
