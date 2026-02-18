@@ -70,8 +70,10 @@ export function ContractOverview() {
       }, {} as Record<string, { total: number; critical: number; warning: number; safe: number; expired: number }>)
     ).sort((a, b) => (b[1].critical + b[1].expired) - (a[1].critical + a[1].expired));
 
-    // Next to expire
-    const nextExpiring = [...expired, ...critical].slice(0, 3);
+    // Next to expire — only future contracts, sorted soonest first
+    const nextExpiring = critical
+      .sort((a, b) => new Date(a.contract_end_date!).getTime() - new Date(b.contract_end_date!).getTime())
+      .slice(0, 3);
 
     // Vendor concentration
     const vendorCounts = resources.reduce((acc, r) => {
@@ -227,23 +229,18 @@ export function ContractOverview() {
           Next to Expire
         </div>
         <div className="space-y-1 mb-3">
-          {nextExpiring.length > 0 ? nextExpiring.map((r, i) => {
-            const isExpired = new Date(r.contract_end_date!) < new Date();
-            const isCritical = !isExpired;
-            const dotColor = isExpired ? '#EF4444' : '#EF4444';
-            return (
+          {nextExpiring.length > 0 ? nextExpiring.map((r) => (
               <div key={r.id} className="flex items-center gap-2" style={{ fontSize: 11 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444', flexShrink: 0 }} />
                 <span className="flex-1 truncate" style={{ color: 'var(--catalyst-text-primary)', fontWeight: 500 }}>
                   {r.name || '—'}
                 </span>
-                <span style={{ color: 'var(--catalyst-text-tertiary)', fontSize: 10 }}>{r.role_name || '—'}</span>
-                <span style={{ color: dotColor, fontWeight: 600, fontSize: 10 }}>
+                <span style={{ color: 'var(--catalyst-text-tertiary)', fontSize: 10 }}>{r.department_name || '—'}</span>
+                <span style={{ color: '#EF4444', fontWeight: 600, fontSize: 10 }}>
                   {formatDate(r.contract_end_date!)}
                 </span>
               </div>
-            );
-          }) : (
+          )) : (
             <div style={{ fontSize: 10, color: 'var(--catalyst-text-tertiary)', textAlign: 'center' }}>
               No imminent expirations
             </div>
