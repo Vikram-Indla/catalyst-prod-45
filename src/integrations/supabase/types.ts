@@ -14145,6 +14145,586 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_initiative_attachments: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          initiative_id: string
+          mime_type: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          file_name: string
+          file_path: string
+          file_size: number
+          id?: string
+          initiative_id: string
+          mime_type: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          initiative_id?: string
+          mime_type?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_initiative_attachments_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_attachments_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_initiative_audit_log: {
+        Row: {
+          action: string
+          created_at: string | null
+          entity_id: string | null
+          entity_type: string
+          field_name: string | null
+          id: string
+          initiative_id: string
+          metadata: Json | null
+          new_value: string | null
+          old_value: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string
+          field_name?: string | null
+          id?: string
+          initiative_id: string
+          metadata?: Json | null
+          new_value?: string | null
+          old_value?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          entity_id?: string | null
+          entity_type?: string
+          field_name?: string | null
+          id?: string
+          initiative_id?: string
+          metadata?: Json | null
+          new_value?: string | null
+          old_value?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      ph_initiative_budget_items: {
+        Row: {
+          actual_amount: number | null
+          category: string
+          created_at: string | null
+          created_by: string | null
+          description: string
+          expense_type: string
+          fiscal_quarter: string | null
+          id: string
+          initiative_id: string
+          invoice_date: string | null
+          notes: string | null
+          planned_amount: number
+          po_number: string | null
+          status: string
+          updated_at: string | null
+          vendor: string | null
+        }
+        Insert: {
+          actual_amount?: number | null
+          category: string
+          created_at?: string | null
+          created_by?: string | null
+          description: string
+          expense_type?: string
+          fiscal_quarter?: string | null
+          id?: string
+          initiative_id: string
+          invoice_date?: string | null
+          notes?: string | null
+          planned_amount?: number
+          po_number?: string | null
+          status?: string
+          updated_at?: string | null
+          vendor?: string | null
+        }
+        Update: {
+          actual_amount?: number | null
+          category?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string
+          expense_type?: string
+          fiscal_quarter?: string | null
+          id?: string
+          initiative_id?: string
+          invoice_date?: string | null
+          notes?: string | null
+          planned_amount?: number
+          po_number?: string | null
+          status?: string
+          updated_at?: string | null
+          vendor?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_budget_items_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_budget_items_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_initiative_links: {
+        Row: {
+          added_by: string | null
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          initiative_id: string
+          is_pinned: boolean | null
+          title: string
+          updated_at: string | null
+          url: string
+        }
+        Insert: {
+          added_by?: string | null
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          initiative_id: string
+          is_pinned?: boolean | null
+          title: string
+          updated_at?: string | null
+          url: string
+        }
+        Update: {
+          added_by?: string | null
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          initiative_id?: string
+          is_pinned?: boolean | null
+          title?: string
+          updated_at?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_links_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_links_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_initiative_milestones: {
+        Row: {
+          actual_date: string | null
+          budget_release: number | null
+          completion_criteria: string | null
+          created_at: string | null
+          created_by: string | null
+          deliverables: string | null
+          description: string | null
+          id: string
+          initiative_id: string
+          is_critical_path: boolean | null
+          owner_id: string | null
+          planned_date: string
+          revised_date: string | null
+          sort_order: number
+          status: string
+          title: string
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          actual_date?: string | null
+          budget_release?: number | null
+          completion_criteria?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          deliverables?: string | null
+          description?: string | null
+          id?: string
+          initiative_id: string
+          is_critical_path?: boolean | null
+          owner_id?: string | null
+          planned_date: string
+          revised_date?: string | null
+          sort_order?: number
+          status?: string
+          title: string
+          type?: string
+          updated_at?: string | null
+        }
+        Update: {
+          actual_date?: string | null
+          budget_release?: number | null
+          completion_criteria?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          deliverables?: string | null
+          description?: string | null
+          id?: string
+          initiative_id?: string
+          is_critical_path?: boolean | null
+          owner_id?: string | null
+          planned_date?: string
+          revised_date?: string | null
+          sort_order?: number
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_initiative_risks: {
+        Row: {
+          category: string
+          contingency_plan: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          impact: number
+          initiative_id: string
+          last_reviewed: string | null
+          mitigation_plan: string | null
+          notes: string | null
+          owner_id: string | null
+          probability: number
+          raised_date: string | null
+          risk_key: string
+          risk_score: number | null
+          status: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          contingency_plan?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          impact: number
+          initiative_id: string
+          last_reviewed?: string | null
+          mitigation_plan?: string | null
+          notes?: string | null
+          owner_id?: string | null
+          probability: number
+          raised_date?: string | null
+          risk_key: string
+          risk_score?: number | null
+          status?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          contingency_plan?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          impact?: number
+          initiative_id?: string
+          last_reviewed?: string | null
+          mitigation_plan?: string | null
+          notes?: string | null
+          owner_id?: string | null
+          probability?: number
+          raised_date?: string | null
+          risk_key?: string
+          risk_score?: number | null
+          status?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ph_initiative_scores: {
         Row: {
           business_impact: number | null
@@ -14199,6 +14779,7 @@ export type Database = {
       ph_initiatives: {
         Row: {
           assignee_id: string | null
+          budget_allocated: number | null
           business_ask_date: string | null
           business_owner_id: string | null
           created_at: string | null
@@ -14221,6 +14802,7 @@ export type Database = {
         }
         Insert: {
           assignee_id?: string | null
+          budget_allocated?: number | null
           business_ask_date?: string | null
           business_owner_id?: string | null
           created_at?: string | null
@@ -14243,6 +14825,7 @@ export type Database = {
         }
         Update: {
           assignee_id?: string | null
+          budget_allocated?: number | null
           business_ask_date?: string | null
           business_owner_id?: string | null
           created_at?: string | null
