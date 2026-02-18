@@ -39,7 +39,7 @@ export interface SidebarMenuItem {
   /** Optional badge count to display */
   badge?: number;
   /** Badge variant for color styling */
-  badgeVariant?: 'info' | 'danger';
+  badgeVariant?: 'info' | 'danger' | 'purple';
   /** Text badge (e.g., "NEW", "BETA") - takes precedence over numeric badge */
   textBadge?: string;
   /** Text badge variant for color styling */
@@ -274,7 +274,7 @@ export function SidebarBase({
                 <div key={section.title} className={sectionIndex > 0 ? 'mt-5' : ''}>
                   {/* Section Header — 10px UPPERCASE per Linear/Stripe pattern */}
                   {expanded && section.title && (
-                    <div className="px-3 pt-3 pb-1.5">
+                    <div className="px-3 pt-3 pb-1.5 mb-1">
                       <span 
                         className="font-semibold tracking-wider uppercase"
                         style={{ 
@@ -493,15 +493,19 @@ function renderMenuItem(
       {!item.textBadge && item.badge !== undefined && item.badge > 0 && (
         <span 
           style={{
-            fontSize: '11px',
+            fontSize: '10px',
             fontWeight: 600,
-            padding: '2px 6px',
+            padding: '1px 6px',
             borderRadius: '9999px',
             background: item.badgeVariant === 'danger' 
               ? 'hsl(var(--destructive))' 
+              : item.badgeVariant === 'purple'
+              ? '#F5F3FF'
               : 'hsl(var(--brand-primary))',
             color: item.badgeVariant === 'danger'
               ? 'hsl(var(--destructive-foreground))'
+              : item.badgeVariant === 'purple'
+              ? '#7C3AED'
               : 'hsl(var(--primary-foreground))',
             minWidth: '20px',
             height: '20px',

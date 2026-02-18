@@ -3,12 +3,7 @@
  * Passed into CommandCenterHeader's `actions` prop for Strategy Room.
  */
 
-import {
-  AlignJustify,
-  Menu,
-  GripHorizontal,
-  Download,
-} from 'lucide-react';
+import { Download } from 'lucide-react';
 import type { StrategyDensity } from '@/hooks/useStrategyPreferences';
 
 interface StrategyRoomActionsProps {
@@ -16,10 +11,37 @@ interface StrategyRoomActionsProps {
   setDensity: (d: StrategyDensity) => void;
 }
 
+/** Compact: 4 thin lines */
+function CompactIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M2 3h10M2 5.5h10M2 8h10M2 10.5h10" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** Comfortable: 3 medium lines */
+function ComfortableIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M2 3.5h10M2 7h10M2 10.5h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+/** Spacious: 2 thick lines */
+function SpaciousIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M2 5h10M2 9h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 const densityOptions: { value: StrategyDensity; label: string; icon: React.ReactNode }[] = [
-  { value: 'compact', label: 'Compact', icon: <AlignJustify size={14} /> },
-  { value: 'comfortable', label: 'Comfortable', icon: <Menu size={14} /> },
-  { value: 'spacious', label: 'Spacious', icon: <GripHorizontal size={14} /> },
+  { value: 'compact', label: 'Compact', icon: <CompactIcon /> },
+  { value: 'comfortable', label: 'Comfortable', icon: <ComfortableIcon /> },
+  { value: 'spacious', label: 'Spacious', icon: <SpaciousIcon /> },
 ];
 
 export function StrategyRoomActions({ density, setDensity }: StrategyRoomActionsProps) {

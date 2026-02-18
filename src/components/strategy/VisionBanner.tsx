@@ -1,5 +1,5 @@
 /**
- * VisionBanner — Premium "Boardroom Statement" hero component
+ * VisionBanner — Compact "Boardroom Statement" hero component
  * Fetches active vision from es_visions table.
  * Supports inline editing for Strategy Owners via es_strategy_roles RBAC.
  */
@@ -67,21 +67,22 @@ function useStrategyRole() {
 
 function formatUpdatedAt(dateStr: string): string {
   const d = new Date(dateStr);
-  return `Updated ${d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
+  return `Last edited ${d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`;
 }
 
-/** Skeleton loader matching banner dimensions */
+/** Skeleton loader */
 function VisionSkeleton() {
   return (
     <div
-      className="relative overflow-hidden rounded-xl"
+      className="relative overflow-hidden"
       style={{
-        minHeight: '80px',
-        background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 40%, #2563EB 100%)',
-        padding: '20px 28px',
+        minHeight: '56px',
+        background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #2563EB 100%)',
+        borderRadius: 'var(--catalyst-radius-xl, 12px)',
+        borderLeft: '3px solid #F59E0B',
+        padding: '12px 20px',
       }}
     >
-      {/* Shimmer animation */}
       <div
         className="absolute inset-0"
         style={{
@@ -89,10 +90,10 @@ function VisionSkeleton() {
           animation: 'shimmer 1.5s infinite',
         }}
       />
-      <div style={{ height: 10, width: 140, background: 'rgba(255,255,255,0.15)', borderRadius: 4, marginBottom: 10 }} />
-      <div style={{ height: 20, width: '60%', background: 'rgba(255,255,255,0.15)', borderRadius: 4, marginBottom: 8 }} />
-      <div style={{ height: 16, width: 100, background: 'rgba(255,255,255,0.1)', borderRadius: 999 }} />
-
+      <div className="flex items-center gap-4">
+        <div style={{ height: 10, width: 140, background: 'rgba(255,255,255,0.15)', borderRadius: 4 }} />
+        <div style={{ height: 16, width: '40%', background: 'rgba(255,255,255,0.15)', borderRadius: 4 }} />
+      </div>
       <style>{`
         @keyframes shimmer {
           0% { transform: translateX(-100%); }
@@ -107,14 +108,16 @@ function VisionSkeleton() {
 function VisionError({ onRetry }: { onRetry: () => void }) {
   return (
     <div
-      className="relative overflow-hidden rounded-xl flex items-center justify-center gap-3"
+      className="relative overflow-hidden flex items-center justify-center gap-3"
       style={{
-        minHeight: '80px',
+        minHeight: '56px',
         background: 'linear-gradient(135deg, #64748B 0%, #94A3B8 100%)',
-        padding: '20px 28px',
+        borderRadius: 'var(--catalyst-radius-xl, 12px)',
+        borderLeft: '3px solid #F59E0B',
+        padding: '12px 20px',
       }}
     >
-      <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>Unable to load vision</span>
+      <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>Unable to load vision</span>
       <button
         onClick={onRetry}
         className="flex items-center gap-1 focus-visible:outline-2 focus-visible:outline-offset-2"
@@ -123,7 +126,7 @@ function VisionError({ onRetry }: { onRetry: () => void }) {
           background: 'none',
           border: 'none',
           cursor: 'pointer',
-          fontSize: 13,
+          fontSize: 12,
           fontWeight: 500,
           textDecoration: 'underline',
         }}
@@ -134,26 +137,25 @@ function VisionError({ onRetry }: { onRetry: () => void }) {
   );
 }
 
-/** Empty state for when no vision exists */
+/** Empty state */
 function VisionEmpty({ isOwner, onDefine }: { isOwner: boolean; onDefine: () => void }) {
   return (
     <div
-      className="relative overflow-hidden rounded-xl flex items-center justify-center"
+      className="vision-banner relative overflow-hidden flex items-center"
       role="banner"
       aria-label="Organizational vision statement"
       style={{
-        minHeight: '80px',
-        background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 40%, #2563EB 100%)',
-        padding: '20px 28px',
+        minHeight: '56px',
+        background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #2563EB 100%)',
+        borderRadius: 'var(--catalyst-radius-xl, 12px)',
+        borderLeft: '3px solid #F59E0B',
+        padding: '12px 20px',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.1)',
       }}
     >
-      {/* Gold accent */}
-      <div className="absolute left-0 top-0 bottom-0" style={{ width: 3, background: '#F59E0B' }} />
-      {/* Pattern overlay */}
-      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-
-      <div className="flex flex-col items-center gap-2 relative z-10">
-        <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14 }}>
+      <div className="vision-pattern absolute inset-0 pointer-events-none" style={{ zIndex: 1 }} />
+      <div className="flex items-center gap-3 relative z-10">
+        <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>
           Set your organizational vision
         </span>
         {isOwner && (
@@ -165,9 +167,9 @@ function VisionEmpty({ isOwner, onDefine }: { isOwner: boolean; onDefine: () => 
               background: 'transparent',
               border: '1px solid rgba(255,255,255,0.4)',
               cursor: 'pointer',
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: 500,
-              padding: '4px 14px',
+              padding: '3px 12px',
               borderRadius: 6,
             }}
           >
@@ -226,191 +228,199 @@ export function VisionBanner() {
     if (e.key === 'Escape') cancelEdit();
   }, [saveVision, cancelEdit]);
 
-  if (loading) return <div style={{ margin: '0 0 16px' }}><VisionSkeleton /></div>;
-  if (error) return <div style={{ margin: '0 0 16px' }}><VisionError onRetry={refetch} /></div>;
-  if (!vision) return <div style={{ margin: '0 0 16px' }}><VisionEmpty isOwner={isOwner} onDefine={startEdit} /></div>;
+  if (loading) return <div style={{ marginBottom: 16 }}><VisionSkeleton /></div>;
+  if (error) return <div style={{ marginBottom: 16 }}><VisionError onRetry={refetch} /></div>;
+  if (!vision) return <div style={{ marginBottom: 16 }}><VisionEmpty isOwner={isOwner} onDefine={startEdit} /></div>;
 
   return (
     <div style={{ marginBottom: 16 }}>
       <div
-        className="relative overflow-hidden rounded-xl group"
+        className="vision-banner relative overflow-hidden group"
         role="banner"
         aria-label="Organizational vision statement"
         style={{
-          minHeight: '80px',
-          background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 40%, #2563EB 100%)',
-          transition: 'box-shadow 300ms ease',
+          minHeight: '56px',
+          background: 'linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #2563EB 100%)',
+          borderRadius: 'var(--catalyst-radius-xl, 12px)',
+          borderLeft: '3px solid #F59E0B',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.1)',
+          transition: 'box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1)',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = '0 8px 32px rgba(30, 58, 138, 0.3)';
+          e.currentTarget.style.boxShadow = '0 8px 32px rgba(30, 58, 138, 0.25), inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.1)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = 'none';
+          e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -1px 0 rgba(0,0,0,0.1)';
         }}
       >
-        {/* Gold left accent stripe */}
-        <div className="absolute left-0 top-0 bottom-0" style={{ width: 3, background: '#F59E0B' }} />
+        {/* Geometric pattern overlay */}
+        <div className="vision-pattern absolute inset-0 pointer-events-none" style={{ zIndex: 1 }} />
 
-        {/* Subtle geometric pattern overlay */}
+        {/* Content — single row */}
         <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: 'radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px)',
-            backgroundSize: '20px 20px',
-          }}
-        />
-
-        {/* Content */}
-        <div
-          className="relative z-10 flex items-start justify-between"
-          style={{ padding: '20px 28px' }}
+          className="relative z-10 flex items-center"
+          style={{ padding: '12px 20px' }}
         >
-          {/* Left section */}
-          <div className="flex-1 min-w-0">
-            {/* Label row */}
-            <div
-              className="hidden lg:block"
-              style={{
-                fontSize: 10,
-                fontWeight: 600,
-                color: 'rgba(255,255,255,0.5)',
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                marginBottom: 6,
-              }}
-            >
-              ORGANIZATIONAL VISION
-            </div>
+          {/* Label */}
+          <span
+            className="hidden lg:inline shrink-0"
+            style={{
+              fontSize: 10,
+              fontWeight: 600,
+              color: 'rgba(255,255,255,0.55)',
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              marginRight: 16,
+            }}
+          >
+            ORGANIZATIONAL VISION
+          </span>
 
-            {editing ? (
-              /* ── Edit Mode ── */
-              <div>
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  aria-label="Vision statement"
-                  disabled={saving}
-                  className="w-full focus:outline-none"
-                  style={{
-                    fontSize: 18,
-                    fontWeight: 700,
-                    color: '#1E3A8A',
-                    background: 'rgba(255,255,255,0.95)',
-                    borderRadius: 8,
-                    padding: '12px 16px',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                    border: 'none',
-                    lineHeight: 1.4,
-                  }}
-                />
-                <div className="flex items-center gap-2 mt-2">
-                  <button
-                    onClick={saveVision}
-                    disabled={saving}
-                    className="flex items-center gap-1 rounded-md focus-visible:outline-2 focus-visible:outline-offset-2"
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 500,
-                      color: '#1D4ED8',
-                      background: '#FFFFFF',
-                      border: 'none',
-                      padding: '4px 12px',
-                      borderRadius: 6,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <Check size={12} /> Save Vision
-                  </button>
-                  <button
-                    onClick={cancelEdit}
-                    disabled={saving}
-                    className="flex items-center gap-1 rounded-md focus-visible:outline-2 focus-visible:outline-offset-2"
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 500,
-                      color: 'rgba(255,255,255,0.7)',
-                      background: 'transparent',
-                      border: 'none',
-                      padding: '4px 12px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <X size={12} /> Cancel
-                  </button>
-                </div>
-              </div>
-            ) : (
-              /* ── Display Mode ── */
-              <>
-                <div
-                  style={{
-                    fontSize: 18,
-                    fontWeight: 700,
-                    color: '#FFFFFF',
-                    lineHeight: 1.4,
-                    textShadow: '0 1px 2px rgba(0,0,0,0.2)',
-                  }}
-                >
-                  {vision.title}
-                </div>
+          {editing ? (
+            /* ── Edit Mode ── */
+            <div className="flex-1 min-w-0 flex items-center gap-2">
+              <input
+                ref={inputRef}
+                type="text"
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                aria-label="Vision statement"
+                disabled={saving}
+                className="flex-1 min-w-0 focus:outline-none"
+                style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  color: '#1E3A8A',
+                  background: 'rgba(255,255,255,0.95)',
+                  borderRadius: 8,
+                  padding: '8px 14px',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                  border: 'none',
+                  lineHeight: 1.4,
+                }}
+              />
+              <button
+                onClick={saveVision}
+                disabled={saving}
+                className="flex items-center gap-1 rounded-md shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2"
+                style={{
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: '#1D4ED8',
+                  background: '#FFFFFF',
+                  border: 'none',
+                  padding: '4px 12px',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                }}
+              >
+                <Check size={12} /> Save
+              </button>
+              <button
+                onClick={cancelEdit}
+                disabled={saving}
+                className="flex items-center gap-1 rounded-md shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2"
+                style={{
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: 'rgba(255,255,255,0.7)',
+                  background: 'transparent',
+                  border: 'none',
+                  padding: '4px 8px',
+                  cursor: 'pointer',
+                }}
+              >
+                <X size={12} /> Cancel
+              </button>
+            </div>
+          ) : (
+            /* ── Display Mode — single row ── */
+            <>
+              <span
+                className="flex-1 min-w-0 truncate"
+                style={{
+                  fontSize: 16,
+                  fontWeight: 700,
+                  color: '#FFFFFF',
+                  lineHeight: 1.4,
+                  textShadow: '0 1px 2px rgba(0,0,0,0.2)',
+                }}
+              >
+                {vision.title}
+              </span>
+
+              {/* Right side: target badge + updated + edit */}
+              <div className="flex items-center gap-3 shrink-0 ml-4">
                 {vision.target_year && (
-                  <div
-                    className="inline-flex items-center gap-1 mt-2"
+                  <span
+                    className="inline-flex items-center"
                     style={{
                       fontSize: 10,
-                      color: 'rgba(255,255,255,0.8)',
-                      background: 'rgba(255,255,255,0.15)',
+                      color: 'rgba(255,255,255,0.7)',
+                      background: 'rgba(255,255,255,0.12)',
                       backdropFilter: 'blur(4px)',
-                      borderRadius: 999,
-                      padding: '2px 10px',
+                      borderRadius: 9999,
+                      padding: '2px 8px',
+                      whiteSpace: 'nowrap',
                     }}
                   >
-                    🎯 Target: {vision.target_year}
-                  </div>
+                    ◎ {vision.target_year}
+                  </span>
                 )}
-              </>
-            )}
-          </div>
-
-          {/* Right section */}
-          {!editing && (
-            <div className="flex flex-col items-end gap-1 shrink-0 ml-4">
-              {isOwner && (
-                <button
-                  onClick={startEdit}
-                  aria-label="Edit vision statement"
-                  className="focus-visible:outline-2 focus-visible:outline-offset-2"
+                <span
+                  className="hidden md:inline"
                   style={{
+                    fontSize: 10,
                     color: 'rgba(255,255,255,0.4)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    padding: 4,
-                    borderRadius: 4,
-                    transition: 'all 200ms ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color = '#FFFFFF';
-                    e.currentTarget.style.transform = 'scale(1.1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = 'rgba(255,255,255,0.4)';
-                    e.currentTarget.style.transform = 'scale(1)';
+                    whiteSpace: 'nowrap',
                   }}
                 >
-                  <Pencil size={14} />
-                </button>
-              )}
-              <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)' }}>
-                {formatUpdatedAt(vision.updated_at)}
-              </span>
-            </div>
+                  {formatUpdatedAt(vision.updated_at)}
+                </span>
+                {isOwner && (
+                  <button
+                    onClick={startEdit}
+                    aria-label="Edit vision statement"
+                    className="focus-visible:outline-2 focus-visible:outline-offset-2"
+                    style={{
+                      color: 'rgba(255,255,255,0.4)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: 4,
+                      borderRadius: 4,
+                      transition: 'all 150ms ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = 'rgba(255,255,255,1)';
+                      e.currentTarget.style.transform = 'scale(1.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = 'rgba(255,255,255,0.4)';
+                      e.currentTarget.style.transform = 'scale(1)';
+                    }}
+                  >
+                    <Pencil size={14} />
+                  </button>
+                )}
+              </div>
+            </>
           )}
         </div>
       </div>
+
+      <style>{`
+        .vision-pattern::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+          background-size: 16px 16px;
+          pointer-events: none;
+          z-index: 1;
+        }
+      `}</style>
     </div>
   );
 }

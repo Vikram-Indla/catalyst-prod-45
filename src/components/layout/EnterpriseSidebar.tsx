@@ -40,7 +40,7 @@ const enterpriseSidebarConfig: SidebarConfig = {
     {
       title: 'Intelligence',
       items: [
-        { id: 'ai-insights', title: 'AI Insights', path: '/strategyhub/ai-insights', icon: Sparkles, exact: false, badge: 3, badgeVariant: 'info' },
+        { id: 'ai-insights', title: 'AI Insights', path: '/strategyhub/ai-insights', icon: Sparkles, exact: false, badge: 3, badgeVariant: 'purple' },
         { id: 'team-alignment', title: 'Team Alignment', path: '/strategyhub/team-alignment', icon: Users, exact: false },
       ],
     },
