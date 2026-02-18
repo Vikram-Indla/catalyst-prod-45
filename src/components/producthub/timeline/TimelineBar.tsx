@@ -75,6 +75,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
           backgroundColor: bgColor,
           borderLeft: `${isHovered ? 4 : 3}px solid ${borderColor}`,
           boxShadow: isHovered ? '0 4px 12px rgba(0,0,0,0.12)' : 'none',
+          overflow: 'hidden',
         }}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
@@ -88,7 +89,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
         {/* Progress fill */}
         {initiative.progress > 0 && (
           <div
-            className="absolute inset-y-0 left-0"
+            className="absolute inset-y-0 left-0 z-[1] pointer-events-none"
             style={{
               width: `${Math.min(100, initiative.progress)}%`,
               backgroundColor: fillColor,
@@ -99,14 +100,12 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
 
         {/* Text label — only when bar wide enough */}
         {width >= 120 && (
-          <div
-            className="absolute inset-0 flex items-center px-2 pointer-events-none"
-            style={{ paddingLeft: 8 }}
+          <span
+            className="relative z-[2] text-[12px] font-medium truncate pointer-events-none"
+            style={{ color: '#3f3f46', padding: '0 8px' }}
           >
-            <span className="text-[12px] font-medium text-foreground/80 truncate">
-              {initiative.title}
-            </span>
-          </div>
+            {initiative.title}
+          </span>
         )}
       </div>
 
