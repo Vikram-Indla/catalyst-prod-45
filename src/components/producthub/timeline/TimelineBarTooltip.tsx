@@ -1,56 +1,102 @@
 // =====================================================
-// TIMELINE BAR TOOLTIP — Rich hover tooltip
+// TIMELINE BAR TOOLTIP — Portal-based rich hover tooltip
 // =====================================================
 
 import React from 'react';
+import { createPortal } from 'react-dom';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 import { STATUS_CONFIG, getPriorityFromScore, hashColor, getInitialsFromName } from '@/types/producthub/initiative';
 import { format } from 'date-fns';
 
 interface TimelineBarTooltipProps {
   initiative: TimelineInitiative;
-  style: React.CSSProperties;
+  position: { x: number; y: number };
+  isVisible: boolean;
 }
 
-export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiative, style }) => {
+export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiative, position, isVisible }) => {
+  if (!isVisible) return null;
+
   const statusCfg = STATUS_CONFIG[initiative.status];
   const priority = getPriorityFromScore(initiative.computed_score);
   const startStr = initiative.kickoff_date || initiative.business_ask_date;
   const endStr = initiative.target_complete;
 
-  return (
+  return createPortal(
     <div
-      className="absolute z-50 bg-card border border-border rounded-xl shadow-lg pointer-events-none max-w-[340px]"
-      style={{ ...style, boxShadow: '0 20px 60px rgba(0,0,0,0.12)' }}
+      style={{
+        position: 'fixed',
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+        zIndex: 9999,
+        background: '#ffffff',
+        border: '1px solid #e4e4e7',
+        borderRadius: '10px',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06)',
+        pointerEvents: 'none',
+        opacity: isVisible ? 1 : 0,
+        transition: 'opacity 0.15s',
+        maxWidth: '340px',
+        minWidth: '280px',
+      }}
     >
-      <div className="p-3 space-y-2.5">
+      <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {/* Header */}
-        <div className="flex items-start gap-2">
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
           <span
-            className="shrink-0 px-1.5 py-0.5 rounded-sm text-[11px] font-medium bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400"
-            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+            style={{
+              flexShrink: 0,
+              padding: '2px 6px',
+              borderRadius: '4px',
+              fontSize: '11px',
+              fontWeight: 500,
+              fontFamily: "'JetBrains Mono', monospace",
+              backgroundColor: 'rgba(59,130,246,0.1)',
+              color: '#2563eb',
+            }}
           >
             {initiative.initiative_key}
           </span>
-          <span className="text-[14px] font-semibold text-foreground leading-tight line-clamp-2">
+          <span
+            style={{
+              fontSize: '14px',
+              fontWeight: 600,
+              color: '#18181b',
+              lineHeight: '1.3',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
             {initiative.title}
           </span>
         </div>
 
         {/* Status + Priority badges */}
-        <div className="flex items-center gap-2">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span
-            className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-medium rounded-xl"
             style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '2px 8px',
+              fontSize: '11px',
+              fontWeight: 500,
+              borderRadius: '12px',
               backgroundColor: statusCfg.bg,
               color: statusCfg.color,
-              borderRadius: 12,
             }}
           >
-            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: statusCfg.color }} />
+            <span style={{
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              backgroundColor: statusCfg.color,
+            }} />
             {statusCfg.label}
           </span>
-          <span className="text-[11px] font-medium text-muted-foreground capitalize">
+          <span style={{ fontSize: '11px', fontWeight: 500, color: '#71717a', textTransform: 'capitalize' }}>
             {priority} Priority
           </span>
         </div>
@@ -58,8 +104,12 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
         {/* Date range */}
         {(startStr || endStr) && (
           <div
-            className="text-[11px] text-muted-foreground"
-            style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}
+            style={{
+              fontSize: '11px',
+              color: '#71717a',
+              fontFamily: "'JetBrains Mono', monospace",
+              fontVariantNumeric: 'tabular-nums',
+            }}
           >
             {startStr ? format(new Date(startStr), 'MMM d, yyyy') : '—'}
             {' → '}
@@ -68,20 +118,18 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
         )}
 
         {/* Progress bar */}
-        <div className="space-y-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] text-muted-foreground">Progress</span>
-            <span
-              className="text-[11px] font-medium text-foreground"
-              style={{ fontVariantNumeric: 'tabular-nums' }}
-            >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '11px', color: '#71717a' }}>Progress</span>
+            <span style={{ fontSize: '11px', fontWeight: 500, color: '#18181b', fontVariantNumeric: 'tabular-nums' }}>
               {initiative.progress}%
             </span>
           </div>
-          <div className="h-1 bg-muted rounded-full overflow-hidden">
+          <div style={{ height: '4px', backgroundColor: '#f4f4f5', borderRadius: '9999px', overflow: 'hidden' }}>
             <div
-              className="h-full rounded-full transition-all"
               style={{
+                height: '100%',
+                borderRadius: '9999px',
                 width: `${initiative.progress}%`,
                 backgroundColor: statusCfg.color,
               }}
@@ -91,28 +139,46 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
 
         {/* Footer: assignee + department */}
         {(initiative.assignee_name || initiative.department_name) && (
-          <div className="flex items-center gap-2 pt-1 border-t border-border/50">
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            paddingTop: '4px',
+            borderTop: '1px solid #f4f4f5',
+          }}>
             {initiative.assignee_name && (
               <>
                 <span
-                  className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-semibold text-white shrink-0"
-                  style={{ backgroundColor: hashColor(initiative.initiative_key) }}
+                  style={{
+                    width: '20px',
+                    height: '20px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '8px',
+                    fontWeight: 600,
+                    color: '#ffffff',
+                    flexShrink: 0,
+                    backgroundColor: hashColor(initiative.initiative_key),
+                  }}
                 >
                   {getInitialsFromName(initiative.assignee_name)}
                 </span>
-                <span className="text-[12px] text-foreground">{initiative.assignee_name}</span>
+                <span style={{ fontSize: '12px', color: '#18181b' }}>{initiative.assignee_name}</span>
               </>
             )}
             {initiative.assignee_name && initiative.department_name && (
-              <span className="text-muted-foreground">·</span>
+              <span style={{ color: '#a1a1aa' }}>·</span>
             )}
             {initiative.department_name && (
-              <span className="text-[12px] text-muted-foreground">{initiative.department_name}</span>
+              <span style={{ fontSize: '12px', color: '#71717a' }}>{initiative.department_name}</span>
             )}
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
