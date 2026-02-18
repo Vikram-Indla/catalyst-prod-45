@@ -96,13 +96,15 @@ export function ExportDropdown({ data, anchorRef, isOpen, onClose }: ExportDropd
   return createPortal(
     <div
       ref={panelRef}
-      className="fixed bg-white border rounded-lg p-1 z-[300]"
+      className="fixed rounded-lg p-1"
       style={{
         top: anchorRect.bottom + 4,
         left: anchorRect.right - 160,
         width: 160,
-        borderColor: '#e4e4e7',
-        boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+        border: '1px solid #e4e4e7',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
+        zIndex: 500,
+        background: '#ffffff',
       }}
     >
       <button
