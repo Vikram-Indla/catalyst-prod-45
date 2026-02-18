@@ -63,10 +63,13 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
         ref={barRef}
         data-bar-id={initiative.id}
         className={cn(
-          'absolute cursor-pointer transition-shadow duration-150',
+          'cursor-pointer transition-shadow duration-150',
           isHovered && 'z-10'
         )}
         style={{
+          position: 'absolute',
+          display: 'flex',
+          alignItems: 'center',
           left,
           top: topOffset,
           width,
@@ -89,11 +92,16 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
         {/* Progress fill */}
         {initiative.progress > 0 && (
           <div
-            className="absolute inset-y-0 left-0 z-[1] pointer-events-none"
             style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              bottom: 0,
               width: `${Math.min(100, initiative.progress)}%`,
-              backgroundColor: fillColor,
-              borderRadius: '4px 0 0 4px',
+              background: fillColor,
+              borderRadius: '6px 0 0 6px',
+              pointerEvents: 'none',
+              zIndex: 1,
             }}
           />
         )}
@@ -101,8 +109,17 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
         {/* Text label — only when bar wide enough */}
         {width >= 120 && (
           <span
-            className="relative z-[2] text-[12px] font-medium truncate pointer-events-none"
-            style={{ color: '#3f3f46', padding: '0 8px' }}
+            style={{
+              position: 'relative',
+              zIndex: 2,
+              fontSize: '12px',
+              fontWeight: 500,
+              color: '#3f3f46',
+              padding: '0 8px',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
           >
             {initiative.title}
           </span>
