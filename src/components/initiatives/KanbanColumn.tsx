@@ -76,7 +76,7 @@ export function KanbanColumn({
           <span className="text-[13px] font-medium text-zinc-800 truncate">
             {display.label}
           </span>
-          <span className="text-[11px] font-medium text-zinc-400 bg-zinc-200/60 rounded-full px-1.5 py-0.5 min-w-[20px] text-center">
+          <span className="text-[12px] font-medium text-zinc-400 tabular-nums">
             {items.length}
           </span>
         </div>
