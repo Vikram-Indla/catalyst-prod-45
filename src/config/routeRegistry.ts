@@ -61,6 +61,7 @@ export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   '/producthub/kanban': { section: 'PRODUCT', pageTitle: 'Product Kanban' },
   '/producthub/table': { section: 'PRODUCT', pageTitle: 'Demand Table' },
   '/producthub/roadmaps': { section: 'PRODUCT', pageTitle: 'Product Roadmap' },
+  '/producthub/roadmap': { section: 'PRODUCT', pageTitle: 'Product Roadmap' },
   
   // Ideas routes
   '/producthub/ideas': { section: 'IDEAS', pageTitle: 'Ideas Hub' },

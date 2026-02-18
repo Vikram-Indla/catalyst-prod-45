@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from "react";
 // ProdHubAppShell removed — /producthub/* now uses CatalystShell
 const InitiativeListingPage = lazy(() => import("./pages/producthub/InitiativeListingPage"));
+const RoadmapPage = lazy(() => import("./pages/producthub/RoadmapPage"));
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { Toaster as HotToaster } from 'react-hot-toast';
@@ -495,6 +496,7 @@ const App = () => (
               <Route path="/producthub/roadmaps" element={<ProductRoadmapV2Page />} />
               <Route path="/producthub/roadmaps-v1" element={<IndustryRoadmapPage />} />
               <Route path="/producthub/reports" element={<IndustryComingSoon />} />
+              <Route path="/producthub/roadmap" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RoadmapPage /></Suspense>} />
               {/* Legacy industry redirects */}
               <Route path="/industry/*" element={<Navigate to="/producthub" replace />} />
               
