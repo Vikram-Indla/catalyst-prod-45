@@ -4620,6 +4620,20 @@ export type Database = {
             referencedRelation: "es_strategic_themes"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_themes_list_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_themes_timeline_view"
+            referencedColumns: ["id"]
+          },
         ]
       }
       es_health_scores: {
@@ -4850,6 +4864,20 @@ export type Database = {
             columns: ["theme_id"]
             isOneToOne: false
             referencedRelation: "es_strategic_themes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_investment_allocations_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_themes_list_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_investment_allocations_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_themes_timeline_view"
             referencedColumns: ["id"]
           },
         ]
@@ -5083,6 +5111,7 @@ export type Database = {
       }
       es_strategic_themes: {
         Row: {
+          ai_health_score: number | null
           bsc_perspective: string | null
           color: string | null
           created_at: string
@@ -5090,15 +5119,27 @@ export type Database = {
           description: string | null
           fiscal_year: number | null
           id: string
+          is_major: boolean | null
+          owner_id: string | null
+          planned_budget: number | null
+          priority: string | null
+          process_step: string | null
+          progress_pct: number | null
           sort_order: number | null
+          start_date: string | null
           status: string
+          success_metrics: Json | null
+          target_completion: string | null
+          theme_group_id: string | null
           title: string
           type: string | null
           updated_at: string
           updated_by: string | null
           vision_id: string
+          vision_statement: string | null
         }
         Insert: {
+          ai_health_score?: number | null
           bsc_perspective?: string | null
           color?: string | null
           created_at?: string
@@ -5106,15 +5147,27 @@ export type Database = {
           description?: string | null
           fiscal_year?: number | null
           id?: string
+          is_major?: boolean | null
+          owner_id?: string | null
+          planned_budget?: number | null
+          priority?: string | null
+          process_step?: string | null
+          progress_pct?: number | null
           sort_order?: number | null
+          start_date?: string | null
           status?: string
+          success_metrics?: Json | null
+          target_completion?: string | null
+          theme_group_id?: string | null
           title: string
           type?: string | null
           updated_at?: string
           updated_by?: string | null
           vision_id: string
+          vision_statement?: string | null
         }
         Update: {
+          ai_health_score?: number | null
           bsc_perspective?: string | null
           color?: string | null
           created_at?: string
@@ -5122,20 +5175,66 @@ export type Database = {
           description?: string | null
           fiscal_year?: number | null
           id?: string
+          is_major?: boolean | null
+          owner_id?: string | null
+          planned_budget?: number | null
+          priority?: string | null
+          process_step?: string | null
+          progress_pct?: number | null
           sort_order?: number | null
+          start_date?: string | null
           status?: string
+          success_metrics?: Json | null
+          target_completion?: string | null
+          theme_group_id?: string | null
           title?: string
           type?: string | null
           updated_at?: string
           updated_by?: string | null
           vision_id?: string
+          vision_statement?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "es_strategic_themes_vision_id_fkey"
             columns: ["vision_id"]
             isOneToOne: false
             referencedRelation: "es_visions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_theme_group"
+            columns: ["theme_group_id"]
+            isOneToOne: false
+            referencedRelation: "es_theme_groups"
             referencedColumns: ["id"]
           },
         ]
@@ -5214,6 +5313,353 @@ export type Database = {
           workstream_color?: string | null
         }
         Relationships: []
+      }
+      es_theme_groups: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          sort_order: number | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          sort_order?: number | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          sort_order?: number | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_theme_groups_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      es_theme_links: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          link_type: string | null
+          source_theme_id: string
+          target_theme_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          link_type?: string | null
+          source_theme_id: string
+          target_theme_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          link_type?: string | null
+          source_theme_id?: string
+          target_theme_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_theme_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "es_theme_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "es_theme_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_links_source_theme_id_fkey"
+            columns: ["source_theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_tree"
+            referencedColumns: ["theme_id"]
+          },
+          {
+            foreignKeyName: "es_theme_links_source_theme_id_fkey"
+            columns: ["source_theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_strategic_themes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_links_source_theme_id_fkey"
+            columns: ["source_theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_themes_list_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_links_source_theme_id_fkey"
+            columns: ["source_theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_themes_timeline_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_links_target_theme_id_fkey"
+            columns: ["target_theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_tree"
+            referencedColumns: ["theme_id"]
+          },
+          {
+            foreignKeyName: "es_theme_links_target_theme_id_fkey"
+            columns: ["target_theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_strategic_themes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_links_target_theme_id_fkey"
+            columns: ["target_theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_themes_list_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_links_target_theme_id_fkey"
+            columns: ["target_theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_themes_timeline_view"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      es_theme_milestones: {
+        Row: {
+          category: string | null
+          completed_date: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          name: string
+          sort_order: number | null
+          start_date: string | null
+          state: string | null
+          theme_id: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          category?: string | null
+          completed_date?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          name: string
+          sort_order?: number | null
+          start_date?: string | null
+          state?: string | null
+          theme_id: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          category?: string | null
+          completed_date?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          name?: string
+          sort_order?: number | null
+          start_date?: string | null
+          state?: string | null
+          theme_id?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_theme_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_tree"
+            referencedColumns: ["theme_id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_strategic_themes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_themes_list_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_themes_timeline_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       es_visions: {
         Row: {
@@ -38866,6 +39312,20 @@ export type Database = {
             referencedRelation: "es_strategic_themes"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_themes_list_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_themes_timeline_view"
+            referencedColumns: ["id"]
+          },
         ]
       }
       es_dashboard_okr_tree: {
@@ -38935,6 +39395,93 @@ export type Database = {
           total_items?: number | null
           workstream?: string | null
           workstream_color?: string | null
+        }
+        Relationships: []
+      }
+      es_themes_list_view: {
+        Row: {
+          ai_health_score: number | null
+          bsc_perspective: string | null
+          budget_allocated: number | null
+          budget_spent: number | null
+          color: string | null
+          created_at: string | null
+          description: string | null
+          fiscal_year: number | null
+          goal_count: number | null
+          id: string | null
+          initiative_count: number | null
+          is_major: boolean | null
+          kr_count: number | null
+          milestone_count: number | null
+          owner_avatar: string | null
+          owner_id: string | null
+          owner_name: string | null
+          planned_budget: number | null
+          priority: string | null
+          process_step: string | null
+          progress_pct: number | null
+          sort_order: number | null
+          start_date: string | null
+          status: string | null
+          success_metrics: Json | null
+          target_completion: string | null
+          theme_group_id: string | null
+          theme_group_name: string | null
+          title: string | null
+          updated_at: string | null
+          vision_statement: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_theme_group"
+            columns: ["theme_group_id"]
+            isOneToOne: false
+            referencedRelation: "es_theme_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      es_themes_timeline_view: {
+        Row: {
+          color: string | null
+          duration_days: number | null
+          elapsed_pct: number | null
+          id: string | null
+          owner_name: string | null
+          progress_pct: number | null
+          start_date: string | null
+          status: string | null
+          target_completion: string | null
+          title: string | null
         }
         Relationships: []
       }
