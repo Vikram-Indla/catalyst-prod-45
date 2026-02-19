@@ -1,4 +1,23 @@
 import React, { lazy, Suspense } from "react";
+// ProjectHub V5 lazy imports
+const ProjectHubShellLazy = lazy(() => import("./components/project-hub/ProjectHubShell").then(m => ({ default: m.ProjectHubShell })));
+const ProjectListPageLazy = lazy(() => import("./pages/project-hub/ProjectListPage"));
+const ProjectDashboardPageLazy = lazy(() => import("./pages/project-hub/ProjectDashboardPage"));
+const PHProjectSettingsPageLazy = lazy(() => import("./pages/project-hub/ProjectSettingsPage"));
+import { List, Columns3, AlignJustify, GanttChart, Tag, BarChart3 } from 'lucide-react';
+import PHPlaceholderBase from "./pages/project-hub/PhasePlaceholderPage";
+const PH_ICONS: Record<string, any> = { Backlog: List, Board: Columns3, List: AlignJustify, Timeline: GanttChart, Releases: Tag, Reports: BarChart3 };
+const PH_DESCRIPTIONS: Record<string, string> = {
+  Backlog: 'Sprint backlog with drag-and-drop prioritization.',
+  Board: 'Kanban board with customizable swim lanes.',
+  List: 'Flat list view with inline editing and bulk actions.',
+  Timeline: 'Gantt-style timeline with dependency tracking.',
+  Releases: 'Release planning and version management.',
+  Reports: 'Velocity charts, burn-down, and team analytics.',
+};
+function PHPlaceholder({ title, phase }: { title: string; phase: string }) {
+  return <PHPlaceholderBase title={title} phase={phase} icon={PH_ICONS[title] || List} description={PH_DESCRIPTIONS[title] || `Coming in ${phase}`} />;
+}
 const StrategicThemesPage = lazy(() => import("./pages/strategyhub/StrategicThemesPage"));
 // ProdHubAppShell removed — /producthub/* now uses CatalystShell
 const InitiativeListingPage = lazy(() => import("./pages/producthub/InitiativeListingPage"));
@@ -777,6 +796,23 @@ const App = () => (
                 <Route path="capacity" element={<WorkHubCapacityPage />} />
                 <Route path="analytics" element={<WorkHubAnalyticsPage />} />
                 
+              </Route>
+
+              {/* ═══════════════════════════════════════════════════════════════ */}
+              {/* PROJECTHUB V5 — NEW SHELL ═══════════════════════════════════ */}
+              {/* ═══════════════════════════════════════════════════════════════ */}
+              <Route path="/project-hub" element={<Suspense fallback={<div />}><ProjectHubShellLazy /></Suspense>}>
+                <Route index element={<Navigate to="/project-hub/projects" replace />} />
+                <Route path="projects" element={<Suspense fallback={<div />}><ProjectListPageLazy /></Suspense>} />
+                <Route path=":key" element={<Navigate to="dashboard" replace />} />
+                <Route path=":key/dashboard" element={<Suspense fallback={<div />}><ProjectDashboardPageLazy /></Suspense>} />
+                <Route path=":key/settings" element={<Suspense fallback={<div />}><PHProjectSettingsPageLazy /></Suspense>} />
+                <Route path=":key/backlog" element={<Suspense fallback={<div />}><PHPlaceholder title="Backlog" phase="Phase 2" /></Suspense>} />
+                <Route path=":key/board" element={<Suspense fallback={<div />}><PHPlaceholder title="Board" phase="Phase 2" /></Suspense>} />
+                <Route path=":key/list" element={<Suspense fallback={<div />}><PHPlaceholder title="List" phase="Phase 2" /></Suspense>} />
+                <Route path=":key/timeline" element={<Suspense fallback={<div />}><PHPlaceholder title="Timeline" phase="Phase 3" /></Suspense>} />
+                <Route path=":key/releases" element={<Suspense fallback={<div />}><PHPlaceholder title="Releases" phase="Phase 3" /></Suspense>} />
+                <Route path=":key/reports" element={<Suspense fallback={<div />}><PHPlaceholder title="Reports" phase="Phase 4" /></Suspense>} />
               </Route>
               <Route path="/projects/:projectKey/settings" element={<ProjectSettingsPage />} />
               <Route path="/projects/:projectId/features" element={<FeaturesPage />} />
