@@ -4,6 +4,7 @@
  */
 
 import { useState, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { useThemes, useCreateTheme, useUpdateTheme, useDeleteTheme } from '@/hooks/use-strategic-themes';
@@ -19,6 +20,7 @@ import { ThemeDetailDrawer } from '@/components/strategy/themes/ThemeDetailDrawe
 import { ThemeCreateModal } from '@/components/strategy/themes/ThemeCreateModal';
 
 export default function StrategicThemesPage() {
+  const navigate = useNavigate();
   const { data: themes = [], isLoading, refetch, isFetching } = useThemes();
   const createTheme = useCreateTheme();
   const updateTheme = useUpdateTheme();
@@ -102,13 +104,16 @@ export default function StrategicThemesPage() {
 
   return (
     <PageChrome hideHeader>
-      <CommandCenterHeader
-        title="Strategic Themes"
-        subtitle={`StrategyHub › Strategic Themes`}
-        timestamp="Updated just now"
-        onRefresh={() => refetch()}
-        isRefreshing={isFetching}
-      />
+      <div style={{ padding: '16px 24px 0' }}>
+        <nav style={{ fontSize: 12, color: '#64748B', marginBottom: 4 }}>
+          <span style={{ cursor: 'pointer' }} onClick={() => navigate('/strategyhub')}>StrategyHub</span>
+          <span style={{ margin: '0 4px', color: '#94A3B8' }}>›</span>
+          <span style={{ fontWeight: 600, color: '#0F172A' }}>Strategic Themes</span>
+        </nav>
+        <div className="flex items-center justify-between" style={{ marginBottom: 0 }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A' }}>Strategic Themes</h1>
+        </div>
+      </div>
 
       <div style={{ padding: '16px 24px 24px' }}>
         <ThemeStatsStrip themes={themes} />
