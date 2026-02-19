@@ -11,30 +11,34 @@ export function useAnnouncements() {
     queryFn: async () => {
       if (!user) return [];
       
-      const now = new Date().toISOString();
-      
-      // Get active announcements
-      const { data: activeAnnouncements, error } = await (supabase as any)
-        .from('announcements')
-        .select('*')
-        .eq('is_active', true)
-        .lte('start_date', now)
-        .gte('end_date', now);
+      try {
+        const now = new Date().toISOString();
+        
+        // Get active announcements
+        const { data: activeAnnouncements, error } = await (supabase as any)
+          .from('announcements')
+          .select('*')
+          .eq('is_active', true)
+          .lte('start_date', now)
+          .gte('end_date', now);
 
-      if (error) throw error;
+        // If table doesn't exist (404) or other error, return empty gracefully
+        if (error) return [];
 
-      // Get dismissed announcements
-      const { data: dismissals } = await (supabase as any)
-        .from('announcement_dismissals')
-        .select('announcement_id')
-        .eq('user_id', user.id);
+        // Get dismissed announcements
+        const { data: dismissals } = await (supabase as any)
+          .from('announcement_dismissals')
+          .select('announcement_id')
+          .eq('user_id', user.id);
 
-      const dismissedIds = new Set((dismissals as any[] || []).map((d: any) => d.announcement_id));
+        const dismissedIds = new Set((dismissals as any[] || []).map((d: any) => d.announcement_id));
 
-      // Filter out dismissed dismissible announcements
-      return (activeAnnouncements as any[] || []).filter(
-        (announcement: any) => !announcement.is_dismissible || !dismissedIds.has(announcement.id)
-      );
+        return (activeAnnouncements as any[] || []).filter(
+          (announcement: any) => !announcement.is_dismissible || !dismissedIds.has(announcement.id)
+        );
+      } catch {
+        return [];
+      }
     },
     enabled: !!user,
   });
