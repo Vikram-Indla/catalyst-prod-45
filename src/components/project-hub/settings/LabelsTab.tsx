@@ -63,41 +63,45 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
     color: '#0F172A', background: '#FFFFFF', border: '1px solid #E2E8F0',
     borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
     flex: 1, minWidth: 0,
+    transition: 'border-color 150ms, box-shadow 150ms',
   };
 
   return (
-    <div
-      className="rounded-xl"
-      style={{
-        background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12,
-        padding: '20px 24px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-      }}
-    >
-      <h3 style={{ fontSize: 14, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif", marginBottom: 16 }}>
-        Labels ({labels.length})
-      </h3>
+    <div className="ph-card">
+      <h3 className="ph-card-title">Labels ({labels.length})</h3>
 
       {isLoading ? (
-        <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>Loading...</div>
+        <div className="space-y-2">
+          {[1,2,3].map(i => <div key={i} className="ph-skeleton rounded" style={{ height: 32, width: '30%' }} />)}
+        </div>
       ) : labels.length === 0 ? (
-        <div className="flex flex-col items-center py-6" style={{ color: '#94A3B8' }}>
-          <Tag size={28} strokeWidth={1.5} />
-          <p style={{ fontSize: 13, marginTop: 8, textAlign: 'center' }}>
-            No labels yet. Add your first label to organize work items.
+        <div className="flex flex-col items-center py-8" style={{ color: '#CBD5E1' }}>
+          <Tag size={32} strokeWidth={1.25} />
+          <p style={{ fontSize: 18, fontWeight: 600, color: '#0F172A', marginTop: 12, fontFamily: "'Sora', sans-serif" }}>No labels yet</p>
+          <p style={{ fontSize: 14, color: '#64748B', marginTop: 4, textAlign: 'center', maxWidth: 320 }}>
+            Labels help categorize and filter work items.
           </p>
         </div>
       ) : (
-        <div className="space-y-0.5 mb-4">
+        <div className="flex flex-wrap gap-2 mb-4">
           {labels.map((l: any) => (
-            <div key={l.id} className="flex items-center gap-3 px-3 rounded-lg hover:bg-[#F8FAFC] transition-colors" style={{ height: 40 }}>
-              <div className="flex-shrink-0 rounded-full" style={{ width: 12, height: 12, background: l.color }} />
-              <span className="flex-1 truncate" style={{ fontSize: 14, color: '#0F172A' }}>{l.name}</span>
+            <div
+              key={l.id}
+              className="inline-flex items-center gap-2 rounded-full transition-colors hover:opacity-80"
+              style={{
+                padding: '4px 10px 4px 8px',
+                background: `${l.color}12`,
+                border: `1px solid ${l.color}30`,
+              }}
+            >
+              <div className="flex-shrink-0 rounded-full" style={{ width: 10, height: 10, background: l.color }} />
+              <span style={{ fontSize: 13, color: '#0F172A', fontWeight: 500 }}>{l.name}</span>
               <button
                 onClick={() => handleDelete(l.id)}
-                className="flex items-center justify-center rounded transition-colors hover:bg-[#FEE2E2] group"
-                style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}
+                className="flex items-center justify-center rounded-full transition-colors hover:bg-[#FEE2E2]"
+                style={{ width: 18, height: 18, border: 'none', background: 'transparent', cursor: 'pointer', marginLeft: 2 }}
               >
-                <X size={14} color="#94A3B8" className="group-hover:!text-[#DC2626]" />
+                <X size={12} color="#94A3B8" />
               </button>
             </div>
           ))}
@@ -114,16 +118,20 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
             placeholder="Label name..."
             disabled={atMax}
             style={{ ...inputStyle, opacity: atMax ? 0.5 : 1 }}
+            onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+            onBlur={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
           />
           <button
             onClick={handleAdd}
             disabled={!newName.trim() || atMax}
-            className="flex-shrink-0 hover:bg-[#F8FAFC] transition-colors disabled:opacity-40"
+            className="flex-shrink-0 transition-all disabled:opacity-40"
             style={{
               height: 36, padding: '0 14px', fontSize: 13, fontWeight: 500,
               color: '#334155', border: '1px solid #E2E8F0', borderRadius: 6,
               background: 'transparent', cursor: !newName.trim() || atMax ? 'default' : 'pointer',
             }}
+            onMouseEnter={e => { if (newName.trim() && !atMax) e.currentTarget.style.background = '#F8FAFC'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
             Add
           </button>

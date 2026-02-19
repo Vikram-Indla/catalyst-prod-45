@@ -25,7 +25,9 @@ function Badge({ name }: { name: string }) {
       className="inline-flex items-center gap-1.5 rounded-full"
       style={{ fontSize: 12, fontWeight: 600, padding: '3px 10px', background: `${cfg.color}15`, color: cfg.color }}
     >
-      <IconComp size={12} strokeWidth={2.5} />
+      <span className="flex items-center justify-center rounded-full flex-shrink-0" style={{ width: 18, height: 18, background: cfg.color }}>
+        <IconComp size={10} color="#FFFFFF" strokeWidth={2.5} />
+      </span>
       {name}
     </span>
   );
@@ -40,19 +42,10 @@ export function TypeHierarchy({ featureLayerEnabled }: TypeHierarchyProps) {
   };
 
   return (
-    <div
-      className="rounded-xl"
-      style={{
-        background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12,
-        padding: '20px 24px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-      }}
-    >
-      <h3 style={{ fontSize: 14, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif", marginBottom: 16 }}>
-        Type Hierarchy
-      </h3>
+    <div className="ph-card">
+      <h3 className="ph-card-title">Type Hierarchy</h3>
 
       <div className="space-y-2" style={{ paddingLeft: 4 }}>
-        {/* Epic */}
         <div><Badge name="Epic" /></div>
 
         {featureLayerEnabled ? (

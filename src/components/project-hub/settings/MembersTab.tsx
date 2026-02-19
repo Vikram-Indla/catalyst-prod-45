@@ -23,7 +23,6 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<{ id: string; name: string; email: string }[]>([]);
 
-  // Fetch members
   const { data: members = [], isLoading } = useQuery({
     queryKey: ['ph-project-members', projectId],
     queryFn: async () => {
@@ -34,9 +33,8 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
       if (error) throw new Error(error.message);
       if (!data || data.length === 0) return [];
 
-      // Fetch profiles for member names/emails
       const userIds = data.map(m => m.user_id);
-      const { data: profiles, error: profErr } = await supabase
+      const { data: profiles } = await supabase
         .from('profiles')
         .select('id, full_name, email')
         .in('id', userIds);
@@ -46,9 +44,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
       return data.map(m => {
         const p = profileMap.get(m.user_id);
         return {
-          id: m.id,
-          user_id: m.user_id,
-          role: m.role,
+          id: m.id, user_id: m.user_id, role: m.role,
           name: p?.full_name || p?.email || 'Unknown',
           email: p?.email || '',
         } as MemberData;
@@ -57,7 +53,6 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
     enabled: !!projectId,
   });
 
-  // Debounced search
   useEffect(() => {
     if (searchTerm.length < 2) { setSearchResults([]); return; }
     const t = setTimeout(async () => {
@@ -70,8 +65,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
       if (!error && data) {
         const existingIds = new Set(members.map(m => m.user_id));
         setSearchResults(
-          data
-            .filter(p => !existingIds.has(p.id))
+          data.filter(p => !existingIds.has(p.id))
             .map(p => ({ id: p.id, name: p.full_name || p.email || 'User', email: p.email || '' }))
         );
       }
@@ -96,10 +90,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
 
   const updateRole = async (memberId: string, role: string) => {
     try {
-      const { error } = await supabase
-        .from('ph_project_members')
-        .update({ role } as any)
-        .eq('id', memberId);
+      const { error } = await supabase.from('ph_project_members').update({ role } as any).eq('id', memberId);
       if (error) throw new Error(error.message);
       queryClient.invalidateQueries({ queryKey: ['ph-project-members', projectId] });
       toast.success('Role updated');
@@ -111,10 +102,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
   const removeMember = async (memberId: string) => {
     if (!confirm('Remove this member from the project?')) return;
     try {
-      const { error } = await supabase
-        .from('ph_project_members')
-        .delete()
-        .eq('id', memberId);
+      const { error } = await supabase.from('ph_project_members').delete().eq('id', memberId);
       if (error) throw new Error(error.message);
       queryClient.invalidateQueries({ queryKey: ['ph-project-members', projectId] });
       toast.success('Member removed');
@@ -126,22 +114,16 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
   const AVATAR_COLORS = ['#7C3AED', '#2563EB', '#0D9488', '#D97706', '#DC2626'];
 
   return (
-    <div
-      className="rounded-xl"
-      style={{
-        background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12,
-        padding: '20px 24px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-      }}
-    >
-      <h3 style={{ fontSize: 14, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif", marginBottom: 16 }}>
-        Members ({members.length})
-      </h3>
+    <div className="ph-card">
+      <h3 className="ph-card-title">Members ({members.length})</h3>
 
       {/* Add member search */}
       <div className="relative mb-4">
         <div
           className="flex items-center gap-2 rounded-md"
-          style={{ height: 40, padding: '0 12px', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6 }}
+          style={{ height: 40, padding: '0 12px', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6, transition: 'border-color 150ms, box-shadow 150ms' }}
+          onFocus={e => { (e.currentTarget as HTMLElement).style.borderColor = '#2563EB'; (e.currentTarget as HTMLElement).style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
+          onBlur={e => { (e.currentTarget as HTMLElement).style.borderColor = '#E2E8F0'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}
         >
           <Search size={14} color="#94A3B8" strokeWidth={2} />
           <input
@@ -156,10 +138,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
         {searchResults.length > 0 && (
           <div
             className="absolute top-full left-0 right-0 mt-1 z-10 max-h-[200px] overflow-y-auto"
-            style={{
-              background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
-              boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)',
-            }}
+            style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,.07)' }}
           >
             {searchResults.map(user => (
               <button
@@ -168,13 +147,8 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
                 className="w-full flex items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-[#F8FAFC]"
                 style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
               >
-                <div
-                  className="flex items-center justify-center rounded-full flex-shrink-0"
-                  style={{
-                    width: 28, height: 28,
-                    background: AVATAR_COLORS[user.name.charCodeAt(0) % AVATAR_COLORS.length],
-                    color: '#FFFFFF', fontSize: 11, fontWeight: 600,
-                  }}
+                <div className="flex items-center justify-center rounded-full flex-shrink-0"
+                  style={{ width: 28, height: 28, background: AVATAR_COLORS[user.name.charCodeAt(0) % AVATAR_COLORS.length], color: '#FFFFFF', fontSize: 11, fontWeight: 600 }}
                 >
                   {user.name[0]?.toUpperCase() || '?'}
                 </div>
@@ -190,27 +164,21 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
 
       {/* Member list */}
       {isLoading ? (
-        <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>Loading members...</div>
+        <div className="space-y-2">
+          {[1,2,3].map(i => <div key={i} className="ph-skeleton rounded" style={{ height: 48 }} />)}
+        </div>
       ) : members.length === 0 ? (
         <div style={{ padding: '20px 0', textAlign: 'center', fontSize: 13, color: '#94A3B8' }}>No members yet</div>
       ) : (
         <div className="space-y-1">
           {members.map(m => (
-            <MemberRow
-              key={m.id}
-              id={m.id}
-              name={m.name}
-              email={m.email}
-              role={m.role}
-              isCurrentUser={m.user_id === currentUserId}
-              onRoleChange={updateRole}
-              onRemove={removeMember}
+            <MemberRow key={m.id} id={m.id} name={m.name} email={m.email} role={m.role}
+              isCurrentUser={m.user_id === currentUserId} onRoleChange={updateRole} onRemove={removeMember}
             />
           ))}
         </div>
       )}
 
-      {/* Footer note */}
       <div className="mt-4 pt-4" style={{ borderTop: '1px solid #E2E8F0' }}>
         <p style={{ fontSize: 11, color: '#94A3B8', lineHeight: 1.6 }}>
           <strong>Admin</strong> — Full access including settings ·{' '}

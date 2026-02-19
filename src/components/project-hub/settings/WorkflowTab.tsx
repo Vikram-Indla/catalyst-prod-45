@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import '@/components/project-hub/shared/phStyles.css';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Plus } from 'lucide-react';
@@ -190,16 +191,8 @@ export function WorkflowTab({ projectId }: WorkflowTabProps) {
   return (
     <div className="space-y-5">
       {/* Workflow Editor Card */}
-      <div
-        className="rounded-xl"
-        style={{
-          background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12,
-          padding: '20px 24px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-        }}
-      >
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}>
-          Workflow
-        </h3>
+      <div className="ph-card">
+        <h3 className="ph-card-title">Workflow</h3>
         <p style={{ fontSize: 12, color: '#64748B', marginTop: 4, marginBottom: 16 }}>
           Drag to reorder statuses. New items start at the Default status. Done items count toward progress %.
         </p>

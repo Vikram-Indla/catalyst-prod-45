@@ -1,0 +1,53 @@
+/* ProjectHub skeleton shimmer animation */
+@keyframes ph-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.ph-skeleton {
+  background: linear-gradient(90deg, #F1F5F9 25%, #E8EDF2 37%, #F1F5F9 63%) !important;
+  background-size: 200% 100% !important;
+  animation: ph-shimmer 1.5s ease-in-out infinite;
+}
+
+/* Card enterprise styling override */
+.ph-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1);
+}
+
+.ph-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0F172A;
+  font-family: 'Sora', sans-serif;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+/* Focus ring for form inputs */
+.ph-input:focus {
+  border-color: #2563EB !important;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.1) !important;
+}
+
+/* Content area responsive */
+.ph-content-wrapper {
+  width: 100%;
+  padding: 24px 28px;
+}
+
+.ph-inner-content {
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (min-width: 1441px) {
+  .ph-inner-content {
+    max-width: 1140px;
+  }
+}

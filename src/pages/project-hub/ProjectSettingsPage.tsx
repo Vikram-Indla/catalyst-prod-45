@@ -12,6 +12,8 @@ import { LabelsTab } from '@/components/project-hub/settings/LabelsTab';
 import { ComponentsTab } from '@/components/project-hub/settings/ComponentsTab';
 import { IntegrationTab } from '@/components/project-hub/settings/IntegrationTab';
 import { NotificationsTab } from '@/components/project-hub/settings/NotificationsTab';
+import { SkeletonTable } from '@/components/project-hub/shared/SkeletonPulse';
+import '@/components/project-hub/shared/phStyles.css';
 
 export default function ProjectSettingsPageNew() {
   const { key } = useParams<{ key: string }>();
@@ -43,75 +45,84 @@ export default function ProjectSettingsPageNew() {
 
   if (isLoading) {
     return (
-      <div style={{ padding: '32px 40px', fontFamily: "'Inter', sans-serif" }}>
-        <div style={{ fontSize: 13, color: '#94A3B8' }}>Loading settings...</div>
+      <div className="ph-content-wrapper" style={{ fontFamily: "'Inter', sans-serif" }}>
+        <div className="ph-inner-content">
+          <div style={{ marginBottom: 20 }}>
+            <div className="ph-skeleton rounded" style={{ height: 20, width: 200, marginBottom: 12 }} />
+            <div className="ph-skeleton rounded" style={{ height: 28, width: 180, marginBottom: 20 }} />
+            <div className="ph-skeleton rounded" style={{ height: 40, width: '100%', marginBottom: 20 }} />
+          </div>
+          <SkeletonTable rows={6} />
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif", padding: '24px 32px' }}>
-      <div className="flex items-center gap-1.5 mb-5">
-        <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: '#64748B' }} onClick={() => navigate('/project-hub/projects')}>ProjectHub</span>
-        <ChevronRight size={12} color="#94A3B8" />
-        <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: '#64748B' }} onClick={() => navigate(`/project-hub/${key}/dashboard`)}>
-          {key?.toUpperCase()}{project ? ` — ${project.name}` : ''}
-        </span>
-        <ChevronRight size={12} color="#94A3B8" />
-        <span style={{ fontSize: 13, color: '#0F172A', fontWeight: 500 }}>Settings</span>
-      </div>
+    <div className="ph-content-wrapper" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <div className="ph-inner-content">
+        <div className="flex items-center gap-1.5 mb-5">
+          <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: '#64748B' }} onClick={() => navigate('/project-hub/projects')}>ProjectHub</span>
+          <ChevronRight size={12} color="#94A3B8" />
+          <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: '#64748B' }} onClick={() => navigate(`/project-hub/${key}/dashboard`)}>
+            {key?.toUpperCase()}{project ? ` — ${project.name}` : ''}
+          </span>
+          <ChevronRight size={12} color="#94A3B8" />
+          <span style={{ fontSize: 13, color: '#0F172A', fontWeight: 500 }}>Settings</span>
+        </div>
 
-      <div className="flex items-center gap-3 mb-5">
-        <Settings size={20} color="#2563EB" strokeWidth={1.75} />
-        <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.3px' }}>Project Settings</h1>
-      </div>
+        <div className="flex items-center gap-3 mb-5">
+          <Settings size={20} color="#2563EB" strokeWidth={1.75} />
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.3px' }}>Project Settings</h1>
+        </div>
 
-      <SettingsTabs active={activeTab} onChange={setActiveTab} />
+        <SettingsTabs active={activeTab} onChange={setActiveTab} />
 
-      <div className="mt-5" style={{ maxWidth: 960, margin: '20px auto 0' }}>
-        {activeTab === 'General' && project && (
-          <GeneralTab
-            project={{
-              id: project.id, key: project.key, name: project.name,
-              description: (project as any).description ?? null,
-              department: (project as any).department ?? '',
-              status: (project as any).status ?? 'active',
-              start_date: (project as any).start_date ?? null,
-              end_date: (project as any).end_date ?? null,
-              feature_layer: (project as any).feature_layer ?? false,
-              ai_assist: (project as any).ai_assist ?? true,
-            }}
-            onSaved={() => queryClient.invalidateQueries({ queryKey: ['ph-project-settings', key] })}
-          />
-        )}
+        <div className="mt-5">
+          {activeTab === 'General' && project && (
+            <GeneralTab
+              project={{
+                id: project.id, key: project.key, name: project.name,
+                description: (project as any).description ?? null,
+                department: (project as any).department ?? '',
+                status: (project as any).status ?? 'active',
+                start_date: (project as any).start_date ?? null,
+                end_date: (project as any).end_date ?? null,
+                feature_layer: (project as any).feature_layer ?? false,
+                ai_assist: (project as any).ai_assist ?? true,
+              }}
+              onSaved={() => queryClient.invalidateQueries({ queryKey: ['ph-project-settings', key] })}
+            />
+          )}
 
-        {activeTab === 'Members' && project && (
-          <MembersTab projectId={project.id} currentUserId={currentUserId} />
-        )}
+          {activeTab === 'Members' && project && (
+            <MembersTab projectId={project.id} currentUserId={currentUserId} />
+          )}
 
-        {activeTab === 'Workflow' && project && (
-          <WorkflowTab projectId={project.id} />
-        )}
+          {activeTab === 'Workflow' && project && (
+            <WorkflowTab projectId={project.id} />
+          )}
 
-        {activeTab === 'Types' && project && (
-          <TypesTab projectId={project.id} featureLayer={(project as any).feature_layer ?? false} />
-        )}
+          {activeTab === 'Types' && project && (
+            <TypesTab projectId={project.id} featureLayer={(project as any).feature_layer ?? false} />
+          )}
 
-        {activeTab === 'Labels' && project && (
-          <LabelsTab projectId={project.id} />
-        )}
+          {activeTab === 'Labels' && project && (
+            <LabelsTab projectId={project.id} />
+          )}
 
-        {activeTab === 'Components' && project && (
-          <ComponentsTab projectId={project.id} />
-        )}
+          {activeTab === 'Components' && project && (
+            <ComponentsTab projectId={project.id} />
+          )}
 
-        {activeTab === 'Integration' && <IntegrationTab />}
+          {activeTab === 'Integration' && <IntegrationTab />}
 
-        {activeTab === 'Notifications' && <NotificationsTab />}
+          {activeTab === 'Notifications' && <NotificationsTab />}
 
-        {!project && !isLoading && (
-          <div style={{ fontSize: 13, color: '#94A3B8', textAlign: 'center', padding: '40px 0' }}>Project not found.</div>
-        )}
+          {!project && !isLoading && (
+            <div style={{ fontSize: 13, color: '#94A3B8', textAlign: 'center', padding: '40px 0' }}>Project not found.</div>
+          )}
+        </div>
       </div>
     </div>
   );
