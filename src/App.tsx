@@ -1,4 +1,5 @@
 import React, { lazy, Suspense } from "react";
+import { ViewportDebug } from "./components/debug/ViewportDebug";
 // ProjectHub V5 lazy imports
 const ProjectHubShellLazy = lazy(() => import("./components/project-hub/ProjectHubShell").then(m => ({ default: m.ProjectHubShell })));
 const ProjectListPageLazy = lazy(() => import("./pages/project-hub/ProjectListPage"));
@@ -1160,6 +1161,7 @@ const App = () => (
             </Routes>
               <CatyWidgetRouteGuard />
               <QAAssistantRouteGuard />
+              <ViewportDebug />
           </BrowserRouter>
         </TooltipProvider>
       </CatalystToastProvider>
