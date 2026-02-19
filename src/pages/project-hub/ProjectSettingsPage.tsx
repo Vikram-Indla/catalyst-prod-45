@@ -50,7 +50,7 @@ export default function ProjectSettingsPageNew() {
   }
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif", maxWidth: 960, margin: '0 auto', padding: '24px 32px' }}>
+    <div style={{ fontFamily: "'Inter', sans-serif", padding: '24px 32px' }}>
       <div className="flex items-center gap-1.5 mb-5">
         <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: '#64748B' }} onClick={() => navigate('/project-hub/projects')}>ProjectHub</span>
         <ChevronRight size={12} color="#94A3B8" />
@@ -68,7 +68,7 @@ export default function ProjectSettingsPageNew() {
 
       <SettingsTabs active={activeTab} onChange={setActiveTab} />
 
-      <div className="mt-5">
+      <div className="mt-5" style={{ maxWidth: 960, margin: '20px auto 0' }}>
         {activeTab === 'General' && project && (
           <GeneralTab
             project={{
