@@ -1,10 +1,10 @@
 /**
- * ThemeCreateModal — Create/Edit form with theme groups from DB
- * Fixed: proper scroll, owner field, theme group, budget placeholder
+ * ThemeCreateModal — Create/Edit form with Radix Select dropdowns
  */
 import { useEffect, useState } from 'react';
 import { X, Plus } from 'lucide-react';
-import { THEME_COLORS, BSC_CONFIG, PRIORITY_CONFIG, BSC_FILTER_OPTIONS } from './theme-utils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { THEME_COLORS, BSC_FILTER_OPTIONS, PRIORITY_CONFIG } from './theme-utils';
 import { useThemeGroups, useCreateThemeGroup } from '@/hooks/use-strategic-themes';
 import type { StrategicTheme, BscPerspective } from '@/types/strategic-themes';
 
@@ -181,17 +181,24 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label style={labelStyle}>Status <span style={{ color: '#EF4444' }}>*</span></label>
-                <select style={inputStyle} value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value as any }))}>
-                  <option value="active">Active</option>
-                  <option value="draft">Draft</option>
-                  <option value="archived">Archived</option>
-                </select>
+                <Select value={form.status} onValueChange={v => setForm(f => ({ ...f, status: v as any }))}>
+                  <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
+                  <SelectContent className="z-[9999]">
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="planned">Planned</SelectItem>
+                    <SelectItem value="draft">Draft</SelectItem>
+                    <SelectItem value="archived">Archived</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label style={labelStyle}>Priority <span style={{ color: '#EF4444' }}>*</span></label>
-                <select style={inputStyle} value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value }))}>
-                  {Object.entries(PRIORITY_CONFIG).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
-                </select>
+                <Select value={form.priority} onValueChange={v => setForm(f => ({ ...f, priority: v }))}>
+                  <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
+                  <SelectContent className="z-[9999]">
+                    {Object.entries(PRIORITY_CONFIG).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -211,16 +218,21 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label style={labelStyle}>Owner <span style={{ color: '#EF4444' }}>*</span></label>
-                <select style={inputStyle} value={form.owner_id} onChange={e => setForm(f => ({ ...f, owner_id: e.target.value }))}>
-                  <option value="">Select owner...</option>
-                  {/* Populated from profiles when available */}
-                </select>
+                <Select value={form.owner_id || '_none'} onValueChange={v => setForm(f => ({ ...f, owner_id: v === '_none' ? '' : v }))}>
+                  <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select owner..." /></SelectTrigger>
+                  <SelectContent className="z-[9999]">
+                    <SelectItem value="_none">Select owner...</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label style={labelStyle}>Fiscal Year <span style={{ color: '#EF4444' }}>*</span></label>
-                <select style={inputStyle} value={form.fiscal_year} onChange={e => setForm(f => ({ ...f, fiscal_year: parseInt(e.target.value) }))}>
-                  {[2024, 2025, 2026, 2027, 2028].map(y => <option key={y} value={y}>FY{y}</option>)}
-                </select>
+                <Select value={String(form.fiscal_year)} onValueChange={v => setForm(f => ({ ...f, fiscal_year: parseInt(v) }))}>
+                  <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
+                  <SelectContent className="z-[9999]">
+                    {[2024, 2025, 2026, 2027, 2028].map(y => <SelectItem key={y} value={String(y)}>FY{y}</SelectItem>)}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -228,10 +240,13 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label style={labelStyle}>BSC Perspective</label>
-                <select style={inputStyle} value={form.bsc_perspective} onChange={e => setForm(f => ({ ...f, bsc_perspective: e.target.value }))}>
-                  <option value="">Select...</option>
-                  {BSC_FILTER_OPTIONS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
-                </select>
+                <Select value={form.bsc_perspective || '_none'} onValueChange={v => setForm(f => ({ ...f, bsc_perspective: v === '_none' ? '' : v }))}>
+                  <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent className="z-[9999]">
+                    <SelectItem value="_none">Select...</SelectItem>
+                    {BSC_FILTER_OPTIONS.map(o => <SelectItem key={o.key} value={o.key}>{o.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label style={labelStyle}>Planned Budget (SAR)</label>
@@ -243,14 +258,17 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
             <div>
               <label style={labelStyle}>Theme Group</label>
               {!showNewGroup ? (
-                <select style={inputStyle} value={form.theme_group_id} onChange={e => {
-                  if (e.target.value === '__new__') { setShowNewGroup(true); return; }
-                  setForm(f => ({ ...f, theme_group_id: e.target.value }));
+                <Select value={form.theme_group_id || '_none'} onValueChange={v => {
+                  if (v === '__new__') { setShowNewGroup(true); return; }
+                  setForm(f => ({ ...f, theme_group_id: v === '_none' ? '' : v }));
                 }}>
-                  <option value="">None</option>
-                  {themeGroups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
-                  <option value="__new__">+ Create New Group</option>
-                </select>
+                  <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="None" /></SelectTrigger>
+                  <SelectContent className="z-[9999]">
+                    <SelectItem value="_none">None</SelectItem>
+                    {themeGroups.map(g => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
+                    <SelectItem value="__new__">+ Create New Group</SelectItem>
+                  </SelectContent>
+                </Select>
               ) : (
                 <div className="flex gap-2">
                   <input style={{ ...inputStyle, flex: 1 }} placeholder="Group name" value={newGroupName} onChange={e => setNewGroupName(e.target.value)} autoFocus />

@@ -1,11 +1,11 @@
 /**
- * ThemeListView — Enterprise data table for strategic themes
+ * ThemeListView — Enterprise data table with Linear-style badges
  */
 import { useState, useMemo } from 'react';
 import type { StrategicTheme } from '@/types/strategic-themes';
 import {
   STATUS_CONFIG, BSC_CONFIG, deriveHealthStatus,
-  formatBudget, getInitials, getAvatarColor, formatThemeId,
+  formatBudget, getInitials, getAvatarColor, formatThemeId, getProgressColor,
 } from './theme-utils';
 
 interface Props {
@@ -56,6 +56,11 @@ export function ThemeListView({ themes, onSelect }: Props) {
 
   const sortIndicator = (field: SortField) => sortField === field ? (sortDir === 'asc' ? ' ↑' : ' ↓') : '';
 
+  const colHeaderStyle: React.CSSProperties = {
+    fontSize: 10.5, fontWeight: 600, color: '#94A3B8',
+    textTransform: 'uppercase', letterSpacing: '0.6px',
+  };
+
   return (
     <div className="rounded-xl border overflow-hidden" style={{ background: '#FFFFFF', borderColor: '#E2E8F0' }}>
       {/* Header */}
@@ -69,14 +74,14 @@ export function ThemeListView({ themes, onSelect }: Props) {
         }}
       >
         <div><input type="checkbox" checked={selected.size === paged.length && paged.length > 0} onChange={toggleAll} style={{ width: 14, height: 14, accentColor: '#2563EB' }} /></div>
-        <div onClick={() => toggleSort('title')} className="cursor-pointer select-none" style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Theme{sortIndicator('title')}</div>
-        <div style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Status</div>
-        <div onClick={() => toggleSort('progress_pct')} className="cursor-pointer select-none" style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Progress{sortIndicator('progress_pct')}</div>
-        <div onClick={() => toggleSort('goal_count')} className="cursor-pointer select-none" style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Goals{sortIndicator('goal_count')}</div>
-        <div style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>KRs</div>
-        <div onClick={() => toggleSort('planned_budget')} className="cursor-pointer select-none" style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Budget{sortIndicator('planned_budget')}</div>
-        <div style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Owner</div>
-        <div style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>BSC</div>
+        <div onClick={() => toggleSort('title')} className="cursor-pointer select-none" style={colHeaderStyle}>Theme{sortIndicator('title')}</div>
+        <div style={colHeaderStyle}>Status</div>
+        <div onClick={() => toggleSort('progress_pct')} className="cursor-pointer select-none" style={colHeaderStyle}>Progress{sortIndicator('progress_pct')}</div>
+        <div onClick={() => toggleSort('goal_count')} className="cursor-pointer select-none" style={colHeaderStyle}>Goals{sortIndicator('goal_count')}</div>
+        <div style={colHeaderStyle}>KRs</div>
+        <div onClick={() => toggleSort('planned_budget')} className="cursor-pointer select-none" style={colHeaderStyle}>Budget (SAR){sortIndicator('planned_budget')}</div>
+        <div style={colHeaderStyle}>Owner</div>
+        <div style={colHeaderStyle}>BSC</div>
       </div>
 
       {/* Rows */}
@@ -84,6 +89,7 @@ export function ThemeListView({ themes, onSelect }: Props) {
         const health = deriveHealthStatus(theme);
         const sc = STATUS_CONFIG[health];
         const bsc = theme.bsc_perspective ? BSC_CONFIG[theme.bsc_perspective] : null;
+        const progressColor = getProgressColor(theme.progress_pct);
 
         return (
           <div
@@ -96,7 +102,7 @@ export function ThemeListView({ themes, onSelect }: Props) {
               borderBottom: '1px solid #F1F5F9',
               padding: '0 12px',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#EFF6FF')}
+            onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             {/* Checkbox */}
@@ -111,17 +117,18 @@ export function ThemeListView({ themes, onSelect }: Props) {
               <span className="shrink-0" style={{ fontSize: 10.5, color: '#94A3B8', fontFamily: 'monospace' }}>{formatThemeId(theme.sort_order)}</span>
             </div>
 
-            {/* Status pill */}
+            {/* Status pill — dot + label (Linear style) */}
             <div>
-              <span className="inline-flex items-center rounded-full px-2 py-0.5" style={{ fontSize: 11, fontWeight: 500, background: sc.bg, color: sc.text }}>
+              <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5" style={{ fontSize: 11, fontWeight: 500, background: sc.bg, color: sc.text }}>
+                <span className="rounded-full shrink-0" style={{ width: 6, height: 6, background: sc.dot }} />
                 {sc.label}
               </span>
             </div>
 
-            {/* Progress */}
+            {/* Progress — threshold colors */}
             <div className="flex items-center gap-2">
               <div className="flex-1 rounded-full overflow-hidden" style={{ height: 6, background: '#E2E8F0' }}>
-                <div className="rounded-full h-full transition-all" style={{ width: `${Math.min(theme.progress_pct, 100)}%`, background: sc.dot }} />
+                <div className="rounded-full h-full transition-all" style={{ width: `${Math.min(theme.progress_pct, 100)}%`, background: progressColor }} />
               </div>
               <span style={{ fontSize: 11, fontWeight: 600, color: '#334155', minWidth: 28, textAlign: 'right' }}>{theme.progress_pct}%</span>
             </div>
@@ -152,10 +159,14 @@ export function ThemeListView({ themes, onSelect }: Props) {
               )}
             </div>
 
-            {/* BSC */}
+            {/* BSC — outlined ghost style */}
             <div>
               {bsc ? (
-                <span className="inline-flex rounded-full px-2 py-0.5" style={{ fontSize: 10, fontWeight: 500, background: bsc.bg, color: bsc.text }}>
+                <span className="inline-flex rounded-full px-2 py-0.5" style={{
+                  fontSize: 10, fontWeight: 500,
+                  background: bsc.bg, color: bsc.text,
+                  border: `1px solid ${bsc.border}`,
+                }}>
                   {bsc.label}
                 </span>
               ) : (

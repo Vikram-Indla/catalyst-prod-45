@@ -1,8 +1,8 @@
 /**
- * ThemeTimelineView — 12-month horizontal Gantt chart
+ * ThemeTimelineView — 12-month horizontal Gantt with threshold progress colors
  */
 import type { StrategicTheme } from '@/types/strategic-themes';
-import { STATUS_CONFIG, deriveHealthStatus } from './theme-utils';
+import { STATUS_CONFIG, deriveHealthStatus, getProgressColor } from './theme-utils';
 
 interface Props {
   themes: StrategicTheme[];
@@ -26,7 +26,6 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
   const today = new Date();
   const todayPct = today.getFullYear() === YEAR ? dateToPercent(today.toISOString()) : null;
 
-  // Only show themes with dates
   const withDates = themes.filter(t => t.start_date && t.target_completion);
   const noDates = themes.filter(t => !t.start_date || !t.target_completion);
 
@@ -35,12 +34,12 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
       {/* Header */}
       <div className="flex" style={{ borderBottom: '1px solid #E2E8F0' }}>
         <div className="shrink-0 flex items-center" style={{ width: 220, height: 36, padding: '0 12px', background: '#F8FAFC' }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>Theme</span>
+          <span style={{ fontSize: 10.5, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.6px' }}>Theme</span>
         </div>
         <div className="flex-1 grid" style={{ gridTemplateColumns: `repeat(12, 1fr)`, background: '#F8FAFC' }}>
           {MONTHS.map((m, i) => (
             <div key={m} className="flex items-center justify-center" style={{
-              height: 36, fontSize: 11, fontWeight: 500, color: '#64748B',
+              height: 36, fontSize: 10.5, fontWeight: 500, color: '#94A3B8',
               borderLeft: '1px solid #F1F5F9',
               background: i % 2 === 0 ? 'rgba(248,250,252,0.5)' : 'transparent',
             }}>
@@ -57,6 +56,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
         const startPct = dateToPercent(theme.start_date)!;
         const endPct = dateToPercent(theme.target_completion)!;
         const hasBar = endPct > startPct;
+        const progressColor = getProgressColor(theme.progress_pct);
 
         return (
           <div
@@ -64,14 +64,15 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
             onClick={() => onSelect(theme)}
             className="flex cursor-pointer transition-colors"
             style={{ borderBottom: '1px solid #F1F5F9', height: 48 }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#EFF6FF')}
+            onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             {/* Label */}
             <div className="shrink-0 flex items-center gap-2 min-w-0" style={{ width: 220, padding: '0 12px' }}>
               <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: theme.color }} />
               <span className="truncate" style={{ fontSize: 12, fontWeight: 500, color: '#0F172A' }} title={theme.title}>{theme.title}</span>
-              <span className="shrink-0 inline-flex rounded-full px-1.5 py-0.5" style={{ fontSize: 9, fontWeight: 500, background: sc.bg, color: sc.text }}>
+              <span className="shrink-0 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5" style={{ fontSize: 9, fontWeight: 500, background: sc.bg, color: sc.text }}>
+                <span className="rounded-full" style={{ width: 4, height: 4, background: sc.dot }} />
                 {sc.label}
               </span>
             </div>
@@ -101,13 +102,13 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
                   left: `${startPct}%`,
                   width: `${endPct - startPct}%`,
                   height: 28, borderRadius: 6,
-                  background: theme.color + '22',
+                  background: theme.color + '18',
                   overflow: 'hidden',
                 }}>
                   <div className="h-full rounded-l-md" style={{
                     width: `${Math.min(theme.progress_pct, 100)}%`,
-                    background: theme.color,
-                    opacity: 0.7,
+                    background: progressColor,
+                    opacity: 0.75,
                   }} />
                   <span className="absolute inset-0 flex items-center justify-center" style={{
                     fontSize: 10, fontWeight: 600, color: '#0F172A',
@@ -126,7 +127,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
           onClick={() => onSelect(theme)}
           className="flex cursor-pointer transition-colors"
           style={{ borderBottom: '1px solid #F1F5F9', height: 48 }}
-          onMouseEnter={e => (e.currentTarget.style.background = '#EFF6FF')}
+          onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
         >
           <div className="shrink-0 flex items-center gap-2 min-w-0" style={{ width: 220, padding: '0 12px' }}>

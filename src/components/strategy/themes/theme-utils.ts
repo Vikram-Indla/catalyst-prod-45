@@ -8,7 +8,7 @@ export type HealthStatus = 'on_track' | 'at_risk' | 'off_track' | 'planned' | 'c
 
 export function deriveHealthStatus(theme: StrategicTheme): HealthStatus {
   // Non-active themes show lifecycle status
-  if (theme.status === 'draft') return 'draft';
+  if (theme.status === 'draft') return 'planned'; // Map draft → planned display
   if (theme.status === 'archived') return 'completed';
 
   // For active themes, compute from progress + AI health
@@ -20,29 +20,30 @@ export function deriveHealthStatus(theme: StrategicTheme): HealthStatus {
   return 'off_track';
 }
 
+// Linear-style desaturated status badges
 export const STATUS_CONFIG: Record<HealthStatus, { label: string; bg: string; text: string; dot: string }> = {
-  on_track:  { label: 'On Track',  bg: '#DCFCE7', text: '#166534', dot: '#16A34A' },
-  at_risk:   { label: 'At Risk',   bg: '#FEF3C7', text: '#92400E', dot: '#D97706' },
-  off_track: { label: 'Off Track', bg: '#FEE2E2', text: '#991B1B', dot: '#DC2626' },
+  on_track:  { label: 'On Track',  bg: 'rgba(220,252,231,0.7)',  text: '#15803d', dot: '#16A34A' },
+  at_risk:   { label: 'At Risk',   bg: 'rgba(254,243,199,0.6)',  text: '#92400E', dot: '#D97706' },
+  off_track: { label: 'Off Track', bg: 'rgba(254,226,226,0.6)',  text: '#991B1B', dot: '#DC2626' },
   planned:   { label: 'Planned',   bg: '#F1F5F9', text: '#475569', dot: '#94A3B8' },
-  completed: { label: 'Completed', bg: '#EEF2FF', text: '#3730A3', dot: '#6366F1' },
-  draft:     { label: 'Draft',     bg: '#F1F5F9', text: '#475569', dot: '#94A3B8' },
+  completed: { label: 'Completed', bg: 'rgba(238,242,255,0.7)', text: '#3730A3', dot: '#6366F1' },
+  draft:     { label: 'Planned',   bg: '#F1F5F9', text: '#475569', dot: '#94A3B8' },
 };
 
-// ═══ BSC PERSPECTIVE — keys match DB values (mixed case with spaces) ═══
-export const BSC_CONFIG: Record<string, { label: string; bg: string; text: string }> = {
-  'Financial':        { label: 'Financial',        bg: '#FEF3C7', text: '#92400E' },
-  'Customer':         { label: 'Customer',         bg: '#DBEAFE', text: '#1E40AF' },
-  'Internal Process': { label: 'Internal Process', bg: '#CCFBF1', text: '#115E59' },
-  'Learning & Growth':{ label: 'Learning & Growth',bg: '#EDE9FE', text: '#5B21B6' },
-  // Also support snake_case keys for backward compat
-  financial:        { label: 'Financial',        bg: '#FEF3C7', text: '#92400E' },
-  customer:         { label: 'Customer',         bg: '#DBEAFE', text: '#1E40AF' },
-  internal_process: { label: 'Internal Process', bg: '#CCFBF1', text: '#115E59' },
-  learning_growth:  { label: 'Learning & Growth',bg: '#EDE9FE', text: '#5B21B6' },
+// ═══ BSC PERSPECTIVE — outlined/ghost style ═══
+export const BSC_CONFIG: Record<string, { label: string; bg: string; text: string; border: string }> = {
+  'Financial':        { label: 'Financial',        bg: 'rgba(254,243,199,0.3)', text: '#92400E', border: '#FDE68A' },
+  'Customer':         { label: 'Customer',         bg: 'rgba(219,234,254,0.3)', text: '#1E40AF', border: '#BFDBFE' },
+  'Internal Process': { label: 'Internal Process', bg: 'rgba(204,251,241,0.3)', text: '#115E59', border: '#99F6E4' },
+  'Learning & Growth':{ label: 'Learning & Growth',bg: 'rgba(237,233,254,0.3)', text: '#5B21B6', border: '#DDD6FE' },
+  // snake_case compat
+  financial:        { label: 'Financial',        bg: 'rgba(254,243,199,0.3)', text: '#92400E', border: '#FDE68A' },
+  customer:         { label: 'Customer',         bg: 'rgba(219,234,254,0.3)', text: '#1E40AF', border: '#BFDBFE' },
+  internal_process: { label: 'Internal Process', bg: 'rgba(204,251,241,0.3)', text: '#115E59', border: '#99F6E4' },
+  learning_growth:  { label: 'Learning & Growth',bg: 'rgba(237,233,254,0.3)', text: '#5B21B6', border: '#DDD6FE' },
 };
 
-// ═══ BSC filter options (snake_case keys for filter dropdowns) ═══
+// ═══ BSC filter options ═══
 export const BSC_FILTER_OPTIONS = [
   { key: 'Financial', label: 'Financial' },
   { key: 'Customer', label: 'Customer' },
@@ -63,6 +64,13 @@ export const THEME_COLORS = [
   '#2563EB', '#0D9488', '#D97706', '#7C3AED', '#EC4899',
   '#059669', '#DC2626', '#0284C7', '#4F46E5', '#CA8A04',
 ];
+
+// ═══ PROGRESS BAR COLOR ═══
+export function getProgressColor(pct: number): string {
+  if (pct >= 60) return '#16A34A';
+  if (pct >= 40) return '#D97706';
+  return '#EF4444';
+}
 
 // ═══ FORMATTERS ═══
 export function formatBudget(value: number): string {
@@ -102,4 +110,24 @@ export function formatDate(dateStr: string | null): string {
 export function capitalize(str: string | null): string {
   if (!str) return '—';
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function formatRelativeTime(dateStr: string): string {
+  const d = new Date(dateStr);
+  const now = new Date();
+  const diff = now.getTime() - d.getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return `${days}d ago`;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+// ═══ STATUS BADGE RENDERER (dot + label) ═══
+export function renderStatusBadge(health: HealthStatus) {
+  const sc = STATUS_CONFIG[health];
+  return { ...sc };
 }
