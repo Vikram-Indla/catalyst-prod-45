@@ -798,22 +798,7 @@ const App = () => (
                 
               </Route>
 
-              {/* ═══════════════════════════════════════════════════════════════ */}
-              {/* PROJECTHUB V5 — NEW SHELL ═══════════════════════════════════ */}
-              {/* ═══════════════════════════════════════════════════════════════ */}
-              <Route path="/project-hub" element={<Suspense fallback={<div />}><ProjectHubShellLazy /></Suspense>}>
-                <Route index element={<Navigate to="/project-hub/projects" replace />} />
-                <Route path="projects" element={<Suspense fallback={<div />}><ProjectListPageLazy /></Suspense>} />
-                <Route path=":key" element={<Navigate to="dashboard" replace />} />
-                <Route path=":key/dashboard" element={<Suspense fallback={<div />}><ProjectDashboardPageLazy /></Suspense>} />
-                <Route path=":key/settings" element={<Suspense fallback={<div />}><PHProjectSettingsPageLazy /></Suspense>} />
-                <Route path=":key/backlog" element={<Suspense fallback={<div />}><PHPlaceholder title="Backlog" phase="Phase 2" /></Suspense>} />
-                <Route path=":key/board" element={<Suspense fallback={<div />}><PHPlaceholder title="Board" phase="Phase 2" /></Suspense>} />
-                <Route path=":key/list" element={<Suspense fallback={<div />}><PHPlaceholder title="List" phase="Phase 2" /></Suspense>} />
-                <Route path=":key/timeline" element={<Suspense fallback={<div />}><PHPlaceholder title="Timeline" phase="Phase 3" /></Suspense>} />
-                <Route path=":key/releases" element={<Suspense fallback={<div />}><PHPlaceholder title="Releases" phase="Phase 3" /></Suspense>} />
-                <Route path=":key/reports" element={<Suspense fallback={<div />}><PHPlaceholder title="Reports" phase="Phase 4" /></Suspense>} />
-              </Route>
+
               <Route path="/projects/:projectKey/settings" element={<ProjectSettingsPage />} />
               <Route path="/projects/:projectId/features" element={<FeaturesPage />} />
               <Route path="/projects/:projectId/features/:featureId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><FeatureDetailPage /></Suspense>} />
@@ -1153,6 +1138,23 @@ const App = () => (
               {/* Dev and QA routes removed */}
             </Route>
             
+            {/* ═══════════════════════════════════════════════════════════════ */}
+            {/* PROJECTHUB V5 — NEW SHELL (outside CatalystShell) ══════════ */}
+            {/* ═══════════════════════════════════════════════════════════════ */}
+            <Route path="/project-hub" element={<ProtectedRoute><Suspense fallback={<div />}><ProjectHubShellLazy /></Suspense></ProtectedRoute>}>
+              <Route index element={<Navigate to="/project-hub/projects" replace />} />
+              <Route path="projects" element={<Suspense fallback={<div />}><ProjectListPageLazy /></Suspense>} />
+              <Route path=":key" element={<Navigate to="dashboard" replace />} />
+              <Route path=":key/dashboard" element={<Suspense fallback={<div />}><ProjectDashboardPageLazy /></Suspense>} />
+              <Route path=":key/settings" element={<Suspense fallback={<div />}><PHProjectSettingsPageLazy /></Suspense>} />
+              <Route path=":key/backlog" element={<Suspense fallback={<div />}><PHPlaceholder title="Backlog" phase="Phase 2" /></Suspense>} />
+              <Route path=":key/board" element={<Suspense fallback={<div />}><PHPlaceholder title="Board" phase="Phase 2" /></Suspense>} />
+              <Route path=":key/list" element={<Suspense fallback={<div />}><PHPlaceholder title="List" phase="Phase 2" /></Suspense>} />
+              <Route path=":key/timeline" element={<Suspense fallback={<div />}><PHPlaceholder title="Timeline" phase="Phase 3" /></Suspense>} />
+              <Route path=":key/releases" element={<Suspense fallback={<div />}><PHPlaceholder title="Releases" phase="Phase 3" /></Suspense>} />
+              <Route path=":key/reports" element={<Suspense fallback={<div />}><PHPlaceholder title="Reports" phase="Phase 4" /></Suspense>} />
+            </Route>
+
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
             </Routes>
