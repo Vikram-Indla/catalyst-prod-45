@@ -24,7 +24,7 @@ export function AlignmentMatrix() {
 
   if (!workstreams || workstreams.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'var(--catalyst-text-tertiary)' }}>
+      <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'var(--exec-text-tertiary)' }}>
         <span style={{ fontSize: 12 }}>No alignment data</span>
       </div>
     );
@@ -37,22 +37,21 @@ export function AlignmentMatrix() {
       {sorted.map(ws => {
         const score = Number(ws.alignment_score) || 0;
         const name = ws.workstream === 'Stand-Alone' ? 'Standalone' : ws.workstream;
+        /* Uniform blue bars; red only if score < 50% */
+        const barColor = score < 50 ? 'var(--exec-signal-red, #DC2626)' : 'var(--exec-blue-500, #3B82F6)';
         return (
           <div key={ws.id} className="flex items-center gap-2">
-            <span style={{ width: 60, fontSize: 10, textAlign: 'right', color: 'var(--catalyst-text-secondary)', flexShrink: 0, whiteSpace: 'nowrap' }}>
+            <span style={{ width: 60, fontSize: 10, textAlign: 'right', color: 'var(--exec-text-secondary)', flexShrink: 0, whiteSpace: 'nowrap' }}>
               {name}
             </span>
-            <div className="flex-1" style={{ height: 6, borderRadius: 3, background: '#F8FAFC', overflow: 'hidden' }}>
+            <div className="flex-1" style={{ height: 6, borderRadius: 3, background: 'var(--exec-bg-hover, #F1F5F9)', overflow: 'hidden' }}>
               <div style={{
-                width: `${score}%`,
-                height: '100%',
-                borderRadius: 3,
-                background: ws.workstream_color || '#2563EB',
-                opacity: 0.85,
+                width: `${score}%`, height: '100%', borderRadius: 3,
+                background: barColor, opacity: 0.85,
                 transition: 'width 800ms ease-out',
               }} />
             </div>
-            <span style={{ width: 30, fontSize: 11, fontWeight: 600, textAlign: 'right', color: 'var(--catalyst-text-primary)', flexShrink: 0 }}>
+            <span style={{ width: 30, fontSize: 11, fontWeight: 600, textAlign: 'right', color: 'var(--exec-text-primary)', flexShrink: 0 }}>
               {score}%
             </span>
           </div>

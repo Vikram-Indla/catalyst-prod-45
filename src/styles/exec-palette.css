@@ -1,0 +1,47 @@
+/**
+ * Executive Color Palette — "Corporate Authority"
+ * 90% neutral. Blue for data. Red for danger. Purple for AI only.
+ * Scoped to .strategy-room
+ */
+
+.strategy-room {
+  /* ── SURFACES ── */
+  --exec-bg-page: #FAFBFC;
+  --exec-bg-card: #FFFFFF;
+  --exec-bg-hover: #F1F5F9;
+  --exec-bg-subtle: #F8FAFC;
+
+  /* ── TEXT ── */
+  --exec-text-primary: #0F172A;
+  --exec-text-secondary: #334155;
+  --exec-text-tertiary: #64748B;
+  --exec-text-muted: #94A3B8;
+
+  /* ── BLUE SCALE ── */
+  --exec-blue-900: #1E3A5F;
+  --exec-blue-700: #1E40AF;
+  --exec-blue-500: #3B82F6;
+  --exec-blue-300: #93C5FD;
+  --exec-blue-100: #DBEAFE;
+  --exec-blue-50: #EFF6FF;
+
+  /* ── SIGNAL RED ── */
+  --exec-signal-red: #DC2626;
+  --exec-signal-red-bg: #FEF2F2;
+
+  /* ── SIGNAL AMBER ── */
+  --exec-signal-amber: #D97706;
+  --exec-signal-amber-bg: #FFFBEB;
+
+  /* ── CONFIRM GREEN ── */
+  --exec-confirm-green: #16A34A;
+  --exec-confirm-green-bg: #F0FDF4;
+
+  /* ── AI PURPLE ── */
+  --exec-ai-purple: #7C3AED;
+  --exec-ai-purple-bg: #F5F3FF;
+
+  /* ── BORDERS ── */
+  --exec-border: #E2E8F0;
+  --exec-border-strong: #CBD5E1;
+}

@@ -13,16 +13,16 @@ import { useBudgetLive, useCapacityLive } from '@/hooks/strategy/useBudgetCapaci
 import { useRisks } from '@/hooks/risks/useRisks';
 
 function getStatusLabel(score: number): { label: string; color: string } {
-  if (score >= 85) return { label: 'Excellent', color: '#0D9488' };
-  if (score >= 70) return { label: 'Good', color: '#7C3AED' };
-  if (score >= 50) return { label: 'At Risk', color: '#D97706' };
-  return { label: 'Critical', color: '#EF4444' };
+  if (score >= 85) return { label: 'Excellent', color: 'var(--exec-confirm-green, #16A34A)' };
+  if (score >= 70) return { label: 'Good', color: 'var(--exec-ai-purple, #7C3AED)' };
+  if (score >= 50) return { label: 'At Risk', color: 'var(--exec-signal-amber, #D97706)' };
+  return { label: 'Critical', color: 'var(--exec-signal-red, #DC2626)' };
 }
 
 function getFactorColor(score: number): string {
-  if (score >= 70) return '#16A34A';
-  if (score >= 40) return '#D97706';
-  return '#EF4444';
+  if (score >= 70) return 'var(--exec-blue-700, #1E40AF)';
+  if (score >= 40) return 'var(--exec-signal-amber, #D97706)';
+  return 'var(--exec-signal-red, #DC2626)';
 }
 
 const FACTOR_ICONS: Record<string, React.ElementType> = {
@@ -48,23 +48,16 @@ export function AiHealthScore() {
     const okrScore = goals?.length
       ? Math.round(goals.reduce((s, g) => s + (Number(g.progress_pct) || 0), 0) / goals.length)
       : 0;
-
     const initCount = initiatives?.length || 0;
     const krCount = keyResults?.length || 0;
     const totalExec = initCount + krCount;
     const execScore = totalExec > 0
-      ? Math.round(
-          ((initiatives?.reduce((s, i) => s + (Number(i.progress_pct) || 0), 0) || 0) +
-           (keyResults?.reduce((s, kr) => s + (Number(kr.progress_pct) || 0), 0) || 0)) / totalExec
-        )
+      ? Math.round(((initiatives?.reduce((s, i) => s + (Number(i.progress_pct) || 0), 0) || 0) + (keyResults?.reduce((s, kr) => s + (Number(kr.progress_pct) || 0), 0) || 0)) / totalExec)
       : 0;
-
     const budgetScore = budgetData?.dataQualityPct || 0;
-
     const totalResources = capacityData?.totalHeadcount || 1;
     const committed = capacityData?.atCapacity || 0;
     const workforceScore = Math.round((committed / totalResources) * 100);
-
     const openRisks = (risks || []).filter(r => r.status === 'Open');
     const criticalRisks = openRisks.filter(r => r.impact === 'Critical' || r.impact === 'High').length;
     const overdueRisks = openRisks.filter(r => r.target_resolution_date && new Date(r.target_resolution_date) < new Date()).length;
@@ -89,21 +82,11 @@ export function AiHealthScore() {
     const weakest = factors.reduce((min, f) => f.score < min.score ? f : min);
     const strongest = factors.reduce((max, f) => f.score > max.score ? f : max);
     const lines: string[] = [];
-
-    if (compositeScore >= 70) {
-      lines.push(`Strategy execution is on track at ${compositeScore}%.`);
-    } else if (compositeScore >= 50) {
-      lines.push(`Strategy health requires attention at ${compositeScore}%.`);
-    } else {
-      lines.push(`Strategy health is critical at ${compositeScore}%. Immediate action needed.`);
-    }
-
+    if (compositeScore >= 70) lines.push(`Strategy execution is on track at ${compositeScore}%.`);
+    else if (compositeScore >= 50) lines.push(`Strategy health requires attention at ${compositeScore}%.`);
+    else lines.push(`Strategy health is critical at ${compositeScore}%. Immediate action needed.`);
     lines.push(`${weakest.name} is the weakest area at ${weakest.score}% — focus on ${weakest.source}.`);
-
-    if (strongest.score >= 80) {
-      lines.push(`${strongest.name} is strong at ${strongest.score}%.`);
-    }
-
+    if (strongest.score >= 80) lines.push(`${strongest.name} is strong at ${strongest.score}%.`);
     return lines;
   }, [factors, compositeScore]);
 
@@ -125,34 +108,28 @@ export function AiHealthScore() {
 
   return (
     <div className="flex flex-col items-center">
-      <CircularGauge value={compositeScore} size={100} strokeWidth={10} color="#7C3AED" label="/ 100" animated />
+      {/* AI Purple gauge — the ONE widget that uses purple */}
+      <CircularGauge value={compositeScore} size={100} strokeWidth={10} color="var(--exec-ai-purple, #7C3AED)" label="/ 100" animated />
 
-      {/* Status badge */}
       <span className="mt-2 mb-3" style={{
         fontSize: 11, fontWeight: 600, color: status.color,
-        background: `${status.color}1A`, borderRadius: 9999, padding: '2px 10px',
+        background: status.label === 'Critical' ? 'var(--exec-signal-red-bg, #FEF2F2)' : `${status.color}1A`,
+        borderRadius: 9999, padding: '2px 10px',
       }}>
         ● {status.label}
       </span>
 
-      {/* B) Factor Breakdown */}
+      {/* Factor Breakdown — blue for good, amber/red for attention */}
       <div className="w-full space-y-1.5 mb-3">
         {factors.map(factor => {
-          const Icon = FACTOR_ICONS[factor.name] || Target;
           const color = getFactorColor(factor.score);
           return (
             <div key={factor.name} className="flex items-center gap-2">
-              <span style={{ width: 70, fontSize: 10, color: 'var(--catalyst-text-secondary)', textAlign: 'right', flexShrink: 0 }}>
+              <span style={{ width: 70, fontSize: 10, color: 'var(--exec-text-secondary)', textAlign: 'right', flexShrink: 0 }}>
                 {factor.name}
               </span>
-              <div className="flex-1" style={{ height: 4, borderRadius: 2, background: '#F1F5F9', overflow: 'hidden' }}>
-                <div style={{
-                  width: `${Math.min(factor.score, 100)}%`,
-                  height: '100%',
-                  borderRadius: 2,
-                  background: color,
-                  transition: 'width 600ms ease-out',
-                }} />
+              <div className="flex-1" style={{ height: 4, borderRadius: 2, background: 'var(--exec-bg-hover, #F1F5F9)', overflow: 'hidden' }}>
+                <div style={{ width: `${Math.min(factor.score, 100)}%`, height: '100%', borderRadius: 2, background: color, transition: 'width 600ms ease-out' }} />
               </div>
               <span style={{ width: 28, fontSize: 10, fontWeight: 700, color, textAlign: 'right', flexShrink: 0 }}>
                 {factor.score}%
@@ -162,11 +139,11 @@ export function AiHealthScore() {
         })}
       </div>
 
-      {/* C) AI Narrative */}
+      {/* AI Narrative — purple sparkle icons */}
       <div className="w-full space-y-1">
         {narrative.map((line, i) => (
-          <div key={i} className="flex gap-1.5" style={{ fontSize: 10, color: 'var(--catalyst-text-secondary)', lineHeight: 1.4 }}>
-            <Sparkles size={8} style={{ color: '#7C3AED', flexShrink: 0, marginTop: 3 }} />
+          <div key={i} className="flex gap-1.5" style={{ fontSize: 10, color: 'var(--exec-text-secondary)', lineHeight: 1.4 }}>
+            <Sparkles size={8} style={{ color: 'var(--exec-ai-purple, #7C3AED)', flexShrink: 0, marginTop: 3 }} />
             <span>{line}</span>
           </div>
         ))}

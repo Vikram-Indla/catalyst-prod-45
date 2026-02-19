@@ -10,9 +10,9 @@ import { ProgressBar } from '../shared/ProgressBar';
 import { useStrategicThemes, useGoals } from '@/hooks/strategy/useStrategyData';
 
 function getProgressColor(v: number) {
-  if (v >= 70) return '#0D9488';
-  if (v >= 50) return '#D97706';
-  return '#EF4444';
+  if (v >= 70) return 'var(--exec-blue-700, #1E40AF)';
+  if (v >= 40) return 'var(--exec-signal-amber, #D97706)';
+  return 'var(--exec-signal-red, #DC2626)';
 }
 
 export function OkrTree() {
@@ -31,7 +31,7 @@ export function OkrTree() {
       return {
         id: theme.id,
         name: theme.title,
-        color: theme.color || '#2563EB',
+        color: '#1E40AF', // All theme dots use exec-blue-700
         progress: avgProgress,
         goals: themeGoals.map(g => ({
           id: g.id,
@@ -44,7 +44,6 @@ export function OkrTree() {
 
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
-  // Initialize expanded state when data loads
   useMemo(() => {
     if (treeData.length > 0 && Object.keys(expanded).length === 0) {
       const init: Record<string, boolean> = {};
@@ -72,7 +71,7 @@ export function OkrTree() {
 
   if (treeData.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'var(--catalyst-text-tertiary)' }}>
+      <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'var(--exec-text-tertiary)' }}>
         <span style={{ fontSize: 12 }}>No strategic themes defined</span>
       </div>
     );
@@ -88,7 +87,7 @@ export function OkrTree() {
       <div className="flex justify-end mb-2">
         <button
           onClick={toggleAll}
-          style={{ fontSize: 10, color: 'var(--catalyst-text-link)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}
+          style={{ fontSize: 10, color: 'var(--exec-blue-700, #1E40AF)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}
         >
           {Object.values(expanded).every(Boolean) ? 'Collapse All' : 'Expand All'}
         </button>
@@ -109,17 +108,17 @@ export function OkrTree() {
                   padding: '8px 6px', borderRadius: 6, background: 'none', border: 'none', cursor: 'pointer',
                   transition: 'background 120ms',
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--catalyst-bg-hover, #F8FAFC)'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--exec-bg-hover, #F1F5F9)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >
                 <span style={{ width: 10, height: 10, borderRadius: '50%', background: theme.color, flexShrink: 0 }} />
-                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--catalyst-text-primary)', flex: 1, textAlign: 'left' }}>
+                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--exec-text-primary)', flex: 1, textAlign: 'left' }}>
                   {theme.name}
                 </span>
                 <span style={{ fontSize: 11, fontWeight: 600, color: getProgressColor(theme.progress), marginRight: 4 }}>
                   {theme.progress}%
                 </span>
-                <Chevron size={14} style={{ color: 'var(--catalyst-text-tertiary)', transition: 'transform 150ms' }} />
+                <Chevron size={14} style={{ color: 'var(--exec-text-tertiary)', transition: 'transform 150ms' }} />
               </button>
 
               {isOpen && (
@@ -134,11 +133,11 @@ export function OkrTree() {
                         borderRadius: 4,
                         transition: 'background-color 120ms ease',
                       }}
-                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--catalyst-bg-surface-2, #F1F5F9)'; }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--exec-bg-hover, #F1F5F9)'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     >
                       <span style={{ width: 6, height: 6, borderRadius: '50%', background: getProgressColor(goal.progress), flexShrink: 0 }} />
-                      <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--catalyst-text-primary)', flex: 1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--exec-text-primary)', flex: 1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {goal.name}
                       </span>
                       <div style={{ width: 80 }}>

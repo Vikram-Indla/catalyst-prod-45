@@ -20,16 +20,26 @@ interface LayerDisplay {
   description: string;
   color: string;
   letter: string;
+  letterColor: string;
   count?: number;
   points: string;
 }
 
+/* Monochromatic blue gradient — darkest at top */
 const LAYER_COLORS: Record<string, string> = {
-  mission: '#1D4ED8',
-  vision: '#2563EB',
-  themes: '#0D9488',
-  goals: '#D97706',
-  krs: '#16A34A',
+  mission: '#1E3A5F',
+  vision: '#1E40AF',
+  themes: '#3B82F6',
+  goals: '#93C5FD',
+  krs: '#DBEAFE',
+};
+
+const LETTER_COLORS: Record<string, string> = {
+  mission: 'rgba(255,255,255,0.30)',
+  vision: 'rgba(255,255,255,0.30)',
+  themes: 'rgba(255,255,255,0.25)',
+  goals: 'rgba(30,58,95,0.20)',
+  krs: 'rgba(30,58,95,0.20)',
 };
 
 const LAYER_POINTS: Record<string, string> = {
@@ -79,29 +89,29 @@ export function StrategyPyramid() {
       {
         key: 'mission', label: 'Mission',
         description: mission?.title || 'No mission defined',
-        color: LAYER_COLORS.mission, letter: 'M', points: LAYER_POINTS.mission,
+        color: LAYER_COLORS.mission, letterColor: LETTER_COLORS.mission, letter: 'M', points: LAYER_POINTS.mission,
       },
       {
         key: 'vision', label: 'Vision',
         description: vision?.title || 'No vision defined',
-        color: LAYER_COLORS.vision, letter: 'V', points: LAYER_POINTS.vision,
+        color: LAYER_COLORS.vision, letterColor: LETTER_COLORS.vision, letter: 'V', points: LAYER_POINTS.vision,
       },
       {
         key: 'themes', label: 'Strategic Themes',
         description: themeNames || 'No themes defined',
-        color: LAYER_COLORS.themes, letter: 'S', count: themes?.length || 0,
+        color: LAYER_COLORS.themes, letterColor: LETTER_COLORS.themes, letter: 'S', count: themes?.length || 0,
         points: LAYER_POINTS.themes,
       },
       {
         key: 'goals', label: 'Goals',
         description: `${goalsPerTheme} per theme · owner-assigned · quarterly cadence`,
-        color: LAYER_COLORS.goals, letter: 'G', count: goals?.length || 0,
+        color: LAYER_COLORS.goals, letterColor: LETTER_COLORS.goals, letter: 'G', count: goals?.length || 0,
         points: LAYER_POINTS.goals,
       },
       {
         key: 'krs', label: 'Key Results',
         description: 'Measurable outcomes · progress-tracked',
-        color: LAYER_COLORS.krs, letter: 'K', count: keyResults?.length || 0,
+        color: LAYER_COLORS.krs, letterColor: LETTER_COLORS.krs, letter: 'K', count: keyResults?.length || 0,
         points: LAYER_POINTS.krs,
       },
     ];
@@ -158,13 +168,13 @@ export function StrategyPyramid() {
                 ? Math.round(themeGoals.reduce((s, g) => s + (Number(g.progress_pct) || 0), 0) / themeGoals.length)
                 : 0;
               return (
-                <div key={t.id} style={{ padding: '12px 0', borderBottom: '1px solid var(--catalyst-border-default, #E2E8F0)' }}>
+                <div key={t.id} style={{ padding: '12px 0', borderBottom: '1px solid var(--exec-border, #E2E8F0)' }}>
                   <div className="flex items-center gap-2 mb-1">
-                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: t.color || '#2563EB', flexShrink: 0 }} />
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--catalyst-text-primary)' }}>{t.title}</span>
-                    <span style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: avgProgress >= 70 ? '#0D9488' : avgProgress >= 50 ? '#D97706' : '#EF4444' }}>{avgProgress}%</span>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#1E40AF', flexShrink: 0 }} />
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--exec-text-primary)' }}>{t.title}</span>
+                    <span style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 600, color: avgProgress >= 70 ? '#1E40AF' : avgProgress >= 40 ? '#D97706' : '#DC2626' }}>{avgProgress}%</span>
                   </div>
-                  <div style={{ fontSize: 11, color: 'var(--catalyst-text-tertiary)', marginBottom: 6, paddingLeft: 16 }}>
+                  <div style={{ fontSize: 11, color: 'var(--exec-text-tertiary)', marginBottom: 6, paddingLeft: 16 }}>
                     {themeGoals.length} Goals · {themeKrs.length} KRs
                   </div>
                   <div style={{ paddingLeft: 16 }}>
@@ -265,8 +275,7 @@ export function StrategyPyramid() {
                   y={pos.y}
                   textAnchor="middle"
                   dominantBaseline="central"
-                  fill="white"
-                  opacity={0.3}
+                  fill={layer.letterColor}
                   style={{ fontSize: FONT_SIZES[layer.key], fontWeight: 800, pointerEvents: 'none' }}
                 >
                   {layer.letter}
@@ -292,26 +301,26 @@ export function StrategyPyramid() {
                 padding: '8px 12px',
                 borderRadius: 6,
                 cursor: 'pointer',
-                background: hoveredLayer === layer.key ? 'var(--catalyst-bg-hover, #F8FAFC)' : 'transparent',
+                background: hoveredLayer === layer.key ? 'var(--exec-bg-hover, #F1F5F9)' : 'transparent',
                 transition: 'background 120ms cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
               <div style={{ width: 3, height: 28, borderRadius: 2, background: layer.color, flexShrink: 0 }} />
               <div className="flex-1 min-w-0">
-                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--catalyst-text-primary)' }}>{layer.label}</div>
-                <div style={{ fontSize: 10, color: 'var(--catalyst-text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--exec-text-primary)' }}>{layer.label}</div>
+                <div style={{ fontSize: 10, color: 'var(--exec-text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {layer.description}
                 </div>
               </div>
               {layer.count !== undefined && layer.count > 0 && (
                 <span style={{
-                  fontSize: 10, fontWeight: 600, background: '#EFF6FF', color: '#2563EB',
+                  fontSize: 10, fontWeight: 600, background: '#EFF6FF', color: '#1E40AF',
                   padding: '1px 8px', borderRadius: 9999, flexShrink: 0,
                 }}>
                   {layer.count}
                 </span>
               )}
-              <span style={{ color: 'var(--catalyst-text-tertiary)', fontSize: 14 }}>›</span>
+              <span style={{ color: 'var(--exec-text-tertiary)', fontSize: 14 }}>›</span>
             </div>
           ))}
         </div>
