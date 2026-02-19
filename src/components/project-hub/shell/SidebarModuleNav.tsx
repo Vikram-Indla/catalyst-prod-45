@@ -92,15 +92,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
         )}
       </div>
 
-      {/* Settings pinned to bottom */}
-      <div style={{ borderTop: '1px solid #E2E8F0', padding: '8px 6px' }}>
-        <NavItem
-          icon={Settings}
-          label="Settings"
-          onClick={() => navigate('/project-hub/settings')}
-          collapsed={collapsed}
-        />
-      </div>
+      {/* Settings pinned to bottom - removed, no module-level settings route */}
     </div>
   );
 }
