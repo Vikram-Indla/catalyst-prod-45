@@ -151,12 +151,6 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
               <input style={inputStyle} value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. Digital Transformation" />
             </div>
 
-            {/* Vision */}
-            <div>
-              <label style={labelStyle}>Vision Statement</label>
-              <textarea style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }} value={form.vision_statement} onChange={e => setForm(f => ({ ...f, vision_statement: e.target.value.slice(0, 500) }))} placeholder="Max 500 characters" />
-              <p style={{ fontSize: 10, color: '#94A3B8', marginTop: 2 }}>{form.vision_statement.length}/500</p>
-            </div>
 
             {/* Description */}
             <div>
