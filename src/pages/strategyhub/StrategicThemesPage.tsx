@@ -1,10 +1,11 @@
 /**
  * StrategicThemesPage — Full Strategic Themes module
- * Sentinel fixes: BSC filter matching, breadcrumb, drawer overlay
+ * Uses CommandCenterHeader (Catalyst standard) with hideHeader on PageChrome
  */
 
 import { useState, useMemo, useCallback } from 'react';
 import { PageChrome } from '@/components/layout/PageChrome';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { useThemes, useCreateTheme, useUpdateTheme, useDeleteTheme } from '@/hooks/use-strategic-themes';
 import type { StrategicTheme, ThemeView } from '@/types/strategic-themes';
 
@@ -18,7 +19,7 @@ import { ThemeDetailDrawer } from '@/components/strategy/themes/ThemeDetailDrawe
 import { ThemeCreateModal } from '@/components/strategy/themes/ThemeCreateModal';
 
 export default function StrategicThemesPage() {
-  const { data: themes = [], isLoading } = useThemes();
+  const { data: themes = [], isLoading, refetch, isFetching } = useThemes();
   const createTheme = useCreateTheme();
   const updateTheme = useUpdateTheme();
   const deleteTheme = useDeleteTheme();
@@ -89,12 +90,18 @@ export default function StrategicThemesPage() {
     setEditingTheme(null);
   }, []);
 
+  const activeCount = themes.filter(t => t.status === 'active').length;
+
   if (isLoading) {
     return (
-      <PageChrome sectionOverride="StrategyHub" titleOverride="Strategic Themes">
+      <PageChrome hideHeader>
+        <CommandCenterHeader
+          title="Strategic Themes"
+          subtitle="Loading..."
+        />
         <div className="p-6 space-y-3">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="rounded-lg animate-pulse" style={{ height: 48, background: '#F1F5F9' }} />
+            <div key={i} className="rounded-lg animate-pulse" style={{ height: 48, background: 'hsl(var(--muted))' }} />
           ))}
         </div>
       </PageChrome>
@@ -105,15 +112,16 @@ export default function StrategicThemesPage() {
   const currentSelected = selectedTheme ? themes.find(t => t.id === selectedTheme.id) || selectedTheme : null;
 
   return (
-    <PageChrome sectionOverride="StrategyHub" titleOverride="Strategic Themes">
+    <PageChrome hideHeader>
+      <CommandCenterHeader
+        title="Strategic Themes"
+        subtitle={`Enterprise strategy portfolio — ${themes.length} themes, ${activeCount} active`}
+        timestamp="Updated just now"
+        onRefresh={() => refetch()}
+        isRefreshing={isFetching}
+      />
+
       <div style={{ padding: '16px 24px 24px' }}>
-        {/* Breadcrumb */}
-        <div style={{ marginBottom: 12 }}>
-          <span style={{ fontSize: 11.5, color: '#64748B' }}>
-            StrategyHub <span style={{ margin: '0 4px' }}>›</span>
-            <span style={{ color: '#2563EB', fontWeight: 500 }}>Strategic Themes</span>
-          </span>
-        </div>
 
         <ThemeStatsStrip themes={themes} />
 
