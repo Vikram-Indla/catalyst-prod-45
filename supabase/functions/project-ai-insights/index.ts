@@ -86,7 +86,6 @@ OUTPUT JSON SCHEMA:
     const userContent = `Analyze this project:
 
 PROJECT: ${context.project.name} (${context.project.project_key})
-TARGET DATE: ${context.project.target_date || "Not set"}
 STATUS: ${context.project.status}
 
 ITEMS: ${context.total_items} total, ${context.done_items} done (${context.completion_percent}%), ${context.remaining_items} remaining
