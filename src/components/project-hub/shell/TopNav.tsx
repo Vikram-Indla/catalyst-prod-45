@@ -7,14 +7,14 @@ import { UserAvatar } from './UserAvatar';
 
 const HUB_TABS = [
   { label: 'Home', path: '/for-you' },
-  { label: 'StrategyHub', path: '/strategyhub' },
-  { label: 'ProductHub', path: '/producthub' },
-  { label: 'ProjectHub', path: '/project-hub' },
-  { label: 'ReleaseHub', path: '/releasehub' },
-  { label: 'IncidentHub', path: '/release' },
-  { label: 'TestHub', path: '/testhub' },
-  { label: 'TaskHub', path: '/taskhub' },
-  { label: 'PlanHub', path: '/planhub' },
+  { label: 'Strategy', path: '/strategyhub' },
+  { label: 'Product', path: '/producthub' },
+  { label: 'Project', path: '/project-hub' },
+  { label: 'Release', path: '/releasehub' },
+  { label: 'Incident', path: '/release' },
+  { label: 'Test', path: '/testhub' },
+  { label: 'Task', path: '/taskhub' },
+  { label: 'Plan', path: '/planhub' },
 ];
 
 interface TopNavProps {
@@ -26,11 +26,6 @@ export function TopNav({ onCreateClick }: TopNavProps) {
   const location = useLocation();
 
   const handleTabClick = (tab: typeof HUB_TABS[number]) => {
-    if (tab.label === 'ProjectHub') {
-      navigate(tab.path);
-      return;
-    }
-    // Other hubs — navigate to their existing routes
     navigate(tab.path);
   };
 
@@ -65,13 +60,13 @@ export function TopNav({ onCreateClick }: TopNavProps) {
       </button>
 
       {/* Hub Tabs */}
-      <nav className="flex items-center h-full flex-1 gap-0.5 overflow-x-auto">
+      <nav className="flex items-center h-full flex-1 gap-0 overflow-x-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         {HUB_TABS.map(tab => (
           <HubTab
             key={tab.label}
             label={tab.label}
             isActive={
-              tab.label === 'ProjectHub'
+              tab.label === 'Project'
                 ? location.pathname.startsWith('/project-hub')
                 : location.pathname.startsWith(tab.path)
             }

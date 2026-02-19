@@ -54,7 +54,9 @@ export default function ProjectSettingsPageNew() {
       <div className="flex items-center gap-1.5 mb-5">
         <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: '#64748B' }} onClick={() => navigate('/project-hub/projects')}>ProjectHub</span>
         <ChevronRight size={12} color="#94A3B8" />
-        <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: '#64748B' }} onClick={() => navigate(`/project-hub/${key}/dashboard`)}>{key?.toUpperCase()}</span>
+        <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: '#64748B' }} onClick={() => navigate(`/project-hub/${key}/dashboard`)}>
+          {key?.toUpperCase()}{project ? ` — ${project.name}` : ''}
+        </span>
         <ChevronRight size={12} color="#94A3B8" />
         <span style={{ fontSize: 13, color: '#0F172A', fontWeight: 500 }}>Settings</span>
       </div>

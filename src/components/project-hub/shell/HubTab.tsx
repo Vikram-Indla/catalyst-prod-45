@@ -10,7 +10,7 @@ export function HubTab({ label, isActive, onClick }: HubTabProps) {
       onClick={onClick}
       className="relative flex items-center h-full transition-colors duration-150"
       style={{
-        padding: '0 14px',
+        padding: '0 10px',
         fontSize: '13px',
         fontWeight: isActive ? 600 : 500,
         color: isActive ? '#2563EB' : '#334155',
@@ -20,6 +20,7 @@ export function HubTab({ label, isActive, onClick }: HubTabProps) {
         borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
         cursor: 'pointer',
         letterSpacing: '0.005em',
+        whiteSpace: 'nowrap' as const,
       }}
       onMouseEnter={(e) => {
         if (!isActive) e.currentTarget.style.color = '#2563EB';
