@@ -14549,6 +14549,35 @@ export type Database = {
           },
         ]
       }
+      ph_components: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          project_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          project_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_components_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ph_config: {
         Row: {
           description: string | null
@@ -15637,6 +15666,136 @@ export type Database = {
           },
         ]
       }
+      ph_labels: {
+        Row: {
+          color: string
+          created_at: string | null
+          id: string
+          name: string
+          project_id: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string | null
+          id?: string
+          name: string
+          project_id: string
+        }
+        Update: {
+          color?: string
+          created_at?: string | null
+          id?: string
+          name?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_labels_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_project_members: {
+        Row: {
+          created_at: string | null
+          id: string
+          project_id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          project_id: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          project_id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_project_members_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_projects: {
+        Row: {
+          ai_assist: boolean | null
+          archived_at: string | null
+          color: string | null
+          created_at: string | null
+          created_by: string
+          department: string
+          description: string | null
+          end_date: string | null
+          feature_layer: boolean | null
+          health: string | null
+          health_override: boolean | null
+          icon: string | null
+          id: string
+          is_archived: boolean | null
+          key: string
+          name: string
+          start_date: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          ai_assist?: boolean | null
+          archived_at?: string | null
+          color?: string | null
+          created_at?: string | null
+          created_by: string
+          department: string
+          description?: string | null
+          end_date?: string | null
+          feature_layer?: boolean | null
+          health?: string | null
+          health_override?: boolean | null
+          icon?: string | null
+          id?: string
+          is_archived?: boolean | null
+          key: string
+          name: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          ai_assist?: boolean | null
+          archived_at?: string | null
+          color?: string | null
+          created_at?: string | null
+          created_by?: string
+          department?: string
+          description?: string | null
+          end_date?: string | null
+          feature_layer?: boolean | null
+          health?: string | null
+          health_override?: boolean | null
+          icon?: string | null
+          id?: string
+          is_archived?: boolean | null
+          key?: string
+          name?: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       ph_releases: {
         Row: {
           actual_date: string | null
@@ -15992,6 +16151,44 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_type_field_layouts: {
+        Row: {
+          field_name: string
+          field_type: string
+          id: string
+          is_required: boolean | null
+          is_type_specific: boolean | null
+          position: number
+          type_id: string
+        }
+        Insert: {
+          field_name: string
+          field_type: string
+          id?: string
+          is_required?: boolean | null
+          is_type_specific?: boolean | null
+          position?: number
+          type_id: string
+        }
+        Update: {
+          field_name?: string
+          field_type?: string
+          id?: string
+          is_required?: boolean | null
+          is_type_specific?: boolean | null
+          position?: number
+          type_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_type_field_layouts_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ph_user_favorites: {
         Row: {
           created_at: string | null
@@ -16066,33 +16263,38 @@ export type Database = {
       }
       ph_user_preferences: {
         Row: {
-          column_config: Json | null
-          default_view: string | null
-          density: string | null
           id: string
-          page_size: number | null
+          preference_key: string
+          preference_value: Json
+          project_id: string | null
+          updated_at: string | null
           user_id: string
-          view_id: string | null
         }
         Insert: {
-          column_config?: Json | null
-          default_view?: string | null
-          density?: string | null
           id?: string
-          page_size?: number | null
+          preference_key: string
+          preference_value?: Json
+          project_id?: string | null
+          updated_at?: string | null
           user_id: string
-          view_id?: string | null
         }
         Update: {
-          column_config?: Json | null
-          default_view?: string | null
-          density?: string | null
           id?: string
-          page_size?: number | null
+          preference_key?: string
+          preference_value?: Json
+          project_id?: string | null
+          updated_at?: string | null
           user_id?: string
-          view_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ph_user_preferences_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ph_versions: {
         Row: {
@@ -16287,6 +16489,91 @@ export type Database = {
             columns: ["theme_id"]
             isOneToOne: false
             referencedRelation: "vw_ph_theme_progress"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_work_types: {
+        Row: {
+          color: string
+          created_at: string | null
+          icon: string
+          id: string
+          is_enabled: boolean | null
+          level: string
+          name: string
+          position: number
+          project_id: string
+        }
+        Insert: {
+          color: string
+          created_at?: string | null
+          icon: string
+          id?: string
+          is_enabled?: boolean | null
+          level: string
+          name: string
+          position?: number
+          project_id: string
+        }
+        Update: {
+          color?: string
+          created_at?: string | null
+          icon?: string
+          id?: string
+          is_enabled?: boolean | null
+          level?: string
+          name?: string
+          position?: number
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_work_types_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_workflow_statuses: {
+        Row: {
+          category: string
+          color: string
+          created_at: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          position: number
+          project_id: string
+        }
+        Insert: {
+          category: string
+          color?: string
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          position?: number
+          project_id: string
+        }
+        Update: {
+          category?: string
+          color?: string
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          position?: number
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_workflow_statuses_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_projects"
             referencedColumns: ["id"]
           },
         ]
@@ -43044,10 +43331,35 @@ export type Database = {
         Args: { p_execution_id: string; p_step_id: string }
         Returns: Json
       }
+      ph_create_project: {
+        Args: {
+          p_color?: string
+          p_department: string
+          p_description?: string
+          p_feature_layer?: boolean
+          p_icon?: string
+          p_key: string
+          p_name: string
+          p_user_id?: string
+        }
+        Returns: string
+      }
       ph_parse_and_update_versions: { Args: never; Returns: undefined }
       ph_parse_version_name: { Args: { vname: string }; Returns: string }
       ph_prune_stale: { Args: { window_months?: number }; Returns: number }
       ph_recompute_all: { Args: never; Returns: undefined }
+      ph_seed_default_field_layouts: {
+        Args: { p_project_id: string }
+        Returns: undefined
+      }
+      ph_seed_default_types: {
+        Args: { p_feature_layer?: boolean; p_project_id: string }
+        Returns: undefined
+      }
+      ph_seed_default_workflow: {
+        Args: { p_project_id: string }
+        Returns: undefined
+      }
       planhub_create_version: {
         Args: {
           plan_uuid: string
