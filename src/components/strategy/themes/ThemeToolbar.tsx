@@ -1,9 +1,9 @@
 /**
  * ThemeToolbar — Search, filters, view toggle, actions
  */
-import { useState } from 'react';
 import { Search, List, LayoutGrid, GanttChart, Network, Download, Plus } from 'lucide-react';
-import type { StrategicTheme, ThemeView, BscPerspective } from '@/types/strategic-themes';
+import type { StrategicTheme, ThemeView } from '@/types/strategic-themes';
+import { BSC_FILTER_OPTIONS } from './theme-utils';
 
 interface Props {
   themes: StrategicTheme[];
@@ -29,12 +29,19 @@ const viewOptions: { key: ThemeView; icon: typeof List; label: string }[] = [
   { key: 'alignment', icon: Network, label: 'Map' },
 ];
 
-const selectStyle: React.CSSProperties = {
+const baseSelectStyle: React.CSSProperties = {
   fontSize: 12, height: 32, borderRadius: 6,
   border: '1px solid #E2E8F0', background: '#FFFFFF',
   color: '#334155', padding: '0 8px', outline: 'none',
   cursor: 'pointer', width: 'auto', minWidth: 0,
 };
+
+function filterStyle(hasValue: boolean): React.CSSProperties {
+  return {
+    ...baseSelectStyle,
+    ...(hasValue ? { background: '#EFF6FF', borderColor: '#2563EB', color: '#2563EB' } : {}),
+  };
+}
 
 export function ThemeToolbar(props: Props) {
   const owners = [...new Set(props.themes.map(t => t.owner_name).filter(Boolean))];
@@ -59,7 +66,7 @@ export function ThemeToolbar(props: Props) {
           onChange={e => props.onSearchChange(e.target.value)}
           className="w-full"
           style={{
-            ...selectStyle,
+            ...baseSelectStyle,
             paddingLeft: 30,
             minWidth: 'unset',
           }}
@@ -67,7 +74,7 @@ export function ThemeToolbar(props: Props) {
       </div>
 
       {/* Status filter */}
-      <select value={props.statusFilter} onChange={e => props.onStatusFilterChange(e.target.value)} style={selectStyle}>
+      <select value={props.statusFilter} onChange={e => props.onStatusFilterChange(e.target.value)} style={filterStyle(!!props.statusFilter)}>
         <option value="">All Status</option>
         <option value="active">Active</option>
         <option value="draft">Draft</option>
@@ -75,22 +82,22 @@ export function ThemeToolbar(props: Props) {
       </select>
 
       {/* Owner filter */}
-      <select value={props.ownerFilter} onChange={e => props.onOwnerFilterChange(e.target.value)} style={selectStyle}>
+      <select value={props.ownerFilter} onChange={e => props.onOwnerFilterChange(e.target.value)} style={filterStyle(!!props.ownerFilter)}>
         <option value="">All Owners</option>
         {owners.map(o => <option key={o} value={o!}>{o}</option>)}
       </select>
 
       {/* BSC filter */}
-      <select value={props.bscFilter} onChange={e => props.onBscFilterChange(e.target.value)} style={selectStyle}>
+      <select value={props.bscFilter} onChange={e => props.onBscFilterChange(e.target.value)} style={filterStyle(!!props.bscFilter)}>
         <option value="">All BSC</option>
-        <option value="financial">Financial</option>
-        <option value="customer">Customer</option>
-        <option value="internal_process">Internal Process</option>
-        <option value="learning_growth">Learning & Growth</option>
+        {BSC_FILTER_OPTIONS.map(o => (
+          <option key={o.key} value={o.key}>{o.label}</option>
+        ))}
+        <option value="__none__">None (Untagged)</option>
       </select>
 
       {/* FY filter */}
-      <select value={props.fyFilter} onChange={e => props.onFyFilterChange(e.target.value)} style={selectStyle}>
+      <select value={props.fyFilter} onChange={e => props.onFyFilterChange(e.target.value)} style={filterStyle(!!props.fyFilter)}>
         <option value="">All FY</option>
         {fiscalYears.map(fy => <option key={fy} value={String(fy)}>FY{fy}</option>)}
       </select>

@@ -1,8 +1,8 @@
 /**
  * ThemeDetailDrawer — Right-side slide-in panel with 6 tabs
- * Stage D: All tabs wired to real DB data, edit/delete/milestone CRUD
+ * Fixed: proper overlay, real field data, AI health card
  */
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { X, Pencil, Trash2, Plus, Loader2 } from 'lucide-react';
 import type { StrategicTheme, ThemeMilestone } from '@/types/strategic-themes';
 import {
@@ -11,7 +11,7 @@ import {
 } from '@/hooks/use-strategic-themes';
 import {
   STATUS_CONFIG, BSC_CONFIG, PRIORITY_CONFIG,
-  deriveHealthStatus, formatBudget, getInitials, getAvatarColor,
+  deriveHealthStatus, formatBudget, getInitials, getAvatarColor, formatDate, capitalize,
 } from './theme-utils';
 
 interface Props {
@@ -48,46 +48,37 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete }: Pr
 
   return (
     <>
-      {/* Overlay */}
-      <div
-        onClick={onClose}
-        style={{
-          position: 'fixed', inset: 0, zIndex: 40,
-          background: 'rgba(15, 23, 42, 0.3)',
-          opacity: open ? 1 : 0,
-          pointerEvents: open ? 'auto' : 'none',
-          transition: 'opacity 200ms',
-        }}
-      />
+      {/* Backdrop */}
+      {open && (
+        <div
+          onClick={onClose}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 200,
+            background: 'rgba(15, 23, 42, 0.3)',
+          }}
+        />
+      )}
 
-      {/* Drawer */}
+      {/* Drawer panel */}
       <div
         style={{
-          position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 50,
+          position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 210,
           width: 560, background: '#FFFFFF',
           transform: open ? 'translateX(0)' : 'translateX(100%)',
-          transition: 'transform 300ms ease',
+          transition: 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1)',
           display: 'flex', flexDirection: 'column',
-          boxShadow: '-8px 0 30px rgba(0,0,0,0.08)',
+          boxShadow: '-4px 0 20px rgba(0,0,0,0.08)',
         }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between shrink-0" style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0' }}>
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="shrink-0 rounded-full" style={{ width: 12, height: 12, background: theme.color }} />
-            <h2 className="truncate" style={{ fontSize: 16, fontWeight: 600, color: '#0F172A' }}>{theme.title}</h2>
-          </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <button onClick={() => onEdit(theme)} className="rounded-md p-1.5 hover:bg-gray-100" style={{ border: 'none', background: 'none', cursor: 'pointer' }} title="Edit">
-              <Pencil size={15} color="#64748B" />
-            </button>
-            <button onClick={() => setConfirmDelete(true)} className="rounded-md p-1.5 hover:bg-red-50" style={{ border: 'none', background: 'none', cursor: 'pointer' }} title="Delete">
-              <Trash2 size={15} color="#DC2626" />
-            </button>
-            <button onClick={onClose} className="rounded-md p-1.5 hover:bg-gray-100" style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
-              <X size={18} color="#64748B" />
-            </button>
-          </div>
+        <div className="flex items-center gap-3 shrink-0" style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0' }}>
+          <div className="shrink-0 rounded-full" style={{ width: 12, height: 12, background: theme.color }} />
+          <h2 className="truncate flex-1" style={{ fontSize: 16, fontWeight: 700, color: '#0F172A' }}>{theme.title}</h2>
+          <button onClick={() => onEdit(theme)} style={{ fontSize: 12, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Edit</button>
+          <button onClick={() => setConfirmDelete(true)} style={{ fontSize: 12, color: '#EF4444', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Delete</button>
+          <button onClick={onClose} className="flex items-center justify-center rounded hover:bg-gray-100" style={{ width: 28, height: 28, border: 'none', background: 'none', cursor: 'pointer' }}>
+            <X size={18} color="#64748B" />
+          </button>
         </div>
 
         {/* Delete Confirmation */}
@@ -155,30 +146,36 @@ function FieldRow({ label, value }: { label: string; value: React.ReactNode }) {
 function OverviewTab({ theme, sc, bsc, pri }: { theme: StrategicTheme; sc: any; bsc: any; pri: any }) {
   return (
     <div>
+      {/* KPI cards */}
       <div className="grid grid-cols-3 gap-3 mb-5">
         <KpiCard label="Progress" value={`${theme.progress_pct}%`} />
         <KpiCard label="Goals" value={theme.goal_count} />
         <KpiCard label="Key Results" value={theme.kr_count} />
       </div>
 
-      {theme.ai_health_score !== null && (
-        <div className="rounded-xl mb-5 overflow-hidden" style={{
+      {/* AI Health Score Card */}
+      {theme.ai_health_score != null && (
+        <div className="rounded-lg mb-5 overflow-hidden" style={{
           background: 'linear-gradient(135deg, #EDE9FE, #F5F3FF)',
           border: '1px solid #DDD6FE', padding: 16,
         }}>
-          <div className="flex items-center gap-2 mb-3">
-            <span className="inline-flex items-center rounded px-1.5 py-0.5" style={{ fontSize: 10, fontWeight: 700, background: '#7C3AED', color: '#FFFFFF' }}>AI</span>
+          <div className="flex items-center gap-2 mb-2">
+            <span style={{ fontSize: 9, fontWeight: 700, padding: '2px 6px', background: '#7C3AED', color: '#FFFFFF', borderRadius: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              AI
+            </span>
             <span style={{ fontSize: 12, fontWeight: 600, color: '#5B21B6' }}>Strategy Health Score</span>
           </div>
-          <p style={{ fontSize: 28, fontWeight: 700, color: '#7C3AED', marginBottom: 8 }}>{theme.ai_health_score}</p>
-          <div className="grid grid-cols-3 gap-2">
+          <div style={{ fontSize: 28, fontWeight: 800, color: '#7C3AED', marginBottom: 8 }}>
+            {theme.ai_health_score}<span style={{ fontSize: 14, fontWeight: 500 }}>/100</span>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5">
             {[
-              { label: 'OKR', value: Math.round(theme.ai_health_score * 0.9) },
-              { label: 'Velocity', value: Math.round(theme.ai_health_score * 1.05) },
-              { label: 'Alignment', value: Math.round(theme.ai_health_score * 0.85) },
+              { label: 'OKR', value: Math.round(theme.ai_health_score * 0.3) },
+              { label: 'Velocity', value: Math.round(theme.ai_health_score * 0.25) },
+              { label: 'Alignment', value: Math.round(theme.ai_health_score * 0.2) },
             ].map(f => (
               <div key={f.label} className="rounded-md text-center" style={{ background: 'rgba(255,255,255,0.6)', padding: '6px 0' }}>
-                <p style={{ fontSize: 14, fontWeight: 600, color: '#5B21B6' }}>{Math.min(f.value, 100)}</p>
+                <p style={{ fontSize: 13, fontWeight: 700, color: '#5B21B6' }}>{f.value}</p>
                 <p style={{ fontSize: 10, color: '#7C3AED' }}>{f.label}</p>
               </div>
             ))}
@@ -186,26 +183,30 @@ function OverviewTab({ theme, sc, bsc, pri }: { theme: StrategicTheme; sc: any; 
         </div>
       )}
 
+      {/* Field grid */}
       <div className="grid grid-cols-2 gap-x-4">
         <FieldRow label="Vision" value={theme.vision_statement} />
-        <FieldRow label="Owner" value={theme.owner_name} />
+        <FieldRow label="Owner" value={theme.owner_name || 'Unassigned'} />
         <FieldRow label="Fiscal Year" value={`FY${theme.fiscal_year}`} />
-        <FieldRow label="Date Range" value={theme.start_date && theme.target_completion ? `${theme.start_date} → ${theme.target_completion}` : null} />
+        <FieldRow label="Date Range" value={
+          theme.start_date && theme.target_completion
+            ? `${formatDate(theme.start_date)} – ${formatDate(theme.target_completion)}`
+            : null
+        } />
         <FieldRow label="BSC Perspective" value={bsc?.label} />
         <FieldRow label="Priority" value={pri ? <span style={{ color: pri.color, fontWeight: 600 }}>{pri.label}</span> : null} />
-        <FieldRow label="Budget (SAR)" value={formatBudget(theme.planned_budget)} />
-        <FieldRow label="Theme Group" value={theme.theme_group_name} />
-        <FieldRow label="Milestones" value={theme.milestone_count} />
+        <FieldRow label="Budget (SAR)" value={theme.planned_budget > 0 ? formatBudget(theme.planned_budget) : null} />
+        <FieldRow label="Theme Group" value={theme.theme_group_name || 'None'} />
+        <FieldRow label="Milestones" value={`${theme.milestone_count ?? 0} / 20`} />
         <FieldRow label="Process Step" value={theme.process_step} />
       </div>
     </div>
   );
 }
 
-// ═══ GOALS & KRS — Real data ═══
+// ═══ GOALS & KRS ═══
 function GoalsTab({ theme }: { theme: StrategicTheme }) {
   const { data: goals = [], isLoading } = useGoalsForTheme(theme.id);
-
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
@@ -218,7 +219,7 @@ function GoalsTab({ theme }: { theme: StrategicTheme }) {
         <p style={{ fontSize: 12, color: '#94A3B8', textAlign: 'center', padding: 32 }}>No goals linked to this theme yet.</p>
       ) : (
         <div className="space-y-2">
-          {goals.map(g => {
+          {goals.map((g: any) => {
             const statusColor = g.status === 'completed' ? '#16A34A' : g.status === 'at_risk' ? '#D97706' : '#2563EB';
             return (
               <div key={g.id} className="rounded-lg border p-3" style={{ borderColor: '#E2E8F0' }}>
@@ -242,10 +243,9 @@ function GoalsTab({ theme }: { theme: StrategicTheme }) {
   );
 }
 
-// ═══ INITIATIVES — Real data ═══
+// ═══ INITIATIVES ═══
 function InitiativesTab({ theme }: { theme: StrategicTheme }) {
   const { data: initiatives = [], isLoading } = useInitiativesForTheme(theme.id);
-
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
@@ -258,7 +258,7 @@ function InitiativesTab({ theme }: { theme: StrategicTheme }) {
         <p style={{ fontSize: 12, color: '#94A3B8', textAlign: 'center', padding: 32 }}>No initiatives linked yet.</p>
       ) : (
         <div className="space-y-2">
-          {initiatives.map(ini => (
+          {initiatives.map((ini: any) => (
             <div key={ini.id} className="rounded-lg border p-3" style={{ borderColor: '#E2E8F0' }}>
               <div className="flex items-start justify-between mb-1">
                 <span style={{ fontSize: 12, fontWeight: 600, color: '#0F172A' }}>{ini.title}</span>
@@ -291,7 +291,6 @@ function FinancialsTab({ theme }: { theme: StrategicTheme }) {
         <KpiCard label="Spent" value={formatBudget(spent)} />
         <KpiCard label="Remaining" value={`${remaining}%`} color={remaining < 20 ? '#DC2626' : undefined} />
       </div>
-
       <div className="mb-3">
         <div className="flex items-center justify-between mb-1">
           <span style={{ fontSize: 11, color: '#64748B' }}>Budget Utilization</span>
@@ -304,7 +303,6 @@ function FinancialsTab({ theme }: { theme: StrategicTheme }) {
           }} />
         </div>
       </div>
-
       <p style={{ fontSize: 12, color: '#64748B', marginTop: 12 }}>
         Planned budget: <strong>{formatBudget(theme.planned_budget)}</strong> SAR for FY{theme.fiscal_year}.
       </p>
@@ -354,7 +352,6 @@ function MilestonesTab({ theme }: { theme: StrategicTheme }) {
         <button onClick={() => { resetForm(); setShowForm(true); }} disabled={milestones.length >= 20} style={{ fontSize: 12, color: milestones.length >= 20 ? '#94A3B8' : '#2563EB', background: 'none', border: 'none', cursor: milestones.length >= 20 ? 'default' : 'pointer', fontWeight: 500 }}>+ Add Milestone</button>
       </div>
 
-      {/* Inline form */}
       {showForm && (
         <div className="rounded-lg border p-3 mb-3" style={{ borderColor: '#DBEAFE', background: '#F8FAFC' }}>
           <div className="space-y-2">

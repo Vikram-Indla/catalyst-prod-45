@@ -9,11 +9,19 @@ interface Props { themes: StrategicTheme[] }
 
 export function ThemeStatsStrip({ themes }: Props) {
   const active = themes.filter(t => t.status === 'active');
-  const avgProgress = themes.length ? Math.round(themes.reduce((s, t) => s + t.progress_pct, 0) / themes.length) : 0;
-  const totalGoals = themes.reduce((s, t) => s + t.goal_count, 0);
+  const avgProgress = themes.length ? Math.round(themes.reduce((s, t) => s + (t.progress_pct || 0), 0) / themes.length) : 0;
+  const totalGoals = themes.reduce((s, t) => s + (t.goal_count || 0), 0);
   const totalBudget = themes.reduce((s, t) => s + (t.planned_budget || 0), 0);
-  const atRisk = themes.filter(t => { const h = deriveHealthStatus(t); return h === 'at_risk' || h === 'off_track'; }).length;
-  const progressDelta = avgProgress - 55;
+
+  // Count active themes that are at risk or off track
+  const atRiskCount = themes.filter(t => {
+    if (t.status !== 'active') return false;
+    const h = deriveHealthStatus(t);
+    return h === 'at_risk' || h === 'off_track';
+  }).length;
+
+  const target = 55;
+  const progressDelta = avgProgress - target;
 
   const cards = [
     {
@@ -27,10 +35,11 @@ export function ThemeStatsStrip({ themes }: Props) {
     {
       label: 'Avg. Progress',
       value: `${avgProgress}%`,
-      sub: progressDelta >= 0 ? `+${progressDelta}% vs target` : `${progressDelta}% vs target`,
+      sub: `${progressDelta >= 0 ? '↑' : '↓'} ${Math.abs(progressDelta)}% vs target`,
       icon: progressDelta >= 0 ? TrendingUp : TrendingDown,
       iconColor: progressDelta >= 0 ? '#16A34A' : '#DC2626',
       iconBg: progressDelta >= 0 ? '#DCFCE7' : '#FEE2E2',
+      subColor: progressDelta >= 0 ? '#16A34A' : '#DC2626',
     },
     {
       label: 'Total Goals',
@@ -50,12 +59,12 @@ export function ThemeStatsStrip({ themes }: Props) {
     },
     {
       label: 'Off Track / At Risk',
-      value: atRisk,
-      sub: atRisk > 0 ? 'Needs attention' : 'All healthy',
+      value: atRiskCount,
+      sub: atRiskCount > 0 ? 'Needs attention' : 'All healthy',
       icon: AlertTriangle,
-      iconColor: atRisk > 0 ? '#DC2626' : '#16A34A',
-      iconBg: atRisk > 0 ? '#FEE2E2' : '#DCFCE7',
-      valueColor: atRisk > 0 ? '#DC2626' : undefined,
+      iconColor: atRiskCount > 0 ? '#DC2626' : '#16A34A',
+      iconBg: atRiskCount > 0 ? '#FEE2E2' : '#DCFCE7',
+      valueColor: atRiskCount > 0 ? '#DC2626' : undefined,
     },
   ];
 
@@ -78,7 +87,7 @@ export function ThemeStatsStrip({ themes }: Props) {
                 fontSize: 22, fontWeight: 700, color: c.valueColor || '#0F172A',
                 lineHeight: 1.1, marginBottom: 2,
               }}>{c.value}</p>
-              <p style={{ fontSize: 11, color: '#94A3B8' }}>{c.sub}</p>
+              <p style={{ fontSize: 11, color: (c as any).subColor || '#94A3B8' }}>{c.sub}</p>
             </div>
             <div
               className="rounded-lg flex items-center justify-center shrink-0"

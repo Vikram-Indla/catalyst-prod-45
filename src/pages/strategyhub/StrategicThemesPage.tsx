@@ -1,6 +1,6 @@
 /**
  * StrategicThemesPage — Full Strategic Themes module
- * Stage D: All CRUD wired to DB, edit/delete, theme groups, toasts
+ * Sentinel fixes: BSC filter matching, breadcrumb, drawer overlay
  */
 
 import { useState, useMemo, useCallback } from 'react';
@@ -45,7 +45,13 @@ export default function StrategicThemesPage() {
       if (search && !t.title.toLowerCase().includes(search.toLowerCase())) return false;
       if (statusFilter && t.status !== statusFilter) return false;
       if (ownerFilter && t.owner_name !== ownerFilter) return false;
-      if (bscFilter && t.bsc_perspective !== bscFilter) return false;
+      if (bscFilter) {
+        if (bscFilter === '__none__') {
+          if (t.bsc_perspective) return false;
+        } else if (t.bsc_perspective !== bscFilter) {
+          return false;
+        }
+      }
       if (fyFilter && String(t.fiscal_year) !== fyFilter) return false;
       return true;
     });
@@ -68,16 +74,9 @@ export default function StrategicThemesPage() {
 
   const handleUpdate = useCallback((data: Partial<StrategicTheme>) => {
     if (!editingTheme) return;
-    updateTheme.mutate({ id: editingTheme.id, updates: data as any }, {
-      onSuccess: () => {
-        // Refresh drawer data if it was open
-        if (selectedTheme?.id === editingTheme.id) {
-          // The query invalidation will handle this
-        }
-      }
-    });
+    updateTheme.mutate({ id: editingTheme.id, updates: data as any });
     setEditingTheme(null);
-  }, [editingTheme, updateTheme, selectedTheme]);
+  }, [editingTheme, updateTheme]);
 
   const handleDelete = useCallback((theme: StrategicTheme) => {
     deleteTheme.mutate(theme.id);
@@ -108,6 +107,14 @@ export default function StrategicThemesPage() {
   return (
     <PageChrome sectionOverride="StrategyHub" titleOverride="Strategic Themes">
       <div style={{ padding: '16px 24px 24px' }}>
+        {/* Breadcrumb */}
+        <div style={{ marginBottom: 12 }}>
+          <span style={{ fontSize: 11.5, color: '#64748B' }}>
+            StrategyHub <span style={{ margin: '0 4px' }}>›</span>
+            <span style={{ color: '#2563EB', fontWeight: 500 }}>Strategic Themes</span>
+          </span>
+        </div>
+
         <ThemeStatsStrip themes={themes} />
 
         <ThemeToolbar
