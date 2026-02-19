@@ -6,8 +6,13 @@ import { ItemsByStatus } from './ItemsByStatus';
 import { RecentActivity } from './RecentActivity';
 import { TeamWorkload } from './TeamWorkload';
 import { AIInsightsCard } from './AIInsightsCard';
+import { LiveAIInsightsCard } from './LiveAIInsightsCard';
 
-export function WidgetGrid() {
+interface WidgetGridProps {
+  projectId?: string;
+}
+
+export function WidgetGrid({ projectId }: WidgetGridProps) {
   return (
     <>
       <style>{`
@@ -50,7 +55,7 @@ export function WidgetGrid() {
           <TeamWorkload />
         </WidgetCard>
 
-        <AIInsightsCard />
+        {projectId ? <LiveAIInsightsCard projectId={projectId} /> : <AIInsightsCard />}
       </div>
     </>
   );

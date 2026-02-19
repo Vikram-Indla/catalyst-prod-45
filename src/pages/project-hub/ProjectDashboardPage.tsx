@@ -69,7 +69,7 @@ export default function ProjectDashboardPage() {
             />
 
             <div className="mt-5">
-              <WidgetGrid />
+              <WidgetGrid projectId={project?.id} />
             </div>
           </>
         )}
