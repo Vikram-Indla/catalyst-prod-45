@@ -4,10 +4,10 @@ export interface StrategicTheme {
   vision_statement: string | null;
   description: string | null;
   color: string;
-  status: 'active' | 'planned' | 'on_hold' | 'completed' | 'archived';
+  status: 'active' | 'draft' | 'archived';
   priority: 'critical' | 'high' | 'medium' | 'low';
-  bsc_perspective: string | null;
-  fiscal_year: string;
+  bsc_perspective: 'financial' | 'customer' | 'internal_process' | 'learning_growth' | null;
+  fiscal_year: number;
   start_date: string | null;
   target_completion: string | null;
   planned_budget: number;
@@ -70,7 +70,7 @@ export interface ThemeLink {
 }
 
 export type ThemeView = 'list' | 'board' | 'timeline' | 'alignment';
-export type ThemeStatus = StrategicTheme['status'];
+export type ThemeStatus = StrategicTheme['status'];  // 'active' | 'draft' | 'archived'
 export type ThemePriority = StrategicTheme['priority'];
 export type BscPerspective = 'financial' | 'customer' | 'internal_process' | 'learning_growth';
 export type MilestoneCategory = ThemeMilestone['category'];
