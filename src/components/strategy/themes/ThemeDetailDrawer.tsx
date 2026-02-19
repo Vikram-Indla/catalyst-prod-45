@@ -1,10 +1,14 @@
 /**
  * ThemeDetailDrawer — Right-side slide-in panel with 6 tabs
+ * Stage D: All tabs wired to real DB data, edit/delete/milestone CRUD
  */
-import { useEffect } from 'react';
-import { X, Target, Zap, DollarSign, Milestone, Activity } from 'lucide-react';
-import { useState } from 'react';
-import type { StrategicTheme } from '@/types/strategic-themes';
+import { useEffect, useState, useCallback } from 'react';
+import { X, Pencil, Trash2, Plus, Loader2 } from 'lucide-react';
+import type { StrategicTheme, ThemeMilestone } from '@/types/strategic-themes';
+import {
+  useMilestones, useCreateMilestone, useUpdateMilestone, useDeleteMilestone,
+  useGoalsForTheme, useInitiativesForTheme,
+} from '@/hooks/use-strategic-themes';
 import {
   STATUS_CONFIG, BSC_CONFIG, PRIORITY_CONFIG,
   deriveHealthStatus, formatBudget, getInitials, getAvatarColor,
@@ -14,16 +18,19 @@ interface Props {
   theme: StrategicTheme | null;
   open: boolean;
   onClose: () => void;
+  onEdit: (theme: StrategicTheme) => void;
+  onDelete: (theme: StrategicTheme) => void;
 }
 
 const TABS = ['Overview', 'Goals & KRs', 'Initiatives', 'Financials', 'Milestones', 'Activity'] as const;
 type Tab = typeof TABS[number];
 
-export function ThemeDetailDrawer({ theme, open, onClose }: Props) {
+export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete }: Props) {
   const [tab, setTab] = useState<Tab>('Overview');
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
-    if (open) setTab('Overview');
+    if (open) { setTab('Overview'); setConfirmDelete(false); }
   }, [open, theme?.id]);
 
   useEffect(() => {
@@ -70,10 +77,29 @@ export function ThemeDetailDrawer({ theme, open, onClose }: Props) {
             <div className="shrink-0 rounded-full" style={{ width: 12, height: 12, background: theme.color }} />
             <h2 className="truncate" style={{ fontSize: 16, fontWeight: 600, color: '#0F172A' }}>{theme.title}</h2>
           </div>
-          <button onClick={onClose} className="shrink-0 rounded-md p-1 hover:bg-gray-100" style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
-            <X size={18} color="#64748B" />
-          </button>
+          <div className="flex items-center gap-1 shrink-0">
+            <button onClick={() => onEdit(theme)} className="rounded-md p-1.5 hover:bg-gray-100" style={{ border: 'none', background: 'none', cursor: 'pointer' }} title="Edit">
+              <Pencil size={15} color="#64748B" />
+            </button>
+            <button onClick={() => setConfirmDelete(true)} className="rounded-md p-1.5 hover:bg-red-50" style={{ border: 'none', background: 'none', cursor: 'pointer' }} title="Delete">
+              <Trash2 size={15} color="#DC2626" />
+            </button>
+            <button onClick={onClose} className="rounded-md p-1.5 hover:bg-gray-100" style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
+              <X size={18} color="#64748B" />
+            </button>
+          </div>
         </div>
+
+        {/* Delete Confirmation */}
+        {confirmDelete && (
+          <div style={{ padding: '12px 20px', background: '#FEF2F2', borderBottom: '1px solid #FECACA' }}>
+            <p style={{ fontSize: 12, color: '#991B1B', marginBottom: 8 }}>Delete "<strong>{theme.title}</strong>"? This will also remove all milestones and links.</p>
+            <div className="flex gap-2">
+              <button onClick={() => { onDelete(theme); setConfirmDelete(false); }} style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 4, border: 'none', background: '#DC2626', color: '#FFF', cursor: 'pointer' }}>Delete</button>
+              <button onClick={() => setConfirmDelete(false)} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, border: '1px solid #E2E8F0', background: '#FFF', color: '#334155', cursor: 'pointer' }}>Cancel</button>
+            </div>
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="shrink-0 flex border-b overflow-x-auto" style={{ borderColor: '#E2E8F0', padding: '0 20px' }}>
@@ -106,8 +132,7 @@ export function ThemeDetailDrawer({ theme, open, onClose }: Props) {
   );
 }
 
-// ═══ TAB COMPONENTS ═══
-
+// ═══ SHARED ═══
 function KpiCard({ label, value, color }: { label: string; value: string | number; color?: string }) {
   return (
     <div className="rounded-lg border text-center" style={{ borderColor: '#E2E8F0', padding: '12px 8px' }}>
@@ -126,17 +151,16 @@ function FieldRow({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
+// ═══ OVERVIEW ═══
 function OverviewTab({ theme, sc, bsc, pri }: { theme: StrategicTheme; sc: any; bsc: any; pri: any }) {
   return (
     <div>
-      {/* KPI row */}
       <div className="grid grid-cols-3 gap-3 mb-5">
         <KpiCard label="Progress" value={`${theme.progress_pct}%`} />
         <KpiCard label="Goals" value={theme.goal_count} />
         <KpiCard label="Key Results" value={theme.kr_count} />
       </div>
 
-      {/* AI Health Score */}
       {theme.ai_health_score !== null && (
         <div className="rounded-xl mb-5 overflow-hidden" style={{
           background: 'linear-gradient(135deg, #EDE9FE, #F5F3FF)',
@@ -162,7 +186,6 @@ function OverviewTab({ theme, sc, bsc, pri }: { theme: StrategicTheme; sc: any; 
         </div>
       )}
 
-      {/* Field grid */}
       <div className="grid grid-cols-2 gap-x-4">
         <FieldRow label="Vision" value={theme.vision_statement} />
         <FieldRow label="Owner" value={theme.owner_name} />
@@ -179,47 +202,87 @@ function OverviewTab({ theme, sc, bsc, pri }: { theme: StrategicTheme; sc: any; 
   );
 }
 
+// ═══ GOALS & KRS — Real data ═══
 function GoalsTab({ theme }: { theme: StrategicTheme }) {
+  const { data: goals = [], isLoading } = useGoalsForTheme(theme.id);
+
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>Goals ({theme.goal_count})</h3>
+        <h3 style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>Goals ({goals.length})</h3>
         <button style={{ fontSize: 12, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>+ Add Goal</button>
       </div>
-      {theme.goal_count === 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center py-8"><Loader2 size={20} className="animate-spin" color="#94A3B8" /></div>
+      ) : goals.length === 0 ? (
         <p style={{ fontSize: 12, color: '#94A3B8', textAlign: 'center', padding: 32 }}>No goals linked to this theme yet.</p>
       ) : (
-        <p style={{ fontSize: 12, color: '#64748B', textAlign: 'center', padding: 32 }}>
-          {theme.goal_count} goals with {theme.kr_count} key results. Detailed view coming in Stage D.
-        </p>
+        <div className="space-y-2">
+          {goals.map(g => {
+            const statusColor = g.status === 'completed' ? '#16A34A' : g.status === 'at_risk' ? '#D97706' : '#2563EB';
+            return (
+              <div key={g.id} className="rounded-lg border p-3" style={{ borderColor: '#E2E8F0' }}>
+                <div className="flex items-start justify-between mb-2">
+                  <span style={{ fontSize: 12, fontWeight: 600, color: '#0F172A' }}>{g.title}</span>
+                  <span className="inline-flex rounded-full px-2 py-0.5 shrink-0 ml-2" style={{ fontSize: 10, fontWeight: 500, background: statusColor + '18', color: statusColor }}>{g.status}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 rounded-full overflow-hidden" style={{ height: 4, background: '#E2E8F0' }}>
+                    <div className="h-full rounded-full" style={{ width: `${g.progress_pct}%`, background: statusColor }} />
+                  </div>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: '#334155' }}>{g.progress_pct}%</span>
+                  <span className="rounded px-1.5 py-0.5" style={{ fontSize: 9, fontWeight: 500, background: '#F1F5F9', color: '#64748B' }}>{g.kr_count} KRs</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );
 }
 
+// ═══ INITIATIVES — Real data ═══
 function InitiativesTab({ theme }: { theme: StrategicTheme }) {
+  const { data: initiatives = [], isLoading } = useInitiativesForTheme(theme.id);
+
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>Linked Initiatives ({theme.initiative_count})</h3>
+        <h3 style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>Linked Initiatives ({initiatives.length})</h3>
         <button style={{ fontSize: 12, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>+ Link Initiative</button>
       </div>
-      {theme.initiative_count === 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center py-8"><Loader2 size={20} className="animate-spin" color="#94A3B8" /></div>
+      ) : initiatives.length === 0 ? (
         <p style={{ fontSize: 12, color: '#94A3B8', textAlign: 'center', padding: 32 }}>No initiatives linked yet.</p>
       ) : (
-        <p style={{ fontSize: 12, color: '#64748B', textAlign: 'center', padding: 32 }}>
-          {theme.initiative_count} initiatives linked. Detailed view coming in Stage D.
-        </p>
+        <div className="space-y-2">
+          {initiatives.map(ini => (
+            <div key={ini.id} className="rounded-lg border p-3" style={{ borderColor: '#E2E8F0' }}>
+              <div className="flex items-start justify-between mb-1">
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#0F172A' }}>{ini.title}</span>
+                <span className="inline-flex rounded-full px-2 py-0.5 shrink-0 ml-2" style={{ fontSize: 10, fontWeight: 500, background: '#F1F5F9', color: '#475569' }}>{ini.status}</span>
+              </div>
+              <div className="flex items-center gap-3" style={{ fontSize: 10, color: '#64748B' }}>
+                <span>Budget: {formatBudget(ini.budget_allocated)}</span>
+                <span>Spent: {formatBudget(ini.budget_spent)}</span>
+                <span>Progress: {ini.progress_pct}%</span>
+              </div>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
 }
 
+// ═══ FINANCIALS ═══
 function FinancialsTab({ theme }: { theme: StrategicTheme }) {
   const allocated = theme.budget_allocated || 0;
   const spent = theme.budget_spent || 0;
   const remaining = allocated > 0 ? Math.round(((allocated - spent) / allocated) * 100) : 0;
-  const utilization = allocated > 0 ? Math.round((spent / allocated) * 100) : 0;
+  const utilization = theme.planned_budget > 0 ? Math.round((spent / theme.planned_budget) * 100) : 0;
 
   return (
     <div>
@@ -249,24 +312,96 @@ function FinancialsTab({ theme }: { theme: StrategicTheme }) {
   );
 }
 
+// ═══ MILESTONES — Full CRUD ═══
+const MILESTONE_CATEGORIES = ['discover', 'define', 'design', 'deliver'] as const;
+const MILESTONE_STATES = ['not_started', 'in_progress', 'completed', 'missed'] as const;
+const STATE_COLORS: Record<string, string> = { not_started: '#94A3B8', in_progress: '#2563EB', completed: '#16A34A', missed: '#DC2626' };
+
 function MilestonesTab({ theme }: { theme: StrategicTheme }) {
+  const { data: milestones = [], isLoading } = useMilestones(theme.id);
+  const createMilestone = useCreateMilestone();
+  const updateMilestone = useUpdateMilestone();
+  const deleteMilestone = useDeleteMilestone();
+
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [formData, setFormData] = useState({ name: '', category: 'deliver' as string, state: 'not_started' as string, due_date: '' });
+
+  const resetForm = () => { setFormData({ name: '', category: 'deliver', state: 'not_started', due_date: '' }); setShowForm(false); setEditingId(null); };
+
+  const handleSave = () => {
+    if (!formData.name.trim()) return;
+    if (editingId) {
+      updateMilestone.mutate({ id: editingId, themeId: theme.id, updates: { name: formData.name, category: formData.category as any, state: formData.state as any, due_date: formData.due_date || null } });
+    } else {
+      createMilestone.mutate({ theme_id: theme.id, name: formData.name, category: formData.category as any, state: formData.state as any, due_date: formData.due_date || null, sort_order: milestones.length });
+    }
+    resetForm();
+  };
+
+  const startEdit = (m: ThemeMilestone) => {
+    setEditingId(m.id);
+    setFormData({ name: m.name, category: m.category, state: m.state, due_date: m.due_date || '' });
+    setShowForm(true);
+  };
+
+  const inputStyle: React.CSSProperties = { fontSize: 12, padding: '6px 8px', border: '1px solid #E2E8F0', borderRadius: 4, outline: 'none', width: '100%' };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>Milestones ({theme.milestone_count} / 20)</h3>
-        <button style={{ fontSize: 12, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>+ Add Milestone</button>
+        <h3 style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>Milestones ({milestones.length} / 20)</h3>
+        <button onClick={() => { resetForm(); setShowForm(true); }} disabled={milestones.length >= 20} style={{ fontSize: 12, color: milestones.length >= 20 ? '#94A3B8' : '#2563EB', background: 'none', border: 'none', cursor: milestones.length >= 20 ? 'default' : 'pointer', fontWeight: 500 }}>+ Add Milestone</button>
       </div>
-      {theme.milestone_count === 0 ? (
+
+      {/* Inline form */}
+      {showForm && (
+        <div className="rounded-lg border p-3 mb-3" style={{ borderColor: '#DBEAFE', background: '#F8FAFC' }}>
+          <div className="space-y-2">
+            <input style={inputStyle} placeholder="Milestone name *" value={formData.name} onChange={e => setFormData(f => ({ ...f, name: e.target.value }))} autoFocus />
+            <div className="grid grid-cols-3 gap-2">
+              <select style={inputStyle} value={formData.category} onChange={e => setFormData(f => ({ ...f, category: e.target.value }))}>
+                {MILESTONE_CATEGORIES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
+              </select>
+              <select style={inputStyle} value={formData.state} onChange={e => setFormData(f => ({ ...f, state: e.target.value }))}>
+                {MILESTONE_STATES.map(s => <option key={s} value={s}>{s.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</option>)}
+              </select>
+              <input type="date" style={inputStyle} value={formData.due_date} onChange={e => setFormData(f => ({ ...f, due_date: e.target.value }))} />
+            </div>
+            <div className="flex gap-2">
+              <button onClick={handleSave} disabled={!formData.name.trim()} style={{ fontSize: 11, fontWeight: 600, padding: '4px 12px', borderRadius: 4, border: 'none', background: formData.name.trim() ? '#2563EB' : '#94A3B8', color: '#FFF', cursor: formData.name.trim() ? 'pointer' : 'default' }}>{editingId ? 'Update' : 'Add'}</button>
+              <button onClick={resetForm} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 4, border: '1px solid #E2E8F0', background: '#FFF', color: '#334155', cursor: 'pointer' }}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isLoading ? (
+        <div className="flex justify-center py-8"><Loader2 size={20} className="animate-spin" color="#94A3B8" /></div>
+      ) : milestones.length === 0 && !showForm ? (
         <p style={{ fontSize: 12, color: '#94A3B8', textAlign: 'center', padding: 32 }}>No milestones added yet.</p>
       ) : (
-        <p style={{ fontSize: 12, color: '#64748B', textAlign: 'center', padding: 32 }}>
-          {theme.milestone_count} milestones. Detailed view coming in Stage D.
-        </p>
+        <div className="space-y-1">
+          {milestones.map(m => (
+            <div key={m.id} className="flex items-center gap-2 rounded-md px-2 group" style={{ height: 36, borderBottom: '1px solid #F8FAFC' }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: STATE_COLORS[m.state] || '#94A3B8' }} />
+              <span className="flex-1 truncate" style={{ fontSize: 12, fontWeight: 500, color: '#0F172A' }}>{m.name}</span>
+              <span className="shrink-0 rounded px-1.5 py-0.5" style={{ fontSize: 9, background: '#F1F5F9', color: '#64748B' }}>{m.category}</span>
+              <span className="shrink-0" style={{ fontSize: 10, color: '#94A3B8' }}>{m.state.replace(/_/g, ' ')}</span>
+              <button onClick={() => startEdit(m)} className="opacity-0 group-hover:opacity-100 p-0.5" style={{ border: 'none', background: 'none', cursor: 'pointer' }}><Pencil size={12} color="#64748B" /></button>
+              <button onClick={() => deleteMilestone.mutate({ id: m.id, themeId: theme.id })} className="opacity-0 group-hover:opacity-100 p-0.5" style={{ border: 'none', background: 'none', cursor: 'pointer' }}><Trash2 size={12} color="#DC2626" /></button>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
 }
 
+// ═══ ACTIVITY ═══
 function ActivityTab({ theme }: { theme: StrategicTheme }) {
   const activities = [
     { color: '#2563EB', text: 'Theme created', time: theme.created_at },

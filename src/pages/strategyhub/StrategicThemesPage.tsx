@@ -1,11 +1,11 @@
 /**
  * StrategicThemesPage — Full Strategic Themes module
- * Stage C: Stats, toolbar, 4 views, drawer, modal — all wired to live data
+ * Stage D: All CRUD wired to DB, edit/delete, theme groups, toasts
  */
 
 import { useState, useMemo, useCallback } from 'react';
 import { PageChrome } from '@/components/layout/PageChrome';
-import { useThemes, useCreateTheme } from '@/hooks/use-strategic-themes';
+import { useThemes, useCreateTheme, useUpdateTheme, useDeleteTheme } from '@/hooks/use-strategic-themes';
 import type { StrategicTheme, ThemeView } from '@/types/strategic-themes';
 
 import { ThemeStatsStrip } from '@/components/strategy/themes/ThemeStatsStrip';
@@ -20,6 +20,8 @@ import { ThemeCreateModal } from '@/components/strategy/themes/ThemeCreateModal'
 export default function StrategicThemesPage() {
   const { data: themes = [], isLoading } = useThemes();
   const createTheme = useCreateTheme();
+  const updateTheme = useUpdateTheme();
+  const deleteTheme = useDeleteTheme();
 
   // View state
   const [view, setView] = useState<ThemeView>('list');
@@ -35,6 +37,7 @@ export default function StrategicThemesPage() {
   const [selectedTheme, setSelectedTheme] = useState<StrategicTheme | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingTheme, setEditingTheme] = useState<StrategicTheme | null>(null);
 
   // Filtered themes
   const filtered = useMemo(() => {
@@ -54,11 +57,38 @@ export default function StrategicThemesPage() {
   }, []);
 
   const handleCreate = useCallback((data: Partial<StrategicTheme>) => {
-    createTheme.mutate({
-      ...data,
-      vision_id: 'b0000001-0000-0000-0000-000000000001', // required FK
-    } as any);
+    createTheme.mutate(data as any);
   }, [createTheme]);
+
+  const handleEdit = useCallback((theme: StrategicTheme) => {
+    setEditingTheme(theme);
+    setDrawerOpen(false);
+    setModalOpen(true);
+  }, []);
+
+  const handleUpdate = useCallback((data: Partial<StrategicTheme>) => {
+    if (!editingTheme) return;
+    updateTheme.mutate({ id: editingTheme.id, updates: data as any }, {
+      onSuccess: () => {
+        // Refresh drawer data if it was open
+        if (selectedTheme?.id === editingTheme.id) {
+          // The query invalidation will handle this
+        }
+      }
+    });
+    setEditingTheme(null);
+  }, [editingTheme, updateTheme, selectedTheme]);
+
+  const handleDelete = useCallback((theme: StrategicTheme) => {
+    deleteTheme.mutate(theme.id);
+    setDrawerOpen(false);
+    setSelectedTheme(null);
+  }, [deleteTheme]);
+
+  const handleModalClose = useCallback(() => {
+    setModalOpen(false);
+    setEditingTheme(null);
+  }, []);
 
   if (isLoading) {
     return (
@@ -72,13 +102,14 @@ export default function StrategicThemesPage() {
     );
   }
 
+  // Keep selected theme in sync with latest data
+  const currentSelected = selectedTheme ? themes.find(t => t.id === selectedTheme.id) || selectedTheme : null;
+
   return (
     <PageChrome sectionOverride="StrategyHub" titleOverride="Strategic Themes">
       <div style={{ padding: '16px 24px 24px' }}>
-        {/* Stats Strip */}
         <ThemeStatsStrip themes={themes} />
 
-        {/* Toolbar */}
         <ThemeToolbar
           themes={themes}
           view={view}
@@ -93,28 +124,28 @@ export default function StrategicThemesPage() {
           onBscFilterChange={setBscFilter}
           fyFilter={fyFilter}
           onFyFilterChange={setFyFilter}
-          onNewTheme={() => setModalOpen(true)}
+          onNewTheme={() => { setEditingTheme(null); setModalOpen(true); }}
         />
 
-        {/* Views */}
         {view === 'list' && <ThemeListView themes={filtered} onSelect={handleSelect} />}
         {view === 'board' && <ThemeBoardView themes={filtered} onSelect={handleSelect} />}
         {view === 'timeline' && <ThemeTimelineView themes={filtered} onSelect={handleSelect} />}
         {view === 'alignment' && <ThemeAlignmentView />}
       </div>
 
-      {/* Drawer */}
       <ThemeDetailDrawer
-        theme={selectedTheme}
+        theme={currentSelected}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
       />
 
-      {/* Modal */}
       <ThemeCreateModal
         open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSubmit={handleCreate}
+        onClose={handleModalClose}
+        onSubmit={editingTheme ? handleUpdate : handleCreate}
+        initialData={editingTheme || undefined}
       />
     </PageChrome>
   );
