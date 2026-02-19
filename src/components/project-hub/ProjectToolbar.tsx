@@ -11,6 +11,7 @@ interface ProjectToolbarProps {
   departments: string[];
   filters: FilterState;
   onFilterChange: (f: FilterState) => void;
+  onNewProject?: () => void;
 }
 
 export function ProjectToolbar({
@@ -21,6 +22,7 @@ export function ProjectToolbar({
   departments,
   filters,
   onFilterChange,
+  onNewProject,
 }: ProjectToolbarProps) {
   const [localSearch, setLocalSearch] = useState(search);
 
@@ -34,7 +36,7 @@ export function ProjectToolbar({
       <div className="flex items-center gap-2 flex-wrap">
         {/* + New Project */}
         <button
-          onClick={() => toast.info('Create Project modal coming in Phase 4')}
+          onClick={onNewProject}
           className="flex items-center gap-1.5 rounded-md hover:opacity-90 transition-opacity"
           style={{
             height: 34,
