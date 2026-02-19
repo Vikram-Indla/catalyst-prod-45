@@ -8,7 +8,7 @@ const corsHeaders = {
 };
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
-const MODEL = "google/gemini-3-flash-preview";
+const MODEL = "google/gemini-2.5-flash";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -142,7 +142,56 @@ ${context.workload.map((w: any) => `  ${w.name}: ${w.active_items} active items`
         );
       }
 
-      throw new Error(`AI Gateway returned ${geminiResponse.status}`);
+      // Fallback: generate rule-based insights from data when AI is unavailable
+      const pct = context.completion_percent || 0;
+      const fallback = {
+        completionForecast: {
+          projectedDate: new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0],
+          daysFromTarget: 0,
+          confidence: 50,
+          reasoning: "AI gateway temporarily unavailable — estimate based on current progress."
+        },
+        riskAlert: {
+          summary: context.overdue_count > 0
+            ? `${context.overdue_count} overdue item(s) and ${context.blocked_count} blocked item(s) need attention.`
+            : "No major risks detected at this time.",
+          impact: context.overdue_count > 3 ? "High" : context.overdue_count > 0 ? "Medium" : "Low",
+          affectedItems: (context.overdue_items || []).slice(0, 3).map((i: any) => i.item_key),
+          mitigation: "Review overdue and blocked items to unblock progress."
+        },
+        velocity: {
+          currentPerWeek: context.velocity_current || 0,
+          previousPerWeek: context.velocity_previous || 0,
+          trendPercent: context.velocity_previous > 0
+            ? Math.round(((context.velocity_current - context.velocity_previous) / context.velocity_previous) * 100)
+            : 0,
+          weeksToComplete: context.velocity_current > 0 ? Math.ceil(context.remaining_items / context.velocity_current) : null,
+          assessment: `Current velocity is ${context.velocity_current || 0} items/week.`
+        },
+        suggestion: {
+          action: context.blocked_count > 0
+            ? "Prioritize unblocking items to restore flow."
+            : context.overdue_count > 0
+            ? "Address overdue items to stay on track."
+            : "Continue current pace — project is on track.",
+          priority: context.blocked_count > 0 ? "High" : context.overdue_count > 0 ? "Medium" : "Low",
+          reason: "Based on current project metrics (AI analysis temporarily unavailable)."
+        },
+        _meta: {
+          model: "rule-based-fallback",
+          generatedAt: new Date().toISOString(),
+          durationMs: Date.now() - startTime,
+          dataPoints: {
+            totalItems: context.total_items,
+            doneItems: context.done_items,
+            overdueCount: context.overdue_count,
+            blockedCount: context.blocked_count,
+          },
+        },
+      };
+      return new Response(JSON.stringify(fallback), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const geminiData = await geminiResponse.json();
