@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { TopNav } from './shell/TopNav';
 import { Sidebar } from './shell/Sidebar';
 import { ProjectEntry } from './shell/ProjectSwitcher';
+import { CreateProjectModal } from './CreateProjectModal';
 import { toast } from 'sonner';
 
 export function ProjectHubShell() {
@@ -63,7 +64,7 @@ export function ProjectHubShell() {
   return (
     <div className="flex flex-col h-screen" style={{ background: '#F8FAFC' }}>
       {/* Top Nav */}
-      <TopNav onCreateClick={() => toast.info('Create Project modal coming in Phase 4')} />
+      <TopNav onCreateClick={() => setCreateModalOpen(true)} />
 
       {/* Body: sidebar + content */}
       <div className="flex flex-1 overflow-hidden">
@@ -76,9 +77,12 @@ export function ProjectHubShell() {
 
         {/* Content area */}
         <main className="flex-1 min-w-0 overflow-y-auto" style={{ background: '#F8FAFC' }}>
-          <Outlet />
+          <Outlet context={{ onNewProject: () => setCreateModalOpen(true) }} />
         </main>
       </div>
+
+      {/* Create Project Modal */}
+      <CreateProjectModal open={createModalOpen} onClose={() => setCreateModalOpen(false)} />
     </div>
   );
 }

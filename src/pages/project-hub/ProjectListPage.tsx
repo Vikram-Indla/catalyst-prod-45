@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronRight, FolderOpen, Plus, ChevronLeft, ChevronRight as ChevronRightIcon } from 'lucide-react';
@@ -12,6 +12,7 @@ import { FilterState } from '@/components/project-hub/FilterDropdown';
 
 export default function ProjectListPage() {
   const navigate = useNavigate();
+  const { onNewProject } = useOutletContext<{ onNewProject?: () => void }>();
   const queryClient = useQueryClient();
   const [view, setView] = useState<'table' | 'card'>('table');
   const [search, setSearch] = useState('');
@@ -176,6 +177,7 @@ export default function ProjectListPage() {
           departments={departments}
           filters={filters}
           onFilterChange={f => { setFilters(f); setPage(0); }}
+          onNewProject={onNewProject}
         />
       </div>
 
@@ -209,7 +211,7 @@ export default function ProjectListPage() {
           </p>
           {!search && filters.departments.length + filters.statuses.length + filters.healths.length === 0 && (
             <button
-              onClick={() => toast.info('Create Project modal coming in Phase 4')}
+              onClick={onNewProject}
               className="flex items-center gap-1.5 mt-6 rounded-md hover:opacity-90 transition-opacity"
               style={{
                 height: 36,
