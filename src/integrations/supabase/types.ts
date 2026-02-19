@@ -42926,6 +42926,7 @@ export type Database = {
           total_plans: number
         }[]
       }
+      get_project_ai_context: { Args: { p_project_id: string }; Returns: Json }
       get_queue_items: {
         Args: {
           p_limit?: number
