@@ -1,5 +1,5 @@
 /**
- * ThemeStatsStrip — 5 KPI cards computed from live theme data
+ * ThemeStatsStrip — 5 KPI cards with enterprise visual hierarchy
  */
 import { TrendingUp, TrendingDown, Target, DollarSign, AlertTriangle, Layers } from 'lucide-react';
 import type { StrategicTheme } from '@/types/strategic-themes';
@@ -13,7 +13,6 @@ export function ThemeStatsStrip({ themes }: Props) {
   const totalGoals = themes.reduce((s, t) => s + (t.goal_count || 0), 0);
   const totalBudget = themes.reduce((s, t) => s + (t.planned_budget || 0), 0);
 
-  // Count active themes that are at risk or off track
   const atRiskCount = themes.filter(t => {
     if (t.status !== 'active') return false;
     const h = deriveHealthStatus(t);
@@ -25,45 +24,45 @@ export function ThemeStatsStrip({ themes }: Props) {
 
   const cards = [
     {
-      label: 'Active Themes',
+      label: 'ACTIVE THEMES',
       value: active.length,
       sub: `${themes.length} total`,
       icon: Layers,
       iconColor: '#2563EB',
-      iconBg: '#DBEAFE',
+      iconBg: '#EFF6FF',
     },
     {
-      label: 'Avg. Progress',
+      label: 'AVG. PROGRESS',
       value: `${avgProgress}%`,
       sub: `${progressDelta >= 0 ? '↑' : '↓'} ${Math.abs(progressDelta)}% vs target`,
       icon: progressDelta >= 0 ? TrendingUp : TrendingDown,
-      iconColor: progressDelta >= 0 ? '#16A34A' : '#DC2626',
-      iconBg: progressDelta >= 0 ? '#DCFCE7' : '#FEE2E2',
-      subColor: progressDelta >= 0 ? '#16A34A' : '#DC2626',
+      iconColor: progressDelta >= 0 ? '#0D9488' : '#DC2626',
+      iconBg: progressDelta >= 0 ? '#F0FDFA' : '#FEF2F2',
+      subColor: progressDelta >= 0 ? '#0D9488' : '#DC2626',
     },
     {
-      label: 'Total Goals',
+      label: 'TOTAL GOALS',
       value: totalGoals,
       sub: themes.length ? `~${Math.round(totalGoals / themes.length)} per theme` : '—',
       icon: Target,
-      iconColor: '#0D9488',
-      iconBg: '#CCFBF1',
+      iconColor: '#059669',
+      iconBg: '#ECFDF5',
     },
     {
-      label: 'Total Budget (SAR)',
+      label: 'TOTAL BUDGET (SAR)',
       value: formatBudget(totalBudget),
       sub: 'FY2026 planned',
       icon: DollarSign,
-      iconColor: '#D97706',
-      iconBg: '#FEF3C7',
+      iconColor: '#2563EB',
+      iconBg: '#EFF6FF',
     },
     {
-      label: 'Off Track / At Risk',
+      label: 'OFF TRACK / AT RISK',
       value: atRiskCount,
       sub: atRiskCount > 0 ? 'Needs attention' : 'All healthy',
       icon: AlertTriangle,
-      iconColor: atRiskCount > 0 ? '#DC2626' : '#16A34A',
-      iconBg: atRiskCount > 0 ? '#FEE2E2' : '#DCFCE7',
+      iconColor: atRiskCount > 0 ? '#DC2626' : '#059669',
+      iconBg: atRiskCount > 0 ? '#FEF2F2' : '#ECFDF5',
       valueColor: atRiskCount > 0 ? '#DC2626' : undefined,
     },
   ];
@@ -73,29 +72,30 @@ export function ThemeStatsStrip({ themes }: Props) {
       {cards.map(c => (
         <div
           key={c.label}
-          className="rounded-lg border"
+          className="rounded-xl border transition-shadow hover:shadow-md"
           style={{
             background: '#FFFFFF',
             borderColor: '#E2E8F0',
-            padding: '14px 16px',
+            padding: '16px 18px',
           }}
         >
-          <div className="flex items-start justify-between">
-            <div>
-              <p style={{ fontSize: 11, color: '#64748B', fontWeight: 500, marginBottom: 4 }}>{c.label}</p>
-              <p style={{
-                fontSize: 22, fontWeight: 700, color: c.valueColor || '#0F172A',
-                lineHeight: 1.1, marginBottom: 2,
-              }}>{c.value}</p>
-              <p style={{ fontSize: 11, color: (c as any).subColor || '#94A3B8' }}>{c.sub}</p>
-            </div>
+          <div className="flex items-start justify-between mb-2">
+            <span style={{
+              fontSize: 11, fontWeight: 600, color: '#94A3B8',
+              letterSpacing: '0.5px',
+            }}>{c.label}</span>
             <div
               className="rounded-lg flex items-center justify-center shrink-0"
-              style={{ width: 36, height: 36, background: c.iconBg }}
+              style={{ width: 28, height: 28, background: c.iconBg }}
             >
-              <c.icon size={18} color={c.iconColor} strokeWidth={1.8} />
+              <c.icon size={14} color={c.iconColor} strokeWidth={2} />
             </div>
           </div>
+          <p style={{
+            fontSize: 26, fontWeight: 800, color: (c as any).valueColor || '#0F172A',
+            lineHeight: 1.1, marginBottom: 4, letterSpacing: '-0.5px',
+          }}>{c.value}</p>
+          <p style={{ fontSize: 11, color: (c as any).subColor || '#94A3B8' }}>{c.sub}</p>
         </div>
       ))}
     </div>

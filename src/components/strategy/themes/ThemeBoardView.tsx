@@ -1,10 +1,10 @@
 /**
- * ThemeBoardView — Kanban-style card grid for strategic themes
+ * ThemeBoardView — Kanban-style card grid with Linear-style badges
  */
 import type { StrategicTheme } from '@/types/strategic-themes';
 import {
-  STATUS_CONFIG, deriveHealthStatus, formatBudget,
-  getInitials, getAvatarColor,
+  STATUS_CONFIG, BSC_CONFIG, deriveHealthStatus, formatBudget,
+  getInitials, getAvatarColor, getProgressColor,
 } from './theme-utils';
 
 interface Props {
@@ -18,6 +18,7 @@ export function ThemeBoardView({ themes, onSelect }: Props) {
       {themes.map((theme, i) => {
         const health = deriveHealthStatus(theme);
         const sc = STATUS_CONFIG[health];
+        const progressColor = getProgressColor(theme.progress_pct);
 
         return (
           <div
@@ -49,7 +50,8 @@ export function ThemeBoardView({ themes, onSelect }: Props) {
                   <h3 className="truncate" style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 2 }}>{theme.title}</h3>
                   <div className="flex items-center gap-2">
                     <span style={{ fontSize: 10, color: '#94A3B8', fontFamily: 'monospace' }}>FY{theme.fiscal_year}</span>
-                    <span className="inline-flex items-center rounded-full px-2 py-0.5" style={{ fontSize: 10, fontWeight: 500, background: sc.bg, color: sc.text }}>
+                    <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5" style={{ fontSize: 10, fontWeight: 500, background: sc.bg, color: sc.text }}>
+                      <span className="rounded-full" style={{ width: 5, height: 5, background: sc.dot }} />
                       {sc.label}
                     </span>
                   </div>
@@ -83,7 +85,7 @@ export function ThemeBoardView({ themes, onSelect }: Props) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 flex-1 mr-3">
                   <div className="flex-1 rounded-full overflow-hidden" style={{ height: 6, background: '#E2E8F0' }}>
-                    <div className="h-full rounded-full" style={{ width: `${Math.min(theme.progress_pct, 100)}%`, background: sc.dot }} />
+                    <div className="h-full rounded-full" style={{ width: `${Math.min(theme.progress_pct, 100)}%`, background: progressColor }} />
                   </div>
                   <span style={{ fontSize: 11, fontWeight: 600, color: '#334155' }}>{theme.progress_pct}%</span>
                 </div>

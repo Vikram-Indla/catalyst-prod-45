@@ -1,6 +1,6 @@
 /**
  * StrategicThemesPage — Full Strategic Themes module
- * Uses CommandCenterHeader (Catalyst standard) with hideHeader on PageChrome
+ * Header: CommandCenterHeader with breadcrumb prefix, no subtitle
  */
 
 import { useState, useMemo, useCallback } from 'react';
@@ -24,23 +24,18 @@ export default function StrategicThemesPage() {
   const updateTheme = useUpdateTheme();
   const deleteTheme = useDeleteTheme();
 
-  // View state
   const [view, setView] = useState<ThemeView>('list');
-
-  // Filters
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [ownerFilter, setOwnerFilter] = useState('');
   const [bscFilter, setBscFilter] = useState('');
   const [fyFilter, setFyFilter] = useState('');
 
-  // Drawer / Modal
   const [selectedTheme, setSelectedTheme] = useState<StrategicTheme | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTheme, setEditingTheme] = useState<StrategicTheme | null>(null);
 
-  // Filtered themes
   const filtered = useMemo(() => {
     return themes.filter(t => {
       if (search && !t.title.toLowerCase().includes(search.toLowerCase())) return false;
@@ -90,15 +85,10 @@ export default function StrategicThemesPage() {
     setEditingTheme(null);
   }, []);
 
-  const activeCount = themes.filter(t => t.status === 'active').length;
-
   if (isLoading) {
     return (
       <PageChrome hideHeader>
-        <CommandCenterHeader
-          title="Strategic Themes"
-          subtitle="Loading..."
-        />
+        <CommandCenterHeader title="Strategic Themes" />
         <div className="p-6 space-y-3">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="rounded-lg animate-pulse" style={{ height: 48, background: 'hsl(var(--muted))' }} />
@@ -108,21 +98,19 @@ export default function StrategicThemesPage() {
     );
   }
 
-  // Keep selected theme in sync with latest data
   const currentSelected = selectedTheme ? themes.find(t => t.id === selectedTheme.id) || selectedTheme : null;
 
   return (
     <PageChrome hideHeader>
       <CommandCenterHeader
         title="Strategic Themes"
-        subtitle={`Enterprise strategy portfolio — ${themes.length} themes, ${activeCount} active`}
+        subtitle={`StrategyHub › Strategic Themes`}
         timestamp="Updated just now"
         onRefresh={() => refetch()}
         isRefreshing={isFetching}
       />
 
       <div style={{ padding: '16px 24px 24px' }}>
-
         <ThemeStatsStrip themes={themes} />
 
         <ThemeToolbar

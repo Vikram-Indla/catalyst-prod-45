@@ -1,10 +1,11 @@
 /**
- * ThemeDetailDrawer — Right-side slide-in panel with 6 tabs
- * Fixed: proper overlay, real field data, AI health card
+ * ThemeDetailDrawer — 560px right-side overlay with 6 tabs
+ * Fixes: Financials uses planned_budget, enhanced empty states, activity tab, Linear badges
  */
 import { useEffect, useState } from 'react';
-import { X, Pencil, Trash2, Plus, Loader2 } from 'lucide-react';
+import { X, Pencil, Trash2, Plus, Loader2, Target, Rocket, Flag, Clock } from 'lucide-react';
 import type { StrategicTheme, ThemeMilestone } from '@/types/strategic-themes';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   useMilestones, useCreateMilestone, useUpdateMilestone, useDeleteMilestone,
   useGoalsForTheme, useInitiativesForTheme,
@@ -12,6 +13,7 @@ import {
 import {
   STATUS_CONFIG, BSC_CONFIG, PRIORITY_CONFIG,
   deriveHealthStatus, formatBudget, getInitials, getAvatarColor, formatDate, capitalize,
+  formatRelativeTime, getProgressColor,
 } from './theme-utils';
 
 interface Props {
@@ -63,7 +65,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete }: Pr
       <div
         style={{
           position: 'fixed', top: 0, right: 0, bottom: 0, zIndex: 210,
-          width: 560, background: '#FFFFFF',
+          width: 560, maxWidth: '90vw', background: '#FFFFFF',
           transform: open ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 300ms cubic-bezier(0.4, 0, 0.2, 1)',
           display: 'flex', flexDirection: 'column',
@@ -99,7 +101,7 @@ export function ThemeDetailDrawer({ theme, open, onClose, onEdit, onDelete }: Pr
               key={t}
               onClick={() => setTab(t)}
               style={{
-                fontSize: 12, fontWeight: tab === t ? 600 : 400,
+                fontSize: 12, fontWeight: tab === t ? 600 : 500,
                 color: tab === t ? '#2563EB' : '#64748B',
                 padding: '10px 12px', border: 'none', background: 'none',
                 borderBottom: tab === t ? '2px solid #2563EB' : '2px solid transparent',
@@ -128,7 +130,7 @@ function KpiCard({ label, value, color }: { label: string; value: string | numbe
   return (
     <div className="rounded-lg border text-center" style={{ borderColor: '#E2E8F0', padding: '12px 8px' }}>
       <p style={{ fontSize: 20, fontWeight: 700, color: color || '#0F172A', marginBottom: 2 }}>{value}</p>
-      <p style={{ fontSize: 11, color: '#64748B' }}>{label}</p>
+      <p style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</p>
     </div>
   );
 }
@@ -136,8 +138,25 @@ function KpiCard({ label, value, color }: { label: string; value: string | numbe
 function FieldRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex items-start gap-2" style={{ padding: '8px 0', borderBottom: '1px solid #F8FAFC' }}>
-      <span className="shrink-0" style={{ width: 120, fontSize: 11, fontWeight: 500, color: '#64748B' }}>{label}</span>
-      <span style={{ fontSize: 12, color: '#0F172A', flex: 1 }}>{value || <span style={{ color: '#94A3B8' }}>—</span>}</span>
+      <span className="shrink-0" style={{ width: 120, fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</span>
+      <span style={{ fontSize: 12.5, fontWeight: 500, color: '#0F172A', flex: 1 }}>{value || <span style={{ color: '#94A3B8' }}>—</span>}</span>
+    </div>
+  );
+}
+
+function EmptyState({ icon: Icon, title, description, cta }: { icon: any; title: string; description: string; cta?: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center text-center" style={{ padding: '48px 24px' }}>
+      <div className="rounded-xl flex items-center justify-center mb-4" style={{ width: 48, height: 48, background: '#F1F5F9' }}>
+        <Icon size={22} color="#94A3B8" strokeWidth={1.5} />
+      </div>
+      <p style={{ fontSize: 13, fontWeight: 600, color: '#334155', marginBottom: 4 }}>{title}</p>
+      <p style={{ fontSize: 12, color: '#94A3B8', maxWidth: 280, lineHeight: 1.5 }}>{description}</p>
+      {cta && (
+        <button style={{ fontSize: 12, fontWeight: 500, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', marginTop: 12 }}>
+          + {cta}
+        </button>
+      )}
     </div>
   );
 }
@@ -216,7 +235,7 @@ function GoalsTab({ theme }: { theme: StrategicTheme }) {
       {isLoading ? (
         <div className="flex justify-center py-8"><Loader2 size={20} className="animate-spin" color="#94A3B8" /></div>
       ) : goals.length === 0 ? (
-        <p style={{ fontSize: 12, color: '#94A3B8', textAlign: 'center', padding: 32 }}>No goals linked to this theme yet.</p>
+        <EmptyState icon={Target} title="No goals linked yet" description="Goals define measurable objectives under this theme. Add your first goal to start tracking progress." cta="Add Goal" />
       ) : (
         <div className="space-y-2">
           {goals.map((g: any) => {
@@ -255,7 +274,7 @@ function InitiativesTab({ theme }: { theme: StrategicTheme }) {
       {isLoading ? (
         <div className="flex justify-center py-8"><Loader2 size={20} className="animate-spin" color="#94A3B8" /></div>
       ) : initiatives.length === 0 ? (
-        <p style={{ fontSize: 12, color: '#94A3B8', textAlign: 'center', padding: 32 }}>No initiatives linked yet.</p>
+        <EmptyState icon={Rocket} title="No initiatives linked" description="Initiatives are actionable projects that contribute to this theme's goals. Link an initiative to connect execution to strategy." cta="Link Initiative" />
       ) : (
         <div className="space-y-2">
           {initiatives.map((ini: any) => (
@@ -277,19 +296,19 @@ function InitiativesTab({ theme }: { theme: StrategicTheme }) {
   );
 }
 
-// ═══ FINANCIALS ═══
+// ═══ FINANCIALS — uses planned_budget for Allocated ═══
 function FinancialsTab({ theme }: { theme: StrategicTheme }) {
-  const allocated = theme.budget_allocated || 0;
+  const allocated = theme.planned_budget || 0;
   const spent = theme.budget_spent || 0;
-  const remaining = allocated > 0 ? Math.round(((allocated - spent) / allocated) * 100) : 0;
-  const utilization = theme.planned_budget > 0 ? Math.round((spent / theme.planned_budget) * 100) : 0;
+  const remainingPct = allocated > 0 ? Math.round(((allocated - spent) / allocated) * 100) : 0;
+  const utilization = allocated > 0 ? Math.round((spent / allocated) * 100) : 0;
 
   return (
     <div>
       <div className="grid grid-cols-3 gap-3 mb-5">
         <KpiCard label="Allocated" value={formatBudget(allocated)} />
         <KpiCard label="Spent" value={formatBudget(spent)} />
-        <KpiCard label="Remaining" value={`${remaining}%`} color={remaining < 20 ? '#DC2626' : undefined} />
+        <KpiCard label="Remaining" value={`${remainingPct}%`} color={remainingPct < 20 ? '#DC2626' : '#059669'} />
       </div>
       <div className="mb-3">
         <div className="flex items-center justify-between mb-1">
@@ -297,10 +316,12 @@ function FinancialsTab({ theme }: { theme: StrategicTheme }) {
           <span style={{ fontSize: 11, fontWeight: 600, color: '#334155' }}>{utilization}%</span>
         </div>
         <div className="rounded-full overflow-hidden" style={{ height: 8, background: '#E2E8F0' }}>
-          <div className="h-full rounded-full" style={{
-            width: `${Math.min(utilization, 100)}%`,
-            background: utilization > 90 ? '#DC2626' : utilization > 70 ? '#D97706' : '#2563EB',
-          }} />
+          {utilization > 0 && (
+            <div className="h-full rounded-full" style={{
+              width: `${Math.min(utilization, 100)}%`,
+              background: utilization > 90 ? '#DC2626' : utilization > 70 ? '#D97706' : '#2563EB',
+            }} />
+          )}
         </div>
       </div>
       <p style={{ fontSize: 12, color: '#64748B', marginTop: 12 }}>
@@ -357,12 +378,18 @@ function MilestonesTab({ theme }: { theme: StrategicTheme }) {
           <div className="space-y-2">
             <input style={inputStyle} placeholder="Milestone name *" value={formData.name} onChange={e => setFormData(f => ({ ...f, name: e.target.value }))} autoFocus />
             <div className="grid grid-cols-3 gap-2">
-              <select style={inputStyle} value={formData.category} onChange={e => setFormData(f => ({ ...f, category: e.target.value }))}>
-                {MILESTONE_CATEGORIES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
-              </select>
-              <select style={inputStyle} value={formData.state} onChange={e => setFormData(f => ({ ...f, state: e.target.value }))}>
-                {MILESTONE_STATES.map(s => <option key={s} value={s}>{s.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</option>)}
-              </select>
+              <Select value={formData.category} onValueChange={v => setFormData(f => ({ ...f, category: v }))}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent className="z-[9999]">
+                  {MILESTONE_CATEGORIES.map(c => <SelectItem key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Select value={formData.state} onValueChange={v => setFormData(f => ({ ...f, state: v }))}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent className="z-[9999]">
+                  {MILESTONE_STATES.map(s => <SelectItem key={s} value={s}>{s.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</SelectItem>)}
+                </SelectContent>
+              </Select>
               <input type="date" style={inputStyle} value={formData.due_date} onChange={e => setFormData(f => ({ ...f, due_date: e.target.value }))} />
             </div>
             <div className="flex gap-2">
@@ -376,7 +403,7 @@ function MilestonesTab({ theme }: { theme: StrategicTheme }) {
       {isLoading ? (
         <div className="flex justify-center py-8"><Loader2 size={20} className="animate-spin" color="#94A3B8" /></div>
       ) : milestones.length === 0 && !showForm ? (
-        <p style={{ fontSize: 12, color: '#94A3B8', textAlign: 'center', padding: 32 }}>No milestones added yet.</p>
+        <EmptyState icon={Flag} title="No milestones added yet" description="Milestones mark key checkpoints in your theme's timeline. Add milestones to track progress toward completion." cta="Add Milestone" />
       ) : (
         <div className="space-y-1">
           {milestones.map(m => (
@@ -401,21 +428,40 @@ function MilestonesTab({ theme }: { theme: StrategicTheme }) {
 // ═══ ACTIVITY ═══
 function ActivityTab({ theme }: { theme: StrategicTheme }) {
   const activities = [
-    { color: '#2563EB', text: 'Theme created', time: theme.created_at },
-    { color: '#16A34A', text: 'Last updated', time: theme.updated_at },
+    {
+      color: '#2563EB',
+      title: 'Theme created',
+      detail: `Created by ${theme.owner_name || 'System'}`,
+      time: theme.created_at,
+    },
+    ...(theme.updated_at !== theme.created_at ? [{
+      color: '#16A34A',
+      title: 'Last updated',
+      detail: 'Theme details modified',
+      time: theme.updated_at,
+    }] : []),
   ];
 
   return (
     <div>
-      {activities.map((a, i) => (
-        <div key={i} className="flex items-start gap-2.5" style={{ padding: '10px 0', borderBottom: '1px solid #F8FAFC' }}>
-          <div className="shrink-0 rounded-full mt-0.5" style={{ width: 8, height: 8, background: a.color }} />
-          <div>
-            <p style={{ fontSize: 12, color: '#0F172A' }}>{a.text}</p>
-            <p style={{ fontSize: 10, color: '#94A3B8' }}>{new Date(a.time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
-          </div>
+      {activities.length === 0 ? (
+        <EmptyState icon={Clock} title="No activity yet" description="Activity events will appear here as this theme is updated." />
+      ) : (
+        <div className="relative pl-6">
+          {/* Timeline line */}
+          <div className="absolute left-[11px] top-2 bottom-2" style={{ width: 2, background: '#E2E8F0' }} />
+          {activities.map((a, i) => (
+            <div key={i} className="relative flex items-start gap-3 mb-4">
+              <div className="absolute left-[-17px] top-1.5 rounded-full border-2 border-white" style={{ width: 10, height: 10, background: a.color }} />
+              <div>
+                <p style={{ fontSize: 12.5, fontWeight: 500, color: '#0F172A' }}>{a.title}</p>
+                <p style={{ fontSize: 11, color: '#64748B', marginBottom: 2 }}>{a.detail}</p>
+                <p style={{ fontSize: 10, color: '#94A3B8' }}>{formatRelativeTime(a.time)}</p>
+              </div>
+            </div>
+          ))}
         </div>
-      ))}
+      )}
     </div>
   );
 }
