@@ -79,7 +79,7 @@ export function WorkforceOverview() {
   const ending30_90 = data.freeingSoon;
   const capacityAlerts = [
     { color: data.contractsEnding30d > 0 ? 'var(--exec-signal-red, #DC2626)' : 'var(--exec-text-tertiary)', count: String(data.contractsEnding30d), label: 'Ending ≤30d', show: true },
-    { color: 'var(--exec-blue-500, #3B82F6)', count: String(ending30_90), label: 'Ending 30-90d', show: ending30_90 > 0 },
+    { color: ending30_90 > 0 ? 'var(--exec-signal-amber, #D97706)' : 'var(--exec-text-tertiary)', count: String(ending30_90), label: 'Ending 30-90d', show: true },
     { color: overAllocated > 0 ? 'var(--exec-signal-red, #DC2626)' : 'var(--exec-text-tertiary)', count: String(overAllocated), label: 'Over-allocated', show: true },
     { color: vendorConcentration > 50 ? 'var(--exec-signal-amber, #D97706)' : 'var(--exec-text-tertiary)', count: `${vendorConcentration}%`, label: topVendor?.name || 'Top Vendor', show: vendorConcentration > 30 },
   ];

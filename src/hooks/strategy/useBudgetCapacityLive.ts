@@ -286,9 +286,9 @@ export function useCapacityLive() {
         const dept = deptCap.get(r.department_id);
         if (dept) {
           dept.headcount++;
-          if (alloc === 0) { dept.available++; totalAvailable++; }
-          else if (alloc <= 80) { dept.healthy++; totalHealthy++; }
-          else if (alloc <= 100) { dept.atCapacity++; totalAtCapacity++; }
+        if (alloc === 0) { dept.available++; totalAvailable++; }
+          else if (alloc < 100) { dept.healthy++; totalHealthy++; }
+          else if (alloc === 100) { dept.atCapacity++; totalAtCapacity++; }
           else { dept.overAllocated++; totalOverAllocated++; }
         }
 
