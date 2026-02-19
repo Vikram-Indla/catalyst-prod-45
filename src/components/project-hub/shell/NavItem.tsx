@@ -1,4 +1,3 @@
-import { cn } from '@/lib/utils';
 import { LucideIcon } from 'lucide-react';
 
 interface NavItemProps {
@@ -14,22 +13,31 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed }: Nav
     <button
       onClick={onClick}
       title={collapsed ? label : undefined}
-      className={cn(
-        'flex items-center w-full rounded-md transition-colors duration-150',
-        'text-[13px] font-medium',
-        collapsed ? 'justify-center px-0 h-[34px] w-[34px] mx-auto' : 'gap-[10px] px-[10px] h-[34px]',
-        isActive
-          ? 'font-semibold'
-          : 'hover:bg-[#F1F5F9]'
-      )}
+      className="flex items-center w-full rounded-md transition-colors duration-150"
       style={{
+        height: 34,
+        gap: collapsed ? 0 : 10,
+        padding: collapsed ? '0' : '0 10px',
+        justifyContent: collapsed ? 'center' : 'flex-start',
+        width: collapsed ? 34 : '100%',
+        margin: collapsed ? '0 auto' : undefined,
+        fontSize: 13,
+        fontWeight: isActive ? 600 : 500,
         color: isActive ? '#2563EB' : '#334155',
-        background: isActive ? '#EFF6FF' : undefined,
+        background: isActive ? '#EFF6FF' : 'transparent',
         borderLeft: isActive && !collapsed ? '3px solid #2563EB' : '3px solid transparent',
         fontFamily: "'Inter', sans-serif",
+        border: 'none',
+        cursor: 'pointer',
+      }}
+      onMouseEnter={(e) => {
+        if (!isActive) e.currentTarget.style.background = '#F1F5F9';
+      }}
+      onMouseLeave={(e) => {
+        if (!isActive) e.currentTarget.style.background = 'transparent';
       }}
     >
-      <Icon size={20} strokeWidth={1.75} />
+      <Icon size={18} strokeWidth={1.75} />
       {!collapsed && <span className="truncate">{label}</span>}
     </button>
   );

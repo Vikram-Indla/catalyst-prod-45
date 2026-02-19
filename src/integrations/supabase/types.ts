@@ -43236,6 +43236,14 @@ export type Database = {
         Returns: string
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_ph_project_admin: {
+        Args: { _project_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_ph_project_member: {
+        Args: { _project_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_project_admin: {
         Args: { p_project_id: string; p_user_id: string }
         Returns: boolean
