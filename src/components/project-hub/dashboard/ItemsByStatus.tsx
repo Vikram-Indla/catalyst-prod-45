@@ -1,9 +1,9 @@
 const MOCK_STATUSES = [
   { name: 'To Do', count: 3, color: '#A3A3A3' },
-  { name: 'In Progress', count: 8, color: '#2563EB' },
-  { name: 'In Review', count: 5, color: '#D97706' },
-  { name: 'Done', count: 20, color: '#0D9488' },
-  { name: 'Cancelled', count: 2, color: '#D4D4D4' },
+  { name: 'In Progress', count: 5, color: '#2563EB' },
+  { name: 'In Review', count: 4, color: '#D97706' },
+  { name: 'Done', count: 30, color: '#0D9488' },
+  { name: 'Cancelled', count: 3, color: '#D4D4D4' },
 ];
 
 export function ItemsByStatus() {
