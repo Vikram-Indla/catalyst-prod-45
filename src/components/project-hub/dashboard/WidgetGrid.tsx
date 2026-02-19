@@ -43,6 +43,8 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
           <BlockedItems />
         </WidgetCard>
 
+        {projectId ? <LiveAIInsightsCard projectId={projectId} /> : <AIInsightsCard />}
+
         <WidgetCard title="Items by Status">
           <ItemsByStatus />
         </WidgetCard>
@@ -54,8 +56,6 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
         <WidgetCard title="Team Workload">
           <TeamWorkload />
         </WidgetCard>
-
-        {projectId ? <LiveAIInsightsCard projectId={projectId} /> : <AIInsightsCard />}
       </div>
     </>
   );
