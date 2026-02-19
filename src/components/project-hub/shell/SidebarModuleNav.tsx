@@ -1,4 +1,4 @@
-import { LayoutGrid, Star, ChevronsLeft, ChevronsRight, Settings } from 'lucide-react';
+import { LayoutGrid, Star, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { NavItem } from './NavItem';
 
@@ -15,7 +15,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
     <div
       className="flex flex-col h-full flex-shrink-0"
       style={{
-        width: collapsed ? 48 : 192,
+        width: collapsed ? 56 : 192,
         background: '#FFFFFF',
         borderRight: '1px solid #E2E8F0',
         transition: 'width 200ms ease',
@@ -26,11 +26,11 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
       {/* Header */}
       <div
         className="flex items-center gap-2 flex-shrink-0"
-        style={{ padding: collapsed ? '12px 7px' : '12px 10px', borderBottom: '1px solid #E2E8F0' }}
+        style={{ padding: collapsed ? '12px 10px' : '12px 10px', borderBottom: '1px solid #E2E8F0' }}
       >
         <div
           className="flex items-center justify-center rounded-full flex-shrink-0"
-          style={{ width: 32, height: 32, background: '#2563EB', color: '#FFFFFF', fontSize: 12, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}
+          style={{ width: 28, height: 28, background: '#2563EB', color: '#FFFFFF', fontSize: 11, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}
         >
           PH
         </div>
@@ -66,7 +66,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
           collapsed={collapsed}
         />
 
-        {/* Favorites section placeholder */}
+        {/* Favorites section */}
         {!collapsed && (
           <div className="pt-3">
             <div
@@ -91,8 +91,6 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
           </div>
         )}
       </div>
-
-      {/* Settings pinned to bottom - removed, no module-level settings route */}
     </div>
   );
 }

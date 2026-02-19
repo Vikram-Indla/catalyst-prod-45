@@ -13,6 +13,7 @@ import {
   ChevronsRight,
   ChevronDown,
   Settings,
+  ArrowLeft,
 } from 'lucide-react';
 import { NavItem } from './NavItem';
 import { ProjectSwitcher, ProjectEntry } from './ProjectSwitcher';
@@ -34,10 +35,6 @@ const PROJECT_NAV = [
   { icon: GanttChart, label: 'Timeline', path: 'timeline' },
   { icon: Tag, label: 'Releases', path: 'releases' },
   { icon: BarChart3, label: 'Reports', path: 'reports' },
-];
-
-const INTELLIGENCE_NAV = [
-  { icon: Sparkles, label: 'AI Assist', path: 'ai-assist' },
 ];
 
 export function SidebarProjectNav({
@@ -62,7 +59,7 @@ export function SidebarProjectNav({
     <div
       className="flex flex-col h-full flex-shrink-0"
       style={{
-        width: collapsed ? 48 : 192,
+        width: collapsed ? 56 : 192,
         background: '#FFFFFF',
         borderRight: '1px solid #E2E8F0',
         transition: 'width 200ms ease',
@@ -74,17 +71,17 @@ export function SidebarProjectNav({
       <div className="relative flex-shrink-0" style={{ borderBottom: '1px solid #E2E8F0' }}>
         <div
           className="flex items-center gap-2"
-          style={{ padding: collapsed ? '12px 7px' : '12px 10px' }}
+          style={{ padding: collapsed ? '12px 10px' : '12px 10px' }}
         >
           {/* Project icon */}
           <div
             className="flex items-center justify-center rounded flex-shrink-0"
             style={{
-              width: 32,
-              height: 32,
+              width: 28,
+              height: 28,
               background: projectColor,
               color: '#FFFFFF',
-              fontSize: 11,
+              fontSize: 10,
               fontWeight: 700,
               borderRadius: 6,
               fontFamily: "'Sora', sans-serif",
@@ -146,8 +143,31 @@ export function SidebarProjectNav({
         />
       </div>
 
+      {/* Back to all projects */}
+      <div className="px-1.5 pt-2">
+        <button
+          onClick={() => navigate('/project-hub/projects')}
+          className="flex items-center gap-1.5 w-full rounded-md transition-colors hover:bg-[#F1F5F9]"
+          style={{
+            height: 30,
+            padding: collapsed ? '0' : '0 10px',
+            fontSize: 12,
+            color: '#64748B',
+            fontWeight: 500,
+            border: 'none',
+            background: 'transparent',
+            cursor: 'pointer',
+            justifyContent: collapsed ? 'center' : 'flex-start',
+          }}
+          title="All Projects"
+        >
+          <ArrowLeft size={14} strokeWidth={1.75} />
+          {!collapsed && <span>All Projects</span>}
+        </button>
+      </div>
+
       {/* Project nav */}
-      <div className="flex-1 py-2 px-1.5 space-y-0.5 overflow-y-auto">
+      <div className="flex-1 py-1 px-1.5 space-y-0.5 overflow-y-auto">
         {/* PROJECT section */}
         {!collapsed && (
           <div
@@ -157,7 +177,7 @@ export function SidebarProjectNav({
               color: '#64748B',
               letterSpacing: '0.05em',
               textTransform: 'uppercase' as const,
-              padding: '0 10px 4px',
+              padding: '8px 10px 4px',
             }}
           >
             Project
@@ -177,7 +197,6 @@ export function SidebarProjectNav({
         {/* INTELLIGENCE section */}
         {!collapsed && (
           <div
-            className="pt-3"
             style={{
               fontSize: 11,
               fontWeight: 600,
@@ -190,16 +209,44 @@ export function SidebarProjectNav({
             Intelligence
           </div>
         )}
-        {INTELLIGENCE_NAV.map(item => (
-          <NavItem
-            key={item.path}
-            icon={item.icon}
-            label={item.label}
-            isActive={isPathActive(item.path)}
-            onClick={() => navigate(`${basePath}/${item.path}`)}
-            collapsed={collapsed}
-          />
-        ))}
+        {/* AI Assist with badge */}
+        <button
+          onClick={() => navigate(`${basePath}/ai-assist`)}
+          title={collapsed ? 'AI Assist' : undefined}
+          className={`flex items-center w-full rounded-md transition-colors duration-150 text-[13px] font-medium ${
+            collapsed ? 'justify-center px-0 h-[34px] w-[34px] mx-auto' : 'gap-[10px] px-[10px] h-[34px]'
+          } ${isPathActive('ai-assist') ? 'font-semibold' : 'hover:bg-[#F1F5F9]'}`}
+          style={{
+            color: isPathActive('ai-assist') ? '#2563EB' : '#334155',
+            background: isPathActive('ai-assist') ? '#EFF6FF' : undefined,
+            borderLeft: isPathActive('ai-assist') && !collapsed ? '3px solid #2563EB' : '3px solid transparent',
+            fontFamily: "'Inter', sans-serif",
+            border: 'none',
+            cursor: 'pointer',
+          }}
+        >
+          <Sparkles size={20} strokeWidth={1.75} />
+          {!collapsed && (
+            <>
+              <span className="truncate">AI Assist</span>
+              <span
+                className="ml-auto flex-shrink-0"
+                style={{
+                  fontSize: 9,
+                  fontWeight: 700,
+                  color: '#FFFFFF',
+                  background: '#2563EB',
+                  borderRadius: 4,
+                  padding: '1px 5px',
+                  lineHeight: '14px',
+                  letterSpacing: '0.03em',
+                }}
+              >
+                AI
+              </span>
+            </>
+          )}
+        </button>
       </div>
 
       {/* Settings pinned to bottom */}
