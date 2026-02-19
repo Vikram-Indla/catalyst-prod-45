@@ -13,12 +13,12 @@ import type { OkrStatus } from '@/types/strategy';
 
 const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
 
-function getCellStyle(status: OkrStatus, isOverall = false): { bg: string; text: string; weight: number } {
+function getCellStyle(status: OkrStatus, isOverall = false): { bg: string; text: string; weight: number; borderLeft?: string } {
   switch (status) {
     case 'on_track': return { bg: isOverall ? '#BFDBFE' : '#DBEAFE', text: '#1E40AF', weight: 600 };
-    case 'at_risk': return { bg: isOverall ? '#FDE68A' : '#FEF3C7', text: '#92400E', weight: 600 };
-    case 'off_track': return { bg: isOverall ? '#FECACA' : '#FEE2E2', text: '#991B1B', weight: 700 };
-    default: return { bg: '#F8FAFC', text: '#94A3B8', weight: 400 };
+    case 'at_risk': return { bg: isOverall ? '#E2E8F0' : '#F1F5F9', text: isOverall ? '#92400E' : '#B45309', weight: 600, borderLeft: '3px solid #D97706' };
+    case 'off_track': return { bg: isOverall ? '#FECACA' : '#FEF2F2', text: isOverall ? '#7F1D1D' : '#991B1B', weight: 700, borderLeft: '3px solid #DC2626' };
+    default: return { bg: 'transparent', text: '#94A3B8', weight: 400 };
   }
 }
 
@@ -151,6 +151,7 @@ export function OkrHeatmap() {
                         fontSize: 13, fontWeight: style.weight,
                         cursor: cell.pct !== null ? 'pointer' : 'default',
                         transition: 'transform 120ms, background 120ms',
+                        borderLeft: style.borderLeft,
                       }}
                       onMouseEnter={(e) => { if (cell.pct !== null) e.currentTarget.style.transform = 'scale(1.05)'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
@@ -164,7 +165,7 @@ export function OkrHeatmap() {
                   background: getCellStyle(row.overall.status, true).bg,
                   color: getCellStyle(row.overall.status, true).text,
                   fontSize: 13, fontWeight: getCellStyle(row.overall.status, true).weight,
-                  borderLeft: '2px solid var(--exec-border-strong, #CBD5E1)',
+                  borderLeft: getCellStyle(row.overall.status, true).borderLeft || '2px solid var(--exec-border-strong, #CBD5E1)',
                 }}>
                   {row.overall.pct ?? '—'}
                 </td>
