@@ -7,6 +7,7 @@
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import '@/styles/strategy-tokens.css';
+import '@/styles/exec-palette.css';
 import { useStrategyPreferences } from '@/hooks/useStrategyPreferences';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { StrategyRoomActions } from '@/components/strategy/StrategyRoomActions';

@@ -8,6 +8,9 @@ import { useMemo } from 'react';
 import { useInvestmentAllocations, useStrategicThemes } from '@/hooks/strategy/useStrategyData';
 import { formatThemeName } from '@/utils/strategy/formatThemeName';
 
+/* Blue monochrome shades — sorted by allocation size */
+const BLUE_SHADES = ['#1E3A5F', '#1E40AF', '#3B82F6', '#93C5FD', '#DBEAFE'];
+
 function formatSAR(amount: number): string {
   if (amount >= 1_000_000_000) return `${(amount / 1_000_000_000).toFixed(1)}B`;
   if (amount >= 1_000_000) return `${(amount / 1_000_000).toFixed(0)}M`;
@@ -22,13 +25,14 @@ export function InvestmentAllocation() {
 
   const segments = useMemo(() => {
     if (!allocations || !themes) return [];
-    return allocations.map(a => {
+    const sorted = [...allocations].sort((a, b) => (Number(b.allocated_pct) || 0) - (Number(a.allocated_pct) || 0));
+    return sorted.map((a, i) => {
       const theme = themes.find(t => t.id === a.theme_id);
       return {
         name: theme?.title ? formatThemeName(theme.title) : 'Unknown',
         pct: Number(a.allocated_pct) || 0,
         amount: formatSAR(Number(a.allocated_amount) || 0),
-        color: theme?.color || '#2563EB',
+        color: BLUE_SHADES[i] || BLUE_SHADES[BLUE_SHADES.length - 1],
       };
     });
   }, [allocations, themes]);
@@ -53,7 +57,7 @@ export function InvestmentAllocation() {
 
   if (segments.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'var(--catalyst-text-tertiary)' }}>
+      <div className="flex flex-col items-center justify-center h-full gap-2" style={{ color: 'var(--exec-text-tertiary)' }}>
         <span style={{ fontSize: 12 }}>No investment data</span>
       </div>
     );
@@ -70,7 +74,6 @@ export function InvestmentAllocation() {
 
   return (
     <div className="flex flex-col items-center">
-      {/* Donut */}
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
         {segments.map(seg => {
           const dashArray = (seg.pct / 100) * circumference;
@@ -91,22 +94,21 @@ export function InvestmentAllocation() {
             />
           );
         })}
-        <text x={cx} y={cy - 4} textAnchor="middle" dominantBaseline="central" style={{ fontSize: 12, fontWeight: 700, fill: 'var(--catalyst-text-primary)' }}>
+        <text x={cx} y={cy - 4} textAnchor="middle" dominantBaseline="central" style={{ fontSize: 12, fontWeight: 700, fill: 'var(--exec-text-primary)' }}>
           SAR {formatSAR(total)}
         </text>
-        <text x={cx} y={cy + 10} textAnchor="middle" dominantBaseline="central" style={{ fontSize: 10, fill: 'var(--catalyst-text-tertiary)' }}>
+        <text x={cx} y={cy + 10} textAnchor="middle" dominantBaseline="central" style={{ fontSize: 10, fill: 'var(--exec-text-tertiary)' }}>
           Total
         </text>
       </svg>
 
-      {/* Legend */}
       <div className="w-full mt-3 space-y-1.5">
         {segments.map(seg => (
           <div key={seg.name} className="flex items-center gap-2">
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: seg.color, flexShrink: 0 }} />
-            <span style={{ flex: 1, fontSize: 11, color: 'var(--catalyst-text-secondary)' }}>{seg.name}</span>
-            <span style={{ fontSize: 11, color: 'var(--catalyst-text-primary)' }}>{seg.amount}</span>
-            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--catalyst-text-primary)', width: 30, textAlign: 'right' }}>{seg.pct}%</span>
+            <span style={{ flex: 1, fontSize: 11, color: 'var(--exec-text-secondary)' }}>{seg.name}</span>
+            <span style={{ fontSize: 11, color: 'var(--exec-text-primary)' }}>{seg.amount}</span>
+            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--exec-text-primary)', width: 30, textAlign: 'right' }}>{seg.pct}%</span>
           </div>
         ))}
       </div>

@@ -15,6 +15,11 @@ interface DialData {
   color: string;
 }
 
+function getDialColor(v: number): string {
+  if (v < 40) return 'var(--exec-signal-red, #DC2626)';
+  return 'var(--exec-blue-500, #3B82F6)';
+}
+
 export function ExecutionDials() {
   const { data: goals, isLoading: gL } = useGoals();
   const { data: krs, isLoading: kL } = useKeyResults();
@@ -43,30 +48,10 @@ export function ExecutionDials() {
     const onTrackGoals = goals?.filter(g => g.status === 'on_track' || g.status === 'completed').length || 0;
 
     return [
-      {
-        label: 'Initiatives',
-        value: initAvg,
-        subtitle: `${initiatives?.length || 0} tracked`,
-        color: '#2563EB',
-      },
-      {
-        label: 'Goals',
-        value: goalAvg,
-        subtitle: `${onTrackGoals}/${goals?.length || 0} on track`,
-        color: '#0D9488',
-      },
-      {
-        label: 'Key Results',
-        value: krAvg,
-        subtitle: `${krs?.length || 0} measured`,
-        color: '#D97706',
-      },
-      {
-        label: 'Execution',
-        value: overallAvg,
-        subtitle: 'Overall velocity',
-        color: '#16A34A',
-      },
+      { label: 'Initiatives', value: initAvg, subtitle: `${initiatives?.length || 0} tracked`, color: getDialColor(initAvg) },
+      { label: 'Goals', value: goalAvg, subtitle: `${onTrackGoals}/${goals?.length || 0} on track`, color: getDialColor(goalAvg) },
+      { label: 'Key Results', value: krAvg, subtitle: `${krs?.length || 0} measured`, color: getDialColor(krAvg) },
+      { label: 'Execution', value: overallAvg, subtitle: 'Overall velocity', color: getDialColor(overallAvg) },
     ];
   }, [goals, krs, initiatives]);
 
@@ -84,25 +69,16 @@ export function ExecutionDials() {
   }
 
   return (
-    <div
-      className="grid gap-4"
-      style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}
-    >
+    <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
       {dials.map(dial => (
         <div key={dial.label} className="flex flex-col items-center">
           <div style={{ opacity: 0.9 }}>
-            <CircularGauge
-              value={dial.value}
-              size={100}
-              strokeWidth={8}
-              color={dial.color}
-              animated
-            />
+            <CircularGauge value={dial.value} size={100} strokeWidth={8} color={dial.color} animated />
           </div>
-          <span style={{ fontSize: 11, color: 'var(--catalyst-text-secondary)', marginTop: 6, textAlign: 'center' }}>
+          <span style={{ fontSize: 11, color: 'var(--exec-text-secondary)', marginTop: 6, textAlign: 'center' }}>
             {dial.label}
           </span>
-          <span style={{ fontSize: 10, color: 'var(--catalyst-text-secondary)' }}>
+          <span style={{ fontSize: 10, color: 'var(--exec-text-tertiary)' }}>
             {dial.subtitle}
           </span>
         </div>
