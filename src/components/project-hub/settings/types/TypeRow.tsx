@@ -2,6 +2,12 @@ import { Zap, Layers, Bookmark, Bug, CheckSquare, CornerDownRight, MoreHorizonta
 
 const ICON_MAP: Record<string, React.ComponentType<any>> = {
   Zap, Layers, Bookmark, Bug, CheckSquare, CornerDownRight,
+  'zap': Zap,
+  'layers': Layers,
+  'bookmark': Bookmark,
+  'bug': Bug,
+  'check-square': CheckSquare,
+  'corner-down-right': CornerDownRight,
 };
 
 const LEVEL_STYLES: Record<string, { bg: string; text: string }> = {
@@ -9,6 +15,10 @@ const LEVEL_STYLES: Record<string, { bg: string; text: string }> = {
   Mid: { bg: '#EFF6FF', text: '#2563EB' },
   Work: { bg: '#F1F5F9', text: '#334155' },
   Child: { bg: '#F1F5F9', text: '#94A3B8' },
+  top: { bg: '#F5F3FF', text: '#7C3AED' },
+  mid: { bg: '#EFF6FF', text: '#2563EB' },
+  work: { bg: '#F1F5F9', text: '#334155' },
+  child: { bg: '#F1F5F9', text: '#94A3B8' },
 };
 
 interface TypeRowProps {
@@ -24,8 +34,9 @@ interface TypeRowProps {
 }
 
 export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, featureLayerEnabled, itemCount, onViewFields }: TypeRowProps) {
-  const IconComp = ICON_MAP[icon] || Zap;
-  const ls = LEVEL_STYLES[level] || LEVEL_STYLES.Work;
+  const IconComp = ICON_MAP[icon] || ICON_MAP[icon.toLowerCase()] || Zap;
+  const normalizedLevel = level.charAt(0).toUpperCase() + level.slice(1).toLowerCase();
+  const ls = LEVEL_STYLES[normalizedLevel] || LEVEL_STYLES[level] || LEVEL_STYLES.Work;
   const isDisabledFeature = isFeatureType && !featureLayerEnabled;
 
   return (
@@ -51,7 +62,7 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
         className="flex-shrink-0 rounded-full"
         style={{ fontSize: 11, fontWeight: 600, padding: '2px 10px', background: ls.bg, color: ls.text }}
       >
-        {level}
+        {normalizedLevel}
       </span>
 
       {/* Item count or disabled label */}
