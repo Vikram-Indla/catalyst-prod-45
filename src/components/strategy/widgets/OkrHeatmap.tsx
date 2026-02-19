@@ -13,13 +13,20 @@ import type { OkrStatus } from '@/types/strategy';
 
 const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
 
-function getCellStyle(status: OkrStatus): { bg: string; text: string; weight: number } {
+function getCellStyle(status: OkrStatus, isOverall = false): { bg: string; text: string; weight: number } {
   switch (status) {
-    case 'on_track': return { bg: 'var(--exec-blue-50, #EFF6FF)', text: 'var(--exec-blue-700, #1E40AF)', weight: 600 };
-    case 'at_risk': return { bg: 'var(--exec-signal-amber-bg, #FFFBEB)', text: 'var(--exec-signal-amber, #D97706)', weight: 600 };
-    case 'off_track': return { bg: 'var(--exec-signal-red-bg, #FEF2F2)', text: 'var(--exec-signal-red, #DC2626)', weight: 700 };
-    default: return { bg: 'transparent', text: 'var(--exec-text-tertiary, #64748B)', weight: 400 };
+    case 'on_track': return { bg: isOverall ? '#BFDBFE' : '#DBEAFE', text: '#1E40AF', weight: 600 };
+    case 'at_risk': return { bg: isOverall ? '#FDE68A' : '#FEF3C7', text: '#92400E', weight: 600 };
+    case 'off_track': return { bg: isOverall ? '#FECACA' : '#FEE2E2', text: '#991B1B', weight: 700 };
+    default: return { bg: '#F8FAFC', text: '#94A3B8', weight: 400 };
   }
+}
+
+function getThemeDotColor(overallPct: number | null): string {
+  if (overallPct === null) return '#94A3B8';
+  if (overallPct >= 70) return '#1E40AF';
+  if (overallPct >= 40) return '#D97706';
+  return '#DC2626';
 }
 
 function pctToStatus(pct: number | null): OkrStatus {
@@ -125,13 +132,13 @@ export function OkrHeatmap() {
               <tr key={row.themeId}>
                 <td style={{ fontSize: 11, fontWeight: 600, color: 'var(--exec-text-primary)', padding: '6px 8px' }}>
                   <div className="flex items-center gap-2">
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#1E40AF', flexShrink: 0 }} />
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: getThemeDotColor(row.overall.pct), flexShrink: 0 }} />
                     {formatThemeName(row.themeName)}
                   </div>
                 </td>
                 {QUARTERS.map(q => {
                   const cell = row.quarters[q];
-                  const style = getCellStyle(cell.status);
+                  const style = getCellStyle(cell.status, false);
                   return (
                     <td
                       key={q}
@@ -154,9 +161,9 @@ export function OkrHeatmap() {
                 })}
                 <td style={{
                   textAlign: 'center', padding: '8px 6px', borderRadius: 6,
-                  background: getCellStyle(row.overall.status).bg,
-                  color: getCellStyle(row.overall.status).text,
-                  fontSize: 13, fontWeight: 600,
+                  background: getCellStyle(row.overall.status, true).bg,
+                  color: getCellStyle(row.overall.status, true).text,
+                  fontSize: 13, fontWeight: getCellStyle(row.overall.status, true).weight,
                   borderLeft: '2px solid var(--exec-border-strong, #CBD5E1)',
                 }}>
                   {row.overall.pct ?? '—'}
