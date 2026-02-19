@@ -16,9 +16,11 @@ import {
 
 function getUtilizationColor(pct: number): string {
   if (pct === 0) return 'var(--exec-text-muted, #94A3B8)';
-  if (pct < 100) return 'var(--exec-signal-amber, #D97706)';
-  if (pct === 100) return 'var(--exec-confirm-green, #16A34A)';
-  return 'var(--exec-signal-red, #DC2626)';
+  if (pct > 100) return 'var(--exec-signal-red, #DC2626)';
+  if (pct >= 95) return 'var(--exec-blue-700, #1E40AF)';
+  if (pct >= 80) return 'var(--exec-blue-500, #3B82F6)';
+  if (pct > 0) return 'var(--exec-signal-amber, #D97706)';
+  return '#94A3B8';
 }
 
 function getUtilizationLabel(pct: number): string {
