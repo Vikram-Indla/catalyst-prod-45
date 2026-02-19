@@ -1,10 +1,11 @@
 /**
  * ThemeListView — Enterprise data table for strategic themes
  */
+import { useState, useMemo } from 'react';
 import type { StrategicTheme } from '@/types/strategic-themes';
 import {
   STATUS_CONFIG, BSC_CONFIG, deriveHealthStatus,
-  formatBudget, getInitials, getAvatarColor, shortId,
+  formatBudget, getInitials, getAvatarColor, formatThemeId,
 } from './theme-utils';
 
 interface Props {
@@ -12,7 +13,49 @@ interface Props {
   onSelect: (theme: StrategicTheme) => void;
 }
 
+type SortField = 'title' | 'progress_pct' | 'goal_count' | 'planned_budget';
+type SortDir = 'asc' | 'desc';
+
 export function ThemeListView({ themes, onSelect }: Props) {
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [sortField, setSortField] = useState<SortField | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>('asc');
+  const [page, setPage] = useState(1);
+  const perPage = 25;
+
+  const toggleSort = (field: SortField) => {
+    if (sortField === field) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortField(field); setSortDir('asc'); }
+  };
+
+  const sorted = useMemo(() => {
+    if (!sortField) return themes;
+    return [...themes].sort((a, b) => {
+      const av = (a as any)[sortField] ?? 0;
+      const bv = (b as any)[sortField] ?? 0;
+      const cmp = typeof av === 'string' ? av.localeCompare(bv) : av - bv;
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
+  }, [themes, sortField, sortDir]);
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / perPage));
+  const paged = sorted.slice((page - 1) * perPage, page * perPage);
+
+  const toggleCheck = (id: string) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAll = () => {
+    if (selected.size === paged.length) setSelected(new Set());
+    else setSelected(new Set(paged.map(t => t.id)));
+  };
+
+  const sortIndicator = (field: SortField) => sortField === field ? (sortDir === 'asc' ? ' ↑' : ' ↓') : '';
+
   return (
     <div className="rounded-xl border overflow-hidden" style={{ background: '#FFFFFF', borderColor: '#E2E8F0' }}>
       {/* Header */}
@@ -25,14 +68,19 @@ export function ThemeListView({ themes, onSelect }: Props) {
           padding: '0 12px',
         }}
       >
-        <div><input type="checkbox" style={{ width: 14, height: 14, accentColor: '#2563EB' }} /></div>
-        {['Theme', 'Status', 'Progress', 'Goals', 'KRs', 'Budget (SAR)', 'Owner', 'BSC'].map(h => (
-          <div key={h} style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>{h}</div>
-        ))}
+        <div><input type="checkbox" checked={selected.size === paged.length && paged.length > 0} onChange={toggleAll} style={{ width: 14, height: 14, accentColor: '#2563EB' }} /></div>
+        <div onClick={() => toggleSort('title')} className="cursor-pointer select-none" style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Theme{sortIndicator('title')}</div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Status</div>
+        <div onClick={() => toggleSort('progress_pct')} className="cursor-pointer select-none" style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Progress{sortIndicator('progress_pct')}</div>
+        <div onClick={() => toggleSort('goal_count')} className="cursor-pointer select-none" style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Goals{sortIndicator('goal_count')}</div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>KRs</div>
+        <div onClick={() => toggleSort('planned_budget')} className="cursor-pointer select-none" style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Budget{sortIndicator('planned_budget')}</div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Owner</div>
+        <div style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.03em' }}>BSC</div>
       </div>
 
       {/* Rows */}
-      {themes.map(theme => {
+      {paged.map(theme => {
         const health = deriveHealthStatus(theme);
         const sc = STATUS_CONFIG[health];
         const bsc = theme.bsc_perspective ? BSC_CONFIG[theme.bsc_perspective] : null;
@@ -53,14 +101,14 @@ export function ThemeListView({ themes, onSelect }: Props) {
           >
             {/* Checkbox */}
             <div onClick={e => e.stopPropagation()}>
-              <input type="checkbox" style={{ width: 14, height: 14, accentColor: '#2563EB' }} />
+              <input type="checkbox" checked={selected.has(theme.id)} onChange={() => toggleCheck(theme.id)} style={{ width: 14, height: 14, accentColor: '#2563EB' }} />
             </div>
 
             {/* Theme */}
             <div className="flex items-center gap-2 min-w-0">
               <div className="shrink-0 rounded-full" style={{ width: 10, height: 10, background: theme.color }} />
               <span className="truncate" style={{ fontSize: 12.5, fontWeight: 600, color: '#0F172A' }}>{theme.title}</span>
-              <span className="shrink-0" style={{ fontSize: 10.5, color: '#94A3B8', fontFamily: 'monospace' }}>{shortId(theme.id)}</span>
+              <span className="shrink-0" style={{ fontSize: 10.5, color: '#94A3B8', fontFamily: 'monospace' }}>{formatThemeId(theme.sort_order)}</span>
             </div>
 
             {/* Status pill */}
@@ -121,6 +169,41 @@ export function ThemeListView({ themes, onSelect }: Props) {
       {themes.length === 0 && (
         <div className="flex items-center justify-center" style={{ height: 120, color: '#94A3B8', fontSize: 13 }}>
           No themes match the current filters.
+        </div>
+      )}
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between px-4 py-3 border-t" style={{ borderColor: '#E2E8F0' }}>
+        <span style={{ fontSize: 12, color: '#64748B' }}>
+          Showing {Math.min((page - 1) * perPage + 1, sorted.length)}–{Math.min(page * perPage, sorted.length)} of {sorted.length} themes
+        </span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            style={{ fontSize: 12, padding: '2px 8px', borderRadius: 4, border: '1px solid #E2E8F0', background: '#FFF', color: page === 1 ? '#CBD5E1' : '#334155', cursor: page === 1 ? 'default' : 'pointer' }}
+          >←</button>
+          <span style={{ fontSize: 12, color: '#64748B' }}>Page {page} of {totalPages}</span>
+          <button
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            style={{ fontSize: 12, padding: '2px 8px', borderRadius: 4, border: '1px solid #E2E8F0', background: '#FFF', color: page === totalPages ? '#CBD5E1' : '#334155', cursor: page === totalPages ? 'default' : 'pointer' }}
+          >→</button>
+        </div>
+      </div>
+
+      {/* Bulk action bar */}
+      {selected.size > 0 && (
+        <div style={{
+          position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+          background: '#0F172A', color: '#FFFFFF', borderRadius: 10,
+          padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 12,
+          boxShadow: '0 8px 30px rgba(0,0,0,0.25)', zIndex: 50,
+        }}>
+          <span style={{ fontSize: 13, fontWeight: 500 }}>{selected.size} selected</span>
+          <button style={{ fontSize: 11, background: 'rgba(255,255,255,0.1)', padding: '4px 12px', borderRadius: 4, border: 'none', color: '#FFF', cursor: 'pointer' }}>Change Status</button>
+          <button style={{ fontSize: 11, background: 'rgba(255,255,255,0.1)', padding: '4px 12px', borderRadius: 4, border: 'none', color: '#FFF', cursor: 'pointer' }}>Assign Owner</button>
+          <button style={{ fontSize: 11, background: 'rgba(239,68,68,0.7)', padding: '4px 12px', borderRadius: 4, border: 'none', color: '#FFF', cursor: 'pointer' }}>Delete</button>
         </div>
       )}
     </div>

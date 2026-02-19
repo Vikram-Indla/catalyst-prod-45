@@ -13,7 +13,6 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 const YEAR = 2026;
 const YEAR_START = new Date(YEAR, 0, 1).getTime();
 const YEAR_END = new Date(YEAR, 11, 31).getTime();
-const TOTAL_DAYS = (YEAR_END - YEAR_START) / (1000 * 60 * 60 * 24);
 
 function dateToPercent(dateStr: string | null): number | null {
   if (!dateStr) return null;
@@ -27,6 +26,10 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
   const today = new Date();
   const todayPct = today.getFullYear() === YEAR ? dateToPercent(today.toISOString()) : null;
 
+  // Only show themes with dates
+  const withDates = themes.filter(t => t.start_date && t.target_completion);
+  const noDates = themes.filter(t => !t.start_date || !t.target_completion);
+
   return (
     <div className="rounded-xl border overflow-hidden" style={{ background: '#FFFFFF', borderColor: '#E2E8F0' }}>
       {/* Header */}
@@ -35,21 +38,25 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
           <span style={{ fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>Theme</span>
         </div>
         <div className="flex-1 grid" style={{ gridTemplateColumns: `repeat(12, 1fr)`, background: '#F8FAFC' }}>
-          {MONTHS.map(m => (
-            <div key={m} className="flex items-center justify-center" style={{ height: 36, fontSize: 11, fontWeight: 500, color: '#64748B', borderLeft: '1px solid #F1F5F9' }}>
+          {MONTHS.map((m, i) => (
+            <div key={m} className="flex items-center justify-center" style={{
+              height: 36, fontSize: 11, fontWeight: 500, color: '#64748B',
+              borderLeft: '1px solid #F1F5F9',
+              background: i % 2 === 0 ? 'rgba(248,250,252,0.5)' : 'transparent',
+            }}>
               {m}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Rows */}
-      {themes.map(theme => {
+      {/* Rows with dates */}
+      {withDates.map(theme => {
         const health = deriveHealthStatus(theme);
         const sc = STATUS_CONFIG[health];
-        const startPct = dateToPercent(theme.start_date);
-        const endPct = dateToPercent(theme.target_completion);
-        const hasBar = startPct !== null && endPct !== null && endPct > startPct;
+        const startPct = dateToPercent(theme.start_date)!;
+        const endPct = dateToPercent(theme.target_completion)!;
+        const hasBar = endPct > startPct;
 
         return (
           <div
@@ -63,7 +70,7 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
             {/* Label */}
             <div className="shrink-0 flex items-center gap-2 min-w-0" style={{ width: 220, padding: '0 12px' }}>
               <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: theme.color }} />
-              <span className="truncate" style={{ fontSize: 12, fontWeight: 500, color: '#0F172A' }}>{theme.title}</span>
+              <span className="truncate" style={{ fontSize: 12, fontWeight: 500, color: '#0F172A' }} title={theme.title}>{theme.title}</span>
               <span className="shrink-0 inline-flex rounded-full px-1.5 py-0.5" style={{ fontSize: 9, fontWeight: 500, background: sc.bg, color: sc.text }}>
                 {sc.label}
               </span>
@@ -71,14 +78,21 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
 
             {/* Timeline area */}
             <div className="flex-1 relative" style={{ borderLeft: '1px solid #E2E8F0' }}>
-              {/* Month gridlines */}
+              {/* Month gridlines + alternating shading */}
               {MONTHS.map((_, i) => (
-                <div key={i} className="absolute top-0 bottom-0" style={{ left: `${(i / 12) * 100}%`, width: 1, borderLeft: '1px dashed #F1F5F9' }} />
+                <div key={i} className="absolute top-0 bottom-0" style={{
+                  left: `${(i / 12) * 100}%`,
+                  width: `${100 / 12}%`,
+                  borderLeft: '1px dashed #F1F5F9',
+                  background: i % 2 === 0 ? 'rgba(248,250,252,0.5)' : 'transparent',
+                }} />
               ))}
 
               {/* Today marker */}
               {todayPct !== null && (
-                <div className="absolute top-0 bottom-0" style={{ left: `${todayPct}%`, width: 2, background: '#DC2626', zIndex: 2 }} />
+                <div className="absolute top-0 bottom-0" style={{ left: `${todayPct}%`, width: 2, background: '#DC2626', zIndex: 2 }}>
+                  <div style={{ position: 'absolute', top: -16, left: -14, fontSize: 9, color: '#DC2626', fontWeight: 600, whiteSpace: 'nowrap' }}>Today</div>
+                </div>
               )}
 
               {/* Bar */}
@@ -104,6 +118,26 @@ export function ThemeTimelineView({ themes, onSelect }: Props) {
           </div>
         );
       })}
+
+      {/* Rows without dates */}
+      {noDates.map(theme => (
+        <div
+          key={theme.id}
+          onClick={() => onSelect(theme)}
+          className="flex cursor-pointer transition-colors"
+          style={{ borderBottom: '1px solid #F1F5F9', height: 48 }}
+          onMouseEnter={e => (e.currentTarget.style.background = '#EFF6FF')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+        >
+          <div className="shrink-0 flex items-center gap-2 min-w-0" style={{ width: 220, padding: '0 12px' }}>
+            <div className="shrink-0 rounded-full" style={{ width: 8, height: 8, background: theme.color }} />
+            <span className="truncate" style={{ fontSize: 12, fontWeight: 500, color: '#0F172A' }}>{theme.title}</span>
+          </div>
+          <div className="flex-1 flex items-center justify-center" style={{ borderLeft: '1px solid #E2E8F0' }}>
+            <span style={{ fontSize: 11, color: '#94A3B8' }}>No dates set</span>
+          </div>
+        </div>
+      ))}
 
       {themes.length === 0 && (
         <div className="flex items-center justify-center" style={{ height: 120, color: '#94A3B8', fontSize: 13 }}>

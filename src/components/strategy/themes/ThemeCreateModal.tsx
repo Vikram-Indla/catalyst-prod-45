@@ -1,9 +1,10 @@
 /**
  * ThemeCreateModal — Create/Edit form with theme groups from DB
+ * Fixed: proper scroll, owner field, theme group, budget placeholder
  */
 import { useEffect, useState } from 'react';
 import { X, Plus } from 'lucide-react';
-import { THEME_COLORS, BSC_CONFIG, PRIORITY_CONFIG } from './theme-utils';
+import { THEME_COLORS, BSC_CONFIG, PRIORITY_CONFIG, BSC_FILTER_OPTIONS } from './theme-utils';
 import { useThemeGroups, useCreateThemeGroup } from '@/hooks/use-strategic-themes';
 import type { StrategicTheme, BscPerspective } from '@/types/strategic-themes';
 
@@ -35,7 +36,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
     priority: 'medium' as string,
     start_date: '', target_completion: '',
     fiscal_year: 2026, bsc_perspective: '' as string,
-    planned_budget: 0, owner_id: '', theme_group_id: '' as string,
+    planned_budget: '' as string, owner_id: '', theme_group_id: '' as string,
     success_metrics: [] as { name: string; target: string }[],
   });
 
@@ -56,7 +57,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
         target_completion: initialData.target_completion || '',
         fiscal_year: initialData.fiscal_year || 2026,
         bsc_perspective: initialData.bsc_perspective || '',
-        planned_budget: initialData.planned_budget || 0,
+        planned_budget: initialData.planned_budget ? String(initialData.planned_budget) : '',
         theme_group_id: initialData.theme_group_id || '',
         success_metrics: Array.isArray(initialData.success_metrics)
           ? initialData.success_metrics.map((m: any) => ({ name: m.name || '', target: m.target || '' }))
@@ -68,7 +69,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
         color: '#2563EB', status: 'active', priority: 'medium',
         start_date: '', target_completion: '',
         fiscal_year: 2026, bsc_perspective: '',
-        planned_budget: 0, owner_id: '', theme_group_id: '',
+        planned_budget: '', owner_id: '', theme_group_id: '',
         success_metrics: [],
       });
     }
@@ -95,7 +96,7 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
       target_completion: form.target_completion || null,
       fiscal_year: form.fiscal_year,
       bsc_perspective: (form.bsc_perspective || null) as BscPerspective | null,
-      planned_budget: form.planned_budget,
+      planned_budget: form.planned_budget ? parseFloat(form.planned_budget) : 0,
       theme_group_id: form.theme_group_id || null,
       success_metrics: form.success_metrics.filter(m => m.name),
     });
@@ -128,11 +129,10 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
         display: 'flex', flexDirection: 'column',
         animation: 'modalIn 200ms ease',
       }}>
-        {/* Header */}
+        {/* Header — sticky */}
         <div className="flex items-center justify-between shrink-0" style={{
           padding: '16px 24px', borderBottom: '1px solid #E2E8F0',
-          position: 'sticky', top: 0, background: '#FFFFFF',
-          borderRadius: '12px 12px 0 0', zIndex: 1,
+          background: '#FFFFFF', borderRadius: '12px 12px 0 0', zIndex: 1,
         }}>
           <h2 style={{ fontSize: 16, fontWeight: 600, color: '#0F172A' }}>
             {initialData ? 'Edit Strategic Theme' : 'Create Strategic Theme'}
@@ -142,27 +142,31 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
           </button>
         </div>
 
-        {/* Body */}
+        {/* Body — scrollable */}
         <div className="flex-1 overflow-y-auto" style={{ padding: 24 }}>
           <div className="space-y-4">
+            {/* Theme Name */}
             <div>
-              <label style={labelStyle}>Theme Name *</label>
+              <label style={labelStyle}>Theme Name <span style={{ color: '#EF4444' }}>*</span></label>
               <input style={inputStyle} value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="e.g. Digital Transformation" />
             </div>
 
+            {/* Vision */}
             <div>
               <label style={labelStyle}>Vision Statement</label>
               <textarea style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }} value={form.vision_statement} onChange={e => setForm(f => ({ ...f, vision_statement: e.target.value.slice(0, 500) }))} placeholder="Max 500 characters" />
               <p style={{ fontSize: 10, color: '#94A3B8', marginTop: 2 }}>{form.vision_statement.length}/500</p>
             </div>
 
+            {/* Description */}
             <div>
               <label style={labelStyle}>Description</label>
               <textarea style={{ ...inputStyle, minHeight: 60, resize: 'vertical' }} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
             </div>
 
+            {/* Color */}
             <div>
-              <label style={labelStyle}>Theme Color *</label>
+              <label style={labelStyle}>Theme Color <span style={{ color: '#EF4444' }}>*</span></label>
               <div className="flex gap-2">
                 {THEME_COLORS.map(c => (
                   <button key={c} onClick={() => setForm(f => ({ ...f, color: c }))} className="rounded-full" style={{
@@ -173,9 +177,10 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
               </div>
             </div>
 
+            {/* Status + Priority */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label style={labelStyle}>Status *</label>
+                <label style={labelStyle}>Status <span style={{ color: '#EF4444' }}>*</span></label>
                 <select style={inputStyle} value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value as any }))}>
                   <option value="active">Active</option>
                   <option value="draft">Draft</option>
@@ -183,13 +188,14 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
                 </select>
               </div>
               <div>
-                <label style={labelStyle}>Priority *</label>
+                <label style={labelStyle}>Priority <span style={{ color: '#EF4444' }}>*</span></label>
                 <select style={inputStyle} value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value }))}>
                   {Object.entries(PRIORITY_CONFIG).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
                 </select>
               </div>
             </div>
 
+            {/* Dates */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label style={labelStyle}>Start Date</label>
@@ -201,28 +207,39 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
               </div>
             </div>
 
+            {/* Owner + Fiscal Year */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label style={labelStyle}>Fiscal Year *</label>
+                <label style={labelStyle}>Owner <span style={{ color: '#EF4444' }}>*</span></label>
+                <select style={inputStyle} value={form.owner_id} onChange={e => setForm(f => ({ ...f, owner_id: e.target.value }))}>
+                  <option value="">Select owner...</option>
+                  {/* Populated from profiles when available */}
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Fiscal Year <span style={{ color: '#EF4444' }}>*</span></label>
                 <select style={inputStyle} value={form.fiscal_year} onChange={e => setForm(f => ({ ...f, fiscal_year: parseInt(e.target.value) }))}>
                   {[2024, 2025, 2026, 2027, 2028].map(y => <option key={y} value={y}>FY{y}</option>)}
                 </select>
               </div>
+            </div>
+
+            {/* BSC + Budget */}
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <label style={labelStyle}>BSC Perspective</label>
                 <select style={inputStyle} value={form.bsc_perspective} onChange={e => setForm(f => ({ ...f, bsc_perspective: e.target.value }))}>
                   <option value="">Select...</option>
-                  {Object.entries(BSC_CONFIG).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+                  {BSC_FILTER_OPTIONS.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
                 </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Planned Budget (SAR)</label>
+                <input type="number" style={inputStyle} value={form.planned_budget} onChange={e => setForm(f => ({ ...f, planned_budget: e.target.value }))} placeholder="e.g. 25,000,000" />
               </div>
             </div>
 
-            <div>
-              <label style={labelStyle}>Planned Budget (SAR)</label>
-              <input type="number" style={inputStyle} value={form.planned_budget} onChange={e => setForm(f => ({ ...f, planned_budget: parseFloat(e.target.value) || 0 }))} />
-            </div>
-
-            {/* Theme Group — with create */}
+            {/* Theme Group */}
             <div>
               <label style={labelStyle}>Theme Group</label>
               {!showNewGroup ? (
@@ -267,11 +284,10 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
           </div>
         </div>
 
-        {/* Footer */}
+        {/* Footer — sticky */}
         <div className="flex items-center justify-end gap-2 shrink-0" style={{
           padding: '14px 24px', borderTop: '1px solid #E2E8F0',
-          position: 'sticky', bottom: 0, background: '#FFFFFF',
-          borderRadius: '0 0 12px 12px',
+          background: '#FFFFFF', borderRadius: '0 0 12px 12px',
         }}>
           <button onClick={onClose} style={{ fontSize: 12, fontWeight: 500, height: 34, padding: '0 14px', border: '1px solid #E2E8F0', borderRadius: 6, background: '#FFFFFF', color: '#334155', cursor: 'pointer' }}>Cancel</button>
           {!initialData && (
