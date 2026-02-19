@@ -247,10 +247,10 @@ export function StrategyPyramid() {
 
   return (
     <>
-      <div className="flex gap-4" style={{ minHeight: 280 }}>
+      <div className="flex flex-col sm:flex-row gap-4" style={{ minHeight: 280 }}>
         {/* SVG Pyramid */}
-        <div style={{ width: 180, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg viewBox="0 0 200 280" width="180" height="280" aria-hidden="true">
+        <div className="flex items-center justify-center" style={{ flexShrink: 0, width: 'auto', maxWidth: 180 }}>
+          <svg viewBox="0 0 200 280" className="w-[140px] h-[220px] sm:w-[180px] sm:h-[280px]" aria-hidden="true">
             {layers.map(layer => (
               <polygon
                 key={layer.key}
@@ -286,7 +286,7 @@ export function StrategyPyramid() {
         </div>
 
         {/* Label Cards */}
-        <div className="flex flex-col justify-center flex-1 gap-1">
+        <div className="flex flex-col justify-center flex-1 gap-1 min-w-0">
           {layers.map(layer => (
             <div
               key={layer.key}
@@ -308,7 +308,7 @@ export function StrategyPyramid() {
               <div style={{ width: 3, height: 28, borderRadius: 2, background: layer.color, flexShrink: 0 }} />
               <div className="flex-1 min-w-0">
                 <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--exec-text-primary)' }}>{layer.label}</div>
-                <div style={{ fontSize: 10, color: 'var(--exec-text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <div style={{ fontSize: 10, color: 'var(--exec-text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                   {layer.description}
                 </div>
               </div>
