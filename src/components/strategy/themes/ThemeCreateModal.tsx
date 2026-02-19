@@ -186,7 +186,6 @@ export function ThemeCreateModal({ open, onClose, onSubmit, initialData }: Props
                   <SelectContent className="z-[9999]">
                     <SelectItem value="active">Active</SelectItem>
                     <SelectItem value="planned">Planned</SelectItem>
-                    <SelectItem value="draft">Draft</SelectItem>
                     <SelectItem value="archived">Archived</SelectItem>
                   </SelectContent>
                 </Select>
