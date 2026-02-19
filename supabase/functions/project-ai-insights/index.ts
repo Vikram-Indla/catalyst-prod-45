@@ -63,18 +63,18 @@ OUTPUT JSON SCHEMA:
     "confidence": number 0-100,
     "reasoning": "1 sentence"
   },
-  "riskAlert": {
-    "summary": "1-2 sentences describing the top risk",
-    "impact": "Low or Medium or High or Critical",
-    "affectedItems": ["item_key", "item_key"],
-    "mitigation": "1 sentence suggestion"
+  "blockersSummary": {
+    "totalBlocked": number,
+    "summary": "1-2 sentences about blocked items and their impact on progress",
+    "topBlockers": ["item_key — reason", "item_key — reason"],
+    "recommendation": "1 sentence on how to unblock"
   },
-  "velocity": {
-    "currentPerWeek": number,
-    "previousPerWeek": number,
-    "trendPercent": number (positive = improving, negative = slowing),
-    "weeksToComplete": number or null,
-    "assessment": "1 sentence"
+  "teamWorkload": {
+    "totalAssigned": number,
+    "busiestMember": "name (N items)",
+    "unassignedCount": number,
+    "balance": "Balanced or Uneven or Overloaded",
+    "observation": "1 sentence about workload distribution"
   },
   "suggestion": {
     "action": "specific actionable suggestion referencing item keys and team member names",
@@ -151,23 +151,28 @@ ${context.workload.map((w: any) => `  ${w.name}: ${w.active_items} active items`
           confidence: 50,
           reasoning: "AI gateway temporarily unavailable — estimate based on current progress."
         },
-        riskAlert: {
-          summary: context.overdue_count > 0
-            ? `${context.overdue_count} overdue item(s) and ${context.blocked_count} blocked item(s) need attention.`
-            : "No major risks detected at this time.",
-          impact: context.overdue_count > 3 ? "High" : context.overdue_count > 0 ? "Medium" : "Low",
-          affectedItems: (context.overdue_items || []).slice(0, 3).map((i: any) => i.item_key),
-          mitigation: "Review overdue and blocked items to unblock progress."
+        blockersSummary: {
+          totalBlocked: context.blocked_count || 0,
+          summary: context.blocked_count > 0
+            ? `${context.blocked_count} item(s) are currently blocked and may delay progress.`
+            : "No blocked items at this time.",
+          topBlockers: (context.blocked_items || []).slice(0, 3).map((i: any) => `${i.item_key} — ${i.title}`),
+          recommendation: context.blocked_count > 0
+            ? "Review and resolve blockers to restore flow."
+            : "No action needed."
         },
-        velocity: {
-          currentPerWeek: context.velocity_current || 0,
-          previousPerWeek: context.velocity_previous || 0,
-          trendPercent: context.velocity_previous > 0
-            ? Math.round(((context.velocity_current - context.velocity_previous) / context.velocity_previous) * 100)
-            : 0,
-          weeksToComplete: context.velocity_current > 0 ? Math.ceil(context.remaining_items / context.velocity_current) : null,
-          assessment: `Current velocity is ${context.velocity_current || 0} items/week.`
-        },
+        teamWorkload: (() => {
+          const workload = context.workload || [];
+          const totalAssigned = workload.reduce((s: number, w: any) => s + (w.active_items || 0), 0);
+          const busiest = workload.length > 0 ? workload.reduce((a: any, b: any) => (b.active_items || 0) > (a.active_items || 0) ? b : a, workload[0]) : null;
+          return {
+            totalAssigned,
+            busiestMember: busiest ? `${busiest.name} (${busiest.active_items} items)` : "N/A",
+            unassignedCount: (context.total_items || 0) - totalAssigned,
+            balance: totalAssigned === 0 ? "Balanced" : (busiest && busiest.active_items > totalAssigned * 0.5 ? "Overloaded" : "Balanced"),
+            observation: workload.length === 0 ? "No workload data available." : `${workload.length} team member(s) with active assignments.`
+          };
+        })(),
         suggestion: {
           action: context.blocked_count > 0
             ? "Prioritize unblocking items to restore flow."

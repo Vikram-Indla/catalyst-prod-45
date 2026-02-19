@@ -59,17 +59,13 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
   if (!insights) return null;
 
   const data = insights;
-  const trendUp = data.velocity.trendPercent >= 0;
-  const trendColor = trendUp ? '#0d9488' : '#ef4444';
-  const trendArrow = trendUp ? '↗' : '↘';
 
-  const impactColors: Record<string, { bg: string; text: string }> = {
-    Low: { bg: '#F1F5F9', text: '#64748B' },
-    Medium: { bg: '#FEF3C7', text: '#D97706' },
-    High: { bg: '#FFEDD5', text: '#EA580C' },
-    Critical: { bg: '#FEE2E2', text: '#ef4444' },
+  const balanceColors: Record<string, { bg: string; text: string }> = {
+    Balanced: { bg: '#ECFDF5', text: '#059669' },
+    Uneven: { bg: '#FEF3C7', text: '#D97706' },
+    Overloaded: { bg: '#FEE2E2', text: '#ef4444' },
   };
-  const impact = impactColors[data.riskAlert.impact] || impactColors.Medium;
+  const balance = balanceColors[data.teamWorkload?.balance] || balanceColors.Balanced;
 
   return (
     <div style={{ gridColumn: '1 / -1', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8, padding: 20, boxShadow: '0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.1)' }}>
@@ -123,36 +119,48 @@ export function LiveAIInsightsCard({ projectId }: LiveAIInsightsCardProps) {
           </span>
         </div>
 
-        {/* Risk Alert */}
+        {/* Blockers Summary */}
         <div style={{ flex: 1, background: '#FAFAFA', borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <AlertTriangle size={15} color="#D97706" />
-            <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>Risk Alert</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>Blockers Summary</span>
+          </div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', marginBottom: 4 }}>
+            {data.blockersSummary?.totalBlocked || 0} blocked item{(data.blockersSummary?.totalBlocked || 0) !== 1 ? 's' : ''}
           </div>
           <div style={{ fontSize: 13, color: '#334155', lineHeight: 1.5 }}>
-            {data.riskAlert.summary}
+            {data.blockersSummary?.summary || 'No blocked items.'}
           </div>
-          <span style={{ fontSize: 12, color: impact.text, background: impact.bg, borderRadius: 9999, padding: '2px 8px', marginTop: 8, display: 'inline-block' }}>
-            Impact: {data.riskAlert.impact}
-          </span>
+          {data.blockersSummary?.topBlockers?.length > 0 && (
+            <div style={{ marginTop: 6, fontSize: 12, color: '#64748B' }}>
+              {data.blockersSummary.topBlockers.slice(0, 2).map((b: string, i: number) => (
+                <div key={i} style={{ marginBottom: 2 }}>• {b}</div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Velocity */}
+        {/* Team Workload */}
         <div style={{ flex: 1, background: '#FAFAFA', borderRadius: 8, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
             <TrendingUp size={15} color="#0D9488" />
-            <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>Velocity</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>Team Workload</span>
           </div>
           <div style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', marginBottom: 4 }}>
-            Current: {data.velocity.currentPerWeek} items/week
+            {data.teamWorkload?.totalAssigned || 0} items assigned
           </div>
-          <div style={{ fontSize: 13, color: trendColor, marginBottom: 4 }}>
-            Trend: {trendArrow} {trendUp ? '+' : ''}{data.velocity.trendPercent}% vs last 2 weeks
+          <div style={{ fontSize: 13, color: '#334155', marginBottom: 4 }}>
+            Busiest: {data.teamWorkload?.busiestMember || 'N/A'}
           </div>
-          <div style={{ fontSize: 13, color: '#64748B' }}>
-            {data.velocity.weeksToComplete
-              ? `At this pace: ~${data.velocity.weeksToComplete} weeks remaining`
-              : 'Insufficient data for projection'}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 12, color: balance.text, background: balance.bg, borderRadius: 9999, padding: '2px 8px' }}>
+              {data.teamWorkload?.balance || 'Balanced'}
+            </span>
+            {(data.teamWorkload?.unassignedCount || 0) > 0 && (
+              <span style={{ fontSize: 12, color: '#D97706' }}>
+                {data.teamWorkload.unassignedCount} unassigned
+              </span>
+            )}
           </div>
         </div>
       </div>
