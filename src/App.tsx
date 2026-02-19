@@ -1,4 +1,5 @@
 import React, { lazy, Suspense } from "react";
+const StrategicThemesPage = lazy(() => import("./pages/strategyhub/StrategicThemesPage"));
 // ProdHubAppShell removed — /producthub/* now uses CatalystShell
 const InitiativeListingPage = lazy(() => import("./pages/producthub/InitiativeListingPage"));
 const RoadmapPage = lazy(() => import("./pages/producthub/RoadmapPage"));
@@ -517,7 +518,7 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/programs" element={<PlaceholderPage />} />
               {/* ═══ Strategy Hub Routes ═══ */}
               <Route path="/strategyhub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyRoom /></Suspense>} />
-              <Route path="/strategyhub/themes" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Strategic Themes" /></Suspense>} />
+              <Route path="/strategyhub/themes" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategicThemesPage /></Suspense>} />
               <Route path="/strategyhub/goals" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Goals & Key Results" /></Suspense>} />
               <Route path="/strategyhub/initiatives" element={<Navigate to="/producthub/backlog" replace />} />
               <Route path="/strategyhub/investment" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Investment Allocation" /></Suspense>} />
