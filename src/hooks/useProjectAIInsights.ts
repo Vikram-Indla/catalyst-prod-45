@@ -9,18 +9,18 @@ export interface AIInsights {
     confidence: number;
     reasoning: string;
   };
-  riskAlert: {
+  blockersSummary: {
+    totalBlocked: number;
     summary: string;
-    impact: "Low" | "Medium" | "High" | "Critical";
-    affectedItems: string[];
-    mitigation: string;
+    topBlockers: string[];
+    recommendation: string;
   };
-  velocity: {
-    currentPerWeek: number;
-    previousPerWeek: number;
-    trendPercent: number;
-    weeksToComplete: number | null;
-    assessment: string;
+  teamWorkload: {
+    totalAssigned: number;
+    busiestMember: string;
+    unassignedCount: number;
+    balance: "Balanced" | "Uneven" | "Overloaded";
+    observation: string;
   };
   suggestion: {
     action: string;
