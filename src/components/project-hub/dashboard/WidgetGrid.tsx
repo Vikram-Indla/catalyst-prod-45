@@ -5,6 +5,7 @@ import { BlockedItems } from './BlockedItems';
 import { ItemsByStatus } from './ItemsByStatus';
 import { RecentActivity } from './RecentActivity';
 import { TeamWorkload } from './TeamWorkload';
+import { AIInsightsCard } from './AIInsightsCard';
 
 export function WidgetGrid() {
   return (
@@ -48,6 +49,8 @@ export function WidgetGrid() {
         <WidgetCard title="Team Workload">
           <TeamWorkload />
         </WidgetCard>
+
+        <AIInsightsCard />
       </div>
     </>
   );
