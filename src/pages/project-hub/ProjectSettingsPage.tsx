@@ -6,8 +6,9 @@ import { ChevronRight, Settings } from 'lucide-react';
 import { SettingsTabs, type SettingsTab } from '@/components/project-hub/settings/SettingsTabs';
 import { GeneralTab } from '@/components/project-hub/settings/GeneralTab';
 import { MembersTab } from '@/components/project-hub/settings/MembersTab';
+import { WorkflowTab } from '@/components/project-hub/settings/WorkflowTab';
 
-const PLACEHOLDER_TABS: SettingsTab[] = ['Workflow', 'Types', 'Labels', 'Components', 'Integration', 'Notifications'];
+const PLACEHOLDER_TABS: SettingsTab[] = ['Types', 'Labels', 'Components', 'Integration', 'Notifications'];
 
 export default function ProjectSettingsPageNew() {
   const { key } = useParams<{ key: string }>();
@@ -103,6 +104,10 @@ export default function ProjectSettingsPageNew() {
 
         {activeTab === 'Members' && project && (
           <MembersTab projectId={project.id} currentUserId={currentUserId} />
+        )}
+
+        {activeTab === 'Workflow' && project && (
+          <WorkflowTab projectId={project.id} />
         )}
 
         {PLACEHOLDER_TABS.includes(activeTab) && (
