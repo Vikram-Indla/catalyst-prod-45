@@ -34,7 +34,7 @@ export function ProjectHubShell() {
         .select('id, key, name, color, icon, status')
         .eq('is_archived', false)
         .order('name');
-      if (error) throw error;
+      if (error) { console.warn('ph_projects shell query error:', error.message); return []; }
       return (data || []).map(p => ({
         key: p.key,
         name: p.name,
@@ -54,7 +54,7 @@ export function ProjectHubShell() {
         .select('id, key, name, color, icon')
         .eq('key', params.key.toUpperCase())
         .maybeSingle();
-      if (error) throw error;
+      if (error) { console.warn('ph_project query error:', error.message); return null; }
       return data ? { key: data.key, name: data.name, color: data.color || '#2563EB' } : null;
     },
     enabled: !!params.key,
