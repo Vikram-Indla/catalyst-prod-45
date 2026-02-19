@@ -7,8 +7,9 @@ import { SettingsTabs, type SettingsTab } from '@/components/project-hub/setting
 import { GeneralTab } from '@/components/project-hub/settings/GeneralTab';
 import { MembersTab } from '@/components/project-hub/settings/MembersTab';
 import { WorkflowTab } from '@/components/project-hub/settings/WorkflowTab';
+import { TypesTab } from '@/components/project-hub/settings/TypesTab';
 
-const PLACEHOLDER_TABS: SettingsTab[] = ['Types', 'Labels', 'Components', 'Integration', 'Notifications'];
+const PLACEHOLDER_TABS: SettingsTab[] = ['Labels', 'Components', 'Integration', 'Notifications'];
 
 export default function ProjectSettingsPageNew() {
   const { key } = useParams<{ key: string }>();
@@ -108,6 +109,10 @@ export default function ProjectSettingsPageNew() {
 
         {activeTab === 'Workflow' && project && (
           <WorkflowTab projectId={project.id} />
+        )}
+
+        {activeTab === 'Types' && project && (
+          <TypesTab projectId={project.id} featureLayer={(project as any).feature_layer ?? false} />
         )}
 
         {PLACEHOLDER_TABS.includes(activeTab) && (
