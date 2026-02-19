@@ -64,7 +64,7 @@ export function SidebarProjectNav({
         borderRight: '1px solid #E2E8F0',
         transition: 'width 200ms ease',
         fontFamily: "'Inter', sans-serif",
-        overflow: 'hidden',
+        position: 'relative',
       }}
     >
       {/* Header with project switcher */}
