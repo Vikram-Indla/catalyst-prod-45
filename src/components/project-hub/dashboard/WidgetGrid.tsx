@@ -5,8 +5,6 @@ import { BlockedItems } from './BlockedItems';
 import { ItemsByStatus } from './ItemsByStatus';
 import { RecentActivity } from './RecentActivity';
 import { TeamWorkload } from './TeamWorkload';
-import { AIInsightsCard } from './AIInsightsCard';
-import { LiveAIInsightsCard } from './LiveAIInsightsCard';
 
 interface WidgetGridProps {
   projectId?: string;
@@ -42,8 +40,6 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
         <WidgetCard title="Blocked Items">
           <BlockedItems />
         </WidgetCard>
-
-        {projectId ? <LiveAIInsightsCard projectId={projectId} /> : <AIInsightsCard />}
 
         <WidgetCard title="Items by Status">
           <ItemsByStatus />

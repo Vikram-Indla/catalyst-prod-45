@@ -5,6 +5,8 @@ import { ChevronRight } from 'lucide-react';
 import { ProjectHeaderCard } from '@/components/project-hub/dashboard/ProjectHeaderCard';
 import { WidgetGrid } from '@/components/project-hub/dashboard/WidgetGrid';
 import { SkeletonWidgetGrid } from '@/components/project-hub/shared/SkeletonPulse';
+import { LiveAIInsightsCard } from '@/components/project-hub/dashboard/LiveAIInsightsCard';
+import { AIInsightsCard } from '@/components/project-hub/dashboard/AIInsightsCard';
 import '@/components/project-hub/shared/phStyles.css';
 
 export default function ProjectDashboardPage() {
@@ -67,6 +69,10 @@ export default function ProjectDashboardPage() {
               starred={false}
               onSettings={() => navigate(`/project-hub/${key}/settings`)}
             />
+
+            <div className="mt-5">
+              {project?.id ? <LiveAIInsightsCard projectId={project.id} /> : <AIInsightsCard />}
+            </div>
 
             <div className="mt-5">
               <WidgetGrid projectId={project?.id} />
