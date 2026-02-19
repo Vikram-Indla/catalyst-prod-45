@@ -3,11 +3,11 @@ import { GripVertical, MoreHorizontal } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-const CATEGORY_STYLES: Record<string, { bg: string; text: string }> = {
-  'To Do': { bg: '#F1F5F9', text: '#64748B' },
-  'In Progress': { bg: '#EFF6FF', text: '#2563EB' },
-  Done: { bg: '#F0FDFA', text: '#0D9488' },
-  Terminal: { bg: '#F1F5F9', text: '#64748B' },
+const CATEGORY_PILL: Record<string, { bg: string; text: string; label: string }> = {
+  todo: { bg: '#F1F5F9', text: '#64748B', label: 'To Do' },
+  in_progress: { bg: '#EFF6FF', text: '#2563EB', label: 'In Progress' },
+  done: { bg: '#F0FDFA', text: '#0D9488', label: 'Done' },
+  terminal: { bg: '#F1F5F9', text: '#64748B', label: 'Terminal' },
 };
 
 interface StatusRowProps {
@@ -26,12 +26,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
   const menuRef = useRef<HTMLDivElement>(null);
 
   const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
+    attributes, listeners, setNodeRef, transform, transition, isDragging,
   } = useSortable({ id });
 
   const style = {
@@ -50,15 +45,11 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
     return () => document.removeEventListener('mousedown', handler);
   }, [menuOpen]);
 
-  const cs = CATEGORY_STYLES[category] || CATEGORY_STYLES['To Do'];
-  const categoryLabel = isDefault ? 'Default' : category === 'Done' ? 'Completion' : category === 'Terminal' ? 'Terminal' : undefined;
-  const categoryLabelStyle = isDefault
-    ? { bg: '#EFF6FF', text: '#2563EB' }
-    : category === 'Done'
-    ? { bg: '#F0FDFA', text: '#0D9488' }
-    : category === 'Terminal'
-    ? { bg: '#F1F5F9', text: '#64748B' }
-    : null;
+  // Determine pill styling
+  const catKey = category.toLowerCase().replace(/\s+/g, '_');
+  const pill = isDefault
+    ? { bg: '#EFF6FF', text: '#2563EB', label: 'Default' }
+    : CATEGORY_PILL[catKey] || CATEGORY_PILL.todo;
 
   return (
     <div
@@ -77,28 +68,20 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
       </button>
 
       {/* Color dot */}
-      <div
-        className="flex-shrink-0 rounded-full"
-        style={{ width: 12, height: 12, background: color }}
-      />
+      <div className="flex-shrink-0 rounded-full" style={{ width: 12, height: 12, background: color }} />
 
       {/* Name */}
       <span className="flex-1 truncate" style={{ fontSize: 14, fontWeight: 500, color: '#0F172A' }}>
         {name}
       </span>
 
-      {/* Category tag */}
-      {categoryLabel && categoryLabelStyle && (
-        <span
-          className="flex-shrink-0 rounded-full"
-          style={{
-            fontSize: 11, fontWeight: 600, padding: '2px 10px',
-            background: categoryLabelStyle.bg, color: categoryLabelStyle.text,
-          }}
-        >
-          {categoryLabel}
-        </span>
-      )}
+      {/* Category pill — always shown */}
+      <span
+        className="flex-shrink-0 rounded-full"
+        style={{ fontSize: 11, fontWeight: 600, padding: '2px 10px', background: pill.bg, color: pill.text }}
+      >
+        {pill.label}
+      </span>
 
       {/* Item count */}
       <span

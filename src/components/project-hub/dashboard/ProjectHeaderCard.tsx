@@ -40,16 +40,7 @@ export function ProjectHeaderCard({
   const clamped = Math.min(Math.max(progress, 0), 100);
 
   return (
-    <div
-      className="rounded-xl"
-      style={{
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
-        borderRadius: 12,
-        padding: '20px 24px',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-      }}
-    >
+    <div className="ph-card">
       {/* Top row */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -75,7 +66,7 @@ export function ProjectHeaderCard({
           </button>
           <button
             onClick={onSettings}
-            className="flex items-center justify-center rounded-md hover:bg-[#F8FAFC] transition-colors"
+            className="flex items-center justify-center rounded-md transition-all"
             style={{
               height: 32, padding: '0 10px', gap: 6,
               border: '1px solid #E2E8F0', borderRadius: 6,
@@ -84,12 +75,16 @@ export function ProjectHeaderCard({
               fontFamily: "'Inter', sans-serif",
               display: 'inline-flex', alignItems: 'center',
             }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; e.currentTarget.style.borderColor = '#CBD5E1'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.borderColor = '#E2E8F0'; }}
           >
             <Settings size={14} color="#64748B" strokeWidth={1.75} /> Settings
           </button>
           <button
-            className="flex items-center justify-center rounded-md hover:bg-[#F8FAFC] transition-colors"
+            className="flex items-center justify-center rounded-md transition-all"
             style={{ width: 32, height: 32, border: '1px solid #E2E8F0', borderRadius: 6, background: '#FFFFFF', cursor: 'pointer' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
           >
             <MoreHorizontal size={16} color="#64748B" strokeWidth={1.75} />
           </button>
@@ -98,16 +93,10 @@ export function ProjectHeaderCard({
 
       {/* Meta row */}
       <div className="flex items-center gap-3 mt-3 flex-wrap">
-        <span
-          className="inline-flex items-center rounded-full"
-          style={{ fontSize: 11, fontWeight: 600, padding: '2px 10px', background: sSt.bg, color: sSt.text }}
-        >
+        <span className="inline-flex items-center rounded-full" style={{ fontSize: 11, fontWeight: 600, padding: '2px 10px', background: sSt.bg, color: sSt.text }}>
           {status === 'on_hold' ? 'On Hold' : status.charAt(0).toUpperCase() + status.slice(1)}
         </span>
-        <span
-          className="inline-flex items-center rounded-full"
-          style={{ fontSize: 11, fontWeight: 600, padding: '2px 10px', background: hSt.bg, color: hSt.text }}
-        >
+        <span className="inline-flex items-center rounded-full" style={{ fontSize: 11, fontWeight: 600, padding: '2px 10px', background: hSt.bg, color: hSt.text }}>
           {hSt.label}
         </span>
         <span className="inline-flex items-center gap-1.5" style={{ fontSize: 12, color: '#64748B' }}>
@@ -124,12 +113,7 @@ export function ProjectHeaderCard({
           <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>{clamped}% complete</span>
         </div>
         <div style={{ width: '100%', height: 6, borderRadius: 3, background: '#E2E8F0' }}>
-          <div
-            style={{
-              width: `${clamped}%`, height: '100%', borderRadius: 3,
-              background: '#0D9488', transition: 'width 500ms ease',
-            }}
-          />
+          <div style={{ width: `${clamped}%`, height: '100%', borderRadius: 3, background: '#0D9488', transition: 'width 500ms ease' }} />
         </div>
         <div style={{ fontSize: 12, color: '#64748B', marginTop: 6 }}>
           {doneCount} of {totalCount} items done · Est. completion: {estCompletion}

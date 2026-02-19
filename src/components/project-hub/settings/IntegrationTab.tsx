@@ -2,16 +2,8 @@ import { Link } from 'lucide-react';
 
 export function IntegrationTab() {
   return (
-    <div
-      className="rounded-xl"
-      style={{
-        background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12,
-        padding: '20px 24px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-      }}
-    >
-      <h3 style={{ fontSize: 14, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif", marginBottom: 16 }}>
-        Jira Integration
-      </h3>
+    <div className="ph-card">
+      <h3 className="ph-card-title">Jira Integration</h3>
 
       <div className="flex items-center gap-3 mb-4">
         <Link size={16} color="#64748B" />

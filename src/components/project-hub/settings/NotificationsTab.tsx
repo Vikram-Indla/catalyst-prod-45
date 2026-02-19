@@ -10,32 +10,26 @@ const NOTIFICATION_OPTIONS = [
 
 export function NotificationsTab() {
   return (
-    <div
-      className="rounded-xl"
-      style={{
-        background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12,
-        padding: '20px 24px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-      }}
-    >
-      <h3 style={{ fontSize: 14, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif", marginBottom: 16 }}>
-        Notification Preferences
-      </h3>
+    <div className="ph-card">
+      <h3 className="ph-card-title">Notification Preferences</h3>
 
       <div className="space-y-1">
         {NOTIFICATION_OPTIONS.map(label => (
           <div
             key={label}
             className="flex items-center justify-between px-3 rounded-lg"
-            style={{ height: 44, opacity: 0.5 }}
+            style={{ height: 44, opacity: 0.6 }}
           >
             <span style={{ fontSize: 13, color: '#94A3B8' }}>{label}</span>
 
-            {/* Disabled toggle */}
+            {/* Disabled toggle — not clickable */}
             <div
               className="flex-shrink-0 rounded-full"
               style={{
-                width: 40, height: 22, borderRadius: 11, background: '#CBD5E1',
+                width: 40, height: 22, borderRadius: 11, background: '#E2E8F0',
                 position: 'relative', cursor: 'not-allowed',
+                pointerEvents: 'none',
+                opacity: 0.5,
               }}
             >
               <span

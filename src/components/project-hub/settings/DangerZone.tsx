@@ -35,27 +35,25 @@ export function DangerZone({ projectId, projectName }: DangerZoneProps) {
   return (
     <>
       <div
-        className="rounded-xl"
-        style={{
-          background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12,
-          borderLeft: '4px solid #DC2626', padding: '20px 24px',
-          boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-        }}
+        className="ph-card"
+        style={{ borderLeft: '4px solid #DC2626' }}
       >
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: '#DC2626', fontFamily: "'Sora', sans-serif" }}>
+        <h3 style={{ fontSize: 15, fontWeight: 600, color: '#DC2626', fontFamily: "'Sora', sans-serif", paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid #F1F5F9' }}>
           Danger Zone
         </h3>
-        <p style={{ fontSize: 13, color: '#64748B', marginTop: 4, maxWidth: 520 }}>
+        <p style={{ fontSize: 13, color: '#64748B', maxWidth: 520 }}>
           Archive this project. Archived projects are hidden from the project list but can be restored.
         </p>
         <button
           onClick={() => setConfirmOpen(true)}
-          className="mt-4 hover:bg-[#FEF2F2] transition-colors"
+          className="mt-4 transition-all"
           style={{
             height: 34, padding: '0 14px', fontSize: 13, fontWeight: 500,
             color: '#DC2626', border: '1px solid #DC2626', borderRadius: 6,
             background: 'transparent', cursor: 'pointer',
           }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#FEF2F2'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
         >
           Archive Project
         </button>

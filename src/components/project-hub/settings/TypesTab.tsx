@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import '@/components/project-hub/shared/phStyles.css';
 import { supabase } from '@/integrations/supabase/client';
 import { TypeRow } from './types/TypeRow';
 import { TypeHierarchy } from './types/TypeHierarchy';
@@ -51,17 +52,9 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
   return (
     <div className="space-y-5">
       {/* Work Types List */}
-      <div
-        className="rounded-xl"
-        style={{
-          background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12,
-          padding: '20px 24px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-        }}
-      >
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}>
-          Work Types
-        </h3>
-        <p style={{ fontSize: 12, color: '#64748B', marginTop: 4, marginBottom: 16 }}>
+      <div className="ph-card">
+        <h3 className="ph-card-title">Work Types</h3>
+        <p style={{ fontSize: 12, color: '#64748B', marginBottom: 16 }}>
           Types define the hierarchy and field layout of work items.
         </p>
 
@@ -101,14 +94,8 @@ export function TypesTab({ projectId, featureLayer }: TypesTabProps) {
       {/* Type Hierarchy */}
       <TypeHierarchy featureLayerEnabled={currentFeatureLayer} />
 
-      {/* Feature Layer Toggle inside hierarchy card - rendered separately for layout */}
-      <div
-        className="rounded-xl"
-        style={{
-          background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12,
-          padding: '16px 24px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-        }}
-      >
+      {/* Feature Layer Toggle inside hierarchy card */}
+      <div className="ph-card">
         <FeatureLayerToggle projectId={projectId} enabled={currentFeatureLayer} onToggled={handleToggled} />
       </div>
     </div>
