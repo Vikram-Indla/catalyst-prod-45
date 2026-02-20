@@ -2,18 +2,25 @@ import { supabase } from "@/integrations/supabase/client";
 import type { ChainMetrics } from './computeChainMetrics';
 
 export interface AIResult {
-  verdict: string;
+  strategyInsight: string;
+  initiativeInsight: string;
+  epicInsight: string;
+  operationsInsight: string;
   riskSignals: string[];
 }
 
-/**
- * Generate AI intelligence verdict via Lovable AI edge function.
- * Uses the strategy-intelligence edge function which calls Lovable AI Gateway.
- */
 export async function generateIntelligence(
   _chainRow: any,
   metrics: ChainMetrics
 ): Promise<AIResult> {
+  const empty: AIResult = {
+    strategyInsight: 'AI analysis could not be generated. Viewing data-driven metrics only.',
+    initiativeInsight: 'AI analysis could not be generated.',
+    epicInsight: 'AI analysis could not be generated.',
+    operationsInsight: 'AI analysis could not be generated.',
+    riskSignals: [],
+  };
+
   try {
     const { data, error } = await supabase.functions.invoke('strategy-intelligence', {
       body: { metrics },
@@ -21,21 +28,18 @@ export async function generateIntelligence(
 
     if (error) {
       console.error('Strategy intelligence error:', error);
-      return {
-        verdict: 'AI analysis could not be generated. Viewing data-driven metrics only.',
-        riskSignals: [],
-      };
+      return empty;
     }
 
     return {
-      verdict: data?.verdict || 'No verdict generated.',
+      strategyInsight: data?.strategyInsight || empty.strategyInsight,
+      initiativeInsight: data?.initiativeInsight || empty.initiativeInsight,
+      epicInsight: data?.epicInsight || empty.epicInsight,
+      operationsInsight: data?.operationsInsight || empty.operationsInsight,
       riskSignals: data?.riskSignals || [],
     };
   } catch (err) {
     console.error('Intelligence generation error:', err);
-    return {
-      verdict: 'AI analysis could not be generated. Viewing data-driven metrics only.',
-      riskSignals: [],
-    };
+    return empty;
   }
 }

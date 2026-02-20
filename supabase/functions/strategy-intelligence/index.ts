@@ -28,27 +28,32 @@ METRICS:
 - Schedule: ${m.scheduleDriftDays > 0 ? m.scheduleDriftDays + ' days ahead' : Math.abs(m.scheduleDriftDays) + ' days behind'}
 - Weakest Link: ${m.weakestNode?.key} at ${m.weakestNode?.progress}% (${m.weakestNode?.status})
 - On-Time Confidence: ${m.confidencePct}%
-- Stories: ${m.storiesDone}/${m.storiesTotal} done, ${m.storiesInProd} in production
+- Stories: ${m.storiesDone}/${m.storiesTotal} done, ${m.storiesInProd} in production, ${m.storiesBlocked} blocked
 - Velocity: ${m.velocityPerWeek} stories/wk (need ${m.neededVelocity}/wk)
-- Open Defects: ${m.storiesBlocked} blocked items
 - Scope: ${m.scopeClean ? 'No changes' : (m.scopeChanges?.length || 0) + ' late additions'}
 - Epic Cycle: ${m.epicCycleDays} days elapsed
 - Avg Story Cycle: ${m.avgStoryCycleDays} days
-- KRs at risk: ${m.krs?.filter((k: any) => k.status === 'At Risk' || k.status === 'Off Track').map((k: any) => k.key).join(', ') || 'None'}
+- Avg Defect Cycle: ${m.avgDefectCycleDays} days
+- KRs: ${m.krs?.map((k: any) => k.key + ' ' + k.progress + '% (' + k.status + ')').join(', ') || 'None'}
+- Strategy-to-Execution Lag: ${m.strategyToExecutionDays} days
+- Linkage Lag: ${m.linkageLagDays} days
 ${!m.initiativeKey ? '- ⚠ NO INITIATIVE LINKED (execution gap)' : ''}
 ${!m.epicKey ? '- ⚠ NO EPIC LINKED (delivery gap)' : ''}
 
-TASK 1 — VERDICT (exactly 2 sentences):
-Sentence 1: State whether this chain is ON TRACK, AT RISK, or CRITICAL with the health score and confidence percentage.
-Sentence 2: Name the single most important action item citing a specific number.
+TASK — Generate 4 contextual insights and 3 risk signals.
 
-TASK 2 — RISK SIGNALS (exactly 3 items, each 1 sentence):
-Signal 1 (highest risk): The biggest threat with specific numbers.
-Signal 2 (watch item): A secondary concern.
-Signal 3 (positive): Something going well with specific numbers.
+1. STRATEGY INSIGHT (2-3 sentences): Assess the strategic theme and goal health. Comment on the overall chain from strategy to execution. Reference the health score, goal progress, and KR performance.
+
+2. INITIATIVE INSIGHT (2-3 sentences): Assess the initiative's progress and its linkage to KRs. Comment on the delivery timeline and any gaps between strategy definition and execution start. If no initiative linked, highlight this as a critical gap.
+
+3. EPIC & STORIES INSIGHT (2-3 sentences): Assess the epic's story completion rate, production deployment status, and cycle times. If no epic is linked, highlight this as a critical delivery gap.
+
+4. OPERATIONS INSIGHT (2-3 sentences): Assess defect rates, people allocation, scope changes, and velocity. If there are blocked stories or open defects, call them out specifically.
+
+5. RISK SIGNALS (3 items, 1 sentence each): Signal 1 = highest risk (red), Signal 2 = watch item (yellow), Signal 3 = positive (green). Use specific numbers.
 
 Return ONLY valid JSON, no markdown, no backticks:
-{"verdict":"sentence1 sentence2","riskSignals":["signal1","signal2","signal3"]}`;
+{"strategyInsight":"...","initiativeInsight":"...","epicInsight":"...","operationsInsight":"...","riskSignals":["...","...","..."]}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -63,7 +68,7 @@ Return ONLY valid JSON, no markdown, no backticks:
           { role: "user", content: prompt },
         ],
         temperature: 0.7,
-        max_tokens: 500,
+        max_tokens: 800,
       }),
     });
 
@@ -96,7 +101,10 @@ Return ONLY valid JSON, no markdown, no backticks:
       });
     } catch {
       return new Response(JSON.stringify({
-        verdict: content.slice(0, 300),
+        strategyInsight: content.slice(0, 300),
+        initiativeInsight: '',
+        epicInsight: '',
+        operationsInsight: '',
         riskSignals: [],
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -106,7 +114,10 @@ Return ONLY valid JSON, no markdown, no backticks:
     console.error("strategy-intelligence error:", e);
     return new Response(JSON.stringify({
       error: e instanceof Error ? e.message : "Unknown error",
-      verdict: "AI analysis could not be generated.",
+      strategyInsight: "AI analysis could not be generated.",
+      initiativeInsight: '',
+      epicInsight: '',
+      operationsInsight: '',
       riskSignals: [],
     }), {
       status: 500,

@@ -1241,6 +1241,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         isOpen={isIntelOpen}
         metrics={chainMetrics}
         defects={chainDefects || []}
+        stories={epicStories || []}
         aiResult={aiResult}
         isAILoading={isAILoading}
         onClose={handleCloseIntelligence}
