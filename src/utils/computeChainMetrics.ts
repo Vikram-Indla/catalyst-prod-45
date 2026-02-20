@@ -61,7 +61,8 @@ export function computeChainMetrics(
   chainData: any[],
   stories: any[],
   defects: any[],
-  roleMap?: Record<string, string>
+  roleMap?: Record<string, string>,
+  themeDisplayKey?: string
 ): ChainMetrics {
   if (!chainData || chainData.length === 0) {
     return getEmptyMetrics();
@@ -228,7 +229,7 @@ export function computeChainMetrics(
     owners,
     concentrationRisk: concentrated ? { name: concentrated[0], count: concentrated[1] } : null,
     lastActor: { name: 'System', action: 'Chain analyzed', date: today.toISOString().split('T')[0], entity: '' },
-    themeKey: first.theme_key,
+    themeKey: themeDisplayKey || first.theme_key,
     themeName: first.theme_name,
     goalKey: first.goal_key,
     goalTitle: first.goal_title,

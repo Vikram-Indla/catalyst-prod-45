@@ -46,14 +46,23 @@ export function AIStrategyIntelligencePanel({
 
   if (!metrics) return null;
 
-  // Chain breadcrumb keys
-  const chainKeys = [
-    metrics.themeKey,
-    metrics.goalKey,
-    metrics.krs.length > 0 ? metrics.krs.map(k => k.key).join(', ') : null,
-    metrics.initiativeKey,
-    metrics.epicKey,
-  ].filter(Boolean);
+  // Chain breadcrumb with color-coded pills per hierarchy level
+  // Colors match Alignment Map spec: Theme=#2563EB, Goal=#0D9488, KR=#2563EB, Init=#D97706, Epic=#4F46E5
+  const LEVEL_COLORS = [
+    { bg: '#DBEAFE', text: '#1E40AF', border: '#93C5FD' },  // Theme (blue)
+    { bg: '#CCFBF1', text: '#115E59', border: '#5EEAD4' },  // Goal (teal)
+    { bg: '#DBEAFE', text: '#1E40AF', border: '#93C5FD' },  // KRs (blue)
+    { bg: '#FEF3C7', text: '#92400E', border: '#FDE68A' },  // Initiative (amber)
+    { bg: '#EDE9FE', text: '#5B21B6', border: '#C4B5FD' },  // Epic (purple)
+  ];
+
+  const chainSegments = [
+    { label: metrics.themeKey, level: 0, exists: true },
+    { label: metrics.goalKey, level: 1, exists: true },
+    { label: metrics.krs.length > 0 ? metrics.krs.map(k => k.key).join(', ') : null, level: 2, exists: metrics.krs.length > 0 },
+    { label: metrics.initiativeKey, level: 3, exists: !!metrics.initiativeKey },
+    { label: metrics.epicKey, level: 4, exists: !!metrics.epicKey },
+  ];
 
   return (
     <div
@@ -83,26 +92,33 @@ export function AIStrategyIntelligencePanel({
           </button>
         </div>
 
-        {/* Chain breadcrumb — always visible */}
-        <div className="flex items-center gap-1 flex-wrap mb-3">
-          {chainKeys.map((key, i) => (
-            <React.Fragment key={i}>
-              {i > 0 && <span className="text-[10px]" style={{ color: '#CBD5E1' }}>›</span>}
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded" style={{ color: '#475569', background: '#F1F5F9' }}>
-                {key}
-              </span>
-            </React.Fragment>
-          ))}
+        {/* Chain breadcrumb — color-coded pills */}
+        <div className="flex items-center gap-1.5 flex-wrap mb-3">
+          {chainSegments.map((seg, i) => {
+            if (!seg.exists || !seg.label) return null;
+            const c = LEVEL_COLORS[seg.level];
+            return (
+              <React.Fragment key={i}>
+                {i > 0 && <span className="text-[10px] font-medium" style={{ color: '#94A3B8' }}>›</span>}
+                <span
+                  className="text-[10px] font-mono font-semibold px-2 py-[3px] rounded-md"
+                  style={{ color: c.text, background: c.bg, border: `1px solid ${c.border}` }}
+                >
+                  {seg.label}
+                </span>
+              </React.Fragment>
+            );
+          })}
           {!metrics.initiativeKey && (
             <>
-              <span className="text-[10px]" style={{ color: '#CBD5E1' }}>›</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ color: '#D97706', background: '#FFFBEB' }}>⚠ No Initiative</span>
+              <span className="text-[10px] font-medium" style={{ color: '#94A3B8' }}>›</span>
+              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: '#D97706', background: '#FFFBEB', border: '1px solid #FDE68A' }}>⚠ No Initiative</span>
             </>
           )}
           {!metrics.epicKey && (
             <>
-              <span className="text-[10px]" style={{ color: '#CBD5E1' }}>›</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ color: '#D97706', background: '#FFFBEB' }}>⚠ No Epic</span>
+              <span className="text-[10px] font-medium" style={{ color: '#94A3B8' }}>›</span>
+              <span className="text-[10px] font-semibold px-2 py-[3px] rounded-md" style={{ color: '#5B21B6', background: '#EDE9FE', border: '1px solid #C4B5FD' }}>⚠ No Epic</span>
             </>
           )}
         </div>
