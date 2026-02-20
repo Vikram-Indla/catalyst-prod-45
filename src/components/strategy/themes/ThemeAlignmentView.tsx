@@ -528,23 +528,29 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
   function getCardClasses(nodeId: string): string {
     if (!isFocused && !anyHover) return 'shadow-sm hover:shadow-lg hover:scale-[1.02]';
     if (isFocused) {
-      if (focusedChain!.nodes.has(nodeId)) return 'shadow-xl ring-2 ring-blue-400/40';
+      if (focusedChain!.nodes.has(nodeId)) return 'shadow-elevated';
       return 'shadow-none pointer-events-none';
     }
     // Hover-only (no focus)
-    return highlightedNodes.has(nodeId) ? 'shadow-md ring-2 ring-blue-400/50 scale-[1.02]' : '';
+    return highlightedNodes.has(nodeId) ? 'shadow-md scale-[1.02]' : '';
   }
 
   function getCardStyle(nodeId: string): React.CSSProperties {
     if (!isFocused && !anyHover) return {};
     if (isFocused) {
       if (focusedChain!.nodes.has(nodeId)) {
-        return { transform: 'scale(1.12)', opacity: 1, zIndex: 20, transition: 'all 500ms ease-out' };
+        return {
+          transform: 'scale(1.12)', opacity: 1, zIndex: 20,
+          boxShadow: '0 4px 24px -4px rgba(37,99,235,0.18), 0 0 0 1.5px rgba(37,99,235,0.15)',
+          transition: 'all 500ms ease-out',
+        };
       }
       return { transform: 'scale(0.92)', opacity: 0.08, zIndex: 1, transition: 'all 500ms ease-out' };
     }
     // Hover-only
-    if (highlightedNodes.has(nodeId)) return { opacity: 1 };
+    if (highlightedNodes.has(nodeId)) {
+      return { opacity: 1, boxShadow: '0 2px 16px -2px rgba(37,99,235,0.14), 0 0 0 1px rgba(37,99,235,0.1)' };
+    }
     return { opacity: 0.2 };
   }
 
