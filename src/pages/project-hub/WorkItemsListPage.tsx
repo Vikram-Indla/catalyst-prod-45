@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useProjectWorkItems } from '@/hooks/useProjectWorkItems';
 import { useWorkItemListState } from '@/hooks/useWorkItemListState';
@@ -8,13 +8,15 @@ import { WorkItemsToolbar } from '@/components/project-hub/work-items/WorkItemsT
 import { WorkItemsTable } from '@/components/project-hub/work-items/WorkItemsTable';
 import { CreateWorkItemModal } from '@/components/project-hub/work-items/CreateWorkItemModal';
 import { WorkItemDetailModal } from '@/components/project-hub/work-items/WorkItemDetailModal';
+import { updateWorkItem, createWorkItem, deleteWorkItem } from '@/services/workItemService';
 import { Loader2 } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { toast } from 'sonner';
 
 export default function WorkItemsListPage() {
   const { key } = useParams<{ key: string }>();
   const [createOpen, setCreateOpen] = useState(false);
   const [detailItemId, setDetailItemId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   // Resolve project by key
   const { data: project } = useQuery({
@@ -32,8 +34,106 @@ export default function WorkItemsListPage() {
   });
 
   const { data: items = [], isLoading } = useProjectWorkItems(project?.id);
-
   const listState = useWorkItemListState(items);
+
+  // Fetch workflow statuses for this project
+  const { data: statuses = [] } = useQuery({
+    queryKey: ['ph-statuses', project?.id],
+    queryFn: async () => {
+      if (!project?.id) return [];
+      const { data } = await supabase
+        .from('ph_workflow_statuses')
+        .select('id, name, category, color')
+        .eq('project_id', project.id)
+        .order('sort_order');
+      return (data || []) as { id: string; name: string; category: string; color: string }[];
+    },
+    enabled: !!project?.id,
+  });
+
+  // Fetch project member profiles
+  const { data: profiles = [] } = useQuery({
+    queryKey: ['ph-profiles-for-project', project?.id],
+    queryFn: async () => {
+      if (!project?.id) return [];
+      const { data: members } = await supabase
+        .from('ph_project_members')
+        .select('user_id')
+        .eq('project_id', project.id);
+      const userIds = (members || []).map((m: any) => m.user_id).filter(Boolean);
+      if (userIds.length === 0) return [];
+      const { data: profs } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .in('id', userIds);
+      return (profs || []).map((p: any) => ({ id: p.id, name: p.full_name || 'Unknown' }));
+    },
+    enabled: !!project?.id,
+  });
+
+  const invalidateItems = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['ph-work-items', project?.id] });
+  }, [queryClient, project?.id]);
+
+  // Inline update (optimistic)
+  const handleInlineUpdate = useCallback(async (id: string, changes: Record<string, any>) => {
+    try {
+      await updateWorkItem(id, changes);
+      invalidateItems();
+      toast.success('Updated');
+    } catch (e: any) {
+      toast.error(e.message);
+      invalidateItems(); // revert
+    }
+  }, [invalidateItems]);
+
+  // Bulk update
+  const handleBulkUpdate = useCallback(async (ids: string[], changes: Record<string, any>) => {
+    try {
+      await Promise.all(ids.map(id => updateWorkItem(id, changes)));
+      invalidateItems();
+      toast.success(`Updated ${ids.length} items`);
+    } catch (e: any) {
+      toast.error(e.message);
+      invalidateItems();
+    }
+  }, [invalidateItems]);
+
+  // Bulk delete
+  const handleBulkDelete = useCallback(async (ids: string[]) => {
+    try {
+      await Promise.all(ids.map(id => deleteWorkItem(id)));
+      invalidateItems();
+      toast.success(`Deleted ${ids.length} item(s)`);
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+  }, [invalidateItems]);
+
+  // Clone item
+  const handleClone = useCallback(async (id: string) => {
+    const item = items.find(i => i.id === id);
+    if (!item || !project) return;
+    try {
+      await createWorkItem({
+        project_id: project.id,
+        type_id: item.type_id,
+        status_id: item.status_id,
+        title: `${item.title} (Copy)`,
+        item_type: item.item_type,
+        priority: item.priority,
+        assignee_id: item.assignee_id,
+        parent_id: item.parent_id,
+        due_date: item.due_date,
+        story_points: item.story_points,
+        is_flagged: item.is_flagged,
+      });
+      invalidateItems();
+      toast.success('Item cloned');
+    } catch (e: any) {
+      toast.error(e.message);
+    }
+  }, [items, project, invalidateItems]);
 
   const assignees = useMemo(() => {
     const seen = new Set<string>();
@@ -108,15 +208,20 @@ export default function WorkItemsListPage() {
           onToggleSort={listState.toggleSort}
           columns={listState.columns}
           grouped={listState.grouped}
+          onInlineUpdate={handleInlineUpdate}
+          onBulkUpdate={handleBulkUpdate}
+          onBulkDelete={handleBulkDelete}
+          onCloneItem={handleClone}
+          statuses={statuses}
+          profiles={profiles}
+          hasSearchOrFilter={listState.hasActiveFilters || !!listState.search}
+          onClearFilters={() => { listState.clearAllFilters(); listState.setSearch(''); }}
         />
       )}
 
-      {/* Create Modal */}
       {project && (
         <CreateWorkItemModal open={createOpen} onClose={() => setCreateOpen(false)} projectId={project.id} projectKey={project.key} />
       )}
-
-      {/* Detail Modal */}
       {project && (
         <WorkItemDetailModal
           open={!!detailItemId}
