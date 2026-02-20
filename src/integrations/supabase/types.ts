@@ -16317,6 +16317,8 @@ export type Database = {
           id: string
           name: string
           owner_user_id: string | null
+          project_id: string | null
+          release_date: string | null
           sort_order: number | null
           start_date: string | null
           status: string
@@ -16332,6 +16334,8 @@ export type Database = {
           id?: string
           name: string
           owner_user_id?: string | null
+          project_id?: string | null
+          release_date?: string | null
           sort_order?: number | null
           start_date?: string | null
           status?: string
@@ -16347,6 +16351,8 @@ export type Database = {
           id?: string
           name?: string
           owner_user_id?: string | null
+          project_id?: string | null
+          release_date?: string | null
           sort_order?: number | null
           start_date?: string | null
           status?: string
@@ -16354,7 +16360,15 @@ export type Database = {
           title?: string
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ph_releases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ph_resource_assignments: {
         Row: {
@@ -16961,10 +16975,14 @@ export type Database = {
           assignee_user_id: string | null
           completed_at: string | null
           created_at: string | null
+          cycle_time_days: number | null
+          department: string | null
           depth: number | null
           description: string | null
           due_date: string | null
+          environment: string | null
           estimated_hours: number | null
+          flag_reason: string | null
           hierarchy_path: string[] | null
           id: string
           is_flagged: boolean | null
@@ -16987,14 +17005,17 @@ export type Database = {
           reporter_id: string | null
           resolution: string | null
           resolved_at: string | null
+          security_level: string | null
           sequence_num: number | null
           sort_order: number | null
           start_date: string | null
           status: string
+          status_changed_at: string | null
           status_id: string | null
           story_points: number | null
           summary: string
           sync_source: string | null
+          team: string | null
           team_id: string | null
           theme_id: string | null
           time_estimate: number | null
@@ -17009,10 +17030,14 @@ export type Database = {
           assignee_user_id?: string | null
           completed_at?: string | null
           created_at?: string | null
+          cycle_time_days?: number | null
+          department?: string | null
           depth?: number | null
           description?: string | null
           due_date?: string | null
+          environment?: string | null
           estimated_hours?: number | null
+          flag_reason?: string | null
           hierarchy_path?: string[] | null
           id?: string
           is_flagged?: boolean | null
@@ -17035,14 +17060,17 @@ export type Database = {
           reporter_id?: string | null
           resolution?: string | null
           resolved_at?: string | null
+          security_level?: string | null
           sequence_num?: number | null
           sort_order?: number | null
           start_date?: string | null
           status?: string
+          status_changed_at?: string | null
           status_id?: string | null
           story_points?: number | null
           summary: string
           sync_source?: string | null
+          team?: string | null
           team_id?: string | null
           theme_id?: string | null
           time_estimate?: number | null
@@ -17057,10 +17085,14 @@ export type Database = {
           assignee_user_id?: string | null
           completed_at?: string | null
           created_at?: string | null
+          cycle_time_days?: number | null
+          department?: string | null
           depth?: number | null
           description?: string | null
           due_date?: string | null
+          environment?: string | null
           estimated_hours?: number | null
+          flag_reason?: string | null
           hierarchy_path?: string[] | null
           id?: string
           is_flagged?: boolean | null
@@ -17083,14 +17115,17 @@ export type Database = {
           reporter_id?: string | null
           resolution?: string | null
           resolved_at?: string | null
+          security_level?: string | null
           sequence_num?: number | null
           sort_order?: number | null
           start_date?: string | null
           status?: string
+          status_changed_at?: string | null
           status_id?: string | null
           story_points?: number | null
           summary?: string
           sync_source?: string | null
+          team?: string | null
           team_id?: string | null
           theme_id?: string | null
           time_estimate?: number | null

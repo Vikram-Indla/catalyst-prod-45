@@ -125,7 +125,7 @@ export default function WorkItemsListPage() {
         assignee_id: item.assignee_id,
         parent_id: item.parent_id,
         due_date: item.due_date,
-        story_points: item.story_points,
+        department: item.department,
         is_flagged: item.is_flagged,
       });
       invalidateItems();
