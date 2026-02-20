@@ -6,8 +6,8 @@ import { supabase } from '@/integrations/supabase/client';
 
 // Get feature with owner and contributors
 export async function getFeatureWithAssignments(featureId: string) {
-  const { data, error } = await supabase
-    .from('features')
+  const { data, error } = await (supabase
+    .from('features') as any)
     .select(`
       *,
       owner:profiles!features_owner_id_fkey(id, full_name, email, avatar_url)

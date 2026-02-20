@@ -64,8 +64,8 @@ export default function SprintBoard() {
     queryKey: ['stories', selectedSprintId],
     queryFn: async () => {
       if (!selectedSprintId) return [];
-      const { data, error } = await supabase
-        .from('stories')
+      const { data, error } = await (supabase
+        .from('stories') as any)
         .select('*, features(name), profiles!stories_assignee_id_fkey(full_name)')
         .eq('sprint_id', selectedSprintId);
       if (error) throw error;
