@@ -1,6 +1,27 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+// Fetch role_name from resource_inventory keyed by profile_id
+export function useOwnerRoles(ownerIds: string[]) {
+  const uniqueIds = [...new Set(ownerIds.filter(Boolean))];
+  return useQuery({
+    queryKey: ['owner-roles', uniqueIds.sort().join(',')],
+    queryFn: async () => {
+      if (uniqueIds.length === 0) return {} as Record<string, string>;
+      const { data, error } = await (supabase.from('resource_inventory') as any)
+        .select('profile_id, role_name')
+        .in('profile_id', uniqueIds)
+        .eq('is_active', true);
+      if (error) return {} as Record<string, string>;
+      const map: Record<string, string> = {};
+      (data || []).forEach((r: any) => { if (r.profile_id && r.role_name) map[r.profile_id] = r.role_name; });
+      return map;
+    },
+    enabled: uniqueIds.length > 0,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
 // Fetch full chain data for a given theme + goal combination
 export function useChainIntelligence(themeId: string | null, goalId: string | null) {
   return useQuery({

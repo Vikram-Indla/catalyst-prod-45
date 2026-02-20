@@ -60,7 +60,8 @@ export interface ChainMetrics {
 export function computeChainMetrics(
   chainData: any[],
   stories: any[],
-  defects: any[]
+  defects: any[],
+  roleMap?: Record<string, string>
 ): ChainMetrics {
   if (!chainData || chainData.length === 0) {
     return getEmptyMetrics();
@@ -178,16 +179,22 @@ export function computeChainMetrics(
   const confidence = Math.round(Math.max(5, Math.min(99, raw * 100)));
 
   // ─── People ───
+  // Resolve role from resource_inventory via roleMap, falling back to hardcoded labels
+  const resolveRole = (id: string | null, fallback: string) => {
+    if (id && roleMap && roleMap[id]) return roleMap[id];
+    return fallback;
+  };
+
   const owners: ChainMetrics['owners'] = [];
-  if (first.theme_owner_name) owners.push({ name: first.theme_owner_name, role: first.theme_owner_role || 'Theme Owner', entity: first.theme_name, entityKey: first.theme_key, level: 'Strategic' });
-  if (first.goal_owner_name) owners.push({ name: first.goal_owner_name, role: first.goal_owner_role || 'Goal Owner', entity: first.goal_title, entityKey: first.goal_key, level: 'Tactical' });
+  if (first.theme_owner_name) owners.push({ name: first.theme_owner_name, role: resolveRole(first.theme_owner_id, 'Theme Owner'), entity: first.theme_name, entityKey: first.theme_key, level: 'Strategic' });
+  if (first.goal_owner_name) owners.push({ name: first.goal_owner_name, role: resolveRole(first.goal_owner_id, 'Goal Owner'), entity: first.goal_title, entityKey: first.goal_key, level: 'Tactical' });
   krs.filter(kr => kr.kr_owner_name).forEach((kr: any) => {
     if (!owners.find(o => o.name === kr.kr_owner_name && o.level === 'Measurement')) {
-      owners.push({ name: kr.kr_owner_name, role: kr.kr_owner_role || 'KR Owner', entity: kr.kr_title, entityKey: kr.kr_key, level: 'Measurement' });
+      owners.push({ name: kr.kr_owner_name, role: resolveRole(kr.kr_owner_id, 'KR Owner'), entity: kr.kr_title, entityKey: kr.kr_key, level: 'Measurement' });
     }
   });
-  if (initiative?.initiative_owner_name) owners.push({ name: initiative.initiative_owner_name, role: 'Delivery Manager', entity: initiative.initiative_title, entityKey: initiative.initiative_key, level: 'Delivery' });
-  if (epic?.epic_owner_name) owners.push({ name: epic.epic_owner_name, role: 'Tech Lead', entity: epic.epic_title, entityKey: epic.epic_key, level: 'Execution' });
+  if (initiative?.initiative_owner_name) owners.push({ name: initiative.initiative_owner_name, role: resolveRole(initiative.initiative_owner_id, 'Delivery Manager'), entity: initiative.initiative_title, entityKey: initiative.initiative_key, level: 'Delivery' });
+  if (epic?.epic_owner_name) owners.push({ name: epic.epic_owner_name, role: resolveRole(epic.epic_owner_id, 'Tech Lead'), entity: epic.epic_title, entityKey: epic.epic_key, level: 'Execution' });
 
   const nameCounts = owners.reduce((acc, o) => { acc[o.name] = (acc[o.name] || 0) + 1; return acc; }, {} as Record<string, number>);
   const concentrated = Object.entries(nameCounts).find(([_, count]) => count > 1);
