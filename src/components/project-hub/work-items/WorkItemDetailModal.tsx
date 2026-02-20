@@ -7,6 +7,8 @@ import { CollapsibleSection } from './detail/CollapsibleSection';
 import { StatusLozenge } from './detail/StatusLozenge';
 import { DetailRightSidebar } from './detail/DetailRightSidebar';
 import { ActivityFeed } from './detail/ActivityFeed';
+import { AttachmentsSection } from './detail/AttachmentsSection';
+import { LinkedItemsSection } from './detail/LinkedItemsSection';
 import { useWorkItemDetail, type ChildItem } from '@/hooks/useWorkItemDetail';
 import {
   X, Copy, Bookmark, Eye, ChevronDown, ArrowUp, ArrowRight, ArrowDown,
@@ -455,31 +457,17 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
                 )}
               </CollapsibleSection>
 
+              {/* Attachments */}
+              <AttachmentsSection workItemId={item.id} projectId={projectId} />
+
               {/* Linked Work Items */}
-              {item.linked_items.length > 0 && (
-                <CollapsibleSection title="Linked Work Items" count={item.linked_items.length} defaultOpen={true}>
-                  {/* Group by link type */}
-                  {groupLinks(item.linked_items).map(([type, links]) => (
-                    <div key={type} className="mb-2">
-                      <span className="text-[12px] font-semibold mb-1 block" style={{ color: '#626F86' }}>
-                        {formatLinkType(type)}
-                      </span>
-                      {links.map(link => (
-                        <button
-                          key={link.id}
-                          className="flex items-center gap-2 px-3 py-1.5 rounded hover:bg-[#F8FAFC] w-full text-left transition-colors"
-                          onClick={() => onNavigate?.(link.id)}
-                        >
-                          <span className="w-2 h-2 rounded-sm shrink-0" style={{ background: TYPE_COLORS[link.type_name] || link.type_color }} />
-                          <span className="text-[10px]" style={{ fontFamily: 'JetBrains Mono, monospace', color: '#64748B' }}>{link.item_key}</span>
-                          <span className="text-[13px] font-medium truncate" style={{ color: '#0F172A' }}>{link.title}</span>
-                          <StatusLozenge name={link.status_name} category={link.status_category} />
-                        </button>
-                      ))}
-                    </div>
-                  ))}
-                </CollapsibleSection>
-              )}
+              <LinkedItemsSection
+                workItemId={item.id}
+                projectId={projectId}
+                linkedItems={item.linked_items}
+                onNavigate={onNavigate}
+                onInvalidate={invalidate}
+              />
 
               {/* Activity Feed */}
               <ActivityFeed workItemId={item.id} />
@@ -550,17 +538,3 @@ function MiniAvatar({ name }: { name: string }) {
   );
 }
 
-// ─── Helpers ─────────────────────────────────────────────
-function groupLinks(links: { link_type: string; [k: string]: any }[]) {
-  const map = new Map<string, typeof links>();
-  for (const l of links) {
-    const arr = map.get(l.link_type) || [];
-    arr.push(l);
-    map.set(l.link_type, arr);
-  }
-  return [...map.entries()];
-}
-
-function formatLinkType(t: string): string {
-  return t.replace(/_/g, ' ');
-}
