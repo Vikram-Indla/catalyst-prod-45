@@ -4547,62 +4547,194 @@ export type Database = {
           },
         ]
       }
+      es_goal_dependencies: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          dependency_type: string | null
+          id: string
+          note: string | null
+          source_goal_id: string
+          target_goal_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          dependency_type?: string | null
+          id?: string
+          note?: string | null
+          source_goal_id: string
+          target_goal_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          dependency_type?: string | null
+          id?: string
+          note?: string | null
+          source_goal_id?: string
+          target_goal_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_goal_dependencies_source_goal_id_fkey"
+            columns: ["source_goal_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_heatmap"
+            referencedColumns: ["goal_id"]
+          },
+          {
+            foreignKeyName: "es_goal_dependencies_source_goal_id_fkey"
+            columns: ["source_goal_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_tree"
+            referencedColumns: ["goal_id"]
+          },
+          {
+            foreignKeyName: "es_goal_dependencies_source_goal_id_fkey"
+            columns: ["source_goal_id"]
+            isOneToOne: false
+            referencedRelation: "es_goals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_goal_dependencies_source_goal_id_fkey"
+            columns: ["source_goal_id"]
+            isOneToOne: false
+            referencedRelation: "es_goals_tree_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_goal_dependencies_target_goal_id_fkey"
+            columns: ["target_goal_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_heatmap"
+            referencedColumns: ["goal_id"]
+          },
+          {
+            foreignKeyName: "es_goal_dependencies_target_goal_id_fkey"
+            columns: ["target_goal_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_tree"
+            referencedColumns: ["goal_id"]
+          },
+          {
+            foreignKeyName: "es_goal_dependencies_target_goal_id_fkey"
+            columns: ["target_goal_id"]
+            isOneToOne: false
+            referencedRelation: "es_goals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_goal_dependencies_target_goal_id_fkey"
+            columns: ["target_goal_id"]
+            isOneToOne: false
+            referencedRelation: "es_goals_tree_view"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       es_goals: {
         Row: {
+          ai_health_score: number | null
+          bsc_perspective: string | null
+          check_in_count: number | null
+          confidence_level: number | null
           created_at: string
           created_by: string | null
           department_id: string | null
           description: string | null
+          fiscal_quarter: string | null
+          goal_key: string | null
           id: string
+          is_archived: boolean | null
+          kr_count: number | null
+          last_check_in_at: string | null
           owner_id: string | null
+          priority: string | null
           progress_override: boolean | null
           progress_pct: number | null
           quarter: number | null
           scope: string | null
+          score_override: number | null
+          sort_order: number | null
+          start_date: string | null
           status: string
+          tags: string[] | null
           target_date: string | null
           theme_id: string
           title: string
           updated_at: string
           updated_by: string | null
+          weight: number | null
           year: number | null
         }
         Insert: {
+          ai_health_score?: number | null
+          bsc_perspective?: string | null
+          check_in_count?: number | null
+          confidence_level?: number | null
           created_at?: string
           created_by?: string | null
           department_id?: string | null
           description?: string | null
+          fiscal_quarter?: string | null
+          goal_key?: string | null
           id?: string
+          is_archived?: boolean | null
+          kr_count?: number | null
+          last_check_in_at?: string | null
           owner_id?: string | null
+          priority?: string | null
           progress_override?: boolean | null
           progress_pct?: number | null
           quarter?: number | null
           scope?: string | null
+          score_override?: number | null
+          sort_order?: number | null
+          start_date?: string | null
           status?: string
+          tags?: string[] | null
           target_date?: string | null
           theme_id: string
           title: string
           updated_at?: string
           updated_by?: string | null
+          weight?: number | null
           year?: number | null
         }
         Update: {
+          ai_health_score?: number | null
+          bsc_perspective?: string | null
+          check_in_count?: number | null
+          confidence_level?: number | null
           created_at?: string
           created_by?: string | null
           department_id?: string | null
           description?: string | null
+          fiscal_quarter?: string | null
+          goal_key?: string | null
           id?: string
+          is_archived?: boolean | null
+          kr_count?: number | null
+          last_check_in_at?: string | null
           owner_id?: string | null
+          priority?: string | null
           progress_override?: boolean | null
           progress_pct?: number | null
           quarter?: number | null
           scope?: string | null
+          score_override?: number | null
+          sort_order?: number | null
+          start_date?: string | null
           status?: string
+          tags?: string[] | null
           target_date?: string | null
           theme_id?: string
           title?: string
           updated_at?: string
           updated_by?: string | null
+          weight?: number | null
           year?: number | null
         }
         Relationships: [
@@ -4884,6 +5016,7 @@ export type Database = {
       }
       es_key_results: {
         Row: {
+          check_in_count: number | null
           confidence_level: string | null
           created_at: string
           created_by: string | null
@@ -4892,10 +5025,14 @@ export type Database = {
           due_date: string | null
           goal_id: string
           id: string
+          kr_key: string | null
+          last_check_in_at: string | null
           metric_type: string
           owner_id: string | null
           progress_pct: number | null
           scoring_method: string | null
+          sort_order: number | null
+          start_date: string | null
           start_value: number | null
           status: string
           target_value: number
@@ -4903,8 +5040,10 @@ export type Database = {
           unit: string | null
           updated_at: string
           updated_by: string | null
+          weight: number | null
         }
         Insert: {
+          check_in_count?: number | null
           confidence_level?: string | null
           created_at?: string
           created_by?: string | null
@@ -4913,10 +5052,14 @@ export type Database = {
           due_date?: string | null
           goal_id: string
           id?: string
+          kr_key?: string | null
+          last_check_in_at?: string | null
           metric_type?: string
           owner_id?: string | null
           progress_pct?: number | null
           scoring_method?: string | null
+          sort_order?: number | null
+          start_date?: string | null
           start_value?: number | null
           status?: string
           target_value: number
@@ -4924,8 +5067,10 @@ export type Database = {
           unit?: string | null
           updated_at?: string
           updated_by?: string | null
+          weight?: number | null
         }
         Update: {
+          check_in_count?: number | null
           confidence_level?: string | null
           created_at?: string
           created_by?: string | null
@@ -4934,10 +5079,14 @@ export type Database = {
           due_date?: string | null
           goal_id?: string
           id?: string
+          kr_key?: string | null
+          last_check_in_at?: string | null
           metric_type?: string
           owner_id?: string | null
           progress_pct?: number | null
           scoring_method?: string | null
+          sort_order?: number | null
+          start_date?: string | null
           start_value?: number | null
           status?: string
           target_value?: number
@@ -4945,6 +5094,7 @@ export type Database = {
           unit?: string | null
           updated_at?: string
           updated_by?: string | null
+          weight?: number | null
         }
         Relationships: [
           {
@@ -4968,12 +5118,20 @@ export type Database = {
             referencedRelation: "es_goals"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "es_key_results_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "es_goals_tree_view"
+            referencedColumns: ["id"]
+          },
         ]
       }
       es_kr_checkins: {
         Row: {
           author_id: string | null
           check_in_date: string
+          confidence_level: number | null
           created_at: string
           id: string
           key_result_id: string
@@ -4984,6 +5142,7 @@ export type Database = {
         Insert: {
           author_id?: string | null
           check_in_date?: string
+          confidence_level?: number | null
           created_at?: string
           id?: string
           key_result_id: string
@@ -4994,6 +5153,7 @@ export type Database = {
         Update: {
           author_id?: string | null
           check_in_date?: string
+          confidence_level?: number | null
           created_at?: string
           id?: string
           key_result_id?: string
@@ -39684,6 +39844,78 @@ export type Database = {
           workstream_color?: string | null
         }
         Relationships: []
+      }
+      es_goals_tree_view: {
+        Row: {
+          ai_health_score: number | null
+          avg_kr_progress: number | null
+          bsc_perspective: string | null
+          check_in_count: number | null
+          confidence_level: number | null
+          created_at: string | null
+          dependency_count: number | null
+          description: string | null
+          fiscal_quarter: string | null
+          goal_key: string | null
+          id: string | null
+          is_archived: boolean | null
+          kr_at_risk: number | null
+          kr_completed: number | null
+          kr_count: number | null
+          kr_off_track: number | null
+          kr_on_track: number | null
+          kr_overdue: number | null
+          last_check_in_at: string | null
+          owner_avatar: string | null
+          owner_id: string | null
+          owner_name: string | null
+          priority: string | null
+          progress_pct: number | null
+          score_override: number | null
+          sort_order: number | null
+          start_date: string | null
+          status: string | null
+          tags: string[] | null
+          target_date: string | null
+          theme_color: string | null
+          theme_id: string | null
+          theme_status: string | null
+          theme_title: string | null
+          title: string | null
+          updated_at: string | null
+          weight: number | null
+          weighted_kr_progress: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_tree"
+            referencedColumns: ["theme_id"]
+          },
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_strategic_themes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_themes_list_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "es_themes_timeline_view"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       es_themes_list_view: {
         Row: {
