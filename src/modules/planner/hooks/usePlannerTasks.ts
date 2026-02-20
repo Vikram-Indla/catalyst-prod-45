@@ -71,7 +71,7 @@ export function usePlannerTasks(teamId?: string | null) {
     // Cache-buster: ensures UI picks up task_key mapping changes immediately
     queryKey: ['planner-tasks', teamId, 'v2-task-key'],
     queryFn: async () => {
-      let query = supabase
+      let query = (supabase as any)
         .from('planner_tasks')
         .select(`
           *,

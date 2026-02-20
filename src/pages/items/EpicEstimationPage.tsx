@@ -56,7 +56,7 @@ export default function EpicEstimationPage() {
   const { data: epics, isLoading } = useQuery({
     queryKey: ['epics-estimation', portfolioId, selectedProgram],
     queryFn: async () => {
-      let query = supabase
+      let query = (supabase as any)
         .from('epics')
         .select(`
           id,
