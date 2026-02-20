@@ -57,6 +57,8 @@ export interface ChainMetrics {
   krs: { key: string; title: string; status: string; progress: number; target: number; current: number; unit: string }[];
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export function computeChainMetrics(
   chainData: any[],
   stories: any[],
@@ -229,7 +231,7 @@ export function computeChainMetrics(
     owners,
     concentrationRisk: concentrated ? { name: concentrated[0], count: concentrated[1] } : null,
     lastActor: { name: 'System', action: 'Chain analyzed', date: today.toISOString().split('T')[0], entity: '' },
-    themeKey: themeDisplayKey || first.theme_key,
+    themeKey: themeDisplayKey || (UUID_RE.test(first.theme_key || '') ? `ST-${String(1).padStart(3, '0')}` : first.theme_key),
     themeName: first.theme_name,
     goalKey: first.goal_key,
     goalTitle: first.goal_title,
