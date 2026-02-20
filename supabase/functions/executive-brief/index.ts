@@ -35,6 +35,13 @@ PORTFOLIO DATA:
 THEMES:
 ${themeLines}
 
+CRITICAL FORMATTING RULES:
+- Every decision MUST have a rationale paragraph (2-3 sentences). Never leave rationale empty.
+- Every decision MUST have 3-4 evidence data points as short strings.
+- Headline must be MAXIMUM 10 words. No colons. No sub-clauses.
+- Contradictions must reference SPECIFIC numbers from the data.
+- Recovery actions must be CONCRETE (include numbers, names, deadlines).
+
 GENERATE exactly this JSON structure:
 
 1. "verdict": A letter grade (A+ to F, with optional +/-), numeric score 0-100, headline (MAXIMUM 10 words, punchy, no colons, no sub-clauses), and detail (2 sentences: first sentence states the core problem, second sentence gives the most important number that proves it).
