@@ -60,7 +60,7 @@ export function useCatyInsights() {
         title: `${overUtilized.length} team member${overUtilized.length > 1 ? 's' : ''} over-utilized`,
         description: `${overUtilized.map((r: any) => r.name).join(', ')} ${overUtilized.length > 1 ? 'are' : 'is'} above 80% capacity. Consider reassigning work items.`,
         action: 'View Resource 360',
-        route: '/projecthub/resource360',
+        route: '/project-hub/resource360',
       });
     }
 
@@ -106,7 +106,7 @@ export function useCatyInsights() {
         title: `${underUtilized.length} members under-utilized`,
         description: `${underUtilized.slice(0, 3).map((r: any) => r.name).join(', ')} are below 40% capacity. They could take on more work.`,
         action: 'View Resource 360',
-        route: '/projecthub/resource360',
+        route: '/project-hub/resource360',
       });
     }
 

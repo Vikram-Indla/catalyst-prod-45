@@ -139,7 +139,7 @@ export function CapacityTable({ resources }: Props) {
               return (
                 <tr
                   key={r.id}
-                  onClick={() => navigate(`/projecthub/resource360/${r.id}`)}
+                  onClick={() => navigate(`/project-hub/resource360/${r.id}`)}
                   style={{
                     height: 44,
                     cursor: 'pointer',
