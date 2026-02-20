@@ -1,5 +1,5 @@
 /**
- * useAlignmentMapData — Fetches and transforms vw_alignment_map into structured layers
+ * useAlignmentMapData — Fetches vw_alignment_map and builds structured layers + connection maps
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -20,12 +20,10 @@ export interface AlignmentData {
   krs: AlignmentNode[];
   initiatives: AlignmentNode[];
   epics: AlignmentNode[];
-  // Connection maps: parentId -> childIds
   themeToGoals: Map<string, Set<string>>;
   goalToKrs: Map<string, Set<string>>;
   krToInitiatives: Map<string, Set<string>>;
   initiativeToEpics: Map<string, Set<string>>;
-  // Stats
   stats: {
     linkedKrs: number;
     totalKrs: number;
@@ -48,7 +46,6 @@ export function useAlignmentMapData() {
 
       const rows = (data || []) as any[];
 
-      // Deduplicate nodes
       const themesMap = new Map<string, AlignmentNode>();
       const goalsMap = new Map<string, AlignmentNode>();
       const krsMap = new Map<string, AlignmentNode>();
@@ -61,8 +58,7 @@ export function useAlignmentMapData() {
       const initiativeToEpics = new Map<string, Set<string>>();
 
       const krsWithInitiative = new Set<string>();
-      const initiativesWithEpic = new Set<string>();
-      let fullChains = 0;
+      const fullChainSet = new Set<string>();
 
       for (const row of rows) {
         if (row.theme_id && !themesMap.has(row.theme_id)) {
@@ -71,7 +67,7 @@ export function useAlignmentMapData() {
             key: row.theme_key || '',
             title: row.theme_name || '',
             status: row.theme_status || 'draft',
-            progress: row.theme_progress ?? 0,
+            progress: Number(row.theme_progress) || 0,
             color: row.theme_color || '#2563EB',
           });
         }
@@ -82,7 +78,7 @@ export function useAlignmentMapData() {
             key: row.goal_key || '',
             title: row.goal_title || '',
             status: row.goal_status || 'draft',
-            progress: row.goal_progress ?? 0,
+            progress: Number(row.goal_progress) || 0,
             health: row.goal_health,
           });
         }
@@ -93,17 +89,17 @@ export function useAlignmentMapData() {
             key: row.kr_key || '',
             title: row.kr_title || '',
             status: row.kr_status || 'not_started',
-            progress: row.kr_progress ?? 0,
+            progress: Number(row.kr_progress) || 0,
           });
         }
 
         if (row.initiative_id && !initiativesMap.has(row.initiative_id)) {
           initiativesMap.set(row.initiative_id, {
             id: row.initiative_id,
-            key: row.initiative_key || '',
+            key: row.initiative_key || row.initiative_id.slice(0, 8),
             title: row.initiative_title || '',
             status: row.initiative_status || 'draft',
-            progress: row.initiative_progress ?? 0,
+            progress: Number(row.initiative_progress) || 0,
           });
         }
 
@@ -116,7 +112,7 @@ export function useAlignmentMapData() {
           });
         }
 
-        // Build connections
+        // Build connection maps
         if (row.theme_id && row.goal_id) {
           if (!themeToGoals.has(row.theme_id)) themeToGoals.set(row.theme_id, new Set());
           themeToGoals.get(row.theme_id)!.add(row.goal_id);
@@ -133,14 +129,19 @@ export function useAlignmentMapData() {
         if (row.initiative_id && row.epic_id) {
           if (!initiativeToEpics.has(row.initiative_id)) initiativeToEpics.set(row.initiative_id, new Set());
           initiativeToEpics.get(row.initiative_id)!.add(row.epic_id);
-          initiativesWithEpic.add(row.initiative_id);
         }
 
-        // Full chain check
+        // Full chain
         if (row.theme_id && row.goal_id && row.kr_id && row.initiative_id && row.epic_id) {
-          fullChains++;
+          fullChainSet.add(`${row.theme_id}-${row.goal_id}-${row.kr_id}-${row.initiative_id}-${row.epic_id}`);
         }
       }
+
+      // Stats: count initiatives that have at least one KR link
+      const linkedInitiatives = initiativesMap.size; // all initiatives in view are linked (they come from KR join)
+      // Count initiatives that also have epics
+      const initsWithEpic = new Set<string>();
+      for (const [iniId] of initiativeToEpics) initsWithEpic.add(iniId);
 
       return {
         themes: Array.from(themesMap.values()),
@@ -155,11 +156,11 @@ export function useAlignmentMapData() {
         stats: {
           linkedKrs: krsWithInitiative.size,
           totalKrs: krsMap.size,
-          linkedInitiatives: initiativesWithEpic.size,
+          linkedInitiatives,
           totalInitiatives: initiativesMap.size,
           linkedEpics: epicsMap.size,
           totalEpics: epicsMap.size,
-          fullChains,
+          fullChains: fullChainSet.size,
         },
       };
     },

@@ -290,17 +290,19 @@ function CatalystShellContent() {
   return (
     <div className="h-screen flex flex-col bg-surface-1 text-text-primary" onClickCapture={handleInternalLinkClickCapture}>
       {/* Global Header - Catalyst Native */}
-      <CatalystHeader />
+      <div data-catalyst-header>
+        <CatalystHeader />
+      </div>
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar - GPU layer for stability */}
-        <div className="relative flex-shrink-0" style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
+        <div data-catalyst-sidebar className="relative flex-shrink-0" style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
           {renderSidebar()}
         </div>
 
         {/* Route content scroll container (single scroll parent) - workspace frame */}
-        <main className="flex-1 min-w-0 flex flex-col overflow-hidden bg-surface-1">
+        <main data-catalyst-main className="flex-1 min-w-0 flex flex-col overflow-hidden bg-surface-1">
           <AnnouncementBanner />
           <div className="flex-1 min-h-0 overflow-auto">
             <Outlet />
