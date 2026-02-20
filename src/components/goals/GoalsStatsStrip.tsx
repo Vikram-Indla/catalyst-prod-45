@@ -10,6 +10,30 @@ interface GoalsStatsStripProps {
   themes?: { id: string }[];
 }
 
+/* Shimmer skeleton for loading state */
+export function GoalsStatsStripSkeleton() {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 16 }}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <div
+          key={i}
+          className="ph-shimmer"
+          style={{
+            background: '#F1F5F9',
+            border: '1px solid #E2E8F0',
+            borderRadius: 12,
+            height: 82,
+          }}
+        />
+      ))}
+      <style>{`
+        @keyframes phShimmer { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+        .ph-shimmer { animation: phShimmer 1.5s ease-in-out infinite; }
+      `}</style>
+    </div>
+  );
+}
+
 export function GoalsStatsStrip({ goals, keyResults, themes }: GoalsStatsStripProps) {
   const totalGoals = goals.length;
   const onTrackGoals = goals.filter(g => ['active', 'completed', 'on_track'].includes(g.status)).length;
@@ -65,7 +89,7 @@ export function GoalsStatsStrip({ goals, keyResults, themes }: GoalsStatsStripPr
   ];
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 16 }}>
+    <div className="goals-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 16 }}>
       {cards.map(card => (
         <div
           key={card.label}
@@ -121,6 +145,14 @@ export function GoalsStatsStrip({ goals, keyResults, themes }: GoalsStatsStripPr
           </div>
         </div>
       ))}
+      <style>{`
+        @media (max-width: 1279px) {
+          .goals-stats-grid { grid-template-columns: repeat(3, 1fr) !important; }
+        }
+        @media (max-width: 767px) {
+          .goals-stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+      `}</style>
     </div>
   );
 }
