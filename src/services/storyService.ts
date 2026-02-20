@@ -78,7 +78,7 @@ export async function createStory(input: CreateStoryInput) {
 }
 
 export async function getStoriesByFeature(featureId: string) {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('stories')
     .select(`
       *,

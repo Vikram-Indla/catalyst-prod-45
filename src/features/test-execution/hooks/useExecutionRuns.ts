@@ -13,7 +13,7 @@ export function useExecutionRuns(filters: RunListFilters = {}) {
   const query = useQuery({
     queryKey: ['execution-runs', filters],
     queryFn: async (): Promise<ExecutionRun[]> => {
-      let queryBuilder = supabase
+      let queryBuilder = (supabase as any)
         .from('test_execution_runs')
         .select(`
           *,

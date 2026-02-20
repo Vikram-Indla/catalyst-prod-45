@@ -134,7 +134,7 @@ export function useResourceJiraWork(resourceId: string | null) {
       // Get department
       let department: string | null = null;
       // We'll get it from the analytics data context, but also try inventory
-      const { data: deptData } = await supabase
+      const { data: deptData } = await (supabase as any)
         .from('resource_inventory')
         .select('capacity_departments(name)')
         .eq('id', resourceId!)
