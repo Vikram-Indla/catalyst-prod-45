@@ -38,14 +38,48 @@ export default function ProjectDashboardPage() {
     <div className="ph-content-wrapper" style={{ fontFamily: "'Inter', sans-serif" }}>
       <div className="ph-inner-content">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 mb-5">
-          <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: '#64748B' }} onClick={() => navigate('/project-hub/projects')}>
-            ProjectHub
-          </span>
-          <ChevronRight size={12} color="#94A3B8" />
-          <span style={{ fontSize: 13, color: '#0F172A', fontWeight: 500 }}>
-            {pKey} — {name}
-          </span>
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-1.5">
+            <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: '#64748B' }} onClick={() => navigate('/project-hub/projects')}>
+              ProjectHub
+            </span>
+            <ChevronRight size={12} color="#94A3B8" />
+            <span style={{ fontSize: 13, color: '#0F172A', fontWeight: 500 }}>
+              {pKey} — {name}
+            </span>
+          </div>
+
+          {!isLoading && (
+            <button
+              onClick={() => setShowInsights(!showInsights)}
+              className="inline-flex items-center gap-2 transition-all"
+              style={{
+                height: 36,
+                padding: '0 14px',
+                borderRadius: 8,
+                border: showInsights ? '1.5px solid #8B5CF6' : '1px solid #E2E8F0',
+                background: showInsights ? '#F5F3FF' : '#FFFFFF',
+                cursor: 'pointer',
+                fontSize: 12,
+                fontWeight: 600,
+                color: showInsights ? '#6D28D9' : '#334155',
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              <span
+                className="inline-flex items-center justify-center"
+                style={{
+                  width: 22,
+                  height: 22,
+                  borderRadius: 6,
+                  background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+                }}
+              >
+                <span style={{ color: '#FFFFFF', fontSize: 13, lineHeight: 1 }}>✦</span>
+              </span>
+              Intelligence
+            </button>
+          )}
         </div>
 
         {isLoading ? (
@@ -71,39 +105,6 @@ export default function ProjectDashboardPage() {
               starred={false}
               onSettings={() => navigate(`/project-hub/${key}/settings`)}
             />
-
-            {/* Intelligence button toolbar */}
-            <div className="flex items-center gap-2 mt-4">
-              <button
-                onClick={() => setShowInsights(!showInsights)}
-                className="inline-flex items-center gap-2 transition-all"
-                style={{
-                  height: 36,
-                  padding: '0 14px',
-                  borderRadius: 8,
-                  border: showInsights ? '1.5px solid #8B5CF6' : '1px solid #E2E8F0',
-                  background: showInsights ? '#F5F3FF' : '#FFFFFF',
-                  cursor: 'pointer',
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: showInsights ? '#6D28D9' : '#334155',
-                  fontFamily: "'Inter', sans-serif",
-                }}
-              >
-                <span
-                  className="inline-flex items-center justify-center"
-                  style={{
-                    width: 22,
-                    height: 22,
-                    borderRadius: 6,
-                    background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
-                  }}
-                >
-                  <span style={{ color: '#FFFFFF', fontSize: 13, lineHeight: 1 }}>✦</span>
-                </span>
-                Intelligence
-              </button>
-            </div>
 
             {showInsights && (
               <div className="mt-4">
