@@ -6,12 +6,14 @@ import { useProjectWorkItems } from '@/hooks/useProjectWorkItems';
 import { WorkItemsToolbar } from '@/components/project-hub/work-items/WorkItemsToolbar';
 import { WorkItemsTable } from '@/components/project-hub/work-items/WorkItemsTable';
 import { CreateWorkItemModal } from '@/components/project-hub/work-items/CreateWorkItemModal';
+import { WorkItemDetailModal } from '@/components/project-hub/work-items/WorkItemDetailModal';
 import { Loader2 } from 'lucide-react';
 
 export default function WorkItemsListPage() {
   const { key } = useParams<{ key: string }>();
   const [search, setSearch] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
+  const [detailItemId, setDetailItemId] = useState<string | null>(null);
 
   // Resolve project by key
   const { data: project } = useQuery({
@@ -30,7 +32,6 @@ export default function WorkItemsListPage() {
 
   const { data: items = [], isLoading } = useProjectWorkItems(project?.id);
 
-  // Filtered items
   const filtered = useMemo(() => {
     if (!search.trim()) return items;
     const q = search.toLowerCase();
@@ -42,7 +43,6 @@ export default function WorkItemsListPage() {
     );
   }, [items, search]);
 
-  // Unique assignees for avatar stack
   const assignees = useMemo(() => {
     const seen = new Set<string>();
     const result: { name: string; color: string }[] = [];
@@ -58,17 +58,11 @@ export default function WorkItemsListPage() {
     return result;
   }, [items]);
 
-  const handleRowClick = (id: string) => {
-    console.log('Work item clicked:', id);
-  };
-
   return (
     <div className="px-6 py-4 max-w-[1400px] mx-auto" style={{ fontFamily: 'Inter, sans-serif' }}>
       {/* Breadcrumb */}
       <div className="flex items-center gap-1 mb-3">
-        <span className="text-[10px] text-[#94A3B8]" style={{ fontFamily: 'Inter, sans-serif' }}>
-          ProjectHub
-        </span>
+        <span className="text-[10px] text-[#94A3B8]">ProjectHub</span>
         <span className="text-[10px] text-[#CBD5E1]">/</span>
         <span className="text-[10px] text-[#94A3B8]">
           {project?.key ?? key?.toUpperCase()} — {project?.name ?? 'Loading…'}
@@ -79,44 +73,38 @@ export default function WorkItemsListPage() {
 
       {/* Page header */}
       <div className="flex items-center gap-2.5 mb-1">
-        <h1
-          className="text-[18px] font-bold tracking-tight"
-          style={{ fontFamily: 'Sora, sans-serif', color: '#0F172A' }}
-        >
+        <h1 className="text-[18px] font-bold tracking-tight" style={{ fontFamily: 'Sora, sans-serif', color: '#0F172A' }}>
           Work Items
         </h1>
-        <span
-          className="text-[11px] font-medium px-2 py-0.5 rounded-full"
-          style={{ background: '#F1F5F9', color: '#64748B' }}
-        >
+        <span className="text-[11px] font-medium px-2 py-0.5 rounded-full" style={{ background: '#F1F5F9', color: '#64748B' }}>
           {filtered.length}
         </span>
       </div>
 
-      {/* Toolbar */}
-      <WorkItemsToolbar
-        search={search}
-        onSearchChange={setSearch}
-        totalCount={filtered.length}
-        assignees={assignees}
-      />
+      <WorkItemsToolbar search={search} onSearchChange={setSearch} totalCount={filtered.length} assignees={assignees} />
 
-      {/* Table */}
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
           <Loader2 size={24} className="animate-spin text-[#2563EB]" />
         </div>
       ) : (
-        <WorkItemsTable items={filtered} onRowClick={handleRowClick} onCreateClick={() => setCreateOpen(true)} />
+        <WorkItemsTable items={filtered} onRowClick={setDetailItemId} onCreateClick={() => setCreateOpen(true)} />
       )}
 
-      {/* Create Work Item Modal */}
+      {/* Create Modal */}
       {project && (
-        <CreateWorkItemModal
-          open={createOpen}
-          onClose={() => setCreateOpen(false)}
+        <CreateWorkItemModal open={createOpen} onClose={() => setCreateOpen(false)} projectId={project.id} projectKey={project.key} />
+      )}
+
+      {/* Detail Modal */}
+      {project && (
+        <WorkItemDetailModal
+          open={!!detailItemId}
+          itemId={detailItemId}
           projectId={project.id}
           projectKey={project.key}
+          onClose={() => setDetailItemId(null)}
+          onNavigate={(id) => setDetailItemId(id)}
         />
       )}
     </div>
