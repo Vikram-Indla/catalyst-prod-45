@@ -14,6 +14,7 @@ import { ReleaseHubSidebar } from './ReleaseHubSidebar';
 import { PlanHubSidebar } from './PlanHubSidebar';
 import { TaskHubSidebar } from './TaskHubSidebar';
 import { TestHubSidebar } from './TestHubSidebar';
+import { WorkHubSidebar } from '@/components/workhub/layout/WorkHubSidebar';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
 import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
@@ -133,9 +134,19 @@ function CatalystShellContent() {
 
   // Determine sidebar based on workspaceType (single source of truth)
   const renderSidebar = () => {
-    // No sidebar for Home, Admin, or WorkHub routes (WorkHub has built-in sidebar)
-    if (location.pathname === '/for-you' || location.pathname.startsWith('/admin') || isWorkHubRoute) {
+    // No sidebar for Home or Admin routes
+    if (location.pathname === '/for-you' || location.pathname.startsWith('/admin')) {
       return null;
+    }
+
+    // ProjectHub sidebar (same pattern as TestHub — shell-managed)
+    if (isWorkHubRoute) {
+      return (
+        <WorkHubSidebar
+          expanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+      );
     }
 
     // ReleaseHub sidebar (new Release Management module)
