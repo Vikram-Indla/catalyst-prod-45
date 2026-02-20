@@ -63,7 +63,7 @@ export function FeatureActivity({ featureId }: FeatureActivityProps) {
     queryKey: ['feature-activity', featureId],
     queryFn: async (): Promise<ActivityItem[]> => {
       // Fetch discussions for this feature with user profiles
-      const { data: discussions, error } = await supabase
+      const { data: discussions, error } = await (supabase as any)
         .from('discussions')
         .select(`
           id, 
