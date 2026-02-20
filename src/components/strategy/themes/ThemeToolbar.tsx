@@ -146,7 +146,7 @@ export function ThemeToolbar(props: Props) {
             key={v.key}
             onClick={() => props.onViewChange(v.key)}
             title={v.label}
-            className="flex items-center justify-center"
+            className="relative flex items-center justify-center"
             style={{
               width: 34, height: 30,
               background: props.view === v.key ? '#EFF6FF' : '#FFFFFF',
@@ -156,6 +156,10 @@ export function ThemeToolbar(props: Props) {
             }}
           >
             <v.icon size={15} strokeWidth={1.8} />
+            {v.key === 'alignment' && (
+              <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full ring-2 ring-white"
+                style={{ background: '#7C3AED' }} />
+            )}
           </button>
         ))}
       </div>
