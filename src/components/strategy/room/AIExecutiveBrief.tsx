@@ -273,24 +273,40 @@ function ChainDial({ dial }: { dial: ExecutiveBriefAI['chainDials'][0] }) {
   const rag = RAG[dial.rag];
 
   return (
-    <div className="rounded-lg border overflow-hidden" style={{ borderColor: C.bdr, background: C.card }}>
+    <div className="rounded-[10px] overflow-hidden" style={{ border: `1px solid ${C.bdr}`, background: C.card }}>
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-3 px-3.5 py-2.5 text-left hover:bg-slate-50/50 transition-colors"
+        className="w-full flex text-left cursor-pointer"
+        style={{ transition: 'border-color .15s' }}
       >
-        <div className="w-2 h-2 rounded-full shrink-0" style={{ background: rag.dot }} />
-        <span className="text-[11px] font-semibold flex-1" style={{ color: C.ink2 }}>{dial.label}</span>
-        <span className="text-[12px] font-bold" style={{ color: C.ink1 }}>{dial.metric}</span>
-        <span className="text-[10px]" style={{ color: C.ink4 }}>{dial.unit}</span>
-        <div className="w-16 h-1.5 rounded-full overflow-hidden shrink-0" style={{ background: C.bdrLt }}>
-          <div className="h-full rounded-full" style={{ width: `${dial.barPct}%`, background: rag.dot, transition: 'width 0.6s ease' }} />
+        {/* RAG color strip */}
+        <div className="shrink-0" style={{ width: 4, background: rag.dot }} />
+        <div className="flex-1 px-3.5 py-2.5">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full shrink-0" style={{ background: rag.dot }} />
+              <span className="text-[11px] font-semibold" style={{ color: C.ink2 }}>{dial.label}</span>
+            </div>
+            {expanded
+              ? <ChevronUp size={12} style={{ color: C.ink4 }} />
+              : <ChevronDown size={12} style={{ color: C.ink4 }} />}
+          </div>
+          <div className="flex items-baseline gap-1.5 mb-1.5">
+            <span className="text-[15px] font-extrabold" style={{ color: C.ink1 }}>{dial.metric}</span>
+            <span className="text-[10px]" style={{ color: C.ink4 }}>{dial.unit}</span>
+          </div>
+          <p className="text-[10px] mb-2" style={{ color: C.ink4 }}>{dial.tell}</p>
+          <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: C.bdrLt }}>
+            <div className="h-full rounded-full" style={{ width: `${dial.barPct}%`, background: rag.dot, transition: 'width 0.6s ease' }} />
+          </div>
         </div>
-        {expanded ? <ChevronUp size={12} style={{ color: C.ink4 }} /> : <ChevronDown size={12} style={{ color: C.ink4 }} />}
       </button>
       {expanded && (
-        <div className="px-3.5 pb-3 pt-0">
-          <p className="text-[10.5px] mb-1" style={{ color: C.ink3 }}>{dial.tell}</p>
-          <p className="text-[11px] leading-relaxed" style={{ color: C.ink2 }}>{dial.insight}</p>
+        <div className="px-3.5 pb-3 pt-0" style={{ borderTop: `1px solid ${C.bdrLt}` }}>
+          <p className="text-[10.5px] italic leading-relaxed pt-2" style={{ color: C.purple }}>
+            <span className="font-semibold not-italic" style={{ color: C.ink2 }}>AI Insight:</span>{' '}
+            {dial.insight}
+          </p>
         </div>
       )}
     </div>
@@ -376,45 +392,61 @@ function DecisionsTab({ brief }: { brief: ExecutiveBriefAI | null }) {
   );
 }
 
-function DecisionCard({ decision }: { decision: ExecutiveBriefAI['decisions'][0] }) {
-  const [expanded, setExpanded] = useState(false);
+function DecisionCard({ decision, defaultOpen = false }: { decision: ExecutiveBriefAI['decisions'][0]; defaultOpen?: boolean }) {
+  const [expanded, setExpanded] = useState(defaultOpen);
   const isCritical = decision.priority === 'CRITICAL';
+  const pbBg = isCritical ? '#DC2626' : '#B45309';
 
   return (
-    <div className="rounded-lg border overflow-hidden" style={{ borderColor: C.bdr, background: C.card }}>
+    <div className="rounded-[10px] overflow-hidden" style={{ border: `1px solid ${C.bdr}`, background: C.card }}>
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-3 px-3.5 py-3 text-left hover:bg-slate-50/50 transition-colors"
+        className="w-full flex items-start gap-2 px-3.5 py-3 text-left cursor-pointer"
       >
-        <span className="text-[10px] font-black px-2 py-0.5 rounded" style={{
+        {/* Decision number badge */}
+        <span className="shrink-0 text-[10px] font-black px-2 py-0.5 rounded mt-0.5" style={{
           background: isCritical ? '#FEF2F2' : C.pri50,
           color: isCritical ? C.danger : C.pri,
         }}>
           {decision.id}
         </span>
-        <span className="text-[11.5px] font-semibold flex-1" style={{ color: C.ink1 }}>{decision.ask}</span>
-        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{
-          background: isCritical ? '#FEF2F2' : '#FFFBEB',
-          color: isCritical ? C.danger : C.warn,
-        }}>
-          {decision.priority}
-        </span>
-        {expanded ? <ChevronUp size={12} style={{ color: C.ink4 }} /> : <ChevronDown size={12} style={{ color: C.ink4 }} />}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-0.5">
+            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{
+              background: isCritical ? '#FEF2F2' : '#FFFBEB',
+              color: pbBg,
+            }}>
+              {decision.priority}
+            </span>
+            <span className="text-[9px]" style={{ color: C.ink4 }}>{decision.deadline}</span>
+          </div>
+          <p className="text-[11.5px] font-semibold leading-snug" style={{ color: C.ink1 }}>{decision.ask}</p>
+        </div>
+        {expanded
+          ? <ChevronUp size={12} className="shrink-0 mt-1" style={{ color: C.ink4 }} />
+          : <ChevronDown size={12} className="shrink-0 mt-1" style={{ color: C.ink4 }} />}
       </button>
       {expanded && (
-        <div className="px-3.5 pb-3.5 pt-0 space-y-2">
-          <p className="text-[10.5px] leading-relaxed" style={{ color: C.ink2 }}>{decision.rationale}</p>
-          <div className="flex flex-wrap gap-1.5">
-            {decision.evidence.map((e, i) => (
-              <span key={i} className="text-[9px] font-medium px-2 py-0.5 rounded-full"
-                style={{ background: C.bdrLt, color: C.ink3 }}>
-                {e}
-              </span>
-            ))}
+        <div className="px-3.5 pb-3.5 pt-0 space-y-2.5" style={{ borderTop: `1px solid ${C.bdrLt}` }}>
+          <div className="pt-2">
+            <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: C.ink4 }}>Rationale</span>
+            <p className="text-[10.5px] leading-relaxed mt-0.5" style={{ color: C.ink2 }}>{decision.rationale}</p>
           </div>
-          <div className="flex items-center gap-4 pt-1">
-            <span className="text-[10px]" style={{ color: C.ink4 }}>Deadline: <strong style={{ color: C.ink2 }}>{decision.deadline}</strong></span>
-            <span className="text-[10px]" style={{ color: C.ink4 }}>Owner: <strong style={{ color: C.ink2 }}>{decision.owner}</strong></span>
+          <div>
+            <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: C.ink4 }}>Evidence</span>
+            <div className="flex flex-wrap gap-1.5 mt-1">
+              {decision.evidence.map((e, i) => (
+                <span key={i} className="text-[9px] font-medium px-2 py-0.5 rounded-full"
+                  style={{ background: C.bdrLt, color: C.ink3 }}>
+                  {e}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="pt-1">
+            <span className="text-[10px]" style={{ color: C.ink4 }}>
+              Owner: <strong style={{ color: C.ink2 }}>{decision.owner}</strong>
+            </span>
           </div>
         </div>
       )}
