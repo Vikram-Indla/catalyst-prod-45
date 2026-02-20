@@ -10,7 +10,7 @@ import { generateExecutiveBrief, type ExecutiveBriefAI } from '@/utils/generateE
 
 // ── Boardroom Neutral tokens ──
 const C = {
-  panel: '#FAFBFC',
+  panel: '#F0F4F8',
   card: '#FFFFFF',
   bdr: '#E2E8F0',
   bdrLt: '#F1F5F9',
@@ -87,7 +87,7 @@ export function AIExecutiveBrief({ open, onClose }: Props) {
           style={{
             position: 'fixed',
             top: 0, left: 0, right: 0, bottom: 0,
-            background: 'rgba(15, 23, 42, 0.35)',
+            background: 'rgba(15, 23, 42, 0.55)',
             zIndex: 100,
             transition: 'opacity 300ms ease',
             backdropFilter: 'blur(2px)',
