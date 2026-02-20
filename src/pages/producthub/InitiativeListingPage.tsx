@@ -336,9 +336,6 @@ export default function InitiativeListingPage() {
       <div className="px-6 py-4 border-b bg-card" style={{ minHeight: 72 }}>
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-bold text-zinc-900">Product Backlog</h1>
-          <span className="bg-zinc-100 text-zinc-600 text-sm font-semibold px-2.5 py-0.5 rounded-full tabular-nums">
-            {filtered.length}
-          </span>
         </div>
         <p className="text-sm text-zinc-500 mt-1">
           Strategic initiative portfolio &amp; prioritization
