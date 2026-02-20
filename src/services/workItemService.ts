@@ -132,15 +132,22 @@ export async function updateWorkItem(
 
   if (error) throw new Error(error.message);
 
+  // Auto-resolve userId if not provided
+  let actorId = userId;
+  if (!actorId) {
+    const { data: { user } } = await supabase.auth.getUser();
+    actorId = user?.id ?? undefined;
+  }
+
   // Log each changed field to activity log
-  if (userId) {
+  if (actorId) {
     const logs: any[] = [];
     for (const [key, newVal] of Object.entries(changes)) {
       const oldVal = (current as any)[key];
       if (String(oldVal) !== String(newVal)) {
         logs.push({
           work_item_id: id,
-          user_id: userId,
+          user_id: actorId,
           action: 'updated',
           field_name: key,
           old_value: oldVal != null ? String(oldVal) : null,

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { useWorkItemActivity, type ActivityEntry } from '@/hooks/useWorkItemActivity';
-import { Loader2, Send } from 'lucide-react';
+import { useWorkItemActivity, type ActivityEntry, type Reaction } from '@/hooks/useWorkItemActivity';
+import { Loader2, Trash2, SmilePlus } from 'lucide-react';
 
 type Tab = 'all' | 'comments' | 'history';
+
+const EMOJI_OPTIONS = ['👍', '👎', '❤️', '🎉', '😕', '🔥'];
 
 interface Props {
   workItemId: string;
@@ -11,7 +13,7 @@ interface Props {
 export function ActivityFeed({ workItemId }: Props) {
   const [tab, setTab] = useState<Tab>('all');
   const [commentText, setCommentText] = useState('');
-  const { entries, isLoading, addComment, isAddingComment } = useWorkItemActivity(workItemId);
+  const { entries, isLoading, addComment, isAddingComment, deleteComment, toggleReaction } = useWorkItemActivity(workItemId);
 
   const filtered = entries.filter(e => {
     if (tab === 'comments') return e.kind === 'comment';
@@ -29,7 +31,6 @@ export function ActivityFeed({ workItemId }: Props) {
 
   return (
     <div style={{ marginTop: 16 }}>
-      {/* Header */}
       <h3 className="text-[16px] font-semibold mb-3" style={{ color: '#0F172A' }}>Activity</h3>
 
       {/* Tabs */}
@@ -112,38 +113,17 @@ export function ActivityFeed({ workItemId }: Props) {
       ) : (
         <div className="flex flex-col">
           {filtered.map(entry => (
-            <div key={entry.id} className="flex gap-3 mb-5">
+            <div key={entry.id} className="flex gap-3 mb-5 group">
               <ActivityAvatar name={entry.actor_name} />
               <div className="flex-1 min-w-0">
                 {entry.kind === 'comment' ? (
-                  <>
-                    <div className="text-[14px]">
-                      <strong style={{ color: '#0F172A' }}>{entry.actor_name}</strong>
-                      <span style={{ color: '#44546F' }}> added a comment</span>
-                    </div>
-                    <div className="text-[12px] mb-1" style={{ color: '#626F86' }}>{entry.relative_time}</div>
-                    <div
-                      className="rounded text-[13px]"
-                      style={{ padding: 8, background: '#F7F8F9', borderRadius: 4, lineHeight: '20px', color: '#0F172A' }}
-                    >
-                      {entry.body}
-                    </div>
-                  </>
+                  <CommentEntry
+                    entry={entry}
+                    onDelete={() => deleteComment(entry.id)}
+                    onToggleReaction={(emoji) => toggleReaction({ commentId: entry.id, emoji })}
+                  />
                 ) : (
-                  <>
-                    <div className="text-[14px]">
-                      <strong style={{ color: '#0F172A' }}>{entry.actor_name}</strong>
-                      <span style={{ color: '#44546F' }}> changed the {formatFieldName(entry.field_name)}</span>
-                    </div>
-                    <div className="text-[12px] mb-0.5" style={{ color: '#626F86' }}>{entry.relative_time}</div>
-                    {(entry.old_value || entry.new_value) && (
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <ChangePill value={entry.old_value} />
-                        <span className="text-[12px]" style={{ color: '#97A0AF' }}>→</span>
-                        <ChangePill value={entry.new_value} />
-                      </div>
-                    )}
-                  </>
+                  <HistoryEntry entry={entry} />
                 )}
               </div>
             </div>
@@ -151,6 +131,105 @@ export function ActivityFeed({ workItemId }: Props) {
         </div>
       )}
     </div>
+  );
+}
+
+// ─── Comment Entry ─────────────────────────────────────────
+function CommentEntry({ entry, onDelete, onToggleReaction }: {
+  entry: ActivityEntry;
+  onDelete: () => void;
+  onToggleReaction: (emoji: string) => void;
+}) {
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  return (
+    <>
+      <div className="flex items-center justify-between">
+        <div className="text-[14px]">
+          <strong style={{ color: '#0F172A' }}>{entry.actor_name}</strong>
+          <span style={{ color: '#44546F' }}> added a comment</span>
+        </div>
+        <button
+          onClick={onDelete}
+          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-[#FEF2F2]"
+          title="Delete comment"
+        >
+          <Trash2 size={12} className="text-[#DC2626]" />
+        </button>
+      </div>
+      <div className="text-[12px] mb-1" style={{ color: '#626F86' }}>{entry.relative_time}</div>
+      <div
+        className="rounded text-[13px]"
+        style={{ padding: 8, background: '#F7F8F9', borderRadius: 4, lineHeight: '20px', color: '#0F172A' }}
+      >
+        {entry.body}
+      </div>
+
+      {/* Reactions */}
+      <div className="flex items-center gap-1 mt-1.5 flex-wrap">
+        {(entry.reactions || []).map(r => (
+          <button
+            key={r.emoji}
+            onClick={() => onToggleReaction(r.emoji)}
+            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[11px] transition-colors"
+            style={{
+              border: r.reacted_by_me ? '1px solid #2563EB' : '1px solid #DFE1E6',
+              background: r.reacted_by_me ? '#E9F2FF' : '#FFF',
+              color: r.reacted_by_me ? '#2563EB' : '#44546F',
+            }}
+          >
+            {r.emoji} {r.count}
+          </button>
+        ))}
+        <div className="relative">
+          <button
+            onClick={() => setPickerOpen(!pickerOpen)}
+            className="p-1 rounded hover:bg-[#F1F5F9] transition-colors"
+            style={{ color: '#94A3B8' }}
+          >
+            <SmilePlus size={14} />
+          </button>
+          {pickerOpen && (
+            <div
+              className="absolute left-0 bottom-full mb-1 flex gap-0.5 rounded-md p-1"
+              style={{ background: '#FFF', border: '1px solid #DFE1E6', boxShadow: '0 8px 20px rgba(0,0,0,0.18)', zIndex: 9999 }}
+            >
+              {EMOJI_OPTIONS.map(e => (
+                <button
+                  key={e}
+                  onClick={() => { onToggleReaction(e); setPickerOpen(false); }}
+                  className="w-7 h-7 flex items-center justify-center rounded hover:bg-[#F1F5F9] text-[16px]"
+                >
+                  {e}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─── History Entry ──────────────────────────────────────────
+function HistoryEntry({ entry }: { entry: ActivityEntry }) {
+  if (entry.action === 'commented') return null; // skip duplicated comment logs
+
+  return (
+    <>
+      <div className="text-[14px]">
+        <strong style={{ color: '#0F172A' }}>{entry.actor_name}</strong>
+        <span style={{ color: '#44546F' }}> changed the {formatFieldName(entry.field_name)}</span>
+      </div>
+      <div className="text-[12px] mb-0.5" style={{ color: '#626F86' }}>{entry.relative_time}</div>
+      {(entry.old_value || entry.new_value) && (
+        <div className="flex items-center gap-2 mt-0.5">
+          <ChangePill value={entry.old_value} />
+          <span className="text-[12px]" style={{ color: '#97A0AF' }}>→</span>
+          <ChangePill value={entry.new_value} />
+        </div>
+      )}
+    </>
   );
 }
 
