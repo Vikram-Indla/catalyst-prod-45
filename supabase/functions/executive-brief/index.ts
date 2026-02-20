@@ -37,7 +37,7 @@ ${themeLines}
 
 GENERATE exactly this JSON structure:
 
-1. "verdict": Letter grade (A+ to F), score 0-100, headline (max 15 words, hard-hitting), detail (2 sentences with specific numbers).
+1. "verdict": Letter grade (A+ to F), score 0-100, headline (MAXIMUM 10 words. Punchy. No colons. No sub-clauses. Example: "Portfolio is structurally broken and ungoverned."), detail (2 sentences with specific numbers).
 
 2. "chainDials": Array of exactly 6 objects. Each link in the strategy-to-execution chain:
    - Themes → Goals, Goals → Key Results, KRs → Work Items, Work → People, People → Budget, Budget → Risk
