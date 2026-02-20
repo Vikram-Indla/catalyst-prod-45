@@ -1,5 +1,5 @@
 /**
- * GoalsKeyResultsPage — Main page composing stats, toolbar, and views
+ * GoalsKeyResultsPage — Main page composing stats, toolbar, views, drawer & modals
  * Route: /strategyhub/goals
  */
 
@@ -12,6 +12,9 @@ import { GoalsToolbar } from '@/components/goals/GoalsToolbar';
 import { GoalsTreeView } from '@/components/goals/GoalsTreeView';
 import { GoalsListView } from '@/components/goals/GoalsListView';
 import { GoalsHeatmapView } from '@/components/goals/GoalsHeatmapView';
+import { GoalDetailDrawer } from '@/components/goals/GoalDetailDrawer';
+import { CreateGoalModal } from '@/components/goals/CreateGoalModal';
+import { CheckinModal } from '@/components/goals/CheckinModal';
 
 export default function GoalsKeyResultsPage() {
   const navigate = useNavigate();
@@ -24,6 +27,11 @@ export default function GoalsKeyResultsPage() {
   const [expandedThemes, setExpandedThemes] = useState<Set<string>>(new Set());
   const [expandedGoals, setExpandedGoals] = useState<Set<string>>(new Set());
   const [isAllExpanded, setIsAllExpanded] = useState(true);
+
+  // Interactive state
+  const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [checkinKrId, setCheckinKrId] = useState<string | null>(null);
 
   // Auto-expand all themes on first load
   useEffect(() => {
@@ -61,16 +69,6 @@ export default function GoalsKeyResultsPage() {
     }
   }, [isAllExpanded, themes, goals]);
 
-  const handleGoalClick = useCallback((goalId: string) => {
-    // Will open detail drawer in later stage
-    console.log('[Goals] Goal clicked:', goalId);
-  }, []);
-
-  const handleCheckinClick = useCallback((krId: string) => {
-    // Will open check-in modal in later stage
-    console.log('[Goals] Check-in clicked:', krId);
-  }, []);
-
   const isLoading = goalsLoading;
 
   return (
@@ -90,19 +88,12 @@ export default function GoalsKeyResultsPage() {
           Goals &amp; Key Results
         </h1>
         <button
-          onClick={() => console.log('[Goals] New Goal clicked')}
+          onClick={() => setShowCreateModal(true)}
           style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            padding: '7px 16px',
-            fontSize: 13,
-            fontWeight: 600,
-            color: '#FFFFFF',
-            backgroundColor: '#2563EB',
-            border: 'none',
-            borderRadius: 6,
-            cursor: 'pointer',
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            padding: '7px 16px', fontSize: 13, fontWeight: 600,
+            color: '#FFFFFF', backgroundColor: '#2563EB',
+            border: 'none', borderRadius: 6, cursor: 'pointer',
           }}
         >
           <Plus size={15} strokeWidth={2.5} />
@@ -118,10 +109,8 @@ export default function GoalsKeyResultsPage() {
         </div>
       ) : (
         <>
-          {/* Stats */}
           <GoalsStatsStrip goals={goals} keyResults={allKRs} themes={themes} />
 
-          {/* Toolbar */}
           <GoalsToolbar
             currentView={currentView}
             onViewChange={setCurrentView}
@@ -131,7 +120,6 @@ export default function GoalsKeyResultsPage() {
             isAllExpanded={isAllExpanded}
           />
 
-          {/* Views */}
           {currentView === 'tree' && (
             <GoalsTreeView
               goals={goals}
@@ -142,17 +130,13 @@ export default function GoalsKeyResultsPage() {
               expandedGoals={expandedGoals}
               onToggleTheme={handleToggleTheme}
               onToggleGoal={handleToggleGoal}
-              onGoalClick={handleGoalClick}
-              onCheckinClick={handleCheckinClick}
+              onGoalClick={setSelectedGoalId}
+              onCheckinClick={setCheckinKrId}
             />
           )}
 
           {currentView === 'list' && (
-            <GoalsListView
-              goals={goals}
-              themes={themes}
-              onGoalClick={handleGoalClick}
-            />
+            <GoalsListView goals={goals} themes={themes} onGoalClick={setSelectedGoalId} />
           )}
 
           {currentView === 'heatmap' && (
@@ -160,6 +144,23 @@ export default function GoalsKeyResultsPage() {
           )}
         </>
       )}
+
+      {/* Interactive overlays */}
+      <GoalDetailDrawer
+        goalId={selectedGoalId}
+        isOpen={!!selectedGoalId}
+        onClose={() => setSelectedGoalId(null)}
+        onCheckinClick={setCheckinKrId}
+      />
+      <CreateGoalModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+      />
+      <CheckinModal
+        krId={checkinKrId}
+        isOpen={!!checkinKrId}
+        onClose={() => setCheckinKrId(null)}
+      />
     </div>
   );
 }
