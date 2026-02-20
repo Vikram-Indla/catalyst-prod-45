@@ -1,7 +1,7 @@
 /**
  * ThemeToolbar — Search, filters (Radix Select), view toggle, actions
  */
-import { Search, List, LayoutGrid, GanttChart, Network, Download, Plus } from 'lucide-react';
+import { Search, List, LayoutGrid, GanttChart, Download, Plus } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { StrategicTheme, ThemeView } from '@/types/strategic-themes';
 import { BSC_FILTER_OPTIONS } from './theme-utils';
@@ -21,13 +21,14 @@ interface Props {
   fyFilter: string;
   onFyFilterChange: (s: string) => void;
   onNewTheme: () => void;
+  isIntelligenceOpen?: boolean;
+  onToggleIntelligence?: () => void;
 }
 
 const viewOptions: { key: ThemeView; icon: typeof List; label: string }[] = [
   { key: 'list', icon: List, label: 'List' },
   { key: 'board', icon: LayoutGrid, label: 'Board' },
   { key: 'timeline', icon: GanttChart, label: 'Timeline' },
-  { key: 'alignment', icon: Network, label: 'Map' },
 ];
 
 export function ThemeToolbar(props: Props) {
@@ -156,13 +157,34 @@ export function ThemeToolbar(props: Props) {
             }}
           >
             <v.icon size={15} strokeWidth={1.8} />
-            {v.key === 'alignment' && (
-              <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full ring-2 ring-white"
-                style={{ background: '#7C3AED' }} />
-            )}
           </button>
         ))}
       </div>
+
+      {/* Intelligence button */}
+      {props.onToggleIntelligence && (
+        <button
+          onClick={props.onToggleIntelligence}
+          className={`group flex items-center gap-1.5 px-3.5 py-[7px] rounded-lg transition-all duration-200 cursor-pointer ${
+            props.isIntelligenceOpen
+              ? 'border-[1.5px] border-purple-500 bg-purple-50'
+              : 'border border-slate-200 bg-white hover:border-purple-300 hover:bg-[#FAFAFF] hover:shadow-[0_2px_8px_rgba(124,58,237,0.08)]'
+          }`}
+        >
+          <div className={`w-[18px] h-[18px] rounded-[5px] flex items-center justify-center shrink-0 ${
+            props.isIntelligenceOpen ? 'bg-purple-600' : ''
+          }`}
+            style={props.isIntelligenceOpen ? undefined : { background: 'linear-gradient(135deg, #7C3AED, #6D28D9)' }}
+          >
+            <span className="text-white text-[9px] font-extrabold leading-none">✦</span>
+          </div>
+          <span className={`text-[12px] font-semibold transition-colors ${
+            props.isIntelligenceOpen ? 'text-purple-700' : 'text-slate-600 group-hover:text-purple-700'
+          }`}>
+            Intelligence
+          </span>
+        </button>
+      )}
 
       <div className="flex-1" />
 
