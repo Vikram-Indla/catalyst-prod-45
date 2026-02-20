@@ -419,7 +419,7 @@ const queryClient = new QueryClient();
 // Caty FAB on capacity planner and project hub routes
 function CatyWidgetRouteGuard() {
   const location = useLocation();
-  const showCaty = location.pathname.startsWith('/planhub/capacity') || location.pathname.startsWith('/strategyhub/capacity') || location.pathname.startsWith('/enterprise/capacity') || location.pathname.startsWith('/project-hub');
+  const showCaty = location.pathname.startsWith('/planhub/capacity') || location.pathname.startsWith('/strategyhub/capacity') || location.pathname.startsWith('/enterprise/capacity');
   if (!showCaty) return null;
   return <CatyFabPlaceholder />;
 }
