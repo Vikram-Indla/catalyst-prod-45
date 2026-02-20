@@ -186,70 +186,86 @@ function LoadingSkeleton() {
 
 /* ═══ VERDICT TAB ═══ */
 function VerdictTab({ brief, metrics }: { brief: ExecutiveBriefAI | null; metrics: any }) {
-  const v = brief?.verdict;
-  const grade = v?.grade || '—';
-  const score = v?.score ?? 0;
+  const V = brief?.verdict || { grade: '—', score: 0, headline: 'Generating executive verdict...', detail: '' };
+  const score = V.score ?? 0;
 
-  const gradeColor = score >= 70 ? C.success : score >= 45 ? C.warn : C.danger;
-
-  // SVG arc params
-  const r = 42, cx = 50, cy = 50;
-  const circumference = 2 * Math.PI * r * 0.75; // 75% arc
-  const offset = circumference - (score / 100) * circumference;
+  const gradeColor = score >= 80 ? '#16A34A'
+    : score >= 65 ? '#0D9488'
+    : score >= 50 ? '#D97706'
+    : score >= 35 ? '#EA580C'
+    : '#DC2626';
 
   return (
     <div className="space-y-5">
-      {/* Hero Card */}
-      <div className="rounded-xl p-5" style={{ background: 'linear-gradient(145deg, #1E293B, #273548)' }}>
-        <div className="flex items-start gap-5">
-          {/* Grade Arc */}
-          <div className="shrink-0 relative" style={{ width: 100, height: 100 }}>
-            <svg viewBox="0 0 100 100" className="w-full h-full" style={{ transform: 'rotate(-225deg)' }}>
-              <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={6}
-                strokeDasharray={`${circumference} ${2 * Math.PI * r * 0.25}`} strokeLinecap="round" />
-              <circle cx={cx} cy={cy} r={r} fill="none" stroke={gradeColor} strokeWidth={6}
-                strokeDasharray={`${circumference} ${2 * Math.PI * r * 0.25}`}
-                strokeDashoffset={offset} strokeLinecap="round"
-                style={{ transition: 'stroke-dashoffset 1s ease' }} />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-2xl font-black" style={{ color: gradeColor }}>{grade}</span>
-              <span className="text-[10px] font-bold" style={{ color: C.ink4 }}>{score}/100</span>
+      {/* Verdict Card — Light mode */}
+      <div style={{
+        background: '#FFFFFF',
+        border: '1px solid #E2E8F0',
+        borderRadius: 12,
+        padding: '20px 18px',
+        borderLeft: `4px solid ${gradeColor}`,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+          {/* Grade circle */}
+          <div style={{
+            width: 64, height: 64, borderRadius: '50%',
+            border: `4px solid ${gradeColor}`,
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0,
+          }}>
+            <div style={{ fontSize: 22, fontWeight: 900, color: gradeColor, lineHeight: 1, letterSpacing: '-.03em' }}>
+              {V.grade}
+            </div>
+            <div style={{ fontSize: 9, fontWeight: 700, color: '#94A3B8', marginTop: 1 }}>
+              {score}/100
             </div>
           </div>
 
-          <div className="flex-1 min-w-0 pt-1">
-            <h3 className="text-sm font-extrabold text-white leading-snug mb-1.5">
-              {v?.headline || 'Generating executive verdict...'}
-            </h3>
-            <p className="text-[10.5px] leading-relaxed" style={{ color: C.ink4 }}>
-              {v?.detail || ''}
-            </p>
+          <div style={{ flex: 1 }}>
+            <div style={{
+              fontSize: 16, fontWeight: 800, color: '#0F172A',
+              lineHeight: 1.3, letterSpacing: '-.02em', marginBottom: 6,
+            }}>
+              {V.headline}
+            </div>
+            <div style={{ fontSize: 13, color: '#334155', lineHeight: 1.6 }}>
+              {V.detail}
+            </div>
           </div>
         </div>
 
-      {/* Stats row */}
-        {metrics && (() => {
-          const stats = [
-            { v: `${metrics.goalsOnTrack}/${metrics.totalGoals}`, l: "Goals on track", c: metrics.goalsOnTrack === 0 ? C.danger : C.success, show: metrics.totalGoals > 0 },
-            { v: `${metrics.overdueRisks}/${metrics.totalRisks}`, l: "Risks overdue", c: metrics.overdueRisks > 0 ? C.danger : C.success, show: metrics.totalRisks > 0 },
-            { v: `${metrics.overAllocated}/${metrics.totalPeople}`, l: "Over-allocated", c: metrics.overAllocated > 0 ? C.danger : C.success, show: metrics.totalPeople > 0 },
-            { v: `${metrics.avgGoalProgress}%`, l: "Avg progress", c: metrics.avgGoalProgress >= 60 ? C.success : metrics.avgGoalProgress >= 40 ? C.warn : C.danger, show: true },
-          ].filter(s => s.show);
-          return stats.length > 0 ? (
-            <>
-              <div className="mt-4 mb-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }} />
-              <div className={`grid gap-3`} style={{ gridTemplateColumns: `repeat(${stats.length}, 1fr)` }}>
-                {stats.map((s, i) => (
-                  <div key={i} className="text-center">
-                    <div className="text-base font-extrabold" style={{ color: s.c }}>{s.v}</div>
-                    <div className="text-[9px] font-medium uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>{s.l}</div>
-                  </div>
-                ))}
-              </div>
-            </>
-          ) : null;
-        })()}
+        {/* Grade reasoning chips */}
+        {metrics && (
+          <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid #F1F5F9' }}>
+            <div style={{
+              fontSize: 10, fontWeight: 700, color: '#94A3B8',
+              textTransform: 'uppercase' as const, letterSpacing: '.05em', marginBottom: 6,
+            }}>
+              Why {V.grade}?
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 6 }}>
+              {[
+                { v: `${metrics.goalsOnTrack}/${metrics.totalGoals}`, l: 'Goals on track', bad: metrics.goalsOnTrack === 0 && metrics.totalGoals > 0, show: metrics.totalGoals > 0 },
+                { v: `${metrics.overdueRisks}/${metrics.totalRisks}`, l: 'Risks overdue', bad: metrics.overdueRisks > 0, show: metrics.totalRisks > 0 },
+                { v: `${metrics.orphanedWorkItems}`, l: 'Orphaned items', bad: metrics.orphanedWorkItems > 10, show: metrics.totalWorkItems > 0 },
+                { v: `${metrics.avgGoalProgress}%`, l: 'Avg progress', bad: metrics.avgGoalProgress < 50, show: true },
+                { v: `${metrics.krsBelow40}`, l: 'KRs below 40%', bad: metrics.krsBelow40 > 3, show: metrics.totalKRs > 0 },
+                { v: `${metrics.resolvedRisks}/${metrics.totalRisks}`, l: 'Risks resolved', bad: metrics.resolvedRisks === 0 && metrics.totalRisks > 0, show: metrics.totalRisks > 0 },
+              ].filter(s => s.show).map((s, i) => (
+                <div key={i} style={{
+                  padding: '4px 10px', borderRadius: 6,
+                  background: s.bad ? '#FEF2F2' : '#F0FDF4',
+                  border: `1px solid ${s.bad ? '#FECACA' : '#BBF7D0'}`,
+                  display: 'flex', alignItems: 'baseline', gap: 4,
+                }}>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: s.bad ? '#DC2626' : '#16A34A' }}>{s.v}</span>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: '#64748B' }}>{s.l}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Chain Dials */}
