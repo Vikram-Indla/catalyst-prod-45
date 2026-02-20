@@ -1,4 +1,4 @@
-import { LayoutGrid, Star, ChevronsLeft, ChevronsRight, Users } from 'lucide-react';
+import { LayoutGrid, Star, ChevronsLeft, ChevronsRight, Users, FolderKanban } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { NavItem } from './NavItem';
 
@@ -63,6 +63,13 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
           label="All Projects"
           isActive={location.pathname === '/project-hub/projects' || location.pathname === '/project-hub'}
           onClick={() => navigate('/project-hub/projects')}
+          collapsed={collapsed}
+        />
+        <NavItem
+          icon={FolderKanban}
+          label="All Projects v2"
+          isActive={location.pathname === '/project/all-projects'}
+          onClick={() => navigate('/project/all-projects')}
           collapsed={collapsed}
         />
         <NavItem
