@@ -1,7 +1,17 @@
 import React, { useRef, useEffect, useState } from "react";
-import { X, Sparkles } from "lucide-react";
+import { X, Sparkles, RefreshCw, Copy } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { ChainMetrics } from "@/utils/computeChainMetrics";
 import type { AIResult } from "@/utils/generateIntelligence";
+import { catalystToast } from "@/lib/catalystToast";
+
+interface LockedChainData {
+  theme: { key: string; name: string; status: string; progress: number };
+  goal: { key: string; title: string; status: string; progress: number; health?: number };
+  krs: { key: string; title: string; status: string; progress: number }[];
+  initiative: { key: string; title: string; status: string; progress: number } | null;
+  epic: { key: string; title: string; status: string } | null;
+}
 
 interface AIStrategyIntelligencePanelProps {
   isOpen: boolean;
@@ -12,9 +22,16 @@ interface AIStrategyIntelligencePanelProps {
   isAILoading: boolean;
   onClose: () => void;
   onRegenerate: () => void;
+  // Executive Brief props
+  briefContent?: string;
+  isBriefGenerating?: boolean;
+  briefError?: string | null;
+  lockedChain?: LockedChainData | null;
+  onRegenerateBrief?: () => void;
 }
 
 const TABS = [
+  { id: 'brief', label: 'Executive Brief' },
   { id: 'strategy', label: 'Strategy' },
   { id: 'initiatives', label: 'Initiatives' },
   { id: 'epics', label: 'Epics & Stories' },
@@ -25,9 +42,10 @@ type TabId = typeof TABS[number]['id'];
 
 export function AIStrategyIntelligencePanel({
   isOpen, metrics, defects, stories, aiResult, isAILoading, onClose, onRegenerate,
+  briefContent, isBriefGenerating, briefError, lockedChain, onRegenerateBrief,
 }: AIStrategyIntelligencePanelProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [activeTab, setActiveTab] = useState<TabId>('strategy');
+  const [activeTab, setActiveTab] = useState<TabId>('brief');
 
   useEffect(() => {
     if (scrollRef.current && metrics) scrollRef.current.scrollTop = 0;
@@ -41,7 +59,7 @@ export function AIStrategyIntelligencePanel({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  useEffect(() => { setActiveTab('strategy'); }, [metrics?.goalKey]);
+  useEffect(() => { setActiveTab('brief'); }, [metrics?.goalKey]);
 
   if (!metrics) return null;
 
@@ -141,6 +159,16 @@ export function AIStrategyIntelligencePanel({
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto" style={{ scrollBehavior: 'smooth' }}>
+        {activeTab === 'brief' && (
+          <ExecutiveBriefTab
+            lockedChain={lockedChain || null}
+            briefContent={briefContent || ''}
+            isBriefGenerating={isBriefGenerating || false}
+            briefError={briefError || null}
+            onRegenerate={onRegenerateBrief}
+            metrics={metrics}
+          />
+        )}
         {activeTab === 'strategy' && <StrategyTab metrics={metrics} aiResult={aiResult} isAILoading={isAILoading} />}
         {activeTab === 'initiatives' && <InitiativesTab metrics={metrics} aiResult={aiResult} isAILoading={isAILoading} />}
         {activeTab === 'epics' && <EpicsStoriesTab metrics={metrics} stories={stories} aiResult={aiResult} isAILoading={isAILoading} />}
@@ -267,6 +295,140 @@ function ChainHealthBars({ metrics }: { metrics: ChainMetrics }) {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB 0: EXECUTIVE BRIEF (moved from ThemeAlignmentView)
+// ═══════════════════════════════════════════════════════════
+
+function ExecutiveBriefTab({ lockedChain, briefContent, isBriefGenerating, briefError, onRegenerate, metrics }: {
+  lockedChain: LockedChainData | null;
+  briefContent: string;
+  isBriefGenerating: boolean;
+  briefError: string | null;
+  onRegenerate?: () => void;
+  metrics: ChainMetrics | null;
+}) {
+  const goalProgress = lockedChain?.goal?.progress || metrics?.goalProgress || 0;
+  const goalHealth = lockedChain?.goal?.health || metrics?.goalHealth || 0;
+  const krCount = lockedChain?.krs?.length || metrics?.krs?.length || 0;
+  const krsOnTrack = lockedChain?.krs?.filter(k => k.status === 'on_track' || k.status === 'active').length || 0;
+  const themeName = lockedChain?.theme?.name || metrics?.themeName || '';
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      catalystToast.success('Copied', 'Executive brief copied to clipboard.');
+    });
+  };
+
+  return (
+    <div className="px-7 py-5">
+      {/* At-a-Glance Metrics */}
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="border border-slate-200 rounded-lg p-3.5">
+          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 10 }}>Goal Progress</p>
+          <p className="font-bold leading-none" style={{ fontSize: 20, color: goalProgress >= 60 ? '#16A34A' : goalProgress >= 40 ? '#D97706' : '#EF4444' }}>
+            {goalProgress}%
+          </p>
+        </div>
+        <div className="border border-slate-200 rounded-lg p-3.5">
+          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 10 }}>AI Health</p>
+          <p className="font-bold leading-none" style={{ fontSize: 20, color: '#7C3AED' }}>
+            {goalHealth}/100
+          </p>
+        </div>
+        <div className="border border-slate-200 rounded-lg p-3.5">
+          <p className="uppercase tracking-wider font-semibold text-slate-500 mb-1" style={{ fontSize: 10 }}>Key Results</p>
+          <p className="font-bold leading-none" style={{ fontSize: 20, color: '#0D9488' }}>
+            {krCount}
+          </p>
+          <p className="text-slate-500 mt-0.5" style={{ fontSize: 10 }}>{krsOnTrack} on track</p>
+        </div>
+      </div>
+
+      {/* Brief Content */}
+      {isBriefGenerating && !briefContent ? (
+        <div className="space-y-6">
+          {[1, 2, 3, 4].map(section => (
+            <div key={section}>
+              <div className="h-3 w-40 bg-slate-100 rounded-full animate-pulse mb-4" />
+              <div className="space-y-2.5">
+                <div className="h-2.5 w-full bg-slate-50 rounded-full animate-pulse" />
+                <div className="h-2.5 bg-slate-50 rounded-full animate-pulse" style={{ width: '90%' }} />
+                <div className="h-2.5 bg-slate-50 rounded-full animate-pulse" style={{ width: '75%' }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : briefError ? (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="flex items-center justify-center rounded-xl mb-4"
+            style={{ width: 48, height: 48, background: '#FFFBEB' }}>
+            <X size={20} style={{ color: '#D97706' }} />
+          </div>
+          <p className="font-semibold text-slate-900 mb-1" style={{ fontSize: 15 }}>Briefing Unavailable</p>
+          <p className="text-slate-500" style={{ fontSize: 13, maxWidth: 300 }}>{briefError}</p>
+          {onRegenerate && (
+            <button onClick={onRegenerate} className="mt-4 px-3 py-1.5 rounded-md border border-slate-200 text-[12px] font-medium text-slate-700 hover:bg-slate-50 flex items-center gap-1.5">
+              <RefreshCw size={14} /> Retry
+            </button>
+          )}
+        </div>
+      ) : briefContent ? (
+        <>
+          <ReactMarkdown
+            components={{
+              h2: ({ children }) => (
+                <h2 className="font-bold tracking-tight mt-8 mb-3 pb-2 border-b border-slate-100 first:mt-0 text-slate-900"
+                  style={{ fontSize: 15 }}>
+                  {children}
+                </h2>
+              ),
+              p: ({ children }) => (
+                <p className="mb-4 text-slate-600" style={{ fontSize: 14, lineHeight: 1.8 }}>{children}</p>
+              ),
+              strong: ({ children }) => (
+                <strong className="font-semibold text-slate-900">{children}</strong>
+              ),
+              ul: ({ children }) => (
+                <ul className="my-3 space-y-1.5">{children}</ul>
+              ),
+              li: ({ children }) => (
+                <li className="pl-1 text-slate-600" style={{ fontSize: 13, lineHeight: 1.6 }}>
+                  <span className="mr-2 text-slate-400">•</span>{children}
+                </li>
+              ),
+            }}
+          >
+            {briefContent}
+          </ReactMarkdown>
+          {isBriefGenerating && (
+            <div className="flex items-center gap-2 mt-4" style={{ color: '#7C3AED', fontSize: 12 }}>
+              <Sparkles size={14} className="animate-pulse" />
+              <span className="font-medium">Generating…</span>
+            </div>
+          )}
+          <div className="flex items-center gap-2 mt-5">
+            {onRegenerate && (
+              <button onClick={onRegenerate} disabled={isBriefGenerating}
+                className="px-3 py-1.5 rounded-md text-[11px] font-medium text-slate-600 hover:bg-slate-100 flex items-center gap-1.5 disabled:opacity-50">
+                <RefreshCw size={13} /> Regenerate
+              </button>
+            )}
+            <button onClick={() => copyToClipboard(briefContent)} disabled={!briefContent}
+              className="px-3 py-1.5 rounded-md text-[11px] font-medium text-slate-600 hover:bg-slate-100 flex items-center gap-1.5 disabled:opacity-50">
+              <Copy size={13} /> Copy
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="py-12 text-center">
+          <Sparkles size={24} className="mx-auto mb-3 text-slate-300" />
+          <p className="text-[13px] text-slate-500">Click a strategy chain node to generate an executive brief.</p>
+        </div>
+      )}
     </div>
   );
 }
