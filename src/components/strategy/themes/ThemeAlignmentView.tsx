@@ -20,6 +20,10 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAlignmentMapData, type AlignmentNode, type AlignmentRow } from '@/hooks/useAlignmentMapData';
 import { catalystToast } from '@/lib/catalystToast';
+import { useChainIntelligence, useEpicStories, useChainDefects } from '@/hooks/useChainIntelligence';
+import { computeChainMetrics } from '@/utils/computeChainMetrics';
+import { generateIntelligence, type AIResult } from '@/utils/generateIntelligence';
+import { AIStrategyIntelligencePanel } from '@/components/strategy/intelligence/AIStrategyIntelligencePanel';
 
 // ── Layer colors (NO purple for KRs) ──
 const LAYER = {
@@ -214,7 +218,29 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
 
-  // ── Filter data by selected theme ──
+  // ── AI Strategy Intelligence panel state ──
+  const [intelChain, setIntelChain] = useState<{
+    themeId: string;
+    goalId: string;
+    epicId: string | null;
+  } | null>(null);
+  const [isIntelOpen, setIsIntelOpen] = useState(false);
+  const [aiResult, setAiResult] = useState<AIResult | null>(null);
+  const [isAILoading, setIsAILoading] = useState(false);
+
+  // Fetch chain intelligence data
+  const { data: chainIntelData } = useChainIntelligence(
+    intelChain?.themeId || null,
+    intelChain?.goalId || null
+  );
+  const { data: epicStories } = useEpicStories(intelChain?.epicId || null);
+  const { data: chainDefects } = useChainDefects(intelChain?.epicId || null);
+
+  // Compute metrics
+  const chainMetrics = useMemo(() => {
+    if (!chainIntelData || chainIntelData.length === 0) return null;
+    return computeChainMetrics(chainIntelData, epicStories || [], chainDefects || []);
+  }, [chainIntelData, epicStories, chainDefects]);
   const filteredData = useMemo(() => {
     if (!data) return null;
     if (selectedThemeFilter === 'all') return data;
@@ -391,7 +417,31 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     setHighlightedNodes(chainNodes);
     setIsAIPanelOpen(true);
     generateExecutiveStory(chainData);
-  }, [getConnectedNodes, buildChainData, generateExecutiveStory]);
+
+    // Also open Intelligence panel — find theme_id, goal_id, epic_id from rows
+    if (data?.rows) {
+      const matchingRow = data.rows.find((row: AlignmentRow) => {
+        const ids: Record<string, string | null> = {
+          [`theme-${row.theme_key}`]: row.theme_id,
+          [`goal-${row.goal_key}`]: row.goal_id,
+          [`kr-${row.kr_key}`]: row.kr_id,
+          [`initiative-${row.initiative_key}`]: row.initiative_id,
+          [`epic-${row.epic_key}`]: row.epic_id,
+        };
+        return Object.keys(ids).filter(k => ids[k] != null).includes(nodeId);
+      });
+      if (matchingRow && matchingRow.theme_id && matchingRow.goal_id) {
+        setIntelChain({
+          themeId: matchingRow.theme_id,
+          goalId: matchingRow.goal_id,
+          epicId: matchingRow.epic_id || null,
+        });
+        setIsIntelOpen(true);
+        setIsAILoading(true);
+        setAiResult(null);
+      }
+    }
+  }, [getConnectedNodes, buildChainData, generateExecutiveStory, data]);
 
   // ── Unfocus / close panel ──
   const handleUnfocus = useCallback(() => {
@@ -400,6 +450,11 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     setHighlightedNodes(new Set());
     setStoryContent('');
     setAiError(null);
+    // Also close intelligence panel
+    setIntelChain(null);
+    setIsIntelOpen(false);
+    setAiResult(null);
+    setIsAILoading(false);
   }, []);
 
   // ── Build connections list ──
@@ -475,7 +530,20 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
   useEffect(() => {
     const timer = setTimeout(recalculateConnections, 450);
     return () => clearTimeout(timer);
-  }, [isAIPanelOpen, recalculateConnections]);
+  }, [isAIPanelOpen, isIntelOpen, recalculateConnections]);
+
+  // ── Trigger AI when intelligence metrics are ready ──
+  useEffect(() => {
+    if (chainMetrics && isIntelOpen && !aiResult) {
+      const firstRow = chainIntelData?.[0];
+      if (firstRow) {
+        generateIntelligence(firstRow, chainMetrics).then(result => {
+          setAiResult(result);
+          setIsAILoading(false);
+        });
+      }
+    }
+  }, [chainMetrics, isIntelOpen]);
 
   // ── Keyboard shortcuts ──
   useEffect(() => {
@@ -519,6 +587,23 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     navigator.clipboard.writeText(text).then(() => {
       catalystToast.success('Copied', 'Executive brief copied to clipboard.');
     });
+  }, []);
+
+  const handleRegenerateAI = useCallback(() => {
+    if (!chainMetrics || !chainIntelData?.[0]) return;
+    setIsAILoading(true);
+    setAiResult(null);
+    generateIntelligence(chainIntelData[0], chainMetrics).then(result => {
+      setAiResult(result);
+      setIsAILoading(false);
+    });
+  }, [chainMetrics, chainIntelData]);
+
+  const handleCloseIntelligence = useCallback(() => {
+    setIntelChain(null);
+    setIsIntelOpen(false);
+    setAiResult(null);
+    setIsAILoading(false);
   }, []);
 
   // ── Focus-aware style helpers ──
@@ -1132,6 +1217,17 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           )}
         </div>
       </div>
+
+      {/* ═══ AI Strategy Intelligence Panel ═══ */}
+      <AIStrategyIntelligencePanel
+        isOpen={isIntelOpen}
+        metrics={chainMetrics}
+        defects={chainDefects || []}
+        aiResult={aiResult}
+        isAILoading={isAILoading}
+        onClose={handleCloseIntelligence}
+        onRegenerate={handleRegenerateAI}
+      />
 
       {/* ═══ LEGEND BAR ═══ */}
       <div className="flex items-center justify-center gap-6 shrink-0 border-t border-border bg-card" style={{ height: 36 }}>
