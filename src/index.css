@@ -502,13 +502,26 @@ html:has(body[data-scroll-locked]) {
        V10 NAVIGATION TOKENS — QA Checklist Compliant
        Per QA-CATALYST-SHELL-V10.md specification
        ═══════════════════════════════════════════════════════════════ */
-    --nav-bg: #ffffff;
-    --nav-text: #475569;                    /* V10: Inactive nav items */
-    --nav-text-hover: #1e293b;              /* V10: Nav hover state */
-    --nav-active: #2563eb;                  /* V10: Active nav text + underline */
-    --nav-hover-bg: transparent;            /* V10: NO background on hover */
-    --nav-active-bg: transparent;           /* V10: NO background on active */
-    --nav-underline: #2563eb;               /* V10: 2px active underline */
+    --nav-bg: #FFFFFF;
+    --nav-text: #64748B;                    /* V11: Inactive nav items */
+    --nav-text-hover: #0F172A;              /* V11: Nav hover state */
+    --nav-active: #2563EB;                  /* V11: Active nav text + underline */
+    --nav-hover-bg: transparent;            /* V11: NO background on hover */
+    --nav-active-bg: transparent;           /* V11: NO background on active */
+    --nav-underline: #2563EB;               /* V11: 2px active underline */
+    --nav-border: #E2E8F0;                  /* V11: Header bottom border */
+    --nav-shadow: 0 1px 0 rgba(15, 23, 42, 0.06); /* V11: Subtle shadow */
+    --nav-logo-separator: #F1F5F9;          /* V11: Logo right divider */
+    --sidebar-bg: #FFFFFF;                  /* V11: Sidebar background */
+    --sidebar-border: #E2E8F0;             /* V11: Sidebar right border */
+    --sidebar-shadow: 1px 0 0 rgba(15, 23, 42, 0.06); /* V11: Sidebar shadow */
+    --sidebar-section-label: #94A3B8;      /* V11: Section headers */
+    --sidebar-item-text: #334155;          /* V11: Default nav item text */
+    --sidebar-item-hover-bg: #F1F5F9;      /* V11: Item hover bg */
+    --sidebar-item-active-bg: #EFF6FF;     /* V11: Active item bg */
+    --sidebar-item-active-text: #2563EB;   /* V11: Active item text */
+    --sidebar-accent-bar: #2563EB;         /* V11: 3px left accent */
+    --sidebar-divider: #F1F5F9;            /* V11: Collapsed section divider */
     
     /* Legacy HEX aliases (DO NOT override canonical HSL tokens above) */
     --brand-active-hex: #2563eb;
@@ -1601,6 +1614,22 @@ html:has(body[data-scroll-locked]) {
 .dark *,
 [data-theme="dark"] * {
   scrollbar-color: hsl(var(--border-default)) hsl(var(--surface-2));
+}
+
+/* V11 Sidebar scrollbar — thin 3px thumb */
+[data-catalyst-sidebar] nav {
+  scrollbar-width: thin;
+  scrollbar-color: #E2E8F0 transparent;
+}
+[data-catalyst-sidebar] nav::-webkit-scrollbar {
+  width: 3px;
+}
+[data-catalyst-sidebar] nav::-webkit-scrollbar-thumb {
+  background: #E2E8F0;
+  border-radius: 3px;
+}
+[data-catalyst-sidebar] nav::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 /* ═══════════════════════════════════════════════════════════════

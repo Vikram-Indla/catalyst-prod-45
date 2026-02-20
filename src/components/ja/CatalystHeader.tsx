@@ -179,24 +179,26 @@ export function CatalystHeader() {
         ref={headerRef}
         className="sticky top-0 z-[100] flex items-center"
         style={{
-          // V10: 52px height + safe area
           height: 'calc(52px + var(--app-safe-top))',
           paddingTop: 'var(--app-safe-top)',
           paddingLeft: '20px',
           paddingRight: '20px',
-          borderBottom: '1px solid var(--divider)',
+          borderBottom: '1px solid var(--nav-border, #E2E8F0)',
           fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          backgroundColor: 'var(--nav-bg)',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-          // GPU layer promotion to prevent flicker when portals mount
+          backgroundColor: 'var(--nav-bg, #FFFFFF)',
+          boxShadow: 'var(--nav-shadow, 0 1px 0 rgba(15, 23, 42, 0.06))',
           transform: 'translateZ(0)',
           backfaceVisibility: 'hidden',
         }}
       >
         {/* ===== LOGO ZONE — Convergence Hub Icon + Umbrella-C Wordmark ===== */}
         <a 
-          className="flex items-center flex-shrink-0 cursor-pointer no-underline rounded-lg transition-colors p-1 -m-1 hover:bg-black/[0.04] dark:hover:bg-white/[0.06]"
-          style={{ marginRight: '32px' }}
+          className="flex items-center flex-shrink-0 cursor-pointer no-underline rounded-lg transition-colors p-1 -m-1 hover:bg-black/[0.04]"
+          style={{ 
+            marginRight: '4px',
+            paddingRight: '20px',
+            borderRight: '1px solid var(--nav-logo-separator, #F1F5F9)',
+          }}
           onClick={() => navigate('/home')}
         >
           {!sidebarExpanded ? (
@@ -260,9 +262,9 @@ export function CatalystHeader() {
               const navButtonStyle: React.CSSProperties = {
                 height: '100%',
                 padding: '0 14px',
-                fontSize: '0.84rem',
+                fontSize: '13px',
                 fontWeight: isActive ? 600 : 500,
-                color: isActive ? '#2563eb' : 'var(--nav-text, #475569)',
+                color: isActive ? '#2563EB' : 'var(--nav-text, #64748B)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '1px',
@@ -273,15 +275,17 @@ export function CatalystHeader() {
                 position: 'relative' as const,
                 fontFamily: "'Inter', sans-serif",
                 outline: 'none',
-                letterSpacing: '0.005em',
+                letterSpacing: '-0.1px',
                 borderRadius: '0',
-                borderBottom: isActive ? '2px solid #2563eb' : '2px solid transparent',
+                borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
               };
               
               // Hover handler - only change color, no backgrounds
               const handleHover = (e: React.MouseEvent<HTMLButtonElement>, isEnter: boolean) => {
                 if (!isActive) {
-                  e.currentTarget.style.color = isEnter ? '#2563eb' : 'var(--nav-text, #475569)';
+                  e.currentTarget.style.color = isEnter ? '#0F172A' : 'var(--nav-text, #64748B)';
+                  // Ghost underline preview
+                  e.currentTarget.style.borderBottom = isEnter ? '2px solid #E2E8F0' : '2px solid transparent';
                 }
               };
               
@@ -529,7 +533,24 @@ export function CatalystHeader() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
-                    className="relative flex items-center justify-center w-10 h-10 rounded-lg text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-all"
+                    className="relative flex items-center justify-center rounded-lg transition-all"
+                    style={{
+                      width: '36px',
+                      height: '36px',
+                      color: '#64748B',
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      borderRadius: '8px',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#334155';
+                      e.currentTarget.style.background = '#F1F5F9';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = '#64748B';
+                      e.currentTarget.style.background = 'transparent';
+                    }}
                     onClick={() => navigate('/admin/users')}
                     title="Settings"
                   >
@@ -542,39 +563,60 @@ export function CatalystHeader() {
               </Tooltip>
             )}
 
-            {/* Search Trigger — PROMINENT (Commercial SaaS: 40px height, 240px min width) */}
+            {/* Search Trigger — V11 light surface */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className={cn(
-                "hidden sm:flex items-center gap-2 h-10 px-4 rounded-lg transition-all",
-                "bg-zinc-100 dark:bg-zinc-800 border border-transparent",
-                "hover:bg-zinc-200 dark:hover:bg-zinc-700 hover:border-zinc-200 dark:hover:border-zinc-600",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
-              )}
-              style={{ minWidth: '240px' }}
+              className="hidden sm:flex items-center gap-2 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+              style={{ 
+                minWidth: '240px',
+                height: '34px',
+                padding: '0 12px',
+                background: '#F1F5F9',
+                border: '1px solid #E2E8F0',
+                borderRadius: '8px',
+                cursor: 'pointer',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = '#CBD5E1';
+                e.currentTarget.style.background = '#FFFFFF';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = '#E2E8F0';
+                e.currentTarget.style.background = '#F1F5F9';
+              }}
             >
-              <Search className="h-4 w-4 text-zinc-500" />
-              <span className="text-sm flex-1 text-left text-zinc-500">
+              <Search className="h-4 w-4" style={{ color: '#94A3B8' }} />
+              <span style={{ fontSize: '13px', fontFamily: "'Inter', sans-serif", color: '#94A3B8', flex: 1, textAlign: 'left' }}>
                 Search anything...
               </span>
               <div className="flex gap-1">
-                <kbd className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-600 rounded text-[11px] font-medium text-zinc-400">
+                <kbd style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '22px', height: '22px', padding: '0 6px', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '4px', fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: '#94A3B8' }}>
                   ⌘
                 </kbd>
-                <kbd className="inline-flex items-center justify-center min-w-[22px] h-[22px] px-1.5 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-600 rounded text-[11px] font-medium text-zinc-400">
+                <kbd style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '22px', height: '22px', padding: '0 6px', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '4px', fontSize: '10px', fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: '#94A3B8' }}>
                   K
                 </kbd>
               </div>
             </button>
-            {/* Mobile search icon — 40×40 */}
+            {/* Mobile search icon */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className={cn(
-                "sm:hidden flex items-center justify-center w-10 h-10 rounded-lg transition-colors",
-                "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
-                "hover:bg-black/[0.04] dark:hover:bg-white/[0.06]",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
-              )}
+              className="sm:hidden flex items-center justify-center rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1"
+              style={{
+                width: '36px',
+                height: '36px',
+                color: '#64748B',
+                background: 'transparent',
+                borderRadius: '8px',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = '#334155';
+                e.currentTarget.style.background = '#F1F5F9';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = '#64748B';
+                e.currentTarget.style.background = 'transparent';
+              }}
             >
               <Search className="h-5 w-5" />
             </button>
@@ -582,20 +624,24 @@ export function CatalystHeader() {
 
             {/* User Avatar */}
             <div ref={userMenuRef} className="relative">
-              <button
-                type="button"
-                onClick={() => setUserMenuOpen((v) => !v)}
-                aria-haspopup="menu"
-                aria-expanded={userMenuOpen}
-                className={cn(
-                  "w-8 h-8 rounded-full flex items-center justify-center",
-                  "text-primary-foreground text-[13px] font-semibold",
-                  "cursor-pointer transition-transform hover:scale-105",
-                  "bg-gradient-to-br from-primary to-primary/80",
-                  "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-                )}
-                title="Profile"
-              >
+                <button
+                  type="button"
+                  onClick={() => setUserMenuOpen((v) => !v)}
+                  aria-haspopup="menu"
+                  aria-expanded={userMenuOpen}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-semibold cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  style={{
+                    background: 'linear-gradient(135deg, #2563EB, #6366F1)',
+                    color: '#FFFFFF',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = '0 0 0 2px #DBEAFE';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                  title="Profile"
+                >
                 {user?.email?.charAt(0).toUpperCase() || 'U'}
               </button>
 
