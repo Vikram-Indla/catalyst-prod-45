@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCreateProject } from '@/hooks/useProjectHub';
 import { toast } from 'sonner';
 
@@ -59,11 +60,16 @@ export function CreateProjectDialog({ open, onClose }: Props) {
           </div>
           <div>
             <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>Category</label>
-            <select value={category} onChange={e => setCategory(e.target.value)} className="w-full rounded-md outline-none" style={{ height: 36, padding: '0 12px', border: '1px solid #E2E8F0', fontSize: 13, background: '#FFF' }}>
-              <option value="todo">To Do</option>
-              <option value="in_progress">In Progress</option>
-              <option value="done">Done</option>
-            </select>
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger className="h-9 text-[13px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todo">To Do</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="done">Done</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>Description</label>
