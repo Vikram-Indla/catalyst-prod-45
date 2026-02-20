@@ -2,36 +2,16 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { createWorkItem } from '@/services/workItemService';
-import { X, Zap, Layers, Bookmark, Bug, CheckSquare, CornerDownRight, ArrowUp, ArrowRight, ArrowDown, ChevronsUp, Calendar, Search, ChevronDown } from 'lucide-react';
+import { X, ArrowUp, ArrowRight, ArrowDown, ChevronsUp, Calendar, Search, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 
 // ─── Types ────────────────────────────────────────────────
-interface WorkTypeOption {
-  id: string;
-  name: string;
-  color: string;
-  icon: string;
-  level: string;
-}
-
-interface StatusOption {
-  id: string;
-  name: string;
-  is_default: boolean;
-}
-
-interface ProfileOption {
-  id: string;
-  full_name: string;
-  avatar_url: string | null;
-}
-
-interface ParentOption {
-  id: string;
-  item_key: string;
-  title: string;
-  summary: string;
-}
+interface WorkTypeOption { id: string; name: string; color: string; icon: string; level: string; }
+interface StatusOption { id: string; name: string; is_default: boolean; }
+interface ProfileOption { id: string; full_name: string; avatar_url: string | null; }
+interface ParentOption { id: string; item_key: string; title: string; summary: string; }
+interface LabelOption { id: string; name: string; color: string; }
+interface ReleaseOption { id: string; name: string; status: string; }
 
 interface CreateWorkItemModalProps {
   open: boolean;
@@ -40,30 +20,21 @@ interface CreateWorkItemModalProps {
   projectKey: string;
 }
 
-// ─── Constants ────────────────────────────────────────────
-const TYPE_ICONS: Record<string, React.ReactNode> = {
-  Epic: <Zap size={16} />,
-  Feature: <Layers size={16} />,
-  Story: <Bookmark size={16} />,
-  Bug: <Bug size={16} />,
-  Task: <CheckSquare size={16} />,
-  Subtask: <CornerDownRight size={16} />,
-};
-
-const TYPE_COLORS: Record<string, string> = {
-  Epic: '#7C3AED',
-  Feature: '#2563EB',
-  Story: '#0D9488',
-  Bug: '#DC2626',
-  Task: '#D97706',
-  Subtask: '#94A3B8',
+// ─── Hierarchy Icons ──────────────────────────────────────
+const HIERARCHY_ICONS: Record<string, { symbol: string; color: string }> = {
+  Epic:    { symbol: '◆', color: '#7C3AED' },
+  Feature: { symbol: '▲', color: '#2563EB' },
+  Story:   { symbol: '●', color: '#0D9488' },
+  Bug:     { symbol: '⬡', color: '#DC2626' },
+  Task:    { symbol: '■', color: '#D97706' },
+  Subtask: { symbol: '○', color: '#94A3B8' },
 };
 
 const PRIORITIES = [
-  { value: 'Critical', icon: <ChevronsUp size={14} />, color: '#DC2626' },
-  { value: 'High', icon: <ArrowUp size={14} />, color: '#D97706' },
-  { value: 'Medium', icon: <ArrowRight size={14} />, color: '#2563EB' },
-  { value: 'Low', icon: <ArrowDown size={14} />, color: '#94A3B8' },
+  { value: 'critical', label: 'Critical', icon: <ChevronsUp size={14} />, color: '#DC2626' },
+  { value: 'high', label: 'High', icon: <ArrowUp size={14} />, color: '#D97706' },
+  { value: 'medium', label: 'Medium', icon: <ArrowRight size={14} />, color: '#2563EB' },
+  { value: 'low', label: 'Low', icon: <ArrowDown size={14} />, color: '#94A3B8' },
 ];
 
 // ─── Component ────────────────────────────────────────────
@@ -72,12 +43,14 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
   const titleRef = useRef<HTMLInputElement>(null);
 
   // Form state
-  const [selectedType, setSelectedType] = useState<string>('');
+  const [selectedType, setSelectedType] = useState('');
   const [title, setTitle] = useState('');
-  const [priority, setPriority] = useState('Medium');
+  const [priority, setPriority] = useState('medium');
   const [assigneeId, setAssigneeId] = useState<string | null>(null);
   const [dueDate, setDueDate] = useState('');
   const [parentId, setParentId] = useState<string | null>(null);
+  const [releaseId, setReleaseId] = useState<string | null>(null);
+  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const [createAnother, setCreateAnother] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -85,6 +58,8 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
   const [priorityOpen, setPriorityOpen] = useState(false);
   const [assigneeOpen, setAssigneeOpen] = useState(false);
   const [parentOpen, setParentOpen] = useState(false);
+  const [releaseOpen, setReleaseOpen] = useState(false);
+  const [labelsOpen, setLabelsOpen] = useState(false);
   const [assigneeSearch, setAssigneeSearch] = useState('');
   const [parentSearch, setParentSearch] = useState('');
 
@@ -93,11 +68,8 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
     queryKey: ['ph-work-types', projectId],
     queryFn: async () => {
       const { data } = await supabase
-        .from('ph_work_types')
-        .select('id, name, color, icon, level')
-        .eq('project_id', projectId)
-        .eq('is_enabled', true)
-        .order('position');
+        .from('ph_work_types').select('id, name, color, icon, level')
+        .eq('project_id', projectId).eq('is_enabled', true).order('position');
       return (data || []) as WorkTypeOption[];
     },
     enabled: !!projectId,
@@ -107,10 +79,8 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
     queryKey: ['ph-statuses-default', projectId],
     queryFn: async () => {
       const { data } = await supabase
-        .from('ph_workflow_statuses')
-        .select('id, name, is_default')
-        .eq('project_id', projectId)
-        .order('position');
+        .from('ph_workflow_statuses').select('id, name, is_default')
+        .eq('project_id', projectId).order('position');
       return (data || []) as StatusOption[];
     },
     enabled: !!projectId,
@@ -119,10 +89,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
   const { data: profiles = [] } = useQuery<ProfileOption[]>({
     queryKey: ['ph-profiles-all'],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url')
-        .order('full_name');
+      const { data } = await supabase.from('profiles').select('id, full_name, avatar_url').order('full_name');
       return (data || []) as ProfileOption[];
     },
   });
@@ -131,11 +98,31 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
     queryKey: ['ph-parent-items', projectId],
     queryFn: async () => {
       const { data } = await supabase
-        .from('ph_work_items')
-        .select('id, item_key, title, summary')
-        .eq('project_id', projectId)
-        .order('item_key');
+        .from('ph_work_items').select('id, item_key, title, summary')
+        .eq('project_id', projectId).order('item_key');
       return (data || []) as ParentOption[];
+    },
+    enabled: !!projectId,
+  });
+
+  const { data: labels = [] } = useQuery<LabelOption[]>({
+    queryKey: ['ph-labels', projectId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_labels').select('id, name, color')
+        .eq('project_id', projectId).order('name');
+      return (data || []) as LabelOption[];
+    },
+    enabled: !!projectId,
+  });
+
+  const { data: releases = [] } = useQuery<ReleaseOption[]>({
+    queryKey: ['ph-releases', projectId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_releases').select('id, name, status')
+        .eq('project_id', projectId).order('release_date');
+      return (data || []) as ReleaseOption[];
     },
     enabled: !!projectId,
   });
@@ -169,32 +156,25 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
 
   const selectedTypeName = workTypes.find(t => t.id === selectedType)?.name || 'Story';
 
-  // ─── Close all dropdowns ────────────────────────────────
   const closeDropdowns = () => {
-    setPriorityOpen(false);
-    setAssigneeOpen(false);
-    setParentOpen(false);
+    setPriorityOpen(false); setAssigneeOpen(false);
+    setParentOpen(false); setReleaseOpen(false); setLabelsOpen(false);
   };
 
-  // ─── Reset form ──────────────────────────────────────────
   const resetForm = (keepTypeAndPriority = false) => {
-    setTitle('');
-    setAssigneeId(null);
-    setDueDate('');
-    setParentId(null);
-    setAssigneeSearch('');
-    setParentSearch('');
+    setTitle(''); setAssigneeId(null); setDueDate('');
+    setParentId(null); setReleaseId(null); setSelectedLabels([]);
+    setAssigneeSearch(''); setParentSearch('');
     if (!keepTypeAndPriority) {
       const story = workTypes.find(t => t.name === 'Story');
       setSelectedType(story?.id || workTypes[0]?.id || '');
-      setPriority('Medium');
+      setPriority('medium');
     }
   };
 
   // ─── Submit ──────────────────────────────────────────────
   const handleSubmit = async () => {
     if (!title.trim() || !selectedType || submitting) return;
-
     const defaultStatus = statuses.find(s => s.is_default) || statuses[0];
     if (!defaultStatus) return;
 
@@ -210,9 +190,11 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
         assignee_id: assigneeId,
         parent_id: parentId,
         due_date: dueDate || null,
+        release_id: releaseId,
+        label_ids: selectedLabels.length > 0 ? selectedLabels : undefined,
       });
 
-      queryClient.invalidateQueries({ queryKey: ['ph-work-items', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['ph-work-items'] });
 
       toast.success(`✓ ${result.item_key} created`, {
         description: result.title,
@@ -233,16 +215,14 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
     }
   };
 
-  // ─── Close handler ───────────────────────────────────────
-  const handleClose = () => {
-    resetForm();
-    onClose();
-  };
+  const handleClose = () => { resetForm(); onClose(); };
 
   if (!open) return null;
 
   const selectedAssignee = profiles.find(p => p.id === assigneeId);
   const selectedParent = parentItems.find(p => p.id === parentId);
+  const selectedRelease = releases.find(r => r.id === releaseId);
+  const pri = PRIORITIES.find(p => p.value === priority);
 
   return (
     <div
@@ -256,13 +236,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
       {/* Modal */}
       <div
         className="relative rounded-lg shadow-2xl flex flex-col"
-        style={{
-          width: 480,
-          maxHeight: '85vh',
-          background: '#FFFFFF',
-          border: '1px solid #E2E8F0',
-          borderRadius: 8,
-        }}
+        style={{ width: 480, maxHeight: '85vh', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8 }}
         onClick={e => { e.stopPropagation(); closeDropdowns(); }}
       >
         {/* Header */}
@@ -286,7 +260,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
 
         {/* Body */}
         <div className="px-5 py-4 flex flex-col gap-4 overflow-y-auto">
-          {/* Type selector */}
+          {/* Type selector — hierarchy icons */}
           <div>
             <label className="text-[10px] font-semibold uppercase tracking-wider mb-2 block" style={{ color: '#94A3B8' }}>
               Type
@@ -294,20 +268,20 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
             <div className="flex gap-1.5 flex-wrap">
               {workTypes.map(wt => {
                 const isSelected = wt.id === selectedType;
-                const color = TYPE_COLORS[wt.name] || wt.color;
+                const hi = HIERARCHY_ICONS[wt.name] || { symbol: '●', color: wt.color };
                 return (
                   <button
                     key={wt.id}
                     onClick={() => setSelectedType(wt.id)}
                     className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium transition-all"
                     style={{
-                      border: isSelected ? `2px solid ${color}` : '1px solid #E2E8F0',
-                      background: isSelected ? `${color}10` : '#FFFFFF',
-                      color: isSelected ? color : '#475569',
-                      outline: isSelected ? `1px solid ${color}` : 'none',
+                      border: isSelected ? `2px solid ${hi.color}` : '1px solid #E2E8F0',
+                      background: isSelected ? `${hi.color}10` : '#FFFFFF',
+                      color: isSelected ? hi.color : '#475569',
+                      outline: isSelected ? `1px solid ${hi.color}` : 'none',
                     }}
                   >
-                    <span style={{ color }}>{TYPE_ICONS[wt.name] || <Bookmark size={14} />}</span>
+                    <span style={{ color: hi.color, fontSize: 14, lineHeight: 1 }}>{hi.symbol}</span>
                     {wt.name}
                   </button>
                 );
@@ -326,46 +300,29 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
               onChange={e => setTitle(e.target.value)}
               placeholder="What needs to be done?"
               className="w-full rounded-md border px-3 text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB] transition-shadow"
-              style={{
-                height: 40,
-                borderColor: '#E2E8F0',
-                color: '#0F172A',
-                fontFamily: 'Inter, sans-serif',
-              }}
+              style={{ height: 40, borderColor: '#E2E8F0', color: '#0F172A', fontFamily: 'Inter, sans-serif' }}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) handleSubmit(); }}
             />
           </div>
 
-          {/* Fields row */}
+          {/* Priority + Assignee */}
           <div className="grid grid-cols-2 gap-3">
             {/* Priority */}
             <div className="relative">
-              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94A3B8' }}>
-                Priority
-              </label>
+              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94A3B8' }}>Priority</label>
               <button
-                onClick={e => { e.stopPropagation(); setPriorityOpen(!priorityOpen); setAssigneeOpen(false); setParentOpen(false); }}
+                onClick={e => { e.stopPropagation(); closeDropdowns(); setPriorityOpen(!priorityOpen); }}
                 className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[#94A3B8] transition-colors"
                 style={{ height: 36, borderColor: '#E2E8F0', color: '#334155' }}
               >
                 <span className="flex items-center gap-1.5">
-                  {PRIORITIES.find(p => p.value === priority)?.icon}
-                  {priority}
+                  <span style={{ color: pri?.color }}>{pri?.icon}</span>
+                  {pri?.label}
                 </span>
                 <ChevronDown size={14} className="text-[#94A3B8]" />
               </button>
               {priorityOpen && (
-                <div
-                  className="absolute left-0 mt-1 rounded-md overflow-hidden"
-                  style={{
-                    width: '100%',
-                    background: '#FFFFFF',
-                    border: '1px solid #E2E8F0',
-                    boxShadow: '0 8px 20px rgba(0,0,0,0.18)',
-                    zIndex: 9999,
-                  }}
-                  onClick={e => e.stopPropagation()}
-                >
+                <FixedDropdown width="100%" onClick={e => e.stopPropagation()}>
                   {PRIORITIES.map(p => (
                     <button
                       key={p.value}
@@ -374,41 +331,26 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                       onClick={() => { setPriority(p.value); setPriorityOpen(false); }}
                     >
                       <span style={{ color: p.color }}>{p.icon}</span>
-                      {p.value}
+                      {p.label}
                     </button>
                   ))}
-                </div>
+                </FixedDropdown>
               )}
             </div>
 
             {/* Assignee */}
             <div className="relative">
-              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94A3B8' }}>
-                Assignee
-              </label>
+              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94A3B8' }}>Assignee</label>
               <button
-                onClick={e => { e.stopPropagation(); setAssigneeOpen(!assigneeOpen); setPriorityOpen(false); setParentOpen(false); }}
+                onClick={e => { e.stopPropagation(); closeDropdowns(); setAssigneeOpen(!assigneeOpen); }}
                 className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[#94A3B8] transition-colors"
                 style={{ height: 36, borderColor: '#E2E8F0', color: selectedAssignee ? '#334155' : '#94A3B8' }}
               >
-                <span className="truncate">
-                  {selectedAssignee ? selectedAssignee.full_name : 'Unassigned'}
-                </span>
+                <span className="truncate">{selectedAssignee ? selectedAssignee.full_name : 'Unassigned'}</span>
                 <ChevronDown size={14} className="text-[#94A3B8] shrink-0" />
               </button>
               {assigneeOpen && (
-                <div
-                  className="absolute left-0 mt-1 rounded-md overflow-hidden flex flex-col"
-                  style={{
-                    width: '100%',
-                    maxHeight: 220,
-                    background: '#FFFFFF',
-                    border: '1px solid #E2E8F0',
-                    boxShadow: '0 8px 20px rgba(0,0,0,0.18)',
-                    zIndex: 9999,
-                  }}
-                  onClick={e => e.stopPropagation()}
-                >
+                <FixedDropdown maxHeight={220} onClick={e => e.stopPropagation()}>
                   <div className="px-2 py-1.5" style={{ borderBottom: '1px solid #F1F5F9' }}>
                     <div className="relative">
                       <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
@@ -424,7 +366,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                   </div>
                   <div className="overflow-y-auto flex-1">
                     <button
-                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] hover:bg-[#F1F5F9] transition-colors"
+                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] hover:bg-[#F1F5F9]"
                       style={{ color: '#94A3B8' }}
                       onClick={() => { setAssigneeId(null); setAssigneeOpen(false); setAssigneeSearch(''); }}
                     >
@@ -433,7 +375,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                     {filteredProfiles.map(p => (
                       <button
                         key={p.id}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[#F1F5F9] transition-colors"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[#F1F5F9] text-left"
                         style={{ color: '#334155' }}
                         onClick={() => { setAssigneeId(p.id); setAssigneeOpen(false); setAssigneeSearch(''); }}
                       >
@@ -442,18 +384,72 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
                       </button>
                     ))}
                   </div>
-                </div>
+                </FixedDropdown>
               )}
             </div>
           </div>
 
-          {/* Due date + Parent row */}
+          {/* Labels (multi-select chips) */}
+          <div className="relative">
+            <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94A3B8' }}>Labels</label>
+            <button
+              onClick={e => { e.stopPropagation(); closeDropdowns(); setLabelsOpen(!labelsOpen); }}
+              className="w-full flex items-center gap-1.5 flex-wrap min-h-[36px] rounded-md border px-2.5 py-1.5 text-[12px] hover:border-[#94A3B8] transition-colors"
+              style={{ borderColor: '#E2E8F0' }}
+            >
+              {selectedLabels.length === 0 && <span style={{ color: '#94A3B8' }}>Select labels…</span>}
+              {selectedLabels.map(lid => {
+                const lb = labels.find(l => l.id === lid);
+                if (!lb) return null;
+                return (
+                  <span
+                    key={lid}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium"
+                    style={{ background: '#DBEAFE', color: '#2563EB' }}
+                  >
+                    {lb.name}
+                    <span
+                      className="cursor-pointer hover:opacity-70"
+                      onClick={e => { e.stopPropagation(); setSelectedLabels(prev => prev.filter(l => l !== lid)); }}
+                    >×</span>
+                  </span>
+                );
+              })}
+              <ChevronDown size={14} className="text-[#94A3B8] ml-auto shrink-0" />
+            </button>
+            {labelsOpen && labels.length > 0 && (
+              <FixedDropdown maxHeight={200} onClick={e => e.stopPropagation()}>
+                <div className="overflow-y-auto">
+                  {labels.map(lb => {
+                    const checked = selectedLabels.includes(lb.id);
+                    return (
+                      <button
+                        key={lb.id}
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[#F1F5F9]"
+                        style={{ color: '#334155' }}
+                        onClick={() => {
+                          setSelectedLabels(prev =>
+                            checked ? prev.filter(l => l !== lb.id) : [...prev, lb.id]
+                          );
+                        }}
+                      >
+                        <div className="w-3.5 h-3.5 rounded border flex items-center justify-center" style={{ borderColor: checked ? '#2563EB' : '#CBD5E1', background: checked ? '#2563EB' : '#fff' }}>
+                          {checked && <span className="text-white text-[9px]">✓</span>}
+                        </div>
+                        <span className="w-2 h-2 rounded-full" style={{ background: lb.color }} />
+                        {lb.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </FixedDropdown>
+            )}
+          </div>
+
+          {/* Due date + Release */}
           <div className="grid grid-cols-2 gap-3">
-            {/* Due date */}
             <div>
-              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94A3B8' }}>
-                Due Date
-              </label>
+              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94A3B8' }}>Due Date</label>
               <div className="relative">
                 <Calendar size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
                 <input
@@ -466,80 +462,103 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
               </div>
             </div>
 
-            {/* Parent selector */}
+            {/* Release */}
             <div className="relative">
-              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94A3B8' }}>
-                Parent
-              </label>
+              <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94A3B8' }}>Release</label>
               <button
-                onClick={e => { e.stopPropagation(); setParentOpen(!parentOpen); setPriorityOpen(false); setAssigneeOpen(false); }}
+                onClick={e => { e.stopPropagation(); closeDropdowns(); setReleaseOpen(!releaseOpen); }}
                 className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[#94A3B8] transition-colors"
-                style={{ height: 36, borderColor: '#E2E8F0', color: selectedParent ? '#334155' : '#94A3B8' }}
+                style={{ height: 36, borderColor: '#E2E8F0', color: selectedRelease ? '#334155' : '#94A3B8' }}
               >
                 <span className="truncate">
-                  {selectedParent ? `${selectedParent.item_key} — ${selectedParent.title || selectedParent.summary}` : 'None'}
+                  {selectedRelease ? selectedRelease.name : 'None'}
                 </span>
                 <ChevronDown size={14} className="text-[#94A3B8] shrink-0" />
               </button>
-              {parentOpen && (
-                <div
-                  className="absolute left-0 mt-1 rounded-md overflow-hidden flex flex-col"
-                  style={{
-                    width: 280,
-                    maxHeight: 220,
-                    background: '#FFFFFF',
-                    border: '1px solid #E2E8F0',
-                    boxShadow: '0 8px 20px rgba(0,0,0,0.18)',
-                    zIndex: 9999,
-                  }}
-                  onClick={e => e.stopPropagation()}
-                >
-                  <div className="px-2 py-1.5" style={{ borderBottom: '1px solid #F1F5F9' }}>
-                    <div className="relative">
-                      <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
-                      <input
-                        value={parentSearch}
-                        onChange={e => setParentSearch(e.target.value)}
-                        placeholder="Search by key or title..."
-                        className="w-full pl-7 pr-2 py-1 text-[11px] rounded border focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
-                        style={{ borderColor: '#E2E8F0', height: 28 }}
-                        autoFocus
-                      />
-                    </div>
-                  </div>
-                  <div className="overflow-y-auto flex-1">
+              {releaseOpen && (
+                <FixedDropdown maxHeight={200} onClick={e => e.stopPropagation()}>
+                  <button
+                    className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-[#F1F5F9]"
+                    style={{ color: '#94A3B8' }}
+                    onClick={() => { setReleaseId(null); setReleaseOpen(false); }}
+                  >
+                    None
+                  </button>
+                  {releases.map(r => (
                     <button
-                      className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-[#F1F5F9] transition-colors"
-                      style={{ color: '#94A3B8' }}
-                      onClick={() => { setParentId(null); setParentOpen(false); setParentSearch(''); }}
+                      key={r.id}
+                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[#F1F5F9] text-left"
+                      style={{ color: '#334155' }}
+                      onClick={() => { setReleaseId(r.id); setReleaseOpen(false); }}
                     >
-                      None
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-bold" style={{ background: '#F0FDFA', color: '#0D9488' }}>
+                        {r.status === 'released' ? '✓' : r.status === 'in_progress' ? '►' : '○'}
+                      </span>
+                      {r.name}
                     </button>
-                    {filteredParents.map(p => (
-                      <button
-                        key={p.id}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[#F1F5F9] transition-colors text-left"
-                        style={{ color: '#334155' }}
-                        onClick={() => { setParentId(p.id); setParentOpen(false); setParentSearch(''); }}
-                      >
-                        <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#64748B', fontSize: 10 }}>
-                          {p.item_key}
-                        </span>
-                        <span className="truncate">{p.title || p.summary}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                  ))}
+                </FixedDropdown>
               )}
             </div>
+          </div>
+
+          {/* Parent selector */}
+          <div className="relative">
+            <label className="text-[10px] font-semibold uppercase tracking-wider mb-1.5 block" style={{ color: '#94A3B8' }}>Parent</label>
+            <button
+              onClick={e => { e.stopPropagation(); closeDropdowns(); setParentOpen(!parentOpen); }}
+              className="w-full flex items-center justify-between rounded-md border px-2.5 text-[12px] font-medium hover:border-[#94A3B8] transition-colors"
+              style={{ height: 36, borderColor: '#E2E8F0', color: selectedParent ? '#334155' : '#94A3B8' }}
+            >
+              <span className="truncate">
+                {selectedParent ? `${selectedParent.item_key} — ${selectedParent.title || selectedParent.summary}` : 'None'}
+              </span>
+              <ChevronDown size={14} className="text-[#94A3B8] shrink-0" />
+            </button>
+            {parentOpen && (
+              <FixedDropdown width={280} maxHeight={220} onClick={e => e.stopPropagation()}>
+                <div className="px-2 py-1.5" style={{ borderBottom: '1px solid #F1F5F9' }}>
+                  <div className="relative">
+                    <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
+                    <input
+                      value={parentSearch}
+                      onChange={e => setParentSearch(e.target.value)}
+                      placeholder="Search by key or title..."
+                      className="w-full pl-7 pr-2 py-1 text-[11px] rounded border focus:outline-none focus:ring-1 focus:ring-[#2563EB]"
+                      style={{ borderColor: '#E2E8F0', height: 28 }}
+                      autoFocus
+                    />
+                  </div>
+                </div>
+                <div className="overflow-y-auto flex-1">
+                  <button
+                    className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-[#F1F5F9]"
+                    style={{ color: '#94A3B8' }}
+                    onClick={() => { setParentId(null); setParentOpen(false); setParentSearch(''); }}
+                  >
+                    None
+                  </button>
+                  {filteredParents.map(p => (
+                    <button
+                      key={p.id}
+                      className="w-full flex items-center gap-2 px-3 py-1.5 text-[11px] font-medium hover:bg-[#F1F5F9] text-left"
+                      style={{ color: '#334155' }}
+                      onClick={() => { setParentId(p.id); setParentOpen(false); setParentSearch(''); }}
+                    >
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', color: '#64748B', fontSize: 10 }}>
+                        {p.item_key}
+                      </span>
+                      <span className="truncate">{p.title || p.summary}</span>
+                    </button>
+                  ))}
+                </div>
+              </FixedDropdown>
+            )}
           </div>
         </div>
 
         {/* Footer */}
-        <div
-          className="flex items-center justify-between px-5 py-3"
-          style={{ borderTop: '1px solid #F1F5F9' }}
-        >
+        <div className="flex items-center justify-between px-5 py-3" style={{ borderTop: '1px solid #F1F5F9' }}>
           <label className="flex items-center gap-2 text-[11px] font-medium cursor-pointer select-none" style={{ color: '#64748B' }}>
             <input
               type="checkbox"
@@ -549,7 +568,6 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
             />
             Create another
           </label>
-
           <div className="flex items-center gap-2">
             <button
               onClick={handleClose}
@@ -562,14 +580,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
               onClick={handleSubmit}
               disabled={!title.trim() || submitting}
               className="flex items-center justify-center rounded-md text-[13px] font-semibold transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                height: 40,
-                padding: '0 20px',
-                background: '#2563EB',
-                color: '#FFFFFF',
-                border: 'none',
-                borderRadius: 6,
-              }}
+              style={{ height: 40, padding: '0 20px', background: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}
             >
               {submitting ? 'Creating…' : 'Create'}
             </button>
@@ -580,7 +591,37 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
   );
 }
 
-// ─── Small Profile Avatar ──────────────────────────────────
+// ─── Reusable fixed dropdown ───────────────────────────────
+function FixedDropdown({
+  children,
+  width,
+  maxHeight,
+  onClick,
+}: {
+  children: React.ReactNode;
+  width?: number | string;
+  maxHeight?: number;
+  onClick?: (e: React.MouseEvent) => void;
+}) {
+  return (
+    <div
+      className="absolute left-0 mt-1 rounded-md overflow-hidden flex flex-col"
+      style={{
+        width: width || '100%',
+        maxHeight: maxHeight || 'auto',
+        background: '#FFFFFF',
+        border: '1px solid #E2E8F0',
+        boxShadow: '0 8px 20px rgba(0,0,0,0.18)',
+        zIndex: 9999,
+      }}
+      onClick={onClick}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ─── Profile Avatar ────────────────────────────────────────
 function ProfileAvatar({ name, url, size = 20 }: { name: string; url: string | null; size?: number }) {
   const initials = (name || '?').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   let hash = 0;
@@ -590,10 +631,7 @@ function ProfileAvatar({ name, url, size = 20 }: { name: string; url: string | n
 
   if (url) {
     return (
-      <img
-        src={url}
-        alt={name}
-        className="rounded-full shrink-0 object-cover"
+      <img src={url} alt={name} className="rounded-full shrink-0 object-cover"
         style={{ width: size, height: size }}
         onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
       />
@@ -601,10 +639,8 @@ function ProfileAvatar({ name, url, size = 20 }: { name: string; url: string | n
   }
 
   return (
-    <div
-      className="rounded-full flex items-center justify-center text-white font-bold shrink-0"
-      style={{ width: size, height: size, backgroundColor: bg, fontSize: size * 0.4 }}
-    >
+    <div className="rounded-full flex items-center justify-center text-white font-bold shrink-0"
+      style={{ width: size, height: size, backgroundColor: bg, fontSize: size * 0.4 }}>
       {initials}
     </div>
   );
