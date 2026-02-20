@@ -63,7 +63,7 @@ export default function UserProfile() {
     queryKey: ['user-role-history', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('user_role_history')
         .select('*, changed_by_profile:profiles!user_role_history_changed_by_fkey(full_name, email)')
         .eq('user_id', user.id)

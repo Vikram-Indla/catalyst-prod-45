@@ -67,7 +67,7 @@ export function useEpicBusinessProcesses(epicId: string | null) {
     queryFn: async () => {
       if (!epicId) return [];
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('epic_business_processes')
         .select(`
           business_process_id,

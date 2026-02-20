@@ -7,7 +7,7 @@ export function useTeams(filters?: TeamFilters) {
   return useQuery({
     queryKey: ['teams', filters],
     queryFn: async () => {
-      let query = supabase
+      let query = (supabase as any)
         .from('teams')
         .select('*, projects:projects!project_id(id, name), programs:programs!parent_program_id(id, name)')
         .order('name');
@@ -50,7 +50,7 @@ export function useTeam(teamId?: string) {
     queryFn: async () => {
       if (!teamId) return null;
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('teams')
         .select('*, projects:projects!project_id(id, name), programs:programs!parent_program_id(id, name)')
         .eq('id', teamId)

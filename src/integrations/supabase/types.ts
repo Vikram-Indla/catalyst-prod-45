@@ -192,6 +192,54 @@ export type Database = {
           },
         ]
       }
+      ai_briefs: {
+        Row: {
+          brief_json: Json
+          created_at: string
+          generated_at: string
+          generated_by: string | null
+          id: string
+          metrics_json: Json
+          published_at: string | null
+          published_by: string | null
+          scope: string
+          scope_entity_id: string | null
+          status: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          brief_json?: Json
+          created_at?: string
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          metrics_json?: Json
+          published_at?: string | null
+          published_by?: string | null
+          scope: string
+          scope_entity_id?: string | null
+          status?: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          brief_json?: Json
+          created_at?: string
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          metrics_json?: Json
+          published_at?: string | null
+          published_by?: string | null
+          scope?: string
+          scope_entity_id?: string | null
+          status?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: []
+      }
       assignment_license_allocations: {
         Row: {
           allocation_percent: number
@@ -54131,6 +54179,7 @@ export type Database = {
         Returns: string
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_ai_brief_admin: { Args: { _user_id: string }; Returns: boolean }
       is_ph_project_admin: {
         Args: { _project_id: string; _user_id: string }
         Returns: boolean
@@ -54316,6 +54365,7 @@ export type Database = {
         Args: { p_item_ids: string[]; p_week_id: string }
         Returns: undefined
       }
+      publish_ai_brief: { Args: { brief_id: string }; Returns: undefined }
       quick_create_defect_v2: {
         Args: {
           p_assigned_to?: string
