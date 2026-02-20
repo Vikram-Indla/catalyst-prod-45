@@ -21,7 +21,7 @@ export function useTestCaseExecutionHistory(caseId: string | undefined) {
       if (!caseId) return [];
 
       // Fetch executions for this test case
-      const { data: executions, error } = await supabase
+      const { data: executions, error } = await (supabase as any)
         .from('test_cycle_executions')
         .select(`
           id,
