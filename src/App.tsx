@@ -21,6 +21,7 @@ function PHPlaceholder({ title, phase }: { title: string; phase: string }) {
   return <PHPlaceholderBase title={title} phase={phase} icon={PH_ICONS[title] || List} description={PH_DESCRIPTIONS[title] || `Coming in ${phase}`} />;
 }
 const StrategicThemesPage = lazy(() => import("./pages/strategyhub/StrategicThemesPage"));
+const GoalsKeyResultsPage = lazy(() => import("./pages/strategyhub/GoalsKeyResultsPage"));
 // ProdHubAppShell removed — /producthub/* now uses CatalystShell
 const InitiativeListingPage = lazy(() => import("./pages/producthub/InitiativeListingPage"));
 const RoadmapPage = lazy(() => import("./pages/producthub/RoadmapPage"));
@@ -540,7 +541,7 @@ const App = () => (
               {/* ═══ Strategy Hub Routes ═══ */}
               <Route path="/strategyhub" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyRoom /></Suspense>} />
               <Route path="/strategyhub/themes" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategicThemesPage /></Suspense>} />
-              <Route path="/strategyhub/goals" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Goals & Key Results" /></Suspense>} />
+              <Route path="/strategyhub/goals" element={<Suspense fallback={<div className="p-8">Loading...</div>}><GoalsKeyResultsPage /></Suspense>} />
               <Route path="/strategyhub/initiatives" element={<Navigate to="/producthub/backlog" replace />} />
               <Route path="/strategyhub/investment" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Investment Allocation" /></Suspense>} />
               <Route path="/strategyhub/snapshots" element={<Suspense fallback={<div className="p-8">Loading...</div>}><StrategyComingSoon title="Snapshots" /></Suspense>} />
