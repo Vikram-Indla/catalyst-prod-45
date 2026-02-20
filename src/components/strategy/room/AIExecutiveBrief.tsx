@@ -228,23 +228,33 @@ function VerdictTab({ brief, metrics }: { brief: ExecutiveBriefAI | null; metric
           </div>
         </div>
 
-        {/* Stats row */}
-        {metrics && (
-          <>
-            <div className="mt-4 mb-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }} />
-            <div className="grid grid-cols-4 gap-3">
-              <MiniStat label="Goals On Track" value={metrics.goalsOnTrack} total={metrics.totalGoals} color={C.success} />
-              <MiniStat label="Risks Overdue" value={metrics.overdueRisks} total={metrics.totalRisks} color={C.danger} />
-              <MiniStat label="Over-Allocated" value={metrics.overAllocated} total={metrics.totalPeople} color={C.warn} />
-              <MiniStat label="Avg Progress" value={`${metrics.avgGoalProgress}%`} color={C.pri} />
-            </div>
-          </>
-        )}
+      {/* Stats row */}
+        {metrics && (() => {
+          const stats = [
+            { v: `${metrics.goalsOnTrack}/${metrics.totalGoals}`, l: "Goals on track", c: metrics.goalsOnTrack === 0 ? C.danger : C.success, show: metrics.totalGoals > 0 },
+            { v: `${metrics.overdueRisks}/${metrics.totalRisks}`, l: "Risks overdue", c: metrics.overdueRisks > 0 ? C.danger : C.success, show: metrics.totalRisks > 0 },
+            { v: `${metrics.overAllocated}/${metrics.totalPeople}`, l: "Over-allocated", c: metrics.overAllocated > 0 ? C.danger : C.success, show: metrics.totalPeople > 0 },
+            { v: `${metrics.avgGoalProgress}%`, l: "Avg progress", c: metrics.avgGoalProgress >= 60 ? C.success : metrics.avgGoalProgress >= 40 ? C.warn : C.danger, show: true },
+          ].filter(s => s.show);
+          return stats.length > 0 ? (
+            <>
+              <div className="mt-4 mb-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }} />
+              <div className={`grid gap-3`} style={{ gridTemplateColumns: `repeat(${stats.length}, 1fr)` }}>
+                {stats.map((s, i) => (
+                  <div key={i} className="text-center">
+                    <div className="text-base font-extrabold" style={{ color: s.c }}>{s.v}</div>
+                    <div className="text-[9px] font-medium uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>{s.l}</div>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : null;
+        })()}
       </div>
 
       {/* Chain Dials */}
       <div>
-        <h4 className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: C.ink3 }}>
+        <h4 className="text-[12px] font-extrabold uppercase tracking-wider mb-3" style={{ color: '#0F172A', letterSpacing: '.04em' }}>
           Strategy-to-Execution Chain
         </h4>
         <div className="space-y-2">
@@ -257,16 +267,8 @@ function VerdictTab({ brief, metrics }: { brief: ExecutiveBriefAI | null; metric
   );
 }
 
-function MiniStat({ label, value, total, color }: { label: string; value: any; total?: number; color: string }) {
-  return (
-    <div className="text-center">
-      <div className="text-base font-extrabold" style={{ color }}>
-        {value}{total !== undefined && typeof value === 'number' ? <span className="text-[10px] font-normal" style={{ color: C.ink4 }}>/{total}</span> : null}
-      </div>
-      <div className="text-[9px] font-medium uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>{label}</div>
-    </div>
-  );
-}
+
+
 
 function ChainDial({ dial }: { dial: ExecutiveBriefAI['chainDials'][0] }) {
   const [expanded, setExpanded] = useState(false);
@@ -285,17 +287,17 @@ function ChainDial({ dial }: { dial: ExecutiveBriefAI['chainDials'][0] }) {
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full shrink-0" style={{ background: rag.dot }} />
-              <span className="text-[11px] font-semibold" style={{ color: C.ink2 }}>{dial.label}</span>
+              <span className="text-[10.5px] font-bold" style={{ color: '#475569', textTransform: 'uppercase', letterSpacing: '.04em' }}>{dial.label}</span>
             </div>
             {expanded
               ? <ChevronUp size={12} style={{ color: C.ink4 }} />
               : <ChevronDown size={12} style={{ color: C.ink4 }} />}
           </div>
           <div className="flex items-baseline gap-1.5 mb-1.5">
-            <span className="text-[15px] font-extrabold" style={{ color: C.ink1 }}>{dial.metric}</span>
+            <span className="text-[22px] font-black" style={{ color: C.ink1 }}>{dial.metric}</span>
             <span className="text-[10px]" style={{ color: C.ink4 }}>{dial.unit}</span>
           </div>
-          <p className="text-[10px] mb-2" style={{ color: C.ink4 }}>{dial.tell}</p>
+          <p className="text-[12px] mb-2" style={{ color: '#334155', lineHeight: 1.45, fontWeight: 500 }}>{dial.tell}</p>
           <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: C.bdrLt }}>
             <div className="h-full rounded-full" style={{ width: `${dial.barPct}%`, background: rag.dot, transition: 'width 0.6s ease' }} />
           </div>
@@ -321,7 +323,7 @@ function IntelligenceTab({ brief }: { brief: ExecutiveBriefAI | null }) {
     <div className="space-y-5">
       {/* Contradictions */}
       <div>
-        <h4 className="text-[11px] font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5" style={{ color: C.ink3 }}>
+        <h4 className="text-[12px] font-extrabold uppercase tracking-wider mb-3 flex items-center gap-1.5" style={{ color: '#0F172A', letterSpacing: '.04em' }}>
           <Zap size={12} style={{ color: C.warn }} /> Contradictions Detected ({contradictions.length})
         </h4>
         {contradictions.length === 0 ? (
@@ -329,9 +331,9 @@ function IntelligenceTab({ brief }: { brief: ExecutiveBriefAI | null }) {
         ) : (
           <div className="space-y-2">
             {contradictions.map((c, i) => (
-              <div key={i} className="rounded-lg p-3.5" style={{ background: '#FFF7ED', border: '1px solid #FED7AA' }}>
-                <p className="text-[11.5px] font-bold mb-0.5" style={{ color: C.ink1 }}>{c.finding}</p>
-                <p className="text-[10.5px] italic mb-1" style={{ color: C.ink2 }}>{c.implication}</p>
+              <div key={i} className="rounded-lg p-3.5" style={{ background: '#FFF3E0', border: '1px solid #FFCC80' }}>
+                <p className="text-[13px] font-extrabold mb-1" style={{ color: '#1E293B', lineHeight: 1.4 }}>{c.finding}</p>
+                <p className="text-[12px] mb-1" style={{ color: '#78350F', lineHeight: 1.5 }}>→ {c.implication}</p>
                 <p className="text-[10px] flex items-center gap-1" style={{ color: C.ink4 }}>
                   <Link2 size={9} /> {c.source}
                 </p>
@@ -341,13 +343,7 @@ function IntelligenceTab({ brief }: { brief: ExecutiveBriefAI | null }) {
         )}
       </div>
 
-      {/* Recent Activity */}
-      <div>
-        <h4 className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: C.ink3 }}>
-          Recent Activity
-        </h4>
-        <p className="text-[12px]" style={{ color: C.ink3 }}>No recent activity tracked yet.</p>
-      </div>
+      {/* Recent Activity — only show if data exists */}
     </div>
   );
 }
@@ -359,7 +355,7 @@ function DecisionsTab({ brief }: { brief: ExecutiveBriefAI | null }) {
   return (
     <div className="space-y-5">
       <div className="flex items-center gap-2">
-        <h4 className="text-[11px] font-bold uppercase tracking-wider" style={{ color: C.ink3 }}>
+        <h4 className="text-[12px] font-extrabold uppercase tracking-wider" style={{ color: '#0F172A', letterSpacing: '.04em' }}>
           Decisions Required from You
         </h4>
         {decisions.length > 0 && (
@@ -373,8 +369,8 @@ function DecisionsTab({ brief }: { brief: ExecutiveBriefAI | null }) {
         <p className="text-[12px]" style={{ color: C.ink3 }}>No decisions pending — AI analysis will generate actionable items.</p>
       ) : (
         <div className="space-y-2.5">
-          {decisions.map((d) => (
-            <DecisionCard key={d.id} decision={d} />
+          {decisions.map((d, i) => (
+            <DecisionCard key={d.id} decision={d} defaultOpen={i === 0} />
           ))}
         </div>
       )}
@@ -382,10 +378,10 @@ function DecisionsTab({ brief }: { brief: ExecutiveBriefAI | null }) {
       {decisions.length > 0 && (
         <div className="rounded-lg p-3.5 flex items-center justify-between"
           style={{ background: C.pri50, border: `1px solid ${C.pri100}` }}>
-          <span className="text-[11.5px] font-semibold" style={{ color: C.pri }}>
+          <span className="text-[12px] font-bold" style={{ color: C.pri }}>
             Ready to act? → Export Decision Pack
           </span>
-          <Download size={14} style={{ color: C.pri }} />
+          <Download size={16} className="text-blue-600" />
         </div>
       )}
     </div>
@@ -404,7 +400,8 @@ function DecisionCard({ decision, defaultOpen = false }: { decision: ExecutiveBr
         className="w-full flex items-start gap-2 px-3.5 py-3 text-left cursor-pointer"
       >
         {/* Decision number badge */}
-        <span className="shrink-0 text-[10px] font-black px-2 py-0.5 rounded mt-0.5" style={{
+        <span className="shrink-0 text-[12px] font-black px-2.5 py-1 rounded mt-0.5 flex items-center justify-center" style={{
+          minWidth: 30, height: 30,
           background: isCritical ? '#FEF2F2' : C.pri50,
           color: isCritical ? C.danger : C.pri,
         }}>
@@ -412,15 +409,15 @@ function DecisionCard({ decision, defaultOpen = false }: { decision: ExecutiveBr
         </span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5">
-            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{
+            <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded" style={{
               background: isCritical ? '#FEF2F2' : '#FFFBEB',
               color: pbBg,
             }}>
               {decision.priority}
             </span>
-            <span className="text-[9px]" style={{ color: C.ink4 }}>{decision.deadline}</span>
+            <span className="text-[10px] font-semibold" style={{ color: '#64748B' }}>{decision.deadline}</span>
           </div>
-          <p className="text-[11.5px] font-semibold leading-snug" style={{ color: C.ink1 }}>{decision.ask}</p>
+          <p className="text-[14px] font-extrabold leading-snug" style={{ color: '#0F172A' }}>{decision.ask}</p>
         </div>
         {expanded
           ? <ChevronUp size={12} className="shrink-0 mt-1" style={{ color: C.ink4 }} />
@@ -463,7 +460,7 @@ function RecoveryTab({ brief }: { brief: ExecutiveBriefAI | null }) {
     <div className="space-y-5">
       {/* Recovery Clock */}
       <div>
-        <h4 className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: C.ink3 }}>
+        <h4 className="text-[12px] font-extrabold uppercase tracking-wider mb-3" style={{ color: '#0F172A', letterSpacing: '.04em' }}>
           Recovery Clock
         </h4>
         <div className="relative pl-5">
@@ -506,26 +503,16 @@ function RecoveryTab({ brief }: { brief: ExecutiveBriefAI | null }) {
         <div className="rounded-lg p-3.5" style={{ background: '#FFFBEB', border: '1px solid #FDE68A' }}>
           <div className="flex items-center gap-2 mb-1.5">
             <Shield size={13} style={{ color: C.warn }} />
-            <span className="text-[11px] font-bold" style={{ color: C.ink1 }}>Data Trust: {dt.level}</span>
+            <span className="text-[12px] font-extrabold" style={{ color: '#92400E' }}>Data Trust: {dt.level}</span>
           </div>
           <div className="flex items-center gap-3 mb-1">
             <span className="text-[10px]" style={{ color: C.ink3 }}>{dt.sourcesUsed} sources used</span>
             <span className="text-[10px]" style={{ color: C.ink3 }}>{dt.gaps} gaps</span>
           </div>
-          <p className="text-[10.5px]" style={{ color: C.ink2 }}>{dt.note}</p>
+          <p className="text-[12px]" style={{ color: '#78350F', lineHeight: 1.6 }}>{dt.note}</p>
         </div>
       )}
 
-      {/* Brief Metadata */}
-      <div className="rounded-lg p-3.5" style={{ background: C.bdrLt }}>
-        <h4 className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: C.ink4 }}>Brief Metadata</h4>
-        <div className="grid grid-cols-2 gap-y-1.5 text-[10px]" style={{ color: C.ink3 }}>
-          <span>Model</span><span className="font-medium" style={{ color: C.ink2 }}>Gemini Flash</span>
-          <span>Scope</span><span className="font-medium" style={{ color: C.ink2 }}>Full portfolio</span>
-          <span>Output</span><span className="font-medium" style={{ color: C.ink2 }}>Structured JSON</span>
-          <span>Guardrails</span><span className="font-medium" style={{ color: C.ink2 }}>Steercom-grade</span>
-        </div>
-      </div>
     </div>
   );
 }
