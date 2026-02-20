@@ -1,3 +1,5 @@
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
 interface DistributionBarProps {
   todo: number;
   inProgress: number;
@@ -5,13 +7,12 @@ interface DistributionBarProps {
   showNumbers?: boolean;
 }
 
-export function DistributionBar({ todo, inProgress, done, showNumbers = true }: DistributionBarProps) {
+export function DistributionBar({ todo, inProgress, done, showNumbers = false }: DistributionBarProps) {
   const total = todo + inProgress + done;
   if (total === 0) {
     return (
-      <div className="flex items-center gap-2">
-        <div style={{ flex: 1, height: 6, borderRadius: 3, background: '#E2E8F0' }} />
-        {showNumbers && <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>0</span>}
+      <div className="flex items-center justify-center">
+        <div style={{ width: '100%', height: 8, borderRadius: 4, background: '#E2E8F0' }} />
       </div>
     );
   }
@@ -20,17 +21,30 @@ export function DistributionBar({ todo, inProgress, done, showNumbers = true }: 
   const todoP = (todo / total) * 100;
 
   return (
-    <div className="flex items-center gap-2">
-      <div style={{ flex: 1, height: 6, borderRadius: 3, background: '#E2E8F0', overflow: 'hidden', display: 'flex' }}>
-        {doneP > 0 && <div style={{ width: `${doneP}%`, background: '#16A34A', borderRadius: doneP === 100 ? 3 : '3px 0 0 3px' }} />}
-        {ipP > 0 && <div style={{ width: `${ipP}%`, background: '#2563EB' }} />}
-        {todoP > 0 && <div style={{ width: `${todoP}%`, background: '#CBD5E1' }} />}
-      </div>
-      {showNumbers && (
-        <span style={{ fontSize: 10, color: '#64748B', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap', minWidth: 60, textAlign: 'right' }}>
-          {done}/{inProgress}/{todo}
-        </span>
-      )}
-    </div>
+    <TooltipProvider delayDuration={200}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="flex flex-col gap-0.5" style={{ cursor: 'default' }}>
+            <div style={{ width: '100%', height: 8, borderRadius: 4, background: '#E2E8F0', overflow: 'hidden', display: 'flex' }}>
+              {doneP > 0 && <div style={{ width: `${doneP}%`, background: '#16A34A', borderRadius: doneP === 100 ? 4 : '4px 0 0 4px' }} />}
+              {ipP > 0 && <div style={{ width: `${ipP}%`, background: '#2563EB' }} />}
+              {todoP > 0 && <div style={{ width: `${todoP}%`, background: '#CBD5E1' }} />}
+            </div>
+            {showNumbers && (
+              <span style={{ fontSize: 9, color: '#64748B', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap', textAlign: 'center' }}>
+                {done}/{inProgress}/{todo}
+              </span>
+            )}
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs">
+          <div className="flex flex-col gap-0.5">
+            <span>✅ Done: {done}</span>
+            <span>🔵 In Progress: {inProgress}</span>
+            <span>⬜ To Do: {todo}</span>
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

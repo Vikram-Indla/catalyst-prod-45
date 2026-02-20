@@ -75,7 +75,7 @@ export default function AllProjectsPage() {
   }
 
   return (
-    <div style={{ padding: '24px 28px', fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ padding: '24px 28px', fontFamily: "'Inter', sans-serif", minHeight: '100vh' }}>
       <div style={{ maxWidth: 1440, margin: '0 auto' }}>
         {/* Breadcrumb */}
         <div className="flex items-center gap-1 mb-1">

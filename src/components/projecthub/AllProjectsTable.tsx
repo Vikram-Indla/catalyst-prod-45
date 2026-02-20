@@ -5,6 +5,7 @@ import { DistributionBar } from './DistributionBar';
 import { MemberStack } from './MemberStack';
 import { STATUS_CATEGORY_DISPLAY } from '@/types/projecthub';
 import { formatDistanceToNowStrict } from 'date-fns';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 function getAvatarGradient(key: string) {
   const letter = (key[0] || '').toUpperCase();
@@ -69,107 +70,126 @@ export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectP
   const allChecked = projects.length > 0 && projects.every(p => selectedRows.has(p.id));
 
   return (
-    <div className="rounded-lg overflow-hidden" style={{ background: '#FFF', border: '1px solid #E2E8F0', boxShadow: '0 1px 2px rgba(0,0,0,.04)' }}>
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif", tableLayout: 'fixed' }}>
-          <colgroup>
-            <col style={{ width: 36 }} />
-            <col style={{ width: 36 }} />
-            <col style={{ width: 56 }} />
-            <col style={{ minWidth: 180 }} />
-            <col style={{ width: 140 }} />
-            <col style={{ width: 100 }} />
-            <col style={{ width: 56 }} />
-            <col style={{ width: 64 }} />
-            <col style={{ width: 56 }} />
-            <col style={{ width: 100 }} />
-            <col style={{ width: 100 }} />
-            <col style={{ width: 100 }} />
-            <col style={{ width: 90 }} />
-          </colgroup>
-          <thead>
-            <tr>
-              <th style={{ padding: '0 8px', height: 36, borderBottom: '1px solid #E2E8F0' }}>
-                <input type="checkbox" checked={allChecked} onChange={onToggleAll} className="cursor-pointer" style={{ width: 14, height: 14 }} />
-              </th>
-              <th style={{ padding: '0 4px', height: 36, borderBottom: '1px solid #E2E8F0' }} />
-              <SortHeader label="Key" col="name" currentCol={sortCol} dir={sortDir} onSort={onSort} width={56} />
-              <SortHeader label="Project Name" col="name" currentCol={sortCol} dir={sortDir} onSort={onSort} />
-              <SortHeader label="Department" col="department" currentCol={sortCol} dir={sortDir} onSort={onSort} width={140} />
-              <th style={{ padding: '0 8px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid #E2E8F0', width: 100 }}>Category</th>
-              <SortHeader label="Epics" col="total_epics" currentCol={sortCol} dir={sortDir} onSort={onSort} align="center" width={56} />
-              <SortHeader label="Stories" col="total_stories" currentCol={sortCol} dir={sortDir} onSort={onSort} align="center" width={64} />
-              <SortHeader label="Tasks" col="total_tasks" currentCol={sortCol} dir={sortDir} onSort={onSort} align="center" width={56} />
-              <th style={{ padding: '0 8px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid #E2E8F0', width: 100 }}>Dist.</th>
-              <SortHeader label="Health" col="health_status" currentCol={sortCol} dir={sortDir} onSort={onSort} width={100} />
-              <th style={{ padding: '0 8px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid #E2E8F0', width: 100 }}>Members</th>
-              <th style={{ padding: '0 8px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid #E2E8F0', textAlign: 'right', width: 90 }}>Updated</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projects.map(p => {
-              const isFav = favoriteIds.has(p.id);
-              const checked = selectedRows.has(p.id);
-              const bg = getAvatarGradient(p.project_key);
-              return (
-                <tr
-                  key={p.id}
-                  onClick={() => onSelectProject(p.id)}
-                  className="group cursor-pointer transition-colors hover:bg-[#F8FAFC]"
-                  style={{ height: 36, borderBottom: '1px solid #F1F5F9' }}
-                >
-                  <td style={{ padding: '0 8px' }} onClick={e => e.stopPropagation()}>
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => onToggleRow(p.id)}
-                      className="cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                      style={{ width: 14, height: 14, ...(checked ? { opacity: 1 } : {}) }}
-                    />
-                  </td>
-                  <td style={{ padding: '0 4px' }} onClick={e => e.stopPropagation()}>
-                    <button onClick={() => onToggleFav(p.id, isFav)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
-                      <Star size={14} fill={isFav ? '#EAB308' : 'none'} color={isFav ? '#EAB308' : '#CBD5E1'} />
-                    </button>
-                  </td>
-                  <td style={{ padding: '0 8px', fontSize: 11, color: '#64748B', fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {p.project_key}
-                  </td>
-                  <td style={{ padding: '0 8px', overflow: 'hidden' }}>
-                    <div className="flex items-center gap-2" style={{ overflow: 'hidden' }}>
-                      <div
-                        className="flex items-center justify-center rounded-md flex-shrink-0"
-                        style={{ width: 26, height: 26, background: bg, color: '#FFF', fontSize: 9, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", borderRadius: 5 }}
-                      >
-                        {p.project_key.substring(0, 2)}
+    <TooltipProvider delayDuration={300}>
+      <div className="rounded-lg overflow-hidden" style={{ background: '#FFF', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(0,0,0,.06)' }}>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif", tableLayout: 'fixed' }}>
+            <colgroup>
+              <col style={{ width: 36 }} />
+              <col style={{ width: 36 }} />
+              <col style={{ width: 56 }} />
+              <col /> {/* PROJECT NAME — flex */}
+              <col style={{ width: 180 }} />
+              <col style={{ width: 100 }} />
+              <col style={{ width: 56 }} />
+              <col style={{ width: 64 }} />
+              <col style={{ width: 56 }} />
+              <col style={{ width: 100 }} />
+              <col style={{ width: 100 }} />
+              <col style={{ width: 90 }} />
+              <col style={{ width: 90 }} />
+            </colgroup>
+            <thead>
+              <tr>
+                <th style={{ padding: '0 8px', height: 36, borderBottom: '1px solid #E2E8F0' }}>
+                  <input type="checkbox" checked={allChecked} onChange={onToggleAll} className="cursor-pointer" style={{ width: 14, height: 14 }} />
+                </th>
+                <th style={{ padding: '0 4px', height: 36, borderBottom: '1px solid #E2E8F0' }} />
+                <SortHeader label="Key" col="name" currentCol={sortCol} dir={sortDir} onSort={onSort} width={56} />
+                <SortHeader label="Project Name" col="name" currentCol={sortCol} dir={sortDir} onSort={onSort} />
+                <SortHeader label="Department" col="department" currentCol={sortCol} dir={sortDir} onSort={onSort} width={180} />
+                <th style={{ padding: '0 8px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid #E2E8F0', width: 100 }}>Category</th>
+                <SortHeader label="Epics" col="total_epics" currentCol={sortCol} dir={sortDir} onSort={onSort} align="center" width={56} />
+                <SortHeader label="Stories" col="total_stories" currentCol={sortCol} dir={sortDir} onSort={onSort} align="center" width={64} />
+                <SortHeader label="Tasks" col="total_tasks" currentCol={sortCol} dir={sortDir} onSort={onSort} align="center" width={56} />
+                <th style={{ padding: '0 8px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid #E2E8F0', textAlign: 'center', width: 100 }}>Dist.</th>
+                <SortHeader label="Health" col="health_status" currentCol={sortCol} dir={sortDir} onSort={onSort} width={100} />
+                <th style={{ padding: '0 8px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid #E2E8F0', width: 90 }}>Members</th>
+                <th style={{ padding: '0 8px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid #E2E8F0', textAlign: 'right', width: 90 }}>Updated</th>
+              </tr>
+            </thead>
+            <tbody>
+              {projects.map(p => {
+                const isFav = favoriteIds.has(p.id);
+                const checked = selectedRows.has(p.id);
+                const bg = getAvatarGradient(p.project_key);
+                return (
+                  <tr
+                    key={p.id}
+                    onClick={() => onSelectProject(p.id)}
+                    className="group cursor-pointer transition-colors"
+                    style={{
+                      height: 36,
+                      borderBottom: '1px solid #F1F5F9',
+                      background: checked ? '#F0F9FF' : undefined,
+                    }}
+                    onMouseEnter={e => { if (!checked) (e.currentTarget as HTMLElement).style.background = '#F8FAFC'; (e.currentTarget as HTMLElement).style.borderLeft = '2px solid #2563EB'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = checked ? '#F0F9FF' : ''; (e.currentTarget as HTMLElement).style.borderLeft = ''; }}
+                  >
+                    <td style={{ padding: '0 8px' }} onClick={e => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => onToggleRow(p.id)}
+                        className="cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
+                        style={{ width: 14, height: 14, ...(checked ? { opacity: 1 } : {}) }}
+                      />
+                    </td>
+                    <td style={{ padding: '0 4px' }} onClick={e => e.stopPropagation()}>
+                      <button onClick={() => onToggleFav(p.id, isFav)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
+                        <Star size={14} fill={isFav ? '#EAB308' : 'none'} color={isFav ? '#EAB308' : '#CBD5E1'} />
+                      </button>
+                    </td>
+                    <td style={{ padding: '0 8px', fontSize: 11, color: '#64748B', fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {p.project_key}
+                    </td>
+                    <td style={{ padding: '0 8px', overflow: 'hidden' }}>
+                      <div className="flex items-center gap-2" style={{ overflow: 'hidden' }}>
+                        <div
+                          className="flex items-center justify-center rounded-md flex-shrink-0"
+                          style={{ width: 26, height: 26, background: bg, color: '#FFF', fontSize: 9, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", borderRadius: 5 }}
+                        >
+                          {p.project_key.substring(0, 2)}
+                        </div>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: '#0F172A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</span>
                       </div>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: '#0F172A', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</span>
-                    </div>
-                  </td>
-                  <td style={{ padding: '0 8px', fontSize: 11, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.department || '—'}</td>
-                  <td style={{ padding: '0 8px' }}>
-                    <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11, color: '#475569' }}>
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: CAT_DOT[p.status_category] || '#94A3B8', flexShrink: 0 }} />
-                      {STATUS_CATEGORY_DISPLAY[p.status_category] || p.status_category}
-                    </span>
-                  </td>
-                  <td style={{ padding: '0 8px', textAlign: 'center', fontSize: 12, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#334155' }}>{p.total_epics}</td>
-                  <td style={{ padding: '0 8px', textAlign: 'center', fontSize: 12, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#334155' }}>{p.total_stories}</td>
-                  <td style={{ padding: '0 8px', textAlign: 'center', fontSize: 12, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#334155' }}>{p.total_tasks}</td>
-                  <td style={{ padding: '0 8px' }}>
-                    <DistributionBar todo={p.work_items_todo} inProgress={p.work_items_in_progress} done={p.work_items_done} />
-                  </td>
-                  <td style={{ padding: '0 8px' }}><ProjectHealthBadge health={p.health_status} /></td>
-                  <td style={{ padding: '0 8px' }}><MemberStack memberIds={p.member_ids} memberCount={p.member_count} /></td>
-                  <td style={{ padding: '0 8px', fontSize: 10, color: '#94A3B8', whiteSpace: 'nowrap', textAlign: 'right' }}>
-                    {p.updated_at ? formatDistanceToNowStrict(new Date(p.updated_at), { addSuffix: true }) : '—'}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </td>
+                    <td style={{ padding: '0 8px', fontSize: 11, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="block truncate">{p.department || '—'}</span>
+                        </TooltipTrigger>
+                        {p.department && p.department.length > 20 && (
+                          <TooltipContent side="top" className="text-xs max-w-[240px]">
+                            {p.department}
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    </td>
+                    <td style={{ padding: '0 8px' }}>
+                      <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11, color: '#475569' }}>
+                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: CAT_DOT[p.status_category] || '#94A3B8', flexShrink: 0 }} />
+                        {STATUS_CATEGORY_DISPLAY[p.status_category] || p.status_category}
+                      </span>
+                    </td>
+                    <td style={{ padding: '0 8px', textAlign: 'center', fontSize: 12, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#334155' }}>{p.total_epics}</td>
+                    <td style={{ padding: '0 8px', textAlign: 'center', fontSize: 12, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#334155' }}>{p.total_stories}</td>
+                    <td style={{ padding: '0 8px', textAlign: 'center', fontSize: 12, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#334155' }}>{p.total_tasks}</td>
+                    <td style={{ padding: '0 8px' }}>
+                      <DistributionBar todo={p.work_items_todo} inProgress={p.work_items_in_progress} done={p.work_items_done} />
+                    </td>
+                    <td style={{ padding: '0 8px' }}><ProjectHealthBadge health={p.health_status} /></td>
+                    <td style={{ padding: '0 8px' }}><MemberStack memberIds={p.member_ids} memberCount={p.member_count} /></td>
+                    <td style={{ padding: '0 8px', fontSize: 10, color: '#94A3B8', whiteSpace: 'nowrap', textAlign: 'right' }}>
+                      {p.updated_at ? formatDistanceToNowStrict(new Date(p.updated_at), { addSuffix: true }) : '—'}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
