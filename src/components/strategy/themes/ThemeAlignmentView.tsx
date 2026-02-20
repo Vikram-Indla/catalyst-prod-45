@@ -424,7 +424,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     setHighlightedNodes(new Set());
   }, [focusedChain]);
 
-  // ── Handle node click → Focus chain + open AI panel ──
+  // ── Handle node click → Focus chain + open Intelligence panel with brief ──
   const handleNodeClick = useCallback((nodeId: string) => {
     const chainNodes = getConnectedNodes(nodeId);
     const chainData = buildChainData(nodeId);
@@ -432,10 +432,11 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
 
     setFocusedChain({ nodes: chainNodes, clickedNodeId: nodeId, chainData });
     setHighlightedNodes(chainNodes);
+    // Generate executive brief content
     setIsAIPanelOpen(true);
     generateExecutiveStory(chainData);
 
-    // Also open Intelligence panel — find theme_id, goal_id, epic_id from rows
+    // Open Intelligence panel — find theme_id, goal_id, epic_id from rows
     if (data?.rows) {
       const matchingRow = data.rows.find((row: AlignmentRow) => {
         const ids: Record<string, string | null> = {
@@ -567,7 +568,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
-        if (isAIPanelOpen) {
+        if (isIntelOpen) {
           handleUnfocus();
         } else {
           handleExit();
@@ -576,7 +577,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     }
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isAIPanelOpen]);
+  }, [isIntelOpen]);
 
   // ── Pan handlers ──
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -618,10 +619,15 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
   }, [chainMetrics, chainIntelData]);
 
   const handleCloseIntelligence = useCallback(() => {
+    setFocusedChain(null);
+    setHighlightedNodes(new Set());
     setIntelChain(null);
     setIsIntelOpen(false);
+    setIsAIPanelOpen(false);
     setAiResult(null);
     setIsAILoading(false);
+    setStoryContent('');
+    setAiError(null);
   }, []);
 
   // ── Focus-aware style helpers ──
@@ -820,7 +826,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           style={{
             background: '#F8FAFC',
             cursor: isPanning ? 'grabbing' : 'grab',
-            width: isAIPanelOpen ? '50vw' : '100%',
+            width: isIntelOpen ? '50vw' : '100%',
             flexShrink: 0,
           }}
           onMouseDown={handleMouseDown}
@@ -1051,192 +1057,9 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
             </div>
           </div>
         </div>
-
-        {/* ═══ AI STORY PANEL ═══ */}
-        <div
-          className={`shrink-0 flex flex-col bg-card border-l border-border transition-all duration-[400ms] ease-out overflow-hidden ${
-            isAIPanelOpen ? 'w-[50vw] opacity-100 shadow-[-12px_0_40px_rgba(0,0,0,0.12)]' : 'w-0 opacity-0 shadow-none'
-          }`}
-        >
-          {isAIPanelOpen && lockedChain && (
-            <>
-              {/* Purple AI Accent */}
-              <div className="shrink-0" style={{ height: 3, background: 'linear-gradient(to right, #7C3AED, #A78BFA, #C4B5FD)' }} />
-
-              {/* Panel Header */}
-              <div className="shrink-0 px-8 pt-6 pb-4 border-b border-border">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-4">
-                    <div className="flex items-center justify-center rounded-xl shrink-0 mt-0.5 shadow-lg"
-                      style={{ width: 44, height: 44, background: 'linear-gradient(135deg, #7C3AED, #6D28D9)', boxShadow: '0 4px 14px rgba(124, 58, 237, 0.25)' }}>
-                      <Sparkles size={20} className="text-white" />
-                    </div>
-                    <div>
-                      <h2 className="font-bold tracking-tight text-foreground leading-tight" style={{ fontSize: 18 }}>
-                        Executive Chain Brief
-                      </h2>
-                      <p className="text-muted-foreground mt-1" style={{ fontSize: 12 }}>
-                        AI-generated strategic analysis · {lockedChain.theme?.name}
-                      </p>
-                    </div>
-                  </div>
-                  <Button variant="ghost" size="icon" onClick={handleUnfocus}
-                    className="w-9 h-9 text-muted-foreground hover:text-foreground shrink-0">
-                    <X size={20} />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Chain Breadcrumb */}
-              <div className="shrink-0 px-8 py-4 bg-muted/40 border-b border-border">
-                <p className="uppercase tracking-widest font-semibold text-muted-foreground mb-2.5" style={{ fontSize: 10 }}>
-                  Strategy Chain
-                </p>
-                <div className="flex items-center gap-2.5 flex-wrap">
-                  {lockedChain.theme && (
-                    <>
-                      <ChainPill color="#2563EB" keyLabel={lockedChain.theme.key} title={lockedChain.theme.name} />
-                      <ChevronRight size={12} className="text-muted-foreground/40 shrink-0" />
-                    </>
-                  )}
-                  {lockedChain.goal && (
-                    <>
-                      <ChainPill color="#0D9488" keyLabel={lockedChain.goal.key} title={lockedChain.goal.title} />
-                      <ChevronRight size={12} className="text-muted-foreground/40 shrink-0" />
-                    </>
-                  )}
-                  <span className="font-semibold text-muted-foreground" style={{ fontSize: 11 }}>
-                    {lockedChain.krs.length} KRs
-                  </span>
-                  <ChevronRight size={12} className="text-muted-foreground/40 shrink-0" />
-                  {lockedChain.initiative ? (
-                    <>
-                      <ChainPill color="#D97706" keyLabel={lockedChain.initiative.key} title={lockedChain.initiative.title} />
-                      <ChevronRight size={12} className="text-muted-foreground/40 shrink-0" />
-                    </>
-                  ) : (
-                    <>
-                      <Badge variant="destructive" className="text-[10px] font-bold py-0">⚠ GAP</Badge>
-                      <ChevronRight size={12} className="text-muted-foreground/40 shrink-0" />
-                    </>
-                  )}
-                  {lockedChain.epic ? (
-                    <ChainPill color="#4F46E5" keyLabel={lockedChain.epic.key} title={lockedChain.epic.title} />
-                  ) : (
-                    <Badge variant="destructive" className="text-[10px] font-bold py-0">⚠ GAP</Badge>
-                  )}
-                </div>
-              </div>
-
-              {/* At-a-Glance Metrics Row */}
-              <div className="shrink-0 px-8 py-4 border-b border-border">
-                <div className="grid grid-cols-4 gap-4">
-                  <MetricCard
-                    label="Goal Progress"
-                    value={`${lockedChain.goal?.progress || 0}%`}
-                    color={getProgressColor(lockedChain.goal?.progress || 0)}
-                  />
-                  <MetricCard
-                    label="AI Health"
-                    value={`${lockedChain.goal?.health || 0}/100`}
-                    color="#7C3AED"
-                  />
-                  <MetricCard
-                    label="Key Results"
-                    value={`${lockedChain.krs.length}`}
-                    sub={`${lockedChain.krs.filter(k => k.status === 'on_track' || k.status === 'active').length} on track`}
-                    color="#0D9488"
-                  />
-                  <MetricCard
-                    label="Chain Health"
-                    value={getChainHealthLabel(lockedChain)}
-                    color={getChainHealthColor(lockedChain)}
-                  />
-                </div>
-              </div>
-
-              {/* Story Content */}
-              <ScrollArea className="flex-1">
-                {isGenerating && !storyContent ? (
-                  <AILoadingState />
-                ) : aiError ? (
-                  <div className="flex flex-col items-center justify-center h-full px-8 text-center py-12">
-                    <div className="flex items-center justify-center rounded-xl mb-4"
-                      style={{ width: 48, height: 48, background: '#FFFBEB' }}>
-                      <X size={20} style={{ color: '#D97706' }} />
-                    </div>
-                    <p className="font-semibold text-foreground mb-1" style={{ fontSize: 15 }}>Briefing Unavailable</p>
-                    <p className="text-muted-foreground" style={{ fontSize: 13, maxWidth: 300 }}>{aiError}</p>
-                    <Button variant="outline" size="sm" className="mt-4 gap-1.5"
-                      onClick={() => generateExecutiveStory(lockedChain)}>
-                      <RefreshCw size={14} /> Retry
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="px-8 py-6">
-                    <ReactMarkdown
-                      components={{
-                        h2: ({ children }) => (
-                          <h2 className="font-bold tracking-tight mt-8 mb-3 pb-2 border-b border-border first:mt-0 text-foreground"
-                            style={{ fontSize: 15 }}>
-                            {children}
-                          </h2>
-                        ),
-                        p: ({ children }) => (
-                          <p className="mb-4 text-muted-foreground" style={{ fontSize: 14, lineHeight: 1.8 }}>{children}</p>
-                        ),
-                        strong: ({ children }) => (
-                          <strong className="font-semibold text-foreground">{children}</strong>
-                        ),
-                        ul: ({ children }) => (
-                          <ul className="my-3 space-y-1.5">{children}</ul>
-                        ),
-                        li: ({ children }) => (
-                          <li className="pl-1 text-muted-foreground" style={{ fontSize: 13, lineHeight: 1.6 }}>
-                            <span className="mr-2 text-muted-foreground/50">•</span>{children}
-                          </li>
-                        ),
-                      }}
-                    >
-                      {storyContent}
-                    </ReactMarkdown>
-                    {isGenerating && (
-                      <div className="flex items-center gap-2 mt-4" style={{ color: '#7C3AED', fontSize: 12 }}>
-                        <Sparkles size={14} className="animate-pulse" />
-                        <span className="font-medium">Generating…</span>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </ScrollArea>
-
-              {/* Panel Footer */}
-              <div className="shrink-0 border-t border-border px-8 py-3 flex items-center justify-between bg-card/95 backdrop-blur-sm">
-                <div className="flex items-center gap-2 text-muted-foreground" style={{ fontSize: 11 }}>
-                  <Sparkles size={12} style={{ color: '#A78BFA' }} />
-                  <span>Generated by AI · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
-                    onClick={() => generateExecutiveStory(lockedChain)} disabled={isGenerating}>
-                    <RefreshCw size={14} /> Regenerate
-                  </Button>
-                  <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
-                    onClick={() => copyToClipboard(storyContent)} disabled={!storyContent}>
-                    <Copy size={14} /> Copy
-                  </Button>
-                  <Button size="sm" onClick={handleUnfocus}
-                    className="gap-1.5 text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white rounded-lg">
-                    Close Brief
-                  </Button>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
       </div>
 
-      {/* ═══ AI Strategy Intelligence Panel ═══ */}
+      {/* ═══ AI Strategy Intelligence Panel (with Executive Brief tab) ═══ */}
       <AIStrategyIntelligencePanel
         isOpen={isIntelOpen}
         metrics={chainMetrics}
@@ -1246,6 +1069,11 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         isAILoading={isAILoading}
         onClose={handleCloseIntelligence}
         onRegenerate={handleRegenerateAI}
+        briefContent={storyContent}
+        isBriefGenerating={isGenerating}
+        briefError={aiError}
+        lockedChain={lockedChain}
+        onRegenerateBrief={() => lockedChain && generateExecutiveStory(lockedChain)}
       />
 
       {/* ═══ LEGEND BAR ═══ */}
