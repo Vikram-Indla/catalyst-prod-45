@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
+import { Plus } from 'lucide-react';
 import type { WorkItemRow } from '@/hooks/useProjectWorkItems';
 import { WorkItemTableRow } from './WorkItemTableRow';
 
 interface WorkItemsTableProps {
   items: WorkItemRow[];
   onRowClick: (id: string) => void;
+  onCreateClick?: () => void;
 }
 
 // Build hierarchy: top-level items (no parent) + their children map
@@ -38,7 +40,7 @@ const HEADER_COLS = [
   { label: 'LABELS', width: 74 },
 ];
 
-export function WorkItemsTable({ items, onRowClick }: WorkItemsTableProps) {
+export function WorkItemsTable({ items, onRowClick, onCreateClick }: WorkItemsTableProps) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const { roots, childrenMap } = useMemo(() => buildTree(items), [items]);
 
@@ -104,6 +106,21 @@ export function WorkItemsTable({ items, onRowClick }: WorkItemsTableProps) {
             <tr>
               <td colSpan={HEADER_COLS.length} className="text-center py-12 text-[#94A3B8] text-sm">
                 No work items found
+              </td>
+            </tr>
+          )}
+          {/* "+ Create" row */}
+          {onCreateClick && (
+            <tr>
+              <td colSpan={HEADER_COLS.length}>
+                <button
+                  onClick={onCreateClick}
+                  className="w-full flex items-center gap-2 px-4 py-2 text-[11px] font-medium hover:bg-[#F8FAFC] transition-colors cursor-pointer"
+                  style={{ color: '#94A3B8', height: 36, border: 'none', background: 'transparent' }}
+                >
+                  <Plus size={14} />
+                  Create work item
+                </button>
               </td>
             </tr>
           )}
