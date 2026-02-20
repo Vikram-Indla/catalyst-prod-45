@@ -4,7 +4,7 @@
  * Uses CommandCenterHeader (locked shared component) + scoped strategy-tokens.css.
  */
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import '@/styles/strategy-tokens.css';
 import '@/styles/exec-palette.css';
@@ -14,10 +14,12 @@ import { StrategyRoomActions } from '@/components/strategy/StrategyRoomActions';
 import { VisionBanner } from '@/components/strategy/VisionBanner';
 import { StrategyDashboardGrid } from '@/components/strategy/StrategyDashboardGrid';
 import { StrategyRoleProvider } from '@/contexts/strategy/RoleContext';
+import { AIExecutiveBrief } from '@/components/strategy/room/AIExecutiveBrief';
 
 export default function StrategyRoom() {
   const { density, setDensity } = useStrategyPreferences();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [briefOpen, setBriefOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const handleRefresh = async () => {
@@ -26,6 +28,10 @@ export default function StrategyRoom() {
     await queryClient.invalidateQueries({ queryKey: ['risks'] });
     setIsRefreshing(false);
   };
+
+  const handleToggleIntelligence = useCallback(() => {
+    setBriefOpen(prev => !prev);
+  }, []);
 
   return (
     <StrategyRoleProvider>
@@ -48,7 +54,14 @@ export default function StrategyRoom() {
           subtitle="Executive dashboard — Ministry of Industry, Saudi Arabia"
           onRefresh={handleRefresh}
           isRefreshing={isRefreshing}
-          actions={<StrategyRoomActions density={density} setDensity={setDensity} />}
+          actions={
+            <StrategyRoomActions
+              density={density}
+              setDensity={setDensity}
+              isIntelligenceOpen={briefOpen}
+              onToggleIntelligence={handleToggleIntelligence}
+            />
+          }
         />
 
         <main
@@ -61,6 +74,9 @@ export default function StrategyRoom() {
           <StrategyDashboardGrid />
         </main>
       </div>
+
+      {/* AI Executive Brief Panel */}
+      <AIExecutiveBrief open={briefOpen} onClose={() => setBriefOpen(false)} />
     </StrategyRoleProvider>
   );
 }
