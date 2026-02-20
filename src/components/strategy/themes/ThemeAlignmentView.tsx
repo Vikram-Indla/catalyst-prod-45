@@ -67,15 +67,15 @@ function StatusBadge({ status }: { status: string }) {
 
 function ChainStat({ label, value, total }: { label: string; value: number; total: number }) {
   const pct = total > 0 ? Math.round((value / total) * 100) : 0;
-  const clr = pct >= 70 ? 'rgb(52,211,153)' : pct >= 40 ? 'rgb(251,191,36)' : 'rgb(248,113,113)';
+  const clr = pct >= 70 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
   return (
     <div className="text-center" style={{ minWidth: 100 }}>
       <div className="flex items-baseline justify-center gap-1">
-        <span style={{ color: '#fff', fontSize: 15, fontWeight: 700 }}>{value}</span>
-        <span style={{ color: '#475569', fontSize: 12 }}>/{total}</span>
+        <span className="text-foreground" style={{ fontSize: 15, fontWeight: 700 }}>{value}</span>
+        <span className="text-muted-foreground" style={{ fontSize: 12 }}>/{total}</span>
         <span style={{ color: clr, fontSize: 12, fontWeight: 600 }}>({pct}%)</span>
       </div>
-      <div style={{ color: '#64748B', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
+      <div className="text-muted-foreground" style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
     </div>
   );
 }
@@ -569,7 +569,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
   // ── Loading / empty states ──
   if (isLoading) {
     return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background">
+      <div className="flex flex-1 items-center justify-center bg-background">
         <div className="animate-pulse text-sm text-muted-foreground">Loading alignment data…</div>
       </div>
     );
@@ -577,7 +577,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
 
   if (!filteredData || filteredData.themes.length === 0) {
     return (
-      <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-background">
+      <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-background">
         <p className="text-sm text-muted-foreground">No alignment data available.</p>
         <Button variant="link" onClick={handleExit}>← Back to Strategic Themes</Button>
       </div>
@@ -599,47 +599,42 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
   const lockedChain = focusedChain?.chainData || null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-background">
-      {/* ═══ TOOLBAR ═══ */}
-      <div className="flex items-center justify-between shrink-0 px-5" style={{ height: 52, background: '#0F172A' }}>
-        {/* Left */}
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={handleExit}
-            className="text-slate-400 hover:text-white hover:bg-transparent gap-1.5 px-2">
-            <ArrowLeft size={16} />
-            <span className="font-medium">Exit</span>
-          </Button>
-          <Separator orientation="vertical" className="h-6 bg-slate-700" />
+    <div className="flex flex-col flex-1 overflow-hidden bg-background">
+      {/* ═══ TOOLBAR (Light) ═══ */}
+      <div className="flex items-center justify-between shrink-0 px-5 border-b border-border bg-card" style={{ height: 52 }}>
+        {/* Left: Title + Stats */}
+        <div className="flex items-center gap-5">
           <div>
-            <h1 className="text-white font-semibold tracking-tight" style={{ fontSize: 15 }}>
+            <h1 className="text-foreground font-semibold tracking-tight" style={{ fontSize: 15 }}>
               Strategy Alignment Map
             </h1>
-            <p className="text-slate-500" style={{ fontSize: 11 }}>
+            <p className="text-muted-foreground" style={{ fontSize: 11 }}>
               Ministry of Industry — FY2026 Strategic Alignment
             </p>
           </div>
+          {stats && (
+            <>
+              <Separator orientation="vertical" className="h-6" />
+              <div className="flex items-center gap-5">
+                <ChainStat label="Linked KRs" value={stats.linkedKrs} total={stats.totalKrs} />
+                <Separator orientation="vertical" className="h-5" />
+                <ChainStat label="Linked Initiatives" value={stats.linkedInitiatives} total={stats.totalInitiatives} />
+                <Separator orientation="vertical" className="h-5" />
+                <ChainStat label="Linked Epics" value={stats.linkedEpics} total={stats.totalEpics} />
+                <Separator orientation="vertical" className="h-5" />
+                <div className="text-center">
+                  <div className="text-foreground font-bold" style={{ fontSize: 15 }}>{stats.fullChains}</div>
+                  <div className="text-muted-foreground uppercase" style={{ fontSize: 10, letterSpacing: '0.05em' }}>Full Chains</div>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Center: Stats */}
-        {stats && (
-          <div className="flex items-center gap-5">
-            <ChainStat label="Linked KRs" value={stats.linkedKrs} total={stats.totalKrs} />
-            <Separator orientation="vertical" className="h-5 bg-slate-700" />
-            <ChainStat label="Linked Initiatives" value={stats.linkedInitiatives} total={stats.totalInitiatives} />
-            <Separator orientation="vertical" className="h-5 bg-slate-700" />
-            <ChainStat label="Linked Epics" value={stats.linkedEpics} total={stats.totalEpics} />
-            <Separator orientation="vertical" className="h-5 bg-slate-700" />
-            <div className="text-center">
-              <div className="text-white font-bold" style={{ fontSize: 15 }}>{stats.fullChains}</div>
-              <div className="text-slate-500 uppercase" style={{ fontSize: 10, letterSpacing: '0.05em' }}>Full Chains</div>
-            </div>
-          </div>
-        )}
-
-        {/* Right: Controls */}
+        {/* Right: Controls + Exit */}
         <div className="flex items-center gap-3">
           <Select value={selectedThemeFilter} onValueChange={setSelectedThemeFilter}>
-            <SelectTrigger className="h-8 w-[200px] text-xs border-slate-700 bg-slate-800 text-slate-300 focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+            <SelectTrigger className="h-8 w-[200px] text-xs border-border bg-muted text-foreground focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
               <SelectValue placeholder="All Themes" />
             </SelectTrigger>
             <SelectContent className="bg-popover border-border shadow-lg rounded-lg">
@@ -650,22 +645,22 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
             </SelectContent>
           </Select>
 
-          <div className="flex items-center gap-1 rounded-md px-1.5 py-1" style={{ background: '#1E293B' }}>
+          <div className="flex items-center gap-1 rounded-md px-1.5 py-1 border border-border bg-muted">
             <TooltipProvider>
               <Tooltip><TooltipTrigger asChild>
                 <button onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}
-                  className="flex items-center justify-center rounded w-6 h-6 text-slate-400 hover:text-white">
+                  className="flex items-center justify-center rounded w-6 h-6 text-muted-foreground hover:text-foreground">
                   <Minus size={12} />
                 </button>
               </TooltipTrigger><TooltipContent>Zoom out</TooltipContent></Tooltip>
             </TooltipProvider>
-            <span className="font-mono text-center text-slate-500" style={{ fontSize: 10, width: 28 }}>
+            <span className="font-mono text-center text-muted-foreground" style={{ fontSize: 10, width: 28 }}>
               {Math.round(zoom * 100)}%
             </span>
             <TooltipProvider>
               <Tooltip><TooltipTrigger asChild>
                 <button onClick={() => setZoom(z => Math.min(2, z + 0.1))}
-                  className="flex items-center justify-center rounded w-6 h-6 text-slate-400 hover:text-white">
+                  className="flex items-center justify-center rounded w-6 h-6 text-muted-foreground hover:text-foreground">
                   <Plus size={12} />
                 </button>
               </TooltipTrigger><TooltipContent>Zoom in</TooltipContent></Tooltip>
@@ -673,16 +668,19 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
             <TooltipProvider>
               <Tooltip><TooltipTrigger asChild>
                 <button onClick={resetView}
-                  className="flex items-center justify-center rounded w-6 h-6 text-slate-400 hover:text-white ml-0.5">
+                  className="flex items-center justify-center rounded w-6 h-6 text-muted-foreground hover:text-foreground ml-0.5">
                   <RotateCcw size={12} />
                 </button>
               </TooltipTrigger><TooltipContent>Reset view</TooltipContent></Tooltip>
             </TooltipProvider>
           </div>
 
-          <Button variant="ghost" size="icon" onClick={handleExit}
-            className="w-8 h-8 text-slate-400 hover:text-white hover:bg-slate-800">
-            <X size={16} />
+          <Separator orientation="vertical" className="h-6" />
+
+          <Button variant="outline" size="sm" onClick={handleExit}
+            className="gap-1.5 text-muted-foreground hover:text-foreground">
+            Exit Map
+            <X size={14} />
           </Button>
         </div>
       </div>
