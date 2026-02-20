@@ -1131,8 +1131,9 @@ const App = () => (
 
               {/* ═══ PROJECTHUB V5 — Now inside CatalystShell ═══ */}
               <Route path="/project-hub" element={<Navigate to="/project-hub/projects" replace />} />
-              <Route path="/project-hub/projects" element={<Suspense fallback={<div />}><ProjectListPageLazy /></Suspense>} />
+              <Route path="/project-hub/projects" element={<Suspense fallback={<div />}><AllProjectsPageLazy /></Suspense>} />
               <Route path="/project/all-projects" element={<Suspense fallback={<div />}><AllProjectsPageLazy /></Suspense>} />
+              <Route path="/project-hub/projects-legacy" element={<Suspense fallback={<div />}><ProjectListPageLazy /></Suspense>} />
               <Route path="/project-hub/resource360" element={<Suspense fallback={<div />}><WorkHubResource360Page /></Suspense>} />
               <Route path="/project-hub/resource360/:id" element={<Suspense fallback={<div />}><WorkHubResourceDetail /></Suspense>} />
               <Route path="/project-hub/:key" element={<Navigate to="dashboard" replace />} />
