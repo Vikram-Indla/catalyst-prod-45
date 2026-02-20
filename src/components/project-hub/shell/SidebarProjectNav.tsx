@@ -6,7 +6,6 @@ import {
   Columns3,
   AlignJustify,
   GanttChart,
-  Tag,
   BarChart3,
   Sparkles,
   ChevronsLeft,
@@ -33,7 +32,6 @@ const PROJECT_NAV = [
   { icon: Columns3, label: 'Board', path: 'board' },
   { icon: AlignJustify, label: 'List', path: 'list' },
   { icon: GanttChart, label: 'Timeline', path: 'timeline' },
-  { icon: Tag, label: 'Releases', path: 'releases' },
   { icon: BarChart3, label: 'Reports', path: 'reports' },
 ];
 
