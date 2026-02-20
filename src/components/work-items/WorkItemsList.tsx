@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { useWorkItems, WorkItemFilters } from '@/hooks/useWorkItems';
+import { useWorkItems, WorkItemFilters } from '@/hooks/useWorkItemsRA';
 import { Loader2, Inbox, ChevronRight, Check, FileText, Layers, List, CheckSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
