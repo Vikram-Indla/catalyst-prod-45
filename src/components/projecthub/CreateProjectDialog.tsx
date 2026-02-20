@@ -12,7 +12,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
   const [name, setName] = useState('');
   const [key, setKey] = useState('');
   const [department, setDepartment] = useState('');
-  const [status, setStatus] = useState('planning');
+  const [category, setCategory] = useState('todo');
   const [description, setDescription] = useState('');
   const createProject = useCreateProject();
 
@@ -27,12 +27,12 @@ export function CreateProjectDialog({ open, onClose }: Props) {
         name: name.trim(),
         project_key: key.trim().toUpperCase(),
         department: department || undefined,
-        status: status as 'planning' | 'active' | 'on_hold',
         description: description || undefined,
+        status_category: category,
       });
       toast.success('Project created');
       onClose();
-      setName(''); setKey(''); setDepartment(''); setStatus('planning'); setDescription('');
+      setName(''); setKey(''); setDepartment(''); setCategory('todo'); setDescription('');
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Failed to create project');
     }
@@ -58,11 +58,11 @@ export function CreateProjectDialog({ open, onClose }: Props) {
             <input value={department} onChange={e => setDepartment(e.target.value)} className="w-full rounded-md outline-none" style={{ height: 36, padding: '0 12px', border: '1px solid #E2E8F0', fontSize: 13 }} placeholder="e.g. Technology & Innovation" />
           </div>
           <div>
-            <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>Status</label>
-            <select value={status} onChange={e => setStatus(e.target.value)} className="w-full rounded-md outline-none" style={{ height: 36, padding: '0 12px', border: '1px solid #E2E8F0', fontSize: 13, background: '#FFF' }}>
-              <option value="planning">Planning</option>
-              <option value="active">Active</option>
-              <option value="on_hold">On Hold</option>
+            <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 4 }}>Category</label>
+            <select value={category} onChange={e => setCategory(e.target.value)} className="w-full rounded-md outline-none" style={{ height: 36, padding: '0 12px', border: '1px solid #E2E8F0', fontSize: 13, background: '#FFF' }}>
+              <option value="todo">To Do</option>
+              <option value="in_progress">In Progress</option>
+              <option value="done">Done</option>
             </select>
           </div>
           <div>
