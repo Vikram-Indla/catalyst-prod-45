@@ -1,9 +1,10 @@
 /**
  * ThemeAlignmentView — CIO-Grade Full-Screen Strategy Alignment Map
- * Complete rebuild: fixed overlay, dark toolbar, SVG connectors with ResizeObserver
+ * With AI Executive Story Panel (Lovable AI / Gemini streaming)
  */
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
-import { ArrowLeft, X, Minus, Plus, RotateCcw, Unlink, Check } from 'lucide-react';
+import { ArrowLeft, X, Minus, Plus, RotateCcw, Unlink, Sparkles, RefreshCw, Copy, ChevronRight } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import {
   Select,
   SelectContent,
@@ -12,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useAlignmentMapData, type AlignmentNode, type AlignmentRow } from '@/hooks/useAlignmentMapData';
+import { catalystToast } from '@/lib/catalystToast';
 
 // ── Layer colors (NO purple for KRs) ──
 const LAYER = {
@@ -82,12 +84,55 @@ function GhostNode({ label }: { label: string }) {
   );
 }
 
+function ChainBadge({ color, label, title }: { color: string; label: string; title: string }) {
+  return (
+    <div className="flex items-center gap-1.5 max-w-[200px]">
+      <span className="font-mono font-bold px-2 py-0.5 rounded-md shrink-0"
+        style={{ fontSize: 10, background: `${color}15`, color }}>
+        {label}
+      </span>
+      <span className="font-medium truncate" style={{ fontSize: 11, color: '#334155' }}>{title}</span>
+    </div>
+  );
+}
+
+function AILoadingState() {
+  return (
+    <div className="flex flex-col items-center justify-center h-full px-8">
+      <div className="relative mb-6">
+        <div className="flex items-center justify-center rounded-2xl" style={{ width: 56, height: 56, background: '#F3E8FF' }}>
+          <Sparkles size={24} style={{ color: '#7C3AED' }} />
+        </div>
+        <div className="absolute inset-0 rounded-2xl animate-ping" style={{ background: '#DDD6FE', opacity: 0.2 }} />
+      </div>
+      <p className="font-semibold mb-2" style={{ fontSize: 15, color: '#0F172A' }}>Analyzing strategic chain…</p>
+      <p className="text-center" style={{ fontSize: 13, color: '#64748B', maxWidth: 280 }}>
+        AI is reviewing the alignment from theme to execution and generating your executive brief.
+      </p>
+      <div className="w-full mt-8 space-y-3" style={{ maxWidth: 400 }}>
+        <div className="h-3 bg-slate-100 rounded-full animate-pulse" style={{ width: '75%' }} />
+        <div className="h-3 bg-slate-100 rounded-full animate-pulse" style={{ width: '100%', animationDelay: '75ms' }} />
+        <div className="h-3 bg-slate-100 rounded-full animate-pulse" style={{ width: '83%', animationDelay: '150ms' }} />
+        <div className="h-3 bg-slate-50 rounded-full animate-pulse" style={{ width: '66%', animationDelay: '200ms' }} />
+      </div>
+    </div>
+  );
+}
+
 interface RenderedPath {
   id: string;
   d: string;
   sourceId: string;
   targetId: string;
   layerColor: string;
+}
+
+interface LockedChainData {
+  theme: { key: string; name: string; status: string; progress: number };
+  goal: { key: string; title: string; status: string; progress: number; health?: number };
+  krs: { key: string; title: string; status: string; progress: number }[];
+  initiative: { key: string; title: string; status: string; progress: number } | null;
+  epic: { key: string; title: string; status: string } | null;
 }
 
 // ══════════════════════════════════════════════════════════
@@ -104,6 +149,13 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
   const [paths, setPaths] = useState<RenderedPath[]>([]);
+
+  // ── AI Story Panel state ──
+  const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
+  const [lockedChain, setLockedChain] = useState<LockedChainData | null>(null);
+  const [storyContent, setStoryContent] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   // ── Filter data by selected theme ──
   const filteredData = useMemo(() => {
@@ -128,9 +180,139 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     };
   }, [data, selectedThemeFilter]);
 
+  // ── Build chain data for a clicked node ──
+  const buildChainData = useCallback((nodeId: string): LockedChainData | null => {
+    if (!data) return null;
+
+    // Find all rows that include this node
+    const matchingRows = data.rows.filter((row: AlignmentRow) => {
+      const ids: Record<string, string | null> = {
+        [`theme-${row.theme_key}`]: row.theme_id,
+        [`goal-${row.goal_key}`]: row.goal_id,
+        [`kr-${row.kr_key}`]: row.kr_id,
+        [`initiative-${row.initiative_key}`]: row.initiative_id,
+        [`epic-${row.epic_key}`]: row.epic_id,
+      };
+      return Object.keys(ids).filter(k => ids[k] != null).includes(nodeId);
+    });
+
+    if (matchingRows.length === 0) return null;
+
+    const firstRow = matchingRows[0];
+    const theme = { key: firstRow.theme_key, name: firstRow.theme_name, status: firstRow.theme_status, progress: Number(firstRow.theme_progress) || 0 };
+    const goal = firstRow.goal_id ? {
+      key: firstRow.goal_key || '', title: firstRow.goal_title || '', status: firstRow.goal_status || 'draft',
+      progress: Number(firstRow.goal_progress) || 0, health: firstRow.goal_health != null ? Number(firstRow.goal_health) : undefined,
+    } : { key: '', title: 'No goal linked', status: 'draft', progress: 0 };
+
+    const krsMap = new Map<string, { key: string; title: string; status: string; progress: number }>();
+    matchingRows.forEach(r => {
+      if (r.kr_id && !krsMap.has(r.kr_id)) {
+        krsMap.set(r.kr_id, { key: r.kr_key || '', title: r.kr_title || '', status: r.kr_status || 'not_started', progress: Number(r.kr_progress) || 0 });
+      }
+    });
+
+    const initiative = firstRow.initiative_id ? {
+      key: firstRow.initiative_key || '', title: firstRow.initiative_title || '', status: firstRow.initiative_status || 'draft', progress: Number(firstRow.initiative_progress) || 0,
+    } : null;
+
+    const epic = firstRow.epic_id ? {
+      key: firstRow.epic_key || '', title: firstRow.epic_title || '', status: firstRow.epic_status || 'proposed',
+    } : null;
+
+    return { theme, goal, krs: Array.from(krsMap.values()), initiative, epic };
+  }, [data]);
+
+  // ── Generate executive story via edge function (streaming) ──
+  const generateExecutiveStory = useCallback(async (chainData: LockedChainData) => {
+    setIsGenerating(true);
+    setStoryContent('');
+    setAiError(null);
+
+    try {
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/alignment-story`;
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ chainData }),
+      });
+
+      if (!resp.ok) {
+        const errData = await resp.json().catch(() => ({}));
+        throw new Error(errData.error || `AI request failed (${resp.status})`);
+      }
+
+      if (!resp.body) throw new Error('No response stream');
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = '';
+      let fullText = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf('\n')) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith('\r')) line = line.slice(0, -1);
+          if (line.startsWith(':') || line.trim() === '') continue;
+          if (!line.startsWith('data: ')) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === '[DONE]') break;
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              fullText += content;
+              setStoryContent(fullText);
+            }
+          } catch {
+            textBuffer = line + '\n' + textBuffer;
+            break;
+          }
+        }
+      }
+
+      // Flush remaining
+      if (textBuffer.trim()) {
+        for (let raw of textBuffer.split('\n')) {
+          if (!raw) continue;
+          if (raw.endsWith('\r')) raw = raw.slice(0, -1);
+          if (raw.startsWith(':') || raw.trim() === '') continue;
+          if (!raw.startsWith('data: ')) continue;
+          const jsonStr = raw.slice(6).trim();
+          if (jsonStr === '[DONE]') continue;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              fullText += content;
+              setStoryContent(fullText);
+            }
+          } catch { /* ignore partial */ }
+        }
+      }
+    } catch (err: any) {
+      console.error('AI story generation error:', err);
+      setAiError(err.message || 'Failed to generate briefing');
+    } finally {
+      setIsGenerating(false);
+    }
+  }, []);
+
   // ── Highlight chain on hover ──
-  const highlightChain = useCallback((nodeId: string) => {
-    if (!data) return;
+  const getConnectedNodes = useCallback((nodeId: string): Set<string> => {
+    if (!data) return new Set();
     const connected = new Set<string>();
     data.rows.forEach((row: AlignmentRow) => {
       const ids: Record<string, string | null> = {
@@ -145,10 +327,38 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         nodeIds.forEach(n => connected.add(n));
       }
     });
-    setHighlightedNodes(connected);
+    return connected;
   }, [data]);
 
-  const clearHighlight = useCallback(() => setHighlightedNodes(new Set()), []);
+  const highlightChain = useCallback((nodeId: string) => {
+    if (lockedChain) return; // Don't override locked state on hover
+    setHighlightedNodes(getConnectedNodes(nodeId));
+  }, [getConnectedNodes, lockedChain]);
+
+  const clearHighlight = useCallback(() => {
+    if (lockedChain) return; // Don't clear while locked
+    setHighlightedNodes(new Set());
+  }, [lockedChain]);
+
+  // ── Handle node click → lock chain + open AI panel ──
+  const handleNodeClick = useCallback((nodeId: string) => {
+    const chain = buildChainData(nodeId);
+    if (!chain) return;
+
+    // Lock the highlight
+    setHighlightedNodes(getConnectedNodes(nodeId));
+    setLockedChain(chain);
+    setIsAIPanelOpen(true);
+    generateExecutiveStory(chain);
+  }, [buildChainData, getConnectedNodes, generateExecutiveStory]);
+
+  const handleClosePanel = useCallback(() => {
+    setIsAIPanelOpen(false);
+    setLockedChain(null);
+    setHighlightedNodes(new Set());
+    setStoryContent('');
+    setAiError(null);
+  }, []);
 
   // ── Build connections list ──
   const connections = useMemo(() => {
@@ -238,6 +448,27 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     requestAnimationFrame(recalculateConnections);
   }, [zoom, pan, selectedThemeFilter, recalculateConnections]);
 
+  // Recalc after panel animation completes
+  useEffect(() => {
+    const timer = setTimeout(recalculateConnections, 350);
+    return () => clearTimeout(timer);
+  }, [isAIPanelOpen, recalculateConnections]);
+
+  // ── Keyboard shortcuts ──
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        if (isAIPanelOpen) {
+          handleClosePanel();
+        } else {
+          handleExit();
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isAIPanelOpen]);
+
   // ── Pan handlers ──
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest('[data-node-id]')) return;
@@ -265,6 +496,12 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
 
   const handleExit = useCallback(() => onBack?.(), [onBack]);
 
+  const copyToClipboard = useCallback((text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      catalystToast.success('Copied', 'Executive brief copied to clipboard.');
+    });
+  }, []);
+
   // ── Loading / empty states ──
   if (isLoading) {
     return (
@@ -288,13 +525,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
   const anyHover = highlightedNodes.size > 0;
   const stats = data?.stats;
 
-  // Check which KRs have no initiative, which initiatives have no epic
-  const krsWithoutInitiative = filteredData.krs.filter(kr => {
-    for (const [, children] of filteredData.krToInitiatives) {
-      if (filteredData.krToInitiatives.get(kr.id)?.size) return false;
-    }
-    return !filteredData.krToInitiatives.has(kr.id);
-  });
+  const krsWithoutInitiative = filteredData.krs.filter(kr => !filteredData.krToInitiatives.has(kr.id));
   const initsWithoutEpic = filteredData.initiatives.filter(ini => !filteredData.initiativeToEpics.has(ini.id));
 
   const columns = [
@@ -354,19 +585,13 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         {/* Right: Controls */}
         <div className="flex items-center gap-3">
           <Select value={selectedThemeFilter} onValueChange={setSelectedThemeFilter}>
-            <SelectTrigger
-              className="h-8 w-[200px] text-xs border-slate-700 bg-slate-800 text-slate-300 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-            >
+            <SelectTrigger className="h-8 w-[200px] text-xs border-slate-700 bg-slate-800 text-slate-300 focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
               <SelectValue placeholder="All Themes" />
             </SelectTrigger>
             <SelectContent className="bg-white border border-slate-200 shadow-lg rounded-lg">
-              <SelectItem value="all" className="text-sm">
-                All Themes
-              </SelectItem>
+              <SelectItem value="all" className="text-sm">All Themes</SelectItem>
               {data?.themes.map(t => (
-                <SelectItem key={t.id} value={t.id} className="text-sm">
-                  {t.title}
-                </SelectItem>
+                <SelectItem key={t.id} value={t.id} className="text-sm">{t.title}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -438,212 +663,377 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         ))}
       </div>
 
-      {/* ═══ CANVAS ═══ */}
-      <div
-        ref={canvasRef}
-        className="flex-1 overflow-auto select-none"
-        style={{ background: '#F8FAFC', cursor: isPanning ? 'grabbing' : 'grab' }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        onWheel={handleWheel}
-      >
+      {/* ═══ MAIN CONTENT AREA (Map + AI Panel) ═══ */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* ═══ CANVAS ═══ */}
         <div
-          ref={innerRef}
-          className="relative"
-          style={{
-            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-            transformOrigin: 'top left',
-            minWidth: 'fit-content',
-            minHeight: 'fit-content',
-          }}
+          ref={canvasRef}
+          className="flex-1 overflow-auto select-none transition-all duration-300"
+          style={{ background: '#F8FAFC', cursor: isPanning ? 'grabbing' : 'grab' }}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          onWheel={handleWheel}
         >
-          {/* SVG connectors */}
-          <svg className="absolute inset-0 pointer-events-none"
-            style={{ width: '100%', height: '100%', overflow: 'visible', zIndex: 1 }}>
-            {paths.map(p => {
-              const isLit = anyHover && highlightedNodes.has(p.sourceId) && highlightedNodes.has(p.targetId);
-              const isDimmed = anyHover && !isLit;
-              return (
-                <path key={p.id} d={p.d}
-                  stroke={isLit ? p.layerColor : '#D1D5DB'}
-                  strokeWidth={isLit ? 2.5 : 1}
-                  fill="none"
-                  opacity={isDimmed ? 0.08 : isLit ? 1 : 0.35}
-                  className="transition-all duration-300" />
-              );
-            })}
-          </svg>
-
-          {/* Node columns */}
-          <div className="relative flex gap-6 p-6" style={{ zIndex: 2 }}>
-            {/* THEMES */}
-            <div data-column="themes" className="flex flex-col gap-2" style={{ minWidth: 200 }}>
-              {filteredData.themes.map(t => {
-                const nid = `theme-${t.key}`;
+          <div
+            ref={innerRef}
+            className="relative"
+            style={{
+              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+              transformOrigin: 'top left',
+              minWidth: 'fit-content',
+              minHeight: 'fit-content',
+            }}
+          >
+            {/* SVG connectors */}
+            <svg className="absolute inset-0 pointer-events-none"
+              style={{ width: '100%', height: '100%', overflow: 'visible', zIndex: 1 }}>
+              {paths.map(p => {
+                const isLit = anyHover && highlightedNodes.has(p.sourceId) && highlightedNodes.has(p.targetId);
+                const isDimmed = anyHover && !isLit;
                 return (
-                  <div key={t.id} data-node-id={nid}
-                    className={`group cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
-                    style={{ width: 200 }}
-                    onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
-                    <div style={{ borderLeft: `4px solid ${t.color || LAYER.theme.border}` }}
-                      className="bg-white border border-slate-200/80 rounded-lg shadow-sm">
-                      <div className="p-3.5">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-mono font-bold rounded-md px-2 py-0.5"
-                            style={{ fontSize: 10, background: LAYER.theme.badgeBg, color: LAYER.theme.badgeText, letterSpacing: '0.02em' }}>
-                            {t.key}
-                          </span>
-                          <StatusBadge status={t.status} />
-                        </div>
-                        <p className="font-semibold leading-snug line-clamp-2" style={{ fontSize: 13, color: '#0F172A' }}>
-                          {t.title}
-                        </p>
-                        <div className="flex items-center gap-2 mt-2.5">
-                          <div className="flex-1 rounded-full overflow-hidden" style={{ height: 5, background: '#E2E8F0' }}>
-                            <div className="rounded-full transition-all" style={{ width: `${t.progress || 0}%`, height: 5, background: getProgressColor(t.progress || 0) }} />
-                          </div>
-                          <span className="font-bold" style={{ fontSize: 11, color: '#334155' }}>{Math.round(t.progress || 0)}%</span>
-                        </div>
-                        <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 8 }}>
-                          {t.goalCount || 0} goals · {t.krCount || 0} KRs
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <path key={p.id} d={p.d}
+                    stroke={isLit ? p.layerColor : '#D1D5DB'}
+                    strokeWidth={isLit ? 2.5 : 1}
+                    fill="none"
+                    opacity={isDimmed ? 0.08 : isLit ? 1 : 0.35}
+                    className="transition-all duration-300" />
                 );
               })}
-            </div>
+            </svg>
 
-            {/* GOALS */}
-            <div data-column="goals" className="flex flex-col gap-2" style={{ minWidth: 190 }}>
-              {filteredData.goals.map(g => {
-                const nid = `goal-${g.key}`;
-                return (
-                  <div key={g.id} data-node-id={nid}
-                    className={`group bg-white rounded-lg shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
-                    style={{ width: 190 }}
-                    onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
-                    <div style={{ borderLeft: `4px solid ${LAYER.goal.border}` }}
-                      className="border border-slate-200/80 rounded-lg">
-                      <div className="p-3">
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="font-mono font-bold rounded-md px-2 py-0.5"
-                            style={{ fontSize: 10, background: LAYER.goal.badgeBg, color: LAYER.goal.badgeText }}>{g.key}</span>
-                          <StatusBadge status={g.status} />
-                        </div>
-                        <p className="font-semibold leading-snug line-clamp-2" style={{ fontSize: 12, color: '#1E293B' }}>{g.title}</p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <div className="flex-1 rounded-full overflow-hidden" style={{ height: 4, background: '#E2E8F0' }}>
-                            <div className="rounded-full" style={{ width: `${g.progress || 0}%`, height: 4, background: getProgressColor(g.progress || 0) }} />
+            {/* Node columns */}
+            <div className="relative flex gap-6 p-6" style={{ zIndex: 2 }}>
+              {/* THEMES */}
+              <div data-column="themes" className="flex flex-col gap-2" style={{ minWidth: 200 }}>
+                {filteredData.themes.map(t => {
+                  const nid = `theme-${t.key}`;
+                  return (
+                    <div key={t.id} data-node-id={nid}
+                      className={`group cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
+                      style={{ width: 200 }}
+                      onClick={() => handleNodeClick(nid)}
+                      onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
+                      <div style={{ borderLeft: `4px solid ${t.color || LAYER.theme.border}` }}
+                        className="bg-white border border-slate-200/80 rounded-lg shadow-sm">
+                        <div className="p-3.5">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="font-mono font-bold rounded-md px-2 py-0.5"
+                              style={{ fontSize: 10, background: LAYER.theme.badgeBg, color: LAYER.theme.badgeText, letterSpacing: '0.02em' }}>
+                              {t.key}
+                            </span>
+                            <StatusBadge status={t.status} />
                           </div>
-                          <span className="font-bold" style={{ fontSize: 10, color: '#475569' }}>{Math.round(g.progress || 0)}%</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* KEY RESULTS — Blue, NOT purple */}
-            <div data-column="krs" className="flex flex-col gap-2" style={{ minWidth: 180 }}>
-              {filteredData.krs.map(kr => {
-                const nid = `kr-${kr.key}`;
-                return (
-                  <div key={kr.id} data-node-id={nid}
-                    className={`group bg-white rounded-lg shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
-                    style={{ width: 180 }}
-                    onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
-                    <div style={{ borderLeft: `4px solid ${LAYER.kr.border}` }}
-                      className="border border-slate-200/80 rounded-lg">
-                      <div className="p-3">
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="font-mono font-bold rounded-md px-2 py-0.5"
-                            style={{ fontSize: 10, background: LAYER.kr.badgeBg, color: LAYER.kr.badgeText }}>{kr.key}</span>
-                          <StatusBadge status={kr.status} />
-                        </div>
-                        <p className="font-medium leading-snug line-clamp-2" style={{ fontSize: 11, color: '#334155' }}>{kr.title}</p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <div className="flex-1 rounded-full overflow-hidden" style={{ height: 3, background: '#E2E8F0' }}>
-                            <div className="rounded-full" style={{ width: `${kr.progress || 0}%`, height: 3, background: getProgressColor(kr.progress || 0) }} />
+                          <p className="font-semibold leading-snug line-clamp-2" style={{ fontSize: 13, color: '#0F172A' }}>
+                            {t.title}
+                          </p>
+                          <div className="flex items-center gap-2 mt-2.5">
+                            <div className="flex-1 rounded-full overflow-hidden" style={{ height: 5, background: '#E2E8F0' }}>
+                              <div className="rounded-full transition-all" style={{ width: `${t.progress || 0}%`, height: 5, background: getProgressColor(t.progress || 0) }} />
+                            </div>
+                            <span className="font-bold" style={{ fontSize: 11, color: '#334155' }}>{Math.round(t.progress || 0)}%</span>
                           </div>
-                          <span className="font-bold" style={{ fontSize: 10, color: '#475569' }}>{Math.round(kr.progress || 0)}%</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-              {krsWithoutInitiative.length > 0 && filteredData.initiatives.length === 0 && (
-                <GhostNode label="initiative" />
-              )}
-            </div>
-
-            {/* INITIATIVES */}
-            <div data-column="initiatives" className="flex flex-col gap-2" style={{ minWidth: 190 }}>
-              {filteredData.initiatives.length > 0 ? filteredData.initiatives.map(ini => {
-                const nid = `initiative-${ini.key}`;
-                return (
-                  <div key={ini.id} data-node-id={nid}
-                    className={`group bg-white rounded-lg shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
-                    style={{ width: 190 }}
-                    onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
-                    <div style={{ borderLeft: `4px solid ${LAYER.initiative.border}` }}
-                      className="border border-slate-200/80 rounded-lg">
-                      <div className="p-3">
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="font-mono font-bold rounded-md px-2 py-0.5"
-                            style={{ fontSize: 10, background: LAYER.initiative.badgeBg, color: LAYER.initiative.badgeText }}>{ini.key}</span>
-                          <StatusBadge status={ini.status} />
-                        </div>
-                        <p className="font-semibold leading-snug line-clamp-2" style={{ fontSize: 12, color: '#1E293B' }}>{ini.title}</p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <div className="flex-1 rounded-full overflow-hidden" style={{ height: 4, background: '#E2E8F0' }}>
-                            <div className="rounded-full" style={{ width: `${ini.progress || 0}%`, height: 4, background: getProgressColor(ini.progress || 0) }} />
+                          <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 8 }}>
+                            {t.goalCount || 0} goals · {t.krCount || 0} KRs
                           </div>
-                          <span className="font-bold" style={{ fontSize: 10, color: '#475569' }}>{Math.round(ini.progress || 0)}%</span>
                         </div>
                       </div>
                     </div>
-                  </div>
-                );
-              }) : (
-                <GhostNode label="initiative" />
-              )}
-              {initsWithoutEpic.length > 0 && filteredData.epics.length === 0 && (
-                <GhostNode label="epic" />
-              )}
-            </div>
+                  );
+                })}
+              </div>
 
-            {/* EPICS */}
-            <div data-column="epics" className="flex flex-col gap-2" style={{ minWidth: 180 }}>
-              {filteredData.epics.length > 0 ? filteredData.epics.map(epic => {
-                const nid = `epic-${epic.key}`;
-                return (
-                  <div key={epic.id} data-node-id={nid}
-                    className={`group bg-white rounded-lg shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
-                    style={{ width: 180 }}
-                    onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
-                    <div style={{ borderLeft: `4px solid ${LAYER.epic.border}` }}
-                      className="border border-slate-200/80 rounded-lg">
-                      <div className="p-3">
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="font-mono font-bold rounded-md px-2 py-0.5"
-                            style={{ fontSize: 10, background: LAYER.epic.badgeBg, color: LAYER.epic.badgeText }}>{epic.key}</span>
-                          <StatusBadge status={epic.status} />
+              {/* GOALS */}
+              <div data-column="goals" className="flex flex-col gap-2" style={{ minWidth: 190 }}>
+                {filteredData.goals.map(g => {
+                  const nid = `goal-${g.key}`;
+                  return (
+                    <div key={g.id} data-node-id={nid}
+                      className={`group bg-white rounded-lg shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
+                      style={{ width: 190 }}
+                      onClick={() => handleNodeClick(nid)}
+                      onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
+                      <div style={{ borderLeft: `4px solid ${LAYER.goal.border}` }}
+                        className="border border-slate-200/80 rounded-lg">
+                        <div className="p-3">
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="font-mono font-bold rounded-md px-2 py-0.5"
+                              style={{ fontSize: 10, background: LAYER.goal.badgeBg, color: LAYER.goal.badgeText }}>{g.key}</span>
+                            <StatusBadge status={g.status} />
+                          </div>
+                          <p className="font-semibold leading-snug line-clamp-2" style={{ fontSize: 12, color: '#1E293B' }}>{g.title}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <div className="flex-1 rounded-full overflow-hidden" style={{ height: 4, background: '#E2E8F0' }}>
+                              <div className="rounded-full" style={{ width: `${g.progress || 0}%`, height: 4, background: getProgressColor(g.progress || 0) }} />
+                            </div>
+                            <span className="font-bold" style={{ fontSize: 10, color: '#475569' }}>{Math.round(g.progress || 0)}%</span>
+                          </div>
                         </div>
-                        <p className="font-medium leading-snug line-clamp-2" style={{ fontSize: 11, color: '#334155' }}>{epic.title}</p>
                       </div>
                     </div>
-                  </div>
-                );
-              }) : (
-                <GhostNode label="epic" />
-              )}
+                  );
+                })}
+              </div>
+
+              {/* KEY RESULTS — Blue, NOT purple */}
+              <div data-column="krs" className="flex flex-col gap-2" style={{ minWidth: 180 }}>
+                {filteredData.krs.map(kr => {
+                  const nid = `kr-${kr.key}`;
+                  return (
+                    <div key={kr.id} data-node-id={nid}
+                      className={`group bg-white rounded-lg shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
+                      style={{ width: 180 }}
+                      onClick={() => handleNodeClick(nid)}
+                      onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
+                      <div style={{ borderLeft: `4px solid ${LAYER.kr.border}` }}
+                        className="border border-slate-200/80 rounded-lg">
+                        <div className="p-3">
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="font-mono font-bold rounded-md px-2 py-0.5"
+                              style={{ fontSize: 10, background: LAYER.kr.badgeBg, color: LAYER.kr.badgeText }}>{kr.key}</span>
+                            <StatusBadge status={kr.status} />
+                          </div>
+                          <p className="font-medium leading-snug line-clamp-2" style={{ fontSize: 11, color: '#334155' }}>{kr.title}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <div className="flex-1 rounded-full overflow-hidden" style={{ height: 3, background: '#E2E8F0' }}>
+                              <div className="rounded-full" style={{ width: `${kr.progress || 0}%`, height: 3, background: getProgressColor(kr.progress || 0) }} />
+                            </div>
+                            <span className="font-bold" style={{ fontSize: 10, color: '#475569' }}>{Math.round(kr.progress || 0)}%</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                {krsWithoutInitiative.length > 0 && filteredData.initiatives.length === 0 && (
+                  <GhostNode label="initiative" />
+                )}
+              </div>
+
+              {/* INITIATIVES */}
+              <div data-column="initiatives" className="flex flex-col gap-2" style={{ minWidth: 190 }}>
+                {filteredData.initiatives.length > 0 ? filteredData.initiatives.map(ini => {
+                  const nid = `initiative-${ini.key}`;
+                  return (
+                    <div key={ini.id} data-node-id={nid}
+                      className={`group bg-white rounded-lg shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
+                      style={{ width: 190 }}
+                      onClick={() => handleNodeClick(nid)}
+                      onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
+                      <div style={{ borderLeft: `4px solid ${LAYER.initiative.border}` }}
+                        className="border border-slate-200/80 rounded-lg">
+                        <div className="p-3">
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="font-mono font-bold rounded-md px-2 py-0.5"
+                              style={{ fontSize: 10, background: LAYER.initiative.badgeBg, color: LAYER.initiative.badgeText }}>{ini.key}</span>
+                            <StatusBadge status={ini.status} />
+                          </div>
+                          <p className="font-semibold leading-snug line-clamp-2" style={{ fontSize: 12, color: '#1E293B' }}>{ini.title}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <div className="flex-1 rounded-full overflow-hidden" style={{ height: 4, background: '#E2E8F0' }}>
+                              <div className="rounded-full" style={{ width: `${ini.progress || 0}%`, height: 4, background: getProgressColor(ini.progress || 0) }} />
+                            </div>
+                            <span className="font-bold" style={{ fontSize: 10, color: '#475569' }}>{Math.round(ini.progress || 0)}%</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }) : (
+                  <GhostNode label="initiative" />
+                )}
+                {initsWithoutEpic.length > 0 && filteredData.epics.length === 0 && (
+                  <GhostNode label="epic" />
+                )}
+              </div>
+
+              {/* EPICS */}
+              <div data-column="epics" className="flex flex-col gap-2" style={{ minWidth: 180 }}>
+                {filteredData.epics.length > 0 ? filteredData.epics.map(epic => {
+                  const nid = `epic-${epic.key}`;
+                  return (
+                    <div key={epic.id} data-node-id={nid}
+                      className={`group bg-white rounded-lg shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
+                      style={{ width: 180 }}
+                      onClick={() => handleNodeClick(nid)}
+                      onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
+                      <div style={{ borderLeft: `4px solid ${LAYER.epic.border}` }}
+                        className="border border-slate-200/80 rounded-lg">
+                        <div className="p-3">
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="font-mono font-bold rounded-md px-2 py-0.5"
+                              style={{ fontSize: 10, background: LAYER.epic.badgeBg, color: LAYER.epic.badgeText }}>{epic.key}</span>
+                            <StatusBadge status={epic.status} />
+                          </div>
+                          <p className="font-medium leading-snug line-clamp-2" style={{ fontSize: 11, color: '#334155' }}>{epic.title}</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }) : (
+                  <GhostNode label="epic" />
+                )}
+              </div>
             </div>
           </div>
+        </div>
+
+        {/* ═══ AI STORY PANEL ═══ */}
+        <div
+          className={`shrink-0 flex flex-col bg-white shadow-2xl border-l border-slate-200 transition-all duration-300 ease-out overflow-hidden ${
+            isAIPanelOpen ? 'w-[50vw] opacity-100' : 'w-0 opacity-0'
+          }`}
+        >
+          {isAIPanelOpen && lockedChain && (
+            <>
+              {/* Panel Header */}
+              <div className="shrink-0 border-b border-slate-100">
+                <div style={{ height: 4, background: 'linear-gradient(to right, #7C3AED, #A78BFA, #C4B5FD)' }} />
+                <div className="flex items-center justify-between px-8 py-5">
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center rounded-xl" style={{ width: 36, height: 36, background: '#7C3AED' }}>
+                      <Sparkles size={18} style={{ color: '#fff' }} />
+                    </div>
+                    <div>
+                      <h2 className="font-bold tracking-tight" style={{ fontSize: 17, color: '#0F172A' }}>
+                        AI Executive Brief
+                      </h2>
+                      <p style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>
+                        Strategic chain analysis · Powered by AI
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleClosePanel}
+                    className="flex items-center justify-center rounded-lg transition-colors hover:bg-slate-100"
+                    style={{ width: 36, height: 36, color: '#94A3B8' }}
+                    title="Close panel (ESC)"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Chain Breadcrumb */}
+              <div className="shrink-0 px-8 py-4 border-b border-slate-100" style={{ background: 'rgba(248,250,252,0.8)' }}>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <ChainBadge color="#2563EB" label={lockedChain.theme.key} title={lockedChain.theme.name} />
+                  <ChevronRight size={14} style={{ color: '#CBD5E1' }} />
+                  <ChainBadge color="#0D9488" label={lockedChain.goal.key} title={lockedChain.goal.title} />
+                  <ChevronRight size={14} style={{ color: '#CBD5E1' }} />
+                  <span className="font-medium" style={{ fontSize: 11, color: '#94A3B8' }}>
+                    {lockedChain.krs.length} Key Results
+                  </span>
+                  <ChevronRight size={14} style={{ color: '#CBD5E1' }} />
+                  {lockedChain.initiative ? (
+                    <ChainBadge color="#D97706" label={lockedChain.initiative.key} title={lockedChain.initiative.title} />
+                  ) : (
+                    <span className="font-semibold px-2 py-0.5 rounded" style={{ fontSize: 11, color: '#EF4444', background: '#FEF2F2' }}>
+                      ⚠ No Initiative
+                    </span>
+                  )}
+                  <ChevronRight size={14} style={{ color: '#CBD5E1' }} />
+                  {lockedChain.epic ? (
+                    <ChainBadge color="#4F46E5" label={lockedChain.epic.key} title={lockedChain.epic.title} />
+                  ) : (
+                    <span className="font-semibold px-2 py-0.5 rounded" style={{ fontSize: 11, color: '#EF4444', background: '#FEF2F2' }}>
+                      ⚠ No Epic
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Story Content */}
+              <div className="flex-1 overflow-y-auto">
+                {isGenerating && !storyContent ? (
+                  <AILoadingState />
+                ) : aiError ? (
+                  <div className="flex flex-col items-center justify-center h-full px-8 text-center">
+                    <div className="flex items-center justify-center rounded-xl mb-4"
+                      style={{ width: 48, height: 48, background: '#FFFBEB' }}>
+                      <X size={20} style={{ color: '#D97706' }} />
+                    </div>
+                    <p className="font-semibold mb-1" style={{ fontSize: 15, color: '#0F172A' }}>Briefing Unavailable</p>
+                    <p style={{ fontSize: 13, color: '#64748B', maxWidth: 300 }}>{aiError}</p>
+                    <button onClick={() => generateExecutiveStory(lockedChain)}
+                      className="mt-4 flex items-center gap-1.5 px-4 py-2 rounded-md font-medium transition-colors hover:bg-slate-100"
+                      style={{ fontSize: 13, color: '#2563EB' }}>
+                      <RefreshCw size={14} />
+                      Retry
+                    </button>
+                  </div>
+                ) : (
+                  <div className="px-8 py-6">
+                    <ReactMarkdown
+                      components={{
+                        h2: ({ children }) => (
+                          <h2 className="font-bold tracking-tight mt-8 mb-3 pb-2 border-b border-slate-100 first:mt-0"
+                            style={{ fontSize: 15, color: '#0F172A' }}>
+                            {children}
+                          </h2>
+                        ),
+                        p: ({ children }) => (
+                          <p className="mb-4" style={{ fontSize: 14, color: '#334155', lineHeight: 1.75 }}>{children}</p>
+                        ),
+                        strong: ({ children }) => (
+                          <strong className="font-semibold" style={{ color: '#0F172A' }}>{children}</strong>
+                        ),
+                        ul: ({ children }) => (
+                          <ul className="my-3 space-y-1.5">{children}</ul>
+                        ),
+                        li: ({ children }) => (
+                          <li className="pl-1" style={{ fontSize: 13, color: '#475569', lineHeight: 1.6 }}>
+                            <span className="mr-2" style={{ color: '#94A3B8' }}>•</span>{children}
+                          </li>
+                        ),
+                      }}
+                    >
+                      {storyContent}
+                    </ReactMarkdown>
+                    {isGenerating && (
+                      <div className="flex items-center gap-2 mt-4" style={{ color: '#7C3AED', fontSize: 12 }}>
+                        <Sparkles size={14} className="animate-pulse" />
+                        <span className="font-medium">Generating…</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Panel Footer */}
+              <div className="shrink-0 border-t border-slate-100 px-8 py-3 flex items-center justify-between bg-white">
+                <div className="flex items-center gap-2" style={{ fontSize: 11, color: '#94A3B8' }}>
+                  <Sparkles size={12} style={{ color: '#A78BFA' }} />
+                  <span>Generated by AI · {new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => generateExecutiveStory(lockedChain)}
+                    disabled={isGenerating}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium transition-colors hover:bg-slate-50 disabled:opacity-50"
+                    style={{ fontSize: 12, color: '#475569' }}>
+                    <RefreshCw size={12} />
+                    Regenerate
+                  </button>
+                  <button
+                    onClick={() => copyToClipboard(storyContent)}
+                    disabled={!storyContent}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium transition-colors hover:bg-slate-50 disabled:opacity-50"
+                    style={{ fontSize: 12, color: '#475569' }}>
+                    <Copy size={12} />
+                    Copy
+                  </button>
+                  <button
+                    onClick={handleClosePanel}
+                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-md font-semibold transition-colors"
+                    style={{ fontSize: 12, color: '#fff', background: '#0F172A' }}>
+                    Close Brief
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
