@@ -634,7 +634,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         {/* Right: Controls + Exit */}
         <div className="flex items-center gap-3">
           <Select value={selectedThemeFilter} onValueChange={setSelectedThemeFilter}>
-            <SelectTrigger className="h-8 w-[200px] text-xs border-border bg-muted text-foreground focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+            <SelectTrigger className="h-8 w-[200px] text-xs border-border bg-muted text-foreground focus:ring-1 focus:ring-brand-primary focus:border-brand-primary">
               <SelectValue placeholder="All Themes" />
             </SelectTrigger>
             <SelectContent className="bg-popover border-border shadow-lg rounded-lg">
@@ -678,7 +678,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           <Separator orientation="vertical" className="h-6" />
 
           <Button variant="outline" size="sm" onClick={handleExit}
-            className="gap-1.5 text-muted-foreground hover:text-foreground">
+            className="gap-1.5 border-brand-primary text-brand-primary hover:bg-brand-primary/5 transition-colors shadow-sm font-medium px-4">
             Exit Map
             <X size={14} />
           </Button>
