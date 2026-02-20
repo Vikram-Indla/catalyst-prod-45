@@ -12,9 +12,41 @@ export interface AlignmentNode {
   progress?: number;
   color?: string;
   health?: number;
+  goalCount?: number;
+  krCount?: number;
+}
+
+export interface AlignmentRow {
+  theme_id: string;
+  theme_key: string;
+  theme_name: string;
+  theme_color: string;
+  theme_status: string;
+  theme_progress: number;
+  goal_id: string | null;
+  goal_key: string | null;
+  goal_title: string | null;
+  goal_status: string | null;
+  goal_progress: number | null;
+  goal_health: number | null;
+  kr_id: string | null;
+  kr_key: string | null;
+  kr_title: string | null;
+  kr_status: string | null;
+  kr_progress: number | null;
+  initiative_id: string | null;
+  initiative_key: string | null;
+  initiative_title: string | null;
+  initiative_status: string | null;
+  initiative_progress: number | null;
+  epic_id: string | null;
+  epic_key: string | null;
+  epic_title: string | null;
+  epic_status: string | null;
 }
 
 export interface AlignmentData {
+  rows: AlignmentRow[];
   themes: AlignmentNode[];
   goals: AlignmentNode[];
   krs: AlignmentNode[];
@@ -39,12 +71,12 @@ export function useAlignmentMapData() {
   return useQuery<AlignmentData>({
     queryKey: ['alignment-map'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('vw_alignment_map' as any)
+      const { data, error } = await (supabase as any)
+        .from('vw_alignment_map')
         .select('*');
       if (error) throw error;
 
-      const rows = (data || []) as any[];
+      const rows = (data || []) as unknown as AlignmentRow[];
 
       const themesMap = new Map<string, AlignmentNode>();
       const goalsMap = new Map<string, AlignmentNode>();
@@ -56,6 +88,10 @@ export function useAlignmentMapData() {
       const goalToKrs = new Map<string, Set<string>>();
       const krToInitiatives = new Map<string, Set<string>>();
       const initiativeToEpics = new Map<string, Set<string>>();
+
+      // For theme stats
+      const themeGoalCount = new Map<string, Set<string>>();
+      const themeKrCount = new Map<string, Set<string>>();
 
       const krsWithInitiative = new Set<string>();
       const fullChainSet = new Set<string>();
@@ -72,6 +108,16 @@ export function useAlignmentMapData() {
           });
         }
 
+        // Track goals/KRs per theme
+        if (row.theme_id && row.goal_id) {
+          if (!themeGoalCount.has(row.theme_id)) themeGoalCount.set(row.theme_id, new Set());
+          themeGoalCount.get(row.theme_id)!.add(row.goal_id);
+        }
+        if (row.theme_id && row.kr_id) {
+          if (!themeKrCount.has(row.theme_id)) themeKrCount.set(row.theme_id, new Set());
+          themeKrCount.get(row.theme_id)!.add(row.kr_id);
+        }
+
         if (row.goal_id && !goalsMap.has(row.goal_id)) {
           goalsMap.set(row.goal_id, {
             id: row.goal_id,
@@ -79,7 +125,7 @@ export function useAlignmentMapData() {
             title: row.goal_title || '',
             status: row.goal_status || 'draft',
             progress: Number(row.goal_progress) || 0,
-            health: row.goal_health,
+            health: row.goal_health != null ? Number(row.goal_health) : undefined,
           });
         }
 
@@ -96,7 +142,7 @@ export function useAlignmentMapData() {
         if (row.initiative_id && !initiativesMap.has(row.initiative_id)) {
           initiativesMap.set(row.initiative_id, {
             id: row.initiative_id,
-            key: row.initiative_key || row.initiative_id.slice(0, 8),
+            key: row.initiative_key || '',
             title: row.initiative_title || '',
             status: row.initiative_status || 'draft',
             progress: Number(row.initiative_progress) || 0,
@@ -106,7 +152,7 @@ export function useAlignmentMapData() {
         if (row.epic_id && !epicsMap.has(row.epic_id)) {
           epicsMap.set(row.epic_id, {
             id: row.epic_id,
-            key: row.epic_key || row.epic_id.slice(0, 8),
+            key: row.epic_key || '',
             title: row.epic_title || '',
             status: row.epic_status || 'proposed',
           });
@@ -137,13 +183,19 @@ export function useAlignmentMapData() {
         }
       }
 
-      // Stats: count initiatives that have at least one KR link
-      const linkedInitiatives = initiativesMap.size; // all initiatives in view are linked (they come from KR join)
-      // Count initiatives that also have epics
-      const initsWithEpic = new Set<string>();
-      for (const [iniId] of initiativeToEpics) initsWithEpic.add(iniId);
+      // Attach goal/kr counts to themes
+      for (const [tid, theme] of themesMap) {
+        theme.goalCount = themeGoalCount.get(tid)?.size || 0;
+        theme.krCount = themeKrCount.get(tid)?.size || 0;
+      }
+
+      // Get total initiatives/epics from ph_initiatives for accurate denominator
+      const { count: totalInitCount } = await supabase
+        .from('ph_initiatives')
+        .select('id', { count: 'exact', head: true });
 
       return {
+        rows,
         themes: Array.from(themesMap.values()),
         goals: Array.from(goalsMap.values()),
         krs: Array.from(krsMap.values()),
@@ -156,8 +208,8 @@ export function useAlignmentMapData() {
         stats: {
           linkedKrs: krsWithInitiative.size,
           totalKrs: krsMap.size,
-          linkedInitiatives,
-          totalInitiatives: initiativesMap.size,
+          linkedInitiatives: initiativesMap.size,
+          totalInitiatives: totalInitCount || initiativesMap.size,
           linkedEpics: epicsMap.size,
           totalEpics: epicsMap.size,
           fullChains: fullChainSet.size,
