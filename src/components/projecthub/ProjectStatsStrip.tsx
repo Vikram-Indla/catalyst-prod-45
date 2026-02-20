@@ -1,7 +1,7 @@
 interface StatsStripProps {
   stats: {
     total: number;
-    active: number;
+    onTrack: number;
     atRisk: number;
     totalEpics: number;
     totalStories: number;
@@ -13,7 +13,7 @@ interface StatsStripProps {
 
 const STAT_CARDS = [
   { key: 'total', label: 'TOTAL PROJECTS', color: '#0F172A' },
-  { key: 'active', label: 'ACTIVE', color: '#16A34A' },
+  { key: 'onTrack', label: 'ON TRACK', color: '#16A34A' },
   { key: 'atRisk', label: 'AT RISK / OFF TRACK', color: '#DC2626' },
   { key: 'totalEpics', label: 'TOTAL EPICS', color: '#2563EB' },
   { key: 'totalStories', label: 'TOTAL STORIES', color: '#7C3AED' },
@@ -28,7 +28,6 @@ const WORK_CARDS = [
 export function ProjectStatsStrip({ stats }: StatsStripProps) {
   return (
     <div className="space-y-3">
-      {/* 5 stat cards */}
       <div className="grid grid-cols-5 gap-3">
         {STAT_CARDS.map(c => (
           <div key={c.key} className="rounded-lg" style={{ background: '#FFF', border: '1px solid #E2E8F0', padding: '14px 16px' }}>
@@ -41,8 +40,6 @@ export function ProjectStatsStrip({ stats }: StatsStripProps) {
           </div>
         ))}
       </div>
-
-      {/* 3 work distribution cards */}
       <div className="grid grid-cols-3 gap-3">
         {WORK_CARDS.map(c => (
           <div key={c.key} className="flex items-center gap-3 rounded-lg" style={{ background: '#FFF', border: '1px solid #E2E8F0', padding: '12px 16px' }}>

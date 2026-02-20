@@ -10,6 +10,7 @@ import {
   filterAndSortProjects,
   computePortfolioStats,
 } from '@/hooks/useProjectHub';
+import { useMemberProfiles } from '@/components/projecthub/MemberStack';
 import { ProjectStatsStrip } from '@/components/projecthub/ProjectStatsStrip';
 import { AllProjectsToolbar } from '@/components/projecthub/AllProjectsToolbar';
 import { ProjectAdvancedFilters } from '@/components/projecthub/ProjectAdvancedFilters';
@@ -37,6 +38,10 @@ export default function AllProjectsPage() {
   const { data: favorites = new Set<string>() } = useProjectFavorites();
   const toggleFav = useToggleFavorite();
   useProjectsRealtime();
+
+  // Batch-fetch member profiles for avatar display
+  const allMemberIds = useMemo(() => projects.flatMap(p => p.member_ids ?? []), [projects]);
+  useMemberProfiles(allMemberIds);
 
   const filtered = useMemo(() => filterAndSortProjects(projects, filters, sortCol, sortDir), [projects, filters, sortCol, sortDir]);
   const stats = useMemo(() => computePortfolioStats(projects), [projects]);

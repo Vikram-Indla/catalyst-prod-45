@@ -9,20 +9,15 @@ interface ToolbarProps {
   onFilterChange: (f: ProjectFilters) => void;
   onToggleAdvanced: () => void;
   showAdvanced: boolean;
-  stats: { total: number; active: number; onHold: number; planning: number; completed: number };
+  stats: { total: number; catTodo: number; catInProgress: number; catDone: number };
 }
 
 const CHIPS = [
-  { label: 'All', key: 'All' },
-  { label: 'Active', key: 'Active' },
-  { label: 'On Hold', key: 'On Hold' },
-  { label: 'Planning', key: 'Planning' },
-  { label: 'Completed', key: 'Completed' },
+  { label: 'All', key: 'All', countKey: 'total' as const },
+  { label: 'To Do', key: 'To Do', countKey: 'catTodo' as const },
+  { label: 'In Progress', key: 'In Progress', countKey: 'catInProgress' as const },
+  { label: 'Done', key: 'Done', countKey: 'catDone' as const },
 ];
-
-const CHIP_COUNTS: Record<string, keyof ToolbarProps['stats']> = {
-  All: 'total', Active: 'active', 'On Hold': 'onHold', Planning: 'planning', Completed: 'completed',
-};
 
 export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange, onToggleAdvanced, showAdvanced, stats }: ToolbarProps) {
   const [localSearch, setLocalSearch] = useState(filters.search);
@@ -36,10 +31,10 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      {/* Status chips */}
+      {/* Category chips */}
       {CHIPS.map(c => {
         const active = filters.statusChip === c.key;
-        const count = stats[CHIP_COUNTS[c.key]];
+        const count = stats[c.countKey];
         return (
           <button
             key={c.key}
@@ -50,9 +45,9 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
               padding: '0 12px',
               fontSize: 12,
               fontWeight: active ? 600 : 500,
-              background: active ? '#EFF6FF' : '#FFF',
-              color: active ? '#2563EB' : '#64748B',
-              border: `1px solid ${active ? '#BFDBFE' : '#E2E8F0'}`,
+              background: active ? '#2563EB' : '#FFF',
+              color: active ? '#FFF' : '#64748B',
+              border: `1px solid ${active ? '#2563EB' : '#E2E8F0'}`,
               cursor: 'pointer',
             }}
           >
@@ -63,7 +58,7 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
                 padding: '0 6px',
                 fontSize: 10,
                 fontWeight: 700,
-                background: active ? '#2563EB' : '#F1F5F9',
+                background: active ? 'rgba(255,255,255,0.25)' : '#F1F5F9',
                 color: active ? '#FFF' : '#64748B',
                 fontFamily: "'JetBrains Mono', monospace",
               }}
@@ -73,30 +68,6 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
           </button>
         );
       })}
-
-      {/* Filter button */}
-      <button
-        onClick={onToggleAdvanced}
-        className="flex items-center gap-1.5 rounded-md transition-all"
-        style={{
-          height: 30,
-          padding: '0 12px',
-          fontSize: 12,
-          fontWeight: 500,
-          background: advFilterCount > 0 || showAdvanced ? '#EFF6FF' : '#FFF',
-          color: advFilterCount > 0 || showAdvanced ? '#2563EB' : '#64748B',
-          border: `1px solid ${advFilterCount > 0 || showAdvanced ? '#BFDBFE' : '#E2E8F0'}`,
-          cursor: 'pointer',
-        }}
-      >
-        <SlidersHorizontal size={13} />
-        Filter
-        {advFilterCount > 0 && (
-          <span className="rounded-full" style={{ padding: '0 5px', fontSize: 10, fontWeight: 700, background: '#2563EB', color: '#FFF' }}>
-            {advFilterCount}
-          </span>
-        )}
-      </button>
 
       <div className="flex-1" />
 
@@ -111,6 +82,29 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
           style={{ fontSize: 12, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}
         />
       </div>
+
+      {/* Filter button */}
+      <button
+        onClick={onToggleAdvanced}
+        className="flex items-center justify-center rounded-md transition-all"
+        style={{
+          width: 30,
+          height: 30,
+          background: advFilterCount > 0 || showAdvanced ? '#EFF6FF' : '#FFF',
+          color: advFilterCount > 0 || showAdvanced ? '#2563EB' : '#64748B',
+          border: `1px solid ${advFilterCount > 0 || showAdvanced ? '#BFDBFE' : '#E2E8F0'}`,
+          cursor: 'pointer',
+          position: 'relative',
+        }}
+        title="Advanced filters"
+      >
+        <SlidersHorizontal size={14} />
+        {advFilterCount > 0 && (
+          <span className="absolute -top-1.5 -right-1.5 rounded-full flex items-center justify-center" style={{ width: 16, height: 16, fontSize: 9, fontWeight: 700, background: '#2563EB', color: '#FFF' }}>
+            {advFilterCount}
+          </span>
+        )}
+      </button>
 
       {/* View toggle */}
       <div className="flex items-center rounded-md" style={{ border: '1px solid #E2E8F0', overflow: 'hidden' }}>
