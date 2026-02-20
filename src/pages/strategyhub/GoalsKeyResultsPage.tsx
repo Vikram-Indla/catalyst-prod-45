@@ -6,9 +6,15 @@
 
 import { useNavigate } from 'react-router-dom';
 import { Plus } from 'lucide-react';
+import { useGoals, useAllKeyResults } from '@/hooks/useGoals';
 
 export default function GoalsKeyResultsPage() {
   const navigate = useNavigate();
+  const { data: goals, isLoading: goalsLoading } = useGoals();
+  const { data: allKRs, isLoading: krsLoading } = useAllKeyResults();
+
+  // Stage B verification — remove after confirming
+  console.log('[Goals Page] Goals:', goals?.length, 'KRs:', allKRs?.length, 'Loading:', goalsLoading || krsLoading);
 
   return (
     <div style={{ padding: '16px 24px 0' }}>
