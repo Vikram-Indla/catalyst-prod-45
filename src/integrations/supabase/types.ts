@@ -54718,6 +54718,7 @@ export type Database = {
           department_name: string
           email: string
           full_name: string
+          job_role: string
           location: string
           project_role: string
           user_id: string

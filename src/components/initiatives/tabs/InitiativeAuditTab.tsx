@@ -92,7 +92,7 @@ export function InitiativeAuditTab({ initiativeId }: InitiativeAuditTabProps) {
   const { data: auditLogs = [], isLoading } = useQuery({
     queryKey: ['initiative-audit', initiativeId, auditFilter],
     queryFn: async () => {
-      let query = supabase
+      let query = (supabase as any)
         .from('ph_initiative_audit_log')
         .select('*, user:profiles!user_id(id, full_name, email)')
         .eq('initiative_id', initiativeId)
