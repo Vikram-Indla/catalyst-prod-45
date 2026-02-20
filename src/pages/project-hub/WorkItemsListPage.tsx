@@ -1,17 +1,18 @@
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useProjectWorkItems } from '@/hooks/useProjectWorkItems';
+import { useWorkItemListState } from '@/hooks/useWorkItemListState';
 import { WorkItemsToolbar } from '@/components/project-hub/work-items/WorkItemsToolbar';
 import { WorkItemsTable } from '@/components/project-hub/work-items/WorkItemsTable';
 import { CreateWorkItemModal } from '@/components/project-hub/work-items/CreateWorkItemModal';
 import { WorkItemDetailModal } from '@/components/project-hub/work-items/WorkItemDetailModal';
 import { Loader2 } from 'lucide-react';
+import { useState, useMemo } from 'react';
 
 export default function WorkItemsListPage() {
   const { key } = useParams<{ key: string }>();
-  const [search, setSearch] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
   const [detailItemId, setDetailItemId] = useState<string | null>(null);
 
@@ -32,16 +33,7 @@ export default function WorkItemsListPage() {
 
   const { data: items = [], isLoading } = useProjectWorkItems(project?.id);
 
-  const filtered = useMemo(() => {
-    if (!search.trim()) return items;
-    const q = search.toLowerCase();
-    return items.filter(
-      i =>
-        i.title?.toLowerCase().includes(q) ||
-        i.summary?.toLowerCase().includes(q) ||
-        i.item_key?.toLowerCase().includes(q)
-    );
-  }, [items, search]);
+  const listState = useWorkItemListState(items);
 
   const assignees = useMemo(() => {
     const seen = new Set<string>();
@@ -77,18 +69,46 @@ export default function WorkItemsListPage() {
           Work Items
         </h1>
         <span className="text-[11px] font-medium px-2 py-0.5 rounded-full" style={{ background: '#F1F5F9', color: '#64748B' }}>
-          {filtered.length}
+          {listState.processed.length}
         </span>
       </div>
 
-      <WorkItemsToolbar search={search} onSearchChange={setSearch} totalCount={filtered.length} assignees={assignees} />
+      <WorkItemsToolbar
+        search={listState.search}
+        onSearchChange={listState.setSearch}
+        totalCount={listState.processed.length}
+        assignees={assignees}
+        activeAssigneeFilters={listState.activeAssigneeFilters}
+        onToggleAssigneeFilter={listState.toggleAssigneeFilter}
+        filters={listState.filters}
+        onFiltersChange={listState.setFilters}
+        hasActiveFilters={listState.hasActiveFilters}
+        activeFilterChips={listState.activeFilterChips}
+        onClearAllFilters={listState.clearAllFilters}
+        uniqueStatuses={listState.uniqueStatuses}
+        uniquePriorities={listState.uniquePriorities}
+        uniqueTypes={listState.uniqueTypes}
+        uniqueAssignees={listState.uniqueAssignees}
+        groupBy={listState.groupBy}
+        onGroupByChange={listState.setGroupBy}
+        columns={listState.columns}
+        onColumnsChange={listState.setColumns}
+      />
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
           <Loader2 size={24} className="animate-spin text-[#2563EB]" />
         </div>
       ) : (
-        <WorkItemsTable items={filtered} onRowClick={setDetailItemId} onCreateClick={() => setCreateOpen(true)} />
+        <WorkItemsTable
+          items={listState.processed}
+          onRowClick={setDetailItemId}
+          onCreateClick={() => setCreateOpen(true)}
+          sorts={listState.sorts}
+          onToggleSort={listState.toggleSort}
+          columns={listState.columns}
+          grouped={listState.grouped}
+        />
       )}
 
       {/* Create Modal */}
