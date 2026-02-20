@@ -3604,6 +3604,13 @@ export type Database = {
             referencedRelation: "epics"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "epic_benefits_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
+          },
         ]
       }
       epic_business_processes: {
@@ -3629,6 +3636,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "epics"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epic_business_processes_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
           },
         ]
       }
@@ -3707,6 +3721,13 @@ export type Database = {
             referencedRelation: "epics"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "epic_design_items_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
+          },
         ]
       }
       epic_intake_responses: {
@@ -3741,6 +3762,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "epics"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epic_intake_responses_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
           },
         ]
       }
@@ -3800,6 +3828,13 @@ export type Database = {
             referencedRelation: "epics"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "epic_label_assignments_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
+          },
         ]
       }
       epic_pi_forecasts: {
@@ -3834,6 +3869,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "epics"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epic_pi_forecasts_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
           },
           {
             foreignKeyName: "epic_pi_forecasts_pi_id_fkey"
@@ -3884,6 +3926,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "epic_process_history_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
+          },
+          {
             foreignKeyName: "epic_process_history_process_step_id_fkey"
             columns: ["process_step_id"]
             isOneToOne: false
@@ -3923,6 +3972,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "epic_program_increments_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
+          },
+          {
             foreignKeyName: "epic_program_increments_pi_id_fkey"
             columns: ["pi_id"]
             isOneToOne: false
@@ -3957,6 +4013,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "epics"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epic_programs_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
           },
           {
             foreignKeyName: "epic_programs_program_id_fkey"
@@ -4048,6 +4111,13 @@ export type Database = {
             referencedRelation: "epics"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "epic_roi_scores_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: true
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
+          },
         ]
       }
       epic_scorecard_responses: {
@@ -4085,6 +4155,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "epics"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epic_scorecard_responses_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
           },
           {
             foreignKeyName: "epic_scorecard_responses_question_id_fkey"
@@ -4177,6 +4254,13 @@ export type Database = {
             referencedRelation: "epics"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "epic_spend_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: true
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
+          },
         ]
       }
       epic_statuses: {
@@ -4259,6 +4343,13 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "epics"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epic_value_metrics_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: true
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
           },
         ]
       }
@@ -4605,6 +4696,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "es_goal_dependencies_source_goal_id_fkey"
+            columns: ["source_goal_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["goal_id"]
+          },
+          {
             foreignKeyName: "es_goal_dependencies_target_goal_id_fkey"
             columns: ["target_goal_id"]
             isOneToOne: false
@@ -4631,6 +4729,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "es_goals_tree_view"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_goal_dependencies_target_goal_id_fkey"
+            columns: ["target_goal_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["goal_id"]
           },
         ]
       }
@@ -4689,6 +4794,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "es_goal_initiatives_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["goal_id"]
+          },
+          {
             foreignKeyName: "es_goal_initiatives_initiative_id_fkey"
             columns: ["initiative_id"]
             isOneToOne: false
@@ -4701,6 +4813,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_goal_initiatives_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["initiative_id"]
           },
         ]
       }
@@ -4835,6 +4954,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "es_themes_timeline_view"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["theme_id"]
           },
         ]
       }
@@ -5005,6 +5131,13 @@ export type Database = {
             referencedRelation: "es_key_results"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "es_initiatives_key_result_id_fkey"
+            columns: ["key_result_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["kr_id"]
+          },
         ]
       }
       es_investment_allocations: {
@@ -5081,6 +5214,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "es_themes_timeline_view"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_investment_allocations_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["theme_id"]
           },
         ]
       }
@@ -5195,6 +5335,13 @@ export type Database = {
             referencedRelation: "es_goals_tree_view"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "es_key_results_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["goal_id"]
+          },
         ]
       }
       es_kr_checkins: {
@@ -5252,6 +5399,90 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "es_key_results"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_kr_checkins_key_result_id_fkey"
+            columns: ["key_result_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["kr_id"]
+          },
+        ]
+      }
+      es_kr_initiatives: {
+        Row: {
+          id: string
+          initiative_id: string
+          key_result_id: string
+          linked_at: string | null
+          linked_by: string | null
+          notes: string | null
+        }
+        Insert: {
+          id?: string
+          initiative_id: string
+          key_result_id: string
+          linked_at?: string | null
+          linked_by?: string | null
+          notes?: string | null
+        }
+        Update: {
+          id?: string
+          initiative_id?: string
+          key_result_id?: string
+          linked_at?: string | null
+          linked_by?: string | null
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_kr_initiatives_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_kr_initiatives_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_kr_initiatives_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["initiative_id"]
+          },
+          {
+            foreignKeyName: "es_kr_initiatives_key_result_id_fkey"
+            columns: ["key_result_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_heatmap"
+            referencedColumns: ["kr_id"]
+          },
+          {
+            foreignKeyName: "es_kr_initiatives_key_result_id_fkey"
+            columns: ["key_result_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_tree"
+            referencedColumns: ["kr_id"]
+          },
+          {
+            foreignKeyName: "es_kr_initiatives_key_result_id_fkey"
+            columns: ["key_result_id"]
+            isOneToOne: false
+            referencedRelation: "es_key_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_kr_initiatives_key_result_id_fkey"
+            columns: ["key_result_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["kr_id"]
           },
         ]
       }
@@ -5726,6 +5957,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "es_theme_links_source_theme_id_fkey"
+            columns: ["source_theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["theme_id"]
+          },
+          {
             foreignKeyName: "es_theme_links_target_theme_id_fkey"
             columns: ["target_theme_id"]
             isOneToOne: false
@@ -5752,6 +5990,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "es_themes_timeline_view"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_links_target_theme_id_fkey"
+            columns: ["target_theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["theme_id"]
           },
         ]
       }
@@ -5860,6 +6105,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "es_themes_timeline_view"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["theme_id"]
           },
           {
             foreignKeyName: "es_theme_milestones_updated_by_fkey"
@@ -6696,6 +6948,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "epics"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "features_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
           },
           {
             foreignKeyName: "features_iteration_id_fkey"
@@ -10148,6 +10407,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "injira_issues_program_epic_id_fkey"
+            columns: ["program_epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
+          },
+          {
             foreignKeyName: "injira_issues_reporter_id_fkey"
             columns: ["reporter_id"]
             isOneToOne: false
@@ -13228,6 +13494,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "milestones_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
+          },
+          {
             foreignKeyName: "milestones_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
@@ -13705,6 +13978,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "epics"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objective_epic_links_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
           },
           {
             foreignKeyName: "objective_epic_links_objective_id_fkey"
@@ -15533,6 +15813,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
+            columns: ["linked_initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["initiative_id"]
+          },
+          {
             foreignKeyName: "ph_ideas_parent_idea_id_fkey"
             columns: ["parent_idea_id"]
             isOneToOne: false
@@ -15620,6 +15907,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_attachments_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["initiative_id"]
           },
           {
             foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
@@ -15791,6 +16085,13 @@ export type Database = {
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ph_initiative_budget_items_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["initiative_id"]
+          },
         ]
       }
       ph_initiative_links: {
@@ -15872,6 +16173,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_links_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["initiative_id"]
           },
         ]
       }
@@ -15978,6 +16286,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["initiative_id"]
           },
           {
             foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
@@ -16120,6 +16435,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ph_initiative_risks_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["initiative_id"]
+          },
+          {
             foreignKeyName: "ph_initiative_risks_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
@@ -16197,6 +16519,13 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_scores_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: true
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["initiative_id"]
           },
         ]
       }
@@ -17291,6 +17620,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_user_favorites_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["initiative_id"]
           },
         ]
       }
@@ -33090,6 +33426,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "theme_epic_links_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["epic_id"]
+          },
+          {
             foreignKeyName: "theme_epic_links_theme_id_fkey"
             columns: ["theme_id"]
             isOneToOne: false
@@ -40873,6 +41216,13 @@ export type Database = {
             referencedRelation: "es_themes_timeline_view"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["theme_id"]
+          },
         ]
       }
       es_dashboard_okr_tree: {
@@ -41014,6 +41364,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "es_themes_timeline_view"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["theme_id"]
           },
         ]
       }
@@ -41287,6 +41644,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
+            columns: ["linked_initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["initiative_id"]
           },
           {
             foreignKeyName: "ph_ideas_parent_idea_id_fkey"
@@ -43437,6 +43801,39 @@ export type Database = {
           role_ids: string[] | null
           role_names: string[] | null
           user_id: string | null
+        }
+        Relationships: []
+      }
+      vw_alignment_map: {
+        Row: {
+          epic_id: string | null
+          epic_key: string | null
+          epic_status: Database["public"]["Enums"]["epic_status"] | null
+          epic_title: string | null
+          goal_health: number | null
+          goal_id: string | null
+          goal_key: string | null
+          goal_progress: number | null
+          goal_status: string | null
+          goal_title: string | null
+          initiative_id: string | null
+          initiative_key: string | null
+          initiative_progress: number | null
+          initiative_status:
+            | Database["public"]["Enums"]["initiative_status"]
+            | null
+          initiative_title: string | null
+          kr_id: string | null
+          kr_key: string | null
+          kr_progress: number | null
+          kr_status: string | null
+          kr_title: string | null
+          theme_color: string | null
+          theme_id: string | null
+          theme_key: string | null
+          theme_name: string | null
+          theme_progress: number | null
+          theme_status: string | null
         }
         Relationships: []
       }
