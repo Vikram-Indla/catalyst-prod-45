@@ -109,17 +109,18 @@ export function SidebarBase({
       <aside
         className={cn(
           'h-full flex-shrink-0 relative flex flex-col overflow-visible',
-          'transition-all duration-200 ease-in-out',
           className
         )}
         style={{ 
           width: expanded ? '240px' : '64px',
-          background: 'var(--surface-elevated, var(--surface-1))',
-          borderRight: '1px solid var(--divider)',
-          boxShadow: '1px 0 3px 0 rgba(0, 0, 0, 0.03)',
-          // GPU layer promotion to prevent flicker when portals mount
+          background: 'var(--sidebar-bg, #FFFFFF)',
+          borderRight: '1px solid var(--sidebar-border, #E2E8F0)',
+          boxShadow: 'var(--sidebar-shadow, 1px 0 0 rgba(15, 23, 42, 0.06))',
           transform: 'translateZ(0)',
           backfaceVisibility: 'hidden',
+          transition: 'width 220ms cubic-bezier(0.4, 0, 0.2, 1)',
+          scrollbarWidth: 'thin' as any,
+          scrollbarColor: '#E2E8F0 transparent',
         }}
       >
         {/* V10 Header with collapse toggle */}
@@ -132,7 +133,7 @@ export function SidebarBase({
           )}
           style={{ 
             minHeight: '54px',
-            borderColor: 'var(--divider)',
+            borderColor: 'var(--sidebar-border, #E2E8F0)',
             padding: expanded ? '14px 14px 14px 16px' : '14px 0',
             gap: expanded ? undefined : '4px',
             background: 'transparent',
@@ -155,20 +156,20 @@ export function SidebarBase({
               </div>
               <button
                 onClick={onToggle}
-                className="flex items-center justify-center w-[26px] h-[26px] rounded-md transition-all flex-shrink-0"
+                className="flex items-center justify-center w-[26px] h-[26px] rounded transition-all flex-shrink-0"
                 style={{
                   background: 'transparent',
                   border: 'none',
                   cursor: 'pointer',
-                  color: 'var(--text-4, #94a3b8)',
+                  color: '#94A3B8',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--surface-2, #f8fafc)';
-                  e.currentTarget.style.color = 'var(--text-2, #475569)';
+                  e.currentTarget.style.background = 'var(--sidebar-item-hover-bg, #F1F5F9)';
+                  e.currentTarget.style.color = '#334155';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = 'var(--text-4, #94a3b8)';
+                  e.currentTarget.style.color = '#94A3B8';
                 }}
                 aria-label="Expand sidebar"
               >
@@ -196,10 +197,10 @@ export function SidebarBase({
                   className="truncate"
                   style={{ 
                     fontFamily: "'Sora', sans-serif",
-                    fontSize: '0.92rem',
+                    fontSize: '14px',
                     fontWeight: 700,
-                    color: 'var(--text-1, #0f172a)',
-                    letterSpacing: '-0.02em',
+                    color: '#0F172A',
+                    letterSpacing: '-0.3px',
                   }}
                 >
                   {config.label}
@@ -207,20 +208,20 @@ export function SidebarBase({
               </div>
               <button
                 onClick={onToggle}
-                className="flex items-center justify-center w-[26px] h-[26px] rounded-md transition-all flex-shrink-0"
+                className="flex items-center justify-center w-[26px] h-[26px] rounded transition-all flex-shrink-0"
                 style={{
                   background: 'transparent',
                   border: 'none',
                   cursor: 'pointer',
-                  color: 'var(--text-4, #94a3b8)',
+                  color: '#94A3B8',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--surface-2, #f8fafc)';
-                  e.currentTarget.style.color = 'var(--text-2, #475569)';
+                  e.currentTarget.style.background = 'var(--sidebar-item-hover-bg, #F1F5F9)';
+                  e.currentTarget.style.color = '#334155';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = 'var(--text-4, #94a3b8)';
+                  e.currentTarget.style.color = '#94A3B8';
                 }}
                 aria-label="Collapse sidebar"
               >
@@ -239,11 +240,14 @@ export function SidebarBase({
               {/* Section Label — 10px UPPERCASE per Linear/Stripe pattern */}
               <div className="px-3 pt-3 pb-1.5">
                 <span 
-                  className="font-semibold tracking-wider uppercase"
                   style={{ 
-                    color: 'var(--nav-section-label, #52525B)',
+                    fontFamily: "'Sora', sans-serif",
+                    color: 'var(--sidebar-section-label, #94A3B8)',
                     fontSize: '10px',
-                    letterSpacing: '0.08em',
+                    fontWeight: 600,
+                    letterSpacing: '0.8px',
+                    textTransform: 'uppercase' as const,
+                    lineHeight: 1,
                   }}
                 >
                   Favorites
@@ -267,20 +271,31 @@ export function SidebarBase({
           {/* Render sections if provided, otherwise render flat items */}
           {config.sections ? (
             config.sections.map((section, sectionIndex) => {
-              // Don't render empty sections
               if (section.items.length === 0) return null;
               
               return (
-                <div key={section.title} className={sectionIndex > 0 ? 'mt-5' : ''}>
-                  {/* Section Header — 10px UPPERCASE per Linear/Stripe pattern */}
+                <div key={section.title}>
+                  {/* Collapsed: section divider between groups */}
+                  {!expanded && sectionIndex > 0 && (
+                    <div style={{ borderTop: '1px solid var(--sidebar-divider, #F1F5F9)', marginTop: '4px', paddingTop: '4px' }} />
+                  )}
+                  {/* Section Header — V11: Sora, 10px, uppercase, #94A3B8 */}
                   {expanded && section.title && (
-                    <div className="px-3 pt-3 pb-1.5 mb-1">
+                    <div 
+                      style={{ 
+                        padding: '14px 10px 6px 10px',
+                        lineHeight: 1,
+                        marginTop: sectionIndex > 0 ? '8px' : '0',
+                      }}
+                    >
                       <span 
-                        className="font-semibold tracking-wider uppercase"
                         style={{ 
-                          color: 'var(--nav-section-label, #52525B)',
+                          fontFamily: "'Sora', sans-serif",
+                          color: 'var(--sidebar-section-label, #94A3B8)',
                           fontSize: '10px',
-                          letterSpacing: '0.08em',
+                          fontWeight: 600,
+                          letterSpacing: '0.8px',
+                          textTransform: 'uppercase' as const,
                         }}
                       >
                         {section.title}
@@ -319,8 +334,8 @@ export function SidebarBase({
           <div 
             className="border-t pt-2 mt-2"
             style={{ 
-              borderColor: 'var(--divider)', 
-              padding: '8px' 
+              borderColor: 'var(--sidebar-divider, #F1F5F9)', 
+              padding: '6px 8px' 
             }}
           >
             {renderMenuItem(
@@ -365,42 +380,44 @@ function renderMenuItem(
   const menuButton = (
     <button
       onClick={() => handleNavigation(item.path)}
-      className="group w-full flex items-center rounded-lg border-none cursor-pointer transition-all relative"
+      className="group w-full flex items-center border-none cursor-pointer transition-all relative"
       style={{
-        // V10: 10px vertical padding → ~36px item height
         height: '36px',
-        padding: expanded ? '0 12px' : '0',
-        gap: '12px', // V10: 12px icon-to-label gap
+        padding: expanded ? '0 10px' : '0',
+        gap: '10px',
         marginBottom: '2px',
-        fontSize: '0.84rem',
+        fontSize: '13px',
         fontWeight: active ? 600 : 500,
-        color: active ? '#2563eb' : 'var(--text-2, #475569)',
+        color: active ? 'var(--sidebar-item-active-text, #2563EB)' : 'var(--sidebar-item-text, #334155)',
         fontFamily: "'Inter', sans-serif",
         outline: 'none',
         justifyContent: expanded ? 'flex-start' : 'center',
-        background: active ? 'rgba(37, 99, 235, 0.12)' : 'transparent',
+        background: active ? 'var(--sidebar-item-active-bg, #EFF6FF)' : 'transparent',
         lineHeight: 1,
+        borderRadius: '6px',
       }}
       onMouseEnter={(e) => {
-        if (!active) e.currentTarget.style.background = 'rgba(37, 99, 235, 0.06)';
-        if (!active) e.currentTarget.style.color = 'var(--text-1, #1e293b)';
+        if (!active) {
+          e.currentTarget.style.background = 'var(--sidebar-item-hover-bg, #F1F5F9)';
+          e.currentTarget.style.color = '#0F172A';
+        }
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.background = active ? 'rgba(37, 99, 235, 0.12)' : 'transparent';
-        e.currentTarget.style.color = active ? '#2563eb' : 'var(--text-2, #475569)';
+        e.currentTarget.style.background = active ? 'var(--sidebar-item-active-bg, #EFF6FF)' : 'transparent';
+        e.currentTarget.style.color = active ? 'var(--sidebar-item-active-text, #2563EB)' : 'var(--sidebar-item-text, #334155)';
       }}
     >
-      {/* V10: Left Accent Bar — 3px, only when expanded and active */}
+      {/* V11: Left Accent Bar — 3px, inset, only when expanded and active */}
       {active && expanded && (
         <span 
           style={{
             position: 'absolute',
             left: 0,
-            top: '7px',
-            bottom: '7px',
+            top: '5px',
+            bottom: '5px',
             width: '3px',
-            background: '#2563eb',
-            borderRadius: '0 2px 2px 0',
+            background: 'var(--sidebar-accent-bar, #2563EB)',
+            borderRadius: '0 3px 3px 0',
           }}
         />
       )}
@@ -410,13 +427,15 @@ function renderMenuItem(
         style={{ 
           width: '17px',
           height: '17px',
+          opacity: active ? 1.0 : 0.65,
+          transition: 'opacity 150ms ease',
         }}
       >
         {CustomIcon && (
           <CustomIcon 
             className="h-[17px] w-[17px]" 
             style={{ 
-              color: active ? '#2563eb' : 'var(--text-3, #64748b)',
+              color: active ? 'var(--sidebar-item-active-text, #2563EB)' : 'var(--sidebar-item-text, #334155)',
               strokeWidth: 1.4,
             }}
           />
@@ -463,60 +482,76 @@ function renderMenuItem(
           )}
         </>
       )}
-      {/* Text Badge (NEW, BETA, etc.) */}
+      {/* Text Badge (AI, NEW, BETA, etc.) — V11 AI badge styling */}
       {item.textBadge && (
         <span 
           style={{
             fontSize: '9px',
-            fontWeight: 700,
-            padding: '2px 6px',
-            borderRadius: '4px',
-            letterSpacing: '0.5px',
+            fontWeight: 600,
+            padding: '1px 6px',
+            borderRadius: '10px',
+            letterSpacing: '0.3px',
             textTransform: 'uppercase',
-            background: item.textBadgeVariant === 'new' 
+            fontFamily: item.textBadge === 'AI' ? "'Sora', sans-serif" : "'Inter', sans-serif",
+            background: item.textBadge === 'AI' 
+              ? 'rgba(124, 58, 237, 0.06)'
+              : item.textBadgeVariant === 'new' 
               ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
               : item.textBadgeVariant === 'beta'
               ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
               : 'hsl(var(--brand-primary))',
-            color: '#ffffff',
-            marginRight: expanded ? '0' : '0',
+            color: item.textBadge === 'AI'
+              ? '#7C3AED'
+              : '#ffffff',
+            border: item.textBadge === 'AI' ? '1px solid rgba(124, 58, 237, 0.12)' : 'none',
             position: expanded ? 'relative' : 'absolute',
             top: expanded ? 'auto' : '4px',
             right: expanded ? 'auto' : '4px',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+            boxShadow: item.textBadge === 'AI' ? 'none' : '0 1px 2px rgba(0,0,0,0.1)',
+            opacity: expanded ? 1 : 0,
+            width: expanded ? 'auto' : '0',
+            overflow: 'hidden',
+            transition: 'opacity 80ms ease, width 80ms ease',
           }}
         >
           {item.textBadge}
         </span>
       )}
-      {/* Numeric Badge */}
+      {/* Numeric Badge — V11: JetBrains Mono, contextual colors */}
       {!item.textBadge && item.badge !== undefined && item.badge > 0 && (
         <span 
           style={{
             fontSize: '10px',
             fontWeight: 600,
+            fontFamily: "'JetBrains Mono', monospace",
             padding: '1px 6px',
-            borderRadius: '9999px',
-            background: item.badgeVariant === 'danger' 
+            borderRadius: '10px',
+            background: active 
+              ? '#DBEAFE'
+              : item.badgeVariant === 'danger' 
               ? 'hsl(var(--destructive))' 
               : item.badgeVariant === 'purple'
               ? '#F5F3FF'
-              : 'hsl(var(--brand-primary))',
-            color: item.badgeVariant === 'danger'
+              : '#F1F5F9',
+            color: active 
+              ? '#2563EB'
+              : item.badgeVariant === 'danger'
               ? 'hsl(var(--destructive-foreground))'
               : item.badgeVariant === 'purple'
               ? '#7C3AED'
-              : 'hsl(var(--primary-foreground))',
-            minWidth: '20px',
+              : '#94A3B8',
+            minWidth: expanded ? '20px' : '0',
             height: '20px',
             textAlign: 'center',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            marginRight: expanded ? '0' : '0',
             position: expanded ? 'relative' : 'absolute',
             top: expanded ? 'auto' : '6px',
             right: expanded ? 'auto' : '6px',
+            opacity: expanded ? 1 : 0,
+            overflow: 'hidden',
+            transition: 'opacity 80ms ease',
           }}
         >
           {item.badge > 99 ? '99+' : item.badge}
@@ -533,8 +568,18 @@ function renderMenuItem(
         </TooltipTrigger>
         <TooltipContent 
           side="right" 
-          sideOffset={8}
-          className="z-[100] bg-popover text-popover-foreground border border-border shadow-md"
+          sideOffset={10}
+          className="z-[200]"
+          style={{
+            background: '#0F172A',
+            color: '#FFFFFF',
+            fontFamily: "'Inter', sans-serif",
+            fontSize: '12px',
+            fontWeight: 500,
+            padding: '5px 10px',
+            borderRadius: '6px',
+            boxShadow: '0 10px 15px -3px rgba(15, 23, 42, 0.06)',
+          }}
         >
           {item.title}
         </TooltipContent>

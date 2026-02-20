@@ -74,11 +74,39 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="fixed top-14 left-0 bottom-0 w-60 bg-background border-r border-border-default z-40 flex flex-col">
+    <aside
+      className="fixed top-14 left-0 bottom-0 w-60 z-40 flex flex-col"
+      style={{
+        background: 'var(--sidebar-bg, #FFFFFF)',
+        borderRight: '1px solid var(--sidebar-border, #E2E8F0)',
+        boxShadow: 'var(--sidebar-shadow, 1px 0 0 rgba(15, 23, 42, 0.06))',
+      }}
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-4 h-12 shrink-0">
-        <span className="text-sm font-semibold text-foreground">Product Hub</span>
-        <button className="flex items-center justify-center w-6 h-6 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-100">
+        <span
+          style={{
+            fontFamily: "'Sora', sans-serif",
+            fontSize: '14px',
+            fontWeight: 700,
+            color: '#0F172A',
+            letterSpacing: '-0.3px',
+          }}
+        >
+          Product Hub
+        </span>
+        <button
+          className="flex items-center justify-center w-6 h-6 rounded transition-colors duration-100"
+          style={{ color: '#94A3B8', background: 'transparent', border: 'none', cursor: 'pointer' }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = '#334155';
+            e.currentTarget.style.background = 'var(--sidebar-item-hover-bg, #F1F5F9)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = '#94A3B8';
+            e.currentTarget.style.background = 'transparent';
+          }}
+        >
           <CollapseIcon />
         </button>
       </div>
@@ -91,19 +119,55 @@ export function Sidebar() {
             <button
               key={item.path}
               onClick={() => navigate(item.path)}
-              className={cn(
-                'w-full flex items-center gap-2.5 h-9 px-3 rounded-md text-table-base transition-colors duration-100',
-                active
-                  ? 'bg-blue-50 text-blue-700 font-medium dark:bg-blue-950/30 dark:text-blue-400'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-              )}
+              className="w-full flex items-center relative transition-colors duration-100"
+              style={{
+                height: '36px',
+                padding: '0 10px',
+                gap: '10px',
+                borderRadius: '6px',
+                fontSize: '13px',
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: active ? 600 : 500,
+                color: active ? 'var(--sidebar-item-active-text, #2563EB)' : 'var(--sidebar-item-text, #334155)',
+                background: active ? 'var(--sidebar-item-active-bg, #EFF6FF)' : 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                outline: 'none',
+              }}
+              onMouseEnter={(e) => {
+                if (!active) {
+                  e.currentTarget.style.background = 'var(--sidebar-item-hover-bg, #F1F5F9)';
+                  e.currentTarget.style.color = '#0F172A';
+                }
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = active ? 'var(--sidebar-item-active-bg, #EFF6FF)' : 'transparent';
+                e.currentTarget.style.color = active ? 'var(--sidebar-item-active-text, #2563EB)' : 'var(--sidebar-item-text, #334155)';
+              }}
             >
-              <span className={cn('shrink-0', active ? 'text-blue-600 dark:text-blue-400' : '')}>
+              {/* V11 Active accent bar */}
+              {active && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    top: '5px',
+                    bottom: '5px',
+                    width: '3px',
+                    background: 'var(--sidebar-accent-bar, #2563EB)',
+                    borderRadius: '0 3px 3px 0',
+                  }}
+                />
+              )}
+              <span
+                className="shrink-0"
+                style={{ opacity: active ? 1.0 : 0.65 }}
+              >
                 {item.icon}
               </span>
               <span className="flex-1 text-left truncate">{item.label}</span>
               {item.hasChevron && (
-                <span className="shrink-0 text-muted-foreground">
+                <span className="shrink-0" style={{ color: '#94A3B8' }}>
                   <ChevronRightIcon />
                 </span>
               )}
@@ -113,9 +177,37 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom settings */}
-      <div className="px-4 pb-4 pt-2">
-        <button className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors duration-100">
-          <GearSmallIcon />
+      <div
+        style={{
+          padding: '6px 8px',
+          borderTop: '1px solid var(--sidebar-divider, #F1F5F9)',
+        }}
+      >
+        <button
+          className="flex items-center gap-2 transition-colors duration-100"
+          style={{
+            fontSize: '13px',
+            fontFamily: "'Inter', sans-serif",
+            fontWeight: 500,
+            color: 'var(--sidebar-item-text, #334155)',
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '0 10px',
+            height: '36px',
+            borderRadius: '6px',
+            width: '100%',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'var(--sidebar-item-hover-bg, #F1F5F9)';
+            e.currentTarget.style.color = '#0F172A';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.color = 'var(--sidebar-item-text, #334155)';
+          }}
+        >
+          <span style={{ opacity: 0.65 }}><GearSmallIcon /></span>
           Product Settings
         </button>
       </div>
