@@ -1,6 +1,6 @@
 /**
- * GoalDetailDrawer — 560px right overlay with 5 tabs + edit mode + delete dialog
- * Fixes: 3 (AI score display), 5 (initiatives tab), 6 (owner), 10 (label typography), 15 (icon alignment)
+ * GoalDetailDrawer — Fix 2: Complete redesign 520px, sticky header/tabs, modern cards
+ * Fix 3: Field labels #94A3B8 10px uppercase, Fix 4: circular avatars
  */
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { X, Sparkles, Rocket, Clock, Activity, Trash2, Pencil, BarChart3, Plus, Save, Search, Link2, Unlink } from 'lucide-react';
@@ -22,9 +22,9 @@ interface GoalDetailDrawerProps {
   onCheckinClick?: (krId: string) => void;
 }
 
-// Fix 10: All label styles are neutral gray, not colored
+// Fix 3: All label styles
 const LABEL_STYLE: React.CSSProperties = {
-  fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase',
+  fontSize: 10, fontWeight: 600, textTransform: 'uppercase',
   letterSpacing: '0.05em', color: '#94A3B8', marginBottom: 4,
 };
 
@@ -49,11 +49,11 @@ function statusBadge(status: string) {
   );
 }
 
-function progressBar(pct: number, height = 5) {
+function progressBar(pct: number, height = 8) {
   const color = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
   return (
-    <div role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} style={{ width: '100%', height, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}>
-      <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 3, transition: 'width 300ms' }} />
+    <div style={{ width: '100%', height, background: '#E2E8F0', borderRadius: 4, overflow: 'hidden' }}>
+      <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 4, transition: 'width 300ms' }} />
     </div>
   );
 }
@@ -67,6 +67,23 @@ function computeKRProgress(kr: KeyResult) {
   if (kr.target === kr.baseline) return 0;
   if (kr.target < kr.baseline) return Math.min(100, Math.max(0, Math.round(((kr.baseline - kr.current_value) / (kr.baseline - kr.target)) * 100)));
   return Math.min(100, Math.max(0, Math.round(((kr.current_value - kr.baseline) / (kr.target - kr.baseline)) * 100)));
+}
+
+// Fix 4: Avatar colors
+const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
+  'Nada Alfassam':      { bg: '#DBEAFE', text: '#1E40AF' },
+  'Sitah Alqahtani':    { bg: '#E0E7FF', text: '#3730A3' },
+  'Sulaiman Alessa':    { bg: '#D1FAE5', text: '#065F46' },
+  'ibrahim alqusiyer':  { bg: '#FEF3C7', text: '#92400E' },
+  'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75' },
+  'Izza Ali':           { bg: '#EDE9FE', text: '#5B21B6' },
+};
+function getAvatarColors(name: string) {
+  if (AVATAR_COLORS[name]) return AVATAR_COLORS[name];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  const palettes = [{ bg: '#DBEAFE', text: '#1E40AF' }, { bg: '#D1FAE5', text: '#065F46' }, { bg: '#E0E7FF', text: '#3730A3' }, { bg: '#FEF3C7', text: '#92400E' }, { bg: '#CFFAFE', text: '#155E75' }, { bg: '#EDE9FE', text: '#5B21B6' }];
+  return palettes[Math.abs(hash) % palettes.length];
 }
 
 const TABS = ['Overview', 'Key Results', 'Initiatives', 'Check-ins', 'Activity'] as const;
@@ -124,6 +141,12 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
   const confColor = confPct >= 60 ? '#16A34A' : confPct >= 40 ? '#D97706' : '#EF4444';
   const daysToDeadline = goal?.target_date ? Math.ceil((new Date(goal.target_date).getTime() - Date.now()) / 86400000) : null;
 
+  // Status dot color
+  const statusDotColor = goal ? ({
+    active: '#16A34A', on_track: '#16A34A', completed: '#4F46E5',
+    at_risk: '#D97706', off_track: '#EF4444', draft: '#94A3B8',
+  }[goal.status] || '#94A3B8') : '#94A3B8';
+
   return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 998, background: 'rgba(15,23,42,0.3)', animation: 'gddFadeIn 200ms ease-out' }} />
@@ -132,47 +155,90 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
         className="gdd-drawer"
         style={{
           position: 'fixed', top: 0, right: 0, bottom: 0,
-          width: 560, maxWidth: '100vw', zIndex: 999,
-          background: '#FFFFFF', boxShadow: '-8px 0 30px rgba(0,0,0,0.1)',
+          width: 520, maxWidth: '100vw', zIndex: 999,
+          background: '#FFFFFF', borderLeft: '1px solid #E2E8F0',
+          boxShadow: '-8px 0 24px rgba(0,0,0,0.08), -2px 0 8px rgba(0,0,0,0.04)',
           display: 'flex', flexDirection: 'column',
           animation: 'gddSlideIn 300ms cubic-bezier(.4,0,.2,1)', overflow: 'hidden',
         }}
       >
-        {/* Header */}
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 10 }}>
-          {theme && <span style={{ width: 12, height: 12, borderRadius: '50%', background: theme.color, flexShrink: 0 }} />}
-          <span style={{ fontSize: 15, fontWeight: 700, color: '#0F172A', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {goal?.goal_key} — {goal?.title}
+        {/* Fix 2: Sticky Header — 56px */}
+        <div style={{
+          position: 'sticky', top: 0, zIndex: 10,
+          background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
+          padding: '0 20px', height: 56,
+          display: 'flex', alignItems: 'center', gap: 10,
+        }}>
+          {/* Status dot */}
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: statusDotColor, flexShrink: 0 }} />
+          {/* Goal key badge */}
+          <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', background: '#F1F5F9', padding: '2px 8px', borderRadius: 4, fontFamily: 'ui-monospace, monospace', flexShrink: 0 }}>
+            {goal?.goal_key}
           </span>
-          <button onClick={() => setIsEditing(!isEditing)} style={{ border: 'none', background: 'none', color: '#2563EB', fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3 }}>
-            <Pencil size={12} /> {isEditing ? 'Cancel' : 'Edit'}
+          {/* Title */}
+          <span style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {goal?.title}
+          </span>
+          {/* Edit button */}
+          <button onClick={() => setIsEditing(!isEditing)} style={{
+            width: 32, height: 32, borderRadius: 8, border: 'none', background: 'none',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#2563EB', transition: 'background 150ms',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = '#F1F5F9')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <Pencil size={14} />
           </button>
-          <button onClick={() => setShowDeleteDialog(true)} style={{ border: 'none', background: 'none', color: '#EF4444', fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3 }}>
-            <Trash2 size={12} /> Delete
+          {/* Delete button */}
+          <button onClick={() => setShowDeleteDialog(true)} style={{
+            width: 32, height: 32, borderRadius: 8, border: 'none', background: 'none',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#EF4444', transition: 'background 150ms',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = '#FEE2E2')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <Trash2 size={14} />
           </button>
-          <button ref={closeRef} onClick={onClose} aria-label="Close drawer" style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 4, borderRadius: 6, display: 'flex' }}>
-            <X size={18} color="#64748B" />
+          {/* Close button */}
+          <button ref={closeRef} onClick={onClose} aria-label="Close drawer" style={{
+            width: 32, height: 32, borderRadius: 8, border: 'none', background: 'none',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#64748B', transition: 'background 150ms',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = '#F1F5F9')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <X size={16} />
           </button>
         </div>
 
-        {/* Tabs */}
-        <div style={{ display: 'flex', borderBottom: '1px solid #E2E8F0', padding: '0 20px' }}>
+        {/* Fix 2: Sticky Tab bar */}
+        <div style={{
+          position: 'sticky', top: 56, zIndex: 10,
+          background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
+          padding: '0 20px', display: 'flex', gap: 0,
+        }}>
           {TABS.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)} style={{
-              padding: '10px 14px', fontSize: 12,
+              padding: '10px 16px', fontSize: 13,
               fontWeight: activeTab === tab ? 600 : 500,
               color: activeTab === tab ? '#2563EB' : '#64748B',
               background: 'none', border: 'none',
               borderBottom: activeTab === tab ? '2px solid #2563EB' : '2px solid transparent',
               cursor: 'pointer', transition: 'all 150ms',
-            }}>
+            }}
+            onMouseEnter={e => { if (activeTab !== tab) { e.currentTarget.style.color = '#334155'; e.currentTarget.style.background = '#F8FAFC'; } }}
+            onMouseLeave={e => { if (activeTab !== tab) { e.currentTarget.style.color = '#64748B'; e.currentTarget.style.background = 'none'; } }}
+            >
               {tab}
             </button>
           ))}
         </div>
 
         {/* Body */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: 20 }}>
           {!goal ? (
             <div style={{ color: '#94A3B8', textAlign: 'center', padding: 40 }}>Goal not found</div>
           ) : activeTab === 'Overview' ? (
@@ -303,37 +369,42 @@ function EditOverviewTab({ goal, themes, onSave, onCancel, isPending }: {
   );
 }
 
-// ── Tab: Overview (Fix 3: AI score, Fix 6: owner, Fix 10: labels) ──
+// ── Tab: Overview ──
 function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
   goal: Goal; theme?: { id: string; title: string; color: string }; krs: KeyResult[];
   confPct: number; confColor: string; daysToDeadline: number | null;
 }) {
-  // Fix 6: Owner display
-  const ownerDisplay = goal.owner_name ? (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-      <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#E0E7FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9.5, fontWeight: 700, color: '#4338CA' }}>
-        {goal.owner_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+  // Fix 4: Circular avatar 32px
+  const ownerDisplay = goal.owner_name ? (() => {
+    const colors = getAvatarColors(goal.owner_name);
+    const initials = goal.owner_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ width: 32, height: 32, borderRadius: '50%', background: colors.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600, color: colors.text, flexShrink: 0 }}>
+          {initials}
+        </div>
+        <span style={{ fontSize: 14, fontWeight: 500, color: '#1E293B' }}>{goal.owner_name}</span>
       </div>
-      <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A' }}>{goal.owner_name}</span>
-    </div>
-  ) : '—';
+    );
+  })() : '—';
+
+  const pct = Math.round(goal.progress_pct || 0);
+  const pctColor = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
 
   const fields = [
     { label: 'Status', value: statusBadge(goal.status) },
-    { label: 'Priority', value: <span style={{ fontSize: 13, fontWeight: 500, textTransform: 'capitalize' as const, color: '#0F172A' }}>{goal.priority}</span> },
-    { label: 'Theme', value: theme ? (<div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 8, height: 8, borderRadius: 2, background: theme.color }} /><span style={{ fontSize: 13, color: '#0F172A' }}>{theme.title}</span></div>) : '—' },
+    { label: 'Priority', value: <span style={{ fontSize: 14, fontWeight: 500, textTransform: 'capitalize' as const, color: '#1E293B' }}>{goal.priority}</span> },
+    { label: 'Theme', value: theme ? (<div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 8, height: 8, borderRadius: 2, background: theme.color }} /><span style={{ fontSize: 14, color: '#1E293B' }}>{theme.title}</span></div>) : '—' },
     { label: 'Owner', value: ownerDisplay },
-    { label: 'Progress', value: (<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><div style={{ width: 80 }}>{progressBar(goal.progress_pct || 0)}</div><span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>{Math.round(goal.progress_pct || 0)}%</span></div>) },
-    { label: 'Confidence', value: <span style={{ fontSize: 13, fontWeight: 600, color: confColor }}>{confPct}%</span> },
-    { label: 'Start Date', value: <span style={{ fontSize: 13, color: '#0F172A' }}>{formatDate(goal.start_date)}</span> },
-    { label: 'Target Date', value: <span style={{ fontSize: 13, color: '#0F172A' }}>{formatDate(goal.target_date)}</span> },
-    { label: 'Fiscal Quarter', value: <span style={{ fontSize: 13, color: '#0F172A' }}>{goal.fiscal_quarter || '—'}</span> },
+    { label: 'Start Date', value: <span style={{ fontSize: 14, color: '#1E293B' }}>{formatDate(goal.start_date)}</span> },
+    { label: 'Target Date', value: <span style={{ fontSize: 14, color: '#1E293B' }}>{formatDate(goal.target_date)}</span> },
+    { label: 'Fiscal Quarter', value: <span style={{ fontSize: 14, color: '#1E293B' }}>{goal.fiscal_quarter || '—'}</span> },
     { label: 'BSC Perspective', value: goal.bsc_perspective ? (<span style={{ fontSize: 11, fontWeight: 500, color: '#64748B', border: '1px solid #E2E8F0', borderRadius: 99, padding: '2px 8px' }}>{goal.bsc_perspective}</span>) : '—' },
-    { label: 'Weight', value: <span style={{ fontSize: 13, color: '#0F172A' }}>{goal.weight}</span> },
-    { label: 'Key Results', value: <span style={{ fontSize: 13, color: '#0F172A' }}>{krs.length} total</span> },
+    { label: 'Confidence', value: <span style={{ fontSize: 14, fontWeight: 600, color: confColor }}>{confPct}%</span> },
+    { label: 'Weight', value: <span style={{ fontSize: 14, color: '#1E293B' }}>{goal.weight}</span> },
+    { label: 'Key Results', value: <span style={{ fontSize: 14, color: '#1E293B' }}>{krs.length} total</span> },
   ];
 
-  // Fix 3: AI health score
   const aiScore = goal.ai_health_score;
   const aiLabel = aiScore != null
     ? (aiScore >= 70 ? 'Healthy — on track for targets' : aiScore >= 50 ? 'Moderate — some risks identified' : 'Needs attention — significant risks')
@@ -343,8 +414,17 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
 
   return (
     <div>
-      {/* Fix 10: neutral gray labels */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 24px', marginBottom: 16 }}>
+      {/* Progress section */}
+      <div style={{ marginBottom: 20 }}>
+        <div style={LABEL_STYLE}>Progress</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
+          <div style={{ flex: 1 }}>{progressBar(pct)}</div>
+          <span style={{ fontSize: 14, fontWeight: 600, color: pctColor }}>{pct}%</span>
+        </div>
+      </div>
+
+      {/* 2-col metadata */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: 20 }}>
         {fields.map(f => (
           <div key={f.label}>
             <div style={LABEL_STYLE}>{f.label}</div>
@@ -354,19 +434,19 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
       </div>
 
       {goal.description && (
-        <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: 14, marginBottom: 16 }}>
+        <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: 14, marginBottom: 20 }}>
           <div style={{ ...LABEL_STYLE, marginBottom: 6 }}>Description</div>
-          <p style={{ fontSize: 12.5, lineHeight: 1.6, color: '#334155', margin: 0 }}>{goal.description}</p>
+          <p style={{ fontSize: 13, lineHeight: 1.6, color: '#334155', margin: 0 }}>{goal.description}</p>
         </div>
       )}
 
-      {/* Fix 3: AI Health Score — show actual value */}
-      <div style={{ background: '#F5F3FF', border: '1px solid rgba(124,58,237,0.15)', borderRadius: 10, padding: 16 }}>
+      {/* AI Health Score — purple branded */}
+      <div style={{ background: '#EDE9FE', border: '1px solid rgba(124,58,237,0.15)', borderRadius: 10, padding: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
           <Sparkles size={14} color="#7C3AED" />
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#7C3AED' }}>AI Health Score</span>
+          <span style={{ fontSize: 12, fontWeight: 600, color: '#7C3AED', textTransform: 'uppercase', letterSpacing: '0.05em' }}>AI Health Score</span>
         </div>
-        <div style={{ fontSize: 28, fontWeight: 800, color: '#7C3AED', marginBottom: 6 }}>{aiScore != null ? aiScore : '—'}/100</div>
+        <div style={{ fontSize: 28, fontWeight: 700, color: '#7C3AED', marginBottom: 6 }}>{aiScore != null ? aiScore : '—'}/100</div>
         <div style={{ fontSize: 11, color: '#7C3AED', marginBottom: 12, opacity: 0.8 }}>{aiLabel ?? 'Score not computed'}</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {[
@@ -376,8 +456,8 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
             { label: 'Days to Deadline', value: daysToDeadline != null ? (daysToDeadline > 0 ? `${daysToDeadline}d` : 'Overdue') : '—' },
           ].map(f => (
             <div key={f.label} style={{ background: 'rgba(124,58,237,0.06)', borderRadius: 6, padding: '8px 10px' }}>
-              <div style={{ fontSize: 10, fontWeight: 600, color: '#7C3AED', opacity: 0.7, marginBottom: 2 }}>{f.label}</div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#7C3AED' }}>{f.value}</div>
+              <div style={{ fontSize: 10, fontWeight: 600, color: '#7C3AED', opacity: 0.7, marginBottom: 2, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{f.label}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#7C3AED' }}>{f.value}</div>
             </div>
           ))}
         </div>
@@ -386,7 +466,7 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
   );
 }
 
-// ── Tab: Key Results ──
+// ── Tab: Key Results — Fix 2: modern card layout ──
 function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loading: boolean; onCheckinClick?: (id: string) => void }) {
   if (loading) return <div style={{ textAlign: 'center', color: '#94A3B8', padding: 40 }}>Loading key results...</div>;
   if (krs.length === 0) {
@@ -402,37 +482,45 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
     );
   }
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {krs.map(kr => {
         const pct = computeKRProgress(kr);
+        const pctColor = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
         return (
-          <div key={kr.id} style={{ border: '1px solid #E2E8F0', borderRadius: 8, padding: '10px 14px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <span style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', background: '#F8FAFC', padding: '1px 5px', borderRadius: 3, fontFamily: 'ui-monospace, monospace' }}>{kr.kr_key}</span>
-              <span style={{ fontSize: 12.5, fontWeight: 500, color: '#0F172A', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{kr.title}</span>
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#0F172A' }}>{pct}%</span>
+          <div key={kr.id} className="kr-detail-card" style={{
+            background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
+            padding: '14px 16px', transition: 'all 150ms',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', background: '#F1F5F9', padding: '2px 6px', borderRadius: 4, fontFamily: 'ui-monospace, monospace' }}>{kr.kr_key}</span>
+              <span style={{ fontSize: 13, fontWeight: 500, color: '#1E293B', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{kr.title}</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: pctColor }}>{pct}%</span>
             </div>
-            {progressBar(pct, 4)}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, flexWrap: 'wrap' }}>
+            <div style={{ height: 6, borderRadius: 3, background: '#E2E8F0', overflow: 'hidden', marginBottom: 8 }}>
+              <div style={{ width: `${pct}%`, height: '100%', background: pctColor, borderRadius: 3, transition: 'width 300ms' }} />
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
               {statusBadge(kr.status)}
-              <span style={{ fontSize: 11, color: '#64748B' }}>Current: {kr.current_value}</span>
-              <span style={{ fontSize: 11, color: '#64748B' }}>Target: {kr.target}</span>
-              <span style={{ fontSize: 11, color: '#64748B' }}>Due: {formatDate(kr.due_date)}</span>
+              <span style={{ fontSize: 12, color: '#64748B' }}>{kr.current_value} / {kr.target}{kr.metric_unit ? ` ${kr.metric_unit}` : ''}</span>
+              <span style={{ fontSize: 12, color: '#64748B' }}>Due: {formatDate(kr.due_date)}</span>
               {onCheckinClick && (
-                <button onClick={() => onCheckinClick(kr.id)} style={{ marginLeft: 'auto', fontSize: 10.5, fontWeight: 500, color: '#2563EB', background: 'none', border: '1px solid #2563EB', borderRadius: 99, padding: '2px 8px', cursor: 'pointer' }}>Check-in</button>
+                <button onClick={() => onCheckinClick(kr.id)} style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 600, color: '#FFFFFF', background: '#2563EB', border: 'none', borderRadius: 6, padding: '4px 12px', cursor: 'pointer' }}>Check-in</button>
               )}
             </div>
           </div>
         );
       })}
-      <button style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, padding: '8px 0', fontSize: 12, fontWeight: 500, color: '#64748B', background: 'none', border: '1px dashed #CBD5E1', borderRadius: 8, cursor: 'pointer', marginTop: 4 }}>
+      <button style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, padding: '12px 0', fontSize: 13, fontWeight: 500, color: '#64748B', background: 'none', border: '1px dashed #CBD5E1', borderRadius: 8, cursor: 'pointer', marginTop: 4, transition: 'all 150ms' }}>
         <Plus size={13} /> Add Key Result
       </button>
+      <style>{`
+        .kr-detail-card:hover { border-color: #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+      `}</style>
     </div>
   );
 }
 
-// ── Tab: Initiatives (Fix 5 + Fix 15) ──
+// ── Tab: Initiatives ──
 function InitiativesTab({ goalId }: { goalId: string }) {
   const { data: links = [], isLoading } = useGoalInitiatives(goalId);
   const linkMutation = useLinkInitiative();
@@ -449,7 +537,6 @@ function InitiativesTab({ goalId }: { goalId: string }) {
     <div>
       {links.length === 0 && !showSearch && (
         <div style={{ textAlign: 'center', padding: '48px 20px' }}>
-          {/* Fix 15: centered icon */}
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
             <Rocket size={36} color="#CBD5E1" />
           </div>
@@ -467,14 +554,17 @@ function InitiativesTab({ goalId }: { goalId: string }) {
       {links.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {links.map(link => (
-            <div key={link.id} style={{ border: '1px solid #E2E8F0', borderRadius: 8, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <Link2 size={14} color="#94A3B8" />
+            <div key={link.id} className="init-card" style={{
+              border: '1px solid #E2E8F0', borderRadius: 8, padding: '14px 16px',
+              display: 'flex', alignItems: 'center', gap: 10, transition: 'all 150ms',
+            }}>
+              <Link2 size={16} color="#CBD5E1" />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                  <span style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', background: '#F8FAFC', padding: '1px 5px', borderRadius: 3, fontFamily: 'ui-monospace, monospace' }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#475569', background: '#F1F5F9', padding: '2px 6px', borderRadius: 4, fontFamily: 'ui-monospace, monospace' }}>
                     {link.initiative?.initiative_key || '—'}
                   </span>
-                  <span style={{ fontSize: 12.5, fontWeight: 500, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: 14, fontWeight: 500, color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {link.initiative?.title || 'Unknown'}
                   </span>
                 </div>
@@ -482,7 +572,8 @@ function InitiativesTab({ goalId }: { goalId: string }) {
               </div>
               <button
                 onClick={() => unlinkMutation.mutate(link.id)}
-                style={{ border: 'none', background: 'none', color: '#94A3B8', cursor: 'pointer', padding: 4, borderRadius: 4 }}
+                className="unlink-btn"
+                style={{ border: 'none', background: 'none', color: '#94A3B8', cursor: 'pointer', padding: 4, borderRadius: 4, transition: 'color 150ms' }}
                 title="Unlink initiative"
               >
                 <Unlink size={13} />
@@ -491,14 +582,14 @@ function InitiativesTab({ goalId }: { goalId: string }) {
           ))}
           <button
             onClick={() => setShowSearch(true)}
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, padding: '8px 0', fontSize: 12, fontWeight: 500, color: '#64748B', background: 'none', border: '1px dashed #CBD5E1', borderRadius: 8, cursor: 'pointer', marginTop: 4 }}
+            className="link-init-btn"
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, padding: '12px 0', fontSize: 13, fontWeight: 500, color: '#64748B', background: 'none', border: '1px dashed #CBD5E1', borderRadius: 8, cursor: 'pointer', marginTop: 4, transition: 'all 150ms' }}
           >
             <Plus size={13} /> Link Initiative
           </button>
         </div>
       )}
 
-      {/* Search modal */}
       {showSearch && (
         <div style={{ marginTop: links.length > 0 ? 12 : 0, border: '1px solid #E2E8F0', borderRadius: 8, padding: 12, background: '#FAFBFD' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
@@ -537,6 +628,12 @@ function InitiativesTab({ goalId }: { goalId: string }) {
           )}
         </div>
       )}
+
+      <style>{`
+        .init-card:hover { border-color: #CBD5E1; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .unlink-btn:hover { color: #EF4444 !important; }
+        .link-init-btn:hover { border-color: #94A3B8; background: #F8FAFC; }
+      `}</style>
     </div>
   );
 }
@@ -559,19 +656,19 @@ function CheckinsTab({ checkins, krs }: { checkins: KRCheckin[]; krs: KeyResult[
         const kr = krMap.get(ci.key_result_id);
         const isPositive = ci.delta_value >= 0;
         return (
-          <div key={ci.id} style={{ display: 'flex', gap: 10, padding: '10px 0', borderBottom: '1px solid #F1F5F9' }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: isPositive ? '#16A34A' : '#EF4444', marginTop: 5, flexShrink: 0 }} />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 12, fontWeight: 500, color: '#0F172A', marginBottom: 2 }}>{kr?.kr_key} — {kr?.title || 'Unknown KR'}</div>
-              <div style={{ fontSize: 12, color: isPositive ? '#16A34A' : '#EF4444', marginBottom: 2 }}>
-                {ci.previous_value} → {ci.new_value} ({isPositive ? '+' : ''}{ci.delta_value})
-              </div>
-              {ci.note && <div style={{ fontSize: 11.5, color: '#64748B', marginBottom: 2 }}>{ci.note}</div>}
-              <div style={{ fontSize: 10.5, color: '#94A3B8' }}>
-                {formatDate(ci.created_at)}
-                {ci.confidence_level != null && ` · Confidence: ${typeof ci.confidence_level === 'number' && ci.confidence_level <= 1 ? Math.round(ci.confidence_level * 100) : ci.confidence_level}%`}
-              </div>
+          <div key={ci.id} style={{ borderLeft: '2px solid #E2E8F0', paddingLeft: 16, marginLeft: 8, marginBottom: 16 }}>
+            <div style={{ fontSize: 12, fontWeight: 500, color: '#64748B', marginBottom: 4 }}>{formatDate(ci.created_at)}</div>
+            <div style={{ fontSize: 12, fontWeight: 500, color: '#0F172A', marginBottom: 4 }}>{kr?.kr_key} — {kr?.title || 'Unknown KR'}</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>
+              {ci.previous_value} → {ci.new_value}
+              <span style={{ color: isPositive ? '#16A34A' : '#EF4444', marginLeft: 6 }}>({isPositive ? '+' : ''}{ci.delta_value})</span>
             </div>
+            {ci.note && <div style={{ fontSize: 13, color: '#475569', lineHeight: 1.5, marginBottom: 4 }}>{ci.note}</div>}
+            {ci.confidence_level != null && (
+              <div style={{ fontSize: 11, color: '#94A3B8' }}>
+                Confidence: {typeof ci.confidence_level === 'number' && ci.confidence_level <= 1 ? Math.round(ci.confidence_level * 100) : ci.confidence_level}%
+              </div>
+            )}
           </div>
         );
       })}
@@ -582,16 +679,19 @@ function CheckinsTab({ checkins, krs }: { checkins: KRCheckin[]; krs: KeyResult[
 // ── Tab: Activity ──
 function ActivityTab({ goal, krs, checkins }: { goal: Goal; krs: KeyResult[]; checkins: KRCheckin[] }) {
   const items = [
-    { icon: <Activity size={12} color="#2563EB" />, text: 'Goal created', date: goal.created_at || goal.start_date },
-    ...(krs.length > 0 ? [{ icon: <BarChart3 size={12} color="#0D9488" />, text: `${krs.length} Key Results added`, date: goal.created_at }] : []),
-    ...(checkins.length > 0 ? [{ icon: <Clock size={12} color="#D97706" />, text: `${checkins.length} check-ins recorded`, date: checkins[0]?.created_at }] : []),
+    { icon: <Activity size={12} color="#2563EB" />, user: 'System', text: 'Goal created', date: goal.created_at || goal.start_date },
+    ...(krs.length > 0 ? [{ icon: <BarChart3 size={12} color="#0D9488" />, user: 'System', text: `${krs.length} Key Results added`, date: goal.created_at }] : []),
+    ...(checkins.length > 0 ? [{ icon: <Clock size={12} color="#D97706" />, user: 'Team', text: `${checkins.length} check-ins recorded`, date: checkins[0]?.created_at }] : []),
   ];
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       {items.map((item, i) => (
-        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderBottom: '1px solid #F1F5F9' }}>
-          <div style={{ width: 24, height: 24, borderRadius: 6, background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{item.icon}</div>
-          <span style={{ fontSize: 12.5, fontWeight: 500, color: '#0F172A', flex: 1 }}>{item.text}</span>
+        <div key={i} style={{ borderLeft: '2px solid #E2E8F0', paddingLeft: 16, marginLeft: 8, marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+            <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{item.icon}</div>
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#334155' }}>{item.user}</span>
+            <span style={{ fontSize: 13, fontWeight: 400, color: '#64748B' }}>{item.text}</span>
+          </div>
           <span style={{ fontSize: 11, color: '#94A3B8' }}>{formatDate(item.date)}</span>
         </div>
       ))}

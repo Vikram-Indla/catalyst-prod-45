@@ -1,6 +1,7 @@
 /**
- * GoalsHeatmapView — Fix 4: CIO-grade heatmap with opacity-based colors
- * Fix 19: Click cells to filter tree view
+ * GoalsHeatmapView — Fix 7: Theme dots from computed health
+ * Fix 8: Current quarter legend
+ * Fix 14: Empty cell distinction
  */
 import type { Goal } from '@/types/goals';
 
@@ -13,7 +14,6 @@ interface GoalsHeatmapViewProps {
 
 const QUARTERS = ['Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026'];
 
-// Determine current quarter
 function getCurrentQuarter(): string {
   const now = new Date();
   const q = Math.ceil((now.getMonth() + 1) / 3);
@@ -26,6 +26,17 @@ function getCellStyle(avgPct: number) {
   if (avgPct >= 40) return { bg: 'rgba(217, 119, 6, 0.12)', text: '#B45309', border: '3px solid rgba(217,119,6,0.3)' };
   if (avgPct >= 20) return { bg: 'rgba(239, 68, 68, 0.12)', text: '#DC2626', border: '3px solid rgba(239,68,68,0.3)' };
   return { bg: 'rgba(239, 68, 68, 0.20)', text: '#991B1B', border: '3px solid rgba(239,68,68,0.4)' };
+}
+
+// Fix 7: Compute theme dot color from child goals
+function getThemeDotColor(goals: Goal[]): string {
+  if (goals.length === 0) return '#CBD5E1';
+  const avgProgress = goals.reduce((sum, g) => sum + (g.progress_pct || 0), 0) / goals.length;
+  const hasOffTrack = goals.some(g => g.status === 'off_track');
+  const hasAtRisk = goals.some(g => g.status === 'at_risk');
+  if (hasOffTrack || avgProgress < 40) return '#EF4444';
+  if (hasAtRisk || avgProgress < 60) return '#D97706';
+  return '#16A34A';
 }
 
 export function GoalsHeatmapView({ goals, themes, onCellClick }: GoalsHeatmapViewProps) {
@@ -47,9 +58,9 @@ export function GoalsHeatmapView({ goals, themes, onCellClick }: GoalsHeatmapVie
       <div style={{
         display: 'grid', gridTemplateColumns: gridCols,
         height: 40, alignItems: 'center',
-        background: '#F8FAFC', borderBottom: '1px solid #E2E8F0',
-        fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase',
-        letterSpacing: '0.05em', color: '#94A3B8',
+        background: '#FFFFFF', borderBottom: '2px solid #E2E8F0',
+        fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+        letterSpacing: '0.05em', color: '#64748B',
       }}>
         <span style={{ paddingLeft: 16 }}>Theme</span>
         {QUARTERS.map(q => (
@@ -60,13 +71,17 @@ export function GoalsHeatmapView({ goals, themes, onCellClick }: GoalsHeatmapVie
         ))}
       </div>
 
+      {/* Fix 8: Current quarter legend */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '4px 16px', fontSize: 11, color: '#94A3B8' }}>
+        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#2563EB', marginRight: 6 }} />
+        Current quarter
+      </div>
+
       {/* Rows */}
       {themes.map(theme => {
-        // Compute theme-level health indicator
         const allThemeGoals = goals.filter(g => g.theme_id === theme.id);
-        const themeAvg = allThemeGoals.length > 0
-          ? Math.round(allThemeGoals.reduce((s, g) => s + (g.progress_pct || 0), 0) / allThemeGoals.length) : 0;
-        const dotColor = themeAvg >= 70 ? '#16A34A' : themeAvg >= 40 ? '#D97706' : themeAvg > 0 ? '#EF4444' : '#CBD5E1';
+        // Fix 7: computed health dot
+        const dotColor = getThemeDotColor(allThemeGoals);
 
         return (
           <div
@@ -92,12 +107,13 @@ export function GoalsHeatmapView({ goals, themes, onCellClick }: GoalsHeatmapVie
             {/* Cells */}
             {QUARTERS.map(q => {
               const cellGoals = cellMap.get(`${theme.id}::${q}`) || [];
+              // Fix 14: Empty cell distinction
               if (cellGoals.length === 0) {
                 return (
                   <div key={q} style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: '#CBD5E1', fontSize: 13,
-                    background: '#F8FAFC',
+                    color: '#CBD5E1', fontSize: 12,
+                    background: '#FFFFFF',
                     borderRight: '1px solid #F1F5F9',
                   }}>
                     —
@@ -123,8 +139,8 @@ export function GoalsHeatmapView({ goals, themes, onCellClick }: GoalsHeatmapVie
                     transition: 'outline 150ms, box-shadow 150ms',
                   }}
                 >
-                  <span style={{ fontSize: 20, fontWeight: 700, color: style.text, lineHeight: 1.2 }}>{avgPct}%</span>
-                  <span style={{ fontSize: 10, color: '#94A3B8', marginTop: 2 }}>{cellGoals.length} goal{cellGoals.length !== 1 ? 's' : ''}</span>
+                  <span style={{ fontSize: 18, fontWeight: 700, color: style.text, lineHeight: 1.2 }}>{avgPct}%</span>
+                  <span style={{ fontSize: 12, color: '#94A3B8', marginTop: 2 }}>{cellGoals.length} goal{cellGoals.length !== 1 ? 's' : ''}</span>
                 </div>
               );
             })}

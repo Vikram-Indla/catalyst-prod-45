@@ -1,6 +1,5 @@
 /**
- * GoalsListView — Flat table of all goals
- * Fix 12: Owner column, Fix 13: Sortable columns
+ * GoalsListView — Fix 4: Circular avatars, Fix 12: 44px rows, tighter density
  */
 import { useState } from 'react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
@@ -8,6 +7,23 @@ import type { Goal } from '@/types/goals';
 
 interface Theme { id: string; title: string; color: string; }
 interface GoalsListViewProps { goals: Goal[]; themes: Theme[]; onGoalClick: (id: string) => void; }
+
+// Fix 4: Avatar colors
+const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
+  'Nada Alfassam':      { bg: '#DBEAFE', text: '#1E40AF' },
+  'Sitah Alqahtani':    { bg: '#E0E7FF', text: '#3730A3' },
+  'Sulaiman Alessa':    { bg: '#D1FAE5', text: '#065F46' },
+  'ibrahim alqusiyer':  { bg: '#FEF3C7', text: '#92400E' },
+  'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75' },
+  'Izza Ali':           { bg: '#EDE9FE', text: '#5B21B6' },
+};
+function getAvatarColors(name: string) {
+  if (AVATAR_COLORS[name]) return AVATAR_COLORS[name];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  const palettes = [{ bg: '#DBEAFE', text: '#1E40AF' }, { bg: '#D1FAE5', text: '#065F46' }, { bg: '#E0E7FF', text: '#3730A3' }, { bg: '#FEF3C7', text: '#92400E' }, { bg: '#CFFAFE', text: '#155E75' }, { bg: '#EDE9FE', text: '#5B21B6' }];
+  return palettes[Math.abs(hash) % palettes.length];
+}
 
 function statusBadge(status: string) {
   const map: Record<string, { dot: string; bg: string; text: string; label: string }> = {
@@ -37,7 +53,7 @@ const COLS: { key: SortKey | 'theme' | 'status' | 'owner'; label: string; width:
   { key: 'title', label: 'Goal', width: '1fr', sortable: true },
   { key: 'theme', label: 'Theme', width: '160px' },
   { key: 'status', label: 'Status', width: '110px' },
-  { key: 'owner', label: 'Owner', width: '120px' },
+  { key: 'owner', label: 'Owner', width: '140px' },
   { key: 'progress_pct', label: 'Progress', width: '120px', sortable: true },
   { key: 'kr_count', label: 'KRs', width: '60px', sortable: true },
   { key: 'fiscal_quarter', label: 'Quarter', width: '90px', sortable: true },
@@ -73,7 +89,8 @@ export function GoalsListView({ goals, themes, onGoalClick }: GoalsListViewProps
 
   return (
     <div style={{ border: '1px solid #E2E8F0', borderRadius: 10, overflow: 'hidden', background: '#FFFFFF' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: gridCols, height: 36, alignItems: 'center', padding: '0 16px', background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8' }}>
+      {/* Header */}
+      <div style={{ display: 'grid', gridTemplateColumns: gridCols, height: 36, alignItems: 'center', padding: '0 16px', background: '#FFFFFF', borderBottom: '2px solid #E2E8F0', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>
         {COLS.map(c => (
           <span
             key={c.key}
@@ -86,47 +103,50 @@ export function GoalsListView({ goals, themes, onGoalClick }: GoalsListViewProps
           </span>
         ))}
       </div>
+      {/* Fix 12: 44px rows, 8px 12px padding */}
       {sortedGoals.map(goal => {
         const theme = themeMap.get(goal.theme_id);
         const pct = Math.round(goal.progress_pct || 0);
         const barColor = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
+        // Fix 4: circular avatar 28px + full name
         const initials = goal.owner_name ? goal.owner_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '';
+        const ownerColors = goal.owner_name ? getAvatarColors(goal.owner_name) : null;
         return (
           <div
             key={goal.id}
             role="button" tabIndex={0}
             onClick={() => onGoalClick(goal.id)}
             onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onGoalClick(goal.id); } }}
-            style={{ display: 'grid', gridTemplateColumns: gridCols, height: 44, alignItems: 'center', padding: '0 16px', borderBottom: '1px solid #F1F5F9', cursor: 'pointer', transition: 'background 100ms' }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#EFF6FF')}
+            style={{ display: 'grid', gridTemplateColumns: gridCols, height: 44, alignItems: 'center', padding: '0 16px', borderBottom: '1px solid #F1F5F9', cursor: 'pointer', transition: 'background 150ms' }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#64748B', background: '#F1F5F9', padding: '1px 6px', borderRadius: 4, justifySelf: 'start', fontFamily: 'ui-monospace, monospace' }}>{goal.goal_key}</span>
-            <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.title}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', background: '#F1F5F9', padding: '2px 8px', borderRadius: 4, justifySelf: 'start', fontFamily: 'ui-monospace, monospace' }}>{goal.goal_key}</span>
+            <span style={{ fontSize: 13, fontWeight: 500, color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.title}</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               {theme && (<><span style={{ width: 8, height: 8, borderRadius: 2, background: theme.color, flexShrink: 0 }} /><span style={{ fontSize: 12, color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{theme.title}</span></>)}
             </div>
             <div>{statusBadge(goal.status)}</div>
-            {/* Fix 12: Owner column */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              {goal.owner_name ? (
+            {/* Fix 4: circular avatar with name */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              {goal.owner_name && ownerColors ? (
                 <>
-                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E0E7FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#4338CA', flexShrink: 0 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: ownerColors.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, color: ownerColors.text, flexShrink: 0 }}>
                     {initials}
                   </div>
-                  <span style={{ fontSize: 11, color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.owner_name}</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{goal.owner_name}</span>
                 </>
               ) : (
                 <span style={{ fontSize: 11, color: '#CBD5E1' }}>—</span>
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ width: 60, height: 5, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}>
+              <div role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} style={{ width: 60, height: 5, background: '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
                 <div style={{ width: `${pct}%`, height: '100%', background: barColor, borderRadius: 3 }} />
               </div>
-              <span style={{ fontSize: 12, fontWeight: 600, color: '#0F172A' }}>{pct}%</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: barColor }}>{pct}%</span>
             </div>
-            <span style={{ fontSize: 12, color: '#64748B' }}>{goal.kr_count || 0}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>{goal.kr_count || 0}</span>
             <span style={{ fontSize: 11, color: '#64748B' }}>{goal.fiscal_quarter || '—'}</span>
           </div>
         );

@@ -1,5 +1,7 @@
 /**
  * GoalsStatsStrip — 5-card horizontal stats computed from goals + KRs
+ * Fix 1: Enhanced contrast, shadows, icon containers
+ * Fix 10: On Track = Active + progress >= 60%
  */
 import { Target, CheckCircle2, Activity, BarChart3, AlertTriangle } from 'lucide-react';
 import type { Goal, KeyResult } from '@/types/goals';
@@ -22,7 +24,7 @@ export function GoalsStatsStripSkeleton() {
             background: '#F1F5F9',
             border: '1px solid #E2E8F0',
             borderRadius: 12,
-            height: 82,
+            height: 96,
           }}
         />
       ))}
@@ -36,7 +38,8 @@ export function GoalsStatsStripSkeleton() {
 
 export function GoalsStatsStrip({ goals, keyResults, themes }: GoalsStatsStripProps) {
   const totalGoals = goals.length;
-  const onTrackGoals = goals.filter(g => ['active', 'completed', 'on_track'].includes(g.status)).length;
+  // Fix 10: On Track = Active status AND progress >= 60
+  const onTrackGoals = goals.filter(g => ['active', 'on_track'].includes(g.status) && (g.progress_pct || 0) >= 60).length;
   const onTrackPct = totalGoals > 0 ? Math.round((onTrackGoals / totalGoals) * 100) : 0;
   const avgProgress = totalGoals > 0 ? Math.round(goals.reduce((s, g) => s + (g.progress_pct || 0), 0) / totalGoals) : 0;
   const totalKRs = keyResults.length;
@@ -50,7 +53,7 @@ export function GoalsStatsStrip({ goals, keyResults, themes }: GoalsStatsStripPr
       label: 'Total Goals',
       value: totalGoals,
       icon: Target,
-      iconBg: 'rgba(37,99,235,0.08)',
+      iconBg: '#EFF6FF',
       iconColor: '#2563EB',
       sub: `across ${uniqueThemes} themes`,
     },
@@ -58,7 +61,7 @@ export function GoalsStatsStrip({ goals, keyResults, themes }: GoalsStatsStripPr
       label: 'On Track',
       value: `${onTrackPct}%`,
       icon: CheckCircle2,
-      iconBg: 'rgba(22,163,74,0.08)',
+      iconBg: '#DCFCE7',
       iconColor: '#16A34A',
       sub: `${onTrackGoals} of ${totalGoals} goals`,
     },
@@ -66,23 +69,23 @@ export function GoalsStatsStrip({ goals, keyResults, themes }: GoalsStatsStripPr
       label: 'Avg Progress',
       value: `${avgProgress}%`,
       icon: Activity,
-      iconBg: 'rgba(13,148,136,0.08)',
-      iconColor: '#0D9488',
+      iconBg: '#FEF3C7',
+      iconColor: '#D97706',
       sub: `${100 - avgProgress}% to target`,
     },
     {
       label: 'Total KRs',
       value: totalKRs,
       icon: BarChart3,
-      iconBg: 'rgba(37,99,235,0.08)',
-      iconColor: '#2563EB',
+      iconBg: '#EDE9FE',
+      iconColor: '#7C3AED',
       sub: `~${krsPerGoal} per goal`,
     },
     {
       label: 'Overdue KRs',
       value: overdueKRs,
       icon: AlertTriangle,
-      iconBg: overdueKRs > 0 ? 'rgba(239,68,68,0.08)' : 'rgba(148,163,184,0.08)',
+      iconBg: overdueKRs > 0 ? '#FEE2E2' : '#F1F5F9',
       iconColor: overdueKRs > 0 ? '#EF4444' : '#94A3B8',
       sub: overdueKRs > 0 ? 'needs attention' : 'all on schedule',
     },
@@ -97,17 +100,18 @@ export function GoalsStatsStrip({ goals, keyResults, themes }: GoalsStatsStripPr
             background: '#FFFFFF',
             border: '1px solid #E2E8F0',
             borderRadius: 12,
-            padding: '14px 16px',
+            padding: '20px 24px',
             display: 'flex',
             alignItems: 'flex-start',
-            gap: 12,
+            gap: 14,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
           }}
         >
           <div
             style={{
-              width: 28,
-              height: 28,
-              borderRadius: 8,
+              width: 40,
+              height: 40,
+              borderRadius: 10,
               background: card.iconBg,
               display: 'flex',
               alignItems: 'center',
@@ -115,33 +119,32 @@ export function GoalsStatsStrip({ goals, keyResults, themes }: GoalsStatsStripPr
               flexShrink: 0,
             }}
           >
-            <card.icon size={14} color={card.iconColor} />
+            <card.icon size={18} color={card.iconColor} />
           </div>
           <div style={{ minWidth: 0 }}>
             <div
               style={{
-                fontSize: '10.5px',
+                fontSize: 11,
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: '0.05em',
-                color: '#94A3B8',
-                marginBottom: 2,
+                color: '#64748B',
+                marginBottom: 4,
               }}
             >
               {card.label}
             </div>
             <div
               style={{
-                fontSize: 26,
-                fontWeight: 800,
-                letterSpacing: '-0.5px',
+                fontSize: 28,
+                fontWeight: 700,
                 color: '#0F172A',
-                lineHeight: 1.1,
+                lineHeight: 1.2,
               }}
             >
               {card.value}
             </div>
-            <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 2 }}>{card.sub}</div>
+            <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 2 }}>{card.sub}</div>
           </div>
         </div>
       ))}
