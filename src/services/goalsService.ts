@@ -1,10 +1,6 @@
 /**
  * Goals & Key Results — Service Layer
  * Maps DB column names to domain types defined in src/types/goals.ts
- * 
- * DB column mapping:
- *   start_value → baseline, target_value → target, unit → metric_unit
- *   value → new_value, notes → note, author_id → checked_by
  */
 
 import { supabase } from '@/integrations/supabase/client';
@@ -40,6 +36,9 @@ function mapGoalRow(row: any): Goal {
     ai_health_score: row.ai_health_score ?? undefined,
     created_at: row.created_at,
     updated_at: row.updated_at,
+    // Joined owner data
+    owner_name: row.profiles?.full_name ?? undefined,
+    owner_avatar: row.profiles?.avatar_url ?? undefined,
   };
 }
 
@@ -84,13 +83,29 @@ function mapCheckinRow(row: any): KRCheckin {
   };
 }
 
+// ── Initiative types ──
+export interface GoalInitiativeLink {
+  id: string;
+  goal_id: string;
+  initiative_id: string;
+  linked_at: string;
+  notes?: string;
+  initiative?: {
+    id: string;
+    initiative_key: string;
+    title: string;
+    status: string;
+    department_id?: string;
+  };
+}
+
 // ── Service ──
 
 export const goalsService = {
   async getGoals(): Promise<Goal[]> {
     const { data, error } = await supabase
       .from('es_goals')
-      .select('*')
+      .select('*, profiles:owner_id (full_name, avatar_url)')
       .eq('is_archived', false)
       .order('sort_order');
     if (error) throw error;
@@ -145,6 +160,8 @@ export const goalsService = {
     delete dbUpdates.id;
     delete dbUpdates.goal_key;
     delete dbUpdates.created_at;
+    delete dbUpdates.owner_name;
+    delete dbUpdates.owner_avatar;
 
     const { data, error } = await supabase
       .from('es_goals')
@@ -259,6 +276,49 @@ export const goalsService = {
       .from('es_strategic_themes')
       .select('id, title, color, status')
       .order('sort_order');
+    if (error) throw error;
+    return data || [];
+  },
+
+  // ── Goal-Initiative linking (Fix 5) ──
+
+  async getGoalInitiatives(goalId: string): Promise<GoalInitiativeLink[]> {
+    const { data, error } = await supabase
+      .from('es_goal_initiatives')
+      .select('*, ph_initiatives!initiative_id (id, initiative_key, title, status, department_id)')
+      .eq('goal_id', goalId);
+    if (error) throw error;
+    return (data || []).map((row: any) => ({
+      id: row.id,
+      goal_id: row.goal_id,
+      initiative_id: row.initiative_id,
+      linked_at: row.linked_at,
+      notes: row.notes,
+      initiative: row.ph_initiatives,
+    }));
+  },
+
+  async linkInitiative(goalId: string, initiativeId: string): Promise<void> {
+    const { error } = await supabase
+      .from('es_goal_initiatives')
+      .insert({ goal_id: goalId, initiative_id: initiativeId });
+    if (error) throw error;
+  },
+
+  async unlinkInitiative(id: string): Promise<void> {
+    const { error } = await supabase
+      .from('es_goal_initiatives')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
+  },
+
+  async searchInitiatives(query: string): Promise<{ id: string; initiative_key: string; title: string; status: string }[]> {
+    const { data, error } = await supabase
+      .from('ph_initiatives')
+      .select('id, initiative_key, title, status')
+      .ilike('title', `%${query}%`)
+      .limit(20);
     if (error) throw error;
     return data || [];
   },

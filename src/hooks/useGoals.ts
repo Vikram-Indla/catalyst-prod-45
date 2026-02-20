@@ -110,6 +110,42 @@ export function useCreateCheckin() {
       qc.invalidateQueries({ queryKey: ['all-key-results'] });
       qc.invalidateQueries({ queryKey: ['goals'] });
       qc.invalidateQueries({ queryKey: ['checkins'] });
+      qc.invalidateQueries({ queryKey: ['goal-checkins'] });
     },
+  });
+}
+
+// ── Goal-Initiative hooks (Fix 5) ──
+
+export function useGoalInitiatives(goalId: string) {
+  return useQuery({
+    queryKey: ['goal-initiatives', goalId],
+    queryFn: () => goalsService.getGoalInitiatives(goalId),
+    enabled: !!goalId,
+  });
+}
+
+export function useLinkInitiative() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ goalId, initiativeId }: { goalId: string; initiativeId: string }) =>
+      goalsService.linkInitiative(goalId, initiativeId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['goal-initiatives'] }),
+  });
+}
+
+export function useUnlinkInitiative() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => goalsService.unlinkInitiative(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['goal-initiatives'] }),
+  });
+}
+
+export function useSearchInitiatives(query: string) {
+  return useQuery({
+    queryKey: ['search-initiatives', query],
+    queryFn: () => goalsService.searchInitiatives(query),
+    enabled: query.length >= 2,
   });
 }

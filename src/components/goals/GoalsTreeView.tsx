@@ -1,9 +1,7 @@
 /**
  * GoalsTreeView — 3-level expandable tree: Theme → Goal → Key Result
- * FIX 1: status badge text uses darker tones per spec
- * FIX 7: ARIA attrs on progress bars, keyboard nav
- * FIX 8: KR hover → yellow-50, goal hover → primary-50, transitions
- * FIX 9: Footer includes last updated date
+ * Fixes: 1 (status), 2 (AI badge), 7 (columns), 8 (KR status), 9 (theme aggregation),
+ *        14 (expand state), 16 (footer), 18 (KR check-in hover)
  */
 import { ChevronRight, Sparkles, ClipboardCheck, Target, X } from 'lucide-react';
 import type { Goal, KeyResult } from '@/types/goals';
@@ -24,14 +22,13 @@ interface GoalsTreeViewProps {
   onClearSearch?: () => void;
 }
 
-// ── Status badge (Linear-style: darker text per spec) ──
+// ── Status badge (Linear-style) ──
 function statusBadge(status: string) {
   const map: Record<string, { dot: string; bg: string; text: string; label: string }> = {
     active:      { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'Active' },
     on_track:    { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'On Track' },
-    in_progress: { dot: '#2563EB', bg: 'rgba(37,99,235,0.08)',  text: '#1D4ED8', label: 'In Progress' },
-    completed:   { dot: '#2563EB', bg: 'rgba(37,99,235,0.08)',  text: '#1D4ED8', label: 'Completed' },
-    achieved:    { dot: '#2563EB', bg: 'rgba(37,99,235,0.08)',  text: '#1D4ED8', label: 'Achieved' },
+    completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Completed' },
+    achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Achieved' },
     at_risk:     { dot: '#D97706', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', label: 'At Risk' },
     off_track:   { dot: '#EF4444', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', label: 'Off Track' },
     draft:       { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', label: 'Draft' },
@@ -50,14 +47,7 @@ function statusBadge(status: string) {
 function progressBar(pct: number, height = 6, label?: string) {
   const color = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
   return (
-    <div
-      role="progressbar"
-      aria-valuenow={Math.round(pct)}
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-label={label || `Progress: ${Math.round(pct)}%`}
-      style={{ width: '100%', height, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}
-    >
+    <div role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} aria-label={label || `Progress: ${Math.round(pct)}%`} style={{ width: '100%', height, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}>
       <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 3, transition: 'width 300ms ease' }} />
     </div>
   );
@@ -73,13 +63,34 @@ function confidenceLabel(val: number | string | undefined) {
   return `${pct}%`;
 }
 
-const GRID_COLS = 'minmax(340px, 1fr) 96px 72px 110px 72px 72px 60px';
+function confidenceColor(val: number | string | undefined): string {
+  if (val === undefined || val === null) return '#94A3B8';
+  let pct: number;
+  if (typeof val === 'string') {
+    const map: Record<string, number> = { high: 80, medium: 50, low: 25 };
+    pct = map[val] ?? 50;
+  } else {
+    pct = val <= 1 ? Math.round(val * 100) : Math.round(val);
+  }
+  return pct >= 70 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
+}
+
+// Fix 9: Theme status from child goals
+function computeThemeStatus(goals: Goal[]): string {
+  if (goals.some(g => g.status === 'off_track')) return 'off_track';
+  if (goals.some(g => g.status === 'at_risk')) return 'at_risk';
+  if (goals.every(g => g.status === 'completed')) return 'completed';
+  if (goals.every(g => g.status === 'draft')) return 'draft';
+  return 'active';
+}
+
+// Fix 7: merged progress columns — "STATUS | PROGRESS | CONF. | KRS | OWNER | AI"
+const GRID_COLS = 'minmax(340px, 1fr) 96px 140px 72px 72px 100px 60px';
 
 /* Skeleton for loading */
 export function GoalsTreeSkeleton() {
   return (
     <div style={{ border: '1px solid #E2E8F0', borderRadius: 10, overflow: 'hidden' }}>
-      {/* header */}
       <div style={{ height: 36, background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }} />
       {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} className="ph-shimmer" style={{ height: 44, borderBottom: '1px solid #F1F5F9', background: '#F8FAFC' }} />
@@ -101,10 +112,7 @@ export function GoalsEmptyState({ onCreateGoal }: { onCreateGoal: () => void }) 
       </div>
       <div style={{ fontSize: 15, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No goals yet</div>
       <div style={{ fontSize: 12.5, color: '#94A3B8', marginBottom: 20, textAlign: 'center', maxWidth: 320 }}>Create your first goal to start tracking progress.</div>
-      <button
-        onClick={onCreateGoal}
-        style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', background: '#2563EB', border: 'none', borderRadius: 6, cursor: 'pointer' }}
-      >
+      <button onClick={onCreateGoal} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 18px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', background: '#2563EB', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
         + Create Goal
       </button>
     </div>
@@ -117,12 +125,22 @@ export function GoalsNoSearchResults({ query, onClear }: { query: string; onClea
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', border: '1px solid #E2E8F0', borderRadius: 10, background: '#FFFFFF' }}>
       <div style={{ fontSize: 14, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No goals matching "{query}"</div>
       <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 14 }}>Try a different search term.</div>
-      <button
-        onClick={onClear}
-        style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 500, color: '#64748B', background: '#F1F5F9', border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer' }}
-      >
+      <button onClick={onClear} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 500, color: '#64748B', background: '#F1F5F9', border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer' }}>
         <X size={12} /> Clear search
       </button>
+    </div>
+  );
+}
+
+function ownerAvatar(name?: string, avatar?: string) {
+  if (!name) return <span style={{ fontSize: 11, color: '#CBD5E1' }}>—</span>;
+  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+      <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E0E7FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#4338CA', flexShrink: 0 }}>
+        {initials}
+      </div>
+      <span style={{ fontSize: 11, color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name.split(' ')[0]}</span>
     </div>
   );
 }
@@ -169,7 +187,6 @@ export function GoalsTreeView({
     });
   };
 
-  // No search results
   if (query && filteredThemes.length === 0) {
     return <GoalsNoSearchResults query={searchQuery} onClear={() => onClearSearch?.()} />;
   }
@@ -186,23 +203,21 @@ export function GoalsTreeView({
 
   return (
     <div className="goals-tree-container" style={{ border: '1px solid #E2E8F0', borderRadius: 10, overflow: 'hidden', background: '#FFFFFF' }}>
-      {/* Header */}
-      <div
-        style={{
-          display: 'grid', gridTemplateColumns: GRID_COLS,
-          height: 36, alignItems: 'center',
-          background: '#F8FAFC', borderBottom: '1px solid #E2E8F0',
-          padding: '0 16px',
-          fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase',
-          letterSpacing: '0.05em', color: '#94A3B8',
-        }}
-      >
+      {/* Header — Fix 7: merged columns */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: GRID_COLS,
+        height: 36, alignItems: 'center',
+        background: '#F8FAFC', borderBottom: '1px solid #E2E8F0',
+        padding: '0 16px',
+        fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase',
+        letterSpacing: '0.05em', color: '#94A3B8',
+      }}>
         <span>Goal / Key Result</span>
         <span>Status</span>
         <span>Progress</span>
-        <span>Progress</span>
-        <span>Conf.</span>
+        <span>Confidence</span>
         <span>KRs</span>
+        <span>Owner</span>
         <span>AI</span>
       </div>
 
@@ -212,14 +227,14 @@ export function GoalsTreeView({
         const themeExpanded = expandedThemes.has(theme.id) || !!query;
         const avgProgress = themeGoals.length > 0
           ? Math.round(themeGoals.reduce((s, g) => s + (g.progress_pct || 0), 0) / themeGoals.length) : 0;
-        const themeStatus = avgProgress >= 60 ? 'on_track' : avgProgress >= 40 ? 'at_risk' : 'off_track';
+        // Fix 9: compute from child goal statuses
+        const themeStatus = computeThemeStatus(themeGoals);
 
         return (
           <div key={theme.id}>
             {/* Theme Row */}
             <div
-              role="button"
-              tabIndex={0}
+              role="button" tabIndex={0}
               onClick={() => onToggleTheme(theme.id)}
               onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggleTheme(theme.id); } }}
               style={{
@@ -238,10 +253,13 @@ export function GoalsTreeView({
                 <span style={{ fontSize: 11, color: '#94A3B8' }}>({themeGoals.length} goal{themeGoals.length !== 1 ? 's' : ''})</span>
               </div>
               <div>{statusBadge(themeStatus)}</div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#0F172A' }}>{avgProgress}%</div>
-              <div>{progressBar(avgProgress, 6, `${theme.title} progress`)}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ flex: 1 }}>{progressBar(avgProgress, 6, `${theme.title} progress`)}</div>
+                <span style={{ fontSize: 12, fontWeight: 600, color: '#0F172A', minWidth: 32, textAlign: 'right' }}>{avgProgress}%</span>
+              </div>
               <div />
               <div style={{ fontSize: 12, color: '#64748B' }}>{themeGoals.reduce((s, g) => s + (g.kr_count || 0), 0)}</div>
+              <div />
               <div />
             </div>
 
@@ -255,8 +273,7 @@ export function GoalsTreeView({
               return (
                 <div key={goal.id}>
                   <div
-                    role="button"
-                    tabIndex={0}
+                    role="button" tabIndex={0}
                     onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onGoalClick(goal.id); } }}
                     style={{
                       display: 'grid', gridTemplateColumns: GRID_COLS,
@@ -276,18 +293,18 @@ export function GoalsTreeView({
                       <span style={{ fontSize: 10.5, fontWeight: 600, color: '#64748B', background: '#F1F5F9', padding: '1px 6px', borderRadius: 3, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
                         {goal.goal_key}
                       </span>
-                      <span
-                        onClick={e => { e.stopPropagation(); onGoalClick(goal.id); }}
-                        style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-                      >
+                      <span onClick={e => { e.stopPropagation(); onGoalClick(goal.id); }} style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {goal.title}
                       </span>
                     </div>
                     <div onClick={e => e.stopPropagation()}>{statusBadge(goal.status)}</div>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: '#0F172A' }}>{Math.round(goal.progress_pct || 0)}%</div>
-                    <div>{progressBar(goal.progress_pct || 0, 5, `${goal.title} progress`)}</div>
-                    <div style={{ fontSize: 12, color: '#64748B' }}>{confPct}%</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ flex: 1 }}>{progressBar(goal.progress_pct || 0, 5, `${goal.title} progress`)}</div>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#0F172A', minWidth: 32, textAlign: 'right' }}>{Math.round(goal.progress_pct || 0)}%</span>
+                    </div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: confidenceColor(goal.confidence_level) }}>{confPct}%</div>
                     <div style={{ fontSize: 12, color: '#64748B' }}>{goalKRs.length}</div>
+                    <div>{ownerAvatar(goal.owner_name)}</div>
                     <div>
                       {goal.ai_health_score != null ? (
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10.5, fontWeight: 600, color: '#7C3AED', background: '#F5F3FF', padding: '2px 6px', borderRadius: 4 }}>
@@ -311,8 +328,7 @@ export function GoalsTreeView({
                       <div
                         key={kr.id}
                         className="kr-row-hover"
-                        role="button"
-                        tabIndex={0}
+                        role="button" tabIndex={0}
                         onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onCheckinClick(kr.id); } }}
                         style={{
                           display: 'grid', gridTemplateColumns: GRID_COLS,
@@ -330,6 +346,7 @@ export function GoalsTreeView({
                           <span style={{ color: '#334155', fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {kr.title}
                           </span>
+                          {/* Fix 18: hover-reveal check-in button */}
                           <button
                             onClick={e => { e.stopPropagation(); onCheckinClick(kr.id); }}
                             className="kr-checkin-btn"
@@ -347,12 +364,15 @@ export function GoalsTreeView({
                           </button>
                         </div>
                         <div>{statusBadge(kr.status)}</div>
-                        <div style={{ fontWeight: 600, color: '#0F172A' }}>{krProgress}%</div>
-                        <div>{progressBar(krProgress, 5, `${kr.title} progress`)}</div>
-                        <div style={{ color: '#64748B' }}>{confidenceLabel(kr.confidence_level)}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <div style={{ flex: 1 }}>{progressBar(krProgress, 5, `${kr.title} progress`)}</div>
+                          <span style={{ fontWeight: 600, color: '#0F172A', minWidth: 32, textAlign: 'right' }}>{krProgress}%</span>
+                        </div>
+                        <div style={{ color: confidenceColor(kr.confidence_level) }}>{confidenceLabel(kr.confidence_level)}</div>
                         <div style={{ color: '#64748B', fontSize: 11 }}>
                           {kr.current_value}{kr.metric_unit ? ` ${kr.metric_unit}` : ''}/{kr.target}
                         </div>
+                        <div />
                         <div />
                       </div>
                     );
@@ -364,10 +384,10 @@ export function GoalsTreeView({
         );
       })}
 
-      {/* Footer */}
-      <div style={{ padding: '10px 16px', fontSize: 11, color: '#94A3B8', borderTop: '1px solid #F1F5F9', background: '#FAFBFD' }}>
-        Showing {totalFilteredGoals} goals, {totalFilteredKRs} key results across {filteredThemes.length} themes
-        {lastUpdated && ` · Last updated: ${lastUpdated}`}
+      {/* Fix 16: Footer */}
+      <div style={{ padding: '10px 16px', fontSize: 11, color: '#94A3B8', borderTop: '1px solid #F1F5F9', background: '#FAFBFD', display: 'flex', justifyContent: 'space-between' }}>
+        <span>Showing {totalFilteredGoals} goals, {totalFilteredKRs} key results across {filteredThemes.length} themes</span>
+        {lastUpdated && <span>Last updated: {lastUpdated}</span>}
       </div>
 
       <style>{`
