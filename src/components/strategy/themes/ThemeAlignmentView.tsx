@@ -1,160 +1,107 @@
 /**
- * ThemeAlignmentView — Full-screen horizontal flow alignment map
- * Theme → Goal → KR → Initiative → Epic with SVG connectors
- * ResizeObserver-based connector recalculation
+ * ThemeAlignmentView — CIO-Grade Full-Screen Strategy Alignment Map
+ * Complete rebuild: fixed overlay, dark toolbar, SVG connectors with ResizeObserver
  */
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
-import { ArrowLeft, X, ZoomIn, ZoomOut, Crosshair } from 'lucide-react';
-import { useAlignmentMapData, type AlignmentNode } from '@/hooks/useAlignmentMapData';
+import { ArrowLeft, X, Minus, Plus, RotateCcw, Unlink } from 'lucide-react';
+import { useAlignmentMapData, type AlignmentNode, type AlignmentRow } from '@/hooks/useAlignmentMapData';
 
-// ── Layer colors ──
-const LAYER_COLORS = {
-  theme: '#2563EB',
-  goal: '#0D9488',
-  kr: '#7C3AED',
-  initiative: '#D97706',
-  epic: '#6366F1',
+// ── Layer colors (NO purple for KRs) ──
+const LAYER = {
+  theme:      { color: '#2563EB', badgeBg: '#EFF6FF', badgeText: '#1E40AF', border: '#2563EB' },
+  goal:       { color: '#0D9488', badgeBg: '#F0FDFA', badgeText: '#115E59', border: '#0D9488' },
+  kr:         { color: '#2563EB', badgeBg: '#DBEAFE', badgeText: '#1E40AF', border: '#2563EB' },
+  initiative: { color: '#D97706', badgeBg: '#FFFBEB', badgeText: '#92400E', border: '#D97706' },
+  epic:       { color: '#4F46E5', badgeBg: '#EEF2FF', badgeText: '#3730A3', border: '#4F46E5' },
 } as const;
 
-const STATUS_DOT: Record<string, string> = {
-  on_track: '#16A34A', active: '#16A34A', completed: '#16A34A', in_progress: '#2563EB',
-  at_risk: '#D97706', approved: '#D97706',
-  off_track: '#EF4444', cancelled: '#EF4444',
-  draft: '#94A3B8', not_started: '#94A3B8', proposed: '#94A3B8', analyzing: '#94A3B8',
+const STATUS_CONFIG: Record<string, { dot: string; bg: string; text: string; label: string }> = {
+  active:       { dot: '#16A34A', bg: '#F0FDF4', text: '#166534', label: 'Active' },
+  on_track:     { dot: '#16A34A', bg: '#F0FDF4', text: '#166534', label: 'On Track' },
+  at_risk:      { dot: '#D97706', bg: '#FFFBEB', text: '#92400E', label: 'At Risk' },
+  off_track:    { dot: '#EF4444', bg: '#FEF2F2', text: '#991B1B', label: 'Off Track' },
+  draft:        { dot: '#94A3B8', bg: '#F8FAFC', text: '#475569', label: 'Draft' },
+  planned:      { dot: '#94A3B8', bg: '#F8FAFC', text: '#475569', label: 'Planned' },
+  completed:    { dot: '#2563EB', bg: '#EFF6FF', text: '#1E40AF', label: 'Done' },
+  cancelled:    { dot: '#94A3B8', bg: '#F8FAFC', text: '#475569', label: 'Cancelled' },
+  in_progress:  { dot: '#2563EB', bg: '#EFF6FF', text: '#1E40AF', label: 'In Progress' },
+  not_started:  { dot: '#94A3B8', bg: '#F8FAFC', text: '#475569', label: 'Not Started' },
+  approved:     { dot: '#0D9488', bg: '#F0FDFA', text: '#115E59', label: 'Approved' },
+  proposed:     { dot: '#94A3B8', bg: '#F8FAFC', text: '#475569', label: 'Proposed' },
+  analyzing:    { dot: '#94A3B8', bg: '#F8FAFC', text: '#475569', label: 'Analyzing' },
 };
-const getStatusColor = (s: string) => STATUS_DOT[s] || '#94A3B8';
+
+function getProgressColor(v: number) {
+  if (v >= 60) return '#16A34A';
+  if (v >= 40) return '#D97706';
+  return '#EF4444';
+}
+
+// ── Sub-components ──
+
+function StatusBadge({ status }: { status: string }) {
+  const c = STATUS_CONFIG[status?.toLowerCase()] || STATUS_CONFIG.draft;
+  return (
+    <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md shrink-0"
+      style={{ background: c.bg, color: c.text, fontSize: 9, fontWeight: 600 }}>
+      <div className="rounded-full shrink-0" style={{ width: 5, height: 5, background: c.dot }} />
+      {c.label}
+    </div>
+  );
+}
+
+function ChainStat({ label, value, total }: { label: string; value: number; total: number }) {
+  const pct = total > 0 ? Math.round((value / total) * 100) : 0;
+  const clr = pct >= 70 ? 'rgb(52,211,153)' : pct >= 40 ? 'rgb(251,191,36)' : 'rgb(248,113,113)';
+  return (
+    <div className="text-center" style={{ minWidth: 100 }}>
+      <div className="flex items-baseline justify-center gap-1">
+        <span style={{ color: '#fff', fontSize: 15, fontWeight: 700 }}>{value}</span>
+        <span style={{ color: '#475569', fontSize: 12 }}>/{total}</span>
+        <span style={{ color: clr, fontSize: 12, fontWeight: 600 }}>({pct}%)</span>
+      </div>
+      <div style={{ color: '#64748B', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
+    </div>
+  );
+}
+
+function GhostNode({ label }: { label: string }) {
+  return (
+    <div className="flex items-center justify-center gap-1.5 border border-dashed rounded-lg"
+      style={{ width: 180, padding: 12, borderColor: '#CBD5E1', background: 'rgba(248,250,252,0.5)' }}>
+      <Unlink size={12} style={{ color: '#94A3B8' }} />
+      <span style={{ fontSize: 11, color: '#94A3B8' }}>No linked {label}</span>
+    </div>
+  );
+}
 
 interface RenderedPath {
   id: string;
   d: string;
-  parentId: string;
-  childId: string;
+  sourceId: string;
+  targetId: string;
+  layerColor: string;
 }
 
-// ── Mini components ──
-function ProgressBar({ value, height = 4, color }: { value: number; height?: number; color?: string }) {
-  return (
-    <div className="w-full rounded-full overflow-hidden" style={{ height, background: '#E2E8F0' }}>
-      <div className="rounded-full transition-all" style={{ width: `${Math.min(100, value)}%`, height, background: color || '#2563EB' }} />
-    </div>
-  );
-}
-
-function StatusDot({ status, size = 8 }: { status: string; size?: number }) {
-  return <div className="rounded-full flex-shrink-0" style={{ width: size, height: size, background: getStatusColor(status) }} />;
-}
-
-function NodeCard({
-  node, layerColor, hoverBorder, isHighlighted, isDimmed,
-  onMouseEnter, onMouseLeave, onClick,
-}: {
-  node: AlignmentNode; layerColor: string; hoverBorder: string;
-  isHighlighted: boolean; isDimmed: boolean;
-  onMouseEnter: () => void; onMouseLeave: () => void; onClick: () => void;
-}) {
-  const w = layerColor === LAYER_COLORS.theme ? 180 : layerColor === LAYER_COLORS.goal || layerColor === LAYER_COLORS.initiative ? 170 : 160;
-  return (
-    <div
-      data-node-id={node.id}
-      className="bg-white border rounded-lg shadow-sm cursor-pointer transition-all"
-      style={{
-        width: w, padding: w >= 170 ? 10 : 8,
-        borderColor: isHighlighted ? hoverBorder : '#E2E8F0',
-        boxShadow: isHighlighted ? `0 2px 8px ${layerColor}20` : undefined,
-        opacity: isDimmed ? 0.3 : 1,
-      }}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      onClick={onClick}
-    >
-      <div className="flex items-center gap-1.5 mb-1">
-        {layerColor === LAYER_COLORS.theme && node.color && (
-          <div className="rounded-full flex-shrink-0" style={{ width: 10, height: 10, background: node.color }} />
-        )}
-        <span className="font-mono font-semibold rounded px-1.5 py-0.5" style={{ fontSize: 9, background: `${layerColor}15`, color: layerColor }}>
-          {node.key}
-        </span>
-        <StatusDot status={node.status} size={6} />
-      </div>
-      <p className="font-medium leading-tight line-clamp-2" style={{ fontSize: w >= 170 ? 12 : 11, color: '#334155' }}>
-        {node.title}
-      </p>
-      {node.progress !== undefined && (
-        <div className="mt-1.5">
-          <ProgressBar value={node.progress} height={w >= 170 ? 4 : 3} color={layerColor} />
-        </div>
-      )}
-    </div>
-  );
-}
-
-function GhostNode({ label, width = 160 }: { label: string; width?: number }) {
-  return (
-    <div className="border border-dashed rounded-md flex items-center justify-center" style={{ width, padding: 8, borderColor: '#CBD5E1', background: '#F8FAFC80' }}>
-      <p style={{ fontSize: 11, color: '#94A3B8', textAlign: 'center' }}>{label}</p>
-    </div>
-  );
-}
-
-function ColumnHeader({ label, count, color }: { label: string; count: number; color: string }) {
-  return (
-    <div className="flex items-center gap-1 px-2 py-2 border-b mb-2" style={{ background: '#F1F5F9', borderColor: '#E2E8F0', borderRadius: '6px 6px 0 0' }}>
-      <span style={{ fontSize: 11, fontWeight: 600, color, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
-      <span style={{ fontSize: 11, fontWeight: 600, color: '#94A3B8' }}>({count})</span>
-    </div>
-  );
-}
-
-// ── Main Component ──
+// ══════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ══════════════════════════════════════════════════════════
 export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
   const { data, isLoading } = useAlignmentMapData();
-  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
-  const [selectedThemeFilter, setSelectedThemeFilter] = useState<string | null>(null);
+  const [highlightedNodes, setHighlightedNodes] = useState<Set<string>>(new Set());
+  const [selectedThemeFilter, setSelectedThemeFilter] = useState<string>('all');
   const [zoom, setZoom] = useState(0.85);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const panStart = useRef({ x: 0, y: 0, px: 0, py: 0 });
   const canvasRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
-  const [connectorPaths, setConnectorPaths] = useState<RenderedPath[]>([]);
+  const [paths, setPaths] = useState<RenderedPath[]>([]);
 
-  // Highlight set
-  const highlightedIds = useMemo(() => {
-    if (!hoveredNode || !data) return new Set<string>();
-    const ids = new Set<string>();
-    ids.add(hoveredNode);
-
-    const allMaps = [data.themeToGoals, data.goalToKrs, data.krToInitiatives, data.initiativeToEpics];
-
-    // Downstream
-    const addDown = (nodeId: string, maps: Map<string, Set<string>>[]) => {
-      for (const map of maps) {
-        const children = map.get(nodeId);
-        if (children) children.forEach(c => { ids.add(c); addDown(c, maps); });
-      }
-    };
-    addDown(hoveredNode, allMaps);
-
-    // Upstream
-    const addUp = (nodeId: string) => {
-      for (const map of allMaps) {
-        for (const [parent, children] of map.entries()) {
-          if (children.has(nodeId) && !ids.has(parent)) {
-            ids.add(parent);
-            addUp(parent);
-          }
-        }
-      }
-    };
-    addUp(hoveredNode);
-
-    return ids;
-  }, [hoveredNode, data]);
-
-  // Filter
+  // ── Filter data by selected theme ──
   const filteredData = useMemo(() => {
     if (!data) return null;
-    if (!selectedThemeFilter) return data;
+    if (selectedThemeFilter === 'all') return data;
 
     const goalIds = data.themeToGoals.get(selectedThemeFilter) || new Set();
     const krIds = new Set<string>();
@@ -174,104 +121,115 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     };
   }, [data, selectedThemeFilter]);
 
-  // ── Connector recalculation ──
-  const recalculateConnections = useCallback(() => {
-    if (!filteredData || !innerRef.current) return;
-    const container = innerRef.current;
-    const containerRect = container.getBoundingClientRect();
-    const paths: RenderedPath[] = [];
-
-    const getPos = (id: string) => {
-      const el = container.querySelector(`[data-node-id="${id}"]`) as HTMLElement | null;
-      if (!el) return null;
-      const r = el.getBoundingClientRect();
-      return {
-        right: (r.right - containerRect.left) / zoom,
-        left: (r.left - containerRect.left) / zoom,
-        centerY: (r.top + r.height / 2 - containerRect.top) / zoom,
+  // ── Highlight chain on hover ──
+  const highlightChain = useCallback((nodeId: string) => {
+    if (!data) return;
+    const connected = new Set<string>();
+    data.rows.forEach((row: AlignmentRow) => {
+      const ids: Record<string, string | null> = {
+        [`theme-${row.theme_key}`]: row.theme_id,
+        [`goal-${row.goal_key}`]: row.goal_id,
+        [`kr-${row.kr_key}`]: row.kr_id,
+        [`initiative-${row.initiative_key}`]: row.initiative_id,
+        [`epic-${row.epic_key}`]: row.epic_id,
       };
-    };
+      const nodeIds = Object.keys(ids).filter(k => ids[k] != null);
+      if (nodeIds.includes(nodeId)) {
+        nodeIds.forEach(n => connected.add(n));
+      }
+    });
+    setHighlightedNodes(connected);
+  }, [data]);
 
-    const addConns = (parentMap: Map<string, Set<string>>) => {
-      for (const [parentId, childIds] of parentMap.entries()) {
-        const pr = getPos(parentId);
-        if (!pr) continue;
+  const clearHighlight = useCallback(() => setHighlightedNodes(new Set()), []);
+
+  // ── Build connections list ──
+  const connections = useMemo(() => {
+    if (!filteredData) return [];
+    const conns: { id: string; sourceId: string; targetId: string; layerColor: string }[] = [];
+
+    const addConns = (map: Map<string, Set<string>>, srcPrefix: string, tgtPrefix: string, color: string,
+      srcNodes: AlignmentNode[], tgtNodes: AlignmentNode[]) => {
+      const srcKeyMap = new Map(srcNodes.map(n => [n.id, n.key]));
+      const tgtKeyMap = new Map(tgtNodes.map(n => [n.id, n.key]));
+      for (const [parentId, childIds] of map.entries()) {
+        const srcKey = srcKeyMap.get(parentId);
+        if (!srcKey) continue;
         childIds.forEach(childId => {
-          const cr = getPos(childId);
-          if (!cr) return;
-          const x1 = pr.right + 4;
-          const y1 = pr.centerY;
-          const x2 = cr.left - 4;
-          const y2 = cr.centerY;
-          const dx = Math.abs(x2 - x1);
-          const cp = Math.min(dx * 0.4, 60);
-          paths.push({
-            id: `${parentId}-${childId}`,
-            d: `M ${x1} ${y1} C ${x1 + cp} ${y1}, ${x2 - cp} ${y2}, ${x2} ${y2}`,
-            parentId,
-            childId,
+          const tgtKey = tgtKeyMap.get(childId);
+          if (!tgtKey) return;
+          conns.push({
+            id: `${srcPrefix}-${srcKey}-${tgtPrefix}-${tgtKey}`,
+            sourceId: `${srcPrefix}-${srcKey}`,
+            targetId: `${tgtPrefix}-${tgtKey}`,
+            layerColor: color,
           });
         });
       }
     };
 
-    addConns(filteredData.themeToGoals);
-    addConns(filteredData.goalToKrs);
-    addConns(filteredData.krToInitiatives);
-    addConns(filteredData.initiativeToEpics);
+    addConns(filteredData.themeToGoals, 'theme', 'goal', LAYER.theme.color, filteredData.themes, filteredData.goals);
+    addConns(filteredData.goalToKrs, 'goal', 'kr', LAYER.goal.color, filteredData.goals, filteredData.krs);
+    addConns(filteredData.krToInitiatives, 'kr', 'initiative', LAYER.kr.color, filteredData.krs, filteredData.initiatives);
+    addConns(filteredData.initiativeToEpics, 'initiative', 'epic', LAYER.initiative.color, filteredData.initiatives, filteredData.epics);
 
-    setConnectorPaths(paths);
-  }, [filteredData, zoom]);
+    return conns;
+  }, [filteredData]);
+
+  // ── Connector recalculation ──
+  const recalculateConnections = useCallback(() => {
+    if (!innerRef.current || connections.length === 0) { setPaths([]); return; }
+    const container = innerRef.current;
+    const containerRect = container.getBoundingClientRect();
+
+    const positions = new Map<string, { right: number; left: number; centerY: number }>();
+    container.querySelectorAll('[data-node-id]').forEach(el => {
+      const id = el.getAttribute('data-node-id')!;
+      const r = el.getBoundingClientRect();
+      positions.set(id, {
+        right: (r.right - containerRect.left) / zoom,
+        left: (r.left - containerRect.left) / zoom,
+        centerY: (r.top + r.height / 2 - containerRect.top) / zoom,
+      });
+    });
+
+    const newPaths = connections.map(conn => {
+      const src = positions.get(conn.sourceId);
+      const tgt = positions.get(conn.targetId);
+      if (!src || !tgt) return null;
+      const x1 = src.right + 6;
+      const y1 = src.centerY;
+      const x2 = tgt.left - 6;
+      const y2 = tgt.centerY;
+      const cp = Math.min(Math.abs(x2 - x1) * 0.4, 50);
+      return {
+        id: conn.id,
+        d: `M ${x1} ${y1} C ${x1 + cp} ${y1}, ${x2 - cp} ${y2}, ${x2} ${y2}`,
+        sourceId: conn.sourceId,
+        targetId: conn.targetId,
+        layerColor: conn.layerColor,
+      };
+    }).filter(Boolean) as RenderedPath[];
+
+    setPaths(newPaths);
+  }, [connections, zoom]);
 
   // ResizeObserver + window resize
   useEffect(() => {
     const inner = innerRef.current;
     if (!inner) return;
-
     const raf = () => requestAnimationFrame(recalculateConnections);
-
-    // Initial calc (double rAF to let layout settle)
     requestAnimationFrame(() => requestAnimationFrame(recalculateConnections));
-
     const ro = new ResizeObserver(raf);
     ro.observe(inner);
-    inner.querySelectorAll('[data-column]').forEach(col => ro.observe(col));
-
     window.addEventListener('resize', raf);
     return () => { ro.disconnect(); window.removeEventListener('resize', raf); };
   }, [recalculateConnections]);
 
-  // Recalc when zoom/pan/filter changes
+  // Recalc on zoom/pan/filter
   useEffect(() => {
     requestAnimationFrame(recalculateConnections);
   }, [zoom, pan, selectedThemeFilter, recalculateConnections]);
-
-  // ── Full-screen: hide shell ──
-  useEffect(() => {
-    const sidebar = document.querySelector('[data-catalyst-sidebar]') as HTMLElement;
-    const header = document.querySelector('[data-catalyst-header]') as HTMLElement;
-    const main = document.querySelector('[data-catalyst-main]') as HTMLElement;
-
-    if (sidebar) sidebar.style.display = 'none';
-    if (header) header.style.display = 'none';
-    if (main) {
-      main.style.marginLeft = '0';
-      main.style.maxWidth = '100vw';
-      main.style.width = '100vw';
-      main.style.padding = '0';
-    }
-
-    return () => {
-      if (sidebar) sidebar.style.display = '';
-      if (header) header.style.display = '';
-      if (main) {
-        main.style.marginLeft = '';
-        main.style.maxWidth = '';
-        main.style.width = '';
-        main.style.padding = '';
-      }
-    };
-  }, []);
 
   // ── Pan handlers ──
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -283,7 +241,10 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isPanning) return;
-    setPan({ x: panStart.current.px + (e.clientX - panStart.current.x), y: panStart.current.py + (e.clientY - panStart.current.y) });
+    setPan({
+      x: panStart.current.px + (e.clientX - panStart.current.x),
+      y: panStart.current.py + (e.clientY - panStart.current.y),
+    });
   }, [isPanning]);
 
   const handleMouseUp = useCallback(() => setIsPanning(false), []);
@@ -295,90 +256,179 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
 
   const resetView = useCallback(() => { setZoom(0.85); setPan({ x: 0, y: 0 }); }, []);
 
+  const handleExit = useCallback(() => onBack?.(), [onBack]);
+
+  // ── Loading / empty states ──
   if (isLoading) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: '#F8FAFC' }}>
-        <div className="animate-pulse text-sm" style={{ color: '#94A3B8' }}>Loading alignment data…</div>
+      <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{ background: '#F8FAFC' }}>
+        <div className="animate-pulse" style={{ fontSize: 14, color: '#94A3B8' }}>Loading alignment data…</div>
       </div>
     );
   }
 
   if (!filteredData || filteredData.themes.length === 0) {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center" style={{ background: '#F8FAFC' }}>
+      <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3" style={{ background: '#F8FAFC' }}>
         <p style={{ fontSize: 14, color: '#64748B' }}>No alignment data available.</p>
+        <button onClick={handleExit} className="text-sm font-medium" style={{ color: '#2563EB' }}>
+          ← Back to Strategic Themes
+        </button>
       </div>
     );
   }
 
-  const anyHover = hoveredNode !== null;
+  const anyHover = highlightedNodes.size > 0;
   const stats = data?.stats;
 
+  // Check which KRs have no initiative, which initiatives have no epic
+  const krsWithoutInitiative = filteredData.krs.filter(kr => {
+    for (const [, children] of filteredData.krToInitiatives) {
+      if (filteredData.krToInitiatives.get(kr.id)?.size) return false;
+    }
+    return !filteredData.krToInitiatives.has(kr.id);
+  });
+  const initsWithoutEpic = filteredData.initiatives.filter(ini => !filteredData.initiativeToEpics.has(ini.id));
+
+  const columns = [
+    { key: 'themes', label: 'Strategic Themes', color: LAYER.theme.color, count: filteredData.themes.length },
+    { key: 'goals', label: 'Goals', color: LAYER.goal.color, count: filteredData.goals.length },
+    { key: 'keyResults', label: 'Key Results', color: LAYER.kr.color, count: filteredData.krs.length },
+    { key: 'initiatives', label: 'Initiatives', color: LAYER.initiative.color, count: filteredData.initiatives.length },
+    { key: 'epics', label: 'Epics', color: LAYER.epic.color, count: filteredData.epics.length },
+  ];
+
+  const getNodeOpacity = (nodeId: string) => {
+    if (!anyHover) return '';
+    return highlightedNodes.has(nodeId) ? 'opacity-100 ring-2 ring-blue-400/50 scale-[1.02]' : 'opacity-20';
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex flex-col" style={{ background: '#F8FAFC' }}>
-      {/* ─── Top toolbar ─── */}
-      <div className="flex items-center justify-between h-12 px-4 bg-white border-b shrink-0" style={{ borderColor: '#E2E8F0' }}>
+    <div className="fixed inset-0 z-[100] flex flex-col" style={{ background: '#fff' }}>
+      {/* ═══ TOOLBAR ═══ */}
+      <div className="flex items-center justify-between shrink-0 px-5" style={{ height: 52, background: '#0F172A' }}>
         {/* Left */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => onBack?.()}
-            className="flex items-center gap-1.5 text-sm font-medium transition-colors"
-            style={{ color: '#64748B' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#0F172A')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#64748B')}
-          >
+        <div className="flex items-center gap-4">
+          <button onClick={handleExit}
+            className="flex items-center gap-1.5 text-sm transition-colors"
+            style={{ color: '#94A3B8' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+            onMouseLeave={e => (e.currentTarget.style.color = '#94A3B8')}>
             <ArrowLeft size={16} />
-            Back to Strategic Themes
+            <span className="font-medium">Exit</span>
           </button>
-          <div style={{ width: 1, height: 20, background: '#E2E8F0' }} />
-          <h1 className="text-sm font-semibold" style={{ color: '#0F172A' }}>Strategy Alignment Map</h1>
+          <div style={{ width: 1, height: 24, background: '#334155' }} />
+          <div>
+            <h1 style={{ color: '#fff', fontSize: 15, fontWeight: 600, letterSpacing: '-0.01em' }}>
+              Strategy Alignment Map
+            </h1>
+            <p style={{ color: '#64748B', fontSize: 11 }}>
+              Ministry of Industry — FY2026 Strategic Alignment
+            </p>
+          </div>
         </div>
 
         {/* Center: Stats */}
         {stats && (
-          <div className="flex items-center gap-4 text-xs" style={{ color: '#64748B' }}>
-            <StatItem label="Linked KRs" value={stats.linkedKrs} total={stats.totalKrs} />
-            <span style={{ width: 1, height: 16, background: '#E2E8F0' }} />
-            <StatItem label="Initiatives" value={stats.linkedInitiatives} total={stats.totalInitiatives} />
-            <span style={{ width: 1, height: 16, background: '#E2E8F0' }} />
-            <StatItem label="Epics" value={stats.linkedEpics} total={stats.totalEpics} />
-            <span style={{ width: 1, height: 16, background: '#E2E8F0' }} />
-            <span>Full Chains: <strong style={{ color: '#0F172A' }}>{stats.fullChains}</strong></span>
+          <div className="flex items-center gap-5">
+            <ChainStat label="Linked KRs" value={stats.linkedKrs} total={stats.totalKrs} />
+            <div style={{ width: 1, height: 20, background: '#334155' }} />
+            <ChainStat label="Linked Initiatives" value={stats.linkedInitiatives} total={stats.totalInitiatives} />
+            <div style={{ width: 1, height: 20, background: '#334155' }} />
+            <ChainStat label="Linked Epics" value={stats.linkedEpics} total={stats.totalEpics} />
+            <div style={{ width: 1, height: 20, background: '#334155' }} />
+            <div className="text-center">
+              <div style={{ color: '#fff', fontSize: 15, fontWeight: 700 }}>{stats.fullChains}</div>
+              <div style={{ color: '#64748B', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Full Chains</div>
+            </div>
           </div>
         )}
 
         {/* Right: Controls */}
-        <div className="flex items-center gap-2">
-          {/* Theme filter */}
+        <div className="flex items-center gap-3">
           <select
-            className="h-7 text-xs border rounded-md px-2 bg-white"
-            style={{ borderColor: '#E2E8F0', color: '#334155' }}
-            value={selectedThemeFilter || 'all'}
-            onChange={e => setSelectedThemeFilter(e.target.value === 'all' ? null : e.target.value)}
-          >
+            value={selectedThemeFilter}
+            onChange={e => setSelectedThemeFilter(e.target.value)}
+            className="h-8 px-3 text-xs rounded-md outline-none"
+            style={{ background: '#1E293B', color: '#CBD5E1', border: '1px solid #334155' }}>
             <option value="all">All Themes</option>
             {data?.themes.map(t => (
               <option key={t.id} value={t.id}>{t.title}</option>
             ))}
           </select>
 
-          {/* Zoom */}
-          <div className="flex items-center gap-0.5 ml-2">
-            <ToolBtn onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}><ZoomOut size={14} /></ToolBtn>
-            <span className="text-[10px] font-mono w-8 text-center" style={{ color: '#94A3B8' }}>{Math.round(zoom * 100)}%</span>
-            <ToolBtn onClick={() => setZoom(z => Math.min(2, z + 0.1))}><ZoomIn size={14} /></ToolBtn>
-            <ToolBtn onClick={resetView} title="Reset view"><Crosshair size={14} /></ToolBtn>
+          <div className="flex items-center gap-1 rounded-md px-1.5 py-1" style={{ background: '#1E293B' }}>
+            <button onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}
+              className="flex items-center justify-center rounded" style={{ width: 24, height: 24, color: '#94A3B8' }}>
+              <Minus size={12} />
+            </button>
+            <span className="font-mono text-center" style={{ fontSize: 10, color: '#64748B', width: 28 }}>
+              {Math.round(zoom * 100)}%
+            </span>
+            <button onClick={() => setZoom(z => Math.min(2, z + 0.1))}
+              className="flex items-center justify-center rounded" style={{ width: 24, height: 24, color: '#94A3B8' }}>
+              <Plus size={12} />
+            </button>
+            <button onClick={resetView} title="Reset view"
+              className="flex items-center justify-center rounded ml-0.5" style={{ width: 24, height: 24, color: '#94A3B8' }}>
+              <RotateCcw size={12} />
+            </button>
           </div>
 
-          <ToolBtn onClick={() => onBack?.()} title="Exit" className="ml-2"><X size={16} /></ToolBtn>
+          <button onClick={handleExit} title="Exit Alignment Map"
+            className="flex items-center justify-center rounded-md transition-colors"
+            style={{ width: 32, height: 32, color: '#94A3B8' }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.background = '#1E293B'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = '#94A3B8'; e.currentTarget.style.background = 'transparent'; }}>
+            <X size={16} />
+          </button>
         </div>
       </div>
 
-      {/* ─── Canvas ─── */}
+      {/* ═══ CHAIN EXPLANATION BANNER ═══ */}
+      <div className="flex items-center justify-center shrink-0 px-6"
+        style={{ height: 40, background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
+        <div className="flex items-center gap-2" style={{ fontSize: 12, color: '#64748B' }}>
+          <span className="font-semibold" style={{ color: '#334155' }}>Reading this map:</span>
+          <span>Each</span>
+          <span className="inline-flex items-center gap-1 font-semibold rounded px-1.5 py-0.5"
+            style={{ fontSize: 11, color: '#1E40AF', background: '#EFF6FF' }}>● Theme</span>
+          <span>breaks down into</span>
+          <span className="inline-flex items-center gap-1 font-semibold rounded px-1.5 py-0.5"
+            style={{ fontSize: 11, color: '#115E59', background: '#F0FDFA' }}>● Goals</span>
+          <span>measured by</span>
+          <span className="inline-flex items-center gap-1 font-semibold rounded px-1.5 py-0.5"
+            style={{ fontSize: 11, color: '#1E40AF', background: '#DBEAFE' }}>● Key Results</span>
+          <span>delivered through</span>
+          <span className="inline-flex items-center gap-1 font-semibold rounded px-1.5 py-0.5"
+            style={{ fontSize: 11, color: '#92400E', background: '#FFFBEB' }}>● Initiatives</span>
+          <span>executed as</span>
+          <span className="inline-flex items-center gap-1 font-semibold rounded px-1.5 py-0.5"
+            style={{ fontSize: 11, color: '#3730A3', background: '#EEF2FF' }}>● Epics</span>
+        </div>
+      </div>
+
+      {/* ═══ COLUMN HEADERS ═══ */}
+      <div className="flex shrink-0" style={{ borderBottom: '2px solid #E2E8F0', background: '#fff' }}>
+        {columns.map(col => (
+          <div key={col.key} className="flex items-center gap-2 px-4"
+            style={{ height: 44, minWidth: col.key === 'themes' ? 220 : col.key === 'goals' || col.key === 'initiatives' ? 210 : 200, borderLeft: `3px solid ${col.color}` }}>
+            <div className="rounded-full" style={{ width: 8, height: 8, background: col.color }} />
+            <span className="font-bold uppercase" style={{ fontSize: 13, color: '#0F172A', letterSpacing: '0.03em' }}>
+              {col.label}
+            </span>
+            <span className="font-semibold" style={{ fontSize: 12, color: '#94A3B8' }}>
+              ({col.count})
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* ═══ CANVAS ═══ */}
       <div
         ref={canvasRef}
         className="flex-1 overflow-auto select-none"
-        style={{ cursor: isPanning ? 'grabbing' : 'grab' }}
+        style={{ background: '#F8FAFC', cursor: isPanning ? 'grabbing' : 'grab' }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -396,148 +446,215 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           }}
         >
           {/* SVG connectors */}
-          <svg className="absolute inset-0 pointer-events-none" style={{ width: '100%', height: '100%', overflow: 'visible', zIndex: 1 }}>
-            {connectorPaths.map(conn => {
-              const isLit = anyHover && highlightedIds.has(conn.parentId) && highlightedIds.has(conn.childId);
+          <svg className="absolute inset-0 pointer-events-none"
+            style={{ width: '100%', height: '100%', overflow: 'visible', zIndex: 1 }}>
+            {paths.map(p => {
+              const isLit = anyHover && highlightedNodes.has(p.sourceId) && highlightedNodes.has(p.targetId);
               const isDimmed = anyHover && !isLit;
               return (
-                <path
-                  key={conn.id}
-                  d={conn.d}
-                  stroke={isLit ? '#2563EB' : '#CBD5E1'}
-                  strokeWidth={isLit ? 2 : 1.5}
+                <path key={p.id} d={p.d}
+                  stroke={isLit ? p.layerColor : '#D1D5DB'}
+                  strokeWidth={isLit ? 2.5 : 1}
                   fill="none"
-                  opacity={isDimmed ? 0.12 : isLit ? 1 : 0.5}
-                  className="transition-all duration-200"
-                />
+                  opacity={isDimmed ? 0.08 : isLit ? 1 : 0.35}
+                  className="transition-all duration-300" />
               );
             })}
           </svg>
 
-          {/* Column headers */}
-          <div className="flex gap-12 px-6 pt-4 pb-2" style={{ zIndex: 2, position: 'relative' }}>
-            <div style={{ minWidth: 180 }}><ColumnHeader label="Themes" count={filteredData.themes.length} color={LAYER_COLORS.theme} /></div>
-            <div style={{ minWidth: 170 }}><ColumnHeader label="Goals" count={filteredData.goals.length} color={LAYER_COLORS.goal} /></div>
-            <div style={{ minWidth: 160 }}><ColumnHeader label="Key Results" count={filteredData.krs.length} color={LAYER_COLORS.kr} /></div>
-            <div style={{ minWidth: 170 }}><ColumnHeader label="Initiatives" count={filteredData.initiatives.length} color={LAYER_COLORS.initiative} /></div>
-            <div style={{ minWidth: 160 }}><ColumnHeader label="Epics" count={filteredData.epics.length} color={LAYER_COLORS.epic} /></div>
-          </div>
-
           {/* Node columns */}
-          <div className="relative flex gap-12 px-6 pb-6" style={{ zIndex: 2 }}>
-            {/* Themes */}
-            <div data-column="themes" className="flex flex-col gap-2" style={{ minWidth: 180 }}>
-              {filteredData.themes.map(t => (
-                <NodeCard key={t.id} node={t} layerColor={LAYER_COLORS.theme} hoverBorder="#93C5FD"
-                  isHighlighted={anyHover ? highlightedIds.has(t.id) : false}
-                  isDimmed={anyHover ? !highlightedIds.has(t.id) : false}
-                  onMouseEnter={() => setHoveredNode(t.id)} onMouseLeave={() => setHoveredNode(null)}
-                  onClick={() => setSelectedThemeFilter(prev => prev === t.id ? null : t.id)}
-                />
-              ))}
+          <div className="relative flex gap-6 p-6" style={{ zIndex: 2 }}>
+            {/* THEMES */}
+            <div data-column="themes" className="flex flex-col gap-2" style={{ minWidth: 200 }}>
+              {filteredData.themes.map(t => {
+                const nid = `theme-${t.key}`;
+                return (
+                  <div key={t.id} data-node-id={nid}
+                    className={`group cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
+                    style={{ width: 200 }}
+                    onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
+                    <div style={{ borderLeft: `4px solid ${t.color || LAYER.theme.border}` }}
+                      className="bg-white border border-slate-200/80 rounded-lg shadow-sm">
+                      <div className="p-3.5">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-mono font-bold rounded-md px-2 py-0.5"
+                            style={{ fontSize: 10, background: LAYER.theme.badgeBg, color: LAYER.theme.badgeText, letterSpacing: '0.02em' }}>
+                            {t.key}
+                          </span>
+                          <StatusBadge status={t.status} />
+                        </div>
+                        <p className="font-semibold leading-snug line-clamp-2" style={{ fontSize: 13, color: '#0F172A' }}>
+                          {t.title}
+                        </p>
+                        <div className="flex items-center gap-2 mt-2.5">
+                          <div className="flex-1 rounded-full overflow-hidden" style={{ height: 5, background: '#E2E8F0' }}>
+                            <div className="rounded-full transition-all" style={{ width: `${t.progress || 0}%`, height: 5, background: getProgressColor(t.progress || 0) }} />
+                          </div>
+                          <span className="font-bold" style={{ fontSize: 11, color: '#334155' }}>{Math.round(t.progress || 0)}%</span>
+                        </div>
+                        <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 8 }}>
+                          {t.goalCount || 0} goals · {t.krCount || 0} KRs
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            {/* Goals */}
-            <div data-column="goals" className="flex flex-col gap-2" style={{ minWidth: 170 }}>
-              {filteredData.goals.length === 0 ? <GhostNode label="No goals" width={170} /> :
-                filteredData.goals.map(g => (
-                  <NodeCard key={g.id} node={g} layerColor={LAYER_COLORS.goal} hoverBorder="#5EEAD4"
-                    isHighlighted={anyHover ? highlightedIds.has(g.id) : false}
-                    isDimmed={anyHover ? !highlightedIds.has(g.id) : false}
-                    onMouseEnter={() => setHoveredNode(g.id)} onMouseLeave={() => setHoveredNode(null)} onClick={() => {}}
-                  />
-                ))
-              }
+            {/* GOALS */}
+            <div data-column="goals" className="flex flex-col gap-2" style={{ minWidth: 190 }}>
+              {filteredData.goals.map(g => {
+                const nid = `goal-${g.key}`;
+                return (
+                  <div key={g.id} data-node-id={nid}
+                    className={`group bg-white rounded-lg shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
+                    style={{ width: 190 }}
+                    onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
+                    <div style={{ borderLeft: `4px solid ${LAYER.goal.border}` }}
+                      className="border border-slate-200/80 rounded-lg">
+                      <div className="p-3">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="font-mono font-bold rounded-md px-2 py-0.5"
+                            style={{ fontSize: 10, background: LAYER.goal.badgeBg, color: LAYER.goal.badgeText }}>{g.key}</span>
+                          <StatusBadge status={g.status} />
+                        </div>
+                        <p className="font-semibold leading-snug line-clamp-2" style={{ fontSize: 12, color: '#1E293B' }}>{g.title}</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <div className="flex-1 rounded-full overflow-hidden" style={{ height: 4, background: '#E2E8F0' }}>
+                            <div className="rounded-full" style={{ width: `${g.progress || 0}%`, height: 4, background: getProgressColor(g.progress || 0) }} />
+                          </div>
+                          <span className="font-bold" style={{ fontSize: 10, color: '#475569' }}>{Math.round(g.progress || 0)}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            {/* KRs */}
-            <div data-column="krs" className="flex flex-col gap-2" style={{ minWidth: 160 }}>
-              {filteredData.krs.length === 0 ? <GhostNode label="No KRs" /> :
-                filteredData.krs.map(k => (
-                  <NodeCard key={k.id} node={k} layerColor={LAYER_COLORS.kr} hoverBorder="#C4B5FD"
-                    isHighlighted={anyHover ? highlightedIds.has(k.id) : false}
-                    isDimmed={anyHover ? !highlightedIds.has(k.id) : false}
-                    onMouseEnter={() => setHoveredNode(k.id)} onMouseLeave={() => setHoveredNode(null)} onClick={() => {}}
-                  />
-                ))
-              }
+            {/* KEY RESULTS — Blue, NOT purple */}
+            <div data-column="krs" className="flex flex-col gap-2" style={{ minWidth: 180 }}>
+              {filteredData.krs.map(kr => {
+                const nid = `kr-${kr.key}`;
+                return (
+                  <div key={kr.id} data-node-id={nid}
+                    className={`group bg-white rounded-lg shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
+                    style={{ width: 180 }}
+                    onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
+                    <div style={{ borderLeft: `4px solid ${LAYER.kr.border}` }}
+                      className="border border-slate-200/80 rounded-lg">
+                      <div className="p-3">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="font-mono font-bold rounded-md px-2 py-0.5"
+                            style={{ fontSize: 10, background: LAYER.kr.badgeBg, color: LAYER.kr.badgeText }}>{kr.key}</span>
+                          <StatusBadge status={kr.status} />
+                        </div>
+                        <p className="font-medium leading-snug line-clamp-2" style={{ fontSize: 11, color: '#334155' }}>{kr.title}</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <div className="flex-1 rounded-full overflow-hidden" style={{ height: 3, background: '#E2E8F0' }}>
+                            <div className="rounded-full" style={{ width: `${kr.progress || 0}%`, height: 3, background: getProgressColor(kr.progress || 0) }} />
+                          </div>
+                          <span className="font-bold" style={{ fontSize: 10, color: '#475569' }}>{Math.round(kr.progress || 0)}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              {krsWithoutInitiative.length > 0 && filteredData.initiatives.length === 0 && (
+                <GhostNode label="initiative" />
+              )}
             </div>
 
-            {/* Initiatives */}
-            <div data-column="initiatives" className="flex flex-col gap-2" style={{ minWidth: 170 }}>
-              {filteredData.initiatives.length === 0 ? <GhostNode label="No linked initiative" width={170} /> :
-                filteredData.initiatives.map(i => (
-                  <NodeCard key={i.id} node={i} layerColor={LAYER_COLORS.initiative} hoverBorder="#FCD34D"
-                    isHighlighted={anyHover ? highlightedIds.has(i.id) : false}
-                    isDimmed={anyHover ? !highlightedIds.has(i.id) : false}
-                    onMouseEnter={() => setHoveredNode(i.id)} onMouseLeave={() => setHoveredNode(null)} onClick={() => {}}
-                  />
-                ))
-              }
+            {/* INITIATIVES */}
+            <div data-column="initiatives" className="flex flex-col gap-2" style={{ minWidth: 190 }}>
+              {filteredData.initiatives.length > 0 ? filteredData.initiatives.map(ini => {
+                const nid = `initiative-${ini.key}`;
+                return (
+                  <div key={ini.id} data-node-id={nid}
+                    className={`group bg-white rounded-lg shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
+                    style={{ width: 190 }}
+                    onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
+                    <div style={{ borderLeft: `4px solid ${LAYER.initiative.border}` }}
+                      className="border border-slate-200/80 rounded-lg">
+                      <div className="p-3">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="font-mono font-bold rounded-md px-2 py-0.5"
+                            style={{ fontSize: 10, background: LAYER.initiative.badgeBg, color: LAYER.initiative.badgeText }}>{ini.key}</span>
+                          <StatusBadge status={ini.status} />
+                        </div>
+                        <p className="font-semibold leading-snug line-clamp-2" style={{ fontSize: 12, color: '#1E293B' }}>{ini.title}</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <div className="flex-1 rounded-full overflow-hidden" style={{ height: 4, background: '#E2E8F0' }}>
+                            <div className="rounded-full" style={{ width: `${ini.progress || 0}%`, height: 4, background: getProgressColor(ini.progress || 0) }} />
+                          </div>
+                          <span className="font-bold" style={{ fontSize: 10, color: '#475569' }}>{Math.round(ini.progress || 0)}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }) : (
+                <GhostNode label="initiative" />
+              )}
+              {initsWithoutEpic.length > 0 && filteredData.epics.length === 0 && (
+                <GhostNode label="epic" />
+              )}
             </div>
 
-            {/* Epics */}
-            <div data-column="epics" className="flex flex-col gap-2" style={{ minWidth: 160 }}>
-              {filteredData.epics.length === 0 ? <GhostNode label="No linked epic" /> :
-                filteredData.epics.map(e => (
-                  <NodeCard key={e.id} node={e} layerColor={LAYER_COLORS.epic} hoverBorder="#A5B4FC"
-                    isHighlighted={anyHover ? highlightedIds.has(e.id) : false}
-                    isDimmed={anyHover ? !highlightedIds.has(e.id) : false}
-                    onMouseEnter={() => setHoveredNode(e.id)} onMouseLeave={() => setHoveredNode(null)} onClick={() => {}}
-                  />
-                ))
-              }
+            {/* EPICS */}
+            <div data-column="epics" className="flex flex-col gap-2" style={{ minWidth: 180 }}>
+              {filteredData.epics.length > 0 ? filteredData.epics.map(epic => {
+                const nid = `epic-${epic.key}`;
+                return (
+                  <div key={epic.id} data-node-id={nid}
+                    className={`group bg-white rounded-lg shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
+                    style={{ width: 180 }}
+                    onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
+                    <div style={{ borderLeft: `4px solid ${LAYER.epic.border}` }}
+                      className="border border-slate-200/80 rounded-lg">
+                      <div className="p-3">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="font-mono font-bold rounded-md px-2 py-0.5"
+                            style={{ fontSize: 10, background: LAYER.epic.badgeBg, color: LAYER.epic.badgeText }}>{epic.key}</span>
+                          <StatusBadge status={epic.status} />
+                        </div>
+                        <p className="font-medium leading-snug line-clamp-2" style={{ fontSize: 11, color: '#334155' }}>{epic.title}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }) : (
+                <GhostNode label="epic" />
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* ─── Legend bar ─── */}
-      <div className="flex items-center justify-center gap-6 h-8 bg-white border-t shrink-0" style={{ borderColor: '#E2E8F0' }}>
+      {/* ═══ LEGEND BAR ═══ */}
+      <div className="flex items-center justify-center gap-6 shrink-0"
+        style={{ height: 36, background: '#fff', borderTop: '1px solid #E2E8F0' }}>
         {[
-          { label: 'Theme', color: LAYER_COLORS.theme },
-          { label: 'Goal', color: LAYER_COLORS.goal },
-          { label: 'Key Result', color: LAYER_COLORS.kr },
-          { label: 'Initiative', color: LAYER_COLORS.initiative },
-          { label: 'Epic', color: LAYER_COLORS.epic },
-        ].map(i => (
-          <div key={i.label} className="flex items-center gap-1.5">
-            <div className="rounded-full" style={{ width: 8, height: 8, background: i.color }} />
-            <span style={{ fontSize: 10, color: '#64748B' }}>{i.label}</span>
+          { label: 'Strategic Theme', color: LAYER.theme.color },
+          { label: 'Goal', color: LAYER.goal.color },
+          { label: 'Key Result', color: LAYER.kr.color },
+          { label: 'Initiative', color: LAYER.initiative.color },
+          { label: 'Epic', color: LAYER.epic.color },
+        ].map(item => (
+          <div key={item.label} className="flex items-center gap-1.5 font-medium"
+            style={{ fontSize: 11, color: '#475569' }}>
+            <div className="rounded-full" style={{ width: 10, height: 3, background: item.color }} />
+            {item.label}
           </div>
         ))}
         <div style={{ width: 1, height: 12, background: '#E2E8F0', margin: '0 4px' }} />
-        <div className="flex items-center gap-1.5">
-          <div style={{ width: 16, height: 0, borderTop: '1px dashed #94A3B8' }} />
-          <span style={{ fontSize: 10, color: '#64748B' }}>Unlinked</span>
+        <div className="flex items-center gap-1.5" style={{ fontSize: 11, color: '#94A3B8' }}>
+          <div style={{ width: 10, height: 0, borderTop: '1px dashed #94A3B8' }} />
+          Unlinked
         </div>
       </div>
     </div>
-  );
-}
-
-// ── Helpers ──
-function StatItem({ label, value, total }: { label: string; value: number; total: number }) {
-  const pct = total > 0 ? Math.round((value / total) * 100) : 0;
-  const pctColor = pct >= 60 ? '#16A34A' : '#D97706';
-  return (
-    <span>
-      {label}: <strong style={{ color: '#0F172A' }}>{value}</strong>
-      <span style={{ color: '#94A3B8' }}>/{total}</span>
-      <span style={{ fontWeight: 600, color: pctColor, marginLeft: 2 }}>({pct}%)</span>
-    </span>
-  );
-}
-
-function ToolBtn({ onClick, title, className, children }: { onClick: () => void; title?: string; className?: string; children: React.ReactNode }) {
-  return (
-    <button
-      onClick={onClick}
-      title={title}
-      className={`w-7 h-7 flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors ${className || ''}`}
-      style={{ color: '#64748B' }}
-    >
-      {children}
-    </button>
   );
 }
