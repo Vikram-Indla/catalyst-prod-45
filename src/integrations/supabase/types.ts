@@ -14625,6 +14625,147 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_acceptance_criteria: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_checked: boolean | null
+          sort_order: number
+          title: string
+          work_item_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_checked?: boolean | null
+          sort_order?: number
+          title: string
+          work_item_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_checked?: boolean | null
+          sort_order?: number
+          title?: string
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_acceptance_criteria_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_acceptance_criteria_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_activity_log: {
+        Row: {
+          action: string
+          created_at: string | null
+          field_name: string | null
+          id: string
+          metadata: Json | null
+          new_value: string | null
+          old_value: string | null
+          user_id: string
+          work_item_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          field_name?: string | null
+          id?: string
+          metadata?: Json | null
+          new_value?: string | null
+          old_value?: string | null
+          user_id?: string
+          work_item_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          field_name?: string | null
+          id?: string
+          metadata?: Json | null
+          new_value?: string | null
+          old_value?: string | null
+          user_id?: string
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_activity_log_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_activity_log_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_attachments: {
+        Row: {
+          created_at: string | null
+          file_name: string
+          file_size: number
+          id: string
+          mime_type: string
+          storage_path: string
+          uploaded_by: string
+          work_item_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          file_name: string
+          file_size: number
+          id?: string
+          mime_type: string
+          storage_path: string
+          uploaded_by?: string
+          work_item_id: string
+        }
+        Update: {
+          created_at?: string | null
+          file_name?: string
+          file_size?: number
+          id?: string
+          mime_type?: string
+          storage_path?: string
+          uploaded_by?: string
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_attachments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_attachments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ph_bulk_ops_log: {
         Row: {
           affected_item_ids: string[]
@@ -14667,29 +14808,61 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_comment_reactions: {
+        Row: {
+          comment_id: string
+          created_at: string | null
+          emoji: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string | null
+          emoji: string
+          id?: string
+          user_id?: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string | null
+          emoji?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_comment_reactions_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "ph_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ph_comments: {
         Row: {
+          author_id: string | null
           body: string
           created_at: string | null
           id: string
           updated_at: string | null
-          user_id: string | null
           work_item_id: string
         }
         Insert: {
+          author_id?: string | null
           body: string
           created_at?: string | null
           id?: string
           updated_at?: string | null
-          user_id?: string | null
           work_item_id: string
         }
         Update: {
+          author_id?: string | null
           body?: string
           created_at?: string | null
           id?: string
           updated_at?: string | null
-          user_id?: string | null
           work_item_id?: string
         }
         Relationships: [
@@ -15491,6 +15664,62 @@ export type Database = {
           },
         ]
       }
+      ph_issue_links: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          id: string
+          link_type: string
+          source_id: string
+          target_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string
+          id?: string
+          link_type: string
+          source_id: string
+          target_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          id?: string
+          link_type?: string
+          source_id?: string
+          target_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_issue_links_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_issue_links_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_issue_links_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_issue_links_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ph_issue_type_icons: {
         Row: {
           bg_color: string
@@ -15851,6 +16080,59 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "ph_labels_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_list_view_configs: {
+        Row: {
+          columns: Json
+          created_at: string | null
+          filters: Json | null
+          group_by: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          project_id: string
+          sort_by: string | null
+          sort_dir: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          columns?: Json
+          created_at?: string | null
+          filters?: Json | null
+          group_by?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          project_id: string
+          sort_by?: string | null
+          sort_dir?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          columns?: Json
+          created_at?: string | null
+          filters?: Json | null
+          group_by?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          project_id?: string
+          sort_by?: string | null
+          sort_dir?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_list_view_configs_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "ph_projects"
@@ -16495,9 +16777,117 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_watchers: {
+        Row: {
+          created_at: string | null
+          user_id: string
+          work_item_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          user_id: string
+          work_item_id: string
+        }
+        Update: {
+          created_at?: string | null
+          user_id?: string
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_watchers_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_watchers_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_work_item_components: {
+        Row: {
+          component_id: string
+          work_item_id: string
+        }
+        Insert: {
+          component_id: string
+          work_item_id: string
+        }
+        Update: {
+          component_id?: string
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_work_item_components_component_id_fkey"
+            columns: ["component_id"]
+            isOneToOne: false
+            referencedRelation: "ph_components"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_components_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_components_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_work_item_labels: {
+        Row: {
+          label_id: string
+          work_item_id: string
+        }
+        Insert: {
+          label_id: string
+          work_item_id: string
+        }
+        Update: {
+          label_id?: string
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_work_item_labels_label_id_fkey"
+            columns: ["label_id"]
+            isOneToOne: false
+            referencedRelation: "ph_labels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_labels_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_labels_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ph_work_items: {
         Row: {
           actual_hours: number | null
+          assignee_id: string | null
           assignee_user_id: string | null
           completed_at: string | null
           created_at: string | null
@@ -16507,6 +16897,7 @@ export type Database = {
           estimated_hours: number | null
           hierarchy_path: string[] | null
           id: string
+          is_flagged: boolean | null
           is_jira_locked: boolean | null
           item_key: string
           item_type: string
@@ -16521,18 +16912,30 @@ export type Database = {
           last_synced_at: string | null
           parent_id: string | null
           priority: string | null
+          project_id: string | null
           release_id: string | null
+          reporter_id: string | null
+          resolution: string | null
+          resolved_at: string | null
+          sequence_num: number | null
+          sort_order: number | null
           start_date: string | null
           status: string
+          status_id: string | null
           story_points: number | null
           summary: string
           sync_source: string | null
           team_id: string | null
           theme_id: string | null
+          time_estimate: number | null
+          time_spent: number | null
+          title: string | null
+          type_id: string | null
           updated_at: string | null
         }
         Insert: {
           actual_hours?: number | null
+          assignee_id?: string | null
           assignee_user_id?: string | null
           completed_at?: string | null
           created_at?: string | null
@@ -16542,6 +16945,7 @@ export type Database = {
           estimated_hours?: number | null
           hierarchy_path?: string[] | null
           id?: string
+          is_flagged?: boolean | null
           is_jira_locked?: boolean | null
           item_key: string
           item_type: string
@@ -16556,18 +16960,30 @@ export type Database = {
           last_synced_at?: string | null
           parent_id?: string | null
           priority?: string | null
+          project_id?: string | null
           release_id?: string | null
+          reporter_id?: string | null
+          resolution?: string | null
+          resolved_at?: string | null
+          sequence_num?: number | null
+          sort_order?: number | null
           start_date?: string | null
           status?: string
+          status_id?: string | null
           story_points?: number | null
           summary: string
           sync_source?: string | null
           team_id?: string | null
           theme_id?: string | null
+          time_estimate?: number | null
+          time_spent?: number | null
+          title?: string | null
+          type_id?: string | null
           updated_at?: string | null
         }
         Update: {
           actual_hours?: number | null
+          assignee_id?: string | null
           assignee_user_id?: string | null
           completed_at?: string | null
           created_at?: string | null
@@ -16577,6 +16993,7 @@ export type Database = {
           estimated_hours?: number | null
           hierarchy_path?: string[] | null
           id?: string
+          is_flagged?: boolean | null
           is_jira_locked?: boolean | null
           item_key?: string
           item_type?: string
@@ -16591,17 +17008,49 @@ export type Database = {
           last_synced_at?: string | null
           parent_id?: string | null
           priority?: string | null
+          project_id?: string | null
           release_id?: string | null
+          reporter_id?: string | null
+          resolution?: string | null
+          resolved_at?: string | null
+          sequence_num?: number | null
+          sort_order?: number | null
           start_date?: string | null
           status?: string
+          status_id?: string | null
           story_points?: number | null
           summary?: string
           sync_source?: string | null
           team_id?: string | null
           theme_id?: string | null
+          time_estimate?: number | null
+          time_spent?: number | null
+          title?: string | null
+          type_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "ph_work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_work_items_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "ph_workflow_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_work_items_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_types"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "wh_work_items_jira_project_id_fkey"
             columns: ["jira_project_id"]
