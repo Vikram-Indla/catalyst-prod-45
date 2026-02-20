@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronRight, FolderKanban, Plus, ChevronLeft, ChevronRight as ChevronRightIcon, ExternalLink, Copy, Star, Archive } from 'lucide-react';
@@ -10,11 +10,13 @@ import { ProjectCardGrid } from '@/components/project-hub/ProjectCardGrid';
 import { PHProject } from '@/components/project-hub/ProjectTableRow';
 import { FilterState } from '@/components/project-hub/FilterDropdown';
 import { SkeletonTable } from '@/components/project-hub/shared/SkeletonPulse';
+import { CreateProjectModal } from '@/components/project-hub/CreateProjectModal';
 import '@/components/project-hub/shared/phStyles.css';
 
 export default function ProjectListPage() {
   const navigate = useNavigate();
-  const { onNewProject } = useOutletContext<{ onNewProject?: () => void }>();
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const onNewProject = useCallback(() => setCreateModalOpen(true), []);
   const queryClient = useQueryClient();
   const [view, setView] = useState<'table' | 'card'>('table');
   const [search, setSearch] = useState('');
@@ -311,6 +313,8 @@ export default function ProjectListPage() {
           </div>
         )}
       </div>
+
+      <CreateProjectModal open={createModalOpen} onClose={() => setCreateModalOpen(false)} />
     </div>
   );
 }

@@ -1127,25 +1127,21 @@ const App = () => (
               <Route path="/admin/settings/notifications" element={<Suspense fallback={<div className="p-8">Loading...</div>}><UserNotificationSettingsPage /></Suspense>} />
               <Route path="/items/:type" element={<PlaceholderPage />} />
               {/* Dev and QA routes removed */}
-            </Route>
-            
-            {/* ═══════════════════════════════════════════════════════════════ */}
-            {/* PROJECTHUB V5 — NEW SHELL (outside CatalystShell) ══════════ */}
-            {/* ═══════════════════════════════════════════════════════════════ */}
-            <Route path="/project-hub" element={<ProtectedRoute><Suspense fallback={<div />}><ProjectHubShellLazy /></Suspense></ProtectedRoute>}>
-              <Route index element={<Navigate to="/project-hub/projects" replace />} />
-              <Route path="projects" element={<Suspense fallback={<div />}><ProjectListPageLazy /></Suspense>} />
-              <Route path=":key" element={<Navigate to="dashboard" replace />} />
-              <Route path=":key/dashboard" element={<Suspense fallback={<div />}><ProjectDashboardPageLazy /></Suspense>} />
-              <Route path=":key/settings" element={<Suspense fallback={<div />}><PHProjectSettingsPageLazy /></Suspense>} />
-              <Route path=":key/backlog" element={<Suspense fallback={<div />}><PHPlaceholder title="Backlog" phase="Phase 2" /></Suspense>} />
-              <Route path=":key/board" element={<Suspense fallback={<div />}><PHPlaceholder title="Board" phase="Phase 2" /></Suspense>} />
-              <Route path=":key/list" element={<Suspense fallback={<div />}><WorkItemsListPageLazy /></Suspense>} />
-              <Route path=":key/timeline" element={<Suspense fallback={<div />}><PHPlaceholder title="Timeline" phase="Phase 3" /></Suspense>} />
-              <Route path=":key/releases" element={<Suspense fallback={<div />}><PHPlaceholder title="Releases" phase="Phase 3" /></Suspense>} />
-              <Route path=":key/reports" element={<Suspense fallback={<div />}><PHPlaceholder title="Reports" phase="Phase 4" /></Suspense>} />
-              <Route path="resource360" element={<Suspense fallback={<div />}><WorkHubResource360Page /></Suspense>} />
-              <Route path="resource360/:id" element={<Suspense fallback={<div />}><WorkHubResourceDetail /></Suspense>} />
+
+              {/* ═══ PROJECTHUB V5 — Now inside CatalystShell ═══ */}
+              <Route path="/project-hub" element={<Navigate to="/project-hub/projects" replace />} />
+              <Route path="/project-hub/projects" element={<Suspense fallback={<div />}><ProjectListPageLazy /></Suspense>} />
+              <Route path="/project-hub/resource360" element={<Suspense fallback={<div />}><WorkHubResource360Page /></Suspense>} />
+              <Route path="/project-hub/resource360/:id" element={<Suspense fallback={<div />}><WorkHubResourceDetail /></Suspense>} />
+              <Route path="/project-hub/:key" element={<Navigate to="dashboard" replace />} />
+              <Route path="/project-hub/:key/dashboard" element={<Suspense fallback={<div />}><ProjectDashboardPageLazy /></Suspense>} />
+              <Route path="/project-hub/:key/settings" element={<Suspense fallback={<div />}><PHProjectSettingsPageLazy /></Suspense>} />
+              <Route path="/project-hub/:key/backlog" element={<Suspense fallback={<div />}><PHPlaceholder title="Backlog" phase="Phase 2" /></Suspense>} />
+              <Route path="/project-hub/:key/board" element={<Suspense fallback={<div />}><PHPlaceholder title="Board" phase="Phase 2" /></Suspense>} />
+              <Route path="/project-hub/:key/list" element={<Suspense fallback={<div />}><WorkItemsListPageLazy /></Suspense>} />
+              <Route path="/project-hub/:key/timeline" element={<Suspense fallback={<div />}><PHPlaceholder title="Timeline" phase="Phase 3" /></Suspense>} />
+              <Route path="/project-hub/:key/releases" element={<Suspense fallback={<div />}><PHPlaceholder title="Releases" phase="Phase 3" /></Suspense>} />
+              <Route path="/project-hub/:key/reports" element={<Suspense fallback={<div />}><PHPlaceholder title="Reports" phase="Phase 4" /></Suspense>} />
             </Route>
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
