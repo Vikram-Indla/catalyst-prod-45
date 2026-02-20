@@ -1,7 +1,8 @@
 /**
  * GoalsTreeView — 3-level expandable tree: Theme → Goal → Key Result
- * Fixes: 1 (status), 2 (AI badge), 7 (columns), 8 (KR status), 9 (theme aggregation),
- *        14 (expand state), 16 (footer), 18 (KR check-in hover)
+ * Fixes: 1 (contrast/depth), 4 (circular avatars), 5 (single progress %),
+ *        6 (split CONFIDENCE/KRs), 9 (confidence dots), 11 (connector lines),
+ *        15 (footer)
  */
 import { ChevronRight, Sparkles, ClipboardCheck, Target, X } from 'lucide-react';
 import type { Goal, KeyResult } from '@/types/goals';
@@ -44,38 +45,50 @@ function statusBadge(status: string) {
   );
 }
 
-function progressBar(pct: number, height = 6, label?: string) {
+function progressBar(pct: number, height = 6) {
   const color = pct >= 60 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
   return (
-    <div role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} aria-label={label || `Progress: ${Math.round(pct)}%`} style={{ width: '100%', height, background: '#F1F5F9', borderRadius: 3, overflow: 'hidden' }}>
+    <div style={{ width: 80, height, background: '#E2E8F0', borderRadius: 3, overflow: 'hidden' }}>
       <div style={{ width: `${Math.min(100, Math.max(0, pct))}%`, height: '100%', background: color, borderRadius: 3, transition: 'width 300ms ease' }} />
     </div>
   );
 }
 
-function confidenceLabel(val: number | string | undefined) {
-  if (val === undefined || val === null) return '—';
-  if (typeof val === 'string') {
-    const map: Record<string, string> = { high: '80%', medium: '50%', low: '25%' };
-    return map[val] ?? val;
-  }
-  const pct = typeof val === 'number' && val <= 1 ? Math.round(val * 100) : Math.round(val as number);
-  return `${pct}%`;
+// Fix 9: Confidence dot indicator
+function ConfidenceDots({ level }: { level: number }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+      {[1, 2, 3, 4, 5].map(i => (
+        <div
+          key={i}
+          style={{
+            width: 5, height: 5, borderRadius: '50%',
+            background: i <= level
+              ? (level >= 4 ? '#16A34A' : level >= 3 ? '#D97706' : '#EF4444')
+              : '#E2E8F0',
+          }}
+        />
+      ))}
+    </div>
+  );
 }
 
-function confidenceColor(val: number | string | undefined): string {
-  if (val === undefined || val === null) return '#94A3B8';
-  let pct: number;
+function getConfidenceLevel(val: number | string | undefined): number {
+  if (val === undefined || val === null) return 0;
   if (typeof val === 'string') {
-    const map: Record<string, number> = { high: 80, medium: 50, low: 25 };
-    pct = map[val] ?? 50;
-  } else {
-    pct = val <= 1 ? Math.round(val * 100) : Math.round(val);
+    const map: Record<string, number> = { high: 4, medium: 3, low: 1 };
+    return map[val] ?? 0;
   }
-  return pct >= 70 ? '#16A34A' : pct >= 40 ? '#D97706' : '#EF4444';
+  // Convert 0-1 or 0-100 to 1-5
+  const pct = val <= 1 ? val * 100 : val;
+  if (pct >= 80) return 5;
+  if (pct >= 60) return 4;
+  if (pct >= 40) return 3;
+  if (pct >= 20) return 2;
+  return 1;
 }
 
-// Fix 9: Theme status from child goals
+// Theme status from child goals
 function computeThemeStatus(goals: Goal[]): string {
   if (goals.some(g => g.status === 'off_track')) return 'off_track';
   if (goals.some(g => g.status === 'at_risk')) return 'at_risk';
@@ -84,14 +97,55 @@ function computeThemeStatus(goals: Goal[]): string {
   return 'active';
 }
 
-// Fix 7: merged progress columns — "STATUS | PROGRESS | CONF. | KRS | OWNER | AI"
-const GRID_COLS = 'minmax(340px, 1fr) 96px 140px 72px 72px 100px 60px';
+// Fix 4: Circular avatar with per-owner colors
+const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
+  'Nada Alfassam':      { bg: '#DBEAFE', text: '#1E40AF' },
+  'Sitah Alqahtani':    { bg: '#E0E7FF', text: '#3730A3' },
+  'Sulaiman Alessa':    { bg: '#D1FAE5', text: '#065F46' },
+  'ibrahim alqusiyer':  { bg: '#FEF3C7', text: '#92400E' },
+  'Khaled Alghithy':    { bg: '#CFFAFE', text: '#155E75' },
+  'Izza Ali':           { bg: '#EDE9FE', text: '#5B21B6' },
+};
+
+function getAvatarColors(name: string) {
+  if (AVATAR_COLORS[name]) return AVATAR_COLORS[name];
+  // Hash fallback
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  const palettes = [
+    { bg: '#DBEAFE', text: '#1E40AF' }, { bg: '#D1FAE5', text: '#065F46' },
+    { bg: '#E0E7FF', text: '#3730A3' }, { bg: '#FEF3C7', text: '#92400E' },
+    { bg: '#CFFAFE', text: '#155E75' }, { bg: '#EDE9FE', text: '#5B21B6' },
+  ];
+  return palettes[Math.abs(hash) % palettes.length];
+}
+
+function OwnerAvatar({ name, size = 28, showName = false }: { name?: string; size?: number; showName?: boolean }) {
+  if (!name) return <span style={{ fontSize: 11, color: '#CBD5E1' }}>—</span>;
+  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  const colors = getAvatarColors(name);
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }} title={name}>
+      <div style={{
+        width: size, height: size, borderRadius: '50%',
+        background: colors.bg, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: size * 0.39, fontWeight: 600, color: colors.text, flexShrink: 0,
+      }}>
+        {initials}
+      </div>
+      {showName && <span style={{ fontSize: 13, fontWeight: 500, color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>}
+    </div>
+  );
+}
+
+// Columns: GOAL | STATUS | PROGRESS | CONFIDENCE | KRs | OWNER | AI
+const GRID_COLS = 'minmax(340px, 1fr) 96px 150px 90px 50px 100px 60px';
 
 /* Skeleton for loading */
 export function GoalsTreeSkeleton() {
   return (
     <div style={{ border: '1px solid #E2E8F0', borderRadius: 10, overflow: 'hidden' }}>
-      <div style={{ height: 36, background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }} />
+      <div style={{ height: 36, background: '#FFFFFF', borderBottom: '2px solid #E2E8F0' }} />
       {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} className="ph-shimmer" style={{ height: 44, borderBottom: '1px solid #F1F5F9', background: '#F8FAFC' }} />
       ))}
@@ -120,7 +174,7 @@ export function GoalsEmptyState({ onCreateGoal }: { onCreateGoal: () => void }) 
 }
 
 /* Empty state for no search results */
-export function GoalsNoSearchResults({ query, onClear }: { query: string; onClear: () => void }) {
+function GoalsNoSearchResults({ query, onClear }: { query: string; onClear: () => void }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', border: '1px solid #E2E8F0', borderRadius: 10, background: '#FFFFFF' }}>
       <div style={{ fontSize: 14, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No goals matching "{query}"</div>
@@ -128,19 +182,6 @@ export function GoalsNoSearchResults({ query, onClear }: { query: string; onClea
       <button onClick={onClear} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 500, color: '#64748B', background: '#F1F5F9', border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer' }}>
         <X size={12} /> Clear search
       </button>
-    </div>
-  );
-}
-
-function ownerAvatar(name?: string, avatar?: string) {
-  if (!name) return <span style={{ fontSize: 11, color: '#CBD5E1' }}>—</span>;
-  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-      <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E0E7FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: '#4338CA', flexShrink: 0 }}>
-        {initials}
-      </div>
-      <span style={{ fontSize: 11, color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name.split(' ')[0]}</span>
     </div>
   );
 }
@@ -197,20 +238,16 @@ export function GoalsTreeView({
     return s + fg.reduce((ks, g) => ks + (krsByGoal.get(g.id)?.length || 0), 0);
   }, 0);
 
-  const lastUpdated = goals.length > 0
-    ? new Date(Math.max(...goals.map(g => new Date(g.updated_at).getTime()))).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-    : '';
-
   return (
     <div className="goals-tree-container" style={{ border: '1px solid #E2E8F0', borderRadius: 10, overflow: 'hidden', background: '#FFFFFF' }}>
-      {/* Header — Fix 7: merged columns */}
+      {/* Header — Fix 6: separate CONFIDENCE + KRs columns */}
       <div style={{
         display: 'grid', gridTemplateColumns: GRID_COLS,
         height: 36, alignItems: 'center',
-        background: '#F8FAFC', borderBottom: '1px solid #E2E8F0',
+        background: '#FFFFFF', borderBottom: '2px solid #E2E8F0',
         padding: '0 16px',
-        fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase',
-        letterSpacing: '0.05em', color: '#94A3B8',
+        fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+        letterSpacing: '0.05em', color: '#64748B',
       }}>
         <span>Goal / Key Result</span>
         <span>Status</span>
@@ -227,12 +264,15 @@ export function GoalsTreeView({
         const themeExpanded = expandedThemes.has(theme.id) || !!query;
         const avgProgress = themeGoals.length > 0
           ? Math.round(themeGoals.reduce((s, g) => s + (g.progress_pct || 0), 0) / themeGoals.length) : 0;
-        // Fix 9: compute from child goal statuses
         const themeStatus = computeThemeStatus(themeGoals);
+        const themeKRCount = themeGoals.reduce((s, g) => s + (krsByGoal.get(g.id)?.length || 0), 0);
+        const avgConf = themeGoals.length > 0
+          ? Math.round(themeGoals.reduce((s, g) => s + getConfidenceLevel(g.confidence_level), 0) / themeGoals.length) : 0;
+        const progressColor = avgProgress >= 60 ? '#16A34A' : avgProgress >= 40 ? '#D97706' : '#EF4444';
 
         return (
           <div key={theme.id}>
-            {/* Theme Row */}
+            {/* Theme Row — Fix 1: left border + #F1F5F9 bg */}
             <div
               role="button" tabIndex={0}
               onClick={() => onToggleTheme(theme.id)}
@@ -240,71 +280,83 @@ export function GoalsTreeView({
               style={{
                 display: 'grid', gridTemplateColumns: GRID_COLS,
                 height: 44, alignItems: 'center', padding: '0 16px',
-                background: '#FAFBFD', borderBottom: '1px solid #F1F5F9',
-                cursor: 'pointer', userSelect: 'none', transition: 'background 100ms',
+                background: '#F1F5F9', borderBottom: '1px solid #E2E8F0',
+                borderLeft: `3px solid ${theme.color}`,
+                cursor: 'pointer', userSelect: 'none', transition: 'background 150ms',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#F1F5F9')}
-              onMouseLeave={e => (e.currentTarget.style.background = '#FAFBFD')}
+              onMouseEnter={e => (e.currentTarget.style.background = '#E2E8F0')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#F1F5F9')}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <ChevronRight size={14} color="#94A3B8" style={{ transform: themeExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0 }} />
-                <span style={{ width: 10, height: 10, borderRadius: 3, background: theme.color, flexShrink: 0 }} />
-                <span style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>{theme.title}</span>
-                <span style={{ fontSize: 11, color: '#94A3B8' }}>({themeGoals.length} goal{themeGoals.length !== 1 ? 's' : ''})</span>
+                <ChevronRight size={14} color="#64748B" style={{ transform: themeExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0 }} />
+                <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A' }}>{theme.title}</span>
+                <span style={{ fontSize: 11, color: '#64748B' }}>({themeGoals.length} goal{themeGoals.length !== 1 ? 's' : ''})</span>
               </div>
               <div>{statusBadge(themeStatus)}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ flex: 1 }}>{progressBar(avgProgress, 6, `${theme.title} progress`)}</div>
-                <span style={{ fontSize: 12, fontWeight: 600, color: '#0F172A', minWidth: 32, textAlign: 'right' }}>{avgProgress}%</span>
+                {progressBar(avgProgress)}
+                <span style={{ fontSize: 13, fontWeight: 600, color: progressColor, minWidth: 32, textAlign: 'right' }}>{avgProgress}%</span>
               </div>
-              <div />
-              <div style={{ fontSize: 12, color: '#64748B' }}>{themeGoals.reduce((s, g) => s + (g.kr_count || 0), 0)}</div>
+              <div><ConfidenceDots level={avgConf} /></div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>{themeKRCount}</div>
               <div />
               <div />
             </div>
 
             {/* Goal Rows */}
-            {themeExpanded && themeGoals.map(goal => {
+            {themeExpanded && themeGoals.map((goal, gi) => {
               const goalExpanded = expandedGoals.has(goal.id) || !!query;
               const goalKRs = krsByGoal.get(goal.id) || [];
-              const confPct = typeof goal.confidence_level === 'number'
-                ? (goal.confidence_level <= 1 ? Math.round(goal.confidence_level * 100) : Math.round(goal.confidence_level)) : 0;
+              const confLevel = getConfidenceLevel(goal.confidence_level);
+              const goalPct = Math.round(goal.progress_pct || 0);
+              const goalProgressColor = goalPct >= 60 ? '#16A34A' : goalPct >= 40 ? '#D97706' : '#EF4444';
+              const isLastGoal = gi === themeGoals.length - 1;
 
               return (
                 <div key={goal.id}>
                   <div
                     role="button" tabIndex={0}
                     onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onGoalClick(goal.id); } }}
+                    className="goal-tree-row"
                     style={{
                       display: 'grid', gridTemplateColumns: GRID_COLS,
                       height: 44, alignItems: 'center', padding: '0 16px 0 36px',
+                      background: '#FFFFFF',
                       borderBottom: '1px solid #F1F5F9', cursor: 'pointer',
-                      transition: 'background 100ms',
+                      transition: 'background 150ms', position: 'relative',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.background = '#EFF6FF')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
+                    onMouseLeave={e => (e.currentTarget.style.background = '#FFFFFF')}
                   >
+                    {/* Fix 11: Connector lines */}
+                    <div style={{ position: 'absolute', left: 28, top: 0, bottom: isLastGoal && !goalExpanded ? '50%' : 0, width: 1, background: '#E2E8F0' }} />
+                    <div style={{ position: 'absolute', left: 28, top: '50%', width: 12, height: 1, background: '#E2E8F0' }} />
+
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
                       <ChevronRight
                         size={13} color="#94A3B8"
                         onClick={e => { e.stopPropagation(); onToggleGoal(goal.id); }}
                         style={{ transform: goalExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 200ms', flexShrink: 0, cursor: 'pointer' }}
                       />
-                      <span style={{ fontSize: 10.5, fontWeight: 600, color: '#64748B', background: '#F1F5F9', padding: '1px 6px', borderRadius: 3, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', background: '#F1F5F9', padding: '2px 8px', borderRadius: 4, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
                         {goal.goal_key}
                       </span>
-                      <span onClick={e => { e.stopPropagation(); onGoalClick(goal.id); }} style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span onClick={e => { e.stopPropagation(); onGoalClick(goal.id); }} style={{ fontSize: 14, fontWeight: 500, color: '#1E293B', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {goal.title}
                       </span>
                     </div>
                     <div onClick={e => e.stopPropagation()}>{statusBadge(goal.status)}</div>
+                    {/* Fix 5: Single progress value */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <div style={{ flex: 1 }}>{progressBar(goal.progress_pct || 0, 5, `${goal.title} progress`)}</div>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: '#0F172A', minWidth: 32, textAlign: 'right' }}>{Math.round(goal.progress_pct || 0)}%</span>
+                      {progressBar(goalPct)}
+                      <span style={{ fontSize: 13, fontWeight: 600, color: goalProgressColor, minWidth: 32, textAlign: 'right' }}>{goalPct}%</span>
                     </div>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: confidenceColor(goal.confidence_level) }}>{confPct}%</div>
-                    <div style={{ fontSize: 12, color: '#64748B' }}>{goalKRs.length}</div>
-                    <div>{ownerAvatar(goal.owner_name)}</div>
+                    {/* Fix 6+9: Confidence as dots */}
+                    <div><ConfidenceDots level={confLevel} /></div>
+                    {/* Fix 6: KRs as count */}
+                    <div style={{ fontSize: 12, fontWeight: 600, color: '#475569' }}>{goalKRs.length}</div>
+                    {/* Fix 4: Circular avatar, no name in tree */}
+                    <div><OwnerAvatar name={goal.owner_name} size={28} /></div>
                     <div>
                       {goal.ai_health_score != null ? (
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 10.5, fontWeight: 600, color: '#7C3AED', background: '#F5F3FF', padding: '2px 6px', borderRadius: 4 }}>
@@ -318,11 +370,13 @@ export function GoalsTreeView({
                   </div>
 
                   {/* KR Rows */}
-                  {goalExpanded && goalKRs.map(kr => {
+                  {goalExpanded && goalKRs.map((kr, ki) => {
                     const krProgress = kr.target === kr.baseline ? 0
                       : kr.target < kr.baseline
                         ? Math.min(100, Math.max(0, Math.round(((kr.baseline - kr.current_value) / (kr.baseline - kr.target)) * 100)))
                         : Math.min(100, Math.max(0, Math.round(((kr.current_value - kr.baseline) / (kr.target - kr.baseline)) * 100)));
+                    const krProgressColor = krProgress >= 60 ? '#16A34A' : krProgress >= 40 ? '#D97706' : '#EF4444';
+                    const isLastKR = ki === goalKRs.length - 1;
 
                     return (
                       <div
@@ -333,20 +387,25 @@ export function GoalsTreeView({
                         style={{
                           display: 'grid', gridTemplateColumns: GRID_COLS,
                           height: 40, alignItems: 'center', padding: '0 16px 0 58px',
-                          borderBottom: '1px solid #F8FAFC', fontSize: 12, position: 'relative',
-                          transition: 'background 100ms',
+                          background: '#FAFBFC',
+                          borderBottom: '1px solid #F8FAFC', fontSize: 13, position: 'relative',
+                          transition: 'background 150ms',
+                          color: '#334155',
                         }}
-                        onMouseEnter={e => (e.currentTarget.style.background = '#FEFCE8')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                        onMouseEnter={e => (e.currentTarget.style.background = '#F1F5F9')}
+                        onMouseLeave={e => (e.currentTarget.style.background = '#FAFBFC')}
                       >
+                        {/* Fix 11: KR connector lines */}
+                        <div style={{ position: 'absolute', left: 52, top: 0, bottom: isLastKR ? '50%' : 0, width: 1, background: '#E2E8F0' }} />
+                        <div style={{ position: 'absolute', left: 52, top: '50%', width: 12, height: 1, background: '#E2E8F0' }} />
+
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                          <span style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', background: '#F8FAFC', padding: '1px 5px', borderRadius: 3, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
+                          <span style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', background: '#F1F5F9', padding: '1px 5px', borderRadius: 3, flexShrink: 0, fontFamily: 'ui-monospace, monospace' }}>
                             {kr.kr_key}
                           </span>
-                          <span style={{ color: '#334155', fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <span style={{ fontWeight: 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {kr.title}
                           </span>
-                          {/* Fix 18: hover-reveal check-in button */}
                           <button
                             onClick={e => { e.stopPropagation(); onCheckinClick(kr.id); }}
                             className="kr-checkin-btn"
@@ -365,12 +424,12 @@ export function GoalsTreeView({
                         </div>
                         <div>{statusBadge(kr.status)}</div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div style={{ flex: 1 }}>{progressBar(krProgress, 5, `${kr.title} progress`)}</div>
-                          <span style={{ fontWeight: 600, color: '#0F172A', minWidth: 32, textAlign: 'right' }}>{krProgress}%</span>
+                          {progressBar(krProgress, 5)}
+                          <span style={{ fontSize: 13, fontWeight: 600, color: krProgressColor, minWidth: 32, textAlign: 'right' }}>{krProgress}%</span>
                         </div>
-                        <div style={{ color: confidenceColor(kr.confidence_level) }}>{confidenceLabel(kr.confidence_level)}</div>
+                        <div><ConfidenceDots level={getConfidenceLevel(kr.confidence_level)} /></div>
                         <div style={{ color: '#64748B', fontSize: 11 }}>
-                          {kr.current_value}{kr.metric_unit ? ` ${kr.metric_unit}` : ''}/{kr.target}
+                          {kr.current_value}/{kr.target}
                         </div>
                         <div />
                         <div />
@@ -384,10 +443,14 @@ export function GoalsTreeView({
         );
       })}
 
-      {/* Fix 16: Footer */}
-      <div style={{ padding: '10px 16px', fontSize: 11, color: '#94A3B8', borderTop: '1px solid #F1F5F9', background: '#FAFBFD', display: 'flex', justifyContent: 'space-between' }}>
-        <span>Showing {totalFilteredGoals} goals, {totalFilteredKRs} key results across {filteredThemes.length} themes</span>
-        {lastUpdated && <span>Last updated: {lastUpdated}</span>}
+      {/* Fix 15: Footer */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        height: 36, background: '#F8FAFC', borderTop: '1px solid #E2E8F0',
+      }}>
+        <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B' }}>
+          Showing {totalFilteredGoals} goals, {totalFilteredKRs} key results across {filteredThemes.length} themes
+        </span>
       </div>
 
       <style>{`

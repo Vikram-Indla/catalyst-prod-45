@@ -1,6 +1,5 @@
 /**
- * CreateGoalModal — 600px centered modal for creating a new goal
- * All selects use shadcn/Radix Select
+ * CreateGoalModal — Fix 3: field labels #94A3B8, Fix 13: section dividers, slider labels, weight helper
  */
 import { useState, useEffect, useCallback } from 'react';
 import { X, Plus } from 'lucide-react';
@@ -28,10 +27,13 @@ const PRIORITY_OPTIONS: { value: Priority; label: string }[] = [
 ];
 
 const QUARTER_OPTIONS = ['Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026'];
-
 const BSC_OPTIONS: BSCPerspective[] = ['Financial', 'Customer', 'Internal Process', 'Learning & Growth'];
 
-const labelStyle: React.CSSProperties = { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 4, display: 'block' };
+// Fix 3: All labels #94A3B8, 10px, uppercase, 600
+const labelStyle: React.CSSProperties = {
+  fontSize: 10, fontWeight: 600, textTransform: 'uppercase',
+  letterSpacing: '0.05em', color: '#94A3B8', marginBottom: 4, display: 'block',
+};
 const inputStyle: React.CSSProperties = { width: '100%', padding: '7px 10px', fontSize: 13, border: '1px solid #E2E8F0', borderRadius: 6, outline: 'none', color: '#0F172A', background: '#FFFFFF', transition: 'border-color 150ms, box-shadow 150ms' };
 
 export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
@@ -51,7 +53,6 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
   const [confidence, setConfidence] = useState(50);
   const [weight, setWeight] = useState('1.0');
 
-  // Reset on open
   useEffect(() => {
     if (isOpen) {
       setTitle(''); setDescription(''); setThemeId(''); setOwnerId('');
@@ -60,7 +61,6 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
     }
   }, [isOpen]);
 
-  // ESC to close
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -100,10 +100,8 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
 
   return (
     <>
-      {/* Backdrop */}
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 998, background: 'rgba(15,23,42,0.3)', animation: 'fadeIn 200ms ease-out' }} />
 
-      {/* Modal */}
       <div style={{
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
         width: 600, maxHeight: '90vh', zIndex: 999,
@@ -115,7 +113,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid #E2E8F0' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(37,99,235,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 28, height: 28, borderRadius: 8, background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Plus size={14} color="#2563EB" />
             </div>
             <span style={{ fontSize: 15, fontWeight: 700, color: '#0F172A' }}>Create New Goal</span>
@@ -129,7 +127,7 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
           {/* Title */}
           <div>
-            <label style={labelStyle}>Title *</label>
+            <label style={labelStyle}>Title <span style={{ color: '#EF4444' }}>*</span></label>
             <input
               value={title} onChange={e => setTitle(e.target.value)}
               placeholder="e.g., Achieve 100% Digital Process Migration"
@@ -151,10 +149,13 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
             />
           </div>
 
+          {/* Fix 13: Section divider */}
+          <div style={{ borderTop: '1px solid #F1F5F9', margin: '2px 0' }} />
+
           {/* Theme + Owner */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
             <div>
-              <label style={labelStyle}>Parent Theme *</label>
+              <label style={labelStyle}>Parent Theme <span style={{ color: '#EF4444' }}>*</span></label>
               <Select value={themeId} onValueChange={setThemeId}>
                 <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select theme..." /></SelectTrigger>
                 <SelectContent>
@@ -206,13 +207,16 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
             <div>
               <label style={labelStyle}>Start Date</label>
-              <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} style={inputStyle} />
+              <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} placeholder="Select date..." style={inputStyle} />
             </div>
             <div>
               <label style={labelStyle}>Target Date</label>
-              <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={inputStyle} />
+              <input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} placeholder="Select date..." style={inputStyle} />
             </div>
           </div>
+
+          {/* Fix 13: Section divider */}
+          <div style={{ borderTop: '1px solid #F1F5F9', margin: '2px 0' }} />
 
           {/* Quarter + BSC */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
@@ -241,6 +245,11 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
             <div>
               <label style={labelStyle}>Confidence Level — {confidence}%</label>
               <Slider value={[confidence]} onValueChange={v => setConfidence(v[0])} min={0} max={100} step={5} className="mt-2" />
+              {/* Fix 13: Slider endpoint labels */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+                <span style={{ fontSize: 10, color: '#94A3B8' }}>Low</span>
+                <span style={{ fontSize: 10, color: '#94A3B8' }}>High</span>
+              </div>
             </div>
             <div>
               <label style={labelStyle}>Weight</label>
@@ -249,11 +258,13 @@ export function CreateGoalModal({ isOpen, onClose }: CreateGoalModalProps) {
                 onChange={e => setWeight(e.target.value)}
                 style={inputStyle}
               />
+              {/* Fix 13: Weight helper text */}
+              <p style={{ fontSize: 11, color: '#94A3B8', marginTop: 4, margin: '4px 0 0' }}>Relative importance (0.1 – 5.0)</p>
             </div>
           </div>
         </div>
 
-        {/* Footer */}
+        {/* Footer — Fix 13: Create button is primary blue */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '12px 20px', borderTop: '1px solid #E2E8F0' }}>
           <button
             onClick={onClose}

@@ -1,6 +1,6 @@
 /**
  * GoalsKeyResultsPage — Main page composing stats, toolbar, views, drawer & modals
- * Fix 11: Functional filters, Fix 19: Heatmap cell click
+ * Fix 1: Page background #F8FAFC
  */
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -52,7 +52,7 @@ export default function GoalsKeyResultsPage() {
     else { setExpandedThemes(new Set(themes.map(t => t.id))); setExpandedGoals(new Set(goals.map(g => g.id))); setIsAllExpanded(true); }
   }, [isAllExpanded, themes, goals]);
 
-  // Fix 11: Filter goals
+  // Filter goals
   const filteredGoals = useMemo(() => {
     let result = goals;
     if (activeFilters.status?.length) {
@@ -84,7 +84,7 @@ export default function GoalsKeyResultsPage() {
     };
   }, [goals, themes]);
 
-  // Fix 19: Heatmap cell click → switch to tree with filters
+  // Heatmap cell click → switch to tree with filters
   const handleHeatmapCellClick = useCallback((themeId: string, quarter: string) => {
     setActiveFilters({ theme: [themeId], quarter: [quarter] });
     setCurrentView('tree');
@@ -111,7 +111,7 @@ export default function GoalsKeyResultsPage() {
   const isLoading = goalsLoading || krsLoading;
 
   return (
-    <div style={{ padding: '16px 24px 24px' }}>
+    <div style={{ padding: '16px 24px 24px', backgroundColor: '#F8FAFC', minHeight: '100%' }}>
       {/* Breadcrumb */}
       <nav style={{ fontSize: 12, color: '#64748B', marginBottom: 4 }} aria-label="Breadcrumb">
         <span style={{ cursor: 'pointer' }} onClick={() => navigate('/strategyhub')}>StrategyHub</span>
@@ -123,10 +123,10 @@ export default function GoalsKeyResultsPage() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8, marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
         <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', margin: 0 }}>Goals &amp; Key Results</h1>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={exportCSV} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', fontSize: 13, fontWeight: 500, color: '#64748B', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer' }}>
+          <button onClick={exportCSV} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', fontSize: 13, fontWeight: 500, color: '#64748B', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.04)' }}>
             <Download size={14} /> Export
           </button>
-          <button onClick={() => setShowCreateModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', backgroundColor: '#2563EB', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
+          <button onClick={() => setShowCreateModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', border: 'none', borderRadius: 6, cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.18)' }}>
             <Plus size={15} strokeWidth={2.5} /> New Goal
           </button>
         </div>
