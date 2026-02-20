@@ -1,14 +1,11 @@
 // ============================================================
 // ProjectHub Types — All Projects Page
-// Source of truth for project data types
 // ============================================================
 
-// === Database Enums ===
 export type ProjectStatus = 'planning' | 'active' | 'on_hold' | 'completed' | 'cancelled' | 'archived';
 export type ProjectHealth = 'on_track' | 'at_risk' | 'off_track';
 export type ProjectStatusCategory = 'todo' | 'in_progress' | 'done';
 
-// === Display Label Maps ===
 export const PROJECT_STATUS_DISPLAY: Record<string, string> = {
   planning: 'Planning',
   active: 'Active',
@@ -30,38 +27,40 @@ export const STATUS_CATEGORY_DISPLAY: Record<string, string> = {
   done: 'Done',
 };
 
-// === Role Category System (for Team tab grouping) ===
+// Role Categories — maps profiles.role values to display groups
 export const ROLE_CATEGORIES: Record<string, string[]> = {
   'Leadership': [
     'Project Director', 'Program Manager', 'Product Owner',
     'Scrum Master', 'Portfolio Manager', 'Director', 'VP',
-    'Technical PO', 'Head of Department'
+    'Technical PO', 'Head of', 'CTO', 'CIO', 'CEO',
+    'admin', 'super_admin'
   ],
   'Architecture & Design': [
     'Solution Architect', 'Cloud Architect', 'UX Designer',
     'UI Designer', 'Backend Architect', 'Enterprise Architect',
-    'System Architect', 'Design Lead'
+    'System Architect', 'Design Lead', 'Architect'
   ],
   'Engineering': [
     'Lead Engineer', 'Technical Lead', 'Full Stack Developer',
     'Frontend Developer', 'Backend Developer', 'AI/ML Engineer',
     'Mobile Developer', 'Software Engineer', 'Senior Developer',
-    'Staff Engineer', 'Principal Engineer'
+    'Staff Engineer', 'Principal Engineer', 'Developer',
+    'Engineer'
   ],
   'Data & Infrastructure': [
     'Data Engineer', 'Database Administrator', 'Systems Engineer',
-    'DevOps Engineer', 'Platform Engineer', 'Site Reliability Engineer',
-    'Network Engineer', 'Infrastructure Engineer', 'DBA'
+    'DevOps Engineer', 'Platform Engineer', 'SRE',
+    'Network Engineer', 'Infrastructure', 'DBA', 'Data Analyst'
   ],
   'Quality & Security': [
     'QA Lead', 'Security Analyst', 'QA Engineer', 'SDET',
     'Test Engineer', 'Penetration Tester', 'Security Engineer',
-    'Quality Manager'
+    'Quality', 'Tester'
   ],
   'Business & Operations': [
     'Business Analyst', 'Release Manager', 'System Administrator',
     'Operations Manager', 'Change Manager', 'Service Manager',
-    'Delivery Manager', 'Agile Coach'
+    'Delivery Manager', 'Agile Coach', 'Analyst', 'Coordinator'
   ],
 };
 
@@ -75,17 +74,18 @@ export const ROLE_CATEGORY_ORDER = [
   'Other',
 ];
 
-export function getRoleCategory(jobRole: string | null | undefined): string {
-  if (!jobRole) return 'Other';
-  for (const [category, roles] of Object.entries(ROLE_CATEGORIES)) {
-    if (roles.some(r => jobRole.toLowerCase().includes(r.toLowerCase()) || r.toLowerCase().includes(jobRole.toLowerCase()))) {
+export function getRoleCategory(role: string | null | undefined): string {
+  if (!role) return 'Other';
+  const lower = role.toLowerCase();
+  for (const [category, keywords] of Object.entries(ROLE_CATEGORIES)) {
+    if (keywords.some(k => lower.includes(k.toLowerCase()) || k.toLowerCase().includes(lower))) {
       return category;
     }
   }
   return 'Other';
 }
 
-// === Database Row Types ===
+// v_project_list row shape
 export interface ProjectListItem {
   id: string;
   project_key: string;
@@ -111,19 +111,19 @@ export interface ProjectListItem {
   member_ids: string[] | null;
 }
 
+// get_project_team RPC row shape
 export interface ProjectTeamMember {
   user_id: string;
   full_name: string;
   email: string;
-  job_role: string | null;
+  job_role: string | null;  // Aliased from profiles.role by RPC
   department_name: string;
   avatar_url: string | null;
   country: string | null;
   location: string | null;
-  project_role: string;
+  project_role: string;  // project_members.role (admin/contributor/viewer)
 }
 
-// === UI State Types ===
 export type ViewMode = 'list' | 'card';
 export type SortColumn = 'name' | 'department' | 'status' | 'health_status' | 'total_epics' | 'total_stories' | 'total_tasks';
 export type SortDirection = 'asc' | 'desc';
@@ -146,7 +146,6 @@ export const DEFAULT_FILTERS: ProjectFilters = {
   categories: [],
 };
 
-// === Form Types ===
 export interface CreateProjectInput {
   name: string;
   project_key: string;
