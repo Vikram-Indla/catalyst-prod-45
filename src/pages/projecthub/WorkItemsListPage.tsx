@@ -41,7 +41,7 @@ export default function WorkItemsListPage() {
     enabled: !!key,
   });
 
-  const { data: items = [], isLoading } = useWorkItems(project?.id);
+  const { data: items = [], isLoading } = usePhWorkItems(project?.id);
 
   // ─── State ────────────────────────────────────────────
   const [search, setSearch] = useState('');
@@ -106,7 +106,7 @@ export default function WorkItemsListPage() {
   const uniqueStatuses = useMemo(() => [...new Set(items.map(i => i.status_name))].sort(), [items]);
   const uniquePriorities = useMemo(() => {
     const order = ['critical', 'high', 'medium', 'low'];
-    return [...new Set(items.map(i => i.priority))].sort((a, b) => order.indexOf(a) - order.indexOf(b));
+    return ([...new Set(items.map(i => i.priority))] as string[]).sort((a, b) => order.indexOf(a) - order.indexOf(b));
   }, [items]);
   const uniqueTypes = useMemo(() => [...new Set(items.map(i => i.type_name))].sort(), [items]);
 
@@ -171,9 +171,9 @@ export default function WorkItemsListPage() {
         hasActiveFilters={hasActiveFilters}
         filterCount={filterCount}
         onClearAllFilters={clearAllFilters}
-        uniqueStatuses={uniqueStatuses}
-        uniquePriorities={uniquePriorities}
-        uniqueTypes={uniqueTypes}
+        uniqueStatuses={uniqueStatuses as string[]}
+        uniquePriorities={uniquePriorities as string[]}
+        uniqueTypes={uniqueTypes as string[]}
         groupBy={groupBy}
         onGroupByChange={setGroupBy}
         columnToggles={columnToggles}
