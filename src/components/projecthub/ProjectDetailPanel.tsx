@@ -115,7 +115,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
         {/* Tab content */}
         <div className="flex-1 overflow-y-auto">
           {tab === 'team' ? (
-            <PanelTeamTab members={members} isLoading={teamLoading} />
+            <PanelTeamTab members={members} isLoading={teamLoading} projectId={project?.id ?? null} />
           ) : (
             <PanelOverviewTab project={project} members={members} />
           )}
