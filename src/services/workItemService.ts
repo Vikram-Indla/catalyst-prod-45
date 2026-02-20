@@ -15,8 +15,14 @@ export interface CreateWorkItemInput {
   assignee_id?: string | null;
   parent_id?: string | null;
   due_date?: string | null;
-  story_points?: number | null;
+  start_date?: string | null;
+  release_id?: string | null;
+  department?: string | null;
+  team?: string | null;
+  environment?: string | null;
+  security_level?: string;
   is_flagged?: boolean;
+  flag_reason?: string | null;
 }
 
 export interface UpdateWorkItemInput {
@@ -29,11 +35,15 @@ export interface UpdateWorkItemInput {
   assignee_id?: string | null;
   parent_id?: string | null;
   due_date?: string | null;
-  story_points?: number | null;
-  is_flagged?: boolean;
-  resolution?: string | null;
-  time_estimate?: number | null;
   start_date?: string | null;
+  release_id?: string | null;
+  department?: string | null;
+  team?: string | null;
+  environment?: string | null;
+  security_level?: string;
+  is_flagged?: boolean;
+  flag_reason?: string | null;
+  resolution?: string | null;
 }
 
 export async function createWorkItem(input: CreateWorkItemInput) {
@@ -68,12 +78,18 @@ export async function createWorkItem(input: CreateWorkItemInput) {
       item_key: itemKey,
       sequence_num: nextSeq,
       description: input.description || null,
-      priority: input.priority || 'Medium',
+      priority: input.priority || 'medium',
       assignee_id: input.assignee_id || null,
       parent_id: input.parent_id || null,
       due_date: input.due_date || null,
-      story_points: input.story_points || null,
+      start_date: input.start_date || null,
+      release_id: input.release_id || null,
+      department: input.department || null,
+      team: input.team || null,
+      environment: input.environment || null,
+      security_level: input.security_level || 'standard',
       is_flagged: input.is_flagged || false,
+      flag_reason: input.flag_reason || null,
       sort_order: 0,
     })
     .select('id, item_key, title, summary')

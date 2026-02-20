@@ -14,11 +14,20 @@ export interface WorkItemRow {
   parent_id: string | null;
   assignee_id: string | null;
   due_date: string | null;
+  start_date: string | null;
   is_flagged: boolean;
+  flag_reason: string | null;
   sort_order: number;
-  story_points: number | null;
   status_id: string;
   type_id: string;
+  release_id: string | null;
+  department: string | null;
+  team: string | null;
+  environment: string | null;
+  security_level: string;
+  cycle_time_days: number | null;
+  status_changed_at: string | null;
+  resolution: string | null;
   // Joined
   type_name: string;
   type_color: string;
@@ -41,8 +50,9 @@ export function useProjectWorkItems(projectId: string | undefined) {
         .from('ph_work_items')
         .select(`
           id, item_key, title, summary, item_type, priority, parent_id,
-          assignee_id, due_date, is_flagged, sort_order, story_points,
-          status_id, type_id,
+          assignee_id, due_date, start_date, is_flagged, flag_reason, sort_order,
+          status_id, type_id, release_id, department, team, environment,
+          security_level, cycle_time_days, status_changed_at, resolution,
           ph_work_types!ph_work_items_type_id_fkey (name, color, icon, level),
           ph_workflow_statuses!ph_work_items_status_id_fkey (name, category, color)
         `)
@@ -75,13 +85,22 @@ export function useProjectWorkItems(projectId: string | undefined) {
           title: row.title || row.summary,
           summary: row.summary,
           item_type: row.item_type,
-          priority: row.priority || 'Medium',
+          priority: row.priority || 'medium',
           parent_id: row.parent_id,
           assignee_id: row.assignee_id,
           due_date: row.due_date,
+          start_date: row.start_date,
           is_flagged: row.is_flagged ?? false,
+          flag_reason: row.flag_reason,
           sort_order: row.sort_order ?? 0,
-          story_points: row.story_points,
+          release_id: row.release_id,
+          department: row.department,
+          team: row.team,
+          environment: row.environment,
+          security_level: row.security_level ?? 'standard',
+          cycle_time_days: row.cycle_time_days,
+          status_changed_at: row.status_changed_at,
+          resolution: row.resolution,
           status_id: row.status_id,
           type_id: row.type_id,
           type_name: row.ph_work_types?.name ?? row.item_type,

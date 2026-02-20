@@ -5,7 +5,9 @@
 
 export type Priority = 'critical' | 'high' | 'medium' | 'low';
 export type Resolution = 'done' | 'wont_do' | 'duplicate' | 'cannot_reproduce';
-export type LinkType = 'blocks' | 'is_blocked_by' | 'relates_to' | 'duplicates' | 'is_duplicated_by' | 'clones';
+export type SecurityLevel = 'public' | 'standard' | 'confidential' | 'restricted';
+export type ReleaseStatus = 'planning' | 'in_progress' | 'released' | 'archived';
+export type LinkType = 'blocks' | 'is_blocked_by' | 'relates_to' | 'duplicates' | 'is_duplicated_by' | 'clones' | 'is_cloned_by';
 export type StatusCategory = 'todo' | 'in_progress' | 'done' | 'terminal';
 
 export interface Profile {
@@ -36,6 +38,16 @@ export interface WorkflowStatus {
   is_default: boolean;
 }
 
+export interface PhRelease {
+  id: string;
+  project_id: string;
+  name: string;
+  description?: string | null;
+  status: ReleaseStatus;
+  release_date?: string | null;
+  created_at: string;
+}
+
 export interface WorkItem {
   id: string;
   project_id: string;
@@ -49,14 +61,19 @@ export interface WorkItem {
   assignee_id: string | null;
   reporter_id: string | null;
   priority: Priority;
-  story_points: number | null;
-  time_estimate: number | null;
-  time_spent: number;
   start_date: string | null;
   due_date: string | null;
+  release_id: string | null;
+  department: string | null;
+  team: string | null;
+  environment: string | null;
+  security_level: SecurityLevel;
   resolution: Resolution | null;
   is_flagged: boolean;
+  flag_reason: string | null;
   sort_order: number;
+  cycle_time_days: number | null;
+  status_changed_at: string;
   created_at: string;
   updated_at: string;
   resolved_at: string | null;
