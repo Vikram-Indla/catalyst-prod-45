@@ -4814,13 +4814,6 @@ export type Database = {
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "es_goal_initiatives_initiative_id_fkey"
-            columns: ["initiative_id"]
-            isOneToOne: false
-            referencedRelation: "vw_alignment_map"
-            referencedColumns: ["initiative_id"]
-          },
         ]
       }
       es_goals: {
@@ -5054,6 +5047,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "es_initiatives"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_initiative_epics_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_alignment_map"
+            referencedColumns: ["initiative_id"]
           },
         ]
       }
@@ -5448,13 +5448,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "es_kr_initiatives_initiative_id_fkey"
-            columns: ["initiative_id"]
-            isOneToOne: false
-            referencedRelation: "vw_alignment_map"
-            referencedColumns: ["initiative_id"]
           },
           {
             foreignKeyName: "es_kr_initiatives_key_result_id_fkey"
@@ -15813,13 +15806,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
-            columns: ["linked_initiative_id"]
-            isOneToOne: false
-            referencedRelation: "vw_alignment_map"
-            referencedColumns: ["initiative_id"]
-          },
-          {
             foreignKeyName: "ph_ideas_parent_idea_id_fkey"
             columns: ["parent_idea_id"]
             isOneToOne: false
@@ -15907,13 +15893,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ph_initiative_attachments_initiative_id_fkey"
-            columns: ["initiative_id"]
-            isOneToOne: false
-            referencedRelation: "vw_alignment_map"
-            referencedColumns: ["initiative_id"]
           },
           {
             foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
@@ -16085,13 +16064,6 @@ export type Database = {
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "ph_initiative_budget_items_initiative_id_fkey"
-            columns: ["initiative_id"]
-            isOneToOne: false
-            referencedRelation: "vw_alignment_map"
-            referencedColumns: ["initiative_id"]
-          },
         ]
       }
       ph_initiative_links: {
@@ -16173,13 +16145,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ph_initiative_links_initiative_id_fkey"
-            columns: ["initiative_id"]
-            isOneToOne: false
-            referencedRelation: "vw_alignment_map"
-            referencedColumns: ["initiative_id"]
           },
         ]
       }
@@ -16286,13 +16251,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ph_initiative_milestones_initiative_id_fkey"
-            columns: ["initiative_id"]
-            isOneToOne: false
-            referencedRelation: "vw_alignment_map"
-            referencedColumns: ["initiative_id"]
           },
           {
             foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
@@ -16435,13 +16393,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_initiative_risks_initiative_id_fkey"
-            columns: ["initiative_id"]
-            isOneToOne: false
-            referencedRelation: "vw_alignment_map"
-            referencedColumns: ["initiative_id"]
-          },
-          {
             foreignKeyName: "ph_initiative_risks_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
@@ -16519,13 +16470,6 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ph_initiative_scores_initiative_id_fkey"
-            columns: ["initiative_id"]
-            isOneToOne: true
-            referencedRelation: "vw_alignment_map"
-            referencedColumns: ["initiative_id"]
           },
         ]
       }
@@ -17620,13 +17564,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ph_user_favorites_initiative_id_fkey"
-            columns: ["initiative_id"]
-            isOneToOne: false
-            referencedRelation: "vw_alignment_map"
-            referencedColumns: ["initiative_id"]
           },
         ]
       }
@@ -41646,13 +41583,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
-            columns: ["linked_initiative_id"]
-            isOneToOne: false
-            referencedRelation: "vw_alignment_map"
-            referencedColumns: ["initiative_id"]
-          },
-          {
             foreignKeyName: "ph_ideas_parent_idea_id_fkey"
             columns: ["parent_idea_id"]
             isOneToOne: false
@@ -43819,9 +43749,7 @@ export type Database = {
           initiative_id: string | null
           initiative_key: string | null
           initiative_progress: number | null
-          initiative_status:
-            | Database["public"]["Enums"]["initiative_status"]
-            | null
+          initiative_status: string | null
           initiative_title: string | null
           kr_id: string | null
           kr_key: string | null

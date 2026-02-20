@@ -102,6 +102,11 @@ export default function StrategicThemesPage() {
 
   const currentSelected = selectedTheme ? themes.find(t => t.id === selectedTheme.id) || selectedTheme : null;
 
+  // Alignment view is full-screen — render ONLY the alignment component
+  if (view === 'alignment') {
+    return <ThemeAlignmentView onBack={() => setView('list')} />;
+  }
+
   return (
     <PageChrome hideHeader>
       <div style={{ padding: '16px 24px 0' }}>
@@ -138,7 +143,6 @@ export default function StrategicThemesPage() {
         {view === 'list' && <ThemeListView themes={filtered} onSelect={handleSelect} />}
         {view === 'board' && <ThemeBoardView themes={filtered} onSelect={handleSelect} />}
         {view === 'timeline' && <ThemeTimelineView themes={filtered} onSelect={handleSelect} />}
-        {view === 'alignment' && <ThemeAlignmentView />}
       </div>
 
       <ThemeDetailDrawer
