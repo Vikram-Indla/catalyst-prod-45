@@ -88,10 +88,16 @@ function getConfidenceLevel(val: number | string | undefined): number {
   return 1;
 }
 
-// Theme status from child goals
+// Theme status from child goals — also check progress thresholds
 function computeThemeStatus(goals: Goal[]): string {
+  if (goals.length === 0) return 'draft';
   if (goals.some(g => g.status === 'off_track')) return 'off_track';
+  // Any goal with progress < 40% is effectively off_track
+  if (goals.some(g => (g.progress_pct || 0) < 40 && !['draft', 'completed', 'cancelled'].includes(g.status))) return 'off_track';
   if (goals.some(g => g.status === 'at_risk')) return 'at_risk';
+  // Any goal with progress 40-59% is effectively at_risk
+  const avgProgress = goals.reduce((s, g) => s + (g.progress_pct || 0), 0) / goals.length;
+  if (avgProgress < 60 && goals.some(g => !['draft', 'completed', 'cancelled'].includes(g.status))) return 'at_risk';
   if (goals.every(g => g.status === 'completed')) return 'completed';
   if (goals.every(g => g.status === 'draft')) return 'draft';
   return 'active';
