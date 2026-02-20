@@ -492,8 +492,8 @@ function RecoveryTab({ brief }: { brief: ExecutiveBriefAI | null }) {
                     style={{ background: rag.bg, borderColor: rag.dot }} />
                   <div className="ml-1">
                     <div className="flex items-center gap-2 mb-1.5">
-                      <span className="text-[11px] font-bold" style={{ color: C.ink1 }}>{r.horizon}</span>
-                      <span className="text-[9px] font-bold px-2 py-0.5 rounded-full"
+                      <span className="text-[13px] font-extrabold" style={{ color: '#0F172A' }}>{r.horizon}</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
                         style={{ background: rag.bg, color: rag.txt, border: `1px solid ${rag.bdr}` }}>
                         {r.tag}
                       </span>
@@ -502,7 +502,7 @@ function RecoveryTab({ brief }: { brief: ExecutiveBriefAI | null }) {
                       {r.actions.map((a, j) => (
                         <div key={j} className="flex items-start gap-2 pl-2"
                           style={{ borderLeft: `2px solid ${rag.bdr}` }}>
-                          <span className="text-[10.5px] leading-relaxed" style={{ color: C.ink2 }}>{a}</span>
+                          <span className="text-[12px] leading-relaxed" style={{ color: '#334155', fontWeight: 500 }}>{a}</span>
                         </div>
                       ))}
                     </div>
@@ -522,8 +522,8 @@ function RecoveryTab({ brief }: { brief: ExecutiveBriefAI | null }) {
             <span className="text-[12px] font-extrabold" style={{ color: '#92400E' }}>Data Trust: {dt.level}</span>
           </div>
           <div className="flex items-center gap-3 mb-1">
-            <span className="text-[10px]" style={{ color: C.ink3 }}>{dt.sourcesUsed} sources used</span>
-            <span className="text-[10px]" style={{ color: C.ink3 }}>{dt.gaps} gaps</span>
+            <span className="text-[11px] font-medium" style={{ color: '#78350F' }}>{dt.sourcesUsed} sources used</span>
+            <span className="text-[11px] font-medium" style={{ color: '#78350F' }}>{dt.gaps} gaps</span>
           </div>
           <p className="text-[12px]" style={{ color: '#78350F', lineHeight: 1.6 }}>{dt.note}</p>
         </div>
