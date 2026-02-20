@@ -75,17 +75,17 @@ export default function AllProjectsPage() {
   }
 
   return (
-    <div style={{ padding: '24px 28px', fontFamily: "'Inter', sans-serif", minHeight: '100vh' }}>
-      <div style={{ maxWidth: 1440, margin: '0 auto' }}>
+    <div className="flex flex-col h-full" style={{ padding: '24px 28px', fontFamily: "'Inter', sans-serif" }}>
+      <div className="flex flex-col flex-1 min-h-0" style={{ maxWidth: 1440, margin: '0 auto', width: '100%' }}>
         {/* Breadcrumb */}
-        <div className="flex items-center gap-1 mb-1">
+        <div className="flex items-center gap-1 mb-1 shrink-0">
           <span style={{ fontSize: 12, color: '#94A3B8', fontWeight: 500 }}>ProjectHub</span>
           <ChevronRight size={13} color="#CBD5E1" />
           <span style={{ fontSize: 12, color: '#475569', fontWeight: 500 }}>All Projects</span>
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center justify-between mb-1 shrink-0">
           <div>
             <h1 style={{ fontSize: 20, fontWeight: 600, color: '#0F172A', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.3px' }}>All Projects</h1>
             <p style={{ fontSize: 12, color: '#94A3B8', marginTop: 2 }}>Portfolio-wide project tracking · Ministry of Industry</p>
@@ -109,12 +109,12 @@ export default function AllProjectsPage() {
         </div>
 
         {/* Stats */}
-        <div className="mb-5 mt-4">
+        <div className="mb-5 mt-4 shrink-0">
           <ProjectStatsStrip stats={stats} />
         </div>
 
         {/* Toolbar */}
-        <div className="mb-3">
+        <div className="mb-3 shrink-0">
           <AllProjectsToolbar
             view={view}
             onViewChange={v => { setView(v); setPage(0); }}
@@ -128,17 +128,19 @@ export default function AllProjectsPage() {
 
         {/* Advanced Filters */}
         {showAdvFilters && (
-          <ProjectAdvancedFilters
-            filters={filters}
-            onChange={f => { setFilters(f); setPage(0); }}
-            departments={departments}
-            onClose={() => setShowAdvFilters(false)}
-          />
+          <div className="shrink-0">
+            <ProjectAdvancedFilters
+              filters={filters}
+              onChange={f => { setFilters(f); setPage(0); }}
+              departments={departments}
+              onClose={() => setShowAdvFilters(false)}
+            />
+          </div>
         )}
 
-        {/* Content */}
+        {/* Content — grows to fill remaining space */}
         {isLoading ? (
-          <div className="rounded-lg" style={{ background: '#FFF', border: '1px solid #E2E8F0', padding: '40px' }}>
+          <div className="flex-1 min-h-0 rounded-lg" style={{ background: '#FFF', border: '1px solid #E2E8F0', padding: '40px' }}>
             <div className="space-y-3">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="animate-pulse flex items-center gap-4">
@@ -154,7 +156,7 @@ export default function AllProjectsPage() {
             </div>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-lg" style={{ background: '#FFF', border: '1px solid #E2E8F0', padding: '80px 40px' }}>
+          <div className="flex-1 min-h-0 flex flex-col items-center justify-center rounded-lg" style={{ background: '#FFF', border: '1px solid #E2E8F0', padding: '80px 40px' }}>
             <FolderKanban size={48} color="#CBD5E1" strokeWidth={1.25} />
             <h3 style={{ fontSize: 18, fontWeight: 600, color: '#0F172A', marginTop: 16, fontFamily: "'Sora', sans-serif" }}>
               {filters.search || filters.statusChip !== 'All' ? 'No projects match your filters' : 'No projects yet'}
@@ -173,52 +175,57 @@ export default function AllProjectsPage() {
             )}
           </div>
         ) : view === 'list' ? (
-          <AllProjectsTable
-            projects={pageData}
-            favoriteIds={favorites}
-            onToggleFav={(id, fav) => toggleFav.mutate({ projectId: id, isFavorited: fav })}
-            onSelectProject={id => setSelectedProject(id)}
-            sortCol={sortCol}
-            sortDir={sortDir}
-            onSort={handleSort}
-            selectedRows={selectedRows}
-            onToggleRow={handleToggleRow}
-            onToggleAll={handleToggleAll}
-          />
-        ) : (
-          <AllProjectsCardGrid
-            projects={pageData}
-            favoriteIds={favorites}
-            onToggleFav={(id, fav) => toggleFav.mutate({ projectId: id, isFavorited: fav })}
-            onSelectProject={id => setSelectedProject(id)}
-          />
-        )}
-
-        {/* Pagination */}
-        {filtered.length > perPage && (
-          <div className="flex items-center justify-between mt-4" style={{ fontSize: 12, color: '#64748B' }}>
-            <span>Showing {page * perPage + 1}–{Math.min((page + 1) * perPage, filtered.length)} of {filtered.length} projects</span>
-            <div className="flex items-center gap-1">
-              <button disabled={page === 0} onClick={() => setPage(p => p - 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: '1px solid #E2E8F0', background: '#FFF', cursor: 'pointer' }}>
-                <ChevronLeft size={14} color="#334155" />
-              </button>
-              {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
-                const pn = totalPages <= 5 ? i : Math.max(0, Math.min(page - 2, totalPages - 5)) + i;
-                return (
-                  <button key={pn} onClick={() => setPage(pn)} className="flex items-center justify-center rounded" style={{ width: 28, height: 28, border: pn === page ? 'none' : '1px solid #E2E8F0', background: pn === page ? '#2563EB' : '#FFF', color: pn === page ? '#FFF' : '#334155', fontSize: 12, fontWeight: pn === page ? 600 : 400, cursor: 'pointer' }}>
-                    {pn + 1}
-                  </button>
-                );
-              })}
-              <button disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: '1px solid #E2E8F0', background: '#FFF', cursor: 'pointer' }}>
-                <ChevronRightIcon size={14} color="#334155" />
-              </button>
-              <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(0); }} className="ml-3 rounded" style={{ height: 28, padding: '0 6px', border: '1px solid #E2E8F0', fontSize: 12, color: '#334155', background: '#FFF', cursor: 'pointer' }}>
-                <option value={12}>12 / page</option>
-                <option value={25}>25 / page</option>
-                <option value={50}>50 / page</option>
-              </select>
+          <div className="flex-1 min-h-0 flex flex-col rounded-lg overflow-hidden" style={{ background: '#FFF', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(0,0,0,.06)' }}>
+            <div className="flex-1 min-h-0 overflow-auto">
+              <AllProjectsTable
+                projects={pageData}
+                favoriteIds={favorites}
+                onToggleFav={(id, fav) => toggleFav.mutate({ projectId: id, isFavorited: fav })}
+                onSelectProject={id => setSelectedProject(id)}
+                sortCol={sortCol}
+                sortDir={sortDir}
+                onSort={handleSort}
+                selectedRows={selectedRows}
+                onToggleRow={handleToggleRow}
+                onToggleAll={handleToggleAll}
+              />
             </div>
+            {/* Pagination pinned at bottom of card */}
+            {filtered.length > perPage && (
+              <div className="shrink-0 border-t border-slate-100 px-4 py-2 flex items-center justify-between" style={{ fontSize: 12, color: '#64748B' }}>
+                <span>Showing {page * perPage + 1}–{Math.min((page + 1) * perPage, filtered.length)} of {filtered.length} projects</span>
+                <div className="flex items-center gap-1">
+                  <button disabled={page === 0} onClick={() => setPage(p => p - 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: '1px solid #E2E8F0', background: '#FFF', cursor: 'pointer' }}>
+                    <ChevronLeft size={14} color="#334155" />
+                  </button>
+                  {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
+                    const pn = totalPages <= 5 ? i : Math.max(0, Math.min(page - 2, totalPages - 5)) + i;
+                    return (
+                      <button key={pn} onClick={() => setPage(pn)} className="flex items-center justify-center rounded" style={{ width: 28, height: 28, border: pn === page ? 'none' : '1px solid #E2E8F0', background: pn === page ? '#2563EB' : '#FFF', color: pn === page ? '#FFF' : '#334155', fontSize: 12, fontWeight: pn === page ? 600 : 400, cursor: 'pointer' }}>
+                        {pn + 1}
+                      </button>
+                    );
+                  })}
+                  <button disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: '1px solid #E2E8F0', background: '#FFF', cursor: 'pointer' }}>
+                    <ChevronRightIcon size={14} color="#334155" />
+                  </button>
+                  <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(0); }} className="ml-3 rounded" style={{ height: 28, padding: '0 6px', border: '1px solid #E2E8F0', fontSize: 12, color: '#334155', background: '#FFF', cursor: 'pointer' }}>
+                    <option value={12}>12 / page</option>
+                    <option value={25}>25 / page</option>
+                    <option value={50}>50 / page</option>
+                  </select>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex-1 min-h-0 overflow-auto">
+            <AllProjectsCardGrid
+              projects={pageData}
+              favoriteIds={favorites}
+              onToggleFav={(id, fav) => toggleFav.mutate({ projectId: id, isFavorited: fav })}
+              onSelectProject={id => setSelectedProject(id)}
+            />
           </div>
         )}
 

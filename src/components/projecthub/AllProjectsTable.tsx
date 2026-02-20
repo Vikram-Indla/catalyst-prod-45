@@ -71,7 +71,6 @@ export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectP
 
   return (
     <TooltipProvider delayDuration={300}>
-      <div className="rounded-lg overflow-hidden" style={{ background: '#FFF', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(0,0,0,.06)' }}>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif", tableLayout: 'fixed' }}>
             <colgroup>
@@ -189,7 +188,6 @@ export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectP
             </tbody>
           </table>
         </div>
-      </div>
     </TooltipProvider>
   );
 }

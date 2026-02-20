@@ -11,7 +11,7 @@ export function AppShell() {
     <div className="min-h-screen bg-background">
       <TopNav />
       <Sidebar />
-      <main className="ml-60 mt-14 min-h-[calc(100vh-56px)]">
+      <main className="ml-60 mt-14 h-[calc(100vh-56px)] flex flex-col overflow-hidden">
         <Outlet />
       </main>
     </div>
