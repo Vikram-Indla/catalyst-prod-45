@@ -120,9 +120,6 @@ export default function KanbanPage() {
       <div className="px-6 py-4 bg-white border-b border-zinc-200">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-bold text-zinc-900">Product Kanban</h1>
-          <span className="bg-zinc-100 text-zinc-600 text-sm font-semibold px-2.5 py-0.5 rounded-full tabular-nums">
-            {filtered.length}
-          </span>
         </div>
         <p className="text-sm text-zinc-500 mt-1">Drag initiatives between status columns to update workflow</p>
       </div>
