@@ -4634,6 +4634,76 @@ export type Database = {
           },
         ]
       }
+      es_goal_initiatives: {
+        Row: {
+          goal_id: string
+          id: string
+          initiative_id: string
+          linked_at: string | null
+          linked_by: string | null
+          notes: string | null
+        }
+        Insert: {
+          goal_id: string
+          id?: string
+          initiative_id: string
+          linked_at?: string | null
+          linked_by?: string | null
+          notes?: string | null
+        }
+        Update: {
+          goal_id?: string
+          id?: string
+          initiative_id?: string
+          linked_at?: string | null
+          linked_by?: string | null
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "es_goal_initiatives_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_heatmap"
+            referencedColumns: ["goal_id"]
+          },
+          {
+            foreignKeyName: "es_goal_initiatives_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "es_dashboard_okr_tree"
+            referencedColumns: ["goal_id"]
+          },
+          {
+            foreignKeyName: "es_goal_initiatives_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "es_goals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_goal_initiatives_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "es_goals_tree_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_goal_initiatives_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_goal_initiatives_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       es_goals: {
         Row: {
           ai_health_score: number | null

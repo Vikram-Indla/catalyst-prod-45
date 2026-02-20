@@ -1,9 +1,10 @@
 /**
  * GoalDetailDrawer — 560px right overlay with 5 tabs + edit mode + delete dialog
+ * Fixes: 3 (AI score display), 5 (initiatives tab), 6 (owner), 10 (label typography), 15 (icon alignment)
  */
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { X, Sparkles, Rocket, Clock, Activity, Trash2, Pencil, BarChart3, Plus, Save } from 'lucide-react';
-import { useGoals, useKeyResults, useThemes, useDeleteGoal, useUpdateGoal } from '@/hooks/useGoals';
+import { X, Sparkles, Rocket, Clock, Activity, Trash2, Pencil, BarChart3, Plus, Save, Search, Link2, Unlink } from 'lucide-react';
+import { useGoals, useKeyResults, useThemes, useDeleteGoal, useUpdateGoal, useGoalInitiatives, useLinkInitiative, useUnlinkInitiative, useSearchInitiatives } from '@/hooks/useGoals';
 import { goalsService } from '@/services/goalsService';
 import { useQuery } from '@tanstack/react-query';
 import type { Goal, KeyResult, KRCheckin, GoalStatus, Priority, BSCPerspective } from '@/types/goals';
@@ -21,14 +22,18 @@ interface GoalDetailDrawerProps {
   onCheckinClick?: (krId: string) => void;
 }
 
-// ── Status badge (Linear-style, darker text) ──
+// Fix 10: All label styles are neutral gray, not colored
+const LABEL_STYLE: React.CSSProperties = {
+  fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase',
+  letterSpacing: '0.05em', color: '#94A3B8', marginBottom: 4,
+};
+
 function statusBadge(status: string) {
   const map: Record<string, { dot: string; bg: string; text: string; label: string }> = {
     active:      { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'Active' },
     on_track:    { dot: '#16A34A', bg: 'rgba(22,163,74,0.08)',  text: '#15803D', label: 'On Track' },
-    in_progress: { dot: '#2563EB', bg: 'rgba(37,99,235,0.08)',  text: '#1D4ED8', label: 'In Progress' },
-    completed:   { dot: '#2563EB', bg: 'rgba(37,99,235,0.08)',  text: '#1D4ED8', label: 'Completed' },
-    achieved:    { dot: '#2563EB', bg: 'rgba(37,99,235,0.08)',  text: '#1D4ED8', label: 'Achieved' },
+    completed:   { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Completed' },
+    achieved:    { dot: '#4F46E5', bg: 'rgba(79,70,229,0.08)',  text: '#4338CA', label: 'Achieved' },
     at_risk:     { dot: '#D97706', bg: 'rgba(217,119,6,0.08)',  text: '#B45309', label: 'At Risk' },
     off_track:   { dot: '#EF4444', bg: 'rgba(239,68,68,0.08)',  text: '#DC2626', label: 'Off Track' },
     draft:       { dot: '#94A3B8', bg: '#F1F5F9',               text: '#64748B', label: 'Draft' },
@@ -93,10 +98,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
   const theme = useMemo(() => themes.find(t => t.id === goal?.theme_id), [themes, goal?.theme_id]);
 
   useEffect(() => { if (isOpen) { setActiveTab('Overview'); setIsEditing(false); } }, [goalId, isOpen]);
-
-  // Auto-focus close button for a11y
   useEffect(() => { if (isOpen) setTimeout(() => closeRef.current?.focus(), 350); }, [isOpen]);
-
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -124,13 +126,9 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
 
   return (
     <>
-      {/* Backdrop */}
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 998, background: 'rgba(15,23,42,0.3)', animation: 'gddFadeIn 200ms ease-out' }} />
-
-      {/* Drawer */}
       <div
-        role="dialog"
-        aria-label={`Goal detail: ${goal?.title || ''}`}
+        role="dialog" aria-label={`Goal detail: ${goal?.title || ''}`}
         className="gdd-drawer"
         style={{
           position: 'fixed', top: 0, right: 0, bottom: 0,
@@ -192,7 +190,7 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
           ) : activeTab === 'Key Results' ? (
             <KeyResultsTab krs={krs} loading={krsLoading} onCheckinClick={onCheckinClick} />
           ) : activeTab === 'Initiatives' ? (
-            <InitiativesTab />
+            <InitiativesTab goalId={goalId!} />
           ) : activeTab === 'Check-ins' ? (
             <CheckinsTab checkins={allCheckins} krs={krs} />
           ) : (
@@ -201,20 +199,15 @@ export function GoalDetailDrawer({ goalId, isOpen, onClose, onCheckinClick }: Go
         </div>
       </div>
 
-      {/* Delete confirmation dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Goal {goal?.goal_key}?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete this goal and all its key results. This action cannot be undone.
-            </AlertDialogDescription>
+            <AlertDialogDescription>This will permanently delete this goal and all its key results. This action cannot be undone.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90 text-white">
-              Delete
-            </AlertDialogAction>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90 text-white">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -243,16 +236,15 @@ function EditOverviewTab({ goal, themes, onSave, onCancel, isPending }: {
   const [quarter, setQuarter] = useState(goal.fiscal_quarter || '');
   const [bsc, setBsc] = useState(goal.bsc_perspective || '');
 
-  const labelStyle: React.CSSProperties = { fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', marginBottom: 4, display: 'block' };
   const inputStyle: React.CSSProperties = { width: '100%', padding: '7px 10px', fontSize: 13, border: '1px solid #E2E8F0', borderRadius: 6, outline: 'none', color: '#0F172A', background: '#FFFFFF' };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <div><label style={labelStyle}>Title</label><input value={title} onChange={e => setTitle(e.target.value)} style={inputStyle} /></div>
-      <div><label style={labelStyle}>Description</label><textarea value={description} onChange={e => setDescription(e.target.value)} style={{ ...inputStyle, minHeight: 60, resize: 'vertical', fontFamily: 'inherit' }} /></div>
+      <div><label style={LABEL_STYLE}>Title</label><input value={title} onChange={e => setTitle(e.target.value)} style={inputStyle} /></div>
+      <div><label style={LABEL_STYLE}>Description</label><textarea value={description} onChange={e => setDescription(e.target.value)} style={{ ...inputStyle, minHeight: 60, resize: 'vertical', fontFamily: 'inherit' }} /></div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <div>
-          <label style={labelStyle}>Status</label>
+          <label style={LABEL_STYLE}>Status</label>
           <Select value={status} onValueChange={v => setStatus(v as GoalStatus)}>
             <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -261,7 +253,7 @@ function EditOverviewTab({ goal, themes, onSave, onCancel, isPending }: {
           </Select>
         </div>
         <div>
-          <label style={labelStyle}>Priority</label>
+          <label style={LABEL_STYLE}>Priority</label>
           <Select value={priority} onValueChange={v => setPriority(v as Priority)}>
             <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -272,14 +264,14 @@ function EditOverviewTab({ goal, themes, onSave, onCancel, isPending }: {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <div>
-          <label style={labelStyle}>Theme</label>
+          <label style={LABEL_STYLE}>Theme</label>
           <Select value={themeId} onValueChange={setThemeId}>
             <SelectTrigger className="h-9 text-sm"><SelectValue /></SelectTrigger>
             <SelectContent>{themes.map(t => <SelectItem key={t.id} value={t.id}><div style={{ display:'flex', alignItems:'center', gap:6 }}><span style={{ width:8,height:8,borderRadius:2,background:t.color }} />{t.title}</div></SelectItem>)}</SelectContent>
           </Select>
         </div>
         <div>
-          <label style={labelStyle}>Quarter</label>
+          <label style={LABEL_STYLE}>Quarter</label>
           <Select value={quarter} onValueChange={setQuarter}>
             <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
             <SelectContent>{['Q1 2026','Q2 2026','Q3 2026','Q4 2026'].map(q => <SelectItem key={q} value={q}>{q}</SelectItem>)}</SelectContent>
@@ -287,11 +279,11 @@ function EditOverviewTab({ goal, themes, onSave, onCancel, isPending }: {
         </div>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <div><label style={labelStyle}>Start Date</label><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} style={inputStyle} /></div>
-        <div><label style={labelStyle}>Target Date</label><input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={inputStyle} /></div>
+        <div><label style={LABEL_STYLE}>Start Date</label><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} style={inputStyle} /></div>
+        <div><label style={LABEL_STYLE}>Target Date</label><input type="date" value={targetDate} onChange={e => setTargetDate(e.target.value)} style={inputStyle} /></div>
       </div>
       <div>
-        <label style={labelStyle}>BSC Perspective</label>
+        <label style={LABEL_STYLE}>BSC Perspective</label>
         <Select value={bsc} onValueChange={setBsc}>
           <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
           <SelectContent>{(['Financial','Customer','Internal Process','Learning & Growth'] as BSCPerspective[]).map(b => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent>
@@ -311,37 +303,51 @@ function EditOverviewTab({ goal, themes, onSave, onCancel, isPending }: {
   );
 }
 
-// ── Tab: Overview ──
+// ── Tab: Overview (Fix 3: AI score, Fix 6: owner, Fix 10: labels) ──
 function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
   goal: Goal; theme?: { id: string; title: string; color: string }; krs: KeyResult[];
   confPct: number; confColor: string; daysToDeadline: number | null;
 }) {
+  // Fix 6: Owner display
+  const ownerDisplay = goal.owner_name ? (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#E0E7FF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9.5, fontWeight: 700, color: '#4338CA' }}>
+        {goal.owner_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+      </div>
+      <span style={{ fontSize: 13, fontWeight: 500, color: '#0F172A' }}>{goal.owner_name}</span>
+    </div>
+  ) : '—';
+
   const fields = [
     { label: 'Status', value: statusBadge(goal.status) },
-    { label: 'Priority', value: <span style={{ fontSize: 13, fontWeight: 500, textTransform: 'capitalize' as const }}>{goal.priority}</span> },
-    { label: 'Theme', value: theme ? (<div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 8, height: 8, borderRadius: 2, background: theme.color }} /><span style={{ fontSize: 13 }}>{theme.title}</span></div>) : '—' },
-    { label: 'Owner', value: '—' },
-    { label: 'Progress', value: (<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><div style={{ width: 80 }}>{progressBar(goal.progress_pct || 0)}</div><span style={{ fontSize: 13, fontWeight: 700 }}>{Math.round(goal.progress_pct || 0)}%</span></div>) },
+    { label: 'Priority', value: <span style={{ fontSize: 13, fontWeight: 500, textTransform: 'capitalize' as const, color: '#0F172A' }}>{goal.priority}</span> },
+    { label: 'Theme', value: theme ? (<div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 8, height: 8, borderRadius: 2, background: theme.color }} /><span style={{ fontSize: 13, color: '#0F172A' }}>{theme.title}</span></div>) : '—' },
+    { label: 'Owner', value: ownerDisplay },
+    { label: 'Progress', value: (<div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><div style={{ width: 80 }}>{progressBar(goal.progress_pct || 0)}</div><span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>{Math.round(goal.progress_pct || 0)}%</span></div>) },
     { label: 'Confidence', value: <span style={{ fontSize: 13, fontWeight: 600, color: confColor }}>{confPct}%</span> },
-    { label: 'Start Date', value: <span style={{ fontSize: 13 }}>{formatDate(goal.start_date)}</span> },
-    { label: 'Target Date', value: <span style={{ fontSize: 13 }}>{formatDate(goal.target_date)}</span> },
-    { label: 'Fiscal Quarter', value: <span style={{ fontSize: 13 }}>{goal.fiscal_quarter || '—'}</span> },
+    { label: 'Start Date', value: <span style={{ fontSize: 13, color: '#0F172A' }}>{formatDate(goal.start_date)}</span> },
+    { label: 'Target Date', value: <span style={{ fontSize: 13, color: '#0F172A' }}>{formatDate(goal.target_date)}</span> },
+    { label: 'Fiscal Quarter', value: <span style={{ fontSize: 13, color: '#0F172A' }}>{goal.fiscal_quarter || '—'}</span> },
     { label: 'BSC Perspective', value: goal.bsc_perspective ? (<span style={{ fontSize: 11, fontWeight: 500, color: '#64748B', border: '1px solid #E2E8F0', borderRadius: 99, padding: '2px 8px' }}>{goal.bsc_perspective}</span>) : '—' },
-    { label: 'Weight', value: <span style={{ fontSize: 13 }}>{goal.weight}</span> },
-    { label: 'Key Results', value: <span style={{ fontSize: 13 }}>{krs.length} total</span> },
+    { label: 'Weight', value: <span style={{ fontSize: 13, color: '#0F172A' }}>{goal.weight}</span> },
+    { label: 'Key Results', value: <span style={{ fontSize: 13, color: '#0F172A' }}>{krs.length} total</span> },
   ];
 
+  // Fix 3: AI health score
   const aiScore = goal.ai_health_score;
-  const aiLabel = aiScore != null ? (aiScore >= 70 ? 'Healthy — on track for targets' : aiScore >= 40 ? 'Moderate — needs monitoring' : 'Needs attention') : null;
+  const aiLabel = aiScore != null
+    ? (aiScore >= 70 ? 'Healthy — on track for targets' : aiScore >= 50 ? 'Moderate — some risks identified' : 'Needs attention — significant risks')
+    : null;
   const avgKRProgress = krs.length > 0 ? Math.round(krs.reduce((s, kr) => s + computeKRProgress(kr), 0) / krs.length) : 0;
   const krVelocity = avgKRProgress >= 60 ? 'Good' : avgKRProgress >= 40 ? 'Moderate' : 'Slow';
 
   return (
     <div>
+      {/* Fix 10: neutral gray labels */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 24px', marginBottom: 16 }}>
         {fields.map(f => (
           <div key={f.label}>
-            <div style={{ fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', marginBottom: 4 }}>{f.label}</div>
+            <div style={LABEL_STYLE}>{f.label}</div>
             <div>{f.value}</div>
           </div>
         ))}
@@ -349,18 +355,18 @@ function OverviewTab({ goal, theme, krs, confPct, confColor, daysToDeadline }: {
 
       {goal.description && (
         <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: 14, marginBottom: 16 }}>
-          <div style={{ fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#94A3B8', marginBottom: 6 }}>Description</div>
+          <div style={{ ...LABEL_STYLE, marginBottom: 6 }}>Description</div>
           <p style={{ fontSize: 12.5, lineHeight: 1.6, color: '#334155', margin: 0 }}>{goal.description}</p>
         </div>
       )}
 
-      {/* AI Health Score */}
+      {/* Fix 3: AI Health Score — show actual value */}
       <div style={{ background: '#F5F3FF', border: '1px solid rgba(124,58,237,0.15)', borderRadius: 10, padding: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
           <Sparkles size={14} color="#7C3AED" />
           <span style={{ fontSize: 12, fontWeight: 600, color: '#7C3AED' }}>AI Health Score</span>
         </div>
-        <div style={{ fontSize: 28, fontWeight: 800, color: '#7C3AED', marginBottom: 6 }}>{aiScore ?? '—'}/100</div>
+        <div style={{ fontSize: 28, fontWeight: 800, color: '#7C3AED', marginBottom: 6 }}>{aiScore != null ? aiScore : '—'}/100</div>
         <div style={{ fontSize: 11, color: '#7C3AED', marginBottom: 12, opacity: 0.8 }}>{aiLabel ?? 'Score not computed'}</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {[
@@ -386,7 +392,7 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
   if (krs.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '48px 20px' }}>
-        <BarChart3 size={36} color="#CBD5E1" style={{ marginBottom: 12 }} />
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}><BarChart3 size={36} color="#CBD5E1" /></div>
         <div style={{ fontSize: 14, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No Key Results yet</div>
         <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 16 }}>Add measurable key results to track progress toward this goal.</div>
         <button style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 600, color: '#2563EB', background: 'rgba(37,99,235,0.06)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 6, cursor: 'pointer' }}>
@@ -426,16 +432,111 @@ function KeyResultsTab({ krs, loading, onCheckinClick }: { krs: KeyResult[]; loa
   );
 }
 
-// ── Tab: Initiatives ──
-function InitiativesTab() {
+// ── Tab: Initiatives (Fix 5 + Fix 15) ──
+function InitiativesTab({ goalId }: { goalId: string }) {
+  const { data: links = [], isLoading } = useGoalInitiatives(goalId);
+  const linkMutation = useLinkInitiative();
+  const unlinkMutation = useUnlinkInitiative();
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const { data: searchResults = [] } = useSearchInitiatives(searchQuery);
+
+  const linkedIds = new Set(links.map(l => l.initiative_id));
+
+  if (isLoading) return <div style={{ textAlign: 'center', color: '#94A3B8', padding: 40 }}>Loading initiatives...</div>;
+
   return (
-    <div style={{ textAlign: 'center', padding: '48px 20px' }}>
-      <Rocket size={36} color="#CBD5E1" style={{ marginBottom: 12 }} />
-      <div style={{ fontSize: 14, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No initiatives linked</div>
-      <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 16 }}>Link business requests or projects that contribute to this goal.</div>
-      <button style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 600, color: '#2563EB', background: 'rgba(37,99,235,0.06)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 6, cursor: 'pointer' }}>
-        <Plus size={13} /> Link Initiative
-      </button>
+    <div>
+      {links.length === 0 && !showSearch && (
+        <div style={{ textAlign: 'center', padding: '48px 20px' }}>
+          {/* Fix 15: centered icon */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+            <Rocket size={36} color="#CBD5E1" />
+          </div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No initiatives linked</div>
+          <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 16 }}>Link initiatives from Product Hub that contribute to this goal.</div>
+          <button
+            onClick={() => setShowSearch(true)}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '6px 14px', fontSize: 12, fontWeight: 600, color: '#2563EB', background: 'rgba(37,99,235,0.06)', border: '1px solid rgba(37,99,235,0.2)', borderRadius: 6, cursor: 'pointer' }}
+          >
+            <Plus size={13} /> Link Initiative
+          </button>
+        </div>
+      )}
+
+      {links.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {links.map(link => (
+            <div key={link.id} style={{ border: '1px solid #E2E8F0', borderRadius: 8, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <Link2 size={14} color="#94A3B8" />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', background: '#F8FAFC', padding: '1px 5px', borderRadius: 3, fontFamily: 'ui-monospace, monospace' }}>
+                    {link.initiative?.initiative_key || '—'}
+                  </span>
+                  <span style={{ fontSize: 12.5, fontWeight: 500, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {link.initiative?.title || 'Unknown'}
+                  </span>
+                </div>
+                {link.initiative?.status && statusBadge(link.initiative.status)}
+              </div>
+              <button
+                onClick={() => unlinkMutation.mutate(link.id)}
+                style={{ border: 'none', background: 'none', color: '#94A3B8', cursor: 'pointer', padding: 4, borderRadius: 4 }}
+                title="Unlink initiative"
+              >
+                <Unlink size={13} />
+              </button>
+            </div>
+          ))}
+          <button
+            onClick={() => setShowSearch(true)}
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, padding: '8px 0', fontSize: 12, fontWeight: 500, color: '#64748B', background: 'none', border: '1px dashed #CBD5E1', borderRadius: 8, cursor: 'pointer', marginTop: 4 }}
+          >
+            <Plus size={13} /> Link Initiative
+          </button>
+        </div>
+      )}
+
+      {/* Search modal */}
+      {showSearch && (
+        <div style={{ marginTop: links.length > 0 ? 12 : 0, border: '1px solid #E2E8F0', borderRadius: 8, padding: 12, background: '#FAFBFD' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+            <Search size={14} color="#94A3B8" />
+            <input
+              autoFocus
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search initiatives..."
+              style={{ flex: 1, border: 'none', outline: 'none', fontSize: 12, color: '#0F172A', background: 'transparent' }}
+            />
+            <button onClick={() => { setShowSearch(false); setSearchQuery(''); }} style={{ border: 'none', background: 'none', color: '#94A3B8', cursor: 'pointer', padding: 2 }}>
+              <X size={14} />
+            </button>
+          </div>
+          {searchResults.length > 0 ? (
+            <div style={{ maxHeight: 200, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {searchResults.filter(i => !linkedIds.has(i.id)).map(init => (
+                <div
+                  key={init.id}
+                  onClick={() => { linkMutation.mutate({ goalId, initiativeId: init.id }); setShowSearch(false); setSearchQuery(''); }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 6, cursor: 'pointer', transition: 'background 100ms' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#EFF6FF')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <span style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', fontFamily: 'ui-monospace, monospace' }}>{init.initiative_key}</span>
+                  <span style={{ fontSize: 12, color: '#0F172A', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{init.title}</span>
+                  {statusBadge(init.status)}
+                </div>
+              ))}
+            </div>
+          ) : searchQuery.length >= 2 ? (
+            <div style={{ fontSize: 12, color: '#94A3B8', textAlign: 'center', padding: 12 }}>No initiatives found</div>
+          ) : (
+            <div style={{ fontSize: 12, color: '#94A3B8', textAlign: 'center', padding: 12 }}>Type at least 2 characters to search</div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -446,7 +547,7 @@ function CheckinsTab({ checkins, krs }: { checkins: KRCheckin[]; krs: KeyResult[
   if (checkins.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '48px 20px' }}>
-        <Clock size={36} color="#CBD5E1" style={{ marginBottom: 12 }} />
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}><Clock size={36} color="#CBD5E1" /></div>
         <div style={{ fontSize: 14, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No check-ins recorded</div>
         <div style={{ fontSize: 12, color: '#94A3B8' }}>Check-ins will appear here when team members update key results.</div>
       </div>

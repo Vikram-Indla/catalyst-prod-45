@@ -1,8 +1,8 @@
 /**
  * GoalsKeyResultsPage — Main page composing stats, toolbar, views, drawer & modals
- * FIX 2: Shimmer skeletons, FIX 3: Empty states, FIX 4: Export CSV, FIX 6: Responsive
+ * Fix 11: Functional filters, Fix 19: Heatmap cell click
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Download } from 'lucide-react';
 import { useGoals, useAllKeyResults, useThemes } from '@/hooks/useGoals';
@@ -26,6 +26,7 @@ export default function GoalsKeyResultsPage() {
   const [expandedThemes, setExpandedThemes] = useState<Set<string>>(new Set());
   const [expandedGoals, setExpandedGoals] = useState<Set<string>>(new Set());
   const [isAllExpanded, setIsAllExpanded] = useState(true);
+  const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
 
   const [selectedGoalId, setSelectedGoalId] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -51,14 +52,53 @@ export default function GoalsKeyResultsPage() {
     else { setExpandedThemes(new Set(themes.map(t => t.id))); setExpandedGoals(new Set(goals.map(g => g.id))); setIsAllExpanded(true); }
   }, [isAllExpanded, themes, goals]);
 
-  // FIX 4: Export CSV
+  // Fix 11: Filter goals
+  const filteredGoals = useMemo(() => {
+    let result = goals;
+    if (activeFilters.status?.length) {
+      result = result.filter(g => activeFilters.status.includes(g.status));
+    }
+    if (activeFilters.theme?.length) {
+      result = result.filter(g => activeFilters.theme.includes(g.theme_id));
+    }
+    if (activeFilters.owner?.length) {
+      result = result.filter(g => g.owner_id && activeFilters.owner.includes(g.owner_id));
+    }
+    if (activeFilters.quarter?.length) {
+      result = result.filter(g => g.fiscal_quarter && activeFilters.quarter.includes(g.fiscal_quarter));
+    }
+    return result;
+  }, [goals, activeFilters]);
+
+  // Build filter options
+  const filterOptions = useMemo(() => {
+    const statuses = [...new Set(goals.map(g => g.status))];
+    const ownerMap = new Map<string, string>();
+    goals.forEach(g => { if (g.owner_id && g.owner_name) ownerMap.set(g.owner_id, g.owner_name); });
+    const quarters = [...new Set(goals.map(g => g.fiscal_quarter).filter(Boolean))] as string[];
+    return {
+      statuses,
+      themes: themes.map(t => ({ id: t.id, title: t.title, color: t.color })),
+      owners: Array.from(ownerMap.entries()).map(([id, name]) => ({ id, name })),
+      quarters: quarters.sort(),
+    };
+  }, [goals, themes]);
+
+  // Fix 19: Heatmap cell click → switch to tree with filters
+  const handleHeatmapCellClick = useCallback((themeId: string, quarter: string) => {
+    setActiveFilters({ theme: [themeId], quarter: [quarter] });
+    setCurrentView('tree');
+    setExpandedThemes(new Set([themeId]));
+  }, []);
+
+  // Export CSV
   const exportCSV = useCallback(() => {
     const headers = ['ID','Title','Theme','Status','Progress','Confidence','KRs','Quarter','Owner'];
     const rows = goals.map(g => {
       const theme = themes.find(t => t.id === g.theme_id);
       const krCount = allKRs.filter(kr => kr.goal_id === g.id).length;
       const conf = typeof g.confidence_level === 'number' ? (g.confidence_level <= 1 ? Math.round(g.confidence_level * 100) : Math.round(g.confidence_level)) : 0;
-      return [g.goal_key, g.title, theme?.title || '', g.status, `${Math.round(g.progress_pct || 0)}%`, `${conf}%`, String(krCount), g.fiscal_quarter || '', ''];
+      return [g.goal_key, g.title, theme?.title || '', g.status, `${Math.round(g.progress_pct || 0)}%`, `${conf}%`, String(krCount), g.fiscal_quarter || '', g.owner_name || ''];
     });
     const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -83,33 +123,25 @@ export default function GoalsKeyResultsPage() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8, marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
         <h1 style={{ fontSize: 20, fontWeight: 700, color: '#0F172A', margin: 0 }}>Goals &amp; Key Results</h1>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button
-            onClick={exportCSV}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', fontSize: 13, fontWeight: 500, color: '#64748B', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer' }}
-          >
+          <button onClick={exportCSV} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', fontSize: 13, fontWeight: 500, color: '#64748B', background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer' }}>
             <Download size={14} /> Export
           </button>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', backgroundColor: '#2563EB', border: 'none', borderRadius: 6, cursor: 'pointer' }}
-          >
+          <button onClick={() => setShowCreateModal(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', backgroundColor: '#2563EB', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
             <Plus size={15} strokeWidth={2.5} /> New Goal
           </button>
         </div>
       </div>
 
-      {/* Loading skeleton */}
       {isLoading ? (
         <>
           <GoalsStatsStripSkeleton />
           <GoalsTreeSkeleton />
         </>
       ) : goals.length === 0 ? (
-        /* Empty state */
         <GoalsEmptyState onCreateGoal={() => setShowCreateModal(true)} />
       ) : (
         <>
-          <GoalsStatsStrip goals={goals} keyResults={allKRs} themes={themes} />
+          <GoalsStatsStrip goals={filteredGoals} keyResults={allKRs} themes={themes} />
 
           <GoalsToolbar
             currentView={currentView}
@@ -118,11 +150,14 @@ export default function GoalsKeyResultsPage() {
             onSearch={setSearchQuery}
             onExpandAll={handleExpandAll}
             isAllExpanded={isAllExpanded}
+            activeFilters={activeFilters}
+            onFiltersChange={setActiveFilters}
+            filterOptions={filterOptions}
           />
 
           {currentView === 'tree' && (
             <GoalsTreeView
-              goals={goals} keyResults={allKRs} themes={themes}
+              goals={filteredGoals} keyResults={allKRs} themes={themes}
               searchQuery={searchQuery}
               expandedThemes={expandedThemes} expandedGoals={expandedGoals}
               onToggleTheme={handleToggleTheme} onToggleGoal={handleToggleGoal}
@@ -132,16 +167,15 @@ export default function GoalsKeyResultsPage() {
           )}
 
           {currentView === 'list' && (
-            <GoalsListView goals={goals} themes={themes} onGoalClick={setSelectedGoalId} />
+            <GoalsListView goals={filteredGoals} themes={themes} onGoalClick={setSelectedGoalId} />
           )}
 
           {currentView === 'heatmap' && (
-            <GoalsHeatmapView goals={goals} themes={themes} />
+            <GoalsHeatmapView goals={filteredGoals} themes={themes} onCellClick={handleHeatmapCellClick} />
           )}
         </>
       )}
 
-      {/* Interactive overlays */}
       <GoalDetailDrawer goalId={selectedGoalId} isOpen={!!selectedGoalId} onClose={() => setSelectedGoalId(null)} onCheckinClick={setCheckinKrId} />
       <CreateGoalModal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} />
       <CheckinModal krId={checkinKrId} isOpen={!!checkinKrId} onClose={() => setCheckinKrId(null)} />

@@ -1,6 +1,5 @@
 /**
  * Goals & Key Results — TypeScript Types
- * Re-exports from the module types for convenience, plus any additional types needed.
  */
 
 export type GoalStatus = 'draft' | 'active' | 'at_risk' | 'off_track' | 'completed' | 'cancelled';
@@ -33,14 +32,15 @@ export interface Goal {
   ai_health_score?: number;
   created_at: string;
   updated_at: string;
+  // Joined owner data
+  owner_name?: string;
+  owner_avatar?: string;
 }
 
 export interface GoalTreeItem extends Goal {
   theme_title: string;
   theme_color: string;
   theme_status: string;
-  owner_name?: string;
-  owner_avatar?: string;
   avg_kr_progress: number;
   weighted_kr_progress: number;
   kr_on_track: number;
