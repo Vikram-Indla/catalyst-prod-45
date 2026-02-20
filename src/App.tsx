@@ -419,7 +419,7 @@ const queryClient = new QueryClient();
 // Caty FAB on capacity planner and project hub routes
 function CatyWidgetRouteGuard() {
   const location = useLocation();
-  const showCaty = location.pathname.startsWith('/planhub/capacity') || location.pathname.startsWith('/strategyhub/capacity') || location.pathname.startsWith('/enterprise/capacity') || location.pathname.startsWith('/projecthub');
+  const showCaty = location.pathname.startsWith('/planhub/capacity') || location.pathname.startsWith('/strategyhub/capacity') || location.pathname.startsWith('/enterprise/capacity') || location.pathname.startsWith('/project-hub');
   if (!showCaty) return null;
   return <CatyFabPlaceholder />;
 }
@@ -781,25 +781,13 @@ const App = () => (
               <Route path="/projects/:projectKey/summary" element={<Navigate to={`/projects`} replace />} />
 
               {/* ═══════════════════════════════════════════════════════════════ */}
-              {/* PROJECTHUB V4.5 — ROUTING ═════════════════════════════════════ */}
-              {/* ═══════════════════════════════════════════════════════════════ */}
-              <Route path="/workhub" element={<Navigate to="/projecthub" replace />} />
-              <Route path="/workhub/*" element={<Navigate to="/projecthub" replace />} />
-              <Route path="/projecthub" element={<WorkHubLayout />}>
-                <Route index element={<WorkHubDashboard />} />
-                <Route path="workitems" element={<WorkItemsPage />} />
-                <Route path="jira-projects" element={<JiraProjectsPage />} />
-                <Route path="releases" element={<WorkHubReleasesPage />} />
-                <Route path="releases/:id" element={<WorkHubReleaseDetail />} />
-                <Route path="themes" element={<WorkHubThemesPage />} />
-                <Route path="themes/:id" element={<WorkHubThemeDetail />} />
-                <Route path="resource360" element={<WorkHubResource360Page />} />
-                <Route path="resource360/:id" element={<WorkHubResourceDetail />} />
-                <Route path="calendar" element={<WorkHubCalendarPage />} />
-                <Route path="capacity" element={<WorkHubCapacityPage />} />
-                <Route path="analytics" element={<WorkHubAnalyticsPage />} />
-                
-              </Route>
+              {/* LEGACY /projecthub — redirect to /project-hub ════════════ */}
+              <Route path="/workhub" element={<Navigate to="/project-hub" replace />} />
+              <Route path="/workhub/*" element={<Navigate to="/project-hub" replace />} />
+              <Route path="/projecthub" element={<Navigate to="/project-hub" replace />} />
+              <Route path="/projecthub/resource360" element={<Navigate to="/project-hub/resource360" replace />} />
+              <Route path="/projecthub/resource360/:id" element={<Navigate to="/project-hub/resource360/:id" replace />} />
+              <Route path="/projecthub/*" element={<Navigate to="/project-hub" replace />} />
 
 
               <Route path="/projects/:projectKey/settings" element={<ProjectSettingsPage />} />
@@ -1156,6 +1144,8 @@ const App = () => (
               <Route path=":key/timeline" element={<Suspense fallback={<div />}><PHPlaceholder title="Timeline" phase="Phase 3" /></Suspense>} />
               <Route path=":key/releases" element={<Suspense fallback={<div />}><PHPlaceholder title="Releases" phase="Phase 3" /></Suspense>} />
               <Route path=":key/reports" element={<Suspense fallback={<div />}><PHPlaceholder title="Reports" phase="Phase 4" /></Suspense>} />
+              <Route path="resource360" element={<Suspense fallback={<div />}><WorkHubResource360Page /></Suspense>} />
+              <Route path="resource360/:id" element={<Suspense fallback={<div />}><WorkHubResourceDetail /></Suspense>} />
             </Route>
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

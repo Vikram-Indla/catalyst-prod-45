@@ -49,7 +49,7 @@ export function TeamUtilizationSection({ resources }: TeamUtilizationSectionProp
           Team Utilization
         </h2>
         <button
-          onClick={() => navigate('/projecthub/resource360')}
+          onClick={() => navigate('/project-hub/resource360')}
           style={{
             fontFamily: 'Inter, system-ui, sans-serif',
             fontSize: 13,
@@ -72,10 +72,10 @@ export function TeamUtilizationSection({ resources }: TeamUtilizationSectionProp
         {sorted.map(resource => (
           <div
             key={resource.id}
-            onClick={() => navigate(`/projecthub/resource360/${resource.id}`)}
+            onClick={() => navigate(`/project-hub/resource360/${resource.id}`)}
             role="button"
             tabIndex={0}
-            onKeyDown={e => e.key === 'Enter' && navigate(`/projecthub/resource360/${resource.id}`)}
+            onKeyDown={e => e.key === 'Enter' && navigate(`/project-hub/resource360/${resource.id}`)}
             style={{
               display: 'flex',
               alignItems: 'center',
