@@ -15023,6 +15023,552 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_idea_audit_log: {
+        Row: {
+          action: string
+          changed_by: string | null
+          created_at: string
+          field_changed: string | null
+          id: string
+          idea_id: string
+          new_value: string | null
+          old_value: string | null
+        }
+        Insert: {
+          action: string
+          changed_by?: string | null
+          created_at?: string
+          field_changed?: string | null
+          id?: string
+          idea_id: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Update: {
+          action?: string
+          changed_by?: string | null
+          created_at?: string
+          field_changed?: string | null
+          id?: string
+          idea_id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_idea_audit_log_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_audit_log_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_board"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_audit_log_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_listing"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_audit_log_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_matrix"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_audit_log_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_triage"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_idea_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          idea_id: string
+          is_internal: boolean | null
+          parent_comment_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          idea_id: string
+          is_internal?: boolean | null
+          parent_comment_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          idea_id?: string
+          is_internal?: boolean | null
+          parent_comment_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_idea_comments_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_comments_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_board"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_comments_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_listing"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_comments_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_matrix"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_comments_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_triage"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "ph_idea_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_idea_evidence: {
+        Row: {
+          attached_by: string | null
+          content: string | null
+          created_at: string
+          evidence_type: string
+          id: string
+          idea_id: string
+          source_url: string | null
+          title: string
+        }
+        Insert: {
+          attached_by?: string | null
+          content?: string | null
+          created_at?: string
+          evidence_type?: string
+          id?: string
+          idea_id: string
+          source_url?: string | null
+          title: string
+        }
+        Update: {
+          attached_by?: string | null
+          content?: string | null
+          created_at?: string
+          evidence_type?: string
+          id?: string
+          idea_id?: string
+          source_url?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_idea_evidence_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_evidence_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_board"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_evidence_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_listing"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_evidence_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_matrix"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_evidence_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_triage"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_idea_scores: {
+        Row: {
+          business_value: number | null
+          confidence: number | null
+          created_at: string
+          effort: number | null
+          framework: string
+          id: string
+          idea_id: string
+          impact: number | null
+          is_ai_generated: boolean | null
+          job_size: number | null
+          notes: string | null
+          reach: number | null
+          risk_reduction: number | null
+          scored_by: string | null
+          time_criticality: number | null
+          total_score: number
+        }
+        Insert: {
+          business_value?: number | null
+          confidence?: number | null
+          created_at?: string
+          effort?: number | null
+          framework?: string
+          id?: string
+          idea_id: string
+          impact?: number | null
+          is_ai_generated?: boolean | null
+          job_size?: number | null
+          notes?: string | null
+          reach?: number | null
+          risk_reduction?: number | null
+          scored_by?: string | null
+          time_criticality?: number | null
+          total_score?: number
+        }
+        Update: {
+          business_value?: number | null
+          confidence?: number | null
+          created_at?: string
+          effort?: number | null
+          framework?: string
+          id?: string
+          idea_id?: string
+          impact?: number | null
+          is_ai_generated?: boolean | null
+          job_size?: number | null
+          notes?: string | null
+          reach?: number | null
+          risk_reduction?: number | null
+          scored_by?: string | null
+          time_criticality?: number | null
+          total_score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_idea_scores_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_scores_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_board"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_scores_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_listing"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_scores_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_matrix"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_scores_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_triage"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_idea_votes: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          idea_id: string
+          user_id: string
+          vote_value: number
+          weight: number | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          idea_id: string
+          user_id: string
+          vote_value?: number
+          weight?: number | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          idea_id?: string
+          user_id?: string
+          vote_value?: number
+          weight?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_idea_votes_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_votes_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_board"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_votes_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_listing"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_votes_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_matrix"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_votes_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_triage"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_ideas: {
+        Row: {
+          ai_category: string | null
+          ai_duplicate_ids: string[] | null
+          ai_enrichment_status: string | null
+          ai_summary: string | null
+          ai_tags: string[] | null
+          assigned_to: string | null
+          business_value: number | null
+          category: string | null
+          confidence: number | null
+          converted_at: string | null
+          converted_by: string | null
+          created_at: string
+          custom_score: number | null
+          department: string | null
+          description: string | null
+          effort: number | null
+          id: string
+          idea_key: string
+          idea_type: string
+          impact: number | null
+          is_deleted: boolean | null
+          job_size: number | null
+          linked_initiative_id: string | null
+          parent_idea_id: string | null
+          priority: string | null
+          reach: number | null
+          rice_score: number | null
+          risk_reduction: number | null
+          source: string
+          status: string
+          submitted_by: string | null
+          tags: string[] | null
+          time_criticality: number | null
+          title: string
+          updated_at: string
+          vote_count: number | null
+          vote_score: number | null
+          wsjf_score: number | null
+        }
+        Insert: {
+          ai_category?: string | null
+          ai_duplicate_ids?: string[] | null
+          ai_enrichment_status?: string | null
+          ai_summary?: string | null
+          ai_tags?: string[] | null
+          assigned_to?: string | null
+          business_value?: number | null
+          category?: string | null
+          confidence?: number | null
+          converted_at?: string | null
+          converted_by?: string | null
+          created_at?: string
+          custom_score?: number | null
+          department?: string | null
+          description?: string | null
+          effort?: number | null
+          id?: string
+          idea_key: string
+          idea_type?: string
+          impact?: number | null
+          is_deleted?: boolean | null
+          job_size?: number | null
+          linked_initiative_id?: string | null
+          parent_idea_id?: string | null
+          priority?: string | null
+          reach?: number | null
+          rice_score?: number | null
+          risk_reduction?: number | null
+          source?: string
+          status?: string
+          submitted_by?: string | null
+          tags?: string[] | null
+          time_criticality?: number | null
+          title: string
+          updated_at?: string
+          vote_count?: number | null
+          vote_score?: number | null
+          wsjf_score?: number | null
+        }
+        Update: {
+          ai_category?: string | null
+          ai_duplicate_ids?: string[] | null
+          ai_enrichment_status?: string | null
+          ai_summary?: string | null
+          ai_tags?: string[] | null
+          assigned_to?: string | null
+          business_value?: number | null
+          category?: string | null
+          confidence?: number | null
+          converted_at?: string | null
+          converted_by?: string | null
+          created_at?: string
+          custom_score?: number | null
+          department?: string | null
+          description?: string | null
+          effort?: number | null
+          id?: string
+          idea_key?: string
+          idea_type?: string
+          impact?: number | null
+          is_deleted?: boolean | null
+          job_size?: number | null
+          linked_initiative_id?: string | null
+          parent_idea_id?: string | null
+          priority?: string | null
+          reach?: number | null
+          rice_score?: number | null
+          risk_reduction?: number | null
+          source?: string
+          status?: string
+          submitted_by?: string | null
+          tags?: string[] | null
+          time_criticality?: number | null
+          title?: string
+          updated_at?: string
+          vote_count?: number | null
+          vote_score?: number | null
+          wsjf_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
+            columns: ["linked_initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
+            columns: ["linked_initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_parent_idea_id_fkey"
+            columns: ["parent_idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_parent_idea_id_fkey"
+            columns: ["parent_idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_board"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_parent_idea_id_fkey"
+            columns: ["parent_idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_listing"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_parent_idea_id_fkey"
+            columns: ["parent_idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_matrix"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_parent_idea_id_fkey"
+            columns: ["parent_idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_triage"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ph_initiative_attachments: {
         Row: {
           category: string
@@ -40655,6 +41201,197 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_ideas_board: {
+        Row: {
+          ai_enrichment_status: string | null
+          assigned_to: string | null
+          assigned_to_name: string | null
+          category: string | null
+          created_at: string | null
+          department: string | null
+          description: string | null
+          id: string | null
+          idea_key: string | null
+          idea_type: string | null
+          priority: string | null
+          rice_score: number | null
+          status: string | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string | null
+          vote_count: number | null
+          vote_score: number | null
+          wsjf_score: number | null
+        }
+        Relationships: []
+      }
+      ph_ideas_listing: {
+        Row: {
+          ai_category: string | null
+          ai_duplicate_ids: string[] | null
+          ai_enrichment_status: string | null
+          ai_summary: string | null
+          ai_tags: string[] | null
+          assigned_to: string | null
+          assigned_to_name: string | null
+          business_value: number | null
+          category: string | null
+          child_count: number | null
+          comment_count: number | null
+          confidence: number | null
+          converted_at: string | null
+          converted_by: string | null
+          created_at: string | null
+          custom_score: number | null
+          department: string | null
+          description: string | null
+          effort: number | null
+          evidence_count: number | null
+          id: string | null
+          idea_key: string | null
+          idea_type: string | null
+          impact: number | null
+          is_deleted: boolean | null
+          job_size: number | null
+          linked_initiative_id: string | null
+          linked_initiative_key: string | null
+          linked_initiative_title: string | null
+          parent_idea_id: string | null
+          priority: string | null
+          reach: number | null
+          rice_score: number | null
+          risk_reduction: number | null
+          source: string | null
+          status: string | null
+          submitted_by: string | null
+          submitted_by_name: string | null
+          tags: string[] | null
+          time_criticality: number | null
+          title: string | null
+          updated_at: string | null
+          vote_count: number | null
+          vote_score: number | null
+          wsjf_score: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
+            columns: ["linked_initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
+            columns: ["linked_initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_parent_idea_id_fkey"
+            columns: ["parent_idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_parent_idea_id_fkey"
+            columns: ["parent_idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_board"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_parent_idea_id_fkey"
+            columns: ["parent_idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_listing"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_parent_idea_id_fkey"
+            columns: ["parent_idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_matrix"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_parent_idea_id_fkey"
+            columns: ["parent_idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_triage"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_ideas_matrix: {
+        Row: {
+          category: string | null
+          confidence: number | null
+          department: string | null
+          effort: number | null
+          id: string | null
+          idea_key: string | null
+          idea_type: string | null
+          impact: number | null
+          priority: string | null
+          rice_score: number | null
+          status: string | null
+          title: string | null
+          vote_score: number | null
+        }
+        Insert: {
+          category?: string | null
+          confidence?: number | null
+          department?: string | null
+          effort?: number | null
+          id?: string | null
+          idea_key?: string | null
+          idea_type?: string | null
+          impact?: number | null
+          priority?: string | null
+          rice_score?: number | null
+          status?: string | null
+          title?: string | null
+          vote_score?: number | null
+        }
+        Update: {
+          category?: string | null
+          confidence?: number | null
+          department?: string | null
+          effort?: number | null
+          id?: string | null
+          idea_key?: string | null
+          idea_type?: string | null
+          impact?: number | null
+          priority?: string | null
+          rice_score?: number | null
+          status?: string | null
+          title?: string | null
+          vote_score?: number | null
+        }
+        Relationships: []
+      }
+      ph_ideas_triage: {
+        Row: {
+          ai_category: string | null
+          ai_duplicate_ids: string[] | null
+          ai_summary: string | null
+          created_at: string | null
+          department: string | null
+          evidence_count: number | null
+          id: string | null
+          idea_key: string | null
+          idea_type: string | null
+          priority: string | null
+          source: string | null
+          submitted_by: string | null
+          submitted_by_name: string | null
+          title: string | null
+        }
+        Relationships: []
+      }
       ph_initiatives_list: {
         Row: {
           assignee_id: string | null
@@ -43109,6 +43846,10 @@ export type Database = {
         Args: { target_date?: string }
         Returns: undefined
       }
+      convert_idea_to_initiative: {
+        Args: { p_idea_id: string; p_user_id?: string }
+        Returns: string
+      }
       create_adhoc_cycle: { Args: never; Returns: string }
       create_automation_connector: {
         Args: {
@@ -44112,6 +44853,10 @@ export type Database = {
           p_test_case_id: string
         }
         Returns: Json
+      }
+      merge_ideas: {
+        Args: { p_source_id: string; p_target_id: string; p_user_id?: string }
+        Returns: undefined
       }
       migrate_tasks_to_workstream_keys: { Args: never; Returns: undefined }
       move_items_to_bottom: {
