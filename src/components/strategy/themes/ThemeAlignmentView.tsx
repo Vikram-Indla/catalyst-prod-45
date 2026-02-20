@@ -3,7 +3,14 @@
  * Complete rebuild: fixed overlay, dark toolbar, SVG connectors with ResizeObserver
  */
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
-import { ArrowLeft, X, Minus, Plus, RotateCcw, Unlink } from 'lucide-react';
+import { ArrowLeft, X, Minus, Plus, RotateCcw, Unlink, Check } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useAlignmentMapData, type AlignmentNode, type AlignmentRow } from '@/hooks/useAlignmentMapData';
 
 // ── Layer colors (NO purple for KRs) ──
@@ -346,16 +353,23 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
 
         {/* Right: Controls */}
         <div className="flex items-center gap-3">
-          <select
-            value={selectedThemeFilter}
-            onChange={e => setSelectedThemeFilter(e.target.value)}
-            className="h-8 px-3 text-xs rounded-md outline-none"
-            style={{ background: '#1E293B', color: '#CBD5E1', border: '1px solid #334155' }}>
-            <option value="all">All Themes</option>
-            {data?.themes.map(t => (
-              <option key={t.id} value={t.id}>{t.title}</option>
-            ))}
-          </select>
+          <Select value={selectedThemeFilter} onValueChange={setSelectedThemeFilter}>
+            <SelectTrigger
+              className="h-8 w-[200px] text-xs border-slate-700 bg-slate-800 text-slate-300 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <SelectValue placeholder="All Themes" />
+            </SelectTrigger>
+            <SelectContent className="bg-white border border-slate-200 shadow-lg rounded-lg">
+              <SelectItem value="all" className="text-sm">
+                All Themes
+              </SelectItem>
+              {data?.themes.map(t => (
+                <SelectItem key={t.id} value={t.id} className="text-sm">
+                  {t.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
           <div className="flex items-center gap-1 rounded-md px-1.5 py-1" style={{ background: '#1E293B' }}>
             <button onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}
