@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface MemberStackProps {
   memberIds: string[] | null;
@@ -19,25 +20,25 @@ function getMemberGradient(name: string): [string, string] {
 }
 
 function getInitials(name: string): string {
+  if (!name || name.length < 2) return '??';
   const parts = name.trim().split(/\s+/);
   if (parts.length >= 2) return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
-  return (parts[0]?.[0] || '?').toUpperCase();
+  return parts[0].substring(0, 2).toUpperCase();
 }
 
-// Batch-fetch profiles for all member IDs across visible projects
+// Global profile cache shared across all MemberStack instances
 const profileCache = new Map<string, { full_name: string; avatar_url: string | null }>();
 
 export function useMemberProfiles(allMemberIds: string[]) {
   const uniqueIds = useMemo(() => {
-    const uncached = allMemberIds.filter(id => !profileCache.has(id));
+    const uncached = allMemberIds.filter(id => id && !profileCache.has(id));
     return [...new Set(uncached)];
   }, [allMemberIds]);
 
   return useQuery({
-    queryKey: ['member-profiles', uniqueIds.sort().join(',')],
+    queryKey: ['member-profiles-batch', uniqueIds.sort().join(',')],
     queryFn: async () => {
       if (uniqueIds.length === 0) return profileCache;
-      // Batch in chunks of 100
       for (let i = 0; i < uniqueIds.length; i += 100) {
         const chunk = uniqueIds.slice(i, i + 100);
         const { data } = await supabase
@@ -45,9 +46,17 @@ export function useMemberProfiles(allMemberIds: string[]) {
           .select('id, full_name, avatar_url')
           .in('id', chunk);
         if (data) {
-          data.forEach(p => profileCache.set(p.id, { full_name: p.full_name || '', avatar_url: p.avatar_url }));
+          data.forEach(p => {
+            profileCache.set(p.id, { full_name: p.full_name || '', avatar_url: p.avatar_url });
+          });
         }
       }
+      // Also set fallback for IDs not found in profiles
+      uniqueIds.forEach(id => {
+        if (!profileCache.has(id)) {
+          profileCache.set(id, { full_name: '', avatar_url: null });
+        }
+      });
       return new Map(profileCache);
     },
     enabled: uniqueIds.length > 0,
@@ -65,50 +74,59 @@ export function MemberStack({ memberIds, memberCount, max = 3 }: MemberStackProp
   }
 
   return (
-    <div className="flex items-center">
-      {shown.map((id, i) => {
-        const profile = profileCache.get(id);
-        const name = profile?.full_name || id.substring(0, 4);
-        const initials = getInitials(name);
-        const [from, to] = getMemberGradient(name);
-        return (
+    <TooltipProvider delayDuration={200}>
+      <div className="flex items-center">
+        {shown.map((id, i) => {
+          const profile = profileCache.get(id);
+          const name = profile?.full_name || '';
+          const initials = name ? getInitials(name) : id.substring(0, 2).toUpperCase();
+          const gradientKey = name || id;
+          const [from, to] = getMemberGradient(gradientKey);
+          return (
+            <Tooltip key={id}>
+              <TooltipTrigger asChild>
+                <div
+                  className="flex items-center justify-center rounded-full border-2 border-white"
+                  style={{
+                    width: 24,
+                    height: 24,
+                    background: `linear-gradient(135deg, ${from}, ${to})`,
+                    marginLeft: i > 0 ? -7 : 0,
+                    fontSize: 8,
+                    fontWeight: 700,
+                    color: '#FFF',
+                    zIndex: max - i,
+                    flexShrink: 0,
+                    cursor: 'default',
+                  }}
+                >
+                  {initials}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="text-xs">
+                {name || 'Unknown member'}
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
+        {overflow > 0 && (
           <div
-            key={id}
             className="flex items-center justify-center rounded-full border-2 border-white"
-            title={name}
             style={{
               width: 24,
               height: 24,
-              background: `linear-gradient(135deg, ${from}, ${to})`,
-              marginLeft: i > 0 ? -7 : 0,
-              fontSize: 8,
-              fontWeight: 700,
-              color: '#FFF',
-              zIndex: max - i,
+              background: '#F1F5F9',
+              marginLeft: -7,
+              fontSize: 9,
+              fontWeight: 600,
+              color: '#64748B',
               flexShrink: 0,
             }}
           >
-            {initials}
+            +{overflow}
           </div>
-        );
-      })}
-      {overflow > 0 && (
-        <div
-          className="flex items-center justify-center rounded-full border-2 border-white"
-          style={{
-            width: 24,
-            height: 24,
-            background: '#F1F5F9',
-            marginLeft: -7,
-            fontSize: 9,
-            fontWeight: 600,
-            color: '#64748B',
-            flexShrink: 0,
-          }}
-        >
-          +{overflow}
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </TooltipProvider>
   );
 }

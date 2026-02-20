@@ -30,8 +30,8 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
   const advFilterCount = filters.departments.length + filters.statuses.length + filters.healths.length + filters.categories.length;
 
   return (
-    <div className="flex items-center gap-2 flex-wrap">
-      {/* Category chips */}
+    <div className="flex items-center gap-1.5 flex-wrap">
+      {/* Category chips — tighter spacing */}
       {CHIPS.map(c => {
         const active = filters.statusChip === c.key;
         const count = stats[c.countKey];
@@ -41,8 +41,8 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
             onClick={() => onFilterChange({ ...filters, statusChip: c.key })}
             className="flex items-center gap-1.5 rounded-full transition-all"
             style={{
-              height: 30,
-              padding: '0 12px',
+              height: 28,
+              padding: '0 10px',
               fontSize: 12,
               fontWeight: active ? 600 : 500,
               background: active ? '#2563EB' : '#FFF',
@@ -55,7 +55,7 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
             <span
               className="rounded-full"
               style={{
-                padding: '0 6px',
+                padding: '0 5px',
                 fontSize: 10,
                 fontWeight: 700,
                 background: active ? 'rgba(255,255,255,0.25)' : '#F1F5F9',
@@ -83,24 +83,26 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
         />
       </div>
 
-      {/* Filter button */}
+      {/* Filter button with label */}
       <button
         onClick={onToggleAdvanced}
-        className="flex items-center justify-center rounded-md transition-all"
+        className="flex items-center gap-1.5 rounded-md transition-all"
         style={{
-          width: 30,
           height: 30,
+          padding: '0 10px',
           background: advFilterCount > 0 || showAdvanced ? '#EFF6FF' : '#FFF',
           color: advFilterCount > 0 || showAdvanced ? '#2563EB' : '#64748B',
           border: `1px solid ${advFilterCount > 0 || showAdvanced ? '#BFDBFE' : '#E2E8F0'}`,
           cursor: 'pointer',
+          fontSize: 12,
+          fontWeight: 500,
           position: 'relative',
         }}
-        title="Advanced filters"
       >
-        <SlidersHorizontal size={14} />
+        <SlidersHorizontal size={13} />
+        <span>Filters</span>
         {advFilterCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 rounded-full flex items-center justify-center" style={{ width: 16, height: 16, fontSize: 9, fontWeight: 700, background: '#2563EB', color: '#FFF' }}>
+          <span className="rounded-full flex items-center justify-center" style={{ width: 16, height: 16, fontSize: 9, fontWeight: 700, background: '#2563EB', color: '#FFF', marginLeft: 2 }}>
             {advFilterCount}
           </span>
         )}
