@@ -60,7 +60,7 @@ export function useResource360Data(resourceId: string | null) {
       const items: WorkItemAssignment[] = [];
 
       // Fetch stories assigned to user
-      const { data: stories } = await supabase
+      const { data: stories } = await (supabase as any)
         .from('stories')
         .select(`
           id, item_id, title, status, story_points, owner_id,
@@ -127,7 +127,7 @@ export function useResource360Data(resourceId: string | null) {
       });
 
       // Fetch epics owned by user
-      const { data: epics } = await supabase
+      const { data: epics } = await (supabase as any)
         .from('epics')
         .select(`
           id, item_id, title, status, owner_id,

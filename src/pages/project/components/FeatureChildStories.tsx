@@ -93,7 +93,7 @@ export function FeatureChildStories({ stories, featureId, projectId, totalCount,
   const { data: storiesWithAssignees = [] } = useQuery({
     queryKey: ['feature-stories-with-assignees', featureId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('stories')
         .select(`
           id,

@@ -46,7 +46,7 @@ export default function PIObjectives() {
   const { data: pi } = useQuery({
     queryKey: ['program-increment', selectedPIId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('program_increments')
         .select('*, portfolios(name)')
         .eq('id', selectedPIId!)
