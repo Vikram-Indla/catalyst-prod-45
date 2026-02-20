@@ -835,6 +835,26 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           onMouseLeave={handleMouseUp}
           onWheel={handleWheel}
         >
+          {/* ═══ COLUMN HEADERS (outside transform so sticky works at all zoom levels) ═══ */}
+          <div className="flex border-b-2 border-border bg-card sticky top-0" style={{ zIndex: 10 }}>
+            {columns.map(col => (
+              <div key={col.key} className="flex items-center gap-2 px-4"
+                style={{
+                  height: 44,
+                  minWidth: col.key === 'themes' ? 224 : col.key === 'goals' || col.key === 'initiatives' ? 214 : 204,
+                  borderLeft: `3px solid ${col.color}`,
+                }}>
+                <div className="rounded-full" style={{ width: 8, height: 8, background: col.color }} />
+                <span className="font-bold uppercase text-foreground" style={{ fontSize: 13, letterSpacing: '0.03em' }}>
+                  {col.label}
+                </span>
+                <span className="font-semibold text-muted-foreground" style={{ fontSize: 12 }}>
+                  ({col.count})
+                </span>
+              </div>
+            ))}
+          </div>
+
           <div
             ref={innerRef}
             className="relative"
@@ -845,25 +865,6 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
               minHeight: 'fit-content',
             }}
           >
-            {/* ═══ COLUMN HEADERS (sticky inside canvas) ═══ */}
-            <div className="flex border-b-2 border-border bg-card sticky top-0" style={{ zIndex: 10 }}>
-              {columns.map(col => (
-                <div key={col.key} className="flex items-center gap-2 px-4"
-                  style={{
-                    height: 44,
-                    minWidth: col.key === 'themes' ? 224 : col.key === 'goals' || col.key === 'initiatives' ? 214 : 204,
-                    borderLeft: `3px solid ${col.color}`,
-                  }}>
-                  <div className="rounded-full" style={{ width: 8, height: 8, background: col.color }} />
-                  <span className="font-bold uppercase text-foreground" style={{ fontSize: 13, letterSpacing: '0.03em' }}>
-                    {col.label}
-                  </span>
-                  <span className="font-semibold text-muted-foreground" style={{ fontSize: 12 }}>
-                    ({col.count})
-                  </span>
-                </div>
-              ))}
-            </div>
 
             {/* SVG connectors */}
             <svg className="absolute inset-0 pointer-events-none"
