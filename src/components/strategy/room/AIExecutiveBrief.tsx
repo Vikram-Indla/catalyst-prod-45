@@ -3,10 +3,13 @@
  * 4 tabs: Verdict, Intelligence, Decisions, Recovery
  * "Boardroom Neutral" palette — no colored backgrounds, color only as signal dots/borders
  */
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { Sparkles, RefreshCw, Download, X, ChevronDown, ChevronUp, Link2, Shield } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Sparkles, RefreshCw, Download, X, ChevronDown, ChevronUp, Link2, Shield, CheckCircle, XCircle } from 'lucide-react';
 import { useStrategyRoomIntelligence } from '@/hooks/useStrategyRoomIntelligence';
 import { generateExecutiveBrief, type ExecutiveBriefAI } from '@/utils/generateExecutiveBrief';
+import { usePublishedBrief, useDraftBrief, usePublishBrief, useGenerateBrief, useDiscardBrief } from '@/hooks/useAIBrief';
+import { useUserRole } from '@/hooks/useUserRole';
+import { toast } from 'sonner';
 
 // ── Boardroom Neutral tokens ──
 const C = {
@@ -33,21 +36,32 @@ interface Props {
 
 export function AIExecutiveBrief({ open, onClose }: Props) {
   const [tab, setTab] = useState<Tab>('verdict');
-  const [brief, setBrief] = useState<ExecutiveBriefAI | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
   const bodyRef = useRef<HTMLDivElement>(null);
 
-  const { data: metrics, isLoading: metricsLoading } = useStrategyRoomIntelligence(open);
+  // ── Role check ──
+  const { isAdmin, isSuperAdmin } = useUserRole();
+  const isAdminUser = isAdmin || isSuperAdmin;
+
+  // ── Cached brief data ──
+  const { data: publishedBrief, isLoading: publishedLoading } = usePublishedBrief('strategy_room');
+  const { data: draftBrief, isLoading: draftLoading } = useDraftBrief('strategy_room');
+  const publishMutation = usePublishBrief();
+  const generateMutation = useGenerateBrief();
+  const discardMutation = useDiscardBrief();
+
+  // ── Metrics (only needed for admin generation) ──
+  const { data: metrics, isLoading: metricsLoading } = useStrategyRoomIntelligence(open && isAdminUser);
+
+  // ── Derive brief from published or draft (admin preview) ──
+  const [previewingDraft, setPreviewingDraft] = useState(false);
+  const activeBriefRecord = previewingDraft && draftBrief ? draftBrief : publishedBrief;
+  const brief: ExecutiveBriefAI | null = activeBriefRecord?.brief_json || null;
 
   useEffect(() => {
-    if (metrics && open && !brief && !isGenerating) {
-      handleGenerate();
+    if (open) {
+      setTab('verdict');
+      setPreviewingDraft(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [metrics, open]);
-
-  useEffect(() => {
-    if (open) setTab('verdict');
   }, [open]);
 
   useEffect(() => {
@@ -57,24 +71,47 @@ export function AIExecutiveBrief({ open, onClose }: Props) {
     return () => window.removeEventListener('keydown', handler);
   }, [open, onClose]);
 
-  const handleGenerate = useCallback(async () => {
+  const handleGenerate = () => {
     if (!metrics) return;
-    setIsGenerating(true);
-    try {
-      const result = await generateExecutiveBrief(metrics);
-      setBrief(result);
-    } finally {
-      setIsGenerating(false);
-    }
-  }, [metrics]);
+    generateMutation.mutate(
+      { scope: 'strategy_room', metricsJson: metrics, generateFn: generateExecutiveBrief },
+      {
+        onSuccess: () => {
+          toast.success('Draft generated — review before publishing');
+          setPreviewingDraft(true);
+        },
+        onError: () => toast.error('Failed to generate brief'),
+      }
+    );
+  };
 
-  const handleRegenerate = useCallback(() => {
-    setBrief(null);
-    handleGenerate();
-  }, [handleGenerate]);
+  const handlePublish = () => {
+    if (!draftBrief) return;
+    publishMutation.mutate(draftBrief.id, {
+      onSuccess: () => {
+        toast.success('Brief published to all users');
+        setPreviewingDraft(false);
+      },
+      onError: () => toast.error('Failed to publish brief'),
+    });
+  };
 
-  const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  const isLoading = metricsLoading || isGenerating;
+  const handleDiscard = () => {
+    if (!draftBrief) return;
+    discardMutation.mutate(draftBrief.id, {
+      onSuccess: () => {
+        toast.success('Draft discarded');
+        setPreviewingDraft(false);
+      },
+      onError: () => toast.error('Failed to discard draft'),
+    });
+  };
+
+  const publishedDateStr = activeBriefRecord?.published_at
+    ? new Date(activeBriefRecord.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+    : null;
+  const versionStr = activeBriefRecord?.version ? `v${activeBriefRecord.version}` : '';
+  const isLoading = publishedLoading || (isAdminUser && generateMutation.isPending);
 
   const hasDecisions = (brief?.decisions?.length ?? 0) > 0;
 
@@ -117,13 +154,18 @@ export function AIExecutiveBrief({ open, onClose }: Props) {
             </div>
             <div className="flex-1 min-w-0">
               <h2 style={{ fontSize: 14, fontWeight: 800, color: C.ink1 }}>CIO Executive Brief</h2>
-              <p style={{ fontSize: 11, color: C.ink3 }}>Strategy Room · {dateStr}</p>
+              <p style={{ fontSize: 11, color: C.ink3 }}>
+                Strategy Room · {publishedDateStr ? `Published ${publishedDateStr}` : 'No brief published'} {versionStr && `· ${versionStr}`}
+              </p>
             </div>
-            <button onClick={handleRegenerate} disabled={isLoading}
-              className="p-1.5 rounded-md hover:bg-slate-100 transition-colors disabled:opacity-40"
-              title="Regenerate">
-              <RefreshCw size={14} className={isLoading ? 'animate-spin' : ''} style={{ color: C.ink3 }} />
-            </button>
+            {/* Admin: Generate New button */}
+            {isAdminUser && (
+              <button onClick={handleGenerate} disabled={isLoading || metricsLoading}
+                className="p-1.5 rounded-md hover:bg-slate-100 transition-colors disabled:opacity-40"
+                title="Generate New Draft">
+                <RefreshCw size={14} className={generateMutation.isPending ? 'animate-spin' : ''} style={{ color: C.ink3 }} />
+              </button>
+            )}
             <button className="p-1.5 rounded-md hover:bg-slate-100 transition-colors" title="Export PDF">
               <Download size={14} style={{ color: C.ink3 }} />
             </button>
@@ -174,11 +216,80 @@ export function AIExecutiveBrief({ open, onClose }: Props) {
           </div>
         </div>
 
+        {/* ── Admin Draft Banner ── */}
+        {isAdminUser && draftBrief && (
+          <div style={{
+            margin: '0',
+            padding: '10px 20px',
+            background: '#FFFBEB',
+            borderBottom: `1px solid #FDE68A`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 12,
+          }}>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#92400E' }}>
+                New draft available
+              </div>
+              <div style={{ fontSize: 11, color: '#A16207' }}>
+                Generated {new Date(draftBrief.generated_at).toLocaleTimeString()} — review before publishing
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+              <button
+                onClick={() => setPreviewingDraft(!previewingDraft)}
+                style={{
+                  padding: '4px 10px', borderRadius: 6,
+                  border: `1px solid ${C.bdr}`, background: C.card,
+                  fontSize: 11, fontWeight: 600, color: C.ink2, cursor: 'pointer',
+                }}
+              >
+                {previewingDraft ? 'View Published' : 'Preview Draft'}
+              </button>
+              <button
+                onClick={handleDiscard}
+                disabled={discardMutation.isPending}
+                style={{
+                  padding: '4px 10px', borderRadius: 6,
+                  border: '1px solid #FECACA', background: '#FEF2F2',
+                  fontSize: 11, fontWeight: 600, color: '#DC2626', cursor: 'pointer',
+                }}
+              >
+                Discard
+              </button>
+              <button
+                onClick={handlePublish}
+                disabled={publishMutation.isPending}
+                style={{
+                  padding: '4px 10px', borderRadius: 6,
+                  border: '1px solid #BBF7D0', background: '#F0FDF4',
+                  fontSize: 11, fontWeight: 700, color: '#16A34A', cursor: 'pointer',
+                }}
+              >
+                {publishMutation.isPending ? 'Publishing...' : 'Publish to All'}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* ── Body ── */}
         <div ref={bodyRef} className="flex-1 overflow-y-auto" style={{ padding: 20 }}>
-          {isLoading ? <LoadingSkeleton /> : (
+          {isLoading && !brief ? <LoadingSkeleton /> : !brief ? (
+            <div style={{ textAlign: 'center', padding: '60px 20px' }}>
+              <Sparkles size={32} style={{ color: C.ink4, margin: '0 auto 12px' }} />
+              <div style={{ fontSize: 14, fontWeight: 700, color: C.ink2, marginBottom: 6 }}>
+                No brief published yet
+              </div>
+              <div style={{ fontSize: 13, color: C.ink3, lineHeight: 1.6 }}>
+                {isAdminUser
+                  ? 'Click the refresh icon to generate a new draft, then publish it for all users.'
+                  : 'An executive brief will appear here once published by your administrator.'}
+              </div>
+            </div>
+          ) : (
             <>
-              {tab === 'verdict' && <VerdictTab brief={brief} metrics={metrics} />}
+              {tab === 'verdict' && <VerdictTab brief={brief} metrics={activeBriefRecord?.metrics_json} />}
               {tab === 'intelligence' && <IntelligenceTab brief={brief} />}
               {tab === 'decisions' && <DecisionsTab brief={brief} />}
               {tab === 'recovery' && <RecoveryTab brief={brief} />}

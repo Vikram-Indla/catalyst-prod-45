@@ -18,7 +18,7 @@ export function useKanbanTasks(filters?: KanbanTaskFilters) {
   return useQuery({
     queryKey: [...QUERY_KEY, filters],
     queryFn: async () => {
-      let query = supabase
+      let query = (supabase as any)
         .from('planner_tasks')
         .select(`
           *,
@@ -116,7 +116,7 @@ export function useCreateKanbanTask() {
       // Generate a temporary key - the DB trigger will override with proper PLN-XXX
       const tempKey = `PLN-${Date.now()}`;
       
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('planner_tasks')
         .insert([{
           key: tempKey,
@@ -176,7 +176,7 @@ export function useUpdateKanbanTask() {
   
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<KanbanTask> & { id: string }) => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('planner_tasks')
         .update(updates as any)
         .eq('id', id)

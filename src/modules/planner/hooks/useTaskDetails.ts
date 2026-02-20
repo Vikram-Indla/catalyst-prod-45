@@ -44,7 +44,7 @@ export function useTaskDependencies(taskId: string | null) {
       if (!data || data.length === 0) return [];
       
       const linkedTaskIds = data.map(d => d.depends_on_task_id);
-      const { data: linkedTasks } = await supabase
+      const { data: linkedTasks } = await (supabase as any)
         .from('planner_tasks')
         .select(`
           id,
