@@ -20,7 +20,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAlignmentMapData, type AlignmentNode, type AlignmentRow } from '@/hooks/useAlignmentMapData';
 import { catalystToast } from '@/lib/catalystToast';
-import { useChainIntelligence, useEpicStories, useChainDefects } from '@/hooks/useChainIntelligence';
+import { useChainIntelligence, useEpicStories, useChainDefects, useOwnerRoles } from '@/hooks/useChainIntelligence';
 import { computeChainMetrics } from '@/utils/computeChainMetrics';
 import { generateIntelligence, type AIResult } from '@/utils/generateIntelligence';
 import { AIStrategyIntelligencePanel } from '@/components/strategy/intelligence/AIStrategyIntelligencePanel';
@@ -236,11 +236,27 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
   const { data: epicStories } = useEpicStories(intelChain?.epicId || null);
   const { data: chainDefects } = useChainDefects(intelChain?.epicId || null);
 
+  // Collect owner IDs from chain data for role resolution
+  const ownerIds = useMemo(() => {
+    if (!chainIntelData || chainIntelData.length === 0) return [];
+    const ids: string[] = [];
+    chainIntelData.forEach((r: any) => {
+      if (r.theme_owner_id) ids.push(r.theme_owner_id);
+      if (r.goal_owner_id) ids.push(r.goal_owner_id);
+      if (r.kr_owner_id) ids.push(r.kr_owner_id);
+      if (r.initiative_owner_id) ids.push(r.initiative_owner_id);
+      if (r.epic_owner_id) ids.push(r.epic_owner_id);
+    });
+    return ids;
+  }, [chainIntelData]);
+
+  const { data: ownerRoleMap } = useOwnerRoles(ownerIds);
+
   // Compute metrics
   const chainMetrics = useMemo(() => {
     if (!chainIntelData || chainIntelData.length === 0) return null;
-    return computeChainMetrics(chainIntelData, epicStories || [], chainDefects || []);
-  }, [chainIntelData, epicStories, chainDefects]);
+    return computeChainMetrics(chainIntelData, epicStories || [], chainDefects || [], ownerRoleMap || undefined);
+  }, [chainIntelData, epicStories, chainDefects, ownerRoleMap]);
   const filteredData = useMemo(() => {
     if (!data) return null;
     if (selectedThemeFilter === 'all') return data;
