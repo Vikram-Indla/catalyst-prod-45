@@ -105,11 +105,31 @@ export const goalsService = {
   async getGoals(): Promise<Goal[]> {
     const { data, error } = await supabase
       .from('es_goals')
-      .select('*, profiles:owner_id (full_name, avatar_url)')
+      .select('*')
       .eq('is_archived', false)
       .order('sort_order');
     if (error) throw error;
-    return (data || []).map(mapGoalRow);
+    const goals = (data || []).map(mapGoalRow);
+
+    // Fetch owner names separately (no FK exists for PostgREST join)
+    const ownerIds = [...new Set(goals.map(g => g.owner_id).filter(Boolean))] as string[];
+    if (ownerIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .in('id', ownerIds);
+      if (profiles) {
+        const profileMap = new Map(profiles.map(p => [p.id, p]));
+        goals.forEach(g => {
+          if (g.owner_id) {
+            const p = profileMap.get(g.owner_id);
+            if (p) { g.owner_name = p.full_name ?? undefined; g.owner_avatar = p.avatar_url ?? undefined; }
+          }
+        });
+      }
+    }
+
+    return goals;
   },
 
   async getKeyResults(goalId: string): Promise<KeyResult[]> {
