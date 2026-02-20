@@ -67,7 +67,11 @@ export default function StrategyRoom() {
         <main
           role="main"
           id="dashboard-main"
-          style={{ padding: 'var(--catalyst-density-padding-card, 20px)' }}
+          style={{
+            padding: 'var(--catalyst-density-padding-card, 20px)',
+            width: briefOpen ? '50vw' : '100%',
+            transition: 'width 400ms cubic-bezier(0.16,1,0.3,1)',
+          }}
           className="flex-1 overflow-auto"
         >
           <VisionBanner />
