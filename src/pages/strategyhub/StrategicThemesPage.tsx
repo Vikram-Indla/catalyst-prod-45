@@ -32,6 +32,7 @@ export default function StrategicThemesPage() {
   const [ownerFilter, setOwnerFilter] = useState('');
   const [bscFilter, setBscFilter] = useState('');
   const [fyFilter, setFyFilter] = useState('');
+  const [isIntelligenceOpen, setIsIntelligenceOpen] = useState(false);
 
   const [selectedTheme, setSelectedTheme] = useState<StrategicTheme | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -87,6 +88,17 @@ export default function StrategicThemesPage() {
     setEditingTheme(null);
   }, []);
 
+  const handleToggleIntelligence = useCallback(() => {
+    if (view === 'alignment') {
+      // Already on alignment map — toggle panel
+      setIsIntelligenceOpen(prev => !prev);
+    } else {
+      // Switch to alignment map
+      setView('alignment');
+      setIsIntelligenceOpen(true);
+    }
+  }, [view]);
+
   if (isLoading) {
     return (
       <PageChrome hideHeader>
@@ -104,7 +116,7 @@ export default function StrategicThemesPage() {
 
   // Alignment view is full-screen — render ONLY the alignment component
   if (view === 'alignment') {
-    return <ThemeAlignmentView onBack={() => setView('list')} />;
+    return <ThemeAlignmentView onBack={() => { setView('list'); setIsIntelligenceOpen(false); }} />;
   }
 
   return (
@@ -138,6 +150,8 @@ export default function StrategicThemesPage() {
           fyFilter={fyFilter}
           onFyFilterChange={setFyFilter}
           onNewTheme={() => { setEditingTheme(null); setModalOpen(true); }}
+          isIntelligenceOpen={isIntelligenceOpen}
+          onToggleIntelligence={handleToggleIntelligence}
         />
 
         {view === 'list' && <ThemeListView themes={filtered} onSelect={handleSelect} />}
