@@ -21,7 +21,7 @@ export function FeatureChildrenTab({ feature }: FeatureChildrenTabProps) {
     queryFn: async () => {
       if (!feature?.id) return [];
       
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('stories')
         .select(`
           *,

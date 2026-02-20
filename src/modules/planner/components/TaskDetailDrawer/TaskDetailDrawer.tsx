@@ -61,7 +61,7 @@ function useTaskDetail(taskId: string | null) {
     queryFn: async () => {
       if (!taskId) return null;
       
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('planner_tasks')
         .select(`
           *,

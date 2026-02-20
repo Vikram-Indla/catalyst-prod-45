@@ -21,7 +21,7 @@ export function StoryDiscussions({ storyId }: StoryDiscussionsProps) {
   const { data: discussions, isLoading } = useQuery({
     queryKey: ['story-discussions', storyId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('discussions')
         .select('*, profiles(full_name, email)')
         .eq('entity_type', 'stories')

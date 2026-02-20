@@ -13,7 +13,7 @@ export function StoryActivityLog({ storyId }: StoryActivityLogProps) {
   const { data: activities, isLoading } = useQuery({
     queryKey: ['story-activity', storyId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('activity_logs')
         .select('*, profiles:actor_id(full_name, email)')
         .eq('entity_type', 'stories')

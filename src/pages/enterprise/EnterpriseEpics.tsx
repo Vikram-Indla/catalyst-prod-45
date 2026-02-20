@@ -48,7 +48,7 @@ export default function EnterpriseEpics() {
   const { data: epics, isLoading } = useQuery({
     queryKey: ['enterprise-epics', searchQuery],
     queryFn: async () => {
-      let query = supabase
+      let query = (supabase as any)
         .from('epics')
         .select(`
           *,

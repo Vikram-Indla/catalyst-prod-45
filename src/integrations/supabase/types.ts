@@ -17391,6 +17391,69 @@ export type Database = {
           },
         ]
       }
+      ph_idea_compliance_tags: {
+        Row: {
+          created_at: string
+          id: string
+          idea_id: string
+          is_ai_suggested: boolean | null
+          requirement_id: string | null
+          standard: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          idea_id: string
+          is_ai_suggested?: boolean | null
+          requirement_id?: string | null
+          standard: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          idea_id?: string
+          is_ai_suggested?: boolean | null
+          requirement_id?: string | null
+          standard?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_idea_compliance_tags_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_compliance_tags_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_board"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_compliance_tags_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_listing"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_compliance_tags_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_matrix"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_compliance_tags_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_triage"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ph_idea_evidence: {
         Row: {
           attached_by: string | null
@@ -17462,7 +17525,9 @@ export type Database = {
       }
       ph_idea_scores: {
         Row: {
+          alignment_score: number | null
           business_value: number | null
+          complexity_factor: number | null
           confidence: number | null
           created_at: string
           effort: number | null
@@ -17470,17 +17535,23 @@ export type Database = {
           id: string
           idea_id: string
           impact: number | null
+          imperative: number | null
           is_ai_generated: boolean | null
           job_size: number | null
+          ministry_efficiency: number | null
           notes: string | null
+          pain_severity: number | null
           reach: number | null
           risk_reduction: number | null
           scored_by: string | null
           time_criticality: number | null
+          timeframe_factor: number | null
           total_score: number
         }
         Insert: {
+          alignment_score?: number | null
           business_value?: number | null
+          complexity_factor?: number | null
           confidence?: number | null
           created_at?: string
           effort?: number | null
@@ -17488,17 +17559,23 @@ export type Database = {
           id?: string
           idea_id: string
           impact?: number | null
+          imperative?: number | null
           is_ai_generated?: boolean | null
           job_size?: number | null
+          ministry_efficiency?: number | null
           notes?: string | null
+          pain_severity?: number | null
           reach?: number | null
           risk_reduction?: number | null
           scored_by?: string | null
           time_criticality?: number | null
+          timeframe_factor?: number | null
           total_score?: number
         }
         Update: {
+          alignment_score?: number | null
           business_value?: number | null
+          complexity_factor?: number | null
           confidence?: number | null
           created_at?: string
           effort?: number | null
@@ -17506,13 +17583,17 @@ export type Database = {
           id?: string
           idea_id?: string
           impact?: number | null
+          imperative?: number | null
           is_ai_generated?: boolean | null
           job_size?: number | null
+          ministry_efficiency?: number | null
           notes?: string | null
+          pain_severity?: number | null
           reach?: number | null
           risk_reduction?: number | null
           scored_by?: string | null
           time_criticality?: number | null
+          timeframe_factor?: number | null
           total_score?: number
         }
         Relationships: [
@@ -17546,6 +17627,69 @@ export type Database = {
           },
           {
             foreignKeyName: "ph_idea_scores_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_triage"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_idea_v2030_mappings: {
+        Row: {
+          created_at: string
+          id: string
+          idea_id: string
+          notes: string | null
+          pillar: string
+          relevance_score: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          idea_id: string
+          notes?: string | null
+          pillar: string
+          relevance_score?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          idea_id?: string
+          notes?: string | null
+          pillar?: string
+          relevance_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_idea_v2030_mappings_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_v2030_mappings_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_board"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_v2030_mappings_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_listing"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_v2030_mappings_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_matrix"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_v2030_mappings_idea_id_fkey"
             columns: ["idea_id"]
             isOneToOne: false
             referencedRelation: "ph_ideas_triage"
@@ -17626,9 +17770,11 @@ export type Database = {
           ai_enrichment_status: string | null
           ai_summary: string | null
           ai_tags: string[] | null
+          alignment: number | null
           assigned_to: string | null
           business_value: number | null
           category: string | null
+          complexity_score: number | null
           confidence: number | null
           converted_at: string | null
           converted_by: string | null
@@ -17641,9 +17787,13 @@ export type Database = {
           idea_key: string
           idea_type: string
           impact: number | null
+          impact_total: number | null
+          imperative: number | null
           is_deleted: boolean | null
           job_size: number | null
           linked_initiative_id: string | null
+          ministry_efficiency: number | null
+          pain_severity: number | null
           parent_idea_id: string | null
           priority: string | null
           reach: number | null
@@ -17654,6 +17804,7 @@ export type Database = {
           submitted_by: string | null
           tags: string[] | null
           time_criticality: number | null
+          timeframe_score: number | null
           title: string
           updated_at: string
           vote_count: number | null
@@ -17666,9 +17817,11 @@ export type Database = {
           ai_enrichment_status?: string | null
           ai_summary?: string | null
           ai_tags?: string[] | null
+          alignment?: number | null
           assigned_to?: string | null
           business_value?: number | null
           category?: string | null
+          complexity_score?: number | null
           confidence?: number | null
           converted_at?: string | null
           converted_by?: string | null
@@ -17681,9 +17834,13 @@ export type Database = {
           idea_key: string
           idea_type?: string
           impact?: number | null
+          impact_total?: number | null
+          imperative?: number | null
           is_deleted?: boolean | null
           job_size?: number | null
           linked_initiative_id?: string | null
+          ministry_efficiency?: number | null
+          pain_severity?: number | null
           parent_idea_id?: string | null
           priority?: string | null
           reach?: number | null
@@ -17694,6 +17851,7 @@ export type Database = {
           submitted_by?: string | null
           tags?: string[] | null
           time_criticality?: number | null
+          timeframe_score?: number | null
           title: string
           updated_at?: string
           vote_count?: number | null
@@ -17706,9 +17864,11 @@ export type Database = {
           ai_enrichment_status?: string | null
           ai_summary?: string | null
           ai_tags?: string[] | null
+          alignment?: number | null
           assigned_to?: string | null
           business_value?: number | null
           category?: string | null
+          complexity_score?: number | null
           confidence?: number | null
           converted_at?: string | null
           converted_by?: string | null
@@ -17721,9 +17881,13 @@ export type Database = {
           idea_key?: string
           idea_type?: string
           impact?: number | null
+          impact_total?: number | null
+          imperative?: number | null
           is_deleted?: boolean | null
           job_size?: number | null
           linked_initiative_id?: string | null
+          ministry_efficiency?: number | null
+          pain_severity?: number | null
           parent_idea_id?: string | null
           priority?: string | null
           reach?: number | null
@@ -17734,6 +17898,7 @@ export type Database = {
           submitted_by?: string | null
           tags?: string[] | null
           time_criticality?: number | null
+          timeframe_score?: number | null
           title?: string
           updated_at?: string
           vote_count?: number | null
@@ -49862,6 +50027,8 @@ export type Database = {
           id: string | null
           idea_key: string | null
           idea_type: string | null
+          impact_total: number | null
+          imperative: number | null
           priority: string | null
           rice_score: number | null
           status: string | null
@@ -49874,6 +50041,23 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_ideas_dept_counts: {
+        Row: {
+          approved_count: number | null
+          avg_impact: number | null
+          department: string | null
+          idea_count: number | null
+        }
+        Relationships: []
+      }
+      ph_ideas_impact_distribution: {
+        Row: {
+          idea_count: number | null
+          score_band: string | null
+          sort_order: number | null
+        }
+        Relationships: []
+      }
       ph_ideas_listing: {
         Row: {
           ai_category: string | null
@@ -49881,12 +50065,15 @@ export type Database = {
           ai_enrichment_status: string | null
           ai_summary: string | null
           ai_tags: string[] | null
+          alignment: number | null
           assigned_to: string | null
           assigned_to_name: string | null
           business_value: number | null
           category: string | null
           child_count: number | null
           comment_count: number | null
+          complexity_score: number | null
+          compliance_tag_count: number | null
           confidence: number | null
           converted_at: string | null
           converted_by: string | null
@@ -49900,11 +50087,15 @@ export type Database = {
           idea_key: string | null
           idea_type: string | null
           impact: number | null
+          impact_total: number | null
+          imperative: number | null
           is_deleted: boolean | null
           job_size: number | null
           linked_initiative_id: string | null
           linked_initiative_key: string | null
           linked_initiative_title: string | null
+          ministry_efficiency: number | null
+          pain_severity: number | null
           parent_idea_id: string | null
           priority: string | null
           reach: number | null
@@ -49916,8 +50107,10 @@ export type Database = {
           submitted_by_name: string | null
           tags: string[] | null
           time_criticality: number | null
+          timeframe_score: number | null
           title: string | null
           updated_at: string | null
+          v2030_pillar_count: number | null
           vote_count: number | null
           vote_score: number | null
           wsjf_score: number | null
@@ -49983,49 +50176,96 @@ export type Database = {
       }
       ph_ideas_matrix: {
         Row: {
+          alignment: number | null
           category: string | null
-          confidence: number | null
+          complexity_score: number | null
           department: string | null
-          effort: number | null
           id: string | null
           idea_key: string | null
           idea_type: string | null
-          impact: number | null
+          impact_total: number | null
+          imperative: number | null
+          matrix_x: number | null
+          matrix_y: number | null
+          ministry_efficiency: number | null
+          pain_severity: number | null
           priority: string | null
-          rice_score: number | null
           status: string | null
+          timeframe_score: number | null
           title: string | null
+          vote_count: number | null
           vote_score: number | null
         }
         Insert: {
+          alignment?: number | null
           category?: string | null
-          confidence?: number | null
+          complexity_score?: number | null
           department?: string | null
-          effort?: number | null
           id?: string | null
           idea_key?: string | null
           idea_type?: string | null
-          impact?: number | null
+          impact_total?: number | null
+          imperative?: number | null
+          matrix_x?: number | null
+          matrix_y?: never
+          ministry_efficiency?: number | null
+          pain_severity?: number | null
           priority?: string | null
-          rice_score?: number | null
           status?: string | null
+          timeframe_score?: number | null
           title?: string | null
+          vote_count?: number | null
           vote_score?: number | null
         }
         Update: {
+          alignment?: number | null
           category?: string | null
-          confidence?: number | null
+          complexity_score?: number | null
           department?: string | null
-          effort?: number | null
           id?: string | null
           idea_key?: string | null
           idea_type?: string | null
-          impact?: number | null
+          impact_total?: number | null
+          imperative?: number | null
+          matrix_x?: number | null
+          matrix_y?: never
+          ministry_efficiency?: number | null
+          pain_severity?: number | null
           priority?: string | null
-          rice_score?: number | null
           status?: string | null
+          timeframe_score?: number | null
           title?: string | null
+          vote_count?: number | null
           vote_score?: number | null
+        }
+        Relationships: []
+      }
+      ph_ideas_monthly_trend: {
+        Row: {
+          approved: number | null
+          avg_impact: number | null
+          month: string | null
+          rejected: number | null
+          submitted: number | null
+        }
+        Relationships: []
+      }
+      ph_ideas_status_counts: {
+        Row: {
+          avg_impact: number | null
+          idea_count: number | null
+          status: string | null
+          total_votes: number | null
+        }
+        Relationships: []
+      }
+      ph_ideas_top_contributors: {
+        Row: {
+          avg_impact: number | null
+          contributor_name: string | null
+          ideas_approved: number | null
+          ideas_submitted: number | null
+          submitted_by: string | null
         }
         Relationships: []
       }
@@ -50033,6 +50273,7 @@ export type Database = {
         Row: {
           ai_category: string | null
           ai_duplicate_ids: string[] | null
+          ai_enrichment_status: string | null
           ai_summary: string | null
           created_at: string | null
           department: string | null
@@ -50040,6 +50281,7 @@ export type Database = {
           id: string | null
           idea_key: string | null
           idea_type: string | null
+          impact_total: number | null
           priority: string | null
           source: string | null
           submitted_by: string | null

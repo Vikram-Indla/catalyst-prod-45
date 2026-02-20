@@ -32,7 +32,7 @@ export function FeatureStoriesTab({ feature, progress }: FeatureStoriesTabProps)
     queryFn: async () => {
       if (!feature?.id) return [];
       
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('stories')
         .select(`
           id,

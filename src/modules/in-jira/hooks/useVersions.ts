@@ -106,7 +106,7 @@ export function useVersions(projectId: string | null | undefined) {
           }
 
           // Get status categories for each issue
-          const { data: issuesWithStatus } = await supabase
+          const { data: issuesWithStatus } = await (supabase as any)
             .from('injira_issues')
             .select(`
               id,
