@@ -62,8 +62,8 @@ export function useDailyScorecardData() {
         .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 
       // Fetch tasks with related data
-      const { data: tasks, error: taskError } = await supabase
-        .from('planner_tasks')
+      const { data: tasks, error: taskError } = await (supabase
+        .from('planner_tasks') as any)
         .select(`
           id,
           title,

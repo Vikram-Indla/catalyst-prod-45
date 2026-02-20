@@ -21,8 +21,8 @@ export function useUpdatePlannerTaskField() {
 
   const mutation = useMutation({
     mutationFn: async ({ taskId, field, value }: UpdateTaskFieldInput) => {
-      const { data, error } = await supabase
-        .from('planner_tasks')
+      const { data, error } = await (supabase
+        .from('planner_tasks') as any)
         .update({ [field]: value, updated_at: new Date().toISOString() })
         .eq('id', taskId)
         .select(`

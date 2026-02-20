@@ -49,8 +49,8 @@ export default function FeaturesPage() {
   const { data: features, isLoading } = useQuery({
     queryKey: ['features', searchQuery],
     queryFn: async () => {
-      let query = supabase
-        .from('features')
+      let query = (supabase
+        .from('features') as any)
         .select(`
           id,
           display_id,

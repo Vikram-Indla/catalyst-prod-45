@@ -115,8 +115,8 @@ function useTimelineTasks() {
   return useQuery({
     queryKey: ['timeline-tasks-dashboard'],
     queryFn: async (): Promise<TimelineTask[]> => {
-      const { data: tasks, error } = await supabase
-        .from('planner_tasks')
+      const { data: tasks, error } = await (supabase
+        .from('planner_tasks') as any)
         .select(`
           id,
           task_key,
