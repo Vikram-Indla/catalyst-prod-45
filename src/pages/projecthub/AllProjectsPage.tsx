@@ -191,32 +191,33 @@ export default function AllProjectsPage() {
               />
             </div>
             {/* Pagination pinned at bottom of card */}
-            {filtered.length > perPage && (
-              <div className="shrink-0 border-t border-slate-100 px-4 py-2 flex items-center justify-between" style={{ fontSize: 12, color: '#64748B' }}>
-                <span>Showing {page * perPage + 1}–{Math.min((page + 1) * perPage, filtered.length)} of {filtered.length} projects</span>
-                <div className="flex items-center gap-1">
-                  <button disabled={page === 0} onClick={() => setPage(p => p - 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: '1px solid #E2E8F0', background: '#FFF', cursor: 'pointer' }}>
-                    <ChevronLeft size={14} color="#334155" />
-                  </button>
-                  {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
-                    const pn = totalPages <= 5 ? i : Math.max(0, Math.min(page - 2, totalPages - 5)) + i;
-                    return (
-                      <button key={pn} onClick={() => setPage(pn)} className="flex items-center justify-center rounded" style={{ width: 28, height: 28, border: pn === page ? 'none' : '1px solid #E2E8F0', background: pn === page ? '#2563EB' : '#FFF', color: pn === page ? '#FFF' : '#334155', fontSize: 12, fontWeight: pn === page ? 600 : 400, cursor: 'pointer' }}>
-                        {pn + 1}
-                      </button>
-                    );
-                  })}
-                  <button disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: '1px solid #E2E8F0', background: '#FFF', cursor: 'pointer' }}>
-                    <ChevronRightIcon size={14} color="#334155" />
-                  </button>
-                  <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(0); }} className="ml-3 rounded" style={{ height: 28, padding: '0 6px', border: '1px solid #E2E8F0', fontSize: 12, color: '#334155', background: '#FFF', cursor: 'pointer' }}>
-                    <option value={12}>12 / page</option>
-                    <option value={25}>25 / page</option>
-                    <option value={50}>50 / page</option>
-                  </select>
-                </div>
+            <div className="shrink-0 border-t border-slate-100 px-4 py-2 flex items-center justify-between" style={{ fontSize: 12, color: '#64748B' }}>
+              <span>Showing {page * perPage + 1}–{Math.min((page + 1) * perPage, filtered.length)} of {filtered.length} projects</span>
+              <div className="flex items-center gap-1">
+                <button disabled={page === 0} onClick={() => setPage(p => p - 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: '1px solid #E2E8F0', background: '#FFF', cursor: 'pointer' }}>
+                  <ChevronLeft size={14} color="#334155" />
+                </button>
+                {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
+                  const pn = totalPages <= 5 ? i : Math.max(0, Math.min(page - 2, totalPages - 5)) + i;
+                  return (
+                    <button key={pn} onClick={() => setPage(pn)} className="flex items-center justify-center rounded" style={{ width: 28, height: 28, border: pn === page ? 'none' : '1px solid #E2E8F0', background: pn === page ? '#2563EB' : '#FFF', color: pn === page ? '#FFF' : '#334155', fontSize: 12, fontWeight: pn === page ? 600 : 400, cursor: 'pointer' }}>
+                      {pn + 1}
+                    </button>
+                  );
+                })}
+                <button disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: '1px solid #E2E8F0', background: '#FFF', cursor: 'pointer' }}>
+                  <ChevronRightIcon size={14} color="#334155" />
+                </button>
               </div>
-            )}
+              <span className="flex items-center gap-1.5" style={{ fontSize: 12, color: '#64748B' }}>
+                Rows per page:
+                <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(0); }} className="rounded" style={{ height: 26, padding: '0 4px', border: '1px solid #E2E8F0', fontSize: 12, color: '#334155', background: '#FFF', cursor: 'pointer' }}>
+                  <option value={12}>12</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+              </span>
+            </div>
           </div>
         ) : (
           <div className="flex-1 min-h-0 overflow-auto">

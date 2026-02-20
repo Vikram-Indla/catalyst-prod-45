@@ -31,10 +31,11 @@ interface Props {
 
 export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSelectProject }: Props) {
   return (
-    <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
+    <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
       {projects.map(p => {
         const isFav = favoriteIds.has(p.id);
         const grad = getAvatarGradient(p.project_key);
+        const total = p.work_items_done + p.work_items_in_progress + p.work_items_todo;
         return (
           <div
             key={p.id}
@@ -72,20 +73,36 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
               {/* Work items grid */}
               <div className="grid grid-cols-3 gap-2 mb-3">
                 {[
-                  { label: 'Epics', val: p.total_epics },
-                  { label: 'Stories', val: p.total_stories },
-                  { label: 'Tasks', val: p.total_tasks },
+                  { label: 'EPICS', val: p.total_epics },
+                  { label: 'STORIES', val: p.total_stories },
+                  { label: 'TASKS', val: p.total_tasks },
                 ].map(i => (
                   <div key={i.label} className="text-center rounded" style={{ padding: '6px 0', background: '#F8FAFC' }}>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: '#0F172A', fontFamily: "'JetBrains Mono', monospace" }}>{i.val}</div>
-                    <div style={{ fontSize: 10, color: '#94A3B8', fontWeight: 500 }}>{i.label}</div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', fontFamily: "'JetBrains Mono', monospace" }}>{i.val}</div>
+                    <div style={{ fontSize: 9, color: '#94A3B8', fontWeight: 600, letterSpacing: '0.04em' }}>{i.label}</div>
                   </div>
                 ))}
               </div>
 
-              {/* Distribution bar */}
+              {/* Distribution bar + text */}
               <div className="mb-3">
                 <DistributionBar todo={p.work_items_todo} inProgress={p.work_items_in_progress} done={p.work_items_done} />
+                {total > 0 && (
+                  <div className="flex items-center gap-3 mt-1.5" style={{ fontSize: 10, color: '#64748B' }}>
+                    <span className="inline-flex items-center gap-1">
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#16A34A' }} />
+                      {p.work_items_done} Done
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#2563EB' }} />
+                      {p.work_items_in_progress} In Prog
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#CBD5E1' }} />
+                      {p.work_items_todo} To Do
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Footer */}

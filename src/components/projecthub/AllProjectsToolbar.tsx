@@ -9,14 +9,21 @@ interface ToolbarProps {
   onFilterChange: (f: ProjectFilters) => void;
   onToggleAdvanced: () => void;
   showAdvanced: boolean;
-  stats: { total: number; catTodo: number; catInProgress: number; catDone: number };
+  stats: {
+    total: number;
+    statusActive: number;
+    statusOnHold: number;
+    statusPlanning: number;
+    statusCompleted: number;
+  };
 }
 
 const CHIPS = [
   { label: 'All', key: 'All', countKey: 'total' as const },
-  { label: 'To Do', key: 'To Do', countKey: 'catTodo' as const },
-  { label: 'In Progress', key: 'In Progress', countKey: 'catInProgress' as const },
-  { label: 'Done', key: 'Done', countKey: 'catDone' as const },
+  { label: 'Active', key: 'Active', countKey: 'statusActive' as const },
+  { label: 'On Hold', key: 'On Hold', countKey: 'statusOnHold' as const },
+  { label: 'Planning', key: 'Planning', countKey: 'statusPlanning' as const },
+  { label: 'Completed', key: 'Completed', countKey: 'statusCompleted' as const },
 ];
 
 export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange, onToggleAdvanced, showAdvanced, stats }: ToolbarProps) {
@@ -31,7 +38,7 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
 
   return (
     <div className="flex items-center gap-1.5 flex-wrap">
-      {/* Category chips — tighter spacing */}
+      {/* Status chips */}
       {CHIPS.map(c => {
         const active = filters.statusChip === c.key;
         const count = stats[c.countKey];
@@ -71,19 +78,7 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
 
       <div className="flex-1" />
 
-      {/* Search */}
-      <div className="flex items-center gap-2 rounded-md" style={{ height: 30, padding: '0 10px', background: '#FFF', border: '1px solid #E2E8F0', borderRadius: 6, minWidth: 200 }}>
-        <Search size={13} color="#94A3B8" />
-        <input
-          value={localSearch}
-          onChange={e => setLocalSearch(e.target.value)}
-          placeholder="Search projects..."
-          className="flex-1 bg-transparent outline-none"
-          style={{ fontSize: 12, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}
-        />
-      </div>
-
-      {/* Filter button with label */}
+      {/* Filter button */}
       <button
         onClick={onToggleAdvanced}
         className="flex items-center gap-1.5 rounded-md transition-all"
@@ -96,17 +91,28 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
           cursor: 'pointer',
           fontSize: 12,
           fontWeight: 500,
-          position: 'relative',
         }}
       >
         <SlidersHorizontal size={13} />
-        <span>Filters</span>
+        <span>Filter</span>
         {advFilterCount > 0 && (
           <span className="rounded-full flex items-center justify-center" style={{ width: 16, height: 16, fontSize: 9, fontWeight: 700, background: '#2563EB', color: '#FFF', marginLeft: 2 }}>
             {advFilterCount}
           </span>
         )}
       </button>
+
+      {/* Search */}
+      <div className="flex items-center gap-2 rounded-md" style={{ height: 30, padding: '0 10px', background: '#FFF', border: '1px solid #E2E8F0', borderRadius: 6, minWidth: 200 }}>
+        <Search size={13} color="#94A3B8" />
+        <input
+          value={localSearch}
+          onChange={e => setLocalSearch(e.target.value)}
+          placeholder="Search projects..."
+          className="flex-1 bg-transparent outline-none"
+          style={{ fontSize: 12, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}
+        />
+      </div>
 
       {/* View toggle */}
       <div className="flex items-center rounded-md" style={{ border: '1px solid #E2E8F0', overflow: 'hidden' }}>

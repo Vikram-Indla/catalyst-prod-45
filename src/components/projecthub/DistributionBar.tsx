@@ -11,8 +11,9 @@ export function DistributionBar({ todo, inProgress, done, showNumbers = false }:
   const total = todo + inProgress + done;
   if (total === 0) {
     return (
-      <div className="flex items-center justify-center">
-        <div style={{ width: '100%', height: 8, borderRadius: 4, background: '#E2E8F0' }} />
+      <div className="flex items-center">
+        <div style={{ width: '100%', height: 6, borderRadius: 3, background: '#E2E8F0' }} />
+        {showNumbers && <span style={{ fontSize: 10, color: '#94A3B8', marginLeft: 6, whiteSpace: 'nowrap', fontFamily: "'JetBrains Mono', monospace" }}>—</span>}
       </div>
     );
   }
@@ -24,14 +25,14 @@ export function DistributionBar({ todo, inProgress, done, showNumbers = false }:
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex flex-col gap-0.5" style={{ cursor: 'default' }}>
-            <div style={{ width: '100%', height: 8, borderRadius: 4, background: '#E2E8F0', overflow: 'hidden', display: 'flex' }}>
-              {doneP > 0 && <div style={{ width: `${doneP}%`, background: '#16A34A', borderRadius: doneP === 100 ? 4 : '4px 0 0 4px' }} />}
+          <div className="flex items-center gap-1.5" style={{ cursor: 'default' }}>
+            <div style={{ flex: 1, height: 6, borderRadius: 3, background: '#E2E8F0', overflow: 'hidden', display: 'flex', minWidth: 50 }}>
+              {doneP > 0 && <div style={{ width: `${doneP}%`, background: '#16A34A', borderRadius: doneP === 100 ? 3 : '3px 0 0 3px' }} />}
               {ipP > 0 && <div style={{ width: `${ipP}%`, background: '#2563EB' }} />}
               {todoP > 0 && <div style={{ width: `${todoP}%`, background: '#CBD5E1' }} />}
             </div>
             {showNumbers && (
-              <span style={{ fontSize: 9, color: '#64748B', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap', textAlign: 'center' }}>
+              <span style={{ fontSize: 10, color: '#64748B', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap' }}>
                 {done}/{inProgress}/{todo}
               </span>
             )}
