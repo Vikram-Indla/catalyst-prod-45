@@ -848,6 +848,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "caty_analytics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "caty_analytics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "caty_analytics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "caty_analytics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "caty_analytics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       caty_conversations: {
@@ -934,6 +969,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "caty_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "caty_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "caty_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "caty_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "caty_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -1146,6 +1216,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "caty_suggestions_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "caty_suggestions_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "caty_suggestions_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "caty_suggestions_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "caty_suggestions_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "caty_suggestions_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -1252,6 +1357,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "cc_activity_log_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
+          },
+          {
             foreignKeyName: "cc_activity_log_test_case_id_fkey"
             columns: ["test_case_id"]
             isOneToOne: false
@@ -1292,6 +1404,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -1437,11 +1584,53 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "change_numbers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "change_numbers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "change_numbers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "change_numbers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "change_numbers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "change_numbers_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
             referencedRelation: "releases"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "change_numbers_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -1822,6 +2011,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "dashboard_widgets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "dashboard_widgets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "dashboard_widgets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "dashboard_widgets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "dashboard_widgets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       data_access_audit: {
@@ -1890,6 +2114,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_access_audit_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "data_access_audit_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "data_access_audit_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "data_access_audit_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "data_access_audit_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -1969,6 +2228,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "defect_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       defect_audit_log: {
@@ -2030,6 +2324,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defect_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "defect_audit_log_defect_id_fkey"
@@ -2094,6 +2423,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "defect_column_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_column_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_column_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_column_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_column_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       defect_comments: {
@@ -2152,6 +2516,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defect_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "defect_comments_defect_id_fkey"
@@ -2218,6 +2617,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defect_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "defect_history_defect_id_fkey"
@@ -2304,6 +2738,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "defect_links_defect_id_fkey"
             columns: ["defect_id"]
             isOneToOne: false
@@ -2368,6 +2837,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defect_work_item_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_work_item_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_work_item_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_work_item_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "defect_work_item_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "defect_work_item_links_defect_id_fkey"
@@ -2526,6 +3030,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "defects_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "defects_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "defects_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "defects_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "defects_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "defects_duplicate_of_id_fkey"
             columns: ["duplicate_of_id"]
             isOneToOne: false
@@ -2582,6 +3121,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "defects_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "defects_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "defects_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "defects_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "defects_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "defects_resolved_by_fkey"
             columns: ["resolved_by"]
             isOneToOne: false
@@ -2610,11 +3184,53 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "defects_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "defects_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "defects_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "defects_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "defects_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "defects_target_release_id_fkey"
             columns: ["target_release_id"]
             isOneToOne: false
             referencedRelation: "releases"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "defects_target_release_id_fkey"
+            columns: ["target_release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
           },
           {
             foreignKeyName: "defects_test_case_id_fkey"
@@ -2692,6 +3308,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "deleted_items_log_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "deleted_items_log_restored_by_fkey"
             columns: ["restored_by"]
             isOneToOne: false
@@ -2718,6 +3369,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_restored_by_fkey"
+            columns: ["restored_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_restored_by_fkey"
+            columns: ["restored_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_restored_by_fkey"
+            columns: ["restored_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_restored_by_fkey"
+            columns: ["restored_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_restored_by_fkey"
+            columns: ["restored_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -4703,6 +5389,13 @@ export type Database = {
             referencedColumns: ["goal_id"]
           },
           {
+            foreignKeyName: "es_goal_dependencies_source_goal_id_fkey"
+            columns: ["source_goal_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_id"]
+          },
+          {
             foreignKeyName: "es_goal_dependencies_target_goal_id_fkey"
             columns: ["target_goal_id"]
             isOneToOne: false
@@ -4735,6 +5428,13 @@ export type Database = {
             columns: ["target_goal_id"]
             isOneToOne: false
             referencedRelation: "vw_alignment_map"
+            referencedColumns: ["goal_id"]
+          },
+          {
+            foreignKeyName: "es_goal_dependencies_target_goal_id_fkey"
+            columns: ["target_goal_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["goal_id"]
           },
         ]
@@ -4801,6 +5501,13 @@ export type Database = {
             referencedColumns: ["goal_id"]
           },
           {
+            foreignKeyName: "es_goal_initiatives_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_id"]
+          },
+          {
             foreignKeyName: "es_goal_initiatives_initiative_id_fkey"
             columns: ["initiative_id"]
             isOneToOne: false
@@ -4813,6 +5520,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_goal_initiatives_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_id"]
           },
         ]
       }
@@ -4953,6 +5667,13 @@ export type Database = {
             columns: ["theme_id"]
             isOneToOne: false
             referencedRelation: "vw_alignment_map"
+            referencedColumns: ["theme_id"]
+          },
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_id"]
           },
         ]
@@ -5138,7 +5859,47 @@ export type Database = {
             referencedRelation: "vw_alignment_map"
             referencedColumns: ["kr_id"]
           },
+          {
+            foreignKeyName: "es_initiatives_key_result_id_fkey"
+            columns: ["key_result_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_id"]
+          },
         ]
+      }
+      es_intelligence_panel_config: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          panel_name: string
+          structure: Json
+          version: number
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          panel_name?: string
+          structure: Json
+          version?: number
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          panel_name?: string
+          structure?: Json
+          version?: number
+        }
+        Relationships: []
       }
       es_investment_allocations: {
         Row: {
@@ -5220,6 +5981,13 @@ export type Database = {
             columns: ["theme_id"]
             isOneToOne: false
             referencedRelation: "vw_alignment_map"
+            referencedColumns: ["theme_id"]
+          },
+          {
+            foreignKeyName: "es_investment_allocations_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_id"]
           },
         ]
@@ -5342,6 +6110,13 @@ export type Database = {
             referencedRelation: "vw_alignment_map"
             referencedColumns: ["goal_id"]
           },
+          {
+            foreignKeyName: "es_key_results_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_id"]
+          },
         ]
       }
       es_kr_checkins: {
@@ -5407,6 +6182,13 @@ export type Database = {
             referencedRelation: "vw_alignment_map"
             referencedColumns: ["kr_id"]
           },
+          {
+            foreignKeyName: "es_kr_checkins_key_result_id_fkey"
+            columns: ["key_result_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_id"]
+          },
         ]
       }
       es_kr_initiatives: {
@@ -5450,6 +6232,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "es_kr_initiatives_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_id"]
+          },
+          {
             foreignKeyName: "es_kr_initiatives_key_result_id_fkey"
             columns: ["key_result_id"]
             isOneToOne: false
@@ -5475,6 +6264,13 @@ export type Database = {
             columns: ["key_result_id"]
             isOneToOne: false
             referencedRelation: "vw_alignment_map"
+            referencedColumns: ["kr_id"]
+          },
+          {
+            foreignKeyName: "es_kr_initiatives_key_result_id_fkey"
+            columns: ["key_result_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["kr_id"]
           },
         ]
@@ -5678,6 +6474,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "es_strategic_themes_vision_id_fkey"
             columns: ["vision_id"]
             isOneToOne: false
@@ -5835,6 +6666,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "es_theme_groups_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "es_theme_groups_updated_by_fkey"
             columns: ["updated_by"]
             isOneToOne: false
@@ -5861,6 +6727,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -5922,6 +6823,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "es_theme_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "es_theme_links_source_theme_id_fkey"
             columns: ["source_theme_id"]
             isOneToOne: false
@@ -5957,6 +6893,13 @@ export type Database = {
             referencedColumns: ["theme_id"]
           },
           {
+            foreignKeyName: "es_theme_links_source_theme_id_fkey"
+            columns: ["source_theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_id"]
+          },
+          {
             foreignKeyName: "es_theme_links_target_theme_id_fkey"
             columns: ["target_theme_id"]
             isOneToOne: false
@@ -5989,6 +6932,13 @@ export type Database = {
             columns: ["target_theme_id"]
             isOneToOne: false
             referencedRelation: "vw_alignment_map"
+            referencedColumns: ["theme_id"]
+          },
+          {
+            foreignKeyName: "es_theme_links_target_theme_id_fkey"
+            columns: ["target_theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_id"]
           },
         ]
@@ -6072,6 +7022,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "es_theme_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "es_theme_milestones_theme_id_fkey"
             columns: ["theme_id"]
             isOneToOne: false
@@ -6107,6 +7092,13 @@ export type Database = {
             referencedColumns: ["theme_id"]
           },
           {
+            foreignKeyName: "es_theme_milestones_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_id"]
+          },
+          {
             foreignKeyName: "es_theme_milestones_updated_by_fkey"
             columns: ["updated_by"]
             isOneToOne: false
@@ -6133,6 +7125,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -6357,6 +7384,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "execution_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "execution_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "execution_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "execution_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "execution_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "execution_results_test_case_id_fkey"
             columns: ["test_case_id"]
             isOneToOne: false
@@ -6421,6 +7483,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execution_run_audit_logs_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "execution_run_audit_logs_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "execution_run_audit_logs_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "execution_run_audit_logs_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "execution_run_audit_logs_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -6512,6 +7609,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "feature_contributors_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "feature_contributors_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "feature_contributors_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "feature_contributors_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "feature_contributors_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "feature_contributors_feature_id_fkey"
             columns: ["feature_id"]
             isOneToOne: false
@@ -6545,6 +7677,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feature_contributors_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "feature_contributors_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "feature_contributors_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "feature_contributors_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "feature_contributors_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -6922,6 +8089,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "features_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "features_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "features_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "features_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "features_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "features_change_number_id_fkey"
             columns: ["change_number_id"]
             isOneToOne: false
@@ -6990,6 +8192,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "releases"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "features_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
           },
           {
             foreignKeyName: "features_team_id_fkey"
@@ -7148,6 +8357,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "generated_reports_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "generated_reports_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "generated_reports_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "generated_reports_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "generated_reports_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "generated_reports_project_id_fkey"
@@ -9346,6 +10590,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "injira_ai_suggestions_accepted_by_fkey"
+            columns: ["accepted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_ai_suggestions_accepted_by_fkey"
+            columns: ["accepted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_ai_suggestions_accepted_by_fkey"
+            columns: ["accepted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_ai_suggestions_accepted_by_fkey"
+            columns: ["accepted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_ai_suggestions_accepted_by_fkey"
+            columns: ["accepted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "injira_ai_suggestions_issue_id_fkey"
             columns: ["issue_id"]
             isOneToOne: false
@@ -9438,6 +10717,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_automation_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_automation_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_automation_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_automation_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_automation_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "injira_automation_rules_tenant_id_fkey"
@@ -9545,6 +10859,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_changelog_groups_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_changelog_groups_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_changelog_groups_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_changelog_groups_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_changelog_groups_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "injira_changelog_groups_issue_id_fkey"
@@ -9800,6 +11149,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_import_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_import_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_import_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_import_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_import_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "injira_import_jobs_tenant_id_fkey"
@@ -10172,6 +11556,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "injira_issue_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issue_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issue_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issue_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issue_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "injira_issue_versions_issue_id_fkey"
             columns: ["issue_id"]
             isOneToOne: false
@@ -10344,6 +11763,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "injira_issues_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "injira_issues_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
@@ -10370,6 +11824,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issues_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "injira_issues_import_job_id_fkey"
@@ -10435,6 +11924,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "injira_issues_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "injira_issues_security_level_fk"
             columns: ["security_level_id"]
             isOneToOne: false
@@ -10482,6 +12006,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issues_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -10639,6 +12198,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "injira_role_assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_role_assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_role_assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_role_assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_role_assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "injira_role_assignments_role_id_fkey"
             columns: ["role_id"]
             isOneToOne: false
@@ -10679,6 +12273,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_role_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_role_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_role_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_role_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_role_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -11848,6 +13477,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "jira_sync_history_triggered_by_fkey"
+            columns: ["triggered_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "jira_sync_history_triggered_by_fkey"
+            columns: ["triggered_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "jira_sync_history_triggered_by_fkey"
+            columns: ["triggered_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "jira_sync_history_triggered_by_fkey"
+            columns: ["triggered_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "jira_sync_history_triggered_by_fkey"
+            columns: ["triggered_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       jira_sync_logs: {
@@ -11975,6 +13639,41 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jira_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "jira_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "jira_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "jira_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "jira_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -12933,6 +14632,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "key_result_checkins_created_by_user_id_fkey"
+            columns: ["created_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "key_result_checkins_created_by_user_id_fkey"
+            columns: ["created_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "key_result_checkins_created_by_user_id_fkey"
+            columns: ["created_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "key_result_checkins_created_by_user_id_fkey"
+            columns: ["created_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "key_result_checkins_created_by_user_id_fkey"
+            columns: ["created_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "key_result_checkins_key_result_id_fkey"
             columns: ["key_result_id"]
             isOneToOne: false
@@ -13108,6 +14842,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "key_results_v2_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "key_results_v2_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "key_results_v2_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "key_results_v2_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "key_results_v2_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -13385,6 +15154,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "masking_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "masking_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "masking_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "masking_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "masking_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       milestone_categories: {
@@ -13499,6 +15303,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "releases"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "milestones_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
           },
           {
             foreignKeyName: "milestones_work_item_id_fkey"
@@ -13697,6 +15508,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mock_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "mock_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "mock_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "mock_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "mock_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -15005,6 +16851,20 @@ export type Database = {
             foreignKeyName: "ph_acceptance_criteria_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "ph_acceptance_criteria_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
+          },
+          {
+            foreignKeyName: "ph_acceptance_criteria_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "vw_ph_work_items_full"
             referencedColumns: ["id"]
           },
@@ -15056,6 +16916,20 @@ export type Database = {
             foreignKeyName: "ph_activity_log_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "ph_activity_log_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
+          },
+          {
+            foreignKeyName: "ph_activity_log_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "vw_ph_work_items_full"
             referencedColumns: ["id"]
           },
@@ -15099,6 +16973,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_work_items"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_attachments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "ph_attachments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
           },
           {
             foreignKeyName: "ph_attachments_work_item_id_fkey"
@@ -15215,6 +17103,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_work_items"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_comments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "wh_comments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
           },
           {
             foreignKeyName: "wh_comments_work_item_id_fkey"
@@ -15806,6 +17708,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
+            columns: ["linked_initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_id"]
+          },
+          {
             foreignKeyName: "ph_ideas_parent_idea_id_fkey"
             columns: ["parent_idea_id"]
             isOneToOne: false
@@ -15895,6 +17804,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ph_initiative_attachments_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_id"]
+          },
+          {
             foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
@@ -15921,6 +17837,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -16051,6 +18002,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "ph_initiative_budget_items_initiative_id_fkey"
             columns: ["initiative_id"]
             isOneToOne: false
@@ -16063,6 +18049,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_budget_items_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_id"]
           },
         ]
       }
@@ -16133,6 +18126,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "ph_initiative_links_initiative_id_fkey"
             columns: ["initiative_id"]
             isOneToOne: false
@@ -16145,6 +18173,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_links_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_id"]
           },
         ]
       }
@@ -16239,6 +18274,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "ph_initiative_milestones_initiative_id_fkey"
             columns: ["initiative_id"]
             isOneToOne: false
@@ -16251,6 +18321,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_id"]
           },
           {
             foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
@@ -16279,6 +18356,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -16379,6 +18491,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "ph_initiative_risks_initiative_id_fkey"
             columns: ["initiative_id"]
             isOneToOne: false
@@ -16391,6 +18538,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_id"]
           },
           {
             foreignKeyName: "ph_initiative_risks_owner_id_fkey"
@@ -16419,6 +18573,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -16470,6 +18659,13 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_scores_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_id"]
           },
         ]
       }
@@ -16590,6 +18786,20 @@ export type Database = {
             foreignKeyName: "ph_issue_links_source_id_fkey"
             columns: ["source_id"]
             isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "ph_issue_links_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
+          },
+          {
+            foreignKeyName: "ph_issue_links_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
             referencedRelation: "vw_ph_work_items_full"
             referencedColumns: ["id"]
           },
@@ -16599,6 +18809,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_work_items"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_issue_links_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "ph_issue_links_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
           },
           {
             foreignKeyName: "ph_issue_links_target_id_fkey"
@@ -17230,6 +19454,20 @@ export type Database = {
             foreignKeyName: "wh_resource_assignments_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "wh_resource_assignments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
+          },
+          {
+            foreignKeyName: "wh_resource_assignments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "vw_ph_work_items_full"
             referencedColumns: ["id"]
           },
@@ -17565,6 +19803,13 @@ export type Database = {
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ph_user_favorites_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_id"]
+          },
         ]
       }
       ph_user_mapping: {
@@ -17708,6 +19953,20 @@ export type Database = {
             foreignKeyName: "ph_watchers_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "ph_watchers_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
+          },
+          {
+            foreignKeyName: "ph_watchers_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "vw_ph_work_items_full"
             referencedColumns: ["id"]
           },
@@ -17745,6 +20004,20 @@ export type Database = {
             foreignKeyName: "ph_work_item_components_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_components_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_components_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "vw_ph_work_items_full"
             referencedColumns: ["id"]
           },
@@ -17777,6 +20050,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_work_items"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_labels_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_labels_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
           },
           {
             foreignKeyName: "ph_work_item_labels_work_item_id_fkey"
@@ -17988,6 +20275,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_work_items"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
           },
           {
             foreignKeyName: "wh_work_items_parent_id_fkey"
@@ -18226,6 +20527,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "plan_team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "plan_team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "plan_team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "plan_team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "plan_team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       plan_test_cases: {
@@ -18281,6 +20617,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "plan_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "plan_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "plan_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "plan_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "plan_test_cases_plan_id_fkey"
@@ -18366,6 +20737,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "planhub_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       planhub_ai_config: {
@@ -18428,6 +20834,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "planhub_ai_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_ai_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_ai_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_ai_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_ai_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       planhub_comments: {
@@ -18483,6 +20924,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_comments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_comments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_comments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_comments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_comments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "planhub_comments_plan_id_fkey"
@@ -18606,6 +21082,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "planhub_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "planhub_plans_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: false
@@ -18632,6 +21143,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -18723,6 +21269,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "planhub_resources_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_resources_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_resources_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_resources_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_resources_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       planhub_role_permissions: {
@@ -18804,6 +21385,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -18892,6 +21508,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "planhub_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "planhub_tasks_parent_id_fkey"
             columns: ["parent_id"]
             isOneToOne: false
@@ -18973,6 +21624,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "planhub_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       planhub_user_roles: {
@@ -19027,6 +21713,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "planhub_user_roles_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "planhub_user_roles_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
@@ -19053,6 +21774,41 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -19115,6 +21871,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planhub_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "planhub_versions_plan_id_fkey"
@@ -19216,6 +22007,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -19388,6 +22214,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -19698,6 +22559,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "planner_task_lead_notes_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_task_lead_notes_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_task_lead_notes_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_task_lead_notes_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_task_lead_notes_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "planner_task_lead_notes_task_id_fkey"
             columns: ["task_id"]
             isOneToOne: false
@@ -19820,6 +22716,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "planner_task_mentions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_task_mentions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_task_mentions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_task_mentions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_task_mentions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       planner_task_watchers: {
@@ -19904,6 +22835,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_task_watchers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_task_watchers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_task_watchers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_task_watchers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_task_watchers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -20031,6 +22997,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "planner_tasks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
@@ -20057,6 +23058,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "planner_tasks_parent_fk"
@@ -20122,6 +23158,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "planner_tasks_reviewer_id_fkey"
             columns: ["reviewer_id"]
             isOneToOne: false
@@ -20148,6 +23219,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "planner_tasks_status_id_fkey"
@@ -21112,6 +24218,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "products_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "products_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "products_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "products_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "products_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       profiles: {
@@ -21353,6 +24494,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "portfolio_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "portfolio_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "portfolio_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "portfolio_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "portfolio_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       program_spend_per_point: {
@@ -21550,6 +24726,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "project_audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "project_audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "project_audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "project_audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "project_audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       project_features: {
@@ -21675,6 +24886,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "project_integrations_connected_by_fkey"
+            columns: ["connected_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "project_integrations_connected_by_fkey"
+            columns: ["connected_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "project_integrations_connected_by_fkey"
+            columns: ["connected_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "project_integrations_connected_by_fkey"
+            columns: ["connected_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "project_integrations_connected_by_fkey"
+            columns: ["connected_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "project_integrations_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -21745,6 +24991,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "project_invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "project_invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "project_invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "project_invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "project_invitations_project_id_fkey"
@@ -21870,6 +25151,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "program_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "program_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "program_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "program_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "program_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "project_members_added_by_fkey"
             columns: ["added_by"]
             isOneToOne: false
@@ -21898,6 +25214,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "project_members_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "project_members_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "project_members_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "project_members_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "project_members_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "project_members_invited_by_fkey"
             columns: ["invited_by"]
             isOneToOne: false
@@ -21924,6 +25275,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_members_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "project_members_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "project_members_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "project_members_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "project_members_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -22005,6 +25391,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_notification_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "project_notification_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "project_notification_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "project_notification_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "project_notification_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -22109,6 +25530,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_stars_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "project_stars_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "project_stars_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "project_stars_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "project_stars_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -22231,6 +25687,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "projects_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "projects_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "projects_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "projects_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "projects_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "projects_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
@@ -22259,6 +25750,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "projects_default_assignee_id_fkey"
             columns: ["default_assignee_id"]
             isOneToOne: false
@@ -22287,6 +25813,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "projects_default_assignee_id_fkey"
+            columns: ["default_assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "projects_default_assignee_id_fkey"
+            columns: ["default_assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "projects_default_assignee_id_fkey"
+            columns: ["default_assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "projects_default_assignee_id_fkey"
+            columns: ["default_assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "projects_default_assignee_id_fkey"
+            columns: ["default_assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "projects_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: false
@@ -22313,6 +25874,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "projects_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "projects_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "projects_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "projects_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -22424,6 +26020,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ra_categories_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ra_categories_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ra_categories_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ra_categories_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ra_categories_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "ra_categories_parent_id_fkey"
             columns: ["parent_id"]
             isOneToOne: false
@@ -22533,6 +26164,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ra_documents_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ra_documents_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ra_documents_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ra_documents_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ra_documents_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "ra_documents_parent_version_id_fkey"
             columns: ["parent_version_id"]
             isOneToOne: false
@@ -22630,6 +26296,13 @@ export type Database = {
             referencedRelation: "releases"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "release_feature_links_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
+          },
         ]
       }
       release_snapshots: {
@@ -22671,6 +26344,13 @@ export type Database = {
             referencedRelation: "releases"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "release_snapshots_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
+          },
         ]
       }
       release_story_links: {
@@ -22699,6 +26379,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "releases"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "release_story_links_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
           },
           {
             foreignKeyName: "release_story_links_story_id_fkey"
@@ -22742,6 +26429,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "releases"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "release_test_cycles_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -22980,6 +26674,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "releases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "releases_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
@@ -23006,6 +26735,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "releases_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "releases_project_id_fkey"
@@ -23043,6 +26807,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "releases_qa_lead_id_fkey"
+            columns: ["qa_lead_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_qa_lead_id_fkey"
+            columns: ["qa_lead_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_qa_lead_id_fkey"
+            columns: ["qa_lead_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_qa_lead_id_fkey"
+            columns: ["qa_lead_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_qa_lead_id_fkey"
+            columns: ["qa_lead_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "releases_release_manager_id_fkey"
             columns: ["release_manager_id"]
             isOneToOne: false
@@ -23069,6 +26868,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "releases_release_manager_id_fkey"
+            columns: ["release_manager_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_release_manager_id_fkey"
+            columns: ["release_manager_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_release_manager_id_fkey"
+            columns: ["release_manager_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_release_manager_id_fkey"
+            columns: ["release_manager_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_release_manager_id_fkey"
+            columns: ["release_manager_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "releases_release_vehicle_id_fkey"
@@ -23158,6 +26992,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "report_configurations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "report_configurations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "report_configurations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "report_configurations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "report_configurations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "report_configurations_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -23237,6 +27106,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "report_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "report_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "report_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "report_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "report_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "report_definitions_project_id_fkey"
@@ -23326,6 +27230,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "report_schedules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "report_schedules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "report_schedules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "report_schedules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "report_schedules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "report_schedules_report_id_fkey"
             columns: ["report_id"]
             isOneToOne: false
@@ -23401,6 +27340,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "report_snapshots_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "report_snapshots_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "report_snapshots_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "report_snapshots_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "report_snapshots_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "report_snapshots_report_id_fkey"
             columns: ["report_id"]
             isOneToOne: false
@@ -23472,6 +27446,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requirement_test_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "requirement_test_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "requirement_test_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "requirement_test_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "requirement_test_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "requirement_test_links_requirement_id_fkey"
@@ -23597,6 +27606,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "requirements_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "requirements_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "requirements_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "requirements_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "requirements_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "requirements_parent_id_fkey"
@@ -24258,6 +28302,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "roadmap_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "roadmap_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "roadmap_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "roadmap_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "roadmap_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -26049,6 +30128,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "subtasks_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
+          },
+          {
             foreignKeyName: "subtasks_story_id_fkey"
             columns: ["story_id"]
             isOneToOne: false
@@ -26110,6 +30196,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "t10_activity_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "t10_activity_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "t10_activity_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "t10_activity_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "t10_activity_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -26178,6 +30299,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "t10_ai_suggestions_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "t10_ai_suggestions_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "t10_ai_suggestions_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "t10_ai_suggestions_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "t10_ai_suggestions_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -26576,6 +30732,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "task_activity_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "task_activity_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "task_activity_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "task_activity_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "task_activity_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       task_attachments: {
@@ -26637,6 +30828,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "task_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "task_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "task_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "task_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -26724,6 +30950,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "task_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "task_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "task_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "task_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "task_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       task_dependencies: {
@@ -26780,6 +31041,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "task_dependencies_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "task_dependencies_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "task_dependencies_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "task_dependencies_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "task_dependencies_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       task_external_links: {
@@ -26835,6 +31131,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_external_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "task_external_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "task_external_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "task_external_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "task_external_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "task_external_links_task_id_fkey"
@@ -27084,6 +31415,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -27602,6 +31968,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "test_case_activities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "test_case_activities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "test_case_activities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "test_case_activities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "test_case_activities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "test_case_activities_test_case_id_fkey"
             columns: ["test_case_id"]
             isOneToOne: false
@@ -27745,6 +32146,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_case_defects_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "test_case_defects_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "test_case_defects_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "test_case_defects_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "test_case_defects_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "test_case_defects_step_id_fkey"
@@ -28278,6 +32714,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "test_cases_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "test_cases_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "test_cases_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "test_cases_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "test_cases_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "test_cases_folder_id_fkey"
             columns: ["folder_id"]
             isOneToOne: false
@@ -28290,6 +32761,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "releases"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cases_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
           },
           {
             foreignKeyName: "test_cases_updated_by_fkey"
@@ -28318,6 +32796,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cases_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "test_cases_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "test_cases_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "test_cases_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "test_cases_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -28559,6 +33072,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cycle_sets_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "test_cycle_sets_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "test_cycle_sets_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "test_cycle_sets_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "test_cycle_sets_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -28836,6 +33384,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "test_data_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "test_data_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "test_data_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "test_data_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "test_data_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "test_data_sets_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -29110,6 +33693,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_execution_results_assigned_tester_fkey"
+            columns: ["assigned_tester"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "test_execution_results_assigned_tester_fkey"
+            columns: ["assigned_tester"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "test_execution_results_assigned_tester_fkey"
+            columns: ["assigned_tester"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "test_execution_results_assigned_tester_fkey"
+            columns: ["assigned_tester"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "test_execution_results_assigned_tester_fkey"
+            columns: ["assigned_tester"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "test_execution_results_run_id_fkey"
@@ -29719,11 +34337,53 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "test_plans_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
             referencedRelation: "releases"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_plans_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -30010,6 +34670,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "test_step_evidence_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "test_step_evidence_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "test_step_evidence_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "test_step_evidence_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "test_step_evidence_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       test_steps: {
@@ -30189,6 +34884,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "th_app_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_app_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_app_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_app_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_app_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       th_audit_log: {
@@ -30283,6 +35013,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -30380,6 +35145,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "th_cycle_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "th_cycle_test_cases_cycle_id_fkey"
             columns: ["cycle_id"]
             isOneToOne: false
@@ -30413,6 +35213,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "th_cycle_test_cases_test_case_id_fkey"
@@ -30490,6 +35325,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "th_defect_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       th_defect_comments: {
@@ -30545,6 +35415,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_defect_comments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_comments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_comments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_comments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_comments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "th_defect_comments_defect_id_fkey"
@@ -30613,6 +35518,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "th_defect_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "th_defect_history_defect_id_fkey"
             columns: ["defect_id"]
             isOneToOne: false
@@ -30676,6 +35616,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "th_defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "th_defect_links_defect_id_fkey"
             columns: ["defect_id"]
             isOneToOne: false
@@ -30734,6 +35709,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_defect_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defect_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "th_defect_tags_defect_id_fkey"
@@ -30866,6 +35876,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "th_defects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "th_defects_folder_id_fkey"
             columns: ["folder_id"]
             isOneToOne: false
@@ -30906,6 +35951,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_defects_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defects_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defects_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defects_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_defects_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -30969,6 +36049,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "th_entity_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_entity_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_entity_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_entity_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_entity_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       th_environment_history: {
@@ -31030,6 +36145,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_environment_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_environment_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_environment_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_environment_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_environment_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "th_environment_history_environment_id_fkey"
@@ -31165,6 +36315,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "th_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       th_execution_attachments: {
@@ -31234,6 +36419,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "th_execution_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_execution_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_execution_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_execution_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_execution_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       th_execution_history: {
@@ -31295,6 +36515,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_execution_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_execution_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_execution_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_execution_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_execution_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "th_execution_history_cycle_test_case_id_fkey"
@@ -31394,6 +36649,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_export_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_export_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_export_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_export_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_export_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -31537,6 +36827,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "th_import_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_import_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_import_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_import_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_import_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       th_import_mappings: {
@@ -31595,6 +36920,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_import_mappings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_import_mappings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_import_mappings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_import_mappings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_import_mappings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -31697,6 +37057,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "th_report_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_report_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_report_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_report_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_report_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       th_reports: {
@@ -31797,6 +37192,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "th_reports_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_reports_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_reports_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_reports_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_reports_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "th_reports_plan_id_fkey"
             columns: ["plan_id"]
             isOneToOne: false
@@ -31855,6 +37285,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "th_requirement_tags_requirement_id_fkey"
@@ -31922,6 +37387,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tests_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tests_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tests_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tests_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_requirement_tests_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "th_requirement_tests_requirement_id_fkey"
@@ -32029,6 +37529,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "th_requirements_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_requirements_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_requirements_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_requirements_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_requirements_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       th_saved_filters: {
@@ -32087,6 +37622,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -32161,6 +37731,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_scheduled_reports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_scheduled_reports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_scheduled_reports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_scheduled_reports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_scheduled_reports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "th_scheduled_reports_template_id_fkey"
@@ -32336,6 +37941,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "th_shared_steps_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "th_shared_steps_updated_by_fkey"
             columns: ["updated_by"]
             isOneToOne: false
@@ -32362,6 +38002,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -32430,6 +38105,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_step_attachments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_step_attachments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_step_attachments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_step_attachments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_step_attachments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "th_step_attachments_step_id_fkey"
@@ -32511,6 +38221,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "th_step_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_step_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_step_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_step_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_step_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       th_tags: {
@@ -32575,6 +38320,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -32711,6 +38491,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_test_case_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_test_case_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_test_case_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_test_case_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_test_case_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "th_test_case_tags_tag_id_fkey"
@@ -32928,6 +38743,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "th_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "th_test_cycles_environment_id_fkey"
             columns: ["environment_id"]
             isOneToOne: false
@@ -32963,11 +38813,53 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "th_test_cycles_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "th_test_cycles_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
             referencedRelation: "releases"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -33114,6 +39006,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "th_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       th_test_steps: {
@@ -33222,6 +39149,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_user_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_user_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_user_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_user_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_user_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -33332,6 +39294,41 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "th_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "th_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "th_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "th_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -33614,6 +39611,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       tm_attachments: {
@@ -33678,6 +39710,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -33746,6 +39813,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "tm_audit_log_project_id_fkey"
@@ -33841,6 +39943,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -34038,6 +40175,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_comments_parent_id_fkey"
             columns: ["parent_id"]
             isOneToOne: false
@@ -34104,6 +40276,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_cycle_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_cycle_assignments_cycle_id_fkey"
             columns: ["cycle_id"]
             isOneToOne: false
@@ -34165,6 +40372,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -34356,6 +40598,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_cycle_milestones_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_milestones_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_milestones_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_milestones_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_milestones_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_cycle_milestones_cycle_id_fkey"
             columns: ["cycle_id"]
             isOneToOne: false
@@ -34463,6 +40740,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "tm_cycle_scope_cycle_id_fkey"
@@ -34578,6 +40890,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "tm_defect_links_defect_id_fkey"
@@ -34771,6 +41118,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_defects_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_defects_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_defects_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_defects_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_defects_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_defects_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -34811,6 +41193,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_defects_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_defects_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_defects_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_defects_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_defects_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "tm_defects_source_test_case_id_fkey"
@@ -34967,6 +41384,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "tm_folders_parent_id_fkey"
@@ -35294,6 +41746,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "tm_notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       tm_permissions: {
@@ -35389,6 +41876,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_plan_approvals_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_plan_approvals_plan_id_fkey"
             columns: ["plan_id"]
             isOneToOne: false
@@ -35422,6 +41944,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -35527,6 +42084,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_plan_scope_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_scope_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_scope_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_scope_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_scope_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_plan_scope_plan_id_fkey"
             columns: ["plan_id"]
             isOneToOne: false
@@ -35590,6 +42182,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_plan_team_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_plan_team_plan_id_fkey"
             columns: ["plan_id"]
             isOneToOne: false
@@ -35623,6 +42250,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -35682,6 +42344,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_plan_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "tm_plan_versions_plan_id_fkey"
@@ -35754,6 +42451,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -35856,6 +42588,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_release_gate_results_evaluated_by_fkey"
+            columns: ["evaluated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_gate_results_evaluated_by_fkey"
+            columns: ["evaluated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_gate_results_evaluated_by_fkey"
+            columns: ["evaluated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_gate_results_evaluated_by_fkey"
+            columns: ["evaluated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_gate_results_evaluated_by_fkey"
+            columns: ["evaluated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_release_gate_results_gate_id_fkey"
             columns: ["gate_id"]
             isOneToOne: false
@@ -35868,6 +42635,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "releases"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_gate_results_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -35962,11 +42736,53 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_release_quality_gates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_quality_gates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_quality_gates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_quality_gates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_quality_gates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_release_quality_gates_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
             referencedRelation: "releases"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_quality_gates_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -36055,6 +42871,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_release_readiness_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_release_readiness_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
@@ -36083,11 +42934,53 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_release_readiness_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_release_readiness_release_id_fkey"
             columns: ["release_id"]
             isOneToOne: false
             referencedRelation: "releases"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -36143,6 +43036,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_release_signoffs_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
+          },
+          {
             foreignKeyName: "tm_release_signoffs_requested_by_fkey"
             columns: ["requested_by"]
             isOneToOne: false
@@ -36171,6 +43071,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_release_signoffs_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_release_signoffs_stakeholder_id_fkey"
             columns: ["stakeholder_id"]
             isOneToOne: false
@@ -36197,6 +43132,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_stakeholder_id_fkey"
+            columns: ["stakeholder_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_stakeholder_id_fkey"
+            columns: ["stakeholder_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_stakeholder_id_fkey"
+            columns: ["stakeholder_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_stakeholder_id_fkey"
+            columns: ["stakeholder_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_stakeholder_id_fkey"
+            columns: ["stakeholder_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -36274,6 +43244,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_requirement_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "tm_requirement_links_test_case_id_fkey"
@@ -36388,6 +43393,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_run_case_assignments_assigned_tester_id_fkey"
+            columns: ["assigned_tester_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_run_case_assignments_assigned_tester_id_fkey"
+            columns: ["assigned_tester_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_run_case_assignments_assigned_tester_id_fkey"
+            columns: ["assigned_tester_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_run_case_assignments_assigned_tester_id_fkey"
+            columns: ["assigned_tester_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_run_case_assignments_assigned_tester_id_fkey"
+            columns: ["assigned_tester_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_run_case_assignments_run_id_fkey"
             columns: ["run_id"]
             isOneToOne: false
@@ -36483,6 +43523,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_run_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_run_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_run_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_run_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_run_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_run_templates_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -36570,6 +43645,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -36686,6 +43796,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_scheduled_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_scheduled_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_scheduled_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_scheduled_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_scheduled_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "tm_scheduled_runs_last_run_id_fkey"
@@ -36824,6 +43969,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "tm_signoff_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_signoff_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_signoff_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_signoff_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_signoff_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       tm_step_definitions: {
@@ -36891,6 +44071,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_step_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_step_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_step_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_step_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_step_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "tm_step_definitions_project_id_fkey"
@@ -36972,6 +44187,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_step_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_step_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_step_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_step_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_step_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "tm_step_results_test_run_id_fkey"
@@ -37106,6 +44356,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "tm_test_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       tm_test_case_links: {
@@ -37161,6 +44446,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_links_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_links_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_links_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_links_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_links_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "tm_test_case_links_test_case_id_fkey"
@@ -37252,6 +44572,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_test_case_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_test_case_templates_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -37329,6 +44684,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_versions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_versions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_versions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_versions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_versions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "tm_test_case_versions_test_case_id_fkey"
@@ -37497,6 +44887,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_test_cases_case_type_id_fkey"
             columns: ["case_type_id"]
             isOneToOne: false
@@ -37544,6 +44969,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "tm_test_cases_folder_id_fkey"
@@ -37600,6 +45060,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "releases"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
           },
           {
             foreignKeyName: "tm_test_cases_release_version_id_fkey"
@@ -37729,6 +45196,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_test_cycles_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
@@ -37757,6 +45259,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_test_cycles_environment_id_fkey"
             columns: ["environment_id"]
             isOneToOne: false
@@ -37783,6 +45320,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "releases"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
           },
           {
             foreignKeyName: "tm_test_cycles_test_plan_id_fkey"
@@ -37846,6 +45390,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_plan_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plan_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plan_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plan_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plan_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "tm_test_plan_cases_test_case_id_fkey"
@@ -38021,6 +45600,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_test_plans_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
@@ -38049,6 +45663,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_test_plans_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -38068,6 +45717,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "releases"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
           },
           {
             foreignKeyName: "tm_test_plans_template_id_fkey"
@@ -38196,6 +45852,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_test_runs_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_runs_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_runs_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_runs_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_runs_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_test_runs_test_data_row_id_fkey"
             columns: ["test_data_row_id"]
             isOneToOne: false
@@ -38257,6 +45948,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_set_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_set_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_set_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_set_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_set_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "tm_test_set_cases_test_case_id_fkey"
@@ -38360,6 +46086,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_test_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_test_sets_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
@@ -38386,6 +46147,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_sets_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_sets_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_sets_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_sets_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_sets_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "tm_test_sets_project_id_fkey"
@@ -38540,6 +46336,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "tm_user_presence_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_user_presence_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_user_presence_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_user_presence_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_user_presence_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       tm_user_roles: {
@@ -38597,6 +46428,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_user_roles_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_user_roles_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_user_roles_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_user_roles_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_user_roles_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_user_roles_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -38644,6 +46510,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -38756,6 +46657,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "transition_approvers_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "transition_approvers_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "transition_approvers_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "transition_approvers_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "transition_approvers_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "transition_approvers_requested_by_fkey"
             columns: ["requested_by"]
             isOneToOne: false
@@ -38782,6 +46718,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transition_approvers_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "transition_approvers_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "transition_approvers_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "transition_approvers_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "transition_approvers_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -39030,6 +47001,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_bulk_update_audit_triggered_by_fkey"
+            columns: ["triggered_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "user_bulk_update_audit_triggered_by_fkey"
+            columns: ["triggered_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "user_bulk_update_audit_triggered_by_fkey"
+            columns: ["triggered_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "user_bulk_update_audit_triggered_by_fkey"
+            columns: ["triggered_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "user_bulk_update_audit_triggered_by_fkey"
+            columns: ["triggered_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       user_email_preferences: {
@@ -39208,6 +47214,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "user_field_change_log_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "user_field_change_log_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "user_field_change_log_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "user_field_change_log_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "user_field_change_log_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "user_field_change_log_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -39234,6 +47275,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_field_change_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "user_field_change_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "user_field_change_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "user_field_change_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "user_field_change_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -39530,6 +47606,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "user_notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "user_notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "user_notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "user_notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -40020,6 +48131,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "webhooks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "webhooks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "webhooks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "webhooks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "webhooks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "webhooks_project_id_fkey"
@@ -40529,6 +48675,13 @@ export type Database = {
             referencedRelation: "releases"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "work_item_versions_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
+          },
         ]
       }
       work_item_watchers: {
@@ -40810,6 +48963,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "work_manager_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "work_manager_tasks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
@@ -40838,6 +49026,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "work_manager_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "work_manager_tasks_reporter_id_fkey"
             columns: ["reporter_id"]
             isOneToOne: false
@@ -40864,6 +49087,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "work_manager_tasks_team_id_fkey"
@@ -41160,6 +49418,13 @@ export type Database = {
             referencedRelation: "vw_alignment_map"
             referencedColumns: ["theme_id"]
           },
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_id"]
+          },
         ]
       }
       es_dashboard_okr_tree: {
@@ -41309,6 +49574,13 @@ export type Database = {
             referencedRelation: "vw_alignment_map"
             referencedColumns: ["theme_id"]
           },
+          {
+            foreignKeyName: "es_goals_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_id"]
+          },
         ]
       }
       es_themes_list_view: {
@@ -41373,6 +49645,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "fk_theme_group"
@@ -41581,6 +49888,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
+            columns: ["linked_initiative_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_id"]
           },
           {
             foreignKeyName: "ph_ideas_parent_idea_id_fkey"
@@ -41884,6 +50198,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "planner_tasks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
@@ -41910,6 +50259,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "planner_tasks_parent_fk"
@@ -42033,6 +50417,41 @@ export type Database = {
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
         ]
       }
       planner_dashboard_metrics: {
@@ -42128,6 +50547,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "planner_tasks_status_id_fkey"
@@ -42256,6 +50710,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "planner_tasks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
@@ -42282,6 +50771,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "planner_tasks_parent_fk"
@@ -42347,6 +50871,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "planner_tasks_reviewer_id_fkey"
             columns: ["reviewer_id"]
             isOneToOne: false
@@ -42373,6 +50932,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "planner_tasks_status_id_fkey"
@@ -42507,6 +51101,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "planner_tasks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
@@ -42533,6 +51162,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "planner_tasks_status_id_fkey"
@@ -43229,6 +51893,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_folders_parent_id_fkey"
             columns: ["parent_id"]
             isOneToOne: false
@@ -43350,6 +52049,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_test_cycles_environment_id_fkey"
             columns: ["environment_id"]
             isOneToOne: false
@@ -43416,6 +52150,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_test_cycles_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -43473,6 +52242,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -43545,6 +52349,41 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_users"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
           {
             foreignKeyName: "tm_test_cases_folder_id_fkey"
@@ -43642,6 +52481,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_test_cycles_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
@@ -43670,6 +52544,41 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
             foreignKeyName: "tm_test_cycles_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
@@ -43689,6 +52598,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "releases"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["release_id"]
           },
         ]
       }
@@ -43764,6 +52680,118 @@ export type Database = {
           theme_status: string | null
         }
         Relationships: []
+      }
+      vw_chain_intelligence: {
+        Row: {
+          epic_created_at: string | null
+          epic_due: string | null
+          epic_id: string | null
+          epic_key: string | null
+          epic_owner_id: string | null
+          epic_owner_name: string | null
+          epic_status: string | null
+          epic_title: string | null
+          epic_updated_at: string | null
+          goal_created_at: string | null
+          goal_health: number | null
+          goal_id: string | null
+          goal_key: string | null
+          goal_owner_id: string | null
+          goal_owner_name: string | null
+          goal_owner_role: string | null
+          goal_progress: number | null
+          goal_start: string | null
+          goal_status: string | null
+          goal_target: string | null
+          goal_title: string | null
+          initiative_created_at: string | null
+          initiative_epic_linked_at: string | null
+          initiative_id: string | null
+          initiative_key: string | null
+          initiative_owner_id: string | null
+          initiative_owner_name: string | null
+          initiative_progress: number | null
+          initiative_status:
+            | Database["public"]["Enums"]["initiative_status"]
+            | null
+          initiative_target: string | null
+          initiative_title: string | null
+          kr_created_at: string | null
+          kr_current: number | null
+          kr_id: string | null
+          kr_initiative_linked_at: string | null
+          kr_key: string | null
+          kr_owner_id: string | null
+          kr_owner_name: string | null
+          kr_owner_role: string | null
+          kr_progress: number | null
+          kr_status: string | null
+          kr_target: number | null
+          kr_target_date: string | null
+          kr_title: string | null
+          kr_unit: string | null
+          theme_created_at: string | null
+          theme_end: string | null
+          theme_id: string | null
+          theme_key: string | null
+          theme_name: string | null
+          theme_owner_id: string | null
+          theme_owner_name: string | null
+          theme_owner_role: string | null
+          theme_progress: number | null
+          theme_start: string | null
+          theme_status: string | null
+        }
+        Relationships: []
+      }
+      vw_epic_stories: {
+        Row: {
+          assignee_id: string | null
+          assignee_name: string | null
+          cycle_days: number | null
+          epic_id: string | null
+          release_id: string | null
+          release_name: string | null
+          release_status: Database["public"]["Enums"]["release_status"] | null
+          story_created_at: string | null
+          story_due: string | null
+          story_id: string | null
+          story_key: string | null
+          story_priority: string | null
+          story_status: string | null
+          story_title: string | null
+          story_updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       vw_ph_calendar_events: {
         Row: {
@@ -43936,6 +52964,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_work_items"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
           },
           {
             foreignKeyName: "wh_work_items_parent_id_fkey"
