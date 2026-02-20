@@ -223,6 +223,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     themeId: string;
     goalId: string;
     epicId: string | null;
+    themeDisplayKey?: string;
   } | null>(null);
   const [isIntelOpen, setIsIntelOpen] = useState(false);
   const [aiResult, setAiResult] = useState<AIResult | null>(null);
@@ -255,8 +256,8 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
   // Compute metrics
   const chainMetrics = useMemo(() => {
     if (!chainIntelData || chainIntelData.length === 0) return null;
-    return computeChainMetrics(chainIntelData, epicStories || [], chainDefects || [], ownerRoleMap || undefined);
-  }, [chainIntelData, epicStories, chainDefects, ownerRoleMap]);
+    return computeChainMetrics(chainIntelData, epicStories || [], chainDefects || [], ownerRoleMap || undefined, intelChain?.themeDisplayKey);
+  }, [chainIntelData, epicStories, chainDefects, ownerRoleMap, intelChain?.themeDisplayKey]);
   const filteredData = useMemo(() => {
     if (!data) return null;
     if (selectedThemeFilter === 'all') return data;
@@ -451,6 +452,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           themeId: matchingRow.theme_id,
           goalId: matchingRow.goal_id,
           epicId: matchingRow.epic_id || null,
+          themeDisplayKey: matchingRow.theme_key || undefined,
         });
         setIsIntelOpen(true);
         setIsAILoading(true);
