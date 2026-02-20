@@ -238,13 +238,13 @@ export function filterAndSortProjects(
     );
   }
 
-  // Category chip (replaces old status chip)
+  // Status chip filter (Active, On Hold, Planning, Completed)
   if (filters.statusChip !== 'All') {
     const map: Record<string, string> = {
-      'To Do': 'todo', 'In Progress': 'in_progress', 'Done': 'done'
+      'Active': 'active', 'On Hold': 'on_hold', 'Planning': 'planning', 'Completed': 'completed'
     };
     const dbVal = map[filters.statusChip];
-    if (dbVal) result = result.filter(p => p.status_category === dbVal);
+    if (dbVal) result = result.filter(p => p.status === dbVal);
   }
 
   // Advanced filters
@@ -291,16 +291,17 @@ export function filterAndSortProjects(
 export function computePortfolioStats(projects: ProjectListItem[]) {
   return {
     total: projects.length,
-    onTrack: projects.filter(p => p.health_status === 'on_track').length,
+    active: projects.filter(p => p.status === 'active').length,
     atRisk: projects.filter(p => p.health_status === 'at_risk' || p.health_status === 'off_track').length,
     totalEpics: projects.reduce((s, p) => s + p.total_epics, 0),
     totalStories: projects.reduce((s, p) => s + p.total_stories, 0),
     totalTodo: projects.reduce((s, p) => s + p.work_items_todo, 0),
     totalInProgress: projects.reduce((s, p) => s + p.work_items_in_progress, 0),
     totalDone: projects.reduce((s, p) => s + p.work_items_done, 0),
-    // Category counts for chips
-    catTodo: projects.filter(p => p.status_category === 'todo').length,
-    catInProgress: projects.filter(p => p.status_category === 'in_progress').length,
-    catDone: projects.filter(p => p.status_category === 'done').length,
+    // Status counts for chips
+    statusActive: projects.filter(p => p.status === 'active').length,
+    statusOnHold: projects.filter(p => p.status === 'on_hold').length,
+    statusPlanning: projects.filter(p => p.status === 'planning').length,
+    statusCompleted: projects.filter(p => p.status === 'completed').length,
   };
 }
