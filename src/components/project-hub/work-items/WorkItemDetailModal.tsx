@@ -5,6 +5,8 @@ import { updateWorkItem } from '@/services/workItemService';
 import { createWorkItem } from '@/services/workItemService';
 import { CollapsibleSection } from './detail/CollapsibleSection';
 import { StatusLozenge } from './detail/StatusLozenge';
+import { DetailRightSidebar } from './detail/DetailRightSidebar';
+import { ActivityFeed } from './detail/ActivityFeed';
 import { useWorkItemDetail, type ChildItem } from '@/hooks/useWorkItemDetail';
 import {
   X, Copy, Bookmark, Eye, ChevronDown, ArrowUp, ArrowRight, ArrowDown,
@@ -478,94 +480,18 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
                   ))}
                 </CollapsibleSection>
               )}
+
+              {/* Activity Feed */}
+              <ActivityFeed workItemId={item.id} />
             </div>
 
             {/* ─── Right Sidebar ─────────────────────── */}
-            <div
-              className="shrink-0 overflow-y-auto"
-              style={{ width: 260, borderLeft: '1px solid #F1F5F9', padding: '20px 16px' }}
-            >
-              {/* Status */}
-              <div className="mb-5">
-                <span className="text-[10px] font-semibold uppercase tracking-wider block mb-1.5" style={{ color: '#94A3B8' }}>Status</span>
-                <StatusLozenge name={item.status_name} category={item.status_category} size="md" />
-              </div>
-
-              {/* Type */}
-              <div className="mb-5">
-                <span className="text-[10px] font-semibold uppercase tracking-wider block mb-1.5" style={{ color: '#94A3B8' }}>Type</span>
-                <div className="flex items-center gap-1.5">
-                  <span style={{ color: typeColor }}>{TYPE_ICONS[item.type_name] || <CheckSquare size={14} />}</span>
-                  <span className="text-[13px] font-medium" style={{ color: '#334155' }}>{item.type_name}</span>
-                </div>
-              </div>
-
-              {/* Assignee */}
-              <div className="mb-5">
-                <span className="text-[10px] font-semibold uppercase tracking-wider block mb-1.5" style={{ color: '#94A3B8' }}>Assignee</span>
-                {item.assignee_name ? (
-                  <div className="flex items-center gap-2">
-                    <MiniAvatar name={item.assignee_name} />
-                    <span className="text-[13px] font-medium" style={{ color: '#334155' }}>{item.assignee_name}</span>
-                  </div>
-                ) : (
-                  <span className="text-[13px]" style={{ color: '#94A3B8' }}>Unassigned</span>
-                )}
-              </div>
-
-              {/* Priority */}
-              <div className="mb-5">
-                <span className="text-[10px] font-semibold uppercase tracking-wider block mb-1.5" style={{ color: '#94A3B8' }}>Priority</span>
-                <div className="flex items-center gap-1.5">
-                  <span style={{ color: PRIORITIES.find(p => p.value === item.priority)?.color }}>
-                    {PRIORITIES.find(p => p.value === item.priority)?.icon}
-                  </span>
-                  <span className="text-[13px] font-medium" style={{ color: '#334155' }}>{item.priority}</span>
-                </div>
-              </div>
-
-              {/* Due Date */}
-              <div className="mb-5">
-                <span className="text-[10px] font-semibold uppercase tracking-wider block mb-1.5" style={{ color: '#94A3B8' }}>Due Date</span>
-                <div className="flex items-center gap-1.5">
-                  <Calendar size={13} style={{ color: '#94A3B8' }} />
-                  <span className="text-[12px]" style={{ fontFamily: 'JetBrains Mono, monospace', color: item.due_date && new Date(item.due_date) < new Date() ? '#DC2626' : '#334155' }}>
-                    {item.due_date ? new Date(item.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
-                  </span>
-                </div>
-              </div>
-
-              {/* Story Points */}
-              {item.story_points != null && (
-                <div className="mb-5">
-                  <span className="text-[10px] font-semibold uppercase tracking-wider block mb-1.5" style={{ color: '#94A3B8' }}>Story Points</span>
-                  <span className="text-[13px] font-semibold" style={{ color: '#334155' }}>{item.story_points}</span>
-                </div>
-              )}
-
-              {/* Flagged */}
-              <div className="mb-5">
-                <span className="text-[10px] font-semibold uppercase tracking-wider block mb-1.5" style={{ color: '#94A3B8' }}>Flagged</span>
-                <button
-                  onClick={() => handleUpdateField('is_flagged', !item.is_flagged)}
-                  className="flex items-center gap-1.5 text-[12px] font-medium"
-                  style={{ color: item.is_flagged ? '#DC2626' : '#94A3B8' }}
-                >
-                  <Flag size={13} />
-                  {item.is_flagged ? 'Flagged' : 'Not flagged'}
-                </button>
-              </div>
-
-              {/* Timestamps */}
-              <div className="pt-3 mt-3" style={{ borderTop: '1px solid #F1F5F9' }}>
-                <div className="text-[10px] mb-1" style={{ color: '#94A3B8' }}>
-                  Created {new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                </div>
-                <div className="text-[10px]" style={{ color: '#94A3B8' }}>
-                  Updated {new Date(item.updated_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                </div>
-              </div>
-            </div>
+            <DetailRightSidebar
+              item={item}
+              projectId={projectId}
+              statuses={statuses}
+              onInvalidate={invalidate}
+            />
           </div>
         )}
       </div>
