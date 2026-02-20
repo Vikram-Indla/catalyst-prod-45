@@ -150,6 +150,6 @@ export interface CreateProjectInput {
   name: string;
   project_key: string;
   department?: string;
-  status?: ProjectStatus;
   description?: string;
+  status_category?: string;
 }
