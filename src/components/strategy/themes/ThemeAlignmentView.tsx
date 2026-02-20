@@ -1,6 +1,6 @@
 /**
  * ThemeAlignmentView — CIO-Grade Full-Screen Strategy Alignment Map
- * With AI Executive Story Panel (Lovable AI / Gemini streaming)
+ * With Chain Focus Zoom & AI Executive Story Panel
  */
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { ArrowLeft, X, Minus, Plus, RotateCcw, Unlink, Sparkles, RefreshCw, Copy, ChevronRight } from 'lucide-react';
@@ -12,6 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAlignmentMapData, type AlignmentNode, type AlignmentRow } from '@/hooks/useAlignmentMapData';
 import { catalystToast } from '@/lib/catalystToast';
 
@@ -84,39 +90,84 @@ function GhostNode({ label }: { label: string }) {
   );
 }
 
-function ChainBadge({ color, label, title }: { color: string; label: string; title: string }) {
+function ChainPill({ color, keyLabel, title }: { color: string; keyLabel: string; title: string }) {
   return (
-    <div className="flex items-center gap-1.5 max-w-[200px]">
-      <span className="font-mono font-bold px-2 py-0.5 rounded-md shrink-0"
-        style={{ fontSize: 10, background: `${color}15`, color }}>
-        {label}
+    <div className="flex items-center gap-1.5 max-w-[180px]">
+      <span className="font-mono font-bold px-1.5 py-0.5 rounded shrink-0"
+        style={{ fontSize: 9, background: `${color}15`, color }}>
+        {keyLabel}
       </span>
       <span className="font-medium truncate" style={{ fontSize: 11, color: '#334155' }}>{title}</span>
     </div>
   );
 }
 
+function MetricCard({ label, value, sub, color }: { label: string; value: string; sub?: string; color: string }) {
+  return (
+    <Card className="border-border bg-card">
+      <CardContent className="p-3">
+        <p className="uppercase tracking-wider font-semibold text-muted-foreground mb-1" style={{ fontSize: 10 }}>
+          {label}
+        </p>
+        <p className="font-bold leading-none" style={{ fontSize: 20, color }}>
+          {value}
+        </p>
+        {sub && <p className="text-muted-foreground mt-1" style={{ fontSize: 10 }}>{sub}</p>}
+      </CardContent>
+    </Card>
+  );
+}
+
 function AILoadingState() {
   return (
-    <div className="flex flex-col items-center justify-center h-full px-8">
-      <div className="relative mb-6">
-        <div className="flex items-center justify-center rounded-2xl" style={{ width: 56, height: 56, background: '#F3E8FF' }}>
-          <Sparkles size={24} style={{ color: '#7C3AED' }} />
+    <div className="px-8 py-8">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="flex items-center justify-center rounded-xl" style={{ width: 40, height: 40, background: '#F3E8FF' }}>
+          <Sparkles size={16} className="animate-pulse" style={{ color: '#7C3AED' }} />
         </div>
-        <div className="absolute inset-0 rounded-2xl animate-ping" style={{ background: '#DDD6FE', opacity: 0.2 }} />
+        <div>
+          <div className="h-3 w-48 bg-muted rounded-full animate-pulse" />
+          <div className="h-2.5 w-32 bg-muted/50 rounded-full animate-pulse mt-2" />
+        </div>
       </div>
-      <p className="font-semibold mb-2" style={{ fontSize: 15, color: '#0F172A' }}>Analyzing strategic chain…</p>
-      <p className="text-center" style={{ fontSize: 13, color: '#64748B', maxWidth: 280 }}>
-        AI is reviewing the alignment from theme to execution and generating your executive brief.
-      </p>
-      <div className="w-full mt-8 space-y-3" style={{ maxWidth: 400 }}>
-        <div className="h-3 bg-slate-100 rounded-full animate-pulse" style={{ width: '75%' }} />
-        <div className="h-3 bg-slate-100 rounded-full animate-pulse" style={{ width: '100%', animationDelay: '75ms' }} />
-        <div className="h-3 bg-slate-100 rounded-full animate-pulse" style={{ width: '83%', animationDelay: '150ms' }} />
-        <div className="h-3 bg-slate-50 rounded-full animate-pulse" style={{ width: '66%', animationDelay: '200ms' }} />
-      </div>
+      {[1, 2, 3, 4].map(section => (
+        <div key={section} className="mb-8">
+          <div className="h-3 w-40 bg-muted rounded-full animate-pulse mb-4" />
+          <div className="space-y-2.5">
+            <div className="h-2.5 w-full bg-muted/50 rounded-full animate-pulse" />
+            <div className="h-2.5 bg-muted/50 rounded-full animate-pulse" style={{ width: '90%' }} />
+            <div className="h-2.5 bg-muted/50 rounded-full animate-pulse" style={{ width: '75%' }} />
+          </div>
+        </div>
+      ))}
     </div>
   );
+}
+
+// ── Chain health helpers ──
+function getChainHealthLabel(chain: LockedChainData | null): string {
+  if (!chain) return '—';
+  if (!chain.initiative) return 'Broken';
+  if (!chain.epic) return 'Partial';
+  const goalProgress = chain.goal?.progress || 0;
+  const goalStatus = chain.goal?.status || '';
+  if (goalStatus === 'off_track' || goalProgress < 30) return 'Critical';
+  if (goalStatus === 'at_risk' || goalProgress < 50) return 'At Risk';
+  if (goalProgress >= 70) return 'Strong';
+  return 'Moderate';
+}
+
+function getChainHealthColor(chain: LockedChainData | null): string {
+  const label = getChainHealthLabel(chain);
+  switch (label) {
+    case 'Strong': return '#16A34A';
+    case 'Moderate': return '#D97706';
+    case 'At Risk': return '#D97706';
+    case 'Critical': return '#EF4444';
+    case 'Broken': return '#EF4444';
+    case 'Partial': return '#D97706';
+    default: return '#94A3B8';
+  }
 }
 
 interface RenderedPath {
@@ -135,6 +186,12 @@ interface LockedChainData {
   epic: { key: string; title: string; status: string } | null;
 }
 
+interface FocusedChain {
+  nodes: Set<string>;
+  clickedNodeId: string;
+  chainData: LockedChainData;
+}
+
 // ══════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ══════════════════════════════════════════════════════════
@@ -150,9 +207,9 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
   const innerRef = useRef<HTMLDivElement>(null);
   const [paths, setPaths] = useState<RenderedPath[]>([]);
 
-  // ── AI Story Panel state ──
+  // ── Focus + AI Panel state ──
+  const [focusedChain, setFocusedChain] = useState<FocusedChain | null>(null);
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
-  const [lockedChain, setLockedChain] = useState<LockedChainData | null>(null);
   const [storyContent, setStoryContent] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
@@ -180,11 +237,29 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     };
   }, [data, selectedThemeFilter]);
 
+  // ── Get connected nodes for a given nodeId ──
+  const getConnectedNodes = useCallback((nodeId: string): Set<string> => {
+    if (!data) return new Set();
+    const connected = new Set<string>();
+    data.rows.forEach((row: AlignmentRow) => {
+      const ids: Record<string, string | null> = {
+        [`theme-${row.theme_key}`]: row.theme_id,
+        [`goal-${row.goal_key}`]: row.goal_id,
+        [`kr-${row.kr_key}`]: row.kr_id,
+        [`initiative-${row.initiative_key}`]: row.initiative_id,
+        [`epic-${row.epic_key}`]: row.epic_id,
+      };
+      const nodeIds = Object.keys(ids).filter(k => ids[k] != null);
+      if (nodeIds.includes(nodeId)) {
+        nodeIds.forEach(n => connected.add(n));
+      }
+    });
+    return connected;
+  }, [data]);
+
   // ── Build chain data for a clicked node ──
   const buildChainData = useCallback((nodeId: string): LockedChainData | null => {
     if (!data) return null;
-
-    // Find all rows that include this node
     const matchingRows = data.rows.filter((row: AlignmentRow) => {
       const ids: Record<string, string | null> = {
         [`theme-${row.theme_key}`]: row.theme_id,
@@ -195,7 +270,6 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
       };
       return Object.keys(ids).filter(k => ids[k] != null).includes(nodeId);
     });
-
     if (matchingRows.length === 0) return null;
 
     const firstRow = matchingRows[0];
@@ -215,7 +289,6 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     const initiative = firstRow.initiative_id ? {
       key: firstRow.initiative_key || '', title: firstRow.initiative_title || '', status: firstRow.initiative_status || 'draft', progress: Number(firstRow.initiative_progress) || 0,
     } : null;
-
     const epic = firstRow.epic_id ? {
       key: firstRow.epic_key || '', title: firstRow.epic_title || '', status: firstRow.epic_status || 'proposed',
     } : null;
@@ -261,29 +334,19 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         while ((newlineIndex = textBuffer.indexOf('\n')) !== -1) {
           let line = textBuffer.slice(0, newlineIndex);
           textBuffer = textBuffer.slice(newlineIndex + 1);
-
           if (line.endsWith('\r')) line = line.slice(0, -1);
           if (line.startsWith(':') || line.trim() === '') continue;
           if (!line.startsWith('data: ')) continue;
-
           const jsonStr = line.slice(6).trim();
           if (jsonStr === '[DONE]') break;
-
           try {
             const parsed = JSON.parse(jsonStr);
             const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-            if (content) {
-              fullText += content;
-              setStoryContent(fullText);
-            }
-          } catch {
-            textBuffer = line + '\n' + textBuffer;
-            break;
-          }
+            if (content) { fullText += content; setStoryContent(fullText); }
+          } catch { textBuffer = line + '\n' + textBuffer; break; }
         }
       }
 
-      // Flush remaining
       if (textBuffer.trim()) {
         for (let raw of textBuffer.split('\n')) {
           if (!raw) continue;
@@ -295,10 +358,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           try {
             const parsed = JSON.parse(jsonStr);
             const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-            if (content) {
-              fullText += content;
-              setStoryContent(fullText);
-            }
+            if (content) { fullText += content; setStoryContent(fullText); }
           } catch { /* ignore partial */ }
         }
       }
@@ -310,51 +370,33 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     }
   }, []);
 
-  // ── Highlight chain on hover ──
-  const getConnectedNodes = useCallback((nodeId: string): Set<string> => {
-    if (!data) return new Set();
-    const connected = new Set<string>();
-    data.rows.forEach((row: AlignmentRow) => {
-      const ids: Record<string, string | null> = {
-        [`theme-${row.theme_key}`]: row.theme_id,
-        [`goal-${row.goal_key}`]: row.goal_id,
-        [`kr-${row.kr_key}`]: row.kr_id,
-        [`initiative-${row.initiative_key}`]: row.initiative_id,
-        [`epic-${row.epic_key}`]: row.epic_id,
-      };
-      const nodeIds = Object.keys(ids).filter(k => ids[k] != null);
-      if (nodeIds.includes(nodeId)) {
-        nodeIds.forEach(n => connected.add(n));
-      }
-    });
-    return connected;
-  }, [data]);
-
+  // ── Highlight chain on hover (only when no chain is focused) ──
   const highlightChain = useCallback((nodeId: string) => {
-    if (lockedChain) return; // Don't override locked state on hover
+    if (focusedChain) return;
     setHighlightedNodes(getConnectedNodes(nodeId));
-  }, [getConnectedNodes, lockedChain]);
+  }, [getConnectedNodes, focusedChain]);
 
   const clearHighlight = useCallback(() => {
-    if (lockedChain) return; // Don't clear while locked
+    if (focusedChain) return;
     setHighlightedNodes(new Set());
-  }, [lockedChain]);
+  }, [focusedChain]);
 
-  // ── Handle node click → lock chain + open AI panel ──
+  // ── Handle node click → Focus chain + open AI panel ──
   const handleNodeClick = useCallback((nodeId: string) => {
-    const chain = buildChainData(nodeId);
-    if (!chain) return;
+    const chainNodes = getConnectedNodes(nodeId);
+    const chainData = buildChainData(nodeId);
+    if (!chainData) return;
 
-    // Lock the highlight
-    setHighlightedNodes(getConnectedNodes(nodeId));
-    setLockedChain(chain);
+    setFocusedChain({ nodes: chainNodes, clickedNodeId: nodeId, chainData });
+    setHighlightedNodes(chainNodes);
     setIsAIPanelOpen(true);
-    generateExecutiveStory(chain);
-  }, [buildChainData, getConnectedNodes, generateExecutiveStory]);
+    generateExecutiveStory(chainData);
+  }, [getConnectedNodes, buildChainData, generateExecutiveStory]);
 
-  const handleClosePanel = useCallback(() => {
+  // ── Unfocus / close panel ──
+  const handleUnfocus = useCallback(() => {
+    setFocusedChain(null);
     setIsAIPanelOpen(false);
-    setLockedChain(null);
     setHighlightedNodes(new Set());
     setStoryContent('');
     setAiError(null);
@@ -364,7 +406,6 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
   const connections = useMemo(() => {
     if (!filteredData) return [];
     const conns: { id: string; sourceId: string; targetId: string; layerColor: string }[] = [];
-
     const addConns = (map: Map<string, Set<string>>, srcPrefix: string, tgtPrefix: string, color: string,
       srcNodes: AlignmentNode[], tgtNodes: AlignmentNode[]) => {
       const srcKeyMap = new Map(srcNodes.map(n => [n.id, n.key]));
@@ -375,21 +416,14 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         childIds.forEach(childId => {
           const tgtKey = tgtKeyMap.get(childId);
           if (!tgtKey) return;
-          conns.push({
-            id: `${srcPrefix}-${srcKey}-${tgtPrefix}-${tgtKey}`,
-            sourceId: `${srcPrefix}-${srcKey}`,
-            targetId: `${tgtPrefix}-${tgtKey}`,
-            layerColor: color,
-          });
+          conns.push({ id: `${srcPrefix}-${srcKey}-${tgtPrefix}-${tgtKey}`, sourceId: `${srcPrefix}-${srcKey}`, targetId: `${tgtPrefix}-${tgtKey}`, layerColor: color });
         });
       }
     };
-
     addConns(filteredData.themeToGoals, 'theme', 'goal', LAYER.theme.color, filteredData.themes, filteredData.goals);
     addConns(filteredData.goalToKrs, 'goal', 'kr', LAYER.goal.color, filteredData.goals, filteredData.krs);
     addConns(filteredData.krToInitiatives, 'kr', 'initiative', LAYER.kr.color, filteredData.krs, filteredData.initiatives);
     addConns(filteredData.initiativeToEpics, 'initiative', 'epic', LAYER.initiative.color, filteredData.initiatives, filteredData.epics);
-
     return conns;
   }, [filteredData]);
 
@@ -398,7 +432,6 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     if (!innerRef.current || connections.length === 0) { setPaths([]); return; }
     const container = innerRef.current;
     const containerRect = container.getBoundingClientRect();
-
     const positions = new Map<string, { right: number; left: number; centerY: number }>();
     container.querySelectorAll('[data-node-id]').forEach(el => {
       const id = el.getAttribute('data-node-id')!;
@@ -409,25 +442,15 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         centerY: (r.top + r.height / 2 - containerRect.top) / zoom,
       });
     });
-
     const newPaths = connections.map(conn => {
       const src = positions.get(conn.sourceId);
       const tgt = positions.get(conn.targetId);
       if (!src || !tgt) return null;
-      const x1 = src.right + 6;
-      const y1 = src.centerY;
-      const x2 = tgt.left - 6;
-      const y2 = tgt.centerY;
+      const x1 = src.right + 6; const y1 = src.centerY;
+      const x2 = tgt.left - 6; const y2 = tgt.centerY;
       const cp = Math.min(Math.abs(x2 - x1) * 0.4, 50);
-      return {
-        id: conn.id,
-        d: `M ${x1} ${y1} C ${x1 + cp} ${y1}, ${x2 - cp} ${y2}, ${x2} ${y2}`,
-        sourceId: conn.sourceId,
-        targetId: conn.targetId,
-        layerColor: conn.layerColor,
-      };
+      return { id: conn.id, d: `M ${x1} ${y1} C ${x1 + cp} ${y1}, ${x2 - cp} ${y2}, ${x2} ${y2}`, sourceId: conn.sourceId, targetId: conn.targetId, layerColor: conn.layerColor };
     }).filter(Boolean) as RenderedPath[];
-
     setPaths(newPaths);
   }, [connections, zoom]);
 
@@ -450,7 +473,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
 
   // Recalc after panel animation completes
   useEffect(() => {
-    const timer = setTimeout(recalculateConnections, 350);
+    const timer = setTimeout(recalculateConnections, 450);
     return () => clearTimeout(timer);
   }, [isAIPanelOpen, recalculateConnections]);
 
@@ -459,7 +482,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         if (isAIPanelOpen) {
-          handleClosePanel();
+          handleUnfocus();
         } else {
           handleExit();
         }
@@ -479,10 +502,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isPanning) return;
-    setPan({
-      x: panStart.current.px + (e.clientX - panStart.current.x),
-      y: panStart.current.py + (e.clientY - panStart.current.y),
-    });
+    setPan({ x: panStart.current.px + (e.clientX - panStart.current.x), y: panStart.current.py + (e.clientY - panStart.current.y) });
   }, [isPanning]);
 
   const handleMouseUp = useCallback(() => setIsPanning(false), []);
@@ -493,7 +513,6 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
   }, []);
 
   const resetView = useCallback(() => { setZoom(0.85); setPan({ x: 0, y: 0 }); }, []);
-
   const handleExit = useCallback(() => onBack?.(), [onBack]);
 
   const copyToClipboard = useCallback((text: string) => {
@@ -502,29 +521,70 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     });
   }, []);
 
+  // ── Focus-aware style helpers ──
+  const isFocused = focusedChain !== null;
+  const anyHover = highlightedNodes.size > 0;
+
+  function getCardClasses(nodeId: string): string {
+    if (!isFocused && !anyHover) return 'shadow-sm hover:shadow-lg hover:scale-[1.02]';
+    if (isFocused) {
+      if (focusedChain!.nodes.has(nodeId)) return 'shadow-xl ring-2 ring-blue-400/40';
+      return 'shadow-none pointer-events-none';
+    }
+    // Hover-only (no focus)
+    return highlightedNodes.has(nodeId) ? 'shadow-md ring-2 ring-blue-400/50 scale-[1.02]' : '';
+  }
+
+  function getCardStyle(nodeId: string): React.CSSProperties {
+    if (!isFocused && !anyHover) return {};
+    if (isFocused) {
+      if (focusedChain!.nodes.has(nodeId)) {
+        return { transform: 'scale(1.12)', opacity: 1, zIndex: 20, transition: 'all 500ms ease-out' };
+      }
+      return { transform: 'scale(0.92)', opacity: 0.08, zIndex: 1, transition: 'all 500ms ease-out' };
+    }
+    // Hover-only
+    if (highlightedNodes.has(nodeId)) return { opacity: 1 };
+    return { opacity: 0.2 };
+  }
+
+  function getPathStyle(p: RenderedPath) {
+    if (!isFocused && !anyHover) {
+      return { stroke: '#D1D5DB', strokeWidth: 1, opacity: 0.35, filter: 'none' };
+    }
+    if (isFocused) {
+      const srcIn = focusedChain!.nodes.has(p.sourceId);
+      const tgtIn = focusedChain!.nodes.has(p.targetId);
+      if (srcIn && tgtIn) {
+        return { stroke: p.layerColor, strokeWidth: 3, opacity: 1, filter: 'drop-shadow(0 0 4px rgba(37, 99, 235, 0.3))' };
+      }
+      return { stroke: '#E2E8F0', strokeWidth: 0.5, opacity: 0.05, filter: 'none' };
+    }
+    // Hover-only
+    const isLit = highlightedNodes.has(p.sourceId) && highlightedNodes.has(p.targetId);
+    if (isLit) return { stroke: p.layerColor, strokeWidth: 2.5, opacity: 1, filter: 'none' };
+    return { stroke: '#D1D5DB', strokeWidth: 1, opacity: 0.08, filter: 'none' };
+  }
+
   // ── Loading / empty states ──
   if (isLoading) {
     return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center" style={{ background: '#F8FAFC' }}>
-        <div className="animate-pulse" style={{ fontSize: 14, color: '#94A3B8' }}>Loading alignment data…</div>
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background">
+        <div className="animate-pulse text-sm text-muted-foreground">Loading alignment data…</div>
       </div>
     );
   }
 
   if (!filteredData || filteredData.themes.length === 0) {
     return (
-      <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3" style={{ background: '#F8FAFC' }}>
-        <p style={{ fontSize: 14, color: '#64748B' }}>No alignment data available.</p>
-        <button onClick={handleExit} className="text-sm font-medium" style={{ color: '#2563EB' }}>
-          ← Back to Strategic Themes
-        </button>
+      <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-3 bg-background">
+        <p className="text-sm text-muted-foreground">No alignment data available.</p>
+        <Button variant="link" onClick={handleExit}>← Back to Strategic Themes</Button>
       </div>
     );
   }
 
-  const anyHover = highlightedNodes.size > 0;
   const stats = data?.stats;
-
   const krsWithoutInitiative = filteredData.krs.filter(kr => !filteredData.krToInitiatives.has(kr.id));
   const initsWithoutEpic = filteredData.initiatives.filter(ini => !filteredData.initiativeToEpics.has(ini.id));
 
@@ -536,31 +596,25 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
     { key: 'epics', label: 'Epics', color: LAYER.epic.color, count: filteredData.epics.length },
   ];
 
-  const getNodeOpacity = (nodeId: string) => {
-    if (!anyHover) return '';
-    return highlightedNodes.has(nodeId) ? 'opacity-100 ring-2 ring-blue-400/50 scale-[1.02]' : 'opacity-20';
-  };
+  const lockedChain = focusedChain?.chainData || null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col" style={{ background: '#fff' }}>
+    <div className="fixed inset-0 z-[100] flex flex-col bg-background">
       {/* ═══ TOOLBAR ═══ */}
       <div className="flex items-center justify-between shrink-0 px-5" style={{ height: 52, background: '#0F172A' }}>
         {/* Left */}
         <div className="flex items-center gap-4">
-          <button onClick={handleExit}
-            className="flex items-center gap-1.5 text-sm transition-colors"
-            style={{ color: '#94A3B8' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#94A3B8')}>
+          <Button variant="ghost" size="sm" onClick={handleExit}
+            className="text-slate-400 hover:text-white hover:bg-transparent gap-1.5 px-2">
             <ArrowLeft size={16} />
             <span className="font-medium">Exit</span>
-          </button>
-          <div style={{ width: 1, height: 24, background: '#334155' }} />
+          </Button>
+          <Separator orientation="vertical" className="h-6 bg-slate-700" />
           <div>
-            <h1 style={{ color: '#fff', fontSize: 15, fontWeight: 600, letterSpacing: '-0.01em' }}>
+            <h1 className="text-white font-semibold tracking-tight" style={{ fontSize: 15 }}>
               Strategy Alignment Map
             </h1>
-            <p style={{ color: '#64748B', fontSize: 11 }}>
+            <p className="text-slate-500" style={{ fontSize: 11 }}>
               Ministry of Industry — FY2026 Strategic Alignment
             </p>
           </div>
@@ -570,14 +624,14 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         {stats && (
           <div className="flex items-center gap-5">
             <ChainStat label="Linked KRs" value={stats.linkedKrs} total={stats.totalKrs} />
-            <div style={{ width: 1, height: 20, background: '#334155' }} />
+            <Separator orientation="vertical" className="h-5 bg-slate-700" />
             <ChainStat label="Linked Initiatives" value={stats.linkedInitiatives} total={stats.totalInitiatives} />
-            <div style={{ width: 1, height: 20, background: '#334155' }} />
+            <Separator orientation="vertical" className="h-5 bg-slate-700" />
             <ChainStat label="Linked Epics" value={stats.linkedEpics} total={stats.totalEpics} />
-            <div style={{ width: 1, height: 20, background: '#334155' }} />
+            <Separator orientation="vertical" className="h-5 bg-slate-700" />
             <div className="text-center">
-              <div style={{ color: '#fff', fontSize: 15, fontWeight: 700 }}>{stats.fullChains}</div>
-              <div style={{ color: '#64748B', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Full Chains</div>
+              <div className="text-white font-bold" style={{ fontSize: 15 }}>{stats.fullChains}</div>
+              <div className="text-slate-500 uppercase" style={{ fontSize: 10, letterSpacing: '0.05em' }}>Full Chains</div>
             </div>
           </div>
         )}
@@ -588,75 +642,78 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
             <SelectTrigger className="h-8 w-[200px] text-xs border-slate-700 bg-slate-800 text-slate-300 focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
               <SelectValue placeholder="All Themes" />
             </SelectTrigger>
-            <SelectContent className="bg-white border border-slate-200 shadow-lg rounded-lg">
-              <SelectItem value="all" className="text-sm">All Themes</SelectItem>
+            <SelectContent className="bg-popover border-border shadow-lg rounded-lg">
+              <SelectItem value="all">All Themes</SelectItem>
               {data?.themes.map(t => (
-                <SelectItem key={t.id} value={t.id} className="text-sm">{t.title}</SelectItem>
+                <SelectItem key={t.id} value={t.id}>{t.title}</SelectItem>
               ))}
             </SelectContent>
           </Select>
 
           <div className="flex items-center gap-1 rounded-md px-1.5 py-1" style={{ background: '#1E293B' }}>
-            <button onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}
-              className="flex items-center justify-center rounded" style={{ width: 24, height: 24, color: '#94A3B8' }}>
-              <Minus size={12} />
-            </button>
-            <span className="font-mono text-center" style={{ fontSize: 10, color: '#64748B', width: 28 }}>
+            <TooltipProvider>
+              <Tooltip><TooltipTrigger asChild>
+                <button onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}
+                  className="flex items-center justify-center rounded w-6 h-6 text-slate-400 hover:text-white">
+                  <Minus size={12} />
+                </button>
+              </TooltipTrigger><TooltipContent>Zoom out</TooltipContent></Tooltip>
+            </TooltipProvider>
+            <span className="font-mono text-center text-slate-500" style={{ fontSize: 10, width: 28 }}>
               {Math.round(zoom * 100)}%
             </span>
-            <button onClick={() => setZoom(z => Math.min(2, z + 0.1))}
-              className="flex items-center justify-center rounded" style={{ width: 24, height: 24, color: '#94A3B8' }}>
-              <Plus size={12} />
-            </button>
-            <button onClick={resetView} title="Reset view"
-              className="flex items-center justify-center rounded ml-0.5" style={{ width: 24, height: 24, color: '#94A3B8' }}>
-              <RotateCcw size={12} />
-            </button>
+            <TooltipProvider>
+              <Tooltip><TooltipTrigger asChild>
+                <button onClick={() => setZoom(z => Math.min(2, z + 0.1))}
+                  className="flex items-center justify-center rounded w-6 h-6 text-slate-400 hover:text-white">
+                  <Plus size={12} />
+                </button>
+              </TooltipTrigger><TooltipContent>Zoom in</TooltipContent></Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip><TooltipTrigger asChild>
+                <button onClick={resetView}
+                  className="flex items-center justify-center rounded w-6 h-6 text-slate-400 hover:text-white ml-0.5">
+                  <RotateCcw size={12} />
+                </button>
+              </TooltipTrigger><TooltipContent>Reset view</TooltipContent></Tooltip>
+            </TooltipProvider>
           </div>
 
-          <button onClick={handleExit} title="Exit Alignment Map"
-            className="flex items-center justify-center rounded-md transition-colors"
-            style={{ width: 32, height: 32, color: '#94A3B8' }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.background = '#1E293B'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#94A3B8'; e.currentTarget.style.background = 'transparent'; }}>
+          <Button variant="ghost" size="icon" onClick={handleExit}
+            className="w-8 h-8 text-slate-400 hover:text-white hover:bg-slate-800">
             <X size={16} />
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* ═══ CHAIN EXPLANATION BANNER ═══ */}
-      <div className="flex items-center justify-center shrink-0 px-6"
-        style={{ height: 40, background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
-        <div className="flex items-center gap-2" style={{ fontSize: 12, color: '#64748B' }}>
-          <span className="font-semibold" style={{ color: '#334155' }}>Reading this map:</span>
+      <div className="flex items-center justify-center shrink-0 px-6 border-b border-border bg-muted/50" style={{ height: 40 }}>
+        <div className="flex items-center gap-2 text-muted-foreground" style={{ fontSize: 12 }}>
+          <span className="font-semibold text-foreground">Reading this map:</span>
           <span>Each</span>
-          <span className="inline-flex items-center gap-1 font-semibold rounded px-1.5 py-0.5"
-            style={{ fontSize: 11, color: '#1E40AF', background: '#EFF6FF' }}>● Theme</span>
+          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5" style={{ color: '#1E40AF', background: '#EFF6FF', borderColor: '#BFDBFE' }}>● Theme</Badge>
           <span>breaks down into</span>
-          <span className="inline-flex items-center gap-1 font-semibold rounded px-1.5 py-0.5"
-            style={{ fontSize: 11, color: '#115E59', background: '#F0FDFA' }}>● Goals</span>
+          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5" style={{ color: '#115E59', background: '#F0FDFA', borderColor: '#99F6E4' }}>● Goals</Badge>
           <span>measured by</span>
-          <span className="inline-flex items-center gap-1 font-semibold rounded px-1.5 py-0.5"
-            style={{ fontSize: 11, color: '#1E40AF', background: '#DBEAFE' }}>● Key Results</span>
+          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5" style={{ color: '#1E40AF', background: '#DBEAFE', borderColor: '#93C5FD' }}>● Key Results</Badge>
           <span>delivered through</span>
-          <span className="inline-flex items-center gap-1 font-semibold rounded px-1.5 py-0.5"
-            style={{ fontSize: 11, color: '#92400E', background: '#FFFBEB' }}>● Initiatives</span>
+          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5" style={{ color: '#92400E', background: '#FFFBEB', borderColor: '#FDE68A' }}>● Initiatives</Badge>
           <span>executed as</span>
-          <span className="inline-flex items-center gap-1 font-semibold rounded px-1.5 py-0.5"
-            style={{ fontSize: 11, color: '#3730A3', background: '#EEF2FF' }}>● Epics</span>
+          <Badge variant="outline" className="font-semibold text-[11px] py-0 px-1.5" style={{ color: '#3730A3', background: '#EEF2FF', borderColor: '#C7D2FE' }}>● Epics</Badge>
         </div>
       </div>
 
       {/* ═══ COLUMN HEADERS ═══ */}
-      <div className="flex shrink-0" style={{ borderBottom: '2px solid #E2E8F0', background: '#fff' }}>
+      <div className="flex shrink-0 border-b-2 border-border bg-card">
         {columns.map(col => (
           <div key={col.key} className="flex items-center gap-2 px-4"
             style={{ height: 44, minWidth: col.key === 'themes' ? 220 : col.key === 'goals' || col.key === 'initiatives' ? 210 : 200, borderLeft: `3px solid ${col.color}` }}>
             <div className="rounded-full" style={{ width: 8, height: 8, background: col.color }} />
-            <span className="font-bold uppercase" style={{ fontSize: 13, color: '#0F172A', letterSpacing: '0.03em' }}>
+            <span className="font-bold uppercase text-foreground" style={{ fontSize: 13, letterSpacing: '0.03em' }}>
               {col.label}
             </span>
-            <span className="font-semibold" style={{ fontSize: 12, color: '#94A3B8' }}>
+            <span className="font-semibold text-muted-foreground" style={{ fontSize: 12 }}>
               ({col.count})
             </span>
           </div>
@@ -668,8 +725,13 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
         {/* ═══ CANVAS ═══ */}
         <div
           ref={canvasRef}
-          className="flex-1 overflow-auto select-none transition-all duration-300"
-          style={{ background: '#F8FAFC', cursor: isPanning ? 'grabbing' : 'grab' }}
+          className="overflow-auto select-none transition-all duration-[400ms] ease-out"
+          style={{
+            background: '#F8FAFC',
+            cursor: isPanning ? 'grabbing' : 'grab',
+            width: isAIPanelOpen ? '50vw' : '100%',
+            flexShrink: 0,
+          }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -690,15 +752,15 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
             <svg className="absolute inset-0 pointer-events-none"
               style={{ width: '100%', height: '100%', overflow: 'visible', zIndex: 1 }}>
               {paths.map(p => {
-                const isLit = anyHover && highlightedNodes.has(p.sourceId) && highlightedNodes.has(p.targetId);
-                const isDimmed = anyHover && !isLit;
+                const s = getPathStyle(p);
                 return (
                   <path key={p.id} d={p.d}
-                    stroke={isLit ? p.layerColor : '#D1D5DB'}
-                    strokeWidth={isLit ? 2.5 : 1}
+                    stroke={s.stroke}
+                    strokeWidth={s.strokeWidth}
                     fill="none"
-                    opacity={isDimmed ? 0.08 : isLit ? 1 : 0.35}
-                    className="transition-all duration-300" />
+                    opacity={s.opacity}
+                    style={{ filter: s.filter, transition: 'all 500ms ease-out' }}
+                  />
                 );
               })}
             </svg>
@@ -711,12 +773,12 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                   const nid = `theme-${t.key}`;
                   return (
                     <div key={t.id} data-node-id={nid}
-                      className={`group cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
-                      style={{ width: 200 }}
+                      className={`group cursor-pointer transition-all duration-500 ease-out ${getCardClasses(nid)}`}
+                      style={{ width: 200, ...getCardStyle(nid) }}
                       onClick={() => handleNodeClick(nid)}
                       onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
                       <div style={{ borderLeft: `4px solid ${t.color || LAYER.theme.border}` }}
-                        className="bg-white border border-slate-200/80 rounded-lg shadow-sm">
+                        className="bg-card border border-border rounded-lg">
                         <div className="p-3.5">
                           <div className="flex items-center justify-between mb-2">
                             <span className="font-mono font-bold rounded-md px-2 py-0.5"
@@ -725,16 +787,16 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                             </span>
                             <StatusBadge status={t.status} />
                           </div>
-                          <p className="font-semibold leading-snug line-clamp-2" style={{ fontSize: 13, color: '#0F172A' }}>
+                          <p className="font-semibold leading-snug line-clamp-2 text-foreground" style={{ fontSize: 13 }}>
                             {t.title}
                           </p>
                           <div className="flex items-center gap-2 mt-2.5">
-                            <div className="flex-1 rounded-full overflow-hidden" style={{ height: 5, background: '#E2E8F0' }}>
+                            <div className="flex-1 rounded-full overflow-hidden bg-muted" style={{ height: 5 }}>
                               <div className="rounded-full transition-all" style={{ width: `${t.progress || 0}%`, height: 5, background: getProgressColor(t.progress || 0) }} />
                             </div>
-                            <span className="font-bold" style={{ fontSize: 11, color: '#334155' }}>{Math.round(t.progress || 0)}%</span>
+                            <span className="font-bold text-foreground" style={{ fontSize: 11 }}>{Math.round(t.progress || 0)}%</span>
                           </div>
-                          <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 8 }}>
+                          <div className="text-muted-foreground" style={{ fontSize: 10, marginTop: 8 }}>
                             {t.goalCount || 0} goals · {t.krCount || 0} KRs
                           </div>
                         </div>
@@ -750,24 +812,24 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                   const nid = `goal-${g.key}`;
                   return (
                     <div key={g.id} data-node-id={nid}
-                      className={`group bg-white rounded-lg shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
-                      style={{ width: 190 }}
+                      className={`group cursor-pointer transition-all duration-500 ease-out ${getCardClasses(nid)}`}
+                      style={{ width: 190, ...getCardStyle(nid) }}
                       onClick={() => handleNodeClick(nid)}
                       onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
                       <div style={{ borderLeft: `4px solid ${LAYER.goal.border}` }}
-                        className="border border-slate-200/80 rounded-lg">
+                        className="bg-card border border-border rounded-lg">
                         <div className="p-3">
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="font-mono font-bold rounded-md px-2 py-0.5"
                               style={{ fontSize: 10, background: LAYER.goal.badgeBg, color: LAYER.goal.badgeText }}>{g.key}</span>
                             <StatusBadge status={g.status} />
                           </div>
-                          <p className="font-semibold leading-snug line-clamp-2" style={{ fontSize: 12, color: '#1E293B' }}>{g.title}</p>
+                          <p className="font-semibold leading-snug line-clamp-2 text-foreground" style={{ fontSize: 12 }}>{g.title}</p>
                           <div className="flex items-center gap-2 mt-2">
-                            <div className="flex-1 rounded-full overflow-hidden" style={{ height: 4, background: '#E2E8F0' }}>
+                            <div className="flex-1 rounded-full overflow-hidden bg-muted" style={{ height: 4 }}>
                               <div className="rounded-full" style={{ width: `${g.progress || 0}%`, height: 4, background: getProgressColor(g.progress || 0) }} />
                             </div>
-                            <span className="font-bold" style={{ fontSize: 10, color: '#475569' }}>{Math.round(g.progress || 0)}%</span>
+                            <span className="font-bold text-muted-foreground" style={{ fontSize: 10 }}>{Math.round(g.progress || 0)}%</span>
                           </div>
                         </div>
                       </div>
@@ -782,24 +844,24 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                   const nid = `kr-${kr.key}`;
                   return (
                     <div key={kr.id} data-node-id={nid}
-                      className={`group bg-white rounded-lg shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
-                      style={{ width: 180 }}
+                      className={`group cursor-pointer transition-all duration-500 ease-out ${getCardClasses(nid)}`}
+                      style={{ width: 180, ...getCardStyle(nid) }}
                       onClick={() => handleNodeClick(nid)}
                       onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
                       <div style={{ borderLeft: `4px solid ${LAYER.kr.border}` }}
-                        className="border border-slate-200/80 rounded-lg">
+                        className="bg-card border border-border rounded-lg">
                         <div className="p-3">
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="font-mono font-bold rounded-md px-2 py-0.5"
                               style={{ fontSize: 10, background: LAYER.kr.badgeBg, color: LAYER.kr.badgeText }}>{kr.key}</span>
                             <StatusBadge status={kr.status} />
                           </div>
-                          <p className="font-medium leading-snug line-clamp-2" style={{ fontSize: 11, color: '#334155' }}>{kr.title}</p>
+                          <p className="font-medium leading-snug line-clamp-2 text-muted-foreground" style={{ fontSize: 11 }}>{kr.title}</p>
                           <div className="flex items-center gap-2 mt-2">
-                            <div className="flex-1 rounded-full overflow-hidden" style={{ height: 3, background: '#E2E8F0' }}>
+                            <div className="flex-1 rounded-full overflow-hidden bg-muted" style={{ height: 3 }}>
                               <div className="rounded-full" style={{ width: `${kr.progress || 0}%`, height: 3, background: getProgressColor(kr.progress || 0) }} />
                             </div>
-                            <span className="font-bold" style={{ fontSize: 10, color: '#475569' }}>{Math.round(kr.progress || 0)}%</span>
+                            <span className="font-bold text-muted-foreground" style={{ fontSize: 10 }}>{Math.round(kr.progress || 0)}%</span>
                           </div>
                         </div>
                       </div>
@@ -817,24 +879,24 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                   const nid = `initiative-${ini.key}`;
                   return (
                     <div key={ini.id} data-node-id={nid}
-                      className={`group bg-white rounded-lg shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
-                      style={{ width: 190 }}
+                      className={`group cursor-pointer transition-all duration-500 ease-out ${getCardClasses(nid)}`}
+                      style={{ width: 190, ...getCardStyle(nid) }}
                       onClick={() => handleNodeClick(nid)}
                       onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
                       <div style={{ borderLeft: `4px solid ${LAYER.initiative.border}` }}
-                        className="border border-slate-200/80 rounded-lg">
+                        className="bg-card border border-border rounded-lg">
                         <div className="p-3">
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="font-mono font-bold rounded-md px-2 py-0.5"
                               style={{ fontSize: 10, background: LAYER.initiative.badgeBg, color: LAYER.initiative.badgeText }}>{ini.key}</span>
                             <StatusBadge status={ini.status} />
                           </div>
-                          <p className="font-semibold leading-snug line-clamp-2" style={{ fontSize: 12, color: '#1E293B' }}>{ini.title}</p>
+                          <p className="font-semibold leading-snug line-clamp-2 text-foreground" style={{ fontSize: 12 }}>{ini.title}</p>
                           <div className="flex items-center gap-2 mt-2">
-                            <div className="flex-1 rounded-full overflow-hidden" style={{ height: 4, background: '#E2E8F0' }}>
+                            <div className="flex-1 rounded-full overflow-hidden bg-muted" style={{ height: 4 }}>
                               <div className="rounded-full" style={{ width: `${ini.progress || 0}%`, height: 4, background: getProgressColor(ini.progress || 0) }} />
                             </div>
-                            <span className="font-bold" style={{ fontSize: 10, color: '#475569' }}>{Math.round(ini.progress || 0)}%</span>
+                            <span className="font-bold text-muted-foreground" style={{ fontSize: 10 }}>{Math.round(ini.progress || 0)}%</span>
                           </div>
                         </div>
                       </div>
@@ -854,19 +916,19 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                   const nid = `epic-${epic.key}`;
                   return (
                     <div key={epic.id} data-node-id={nid}
-                      className={`group bg-white rounded-lg shadow-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${getNodeOpacity(nid)}`}
-                      style={{ width: 180 }}
+                      className={`group cursor-pointer transition-all duration-500 ease-out ${getCardClasses(nid)}`}
+                      style={{ width: 180, ...getCardStyle(nid) }}
                       onClick={() => handleNodeClick(nid)}
                       onMouseEnter={() => highlightChain(nid)} onMouseLeave={clearHighlight}>
                       <div style={{ borderLeft: `4px solid ${LAYER.epic.border}` }}
-                        className="border border-slate-200/80 rounded-lg">
+                        className="bg-card border border-border rounded-lg">
                         <div className="p-3">
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="font-mono font-bold rounded-md px-2 py-0.5"
                               style={{ fontSize: 10, background: LAYER.epic.badgeBg, color: LAYER.epic.badgeText }}>{epic.key}</span>
                             <StatusBadge status={epic.status} />
                           </div>
-                          <p className="font-medium leading-snug line-clamp-2" style={{ fontSize: 11, color: '#334155' }}>{epic.title}</p>
+                          <p className="font-medium leading-snug line-clamp-2 text-muted-foreground" style={{ fontSize: 11 }}>{epic.title}</p>
                         </div>
                       </div>
                     </div>
@@ -881,110 +943,146 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
 
         {/* ═══ AI STORY PANEL ═══ */}
         <div
-          className={`shrink-0 flex flex-col bg-white shadow-2xl border-l border-slate-200 transition-all duration-300 ease-out overflow-hidden ${
-            isAIPanelOpen ? 'w-[50vw] opacity-100' : 'w-0 opacity-0'
+          className={`shrink-0 flex flex-col bg-card border-l border-border transition-all duration-[400ms] ease-out overflow-hidden ${
+            isAIPanelOpen ? 'w-[50vw] opacity-100 shadow-[-12px_0_40px_rgba(0,0,0,0.12)]' : 'w-0 opacity-0 shadow-none'
           }`}
         >
           {isAIPanelOpen && lockedChain && (
             <>
+              {/* Purple AI Accent */}
+              <div className="shrink-0" style={{ height: 3, background: 'linear-gradient(to right, #7C3AED, #A78BFA, #C4B5FD)' }} />
+
               {/* Panel Header */}
-              <div className="shrink-0 border-b border-slate-100">
-                <div style={{ height: 4, background: 'linear-gradient(to right, #7C3AED, #A78BFA, #C4B5FD)' }} />
-                <div className="flex items-center justify-between px-8 py-5">
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center rounded-xl" style={{ width: 36, height: 36, background: '#7C3AED' }}>
-                      <Sparkles size={18} style={{ color: '#fff' }} />
+              <div className="shrink-0 px-8 pt-6 pb-4 border-b border-border">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-start gap-4">
+                    <div className="flex items-center justify-center rounded-xl shrink-0 mt-0.5 shadow-lg"
+                      style={{ width: 44, height: 44, background: 'linear-gradient(135deg, #7C3AED, #6D28D9)', boxShadow: '0 4px 14px rgba(124, 58, 237, 0.25)' }}>
+                      <Sparkles size={20} className="text-white" />
                     </div>
                     <div>
-                      <h2 className="font-bold tracking-tight" style={{ fontSize: 17, color: '#0F172A' }}>
-                        AI Executive Brief
+                      <h2 className="font-bold tracking-tight text-foreground leading-tight" style={{ fontSize: 18 }}>
+                        Executive Chain Brief
                       </h2>
-                      <p style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>
-                        Strategic chain analysis · Powered by AI
+                      <p className="text-muted-foreground mt-1" style={{ fontSize: 12 }}>
+                        AI-generated strategic analysis · {lockedChain.theme?.name}
                       </p>
                     </div>
                   </div>
-                  <button
-                    onClick={handleClosePanel}
-                    className="flex items-center justify-center rounded-lg transition-colors hover:bg-slate-100"
-                    style={{ width: 36, height: 36, color: '#94A3B8' }}
-                    title="Close panel (ESC)"
-                  >
+                  <Button variant="ghost" size="icon" onClick={handleUnfocus}
+                    className="w-9 h-9 text-muted-foreground hover:text-foreground shrink-0">
                     <X size={20} />
-                  </button>
+                  </Button>
                 </div>
               </div>
 
               {/* Chain Breadcrumb */}
-              <div className="shrink-0 px-8 py-4 border-b border-slate-100" style={{ background: 'rgba(248,250,252,0.8)' }}>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <ChainBadge color="#2563EB" label={lockedChain.theme.key} title={lockedChain.theme.name} />
-                  <ChevronRight size={14} style={{ color: '#CBD5E1' }} />
-                  <ChainBadge color="#0D9488" label={lockedChain.goal.key} title={lockedChain.goal.title} />
-                  <ChevronRight size={14} style={{ color: '#CBD5E1' }} />
-                  <span className="font-medium" style={{ fontSize: 11, color: '#94A3B8' }}>
-                    {lockedChain.krs.length} Key Results
-                  </span>
-                  <ChevronRight size={14} style={{ color: '#CBD5E1' }} />
-                  {lockedChain.initiative ? (
-                    <ChainBadge color="#D97706" label={lockedChain.initiative.key} title={lockedChain.initiative.title} />
-                  ) : (
-                    <span className="font-semibold px-2 py-0.5 rounded" style={{ fontSize: 11, color: '#EF4444', background: '#FEF2F2' }}>
-                      ⚠ No Initiative
-                    </span>
+              <div className="shrink-0 px-8 py-4 bg-muted/40 border-b border-border">
+                <p className="uppercase tracking-widest font-semibold text-muted-foreground mb-2.5" style={{ fontSize: 10 }}>
+                  Strategy Chain
+                </p>
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  {lockedChain.theme && (
+                    <>
+                      <ChainPill color="#2563EB" keyLabel={lockedChain.theme.key} title={lockedChain.theme.name} />
+                      <ChevronRight size={12} className="text-muted-foreground/40 shrink-0" />
+                    </>
                   )}
-                  <ChevronRight size={14} style={{ color: '#CBD5E1' }} />
-                  {lockedChain.epic ? (
-                    <ChainBadge color="#4F46E5" label={lockedChain.epic.key} title={lockedChain.epic.title} />
+                  {lockedChain.goal && (
+                    <>
+                      <ChainPill color="#0D9488" keyLabel={lockedChain.goal.key} title={lockedChain.goal.title} />
+                      <ChevronRight size={12} className="text-muted-foreground/40 shrink-0" />
+                    </>
+                  )}
+                  <span className="font-semibold text-muted-foreground" style={{ fontSize: 11 }}>
+                    {lockedChain.krs.length} KRs
+                  </span>
+                  <ChevronRight size={12} className="text-muted-foreground/40 shrink-0" />
+                  {lockedChain.initiative ? (
+                    <>
+                      <ChainPill color="#D97706" keyLabel={lockedChain.initiative.key} title={lockedChain.initiative.title} />
+                      <ChevronRight size={12} className="text-muted-foreground/40 shrink-0" />
+                    </>
                   ) : (
-                    <span className="font-semibold px-2 py-0.5 rounded" style={{ fontSize: 11, color: '#EF4444', background: '#FEF2F2' }}>
-                      ⚠ No Epic
-                    </span>
+                    <>
+                      <Badge variant="destructive" className="text-[10px] font-bold py-0">⚠ GAP</Badge>
+                      <ChevronRight size={12} className="text-muted-foreground/40 shrink-0" />
+                    </>
+                  )}
+                  {lockedChain.epic ? (
+                    <ChainPill color="#4F46E5" keyLabel={lockedChain.epic.key} title={lockedChain.epic.title} />
+                  ) : (
+                    <Badge variant="destructive" className="text-[10px] font-bold py-0">⚠ GAP</Badge>
                   )}
                 </div>
               </div>
 
+              {/* At-a-Glance Metrics Row */}
+              <div className="shrink-0 px-8 py-4 border-b border-border">
+                <div className="grid grid-cols-4 gap-4">
+                  <MetricCard
+                    label="Goal Progress"
+                    value={`${lockedChain.goal?.progress || 0}%`}
+                    color={getProgressColor(lockedChain.goal?.progress || 0)}
+                  />
+                  <MetricCard
+                    label="AI Health"
+                    value={`${lockedChain.goal?.health || 0}/100`}
+                    color="#7C3AED"
+                  />
+                  <MetricCard
+                    label="Key Results"
+                    value={`${lockedChain.krs.length}`}
+                    sub={`${lockedChain.krs.filter(k => k.status === 'on_track' || k.status === 'active').length} on track`}
+                    color="#0D9488"
+                  />
+                  <MetricCard
+                    label="Chain Health"
+                    value={getChainHealthLabel(lockedChain)}
+                    color={getChainHealthColor(lockedChain)}
+                  />
+                </div>
+              </div>
+
               {/* Story Content */}
-              <div className="flex-1 overflow-y-auto">
+              <ScrollArea className="flex-1">
                 {isGenerating && !storyContent ? (
                   <AILoadingState />
                 ) : aiError ? (
-                  <div className="flex flex-col items-center justify-center h-full px-8 text-center">
+                  <div className="flex flex-col items-center justify-center h-full px-8 text-center py-12">
                     <div className="flex items-center justify-center rounded-xl mb-4"
                       style={{ width: 48, height: 48, background: '#FFFBEB' }}>
                       <X size={20} style={{ color: '#D97706' }} />
                     </div>
-                    <p className="font-semibold mb-1" style={{ fontSize: 15, color: '#0F172A' }}>Briefing Unavailable</p>
-                    <p style={{ fontSize: 13, color: '#64748B', maxWidth: 300 }}>{aiError}</p>
-                    <button onClick={() => generateExecutiveStory(lockedChain)}
-                      className="mt-4 flex items-center gap-1.5 px-4 py-2 rounded-md font-medium transition-colors hover:bg-slate-100"
-                      style={{ fontSize: 13, color: '#2563EB' }}>
-                      <RefreshCw size={14} />
-                      Retry
-                    </button>
+                    <p className="font-semibold text-foreground mb-1" style={{ fontSize: 15 }}>Briefing Unavailable</p>
+                    <p className="text-muted-foreground" style={{ fontSize: 13, maxWidth: 300 }}>{aiError}</p>
+                    <Button variant="outline" size="sm" className="mt-4 gap-1.5"
+                      onClick={() => generateExecutiveStory(lockedChain)}>
+                      <RefreshCw size={14} /> Retry
+                    </Button>
                   </div>
                 ) : (
                   <div className="px-8 py-6">
                     <ReactMarkdown
                       components={{
                         h2: ({ children }) => (
-                          <h2 className="font-bold tracking-tight mt-8 mb-3 pb-2 border-b border-slate-100 first:mt-0"
-                            style={{ fontSize: 15, color: '#0F172A' }}>
+                          <h2 className="font-bold tracking-tight mt-8 mb-3 pb-2 border-b border-border first:mt-0 text-foreground"
+                            style={{ fontSize: 15 }}>
                             {children}
                           </h2>
                         ),
                         p: ({ children }) => (
-                          <p className="mb-4" style={{ fontSize: 14, color: '#334155', lineHeight: 1.75 }}>{children}</p>
+                          <p className="mb-4 text-muted-foreground" style={{ fontSize: 14, lineHeight: 1.8 }}>{children}</p>
                         ),
                         strong: ({ children }) => (
-                          <strong className="font-semibold" style={{ color: '#0F172A' }}>{children}</strong>
+                          <strong className="font-semibold text-foreground">{children}</strong>
                         ),
                         ul: ({ children }) => (
                           <ul className="my-3 space-y-1.5">{children}</ul>
                         ),
                         li: ({ children }) => (
-                          <li className="pl-1" style={{ fontSize: 13, color: '#475569', lineHeight: 1.6 }}>
-                            <span className="mr-2" style={{ color: '#94A3B8' }}>•</span>{children}
+                          <li className="pl-1 text-muted-foreground" style={{ fontSize: 13, lineHeight: 1.6 }}>
+                            <span className="mr-2 text-muted-foreground/50">•</span>{children}
                           </li>
                         ),
                       }}
@@ -999,37 +1097,27 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
                     )}
                   </div>
                 )}
-              </div>
+              </ScrollArea>
 
               {/* Panel Footer */}
-              <div className="shrink-0 border-t border-slate-100 px-8 py-3 flex items-center justify-between bg-white">
-                <div className="flex items-center gap-2" style={{ fontSize: 11, color: '#94A3B8' }}>
+              <div className="shrink-0 border-t border-border px-8 py-3 flex items-center justify-between bg-card/95 backdrop-blur-sm">
+                <div className="flex items-center gap-2 text-muted-foreground" style={{ fontSize: 11 }}>
                   <Sparkles size={12} style={{ color: '#A78BFA' }} />
-                  <span>Generated by AI · {new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</span>
+                  <span>Generated by AI · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => generateExecutiveStory(lockedChain)}
-                    disabled={isGenerating}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium transition-colors hover:bg-slate-50 disabled:opacity-50"
-                    style={{ fontSize: 12, color: '#475569' }}>
-                    <RefreshCw size={12} />
-                    Regenerate
-                  </button>
-                  <button
-                    onClick={() => copyToClipboard(storyContent)}
-                    disabled={!storyContent}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium transition-colors hover:bg-slate-50 disabled:opacity-50"
-                    style={{ fontSize: 12, color: '#475569' }}>
-                    <Copy size={12} />
-                    Copy
-                  </button>
-                  <button
-                    onClick={handleClosePanel}
-                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-md font-semibold transition-colors"
-                    style={{ fontSize: 12, color: '#fff', background: '#0F172A' }}>
+                  <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+                    onClick={() => generateExecutiveStory(lockedChain)} disabled={isGenerating}>
+                    <RefreshCw size={14} /> Regenerate
+                  </Button>
+                  <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+                    onClick={() => copyToClipboard(storyContent)} disabled={!storyContent}>
+                    <Copy size={14} /> Copy
+                  </Button>
+                  <Button size="sm" onClick={handleUnfocus}
+                    className="gap-1.5 text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white rounded-lg">
                     Close Brief
-                  </button>
+                  </Button>
                 </div>
               </div>
             </>
@@ -1038,8 +1126,7 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
       </div>
 
       {/* ═══ LEGEND BAR ═══ */}
-      <div className="flex items-center justify-center gap-6 shrink-0"
-        style={{ height: 36, background: '#fff', borderTop: '1px solid #E2E8F0' }}>
+      <div className="flex items-center justify-center gap-6 shrink-0 border-t border-border bg-card" style={{ height: 36 }}>
         {[
           { label: 'Strategic Theme', color: LAYER.theme.color },
           { label: 'Goal', color: LAYER.goal.color },
@@ -1047,15 +1134,14 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           { label: 'Initiative', color: LAYER.initiative.color },
           { label: 'Epic', color: LAYER.epic.color },
         ].map(item => (
-          <div key={item.label} className="flex items-center gap-1.5 font-medium"
-            style={{ fontSize: 11, color: '#475569' }}>
+          <div key={item.label} className="flex items-center gap-1.5 font-medium text-muted-foreground" style={{ fontSize: 11 }}>
             <div className="rounded-full" style={{ width: 10, height: 3, background: item.color }} />
             {item.label}
           </div>
         ))}
-        <div style={{ width: 1, height: 12, background: '#E2E8F0', margin: '0 4px' }} />
-        <div className="flex items-center gap-1.5" style={{ fontSize: 11, color: '#94A3B8' }}>
-          <div style={{ width: 10, height: 0, borderTop: '1px dashed #94A3B8' }} />
+        <Separator orientation="vertical" className="h-3 mx-1" />
+        <div className="flex items-center gap-1.5 text-muted-foreground" style={{ fontSize: 11 }}>
+          <div style={{ width: 10, height: 0, borderTop: '1px dashed currentColor' }} />
           Unlinked
         </div>
       </div>
