@@ -5,11 +5,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useProjectWorkItems } from '@/hooks/useProjectWorkItems';
 import { WorkItemsToolbar } from '@/components/project-hub/work-items/WorkItemsToolbar';
 import { WorkItemsTable } from '@/components/project-hub/work-items/WorkItemsTable';
+import { CreateWorkItemModal } from '@/components/project-hub/work-items/CreateWorkItemModal';
 import { Loader2 } from 'lucide-react';
 
 export default function WorkItemsListPage() {
   const { key } = useParams<{ key: string }>();
   const [search, setSearch] = useState('');
+  const [createOpen, setCreateOpen] = useState(false);
 
   // Resolve project by key
   const { data: project } = useQuery({
@@ -105,7 +107,17 @@ export default function WorkItemsListPage() {
           <Loader2 size={24} className="animate-spin text-[#2563EB]" />
         </div>
       ) : (
-        <WorkItemsTable items={filtered} onRowClick={handleRowClick} />
+        <WorkItemsTable items={filtered} onRowClick={handleRowClick} onCreateClick={() => setCreateOpen(true)} />
+      )}
+
+      {/* Create Work Item Modal */}
+      {project && (
+        <CreateWorkItemModal
+          open={createOpen}
+          onClose={() => setCreateOpen(false)}
+          projectId={project.id}
+          projectKey={project.key}
+        />
       )}
     </div>
   );
