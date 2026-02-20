@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import { useLocation, useParams, Outlet, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,6 +16,7 @@ import { PlanHubSidebar } from './PlanHubSidebar';
 import { TaskHubSidebar } from './TaskHubSidebar';
 import { TestHubSidebar } from './TestHubSidebar';
 import { WorkHubSidebar } from '@/components/workhub/layout/WorkHubSidebar';
+import { ProjectHubSidebar } from './ProjectHubSidebar';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
 import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
@@ -91,6 +93,9 @@ function CatalystShellContent() {
   // Check if on TestHub route
   const isTestHubRoute = location.pathname.startsWith('/testhub');
 
+  // Check if on ProjectHub V5 route (/project-hub/*)
+  const isProjectHubRoute = location.pathname.startsWith('/project-hub');
+
   // Check if on WorkHub/ProjectHub route (v4.5)
   const isWorkHubRoute = location.pathname.startsWith('/workhub') || location.pathname.startsWith('/projecthub');
 
@@ -137,6 +142,16 @@ function CatalystShellContent() {
     // No sidebar for Home or Admin routes
     if (location.pathname === '/for-you' || location.pathname.startsWith('/admin')) {
       return null;
+    }
+
+    // ProjectHub V5 sidebar (/project-hub/*)
+    if (isProjectHubRoute) {
+      return (
+        <ProjectHubSidebar
+          expanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+      );
     }
 
     // ProjectHub sidebar (same pattern as TestHub — shell-managed)
