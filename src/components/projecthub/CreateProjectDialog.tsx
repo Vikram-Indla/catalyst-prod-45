@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { X } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useCreateProject, useProjects } from '@/hooks/useProjectHub';
@@ -39,37 +39,42 @@ const labelStyle: React.CSSProperties = {
 export function CreateProjectDialog({ open, onClose }: Props) {
   const [name, setName] = useState('');
   const [key, setKey] = useState('');
+  const [keyManuallyEdited, setKeyManuallyEdited] = useState(false);
   const [department, setDepartment] = useState('');
-  const [category, setCategory] = useState('todo');
+  const [status, setStatus] = useState('todo');
   const [description, setDescription] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const createProject = useCreateProject();
   const { data: projects } = useProjects();
+  const overlayRef = useRef<HTMLDivElement>(null);
 
   const existingKeys = new Set((projects ?? []).map(p => p.project_key?.toUpperCase()).filter(Boolean));
-  const isDuplicate = key.length >= 2 && existingKeys.has(key);
+  const isDuplicate = key.length >= 3 && existingKeys.has(key);
 
   const uniqueDepartments = useMemo(() => {
     const depts = new Set((projects ?? []).map(p => p.department).filter(Boolean));
     return Array.from(depts).sort() as string[];
   }, [projects]);
 
-  // Auto-generate key when name changes
+  // Auto-generate key when name changes (only if user hasn't manually edited)
   useEffect(() => {
-    setKey(deriveKeyFromName(name));
-  }, [name]);
+    if (!keyManuallyEdited) {
+      setKey(deriveKeyFromName(name));
+    }
+  }, [name, keyManuallyEdited]);
 
   // Reset on close
   useEffect(() => {
     if (!open) {
-      setName(''); setKey(''); setDepartment(''); setCategory('todo'); setDescription(''); setErrors({});
+      setName(''); setKey(''); setKeyManuallyEdited(false);
+      setDepartment(''); setStatus('todo'); setDescription(''); setErrors({});
     }
   }, [open]);
 
   const validate = (): boolean => {
     const errs: Record<string, string> = {};
     if (!name.trim() || name.trim().length < 2) errs.name = 'Project name is required';
-    if (!key || key.length < 2 || key.length > 4 || !/^[A-Z]+$/.test(key)) errs.key = 'Key must be 2-4 uppercase letters';
+    if (!key || key.length < 3 || key.length > 4 || !/^[A-Z]+$/.test(key)) errs.key = 'Key must be 3-4 uppercase letters';
     if (isDuplicate) errs.key = 'A project with this key already exists';
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -83,7 +88,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
         project_key: key,
         department: department || undefined,
         description: description.trim() || undefined,
-        status_category: category,
+        status_category: status,
       });
       toast.success('Project created successfully');
       onClose();
@@ -96,11 +101,19 @@ export function CreateProjectDialog({ open, onClose }: Props) {
     }
   };
 
+  /** Only close if the click target is the overlay itself (not a portal) */
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === overlayRef.current) {
+      onClose();
+    }
+  };
+
   if (!open) return null;
 
   return (
     <div
-      onClick={onClose}
+      ref={overlayRef}
+      onClick={handleOverlayClick}
       style={{
         position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1600,
         display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
@@ -157,7 +170,10 @@ export function CreateProjectDialog({ open, onClose }: Props) {
             <label style={labelStyle}>Project Key <span style={{ color: '#DC2626' }}>*</span></label>
             <input
               value={key}
-              onChange={e => setKey(e.target.value.toUpperCase().replace(/[^A-Z]/g, '').substring(0, 4))}
+              onChange={e => {
+                setKeyManuallyEdited(true);
+                setKey(e.target.value.toUpperCase().replace(/[^A-Z]/g, '').substring(0, 4));
+              }}
               placeholder="ABC"
               maxLength={4}
               style={{
@@ -182,11 +198,11 @@ export function CreateProjectDialog({ open, onClose }: Props) {
             />
             {errors.key && <p style={{ fontSize: 12, color: '#DC2626', marginTop: 4 }}>{errors.key}</p>}
             {!errors.key && (
-              <p style={{ fontSize: 11, color: '#94A3B8', marginTop: 4 }}>Auto-generated from project name · 2–4 letters</p>
+              <p style={{ fontSize: 11, color: '#94A3B8', marginTop: 4 }}>Auto-generated from project name · 3–4 letters</p>
             )}
           </div>
 
-          {/* Department + Category row */}
+          {/* Department + Status row */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 16 }}>
             <div>
               <label style={labelStyle}>Department</label>
@@ -197,7 +213,10 @@ export function CreateProjectDialog({ open, onClose }: Props) {
                 >
                   <SelectValue placeholder="Select department" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent
+                  style={{ zIndex: 9999, background: '#FFFFFF' }}
+                  onPointerDownOutside={e => e.preventDefault()}
+                >
                   {uniqueDepartments.map(dept => (
                     <SelectItem key={dept} value={dept}>{dept}</SelectItem>
                   ))}
@@ -205,15 +224,18 @@ export function CreateProjectDialog({ open, onClose }: Props) {
               </Select>
             </div>
             <div>
-              <label style={labelStyle}>Category</label>
-              <Select value={category} onValueChange={setCategory}>
+              <label style={labelStyle}>Status</label>
+              <Select value={status} onValueChange={setStatus}>
                 <SelectTrigger
                   className="h-9 text-sm"
                   style={{ border: '1.5px solid #E2E8F0', borderRadius: 6 }}
                 >
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent
+                  style={{ zIndex: 9999, background: '#FFFFFF' }}
+                  onPointerDownOutside={e => e.preventDefault()}
+                >
                   <SelectItem value="todo">To Do</SelectItem>
                   <SelectItem value="in_progress">In Progress</SelectItem>
                   <SelectItem value="done">Done</SelectItem>
