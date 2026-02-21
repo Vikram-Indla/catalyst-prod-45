@@ -39,27 +39,37 @@ export function MasterPageHeader({
         className="flex items-center justify-between px-6"
         style={{ height: '52px' }}
       >
-        <div className="flex flex-col justify-center">
+        <div>
           <div className="flex items-baseline gap-2.5">
             <h1 
-              className="font-bold m-0 leading-tight"
-              style={{ color: 'var(--text-1)', fontSize: '22px' }}
+              className="m-0"
+              style={{ 
+                fontSize: '24px', 
+                fontWeight: 700, 
+                letterSpacing: '-0.02em', 
+                lineHeight: 1.2, 
+                color: 'var(--catalyst-text-primary, var(--text-1))' 
+              }}
             >
               {title}
             </h1>
             {count && (
               <span 
                 className="text-[13px] font-medium"
-                style={{ color: 'var(--text-3)' }}
+                style={{ color: 'var(--catalyst-text-secondary, var(--text-3))' }}
               >
                 {count}
               </span>
             )}
           </div>
           {subtitle && (
-            <span className="text-[13px]" style={{ color: 'var(--text-3)', marginTop: 4 }}>
+            <p style={{ 
+              fontSize: '14px', 
+              color: 'var(--catalyst-text-secondary, var(--text-3))', 
+              margin: '4px 0 0 0' 
+            }}>
               {subtitle}
-            </span>
+            </p>
           )}
         </div>
         {inlineTitleControls && rightControls && (

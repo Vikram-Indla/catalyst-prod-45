@@ -82,24 +82,31 @@ export default function AllProjectsPage() {
         subtitle="Track and manage all projects across your portfolio"
         inlineTitleControls
         rightControls={
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setShowExportModal(true)}
+              className="flex items-center gap-1.5 rounded-md"
               style={{
-                display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px',
-                background: '#FFF', border: '1px solid #E2E8F0', borderRadius: 6,
-                fontSize: 13, fontWeight: 500, color: '#334155', cursor: 'pointer',
+                height: 32, padding: '0 12px', fontSize: 13, fontWeight: 500,
+                color: 'var(--catalyst-text-secondary, #334155)',
+                background: 'var(--catalyst-bg-surface-0, #FFF)',
+                border: '1px solid var(--catalyst-border-default, #E2E8F0)',
+                borderRadius: 'var(--catalyst-radius-md, 6px)',
+                cursor: 'pointer',
               }}
             >
               <Download size={14} /> Export
             </button>
             <button
               onClick={() => setShowCreateModal(true)}
+              className="flex items-center gap-1.5 rounded-md"
               style={{
-                display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 14px',
-                background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', border: 'none', borderRadius: 6,
-                fontSize: 13, fontWeight: 600, color: '#FFF', cursor: 'pointer',
-                boxShadow: '0 1px 3px rgba(37,99,235,0.15)',
+                height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600,
+                color: 'var(--catalyst-text-on-primary, #FFF)',
+                background: 'var(--catalyst-primary, #2563EB)',
+                border: 'none',
+                borderRadius: 'var(--catalyst-radius-md, 6px)',
+                cursor: 'pointer',
               }}
             >
               <Plus size={16} strokeWidth={2.5} /> New Project
