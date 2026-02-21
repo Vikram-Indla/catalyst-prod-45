@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Subtask, SubtaskType, SubtaskStatus } from '@/types/subtask';
 
 export async function getSubtasksByStory(storyId: string): Promise<Subtask[]> {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('subtasks')
     .select(`
       *,
@@ -22,7 +22,7 @@ export async function getSubtasksByStory(storyId: string): Promise<Subtask[]> {
 }
 
 export async function getSubtask(subtaskId: string): Promise<Subtask> {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('subtasks')
     .select(`
       *,
@@ -47,12 +47,12 @@ export async function createSubtask(input: {
   change_number_id?: string;
 }): Promise<Subtask> {
   // Get next order index
-  const { count } = await supabase
+  const { count } = await (supabase as any)
     .from('subtasks')
     .select('*', { count: 'exact', head: true })
     .eq('story_id', input.story_id);
 
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('subtasks')
     .insert([{
       story_id: input.story_id,
@@ -87,7 +87,7 @@ export async function updateSubtask(
     change_number_id: string | null;
   }>
 ): Promise<Subtask> {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from('subtasks')
     .update(updates)
     .eq('id', subtaskId)
@@ -104,7 +104,7 @@ export async function updateSubtask(
 }
 
 export async function deleteSubtask(subtaskId: string): Promise<void> {
-  const { error } = await supabase
+  const { error } = await (supabase as any)
     .from('subtasks')
     .delete()
     .eq('id', subtaskId);
