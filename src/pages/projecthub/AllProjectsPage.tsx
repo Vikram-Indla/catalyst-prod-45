@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { ChevronRight, Plus, Download, ChevronLeft, ChevronRight as ChevronRightIcon, FolderKanban } from 'lucide-react';
-import type { ViewMode, ProjectFilters, SortColumn, SortDirection, ProjectListItem } from '@/types/projecthub';
+import type { ViewMode, ProjectFilters, SortColumn, SortDirection } from '@/types/projecthub';
 import { DEFAULT_FILTERS } from '@/types/projecthub';
 import {
   useProjects,
@@ -39,7 +39,6 @@ export default function AllProjectsPage() {
   const toggleFav = useToggleFavorite();
   useProjectsRealtime();
 
-  // Batch-fetch member profiles for avatar display
   const allMemberIds = useMemo(() => projects.flatMap(p => p.member_ids ?? []), [projects]);
   useMemberProfiles(allMemberIds);
 
@@ -75,174 +74,223 @@ export default function AllProjectsPage() {
   }
 
   return (
-    <div className="flex flex-col h-full" style={{ padding: '24px 28px', fontFamily: "'Inter', sans-serif" }}>
-      <div className="flex flex-col flex-1 min-h-0" style={{ maxWidth: 1440, margin: '0 auto', width: '100%' }}>
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-1 mb-1 shrink-0">
-          <span style={{ fontSize: 12, color: '#94A3B8', fontWeight: 500 }}>ProjectHub</span>
-          <ChevronRight size={13} color="#CBD5E1" />
-          <span style={{ fontSize: 12, color: '#475569', fontWeight: 500 }}>All Projects</span>
-        </div>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '20px 24px', fontFamily: "'Inter', -apple-system, system-ui, sans-serif", WebkitFontSmoothing: 'antialiased' }}>
+      {/* Breadcrumb */}
+      <div style={{ fontSize: 12, color: '#64748B', marginBottom: 2, flexShrink: 0 }}>
+        <span>ProjectHub</span>
+        <span style={{ color: '#94A3B8', fontSize: 10, margin: '0 4px' }}>›</span>
+        <span style={{ color: '#475569', fontWeight: 500 }}>All Projects</span>
+      </div>
 
-        {/* Header */}
-        <div className="flex items-center justify-between mb-1 shrink-0">
-          <div>
-            <h1 style={{ fontSize: 20, fontWeight: 600, color: '#0F172A', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.3px' }}>All Projects</h1>
-            <p style={{ fontSize: 12, color: '#94A3B8', marginTop: 2 }}>Portfolio-wide project tracking · Ministry of Industry</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowExportModal(true)}
-              className="flex items-center gap-1.5 rounded-md transition-colors hover:bg-slate-50"
-              style={{ height: 34, padding: '0 14px', background: '#FFF', border: '1px solid #E2E8F0', fontSize: 13, fontWeight: 500, color: '#475569', cursor: 'pointer' }}
-            >
-              <Download size={14} /> Export
-            </button>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-1.5 rounded-md transition-opacity hover:opacity-90"
-              style={{ height: 34, padding: '0 14px', background: '#2563EB', border: 'none', fontSize: 13, fontWeight: 600, color: '#FFF', cursor: 'pointer', borderRadius: 6 }}
-            >
-              <Plus size={16} strokeWidth={2.5} /> New Project
-            </button>
-          </div>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexShrink: 0 }}>
+        <div>
+          <h1 style={{ fontSize: 20, fontWeight: 600, color: '#0F172A', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.01em', margin: 0 }}>All Projects</h1>
+          <p style={{ fontSize: 12, color: '#64748B', marginTop: 2, margin: '2px 0 0' }}>Portfolio-wide project tracking · Ministry of Industry</p>
         </div>
-
-        {/* Stats */}
-        <div className="mb-5 mt-4 shrink-0">
-          <ProjectStatsStrip stats={stats} />
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={() => setShowExportModal(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px',
+              background: '#FFF', border: '1px solid #E2E8F0', borderRadius: 6,
+              fontSize: 13, fontWeight: 500, color: '#334155', cursor: 'pointer',
+            }}
+          >
+            <Download size={14} /> Export
+          </button>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 14px',
+              background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', border: 'none', borderRadius: 6,
+              fontSize: 13, fontWeight: 600, color: '#FFF', cursor: 'pointer',
+              boxShadow: '0 1px 3px rgba(37,99,235,0.15)',
+            }}
+          >
+            <Plus size={16} strokeWidth={2.5} /> New Project
+          </button>
         </div>
+      </div>
 
-        {/* Toolbar */}
-        <div className="mb-3 shrink-0">
-          <AllProjectsToolbar
-            view={view}
-            onViewChange={v => { setView(v); setPage(0); }}
+      {/* Stats */}
+      <div style={{ marginBottom: 16, flexShrink: 0 }}>
+        <ProjectStatsStrip stats={stats} />
+      </div>
+
+      {/* Toolbar */}
+      <div style={{ marginBottom: 10, flexShrink: 0 }}>
+        <AllProjectsToolbar
+          view={view}
+          onViewChange={v => { setView(v); setPage(0); }}
+          filters={filters}
+          onFilterChange={f => { setFilters(f); setPage(0); }}
+          onToggleAdvanced={() => setShowAdvFilters(v => !v)}
+          showAdvanced={showAdvFilters}
+          stats={stats}
+        />
+      </div>
+
+      {/* Advanced Filters */}
+      {showAdvFilters && (
+        <div style={{ flexShrink: 0 }}>
+          <ProjectAdvancedFilters
             filters={filters}
-            onFilterChange={f => { setFilters(f); setPage(0); }}
-            onToggleAdvanced={() => setShowAdvFilters(v => !v)}
-            showAdvanced={showAdvFilters}
-            stats={stats}
+            onChange={f => { setFilters(f); setPage(0); }}
+            departments={departments}
+            onClose={() => setShowAdvFilters(false)}
           />
         </div>
+      )}
 
-        {/* Advanced Filters */}
-        {showAdvFilters && (
-          <div className="shrink-0">
-            <ProjectAdvancedFilters
-              filters={filters}
-              onChange={f => { setFilters(f); setPage(0); }}
-              departments={departments}
-              onClose={() => setShowAdvFilters(false)}
-            />
-          </div>
-        )}
-
-        {/* Content — grows to fill remaining space */}
-        {isLoading ? (
-          <div className="flex-1 min-h-0 rounded-lg" style={{ background: '#FFF', border: '1px solid #E2E8F0', padding: '40px' }}>
-            <div className="space-y-3">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="animate-pulse flex items-center gap-4">
-                  <div className="rounded bg-slate-200" style={{ width: 28, height: 28 }} />
-                  <div className="flex-1 space-y-1.5">
-                    <div className="h-3 bg-slate-200 rounded w-1/3" />
-                    <div className="h-2.5 bg-slate-100 rounded w-1/5" />
-                  </div>
-                  <div className="h-3 bg-slate-100 rounded w-16" />
-                  <div className="h-3 bg-slate-100 rounded w-12" />
+      {/* Content */}
+      {isLoading ? (
+        <div style={{ flex: 1, background: '#FFF', border: '1px solid #E2E8F0', borderRadius: 8, padding: 40 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="animate-pulse" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{ width: 28, height: 28, borderRadius: 4, background: '#E2E8F0' }} />
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <div style={{ height: 12, background: '#E2E8F0', borderRadius: 4, width: '30%' }} />
+                  <div style={{ height: 10, background: '#F1F5F9', borderRadius: 4, width: '20%' }} />
                 </div>
-              ))}
-            </div>
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="flex-1 min-h-0 flex flex-col items-center justify-center rounded-lg" style={{ background: '#FFF', border: '1px solid #E2E8F0', padding: '80px 40px' }}>
-            <FolderKanban size={48} color="#CBD5E1" strokeWidth={1.25} />
-            <h3 style={{ fontSize: 18, fontWeight: 600, color: '#0F172A', marginTop: 16, fontFamily: "'Sora', sans-serif" }}>
-              {filters.search || filters.statusChip !== 'All' ? 'No projects match your filters' : 'No projects yet'}
-            </h3>
-            <p style={{ fontSize: 13, color: '#64748B', marginTop: 4, textAlign: 'center', maxWidth: 360 }}>
-              {filters.search || filters.statusChip !== 'All' ? 'Try adjusting your search or filter criteria.' : 'Create your first project to get started.'}
-            </p>
-            {filters.search === '' && filters.statusChip === 'All' && (
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="flex items-center gap-1.5 mt-6 rounded-md"
-                style={{ height: 36, padding: '0 16px', background: '#2563EB', color: '#FFF', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
-              >
-                <Plus size={16} /> New Project
-              </button>
-            )}
-          </div>
-        ) : view === 'list' ? (
-          <div className="flex-1 min-h-0 flex flex-col rounded-lg overflow-hidden" style={{ background: '#FFF', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(0,0,0,.06)' }}>
-            <div className="flex-1 min-h-0 overflow-auto">
-              <AllProjectsTable
-                projects={pageData}
-                favoriteIds={favorites}
-                onToggleFav={(id, fav) => toggleFav.mutate({ projectId: id, isFavorited: fav })}
-                onSelectProject={id => setSelectedProject(id)}
-                sortCol={sortCol}
-                sortDir={sortDir}
-                onSort={handleSort}
-                selectedRows={selectedRows}
-                onToggleRow={handleToggleRow}
-                onToggleAll={handleToggleAll}
-              />
-            </div>
-            {/* Pagination pinned at bottom of card */}
-            <div className="shrink-0 border-t border-slate-100 px-4 py-2 flex items-center justify-between" style={{ fontSize: 12, color: '#64748B' }}>
-              <span>Showing {page * perPage + 1}–{Math.min((page + 1) * perPage, filtered.length)} of {filtered.length} projects</span>
-              <div className="flex items-center gap-1">
-                <button disabled={page === 0} onClick={() => setPage(p => p - 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: '1px solid #E2E8F0', background: '#FFF', cursor: 'pointer' }}>
-                  <ChevronLeft size={14} color="#334155" />
-                </button>
-                {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
-                  const pn = totalPages <= 5 ? i : Math.max(0, Math.min(page - 2, totalPages - 5)) + i;
-                  return (
-                    <button key={pn} onClick={() => setPage(pn)} className="flex items-center justify-center rounded" style={{ width: 28, height: 28, border: pn === page ? 'none' : '1px solid #E2E8F0', background: pn === page ? '#2563EB' : '#FFF', color: pn === page ? '#FFF' : '#334155', fontSize: 12, fontWeight: pn === page ? 600 : 400, cursor: 'pointer' }}>
-                      {pn + 1}
-                    </button>
-                  );
-                })}
-                <button disabled={page >= totalPages - 1} onClick={() => setPage(p => p + 1)} className="flex items-center justify-center rounded transition-colors disabled:opacity-30" style={{ width: 28, height: 28, border: '1px solid #E2E8F0', background: '#FFF', cursor: 'pointer' }}>
-                  <ChevronRightIcon size={14} color="#334155" />
-                </button>
+                <div style={{ height: 12, background: '#F1F5F9', borderRadius: 4, width: 60 }} />
               </div>
-              <span className="flex items-center gap-1.5" style={{ fontSize: 12, color: '#64748B' }}>
-                Rows per page:
-                <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setPage(0); }} className="rounded" style={{ height: 26, padding: '0 4px', border: '1px solid #E2E8F0', fontSize: 12, color: '#334155', background: '#FFF', cursor: 'pointer' }}>
-                  <option value={12}>12</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                </select>
-              </span>
-            </div>
+            ))}
           </div>
-        ) : (
-          <div className="flex-1 min-h-0 overflow-auto">
-            <AllProjectsCardGrid
+        </div>
+      ) : filtered.length === 0 ? (
+        <div style={{
+          flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          background: '#FFF', border: '1px solid #E2E8F0', borderRadius: 8, padding: '80px 40px',
+        }}>
+          <FolderKanban size={48} color="#CBD5E1" strokeWidth={1.25} />
+          <h3 style={{ fontSize: 18, fontWeight: 600, color: '#0F172A', marginTop: 16, fontFamily: "'Sora', sans-serif" }}>
+            {filters.search || filters.statusChip !== 'All' ? 'No projects match your filters' : 'No projects yet'}
+          </h3>
+          <p style={{ fontSize: 13, color: '#64748B', marginTop: 4, textAlign: 'center', maxWidth: 360 }}>
+            {filters.search || filters.statusChip !== 'All' ? 'Try adjusting your search or filter criteria.' : 'Create your first project to get started.'}
+          </p>
+          {filters.search === '' && filters.statusChip === 'All' && (
+            <button
+              onClick={() => setShowCreateModal(true)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6, height: 36, padding: '0 16px', marginTop: 24,
+                background: '#2563EB', color: '#FFF', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: 'pointer',
+              }}
+            >
+              <Plus size={16} /> New Project
+            </button>
+          )}
+        </div>
+      ) : view === 'list' ? (
+        <div style={{
+          flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column',
+          background: '#FFF', border: '1px solid #E2E8F0', borderRadius: 8, overflow: 'hidden',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+        }}>
+          <div style={{ flex: 1, minHeight: 0, overflowX: 'auto', overflowY: 'auto' }}>
+            <AllProjectsTable
               projects={pageData}
               favoriteIds={favorites}
               onToggleFav={(id, fav) => toggleFav.mutate({ projectId: id, isFavorited: fav })}
               onSelectProject={id => setSelectedProject(id)}
+              sortCol={sortCol}
+              sortDir={sortDir}
+              onSort={handleSort}
+              selectedRows={selectedRows}
+              onToggleRow={handleToggleRow}
+              onToggleAll={handleToggleAll}
             />
           </div>
-        )}
+          {/* Footer */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '8px 16px', borderTop: '1px solid #F1F5F9', background: '#FAFBFC',
+            fontSize: 12, color: '#64748B', flexShrink: 0,
+          }}>
+            <span>Showing {page * perPage + 1}–{Math.min((page + 1) * perPage, filtered.length)} of {filtered.length} projects</span>
+            <div style={{ display: 'flex', gap: 4 }}>
+              <button
+                disabled={page === 0}
+                onClick={() => setPage(p => p - 1)}
+                style={{
+                  width: 28, height: 28, border: '1px solid #E2E8F0', background: '#FFF', borderRadius: 4,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: page === 0 ? 'not-allowed' : 'pointer',
+                  opacity: page === 0 ? 0.4 : 1,
+                }}
+              >
+                <ChevronLeft size={14} color="#334155" />
+              </button>
+              {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
+                const pn = totalPages <= 5 ? i : Math.max(0, Math.min(page - 2, totalPages - 5)) + i;
+                return (
+                  <button
+                    key={pn}
+                    onClick={() => setPage(pn)}
+                    style={{
+                      width: 28, height: 28, borderRadius: 4,
+                      border: pn === page ? 'none' : '1px solid #E2E8F0',
+                      background: pn === page ? '#2563EB' : '#FFF',
+                      color: pn === page ? '#FFF' : '#334155',
+                      fontSize: 12, fontWeight: pn === page ? 600 : 400, cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}
+                  >
+                    {pn + 1}
+                  </button>
+                );
+              })}
+              <button
+                disabled={page >= totalPages - 1}
+                onClick={() => setPage(p => p + 1)}
+                style={{
+                  width: 28, height: 28, border: '1px solid #E2E8F0', background: '#FFF', borderRadius: 4,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer',
+                  opacity: page >= totalPages - 1 ? 0.4 : 1,
+                }}
+              >
+                <ChevronRightIcon size={14} color="#334155" />
+              </button>
+            </div>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#64748B' }}>
+              Rows per page:
+              <select
+                value={perPage}
+                onChange={e => { setPerPage(Number(e.target.value)); setPage(0); }}
+                style={{ height: 26, padding: '0 4px', border: '1px solid #E2E8F0', fontSize: 12, color: '#334155', background: '#FFF', borderRadius: 4, cursor: 'pointer' }}
+              >
+                <option value={12}>12</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+              </select>
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+          <AllProjectsCardGrid
+            projects={pageData}
+            favoriteIds={favorites}
+            onToggleFav={(id, fav) => toggleFav.mutate({ projectId: id, isFavorited: fav })}
+            onSelectProject={id => setSelectedProject(id)}
+          />
+        </div>
+      )}
 
-        {/* Detail Panel */}
-        <ProjectDetailPanel
-          project={selectedProjectData}
-          open={!!selectedProject}
-          onClose={() => setSelectedProject(null)}
-          isFav={selectedProject ? favorites.has(selectedProject) : false}
-          onToggleFav={() => { if (selectedProject) toggleFav.mutate({ projectId: selectedProject, isFavorited: favorites.has(selectedProject) }); }}
-        />
+      {/* Detail Panel */}
+      <ProjectDetailPanel
+        project={selectedProjectData}
+        open={!!selectedProject}
+        onClose={() => setSelectedProject(null)}
+        isFav={selectedProject ? favorites.has(selectedProject) : false}
+        onToggleFav={() => { if (selectedProject) toggleFav.mutate({ projectId: selectedProject, isFavorited: favorites.has(selectedProject) }); }}
+      />
 
-        {/* Modals */}
-        <CreateProjectDialog open={showCreateModal} onClose={() => setShowCreateModal(false)} />
-        <ExportDialog open={showExportModal} onClose={() => setShowExportModal(false)} projects={filtered} />
-      </div>
+      {/* Modals */}
+      <CreateProjectDialog open={showCreateModal} onClose={() => setShowCreateModal(false)} />
+      <ExportDialog open={showExportModal} onClose={() => setShowExportModal(false)} projects={filtered} />
     </div>
   );
 }
