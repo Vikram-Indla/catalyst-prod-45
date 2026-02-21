@@ -12,6 +12,11 @@ import {
   LayoutGrid,
   Zap,
   Settings,
+  Lightbulb,
+  Columns,
+  ScatterChart,
+  BarChart3,
+  Rocket,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -29,6 +34,16 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
     badge: 'PH',
     label: 'Product Hub',
     sections: [
+      {
+        title: 'Ideation',
+        items: [
+          { id: 'idea-backlog', title: 'Idea Backlog', path: '/producthub/ideation', icon: Lightbulb, exact: true, badge: 15 },
+          { id: 'idea-board', title: 'Idea Board', path: '/producthub/ideation?view=board', icon: Columns, exact: true },
+          { id: 'impact-matrix', title: 'Impact Matrix', path: '/producthub/ideation?view=matrix', icon: ScatterChart, exact: true },
+          { id: 'ideation-analytics', title: 'Analytics', path: '/producthub/ideation?view=analytics', icon: BarChart3, exact: true },
+          { id: 'innovation-drives', title: 'Innovation Drives', path: '/producthub/ideation?view=drives', icon: Rocket, exact: true },
+        ],
+      },
       {
         title: 'Product Hub',
         items: [
