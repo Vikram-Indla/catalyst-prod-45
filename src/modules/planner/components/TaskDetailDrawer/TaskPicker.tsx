@@ -23,7 +23,7 @@ export function TaskPicker({ isOpen, onClose, onSelect, excludeTaskId, title }: 
   const { data: tasks = [], isLoading } = useQuery({
     queryKey: ['planner-tasks-picker'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('planner_tasks')
         .select(`
           id,
