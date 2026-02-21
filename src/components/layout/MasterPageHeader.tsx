@@ -36,8 +36,8 @@ export function MasterPageHeader({
     <div className="bg-card flex-shrink-0">
       {/* Row 1: Title Row */}
       <div 
-        className="flex items-center justify-between px-6"
-        style={{ padding: subtitle ? '16px 24px' : '0 24px', minHeight: '52px' }}
+        className="flex items-center justify-between"
+        style={{ padding: subtitle ? '20px 24px 16px 24px' : '0 24px', minHeight: '52px' }}
       >
         <div>
           <div className="flex items-baseline gap-2.5">
