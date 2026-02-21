@@ -420,7 +420,7 @@ export function useBoardUsers(boardId?: string) {
     queryKey: ['board-users', boardId],
     queryFn: async () => {
       if (!boardId) return [];
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('kanban_board_users')
         .select('*, profiles:user_id(id, full_name, email)')
         .eq('board_id', boardId);

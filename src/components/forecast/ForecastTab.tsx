@@ -102,7 +102,7 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
     queryFn: async () => {
       if (!selectedPiId) return [];
       
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('forecast_entries')
         .select('*, program_increments(name), programs(name), teams(name)')
         .eq('work_item_id', workItemId)
