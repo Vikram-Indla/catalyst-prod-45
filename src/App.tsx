@@ -1,4 +1,5 @@
 import React, { lazy, Suspense } from "react";
+import { Resource360Redirect } from './components/workhub/resource360/Resource360Redirect';
 
 // ProjectHub V5 lazy imports
 const ProjectHubShellLazy = lazy(() => import("./components/project-hub/ProjectHubShell").then(m => ({ default: m.ProjectHubShell })));
@@ -787,7 +788,7 @@ const App = () => (
               <Route path="/workhub/*" element={<Navigate to="/project-hub" replace />} />
               <Route path="/projecthub" element={<Navigate to="/project-hub" replace />} />
               <Route path="/projecthub/resource360" element={<Navigate to="/project-hub/resource360" replace />} />
-              <Route path="/projecthub/resource360/:id" element={<Navigate to="/project-hub/resource360/:id" replace />} />
+              <Route path="/projecthub/resource360/:id" element={<Resource360Redirect />} />
               <Route path="/projecthub/*" element={<Navigate to="/project-hub" replace />} />
 
 
