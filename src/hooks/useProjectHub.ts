@@ -156,7 +156,7 @@ export function useCreateProject() {
           created_by: user.id,
           health_status: 'on_track',
           program_id: '00000000-0000-0000-0000-000000000001',
-          project_type: 'software',
+          project_type: 'kanban',
           total_epics: 0,
           total_stories: 0,
           total_tasks: 0,
