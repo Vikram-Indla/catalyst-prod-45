@@ -9,6 +9,7 @@ import { Idea, ideas, STATUS_CONFIG, TYPE_CONFIG, PRIORITY_CONFIG, IDEA_IMPACT_F
 interface Props {
   ideaKey: string | null;
   onClose: () => void;
+  onConvert?: (key: string) => void;
 }
 
 type Tab = 'details' | 'impact' | 'ai' | 'evidence' | 'comments';
@@ -21,7 +22,7 @@ const TABS: { key: Tab; label: string; purple?: boolean }[] = [
   { key: 'comments', label: 'Comments' },
 ];
 
-export default function IdeationDetailPanel({ ideaKey, onClose }: Props) {
+export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Props) {
   const [tab, setTab] = useState<Tab>('details');
   const idea = ideas.find(i => i.key === ideaKey);
 
@@ -91,7 +92,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose }: Props) {
 
         {/* Content */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
-          {tab === 'details' && <DetailsTab idea={idea} />}
+          {tab === 'details' && <DetailsTab idea={idea} onConvert={onConvert} />}
           {tab === 'impact' && <ImpactTab idea={idea} />}
           {tab === 'ai' && <AiTab idea={idea} />}
           {tab === 'evidence' && <EvidenceTab idea={idea} />}
@@ -110,7 +111,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose }: Props) {
 }
 
 // ─── Details Tab ─────────────────────────────────────────────────
-function DetailsTab({ idea }: { idea: Idea }) {
+function DetailsTab({ idea, onConvert }: { idea: Idea; onConvert?: (key: string) => void }) {
   const sc = STATUS_CONFIG[idea.status];
   const tc = TYPE_CONFIG[idea.type];
   const pc = PRIORITY_CONFIG[idea.priority] || PRIORITY_CONFIG.P4;
@@ -129,7 +130,7 @@ function DetailsTab({ idea }: { idea: Idea }) {
             <div style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>This idea is approved and ready for promotion</div>
             <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>Convert to an initiative to begin planning and execution.</div>
           </div>
-          <button onClick={() => toast.success('Conversion initiated')} style={{
+          <button onClick={() => onConvert?.(idea.key)} style={{
             background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '8px',
             padding: '8px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
           }}>

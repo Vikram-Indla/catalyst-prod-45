@@ -11,6 +11,7 @@ const TOP_AI_KEYS = new Set(['IDH-005', 'IDH-001', 'IDH-013']);
 interface Props {
   ideas: Idea[];
   onOpenDetail: (key: string) => void;
+  onConvert?: (key: string) => void;
 }
 
 const COLUMNS: { status: IdeaStatus; extra?: React.ReactNode }[] = [
@@ -27,7 +28,7 @@ const INITIATIVE_LINKS: Record<string, string> = {
   'IDH-013': '↗ INIT-2026-002 · 2 ideas merged',
 };
 
-export default function IdeationBoardView({ ideas, onOpenDetail }: Props) {
+export default function IdeationBoardView({ ideas, onOpenDetail, onConvert }: Props) {
   return (
     <div style={{
       display: 'flex', gap: '12px', padding: '16px 28px',
@@ -62,6 +63,7 @@ export default function IdeationBoardView({ ideas, onOpenDetail }: Props) {
                 idea={idea}
                 columnStatus={col.status}
                 onClick={() => onOpenDetail(idea.key)}
+                onConvert={onConvert}
               />
             ))}
           </div>
@@ -71,7 +73,7 @@ export default function IdeationBoardView({ ideas, onOpenDetail }: Props) {
   );
 }
 
-function IdeaBoardCard({ idea, columnStatus, onClick }: { idea: Idea; columnStatus: IdeaStatus; onClick: () => void }) {
+function IdeaBoardCard({ idea, columnStatus, onClick, onConvert }: { idea: Idea; columnStatus: IdeaStatus; onClick: () => void; onConvert?: (key: string) => void }) {
   const pc = PRIORITY_CONFIG[idea.priority] || PRIORITY_CONFIG.P4;
   const isAiReady = idea.ai === 'ready';
   const showFullAiStrip = isAiReady && TOP_AI_KEYS.has(idea.key) && AI_INSIGHTS[idea.key];
@@ -190,7 +192,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick }: { idea: Idea; columnStat
         <button
           onClick={e => {
             e.stopPropagation();
-            toast.success('Conversion initiated — redirecting to Initiative creation');
+            onConvert?.(idea.key);
           }}
           style={{
             width: '100%', marginTop: '8px', padding: '6px', background: '#2563EB',

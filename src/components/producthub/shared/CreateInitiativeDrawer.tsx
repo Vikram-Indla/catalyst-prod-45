@@ -15,9 +15,16 @@ import { QuarterSelect } from './QuarterSelect';
 import { PeopleSelect } from './PeopleSelect';
 import { DepartmentSelect } from './DepartmentSelect';
 
+export interface ConversionSource {
+  type: 'single' | 'merge';
+  primaryIdea: { key: string; title: string; description?: string; impact: number; votes: number; dept: string; assignee?: string; priority: string };
+  mergeIdea?: { key: string; title: string; description?: string; impact: number; votes: number };
+}
+
 interface CreateInitiativeDrawerProps {
   open: boolean;
   onClose: () => void;
+  conversionSource?: ConversionSource | null;
 }
 
 function useNextInitiativeKey() {
@@ -82,7 +89,7 @@ function useCreateInitiative() {
   });
 }
 
-export function CreateInitiativeDrawer({ open, onClose }: CreateInitiativeDrawerProps) {
+export function CreateInitiativeDrawer({ open, onClose, conversionSource }: CreateInitiativeDrawerProps) {
   const { data: nextKey } = useNextInitiativeKey();
   const createMutation = useCreateInitiative();
   const { data: departmentOptions } = useDepartmentOptions();
@@ -105,15 +112,55 @@ export function CreateInitiativeDrawer({ open, onClose }: CreateInitiativeDrawer
 
   useEffect(() => {
     if (open) {
-      setForm({
-        title: '', description: '', status: 'new_demand',
-        department_id: '', assignee_id: '', business_owner_id: '',
-        reporter_id: '', target_quarter: '', kickoff_date: '',
-        target_complete: '', business_ask_date: '',
-      });
+      if (conversionSource) {
+        const src = conversionSource;
+        if (src.type === 'single') {
+          const p = src.primaryIdea;
+          const desc = `Converted from Ideation · ${p.key}\n\n${p.description || p.title}\n\n---\nIMPACT Score: ${p.impact.toFixed(2)}/5.00\nVotes: ${p.votes} · Priority: ${p.priority}`;
+          setForm({
+            title: p.title,
+            description: desc,
+            status: 'new_demand',
+            department_id: '',
+            assignee_id: '',
+            business_owner_id: '',
+            reporter_id: '',
+            target_quarter: '',
+            kickoff_date: '',
+            target_complete: '',
+            business_ask_date: '',
+          });
+        } else if (src.type === 'merge' && src.mergeIdea) {
+          const p = src.primaryIdea;
+          const m = src.mergeIdea;
+          const combinedImpact = p.impact;
+          const totalVotes = p.votes + m.votes;
+          const desc = `Consolidated from 2 ideation submissions:\n\n• ${p.key}: ${p.title} (IMPACT ${p.impact.toFixed(2)}, ${p.votes} votes)\n• ${m.key}: ${m.title} (IMPACT ${m.impact.toFixed(2)}, ${m.votes} votes)\n\n---\nCombined IMPACT: ${combinedImpact.toFixed(2)} (weighted by vote count)\nTotal votes: ${totalVotes}`;
+          setForm({
+            title: `${p.title} & ${m.title.split(' ').slice(0, 3).join(' ')} Platform`,
+            description: desc,
+            status: 'new_demand',
+            department_id: '',
+            assignee_id: '',
+            business_owner_id: '',
+            reporter_id: '',
+            target_quarter: '',
+            kickoff_date: '',
+            target_complete: '',
+            business_ask_date: '',
+          });
+        }
+      } else {
+        setForm({
+          title: '', description: '', status: 'new_demand',
+          department_id: '', assignee_id: '', business_owner_id: '',
+          reporter_id: '', target_quarter: '', kickoff_date: '',
+          target_complete: '', business_ask_date: '',
+        });
+      }
       setTitleError(false);
     }
-  }, [open]);
+  }, [open, conversionSource]);
 
   useEffect(() => {
     if (!open) return;
@@ -197,6 +244,35 @@ export function CreateInitiativeDrawer({ open, onClose }: CreateInitiativeDrawer
 
             {/* Scrollable Body */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              {/* Conversion Banner */}
+              {conversionSource?.type === 'single' && (
+                <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px', padding: '12px 16px', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A', marginBottom: '4px' }}>🔄 Converting idea to initiative</div>
+                  <div style={{ fontSize: '12px', color: '#334155' }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#2563EB' }}>{conversionSource.primaryIdea.key}</span>
+                    {' · '}{conversionSource.primaryIdea.title}
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+                    IMPACT {conversionSource.primaryIdea.impact.toFixed(2)} · {conversionSource.primaryIdea.votes} votes · Approved
+                  </div>
+                </div>
+              )}
+              {conversionSource?.type === 'merge' && conversionSource.mergeIdea && (
+                <div style={{ background: '#F5F3FF', border: '1px solid #DDD6FE', borderRadius: '8px', padding: '12px 16px', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A', marginBottom: '4px' }}>🔗 Merging 2 ideas into 1 initiative</div>
+                  <div style={{ fontSize: '12px', color: '#334155' }}>
+                    Primary: <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#2563EB' }}>{conversionSource.primaryIdea.key}</span>
+                    {' · '}{conversionSource.primaryIdea.title}
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#334155', marginTop: '2px' }}>
+                    Merging: <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#2563EB' }}>{conversionSource.mergeIdea.key}</span>
+                    {' · '}{conversionSource.mergeIdea.title}
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+                    Combined IMPACT: {conversionSource.primaryIdea.impact.toFixed(2)} · {conversionSource.primaryIdea.votes + conversionSource.mergeIdea.votes} total votes
+                  </div>
+                </div>
+              )}
               {/* Title */}
               <div>
                 <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">
