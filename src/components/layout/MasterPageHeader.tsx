@@ -33,11 +33,11 @@ export function MasterPageHeader({
   inlineTitleControls,
 }: MasterPageHeaderProps) {
   return (
-    <div className="bg-card flex-shrink-0">
+    <div className="bg-card flex-shrink-0" style={{ marginBottom: '20px' }}>
       {/* Row 1: Title Row */}
       <div 
         className="flex items-center justify-between"
-        style={{ padding: subtitle ? '20px 24px 16px 24px' : '0 24px', minHeight: '52px' }}
+        style={{ padding: subtitle ? '20px 24px 16px 24px' : '0 24px', minHeight: '72px' }}
       >
         <div>
           <div className="flex items-baseline gap-2.5">
