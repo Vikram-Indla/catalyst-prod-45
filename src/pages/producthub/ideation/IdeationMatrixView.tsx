@@ -2,26 +2,31 @@
  * IdeationMatrixView — Impact vs Complexity scatter plot with 4 quadrants
  */
 import React, { useState } from 'react';
+import { ideas } from './ideation-data';
 
 interface Props {
   onOpenDetail: (key: string) => void;
 }
 
 interface DotData {
-  key: string; left: number; bottom: number; size: number; color: string; title: string; impact: number; votes: number;
+  key: string; num: string; left: number; bottom: number; size: number; color: string; border: string;
+  title: string; impact: number; votes: number; status: string;
 }
 
 const DOTS: DotData[] = [
-  { key: 'IDH-001', left: 32, bottom: 88, size: 32, color: 'rgba(22,163,74,0.8)', title: 'Unified Portal', impact: 4.40, votes: 12 },
-  { key: 'IDH-002', left: 48, bottom: 78, size: 26, color: 'rgba(124,58,237,0.75)', title: 'AI Permit Classification', impact: 3.90, votes: 8 },
-  { key: 'IDH-003', left: 65, bottom: 62, size: 20, color: 'rgba(37,99,235,0.6)', title: 'Factory Compliance', impact: 3.50, votes: 5 },
-  { key: 'IDH-004', left: 38, bottom: 72, size: 28, color: 'rgba(37,99,235,0.6)', title: 'Bilingual Docs', impact: 3.70, votes: 9 },
-  { key: 'IDH-005', left: 28, bottom: 92, size: 36, color: 'rgba(22,163,74,0.85)', title: 'Investor Onboarding', impact: 4.60, votes: 15 },
-  { key: 'IDH-006', left: 82, bottom: 50, size: 22, color: 'rgba(217,119,6,0.6)', title: 'Predictive Maintenance', impact: 2.80, votes: 6 },
-  { key: 'IDH-011', left: 68, bottom: 85, size: 30, color: 'rgba(124,58,237,0.7)', title: 'Regulatory Assessment', impact: 4.20, votes: 11 },
-  { key: 'IDH-013', left: 42, bottom: 86, size: 34, color: 'rgba(22,163,74,0.8)', title: 'Payment Gateway', impact: 4.30, votes: 14 },
-  { key: 'IDH-015', left: 85, bottom: 82, size: 28, color: 'rgba(217,119,6,0.65)', title: 'Data Sharing', impact: 4.10, votes: 10 },
-  { key: 'IDH-009', left: 88, bottom: 20, size: 14, color: 'rgba(239,68,68,0.6)', title: 'Blockchain Cert', impact: 1.50, votes: -2 },
+  { key: 'IDH-001', num: '01', left: 32, bottom: 88, size: 34, color: '#16A34A', border: '2px solid white', title: 'Unified Digital Services Portal', impact: 4.40, votes: 12, status: 'Converted' },
+  { key: 'IDH-002', num: '02', left: 48, bottom: 78, size: 28, color: '#7C3AED', border: '2px solid white', title: 'AI-Powered Permit Classification', impact: 3.90, votes: 8, status: 'Under Review' },
+  { key: 'IDH-003', num: '03', left: 58, bottom: 55, size: 22, color: '#3B82F6', border: '2px solid white', title: 'Real-Time Factory Compliance Dashboard', impact: 3.50, votes: 5, status: 'Submitted' },
+  { key: 'IDH-004', num: '04', left: 38, bottom: 72, size: 28, color: '#3B82F6', border: '2px solid white', title: 'Bilingual Document Generation Engine', impact: 3.70, votes: 9, status: 'Under Review' },
+  { key: 'IDH-005', num: '05', left: 28, bottom: 92, size: 38, color: '#16A34A', border: '2px solid white', title: 'Investor Onboarding Simplification', impact: 4.60, votes: 15, status: 'Approved' },
+  { key: 'IDH-006', num: '06', left: 78, bottom: 48, size: 24, color: '#D97706', border: '2px solid white', title: 'Predictive Maintenance for Legacy Systems', impact: 2.80, votes: 6, status: 'Under Review' },
+  { key: 'IDH-007', num: '07', left: 62, bottom: 45, size: 20, color: '#3B82F6', border: '2px solid white', title: 'Mobile-First Inspection App', impact: 3.20, votes: 4, status: 'Submitted' },
+  { key: 'IDH-009', num: '09', left: 88, bottom: 18, size: 16, color: '#EF4444', border: '2px solid white', title: 'Blockchain-Based Certificate Verification', impact: 1.50, votes: -2, status: 'Rejected' },
+  { key: 'IDH-010', num: '10', left: 42, bottom: 52, size: 24, color: '#3B82F6', border: '2px solid white', title: 'Stakeholder Communication Hub', impact: 3.30, votes: 7, status: 'Submitted' },
+  { key: 'IDH-011', num: '11', left: 65, bottom: 82, size: 32, color: '#7C3AED', border: '2px solid white', title: 'Automated Regulatory Impact Assessment', impact: 4.20, votes: 11, status: 'Under Review' },
+  { key: 'IDH-013', num: '13', left: 35, bottom: 86, size: 36, color: '#16A34A', border: '2px solid white', title: 'Integrated Payment Gateway for Ministry Fees', impact: 4.30, votes: 14, status: 'Converted' },
+  { key: 'IDH-014', num: '14', left: 55, bottom: 60, size: 24, color: '#3B82F6', border: '2px solid white', title: 'Carbon Footprint Tracking Module', impact: 3.40, votes: 6, status: 'Submitted' },
+  { key: 'IDH-015', num: '15', left: 82, bottom: 80, size: 30, color: '#D97706', border: '2px solid white', title: 'Cross-Ministry Data Sharing Framework', impact: 4.10, votes: 10, status: 'Under Review' },
 ];
 
 export default function IdeationMatrixView({ onOpenDetail }: Props) {
@@ -58,18 +63,18 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
           <div style={{ position: 'absolute', top: '40px', right: '40px', bottom: '50px', left: '60px' }}>
             {/* Quadrants */}
             {[
-              { top: 0, left: 0, label: '⚡ Quick Wins', bg: 'rgba(22,163,74,0.04)', tc: 'rgba(22,163,74,0.35)' },
-              { top: 0, left: '50%', label: '🎯 Big Bets', bg: 'rgba(37,99,235,0.04)', tc: 'rgba(37,99,235,0.3)' },
-              { top: '50%', left: 0, label: '📋 Fill-Ins', bg: 'rgba(161,161,170,0.04)', tc: 'rgba(161,161,170,0.4)' },
-              { top: '50%', left: '50%', label: '⚠ Money Pit', bg: 'rgba(239,68,68,0.04)', tc: 'rgba(239,68,68,0.3)' },
+              { top: 0, left: 0, label: '⚡ Quick Wins', bg: 'rgba(22,163,74,0.10)', tc: 'rgba(22,163,74,0.6)' },
+              { top: 0, left: '50%', label: '🎯 Big Bets', bg: 'rgba(37,99,235,0.10)', tc: 'rgba(37,99,235,0.55)' },
+              { top: '50%', left: 0, label: '📋 Fill-Ins', bg: 'rgba(161,161,170,0.08)', tc: 'rgba(161,161,170,0.6)' },
+              { top: '50%', left: '50%', label: '⚠ Money Pit', bg: 'rgba(239,68,68,0.08)', tc: 'rgba(239,68,68,0.55)' },
             ].map(q => (
               <div key={q.label} style={{
                 position: 'absolute', top: q.top, left: q.left, width: '50%', height: '50%',
-                background: q.bg, border: '1px dashed #E2E8F0',
+                background: q.bg, border: '1px dashed #CBD5E1',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <span style={{
-                  fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px',
+                  fontSize: '13px', fontWeight: 800, textTransform: 'uppercase' as const, letterSpacing: '0.8px',
                   color: q.tc,
                 }}>
                   {q.label}
@@ -78,8 +83,8 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
             ))}
 
             {/* Midlines */}
-            <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: '1px', background: '#E2E8F0' }} />
-            <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', background: '#E2E8F0' }} />
+            <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 0, borderLeft: '1px dashed #CBD5E1', zIndex: 1 }} />
+            <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 0, borderTop: '1px dashed #CBD5E1', zIndex: 1 }} />
 
             {/* Dots */}
             {DOTS.map(dot => (
@@ -93,26 +98,29 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
                   left: `calc(${dot.left}% - ${dot.size / 2}px)`,
                   bottom: `calc(${dot.bottom}% - ${dot.size / 2}px)`,
                   width: `${dot.size}px`, height: `${dot.size}px`,
-                  borderRadius: '50%', background: dot.color, cursor: 'pointer',
+                  borderRadius: '50%', background: dot.color, border: dot.border, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '9px', fontWeight: 700, color: '#FFFFFF',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                  transform: hoveredDot === dot.key ? 'scale(1.4)' : 'scale(1)',
+                  fontSize: '9px', fontWeight: 800, color: '#FFFFFF',
+                  boxShadow: hoveredDot === dot.key ? '0 4px 16px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.2)',
+                  transform: hoveredDot === dot.key ? 'scale(1.35)' : 'scale(1)',
                   zIndex: hoveredDot === dot.key ? 10 : 2,
                   transition: 'all 0.2s',
                 }}
               >
-                {dot.key.replace('IDH-0', '')}
+                {dot.num}
 
                 {/* Tooltip */}
                 {hoveredDot === dot.key && (
                   <div style={{
                     position: 'absolute', bottom: `${dot.size + 8}px`, left: '50%', transform: 'translateX(-50%)',
-                    background: '#0F172A', color: '#FFFFFF', fontSize: '11px', borderRadius: '8px',
-                    padding: '6px 10px', whiteSpace: 'nowrap', zIndex: 20,
+                    background: '#0F172A', color: '#FFFFFF', fontSize: '12px', borderRadius: '8px',
+                    padding: '8px 12px', whiteSpace: 'nowrap', zIndex: 20,
                     boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
                   }}>
-                    {dot.key} {dot.title} · {dot.impact.toFixed(2)} · {dot.votes} votes
+                    <div style={{ fontWeight: 700, marginBottom: '2px' }}>{dot.key} · {dot.title}</div>
+                    <div style={{ fontSize: '11px', color: '#CBD5E1' }}>
+                      IMPACT: {dot.impact.toFixed(2)} · Votes: {dot.votes} · {dot.status}
+                    </div>
                     <div style={{
                       position: 'absolute', bottom: '-4px', left: '50%', transform: 'translateX(-50%)',
                       width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent',
@@ -127,13 +135,13 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
           {/* Axis labels */}
           <div style={{
             position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)',
-            fontSize: '11px', fontWeight: 600, color: '#94A3B8', whiteSpace: 'nowrap',
+            fontSize: '12px', fontWeight: 700, color: '#64748B', letterSpacing: '0.5px', whiteSpace: 'nowrap',
           }}>
             ← LOW COMPLEXITY — HIGH COMPLEXITY →
           </div>
           <div style={{
             position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%) rotate(-90deg)',
-            fontSize: '11px', fontWeight: 600, color: '#94A3B8', whiteSpace: 'nowrap',
+            fontSize: '12px', fontWeight: 700, color: '#64748B', letterSpacing: '0.5px', whiteSpace: 'nowrap',
           }}>
             ← LOW STRATEGIC VALUE — HIGH STRATEGIC VALUE →
           </div>
@@ -145,15 +153,15 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', marginTop: '16px',
       }}>
         {[
-          { color: 'rgba(22,163,74,0.8)', label: 'Approved' },
-          { color: 'rgba(124,58,237,0.7)', label: 'Under Review AI' },
-          { color: 'rgba(37,99,235,0.6)', label: 'Submitted' },
-          { color: 'rgba(217,119,6,0.6)', label: 'Under Review' },
-          { color: 'rgba(239,68,68,0.6)', label: 'Rejected' },
+          { color: '#16A34A', label: 'Approved / Converted' },
+          { color: '#7C3AED', label: 'Under Review (AI-enriched)' },
+          { color: '#3B82F6', label: 'Submitted' },
+          { color: '#D97706', label: 'Under Review' },
+          { color: '#EF4444', label: 'Rejected' },
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: l.color }} />
-            <span style={{ fontSize: '11px', color: '#334155', fontWeight: 500 }}>{l.label}</span>
+            <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: l.color, flexShrink: 0 }} />
+            <span style={{ fontSize: '12px', color: '#334155', fontWeight: 600 }}>{l.label}</span>
           </div>
         ))}
         <span style={{ fontSize: '11px', color: '#94A3B8' }}>Dot size = Vote count</span>

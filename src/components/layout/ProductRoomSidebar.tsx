@@ -11,7 +11,6 @@ import {
   GanttChart,
   LayoutGrid,
   Zap,
-  Settings,
   Lightbulb,
   Columns,
   ScatterChart,
@@ -19,7 +18,6 @@ import {
   Rocket,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
-import { useUserRole } from '@/hooks/useUserRole';
 
 interface ProductRoomSidebarProps {
   expanded: boolean;
@@ -28,7 +26,6 @@ interface ProductRoomSidebarProps {
 }
 
 export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoomSidebarProps) {
-  const { isAdmin } = useUserRole();
 
   const productSidebarConfig: SidebarConfig = {
     badge: 'PH',
@@ -60,13 +57,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
         ],
       },
     ],
-    footerItem: isAdmin ? {
-      id: 'settings',
-      title: 'Settings',
-      path: '/producthub/settings',
-      icon: Settings,
-      exact: true,
-    } : undefined,
+    footerItem: undefined,
   };
 
   return (
