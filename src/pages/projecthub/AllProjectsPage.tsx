@@ -79,7 +79,8 @@ export default function AllProjectsPage() {
       {/* Catalyst Header */}
       <MasterPageHeader
         title="All Projects"
-        count={`${filtered.length} project${filtered.length !== 1 ? 's' : ''}`}
+        subtitle="Track and manage all projects across your portfolio"
+        inlineTitleControls
         rightControls={
           <div style={{ display: 'flex', gap: 8 }}>
             <button

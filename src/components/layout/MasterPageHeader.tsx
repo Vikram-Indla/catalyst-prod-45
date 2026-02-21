@@ -9,6 +9,8 @@ import React, { ReactNode } from 'react';
 interface MasterPageHeaderProps {
   /** Page title - displayed in olive color, 20px font weight 700 */
   title: string;
+  /** Subtitle / byline text */
+  subtitle?: string;
   /** Count display - e.g., "6/6" or "12 items" */
   count?: string | ReactNode;
   /** Left side controls - view toggles, etc. */
@@ -17,38 +19,54 @@ interface MasterPageHeaderProps {
   centerControls?: ReactNode;
   /** Right side controls - action buttons, filters, etc. */
   rightControls?: ReactNode;
+  /** Put rightControls in title row instead of toolbar row */
+  inlineTitleControls?: boolean;
 }
 
 export function MasterPageHeader({
   title,
+  subtitle,
   count,
   leftControls,
   centerControls,
   rightControls,
+  inlineTitleControls,
 }: MasterPageHeaderProps) {
   return (
     <div className="bg-card flex-shrink-0">
       {/* Row 1: Title Row - 44px, no border */}
       <div 
-        className="flex items-center px-6"
+        className="flex items-center justify-between px-6"
         style={{ height: '44px' }}
       >
-        <div className="flex items-baseline gap-2.5">
-          <h1 
-            className="text-xl font-bold m-0 leading-tight"
-            style={{ color: 'var(--text-1)' }}
-          >
-            {title}
-          </h1>
-          {count && (
-            <span 
-              className="text-[13px] font-medium"
-              style={{ color: 'var(--text-3)' }}
+        <div className="flex flex-col justify-center">
+          <div className="flex items-baseline gap-2.5">
+            <h1 
+              className="text-xl font-bold m-0 leading-tight"
+              style={{ color: 'var(--text-1)' }}
             >
-              {count}
+              {title}
+            </h1>
+            {count && (
+              <span 
+                className="text-[13px] font-medium"
+                style={{ color: 'var(--text-3)' }}
+              >
+                {count}
+              </span>
+            )}
+          </div>
+          {subtitle && (
+            <span className="text-xs" style={{ color: 'var(--text-3)', marginTop: 1 }}>
+              {subtitle}
             </span>
           )}
         </div>
+        {inlineTitleControls && rightControls && (
+          <div className="flex items-center gap-2">
+            {rightControls}
+          </div>
+        )}
       </div>
 
       {/* Row 2: Toolbar Row - 52px, with border-bottom */}
@@ -78,7 +96,7 @@ export function MasterPageHeader({
 
           {/* Right Zone - auto width, right-aligned */}
           <div className="flex items-center justify-end gap-3">
-            {rightControls}
+            {!inlineTitleControls && rightControls}
           </div>
         </div>
       </div>
