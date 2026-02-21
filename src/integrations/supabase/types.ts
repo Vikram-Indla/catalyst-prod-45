@@ -20446,6 +20446,7 @@ export type Database = {
           actual_hours: number | null
           assignee_id: string | null
           assignee_user_id: string | null
+          backlog_order: number | null
           completed_at: string | null
           created_at: string | null
           cycle_time_days: number | null
@@ -20501,6 +20502,7 @@ export type Database = {
           actual_hours?: number | null
           assignee_id?: string | null
           assignee_user_id?: string | null
+          backlog_order?: number | null
           completed_at?: string | null
           created_at?: string | null
           cycle_time_days?: number | null
@@ -20556,6 +20558,7 @@ export type Database = {
           actual_hours?: number | null
           assignee_id?: string | null
           assignee_user_id?: string | null
+          backlog_order?: number | null
           completed_at?: string | null
           created_at?: string | null
           cycle_time_days?: number | null
