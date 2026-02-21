@@ -88,8 +88,17 @@ export function SidebarBase({
   const { isDark } = useTheme();
 
   const isActive = (path: string, exact: boolean = false) => {
-    if (exact) return location.pathname === path;
-    return location.pathname === path || location.pathname.startsWith(path + '/');
+    // Support paths with query params (e.g., /producthub/ideation?view=board)
+    const [pathPart, queryPart] = path.split('?');
+    if (queryPart) {
+      // Must match both pathname and search params
+      return location.pathname === pathPart && location.search === `?${queryPart}`;
+    }
+    if (exact) {
+      // For exact match without query params, also match when there's no search string
+      return location.pathname === pathPart && !location.search;
+    }
+    return location.pathname === pathPart || location.pathname.startsWith(pathPart + '/');
   };
 
   const handleNavigation = (path: string) => {
