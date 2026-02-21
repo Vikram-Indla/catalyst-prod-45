@@ -34,16 +34,16 @@ export function MasterPageHeader({
 }: MasterPageHeaderProps) {
   return (
     <div className="bg-card flex-shrink-0">
-      {/* Row 1: Title Row - 44px, no border */}
+      {/* Row 1: Title Row */}
       <div 
         className="flex items-center justify-between px-6"
-        style={{ height: '44px' }}
+        style={{ minHeight: subtitle ? '68px' : '44px', paddingTop: subtitle ? 14 : 0, paddingBottom: subtitle ? 14 : 0 }}
       >
         <div className="flex flex-col justify-center">
           <div className="flex items-baseline gap-2.5">
             <h1 
-              className="text-xl font-bold m-0 leading-tight"
-              style={{ color: 'var(--text-1)' }}
+              className="font-bold m-0 leading-tight"
+              style={{ color: 'var(--text-1)', fontSize: '22px' }}
             >
               {title}
             </h1>
@@ -57,7 +57,7 @@ export function MasterPageHeader({
             )}
           </div>
           {subtitle && (
-            <span className="text-xs" style={{ color: 'var(--text-3)', marginTop: 1 }}>
+            <span className="text-[13px]" style={{ color: 'var(--text-3)', marginTop: 4 }}>
               {subtitle}
             </span>
           )}
