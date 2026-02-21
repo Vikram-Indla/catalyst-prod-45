@@ -37,7 +37,7 @@ export function MasterPageHeader({
       {/* Row 1: Title Row */}
       <div 
         className="flex items-center justify-between px-6"
-        style={{ minHeight: subtitle ? '68px' : '44px', paddingTop: subtitle ? 14 : 0, paddingBottom: subtitle ? 14 : 0 }}
+        style={{ height: '52px' }}
       >
         <div className="flex flex-col justify-center">
           <div className="flex items-baseline gap-2.5">
