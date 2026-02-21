@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { getRoleCategory, ROLE_CATEGORY_ORDER } from '@/types/projecthub';
 import type { ProjectTeamMember } from '@/types/projecthub';
-import { Search, Mail, MapPin, UserPlus, Trash2, Loader2 } from 'lucide-react';
+import { Search, UserPlus, Trash2, Loader2 } from 'lucide-react';
 import { AddMemberDialog } from './AddMemberDialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -171,6 +171,16 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
 
   const existingMemberIds = useMemo(() => members.map(m => m.user_id), [members]);
 
+  // Map member user_id to resource_inventory role_name
+  const resourceRoleMap = useMemo(() => {
+    const map = new Map<string, string>();
+    resourceUsers.forEach(u => {
+      if (u.profile_id && u.role_name) map.set(u.profile_id, u.role_name);
+      if (u.role_name) map.set(u.id, u.role_name);
+    });
+    return map;
+  }, [resourceUsers]);
+
   if (isLoading) {
     return (
       <div className="space-y-3 p-4">
@@ -305,21 +315,8 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
                         {m.project_role || 'member'}
                       </div>
                       <div style={{ fontSize: 11, color: '#94A3B8', lineHeight: '16px' }}>
-                        {m.department_name || 'Unassigned'}
+                        {resourceRoleMap.get(m.user_id) || m.job_role || 'Unassigned'}
                       </div>
-                    </div>
-
-                    <div className="text-right flex-shrink-0" style={{ minWidth: 120 }}>
-                      {m.email && (
-                        <a href={`mailto:${m.email}`} onClick={e => e.stopPropagation()} className="flex items-center gap-1 justify-end hover:text-blue-600" style={{ fontSize: 11, color: '#475569', lineHeight: '18px' }}>
-                          <Mail size={11} /> {m.email.split('@')[0]}
-                        </a>
-                      )}
-                      {(m.country || m.location) && (
-                        <div className="flex items-center gap-1 justify-end" style={{ fontSize: 10, color: '#94A3B8', lineHeight: '16px', marginTop: 2 }}>
-                          <MapPin size={10} /> {[m.location, m.country].filter(Boolean).join(', ')}
-                        </div>
-                      )}
                     </div>
 
                     <button
