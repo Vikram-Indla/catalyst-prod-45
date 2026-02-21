@@ -82,10 +82,8 @@ export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectP
           <SortHeader label="Project Name" col="name" currentCol={sortCol} dir={sortDir} onSort={onSort} />
           <SortHeader label="Department" col="department" currentCol={sortCol} dir={sortDir} onSort={onSort} />
           <SortHeader label="Status" col="status" currentCol={sortCol} dir={sortDir} onSort={onSort} />
-          <th style={{ padding: '0 16px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '2px solid #E2E8F0', background: '#F8FAFC' }}>Category</th>
           <SortHeader label="Epics" col="total_epics" currentCol={sortCol} dir={sortDir} onSort={onSort} center />
           <SortHeader label="Stories" col="total_stories" currentCol={sortCol} dir={sortDir} onSort={onSort} center />
-          <SortHeader label="Tasks" col="total_tasks" currentCol={sortCol} dir={sortDir} onSort={onSort} center />
           <th style={{ padding: '0 12px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '2px solid #E2E8F0', background: '#F8FAFC' }}>Distribution</th>
           <SortHeader label="Health" col="health_status" currentCol={sortCol} dir={sortDir} onSort={onSort} />
           <th style={{ padding: '0 12px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '2px solid #E2E8F0', background: '#F8FAFC' }}>Members</th>
@@ -146,15 +144,8 @@ export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectP
               <td style={{ padding: '0 16px' }}>
                 <ProjectStatusBadge status={p.status} />
               </td>
-              <td style={{ padding: '0 16px' }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 500, color: CAT_TEXT[p.status_category] || '#94A3B8' }}>
-                  <span style={{ width: 6, height: 6, borderRadius: 3, background: CAT_DOT[p.status_category] || '#94A3B8', flexShrink: 0 }} />
-                  {STATUS_CATEGORY_DISPLAY[p.status_category] || p.status_category}
-                </span>
-              </td>
               <td style={{ padding: '0 16px', textAlign: 'center', fontSize: 12, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>{p.total_epics}</td>
               <td style={{ padding: '0 16px', textAlign: 'center', fontSize: 12, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>{p.total_stories}</td>
-              <td style={{ padding: '0 16px', textAlign: 'center', fontSize: 12, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>{p.total_tasks}</td>
               <td style={{ padding: '0 12px' }}>
                 <DistributionBar todo={p.work_items_todo} inProgress={p.work_items_in_progress} done={p.work_items_done} showNumbers />
               </td>
