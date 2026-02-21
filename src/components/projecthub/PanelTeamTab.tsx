@@ -97,13 +97,13 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
       {/* Search + Add button */}
       <div className="flex items-center gap-2 mx-4 mt-3 mb-2">
         <div className="flex items-center gap-2 flex-1 rounded-lg" style={{ height: 38, padding: '0 12px', background: '#FFF', border: '1px solid #CBD5E1' }}>
-          <Search size={14} color="#94A3B8" />
+          <Search size={14} color="#94A3B8" className="shrink-0" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search by name, role, or email..."
-            className="flex-1 bg-transparent outline-none"
-            style={{ fontSize: 13, color: '#0F172A' }}
+            className="flex-1 bg-transparent outline-none border-0 ring-0 shadow-none focus:outline-none focus:ring-0 focus:border-0 focus:shadow-none p-0 m-0"
+            style={{ fontSize: 13, color: '#0F172A', border: 'none', boxShadow: 'none', outline: 'none', WebkitAppearance: 'none', background: 'transparent' }}
           />
         </div>
         <button
