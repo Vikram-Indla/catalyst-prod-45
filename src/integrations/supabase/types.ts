@@ -26146,6 +26146,7 @@ export type Database = {
           default_assignee_id: string | null
           department: string | null
           description: string | null
+          display_status: string | null
           health_status: string | null
           id: string
           is_archived: boolean | null
@@ -26186,6 +26187,7 @@ export type Database = {
           default_assignee_id?: string | null
           department?: string | null
           description?: string | null
+          display_status?: string | null
           health_status?: string | null
           id?: string
           is_archived?: boolean | null
@@ -26226,6 +26228,7 @@ export type Database = {
           default_assignee_id?: string | null
           department?: string | null
           description?: string | null
+          display_status?: string | null
           health_status?: string | null
           id?: string
           is_archived?: boolean | null
@@ -52866,7 +52869,7 @@ export type Database = {
           owner_id: string | null
           priority: string | null
           project_key: string | null
-          status: Database["public"]["Enums"]["program_status"] | null
+          status: string | null
           status_category: string | null
           tags: string[] | null
           total_epics: number | null
