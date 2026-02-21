@@ -4,7 +4,7 @@
  * Tabs removed — sidebar items are sole navigators
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
   Search, Sparkles, Download, Plus, ChevronUp, ChevronDown, ArrowUpDown,
@@ -20,6 +20,8 @@ import IdeationDrivesView from './ideation/IdeationDrivesView';
 import IdeationDetailPanel from './ideation/IdeationDetailPanel';
 import IdeationCreateWizard from './ideation/IdeationCreateWizard';
 import IdeationTriagePanel from './ideation/IdeationTriagePanel';
+import IdeationIntelligenceHub from './ideation/IdeationIntelligenceHub';
+import { CreateInitiativeDrawer, type ConversionSource } from '@/components/producthub/shared/CreateInitiativeDrawer';
 
 // ─── Component ───────────────────────────────────────────────────
 export default function IdeationPage() {
@@ -36,6 +38,45 @@ export default function IdeationPage() {
   const [detailKey, setDetailKey] = useState<string | null>(null);
   const [wizardOpen, setWizardOpen] = useState(false);
   const [triageOpen, setTriageOpen] = useState(false);
+  const [intelligenceOpen, setIntelligenceOpen] = useState(false);
+
+  // Convert to Initiative
+  const [convertDrawerOpen, setConvertDrawerOpen] = useState(false);
+  const [conversionSource, setConversionSource] = useState<ConversionSource | null>(null);
+
+  const handleConvertIdea = useCallback((ideaKey: string) => {
+    const idea = ideas.find(i => i.key === ideaKey);
+    if (!idea) return;
+    setConversionSource({
+      type: 'single',
+      primaryIdea: {
+        key: idea.key, title: idea.title, impact: idea.impact,
+        votes: idea.votes, dept: idea.dept, priority: idea.priority,
+        assignee: idea.assignee?.name,
+        description: `${idea.title} — A comprehensive initiative to streamline operations and deliver measurable outcomes aligned with organizational strategy and V2030 objectives.`,
+      },
+    });
+    setConvertDrawerOpen(true);
+  }, []);
+
+  const handleMergeIdeas = useCallback((primaryKey: string, mergeKey: string) => {
+    const primary = ideas.find(i => i.key === primaryKey);
+    const merge = ideas.find(i => i.key === mergeKey);
+    if (!primary || !merge) return;
+    setConversionSource({
+      type: 'merge',
+      primaryIdea: {
+        key: primary.key, title: primary.title, impact: primary.impact,
+        votes: primary.votes, dept: primary.dept, priority: primary.priority,
+        assignee: primary.assignee?.name,
+      },
+      mergeIdea: {
+        key: merge.key, title: merge.title, impact: merge.impact, votes: merge.votes,
+      },
+    });
+    setConvertDrawerOpen(true);
+    setTriageOpen(false);
+  }, []);
 
   const filteredIdeas = useMemo(() => {
     let result = ideas;
@@ -93,11 +134,14 @@ export default function IdeationPage() {
             </span>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button style={{
-              background: '#7C3AED', color: '#FFFFFF', border: '1px solid #7C3AED',
-              borderRadius: '8px', padding: '7px 14px', fontSize: '13px', fontWeight: 600,
-              cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
-            }}>
+            <button
+              onClick={() => setIntelligenceOpen(true)}
+              style={{
+                background: '#7C3AED', color: '#FFFFFF', border: '1px solid #7C3AED',
+                borderRadius: '8px', padding: '7px 14px', fontSize: '13px', fontWeight: 600,
+                cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
+              }}
+            >
               <Sparkles size={14} /> Intelligence
             </button>
             <button style={{
@@ -238,7 +282,7 @@ export default function IdeationPage() {
           </div>
         )}
         {activeView === 'board' && (
-          <IdeationBoardView ideas={ideas} onOpenDetail={setDetailKey} />
+          <IdeationBoardView ideas={ideas} onOpenDetail={setDetailKey} onConvert={handleConvertIdea} />
         )}
         {activeView === 'matrix' && (
           <IdeationMatrixView onOpenDetail={setDetailKey} />
@@ -252,9 +296,15 @@ export default function IdeationPage() {
       </div>
 
       {/* ─── Panels ─── */}
-      {detailKey && <IdeationDetailPanel ideaKey={detailKey} onClose={() => setDetailKey(null)} />}
+      {detailKey && <IdeationDetailPanel ideaKey={detailKey} onClose={() => setDetailKey(null)} onConvert={handleConvertIdea} />}
       <IdeationCreateWizard open={wizardOpen} onClose={() => setWizardOpen(false)} />
-      <IdeationTriagePanel open={triageOpen} onClose={() => setTriageOpen(false)} />
+      <IdeationTriagePanel open={triageOpen} onClose={() => setTriageOpen(false)} onMerge={handleMergeIdeas} onConvert={handleConvertIdea} />
+      <IdeationIntelligenceHub open={intelligenceOpen} onClose={() => setIntelligenceOpen(false)} />
+      <CreateInitiativeDrawer
+        open={convertDrawerOpen}
+        onClose={() => { setConvertDrawerOpen(false); setConversionSource(null); }}
+        conversionSource={conversionSource}
+      />
     </div>
   );
 }

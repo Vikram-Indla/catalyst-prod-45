@@ -8,9 +8,11 @@ import { toast } from 'sonner';
 interface Props {
   open: boolean;
   onClose: () => void;
+  onMerge?: (primaryKey: string, mergeKey: string) => void;
+  onConvert?: (key: string) => void;
 }
 
-export default function IdeationTriagePanel({ open, onClose }: Props) {
+export default function IdeationTriagePanel({ open, onClose, onMerge, onConvert }: Props) {
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     if (open) { document.addEventListener('keydown', handleEsc); return () => document.removeEventListener('keydown', handleEsc); }
@@ -51,7 +53,7 @@ export default function IdeationTriagePanel({ open, onClose }: Props) {
             ideaKey="IDH-011" title="Automated Regulatory Impact Assessment"
             body="Strong V2030 Pillar 1 alignment (5/5), IMPACT 4.20, 11 votes, no duplicates detected. All approval criteria met."
             buttons={[
-              { label: '⚡ Fast-Track → Approve', bg: '#16A34A', onClick: () => toast.success('IDH-011 fast-tracked to Approved') },
+              { label: '⚡ Fast-Track → Approve', bg: '#16A34A', onClick: () => { onConvert?.('IDH-011'); toast.success('IDH-011 fast-tracked to Approved'); } },
               { label: '🔍 Investigate', bg: '#D97706', onClick: () => toast('Investigation started for IDH-011') },
             ]}
           />
@@ -63,7 +65,7 @@ export default function IdeationTriagePanel({ open, onClose }: Props) {
             body="87% similarity with IDH-001 (Unified Digital Services Portal). Overlapping scope, shared stakeholders."
             aiCallout="✦ Merge IDH-010 into IDH-001 — consolidate 2 ideas into 1 initiative"
             buttons={[
-              { label: '🔗 Merge & Consolidate', bg: '#7C3AED', onClick: () => toast.success('IDH-010 merged into IDH-001') },
+              { label: '🔗 Merge & Consolidate', bg: '#7C3AED', onClick: () => { onMerge?.('IDH-001', 'IDH-010'); } },
               { label: 'Keep Separate', bg: '#64748B', onClick: () => toast('IDH-010 kept separate') },
             ]}
           />
