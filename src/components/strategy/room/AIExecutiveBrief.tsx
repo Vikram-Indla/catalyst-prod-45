@@ -256,14 +256,34 @@ export function AIExecutiveBrief({ open, onClose }: Props) {
   );
 }
 
+/* ═══ GRADING SCALE ═══ */
+const GRADE_SCALE = [
+  { grade: 'A+', range: '95–100', color: '#16A34A', meaning: 'World-class execution', desc: 'All strategic objectives on track, risks fully mitigated, full alignment across portfolio.' },
+  { grade: 'A',  range: '90–94',  color: '#16A34A', meaning: 'Exceptional performance', desc: 'Near-complete goal attainment with proactive risk management and strong OKR velocity.' },
+  { grade: 'A-', range: '85–89',  color: '#16A34A', meaning: 'Strong execution', desc: 'Most goals on track with minor gaps. Strategic alignment is high across all themes.' },
+  { grade: 'B+', range: '80–84',  color: '#0D9488', meaning: 'Above expectations', desc: 'Good progress with a few at-risk items. Recovery plans in place and being actioned.' },
+  { grade: 'B',  range: '75–79',  color: '#0D9488', meaning: 'Solid performance', desc: 'Majority of KRs progressing. Some orphaned work items but governance is functional.' },
+  { grade: 'B-', range: '70–74',  color: '#0D9488', meaning: 'Adequate with concerns', desc: 'Noticeable gaps in risk resolution or alignment. Requires leadership attention within 30 days.' },
+  { grade: 'C+', range: '65–69',  color: '#D97706', meaning: 'Below expectations', desc: 'Multiple goals at risk. KR velocity declining. Overdue risks emerging across themes.' },
+  { grade: 'C',  range: '60–64',  color: '#D97706', meaning: 'Underperforming', desc: 'Less than half of goals on track. Significant orphaned work and misalignment detected.' },
+  { grade: 'C-', range: '55–59',  color: '#D97706', meaning: 'Significant weakness', desc: 'Strategic coherence breaking down. Multiple themes off-track. Immediate intervention needed.' },
+  { grade: 'D+', range: '50–54',  color: '#EA580C', meaning: 'Critical underperformance', desc: 'Majority of goals off-track. Risk backlog growing. Workforce misaligned to strategy.' },
+  { grade: 'D',  range: '40–49',  color: '#EA580C', meaning: 'Severe governance failure', desc: 'Portfolio lacks strategic anchoring. Critical risks unmanaged. OKR framework non-functional.' },
+  { grade: 'D-', range: '30–39',  color: '#DC2626', meaning: 'Near-total breakdown', desc: 'No goals on track. Risk posture critical. Requires full strategic reset and escalation.' },
+  { grade: 'F',  range: '0–29',   color: '#DC2626', meaning: 'Strategic failure', desc: 'Complete absence of execution governance. Immediate board-level intervention required.' },
+];
+
 /* ═══ VERDICT CARD ═══ */
 function VerdictCard({ brief, metrics }: { brief: ExecutiveBriefAI; metrics: any }) {
   const V = brief.verdict || { grade: '—', score: 0, headline: '', detail: '' };
   const score = V.score ?? 0;
   const gradeColor = score >= 80 ? '#16A34A' : score >= 65 ? '#0D9488' : score >= 50 ? '#D97706' : score >= 35 ? '#EA580C' : '#DC2626';
 
+  // Find the current grade row
+  const currentGradeRow = GRADE_SCALE.find(g => g.grade === V.grade);
+
   return (
-    <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 20, minHeight: 280 }}>
+    <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 12, padding: 20, minHeight: 280, display: 'flex', flexDirection: 'column' }}>
       <SectionHeader>Executive Verdict</SectionHeader>
 
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, marginBottom: 16 }}>
@@ -280,12 +300,13 @@ function VerdictCard({ brief, metrics }: { brief: ExecutiveBriefAI; metrics: any
         </div>
       </div>
 
+      {/* Why Grade? — Vertical metric tiles */}
       {metrics && (
-        <div style={{ paddingTop: 12, borderTop: '1px solid #F1F5F9' }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: C.ink4, textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 6 }}>
+        <div style={{ paddingTop: 12, borderTop: '1px solid #F1F5F9', marginBottom: 16 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: C.ink4, textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 8 }}>
             Why {V.grade}?
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
             {[
               { v: `${metrics.goalsOnTrack}/${metrics.totalGoals}`, l: 'Goals on track', bad: metrics.goalsOnTrack === 0 && metrics.totalGoals > 0, show: metrics.totalGoals > 0 },
               { v: `${metrics.overdueRisks}/${metrics.totalRisks}`, l: 'Risks overdue', bad: metrics.overdueRisks > 0, show: metrics.totalRisks > 0 },
@@ -295,7 +316,7 @@ function VerdictCard({ brief, metrics }: { brief: ExecutiveBriefAI; metrics: any
               { v: `${metrics.resolvedRisks}/${metrics.totalRisks}`, l: 'Risks resolved', bad: metrics.resolvedRisks === 0 && metrics.totalRisks > 0, show: metrics.totalRisks > 0 },
             ].filter(s => s.show).map((s, i) => (
               <div key={i} style={{
-                padding: '4px 10px', borderRadius: 6,
+                padding: '6px 10px', borderRadius: 6,
                 background: s.bad ? '#FEF2F2' : '#F0FDF4',
                 border: `1px solid ${s.bad ? '#FECACA' : '#BBF7D0'}`,
                 display: 'flex', alignItems: 'baseline', gap: 4,
@@ -307,6 +328,40 @@ function VerdictCard({ brief, metrics }: { brief: ExecutiveBriefAI; metrics: any
           </div>
         </div>
       )}
+
+      {/* Grading Scale Reference — fills remaining white space */}
+      <div style={{ flex: 1, background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', overflow: 'hidden' }}>
+        <div style={{ fontSize: 10, fontWeight: 700, color: C.ink4, textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 8 }}>
+          Portfolio Grading Scale
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {GRADE_SCALE.map(g => {
+            const isActive = g.grade === V.grade;
+            return (
+              <div key={g.grade} style={{
+                display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px', borderRadius: 6,
+                background: isActive ? `${g.color}10` : 'transparent',
+                border: isActive ? `1.5px solid ${g.color}40` : '1.5px solid transparent',
+                transition: 'all 0.2s',
+              }}>
+                <div style={{
+                  width: 28, textAlign: 'center',
+                  fontSize: 12, fontWeight: 900, color: g.color, fontFamily: "'JetBrains Mono', monospace",
+                }}>{g.grade}</div>
+                <div style={{
+                  width: 42, fontSize: 10, fontWeight: 600, color: C.ink4, fontFamily: "'JetBrains Mono', monospace",
+                }}>{g.range}</div>
+                <div style={{ flex: 1, fontSize: 11, fontWeight: isActive ? 700 : 500, color: isActive ? C.ink1 : C.ink3 }}>
+                  {g.meaning}
+                </div>
+                {isActive && (
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: g.color, flexShrink: 0 }} />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
