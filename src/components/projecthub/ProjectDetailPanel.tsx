@@ -41,7 +41,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
 
   return (
     <Sheet open={open} onOpenChange={v => { if (!v) onClose(); }}>
-      <SheetContent side="right" className="p-0 w-[540px] max-w-full flex flex-col" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <SheetContent side="right" className="p-0 w-[540px] max-w-full flex flex-col [&>button:first-child]:hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
         {/* Header */}
         <div style={{ borderBottom: '1px solid #E2E8F0', padding: '16px 20px' }}>
           <div className="flex items-center gap-3 mb-3">
