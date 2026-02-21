@@ -284,7 +284,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
                 letterSpacing: '0.5px', color: '#94A3B8', padding: '0 8px',
                 width: i === 0 ? '80px' : i === 1 ? undefined : i === 2 ? '120px' : i === 3 ? '100px'
                   : i === 4 ? '50px' : i === 5 ? '110px' : i === 6 ? '80px' : i === 7 ? '100px'
-                  : i === 8 ? '110px' : i === 9 ? '120px' : '60px',
+                  : i === 8 ? '110px' : i === 9 ? '120px' : '40px',
               }}>
                 {col}
               </th>
@@ -434,7 +434,7 @@ function AssigneeCell({ assignee }: { assignee: Idea['assignee'] }) {
 
 function AiBadge({ ai }: { ai: 'ready' | 'pending' }) {
   if (ai === 'ready') {
-    return <span style={{ background: '#EDE9FE', color: '#7C3AED', padding: '2px 7px', borderRadius: '4px', fontSize: '10px', fontWeight: 600 }}>✦ Ready</span>;
+    return <span style={{ fontSize: '14px', color: '#7C3AED', textAlign: 'center', display: 'block' }}>✦</span>;
   }
-  return <span style={{ background: '#FEF3C7', color: '#B45309', padding: '2px 7px', borderRadius: '4px', fontSize: '10px', fontWeight: 600 }}>⏳ Pending</span>;
+  return <span style={{ fontSize: '14px', color: '#D97706', textAlign: 'center', display: 'block' }}>⏳</span>;
 }

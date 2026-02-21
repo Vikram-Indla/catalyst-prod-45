@@ -3,7 +3,10 @@
  */
 import React from 'react';
 import { toast } from 'sonner';
-import { Idea, IdeaStatus, STATUS_CONFIG, TYPE_CONFIG, PRIORITY_CONFIG, AI_INSIGHTS, getImpactColor } from './ideation-data';
+import { Idea, IdeaStatus, STATUS_CONFIG, PRIORITY_CONFIG, AI_INSIGHTS, getImpactColor } from './ideation-data';
+
+// Top 3 ideas by IMPACT score that have AI data get full insight strips
+const TOP_AI_KEYS = new Set(['IDH-005', 'IDH-001', 'IDH-013']);
 
 interface Props {
   ideas: Idea[];
@@ -70,9 +73,8 @@ export default function IdeationBoardView({ ideas, onOpenDetail }: Props) {
 
 function IdeaBoardCard({ idea, columnStatus, onClick }: { idea: Idea; columnStatus: IdeaStatus; onClick: () => void }) {
   const pc = PRIORITY_CONFIG[idea.priority] || PRIORITY_CONFIG.P4;
-  const tc = TYPE_CONFIG[idea.type];
-  const ic = getImpactColor(idea.impact);
   const isAiReady = idea.ai === 'ready';
+  const showFullAiStrip = isAiReady && TOP_AI_KEYS.has(idea.key) && AI_INSIGHTS[idea.key];
   const aiInsight = AI_INSIGHTS[idea.key];
   const initLink = INITIATIVE_LINKS[idea.key];
 
@@ -85,11 +87,11 @@ function IdeaBoardCard({ idea, columnStatus, onClick }: { idea: Idea; columnStat
     <div
       onClick={onClick}
       style={{
+        position: 'relative',
         background: isApproved
           ? 'linear-gradient(135deg, #F0FDF4, #EFF6FF)'
           : isConverted ? '#F0FDFA' : '#FFFFFF',
         border: `1px solid ${isApproved ? '#86EFAC' : isConverted ? '#CCFBF1' : '#E2E8F0'}`,
-        borderLeft: isAiReady ? '3px solid #7C3AED' : undefined,
         borderRadius: '8px', padding: '12px', marginBottom: '8px', cursor: 'grab',
         opacity: isDraft ? 0.7 : isRejected ? 0.55 : 1,
         transition: 'all 0.15s',
@@ -105,6 +107,14 @@ function IdeaBoardCard({ idea, columnStatus, onClick }: { idea: Idea; columnStat
         e.currentTarget.style.transform = 'none';
       }}
     >
+      {/* Small AI dot indicator (non-top-3 AI cards) */}
+      {isAiReady && !showFullAiStrip && (
+        <div style={{
+          position: 'absolute', top: '10px', right: '10px',
+          width: '6px', height: '6px', borderRadius: '50%', background: '#7C3AED',
+        }} />
+      )}
+
       {/* Top row: key + priority */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
         <span style={{
@@ -131,19 +141,19 @@ function IdeaBoardCard({ idea, columnStatus, onClick }: { idea: Idea; columnStat
         {idea.title}
       </div>
 
-      {/* Type badge */}
+      {/* Type badge — muted gray for all */}
       <div style={{ marginBottom: '8px' }}>
         <span style={{
-          background: tc.bg, color: tc.text, padding: '2px 6px', borderRadius: '4px',
+          background: '#F4F4F5', color: '#71717A', padding: '2px 6px', borderRadius: '4px',
           fontSize: '10px', fontWeight: 600,
         }}>
-          {tc.label}
+          {idea.type.charAt(0).toUpperCase() + idea.type.slice(1)}
         </span>
       </div>
 
       {/* Divider + stats */}
       <div style={{ borderTop: '1px solid #F4F4F5', paddingTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: '11px', fontWeight: 700, color: ic.text, fontFamily: "'JetBrains Mono', monospace" }}>
+        <span style={{ fontSize: '11px', fontWeight: 700, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>
           IMPACT {idea.impact.toFixed(2)}
         </span>
         <span style={{
@@ -155,8 +165,8 @@ function IdeaBoardCard({ idea, columnStatus, onClick }: { idea: Idea; columnStat
         </span>
       </div>
 
-      {/* AI insight strip */}
-      {isAiReady && aiInsight && (
+      {/* AI insight strip — only top 3 */}
+      {showFullAiStrip && (
         <div style={{
           marginTop: '8px', background: '#F5F3FF', borderRadius: '6px',
           padding: '5px 8px', fontSize: '10px', color: '#7C3AED', fontWeight: 600,

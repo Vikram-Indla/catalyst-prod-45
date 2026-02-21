@@ -94,14 +94,14 @@ export default function IdeationDrivesView() {
 
             {/* Stats row */}
             <div style={{ display: 'flex', gap: '24px', fontSize: '12px', color: '#334155', fontWeight: 500, marginBottom: '10px' }}>
-              <span><strong>{drive.submitted}</strong> ideas submitted</span>
+              <span><strong>{drive.submitted}</strong> {drive.submitted === 1 ? 'idea' : 'ideas'} submitted</span>
               <span>Deadline: <strong>{drive.deadline}</strong></span>
               <span>Target: <strong>{drive.target}</strong> ideas</span>
             </div>
 
             {/* Progress bar */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-              <div style={{ flex: 1, height: '8px', background: '#E4E4E7', borderRadius: '4px', overflow: 'hidden' }}>
+              <div style={{ flex: 1, height: '8px', background: '#CBD5E1', borderRadius: '4px', overflow: 'hidden' }}>
                 <div style={{
                   width: `${pct}%`, height: '100%',
                   background: isActive ? '#16A34A' : '#94A3B8', borderRadius: '4px',

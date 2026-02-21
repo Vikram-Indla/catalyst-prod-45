@@ -86,15 +86,15 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
         </div>
 
         {/* Step tabs */}
-        <div style={{ padding: '0 16px', borderBottom: '1px solid #E2E8F0', background: '#FAFAFA', display: 'flex', overflowX: 'auto', gap: '0', scrollbarWidth: 'none' as any, msOverflowStyle: 'none' as any }}>
+        <div style={{ padding: '0 12px', borderBottom: '1px solid #E2E8F0', background: '#FAFAFA', display: 'flex', overflowX: 'auto', gap: '0', scrollbarWidth: 'none' as any, msOverflowStyle: 'none' as any, WebkitOverflowScrolling: 'touch' }}>
           {STEPS.map(s => {
             const active = step === s.num;
             const completed = step > s.num;
             return (
               <button key={s.num} onClick={() => setStep(s.num)} style={{
-                display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 12px',
+                display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 10px',
                 background: 'none', border: 'none', borderBottom: active ? '2px solid #2563EB' : '2px solid transparent',
-                cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+                cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, minWidth: 'auto',
               }}>
                 <span style={{
                   width: '18px', height: '18px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -102,10 +102,11 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
                   background: completed ? '#16A34A' : active ? '#2563EB' : 'transparent',
                   color: completed || active ? '#FFF' : '#94A3B8',
                   border: !completed && !active ? '1.5px solid #CBD5E1' : 'none',
+                  flexShrink: 0,
                 }}>
                   {completed ? <Check size={10} /> : s.num}
                 </span>
-                <span style={{ fontSize: '12px', fontWeight: active ? 600 : 500, color: completed ? '#16A34A' : active ? '#2563EB' : '#94A3B8' }}>
+                <span style={{ fontSize: '11px', fontWeight: active ? 600 : 500, color: completed ? '#16A34A' : active ? '#2563EB' : '#94A3B8' }}>
                   {s.label}
                 </span>
               </button>
