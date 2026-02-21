@@ -177,7 +177,7 @@ export function Resource360Page() {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {items.map(r => (
-                    <ResourceCard key={r.id} resource={r} onClick={() => navigate(`/projecthub/resource360/${r.id}`)} />
+                    <ResourceCard key={r.id} resource={r} onClick={() => navigate(`/project-hub/resource360/${r.id}`)} />
                   ))}
                 </div>
               </div>
@@ -185,7 +185,7 @@ export function Resource360Page() {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {sorted.map(r => (
-                <ResourceCard key={r.id} resource={r} onClick={() => navigate(`/projecthub/resource360/${r.id}`)} />
+                <ResourceCard key={r.id} resource={r} onClick={() => navigate(`/project-hub/resource360/${r.id}`)} />
               ))}
             </div>
           )}

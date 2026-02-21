@@ -189,7 +189,7 @@ export function ResourceDetail() {
       <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
         {/* Breadcrumb */}
         <button
-          onClick={() => navigate('/projecthub/resource360')}
+          onClick={() => navigate('/project-hub/resource360')}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             background: 'none', border: 'none', cursor: 'pointer',
