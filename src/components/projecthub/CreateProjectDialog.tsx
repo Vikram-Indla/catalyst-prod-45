@@ -57,36 +57,34 @@ export function CreateProjectDialog({ open, onClose }: Props) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <div>
               <label style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', display: 'block', marginBottom: 6 }}>Department</label>
-              <select
-                value={department}
-                onChange={e => setDepartment(e.target.value)}
-                className="w-full rounded-md outline-none appearance-none"
-                style={{ height: 40, padding: '0 12px', border: '1px solid #E2E8F0', fontSize: 14, color: department ? '#0F172A' : '#94A3B8', background: '#FFF', cursor: 'pointer' }}
-              >
-                <option value="">Select department</option>
-                <option value="Energy & Sustainability">Energy &amp; Sustainability</option>
-                <option value="Human Capital">Human Capital</option>
-                <option value="Information Security">Information Security</option>
-                <option value="Logistics">Logistics</option>
-                <option value="Mining & Minerals">Mining &amp; Minerals</option>
-                <option value="Operations">Operations</option>
-                <option value="Quality Assurance">Quality Assurance</option>
-                <option value="Technology & Innovation">Technology &amp; Innovation</option>
-              </select>
+              <Select value={department} onValueChange={setDepartment}>
+                <SelectTrigger className="h-10 text-sm">
+                  <SelectValue placeholder="Select department" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Energy & Sustainability">Energy &amp; Sustainability</SelectItem>
+                  <SelectItem value="Human Capital">Human Capital</SelectItem>
+                  <SelectItem value="Information Security">Information Security</SelectItem>
+                  <SelectItem value="Logistics">Logistics</SelectItem>
+                  <SelectItem value="Mining & Minerals">Mining &amp; Minerals</SelectItem>
+                  <SelectItem value="Operations">Operations</SelectItem>
+                  <SelectItem value="Quality Assurance">Quality Assurance</SelectItem>
+                  <SelectItem value="Technology & Innovation">Technology &amp; Innovation</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <label style={{ fontSize: 13, fontWeight: 500, color: '#0F172A', display: 'block', marginBottom: 6 }}>Status</label>
-              <select
-                value={status}
-                onChange={e => setStatus(e.target.value)}
-                className="w-full rounded-md outline-none appearance-none"
-                style={{ height: 40, padding: '0 12px', border: '1px solid #E2E8F0', fontSize: 14, color: status ? '#0F172A' : '#94A3B8', background: '#FFF', cursor: 'pointer' }}
-              >
-                <option value="">Select status</option>
-                <option value="active">Active</option>
-                <option value="on_hold">On Hold</option>
-                <option value="planning">Planning</option>
-              </select>
+              <Select value={status} onValueChange={setStatus}>
+                <SelectTrigger className="h-10 text-sm">
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="on_hold">On Hold</SelectItem>
+                  <SelectItem value="planning">Planning</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div>
