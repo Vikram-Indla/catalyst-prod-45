@@ -1,20 +1,27 @@
 import type { ProjectHealth } from '@/types/projecthub';
 import { PROJECT_HEALTH_DISPLAY } from '@/types/projecthub';
 
-const HEALTH_STYLES: Record<string, { bg: string; text: string; dot: string }> = {
-  on_track: { bg: '#F0FDF4', text: '#16A34A', dot: '#16A34A' },
-  at_risk: { bg: '#FFFBEB', text: '#D97706', dot: '#D97706' },
-  off_track: { bg: '#FEF2F2', text: '#DC2626', dot: '#DC2626' },
+const HEALTH_STYLES: Record<string, { dot: string; text: string }> = {
+  on_track: { dot: '#22C55E', text: '#15803D' },
+  at_risk: { dot: '#F59E0B', text: '#D97706' },
+  off_track: { dot: '#EF4444', text: '#DC2626' },
 };
 
 export function ProjectHealthBadge({ health }: { health: ProjectHealth }) {
   const s = HEALTH_STYLES[health] || HEALTH_STYLES.on_track;
   return (
     <span
-      className="inline-flex items-center gap-1.5"
-      style={{ fontSize: 12, color: s.text, whiteSpace: 'nowrap' }}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 5,
+        fontSize: 12,
+        fontWeight: 500,
+        color: s.text,
+        whiteSpace: 'nowrap',
+      }}
     >
-      <span style={{ width: 7, height: 7, borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
+      <span style={{ width: 8, height: 8, borderRadius: 4, background: s.dot, flexShrink: 0 }} />
       {PROJECT_HEALTH_DISPLAY[health] || health}
     </span>
   );

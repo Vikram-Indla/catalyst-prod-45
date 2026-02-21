@@ -9,24 +9,34 @@ interface MemberStackProps {
   max?: number;
 }
 
-// Gradient by first letter of name
 function getMemberGradient(name: string): [string, string] {
   const c = (name || '?')[0].toUpperCase();
-  if ('ABCDE'.includes(c)) return ['#2563EB', '#1D4ED8'];
-  if ('FGHIJ'.includes(c)) return ['#7C3AED', '#6D28D9'];
-  if ('KLMNO'.includes(c)) return ['#0D9488', '#0F766E'];
-  if ('PQRST'.includes(c)) return ['#F59E0B', '#D97706'];
-  return ['#16A34A', '#15803D'];
+  const map: Record<string, [string, string]> = {
+    A: ['#2563EB', '#1D4ED8'], B: ['#2563EB', '#1D4ED8'],
+    C: ['#7C3AED', '#6D28D9'], D: ['#7C3AED', '#6D28D9'],
+    E: ['#0D9488', '#0F766E'], F: ['#0D9488', '#0F766E'],
+    G: ['#D97706', '#B45309'], H: ['#D97706', '#B45309'],
+    I: ['#2563EB', '#1D4ED8'], J: ['#2563EB', '#1D4ED8'],
+    K: ['#1D4ED8', '#1E3A8A'], L: ['#1D4ED8', '#1E3A8A'],
+    M: ['#F59E0B', '#D97706'], N: ['#F59E0B', '#D97706'],
+    O: ['#DC2626', '#B91C1C'], P: ['#DC2626', '#B91C1C'],
+    Q: ['#16A34A', '#15803D'], R: ['#16A34A', '#15803D'],
+    S: ['#0284C7', '#0369A1'], T: ['#0284C7', '#0369A1'],
+    U: ['#0D9488', '#115E59'], V: ['#0D9488', '#115E59'],
+    W: ['#0284C7', '#075985'], X: ['#0284C7', '#075985'],
+    Y: ['#7C3AED', '#5B21B6'], Z: ['#7C3AED', '#5B21B6'],
+  };
+  return map[c] || ['#2563EB', '#1D4ED8'];
 }
 
 function getInitials(name: string): string {
-  if (!name || name.length < 2) return '??';
+  if (!name || name.length < 2) return '?';
   const parts = name.trim().split(/\s+/);
   if (parts.length >= 2) return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
   return parts[0].substring(0, 2).toUpperCase();
 }
 
-// Global profile cache shared across all MemberStack instances
+// Global profile cache
 const profileCache = new Map<string, { full_name: string; avatar_url: string | null }>();
 
 export function useMemberProfiles(allMemberIds: string[]) {
@@ -51,7 +61,6 @@ export function useMemberProfiles(allMemberIds: string[]) {
           });
         }
       }
-      // Also set fallback for IDs not found in profiles
       uniqueIds.forEach(id => {
         if (!profileCache.has(id)) {
           profileCache.set(id, { full_name: '', avatar_url: null });
@@ -75,56 +84,38 @@ export function MemberStack({ memberIds, memberCount, max = 3 }: MemberStackProp
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="flex items-center">
+      <div style={{ display: 'flex', alignItems: 'center' }}>
         {shown.map((id, i) => {
           const profile = profileCache.get(id);
           const name = profile?.full_name || '';
-          const initials = name ? getInitials(name) : id.substring(0, 2).toUpperCase();
-          const gradientKey = name || id;
-          const [from, to] = getMemberGradient(gradientKey);
+          const initials = name ? getInitials(name) : '?';
+          const [from, to] = getMemberGradient(name || id);
           return (
             <Tooltip key={id}>
               <TooltipTrigger asChild>
                 <div
-                  className="flex items-center justify-center rounded-full border-2 border-white"
                   style={{
-                    width: 24,
-                    height: 24,
+                    width: 22, height: 22, borderRadius: 99, border: '2px solid #FFF',
                     background: `linear-gradient(135deg, ${from}, ${to})`,
-                    marginLeft: i > 0 ? -7 : 0,
-                    fontSize: 8,
-                    fontWeight: 700,
-                    color: '#FFF',
-                    zIndex: max - i,
-                    flexShrink: 0,
-                    cursor: 'default',
+                    marginLeft: i > 0 ? -6 : 0,
+                    fontSize: 8, fontWeight: 700, color: '#FFF',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    zIndex: max - i, flexShrink: 0, cursor: 'default',
                   }}
                 >
                   {initials}
                 </div>
               </TooltipTrigger>
               <TooltipContent side="top" className="text-xs">
-                {name || 'Unknown member'}
+                {name || 'Unknown'}
               </TooltipContent>
             </Tooltip>
           );
         })}
         {overflow > 0 && (
-          <div
-            className="flex items-center justify-center rounded-full border-2 border-white"
-            style={{
-              width: 24,
-              height: 24,
-              background: '#F1F5F9',
-              marginLeft: -7,
-              fontSize: 9,
-              fontWeight: 600,
-              color: '#64748B',
-              flexShrink: 0,
-            }}
-          >
-            +{overflow}
-          </div>
+          <span style={{ fontSize: 10, color: '#64748B', marginLeft: 4 }}>
+            {overflow}
+          </span>
         )}
       </div>
     </TooltipProvider>

@@ -14,8 +14,18 @@ export function ProjectStatusBadge({ status }: { status: ProjectStatus }) {
   const s = STATUS_STYLES[status] || STATUS_STYLES.active;
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full"
-      style={{ padding: '2px 10px 2px 8px', background: s.bg, fontSize: 11, fontWeight: 600, color: s.text, whiteSpace: 'nowrap' }}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 5,
+        padding: '2px 10px 2px 8px',
+        background: s.bg,
+        fontSize: 11,
+        fontWeight: 600,
+        color: s.text,
+        whiteSpace: 'nowrap',
+        borderRadius: 99,
+      }}
     >
       <span style={{ width: 6, height: 6, borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
       {PROJECT_STATUS_DISPLAY[status] || status}
