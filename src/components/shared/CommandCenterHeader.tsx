@@ -1,8 +1,22 @@
 /**
- * CommandCenterHeader — Reusable dashboard/overview page header
+ * CommandCenterHeader — Catalyst Platform Page Header
  *
- * Spec: 72px height, 20px bold title, 14px subtitle,
- * right-aligned timestamp + action slot, 1px bottom border.
+ * CONTRACT (Catalyst Header Spec v1.0):
+ * ─────────────────────────────────────
+ * minHeight:       72px
+ * Padding:         20px top, 24px left/right, 16px bottom (with subtitle)
+ * Bottom margin:   20px (mb-5) before page content
+ * Border:          1px bottom, semantic --border / --divider token
+ * Background:      bg-card (semantic)
+ *
+ * Title:           Sora, 24px, weight 700, tracking -0.02em, lineHeight 1.2
+ * Subtitle:        Inter, 14px, 4px top margin, muted-foreground
+ * Timestamp:       JetBrains Mono, 12px, text-3 token
+ *
+ * Right zone:      flex row, gap-3, vertically centered
+ *
+ * All pages MUST use this component for their top-level header.
+ * Do NOT wrap in additional containers that add padding.
  */
 
 import React from 'react';
@@ -17,11 +31,13 @@ import {
 } from '@/components/ui/tooltip';
 
 interface CommandCenterHeaderProps {
-  /** Bold page title */
+  /** Bold page title (Sora font) */
   title: string;
-  /** Secondary description */
+  /** Secondary description (Inter font, muted) */
   subtitle?: string;
-  /** e.g. "Updated just now" */
+  /** Optional count badge next to title, e.g. "6/6" */
+  count?: string | React.ReactNode;
+  /** e.g. "Updated just now" (JetBrains Mono) */
   timestamp?: string;
   /** Refresh callback (shows spin icon) */
   onRefresh?: () => void;
@@ -36,6 +52,7 @@ interface CommandCenterHeaderProps {
 export function CommandCenterHeader({
   title,
   subtitle,
+  count,
   timestamp,
   onRefresh,
   isRefreshing,
@@ -45,31 +62,49 @@ export function CommandCenterHeader({
   return (
     <header
       className={cn(
-        'w-full flex items-start justify-between gap-4 border-b bg-card mb-5',
+        'w-full flex items-start justify-between gap-4 border-b bg-card mb-5 flex-shrink-0',
         className,
       )}
-      style={{ minHeight: 72, padding: subtitle ? '20px 24px 16px 24px' : '20px 24px' }}
+      style={{
+        minHeight: 72,
+        padding: subtitle ? '20px 24px 16px 24px' : '20px 24px',
+      }}
     >
       {/* Left: title + subtitle */}
       <div className="min-w-0">
-        <h1
-          className="m-0"
-          style={{
-            fontSize: 24,
-            fontWeight: 700,
-            letterSpacing: '-0.02em',
-            lineHeight: 1.2,
-            color: 'var(--catalyst-text-primary, var(--text-1, #0f172a))',
-          }}
-        >
-          {title}
-        </h1>
+        <div className="flex items-baseline gap-2.5">
+          <h1
+            className="m-0"
+            style={{
+              fontFamily: "'Sora', var(--font-heading, sans-serif)",
+              fontSize: 24,
+              fontWeight: 700,
+              letterSpacing: '-0.02em',
+              lineHeight: 1.2,
+              color: 'var(--catalyst-text-primary, var(--text-1, hsl(var(--foreground))))',
+            }}
+          >
+            {title}
+          </h1>
+          {count && (
+            <span
+              style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: 13,
+                fontWeight: 500,
+                color: 'var(--catalyst-text-secondary, var(--text-3, hsl(var(--muted-foreground))))',
+              }}
+            >
+              {count}
+            </span>
+          )}
+        </div>
         {subtitle && (
           <p
-            className="text-sm"
             style={{
+              fontFamily: "'Inter', var(--font-body, sans-serif)",
               fontSize: 14,
-              color: 'var(--catalyst-text-secondary, var(--text-2, #64748b))',
+              color: 'var(--catalyst-text-secondary, var(--text-2, hsl(var(--muted-foreground))))',
               margin: '4px 0 0',
             }}
           >
@@ -79,11 +114,15 @@ export function CommandCenterHeader({
       </div>
 
       {/* Right: timestamp + actions + refresh */}
-      <div className="flex items-center gap-3 flex-shrink-0">
+      <div className="flex items-center gap-3 flex-shrink-0" style={{ marginTop: 2 }}>
         {timestamp && (
           <span
-            className="text-xs cursor-default"
-            style={{ color: 'var(--text-3, #94a3b8)' }}
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 12,
+              color: 'var(--text-3, hsl(var(--muted-foreground)))',
+              cursor: 'default',
+            }}
           >
             {timestamp}
           </span>
