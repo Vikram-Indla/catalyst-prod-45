@@ -48,11 +48,11 @@ const WEEKS = [
 
 // ── Row 3B: Contributors ──
 const CONTRIBUTORS = [
-  { rank: 1, name: 'Sarah K.', initials: 'SK', color: '#0D9488', ideas: 3, pct: 60, barColor: '#16A34A' },
+  { rank: 1, name: 'Sarah K.', initials: 'SK', color: '#0D9488', ideas: 3, pct: 60, barColor: '#2563EB' },
   { rank: 2, name: 'Ahmed M.', initials: 'AM', color: '#2563EB', ideas: 3, pct: 60, barColor: '#2563EB' },
-  { rank: 3, name: 'Fatima R.', initials: 'FR', color: '#D97706', ideas: 2, pct: 40, barColor: '#D97706' },
-  { rank: 4, name: 'Layla S.', initials: 'LS', color: '#0D9488', ideas: 2, pct: 40, barColor: '#0D9488' },
-  { rank: 5, name: 'Khalid B.', initials: 'KB', color: '#7C3AED', ideas: 2, pct: 40, barColor: '#7C3AED' },
+  { rank: 3, name: 'Fatima R.', initials: 'FR', color: '#D97706', ideas: 2, pct: 40, barColor: '#2563EB' },
+  { rank: 4, name: 'Layla S.', initials: 'LS', color: '#0D9488', ideas: 2, pct: 40, barColor: '#2563EB' },
+  { rank: 5, name: 'Khalid B.', initials: 'KB', color: '#7C3AED', ideas: 2, pct: 40, barColor: '#2563EB' },
 ];
 
 // ── Row 4A: Traceability ──
