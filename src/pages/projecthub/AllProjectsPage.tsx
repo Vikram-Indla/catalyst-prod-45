@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { ChevronRight, Plus, Download, ChevronLeft, ChevronRight as ChevronRightIcon, FolderKanban } from 'lucide-react';
+import { Plus, Download, ChevronLeft, ChevronRight as ChevronRightIcon, FolderKanban } from 'lucide-react';
 import type { ViewMode, ProjectFilters, SortColumn, SortDirection } from '@/types/projecthub';
 import { DEFAULT_FILTERS } from '@/types/projecthub';
 import {
@@ -20,6 +20,7 @@ import { ProjectDetailPanel } from '@/components/projecthub/ProjectDetailPanel';
 import { CreateProjectDialog } from '@/components/projecthub/CreateProjectDialog';
 import { ExportDialog } from '@/components/projecthub/ExportDialog';
 import { toast } from 'sonner';
+import { MasterPageHeader } from '@/components/layout/MasterPageHeader';
 
 export default function AllProjectsPage() {
   const [view, setView] = useState<ViewMode>('list');
@@ -74,44 +75,39 @@ export default function AllProjectsPage() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '20px 24px', fontFamily: "'Inter', -apple-system, system-ui, sans-serif", WebkitFontSmoothing: 'antialiased' }}>
-      {/* Breadcrumb */}
-      <div style={{ fontSize: 12, color: '#64748B', marginBottom: 2, flexShrink: 0 }}>
-        <span>ProjectHub</span>
-        <span style={{ color: '#94A3B8', fontSize: 10, margin: '0 4px' }}>›</span>
-        <span style={{ color: '#475569', fontWeight: 500 }}>All Projects</span>
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: "'Inter', -apple-system, system-ui, sans-serif", WebkitFontSmoothing: 'antialiased' }}>
+      {/* Catalyst Header */}
+      <MasterPageHeader
+        title="All Projects"
+        count={`${filtered.length} project${filtered.length !== 1 ? 's' : ''}`}
+        rightControls={
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              onClick={() => setShowExportModal(true)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px',
+                background: '#FFF', border: '1px solid #E2E8F0', borderRadius: 6,
+                fontSize: 13, fontWeight: 500, color: '#334155', cursor: 'pointer',
+              }}
+            >
+              <Download size={14} /> Export
+            </button>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 14px',
+                background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', border: 'none', borderRadius: 6,
+                fontSize: 13, fontWeight: 600, color: '#FFF', cursor: 'pointer',
+                boxShadow: '0 1px 3px rgba(37,99,235,0.15)',
+              }}
+            >
+              <Plus size={16} strokeWidth={2.5} /> New Project
+            </button>
+          </div>
+        }
+      />
 
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexShrink: 0 }}>
-        <div>
-          <h1 style={{ fontSize: 20, fontWeight: 600, color: '#0F172A', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.01em', margin: 0 }}>All Projects</h1>
-          <p style={{ fontSize: 12, color: '#64748B', marginTop: 2, margin: '2px 0 0' }}>Portfolio-wide project tracking · Ministry of Industry</p>
-        </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button
-            onClick={() => setShowExportModal(true)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px',
-              background: '#FFF', border: '1px solid #E2E8F0', borderRadius: 6,
-              fontSize: 13, fontWeight: 500, color: '#334155', cursor: 'pointer',
-            }}
-          >
-            <Download size={14} /> Export
-          </button>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 14px',
-              background: 'linear-gradient(135deg, #2563EB, #1D4ED8)', border: 'none', borderRadius: 6,
-              fontSize: 13, fontWeight: 600, color: '#FFF', cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(37,99,235,0.15)',
-            }}
-          >
-            <Plus size={16} strokeWidth={2.5} /> New Project
-          </button>
-        </div>
-      </div>
+      <div style={{ flex: 1, overflow: 'auto', padding: '16px 24px' }}>
 
       {/* Stats */}
       <div style={{ marginBottom: 16, flexShrink: 0 }}>
@@ -291,6 +287,7 @@ export default function AllProjectsPage() {
       {/* Modals */}
       <CreateProjectDialog open={showCreateModal} onClose={() => setShowCreateModal(false)} />
       <ExportDialog open={showExportModal} onClose={() => setShowExportModal(false)} projects={filtered} />
+      </div>
     </div>
   );
 }
