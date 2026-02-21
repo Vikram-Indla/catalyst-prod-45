@@ -15,6 +15,8 @@ import {
 } from './ideation/ideation-data';
 import IdeationBoardView from './ideation/IdeationBoardView';
 import IdeationMatrixView from './ideation/IdeationMatrixView';
+import IdeationAnalyticsView from './ideation/IdeationAnalyticsView';
+import IdeationDrivesView from './ideation/IdeationDrivesView';
 import IdeationDetailPanel from './ideation/IdeationDetailPanel';
 import IdeationCreateWizard from './ideation/IdeationCreateWizard';
 import IdeationTriagePanel from './ideation/IdeationTriagePanel';
@@ -242,10 +244,10 @@ export default function IdeationPage() {
           <IdeationMatrixView onOpenDetail={setDetailKey} />
         )}
         {activeView === 'analytics' && (
-          <PlaceholderView label="Analytics" />
+          <IdeationAnalyticsView />
         )}
         {activeView === 'drives' && (
-          <PlaceholderView label="Innovation Drives" />
+          <IdeationDrivesView />
         )}
       </div>
 
@@ -253,15 +255,6 @@ export default function IdeationPage() {
       {detailKey && <IdeationDetailPanel ideaKey={detailKey} onClose={() => setDetailKey(null)} />}
       <IdeationCreateWizard open={wizardOpen} onClose={() => setWizardOpen(false)} />
       <IdeationTriagePanel open={triageOpen} onClose={() => setTriageOpen(false)} />
-    </div>
-  );
-}
-
-// ─── Placeholder ─────────────────────────────────────────────────
-function PlaceholderView({ label }: { label: string }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px', color: '#94A3B8', fontSize: '15px', fontWeight: 500 }}>
-      {label} — Coming Soon
     </div>
   );
 }

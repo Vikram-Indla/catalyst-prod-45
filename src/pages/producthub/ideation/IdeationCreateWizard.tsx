@@ -16,7 +16,7 @@ const STEPS = [
   { num: 3, label: 'Evidence' },
   { num: 4, label: 'IMPACT' },
   { num: 5, label: 'V2030' },
-  { num: 6, label: 'Compliance' },
+  { num: 6, label: 'Comply' },
   { num: 7, label: 'AI Review' },
   { num: 8, label: 'Submit' },
 ];
@@ -86,7 +86,7 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
         </div>
 
         {/* Step tabs */}
-        <div style={{ padding: '0 24px', borderBottom: '1px solid #E2E8F0', background: '#FAFAFA', display: 'flex', overflowX: 'auto', gap: '0' }}>
+        <div style={{ padding: '0 16px', borderBottom: '1px solid #E2E8F0', background: '#FAFAFA', display: 'flex', overflowX: 'auto', gap: '0', scrollbarWidth: 'none' as any, msOverflowStyle: 'none' as any }}>
           {STEPS.map(s => {
             const active = step === s.num;
             const completed = step > s.num;
