@@ -137,12 +137,19 @@ export default function IdeationPage() {
             <button
               onClick={() => setIntelligenceOpen(true)}
               style={{
-                background: '#7C3AED', color: '#FFFFFF', border: '1px solid #7C3AED',
+                background: '#FFFFFF', color: '#334155', border: '1px solid #E2E8F0',
                 borderRadius: '8px', padding: '7px 14px', fontSize: '13px', fontWeight: 600,
                 cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
               }}
             >
-              <Sparkles size={14} /> Intelligence
+              <span style={{
+                width: 22, height: 22, borderRadius: 6,
+                background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Sparkles size={12} color="#FFFFFF" />
+              </span>
+              Intelligence
             </button>
             <button style={{
               background: '#FFFFFF', color: '#334155', border: '1px solid #E2E8F0',
@@ -259,12 +266,19 @@ export default function IdeationPage() {
         <button
           onClick={() => setTriageOpen(true)}
           style={{
-            background: '#7C3AED', color: '#FFFFFF', border: 'none', borderRadius: '6px',
+            background: '#FFFFFF', color: '#334155', border: '1px solid #E2E8F0', borderRadius: '6px',
             padding: '5px 10px', fontSize: '11px', fontWeight: 600, cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: '4px',
           }}
         >
-          <Sparkles size={12} /> AI Triage (4)
+          <span style={{
+            width: 20, height: 20, borderRadius: 5,
+            background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Sparkles size={10} color="#FFFFFF" />
+          </span>
+          AI Triage (4)
         </button>
       </div>
 
