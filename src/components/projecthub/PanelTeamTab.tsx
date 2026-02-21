@@ -207,8 +207,8 @@ export function PanelTeamTab({ members, isLoading, projectId }: Props) {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search by name, role, or email..."
-            className="flex-1 bg-transparent outline-none border-0 ring-0 shadow-none focus:outline-none focus:ring-0 focus:border-0 focus:shadow-none p-0 m-0"
-            style={{ fontSize: 13, color: '#0F172A', border: 'none', boxShadow: 'none', outline: 'none', WebkitAppearance: 'none', background: 'transparent' }}
+            className="flex-1 bg-transparent p-0 m-0 appearance-none"
+            style={{ fontSize: 13, color: '#0F172A', border: 'none', boxShadow: 'none', outline: 'none', WebkitAppearance: 'none', MozAppearance: 'none', background: 'transparent', borderRadius: 0 }}
           />
         </div>
         <button
