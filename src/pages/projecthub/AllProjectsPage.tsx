@@ -20,7 +20,7 @@ import { ProjectDetailPanel } from '@/components/projecthub/ProjectDetailPanel';
 import { CreateProjectDialog } from '@/components/projecthub/CreateProjectDialog';
 import { ExportDialog } from '@/components/projecthub/ExportDialog';
 import { toast } from 'sonner';
-import { MasterPageHeader } from '@/components/layout/MasterPageHeader';
+import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 
 export default function AllProjectsPage() {
   const [view, setView] = useState<ViewMode>('list');
@@ -77,11 +77,10 @@ export default function AllProjectsPage() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: "'Inter', -apple-system, system-ui, sans-serif", WebkitFontSmoothing: 'antialiased' }}>
       {/* Catalyst Header */}
-      <MasterPageHeader
+      <CommandCenterHeader
         title="All Projects"
         subtitle="Track and manage all projects across your portfolio"
-        inlineTitleControls
-        rightControls={
+        actions={
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowExportModal(true)}

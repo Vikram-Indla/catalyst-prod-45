@@ -43,18 +43,24 @@ export function CommandCenterHeader({
   className,
 }: CommandCenterHeaderProps) {
   return (
-    <div
+    <header
       className={cn(
-        'flex items-center justify-between px-6 py-4 border-b bg-card',
+        'w-full flex items-start justify-between gap-4 border-b bg-card mb-5',
         className,
       )}
-      style={{ minHeight: 72 }}
+      style={{ minHeight: 72, padding: subtitle ? '20px 24px 16px 24px' : '20px 24px' }}
     >
       {/* Left: title + subtitle */}
-      <div>
+      <div className="min-w-0">
         <h1
-          className="text-xl font-bold"
-          style={{ color: 'var(--text-1, #0f172a)', margin: 0 }}
+          className="m-0"
+          style={{
+            fontSize: 24,
+            fontWeight: 700,
+            letterSpacing: '-0.02em',
+            lineHeight: 1.2,
+            color: 'var(--catalyst-text-primary, var(--text-1, #0f172a))',
+          }}
         >
           {title}
         </h1>
@@ -62,8 +68,9 @@ export function CommandCenterHeader({
           <p
             className="text-sm"
             style={{
-              color: 'var(--text-2, #64748b)',
-              margin: '2px 0 0',
+              fontSize: 14,
+              color: 'var(--catalyst-text-secondary, var(--text-2, #64748b))',
+              margin: '4px 0 0',
             }}
           >
             {subtitle}
@@ -72,7 +79,7 @@ export function CommandCenterHeader({
       </div>
 
       {/* Right: timestamp + actions + refresh */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-shrink-0">
         {timestamp && (
           <span
             className="text-xs cursor-default"
@@ -107,7 +114,7 @@ export function CommandCenterHeader({
           </TooltipProvider>
         )}
       </div>
-    </div>
+    </header>
   );
 }
 
