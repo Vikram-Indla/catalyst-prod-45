@@ -1,5 +1,7 @@
 /**
- * IdeationIntelligenceHub — Full-screen AI Intelligence overlay
+ * AI Ideas Hub — Full-screen AI overlay for Ideation Module
+ * Catalyst V11 Carbon Precision color system
+ * Max 4 semantic colors: blue, teal, warning, danger. All else neutral.
  */
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
@@ -9,6 +11,30 @@ interface Props {
   open: boolean;
   onClose: () => void;
 }
+
+/* ── Catalyst V5 Semantic Palette ── */
+const C = {
+  primary: '#2563eb',
+  success: '#0d9488',
+  warning: '#d97706',
+  danger: '#ef4444',
+  textPrimary: '#0f172a',
+  textSecondary: '#334155',
+  textTertiary: '#475569',
+  surface: '#f8fafc',
+  surfaceAlt: '#f1f5f9',
+  border: '#e2e8f0',
+  bg: '#ffffff',
+  insightBg: '#eff6ff',
+  insightText: '#1e40af',
+  insightBorder: '#2563eb',
+  gapBg: '#fef2f2',
+  gapText: '#991b1b',
+  gapBody: '#7f1d1d',
+  gapBorder: '#ef4444',
+} as const;
+
+const MONO = "'JetBrains Mono', monospace";
 
 export default function IdeationIntelligenceHub({ open, onClose }: Props) {
   useEffect(() => {
@@ -21,64 +47,65 @@ export default function IdeationIntelligenceHub({ open, onClose }: Props) {
   if (!open) return null;
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: '#FFFFFF', zIndex: 300, overflowY: 'auto' }}>
-      {/* Header */}
+    <div style={{ position: 'fixed', inset: 0, background: C.bg, zIndex: 300, overflowY: 'auto' }}>
+      {/* ══ Header ══ */}
       <div style={{
-        padding: '20px 32px', borderBottom: '1px solid #E2E8F0',
+        padding: '20px 32px', borderBottom: `1px solid ${C.border}`,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <div style={{
-            width: '40px', height: '40px', borderRadius: '50%', background: '#F5F3FF',
+            width: '40px', height: '40px', borderRadius: '10px',
+            background: C.insightBg,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '20px', color: '#7C3AED',
+            fontSize: '20px', color: C.primary,
           }}>✦</div>
           <div>
-            <div style={{ fontSize: '20px', fontWeight: 800, color: '#0F172A' }}>AI Intelligence Hub</div>
-            <div style={{ fontSize: '12px', color: '#94A3B8' }}>Powered by Catalyst AI · 15 ideas analyzed</div>
+            <div style={{ fontSize: '20px', fontWeight: 700, color: C.textPrimary }}>AI Ideas Hub</div>
+            <div style={{ fontSize: '13px', color: C.textTertiary }}>Powered by Catalyst AI · 15 ideas analyzed</div>
           </div>
         </div>
         <button
           onClick={onClose}
           style={{
             background: 'none', border: 'none', cursor: 'pointer', padding: '8px 14px',
-            fontSize: '14px', fontWeight: 600, color: '#64748B', borderRadius: '6px',
+            fontSize: '14px', fontWeight: 600, color: C.textTertiary, borderRadius: '6px',
             display: 'flex', alignItems: 'center', gap: '6px',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#F4F4F5'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = C.surfaceAlt; }}
           onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
         >
           <X size={16} /> Close
         </button>
       </div>
 
-      {/* Stats Row */}
+      {/* ══ KPI Stat Strip ══ */}
       <div style={{ padding: '16px 32px', display: 'flex', gap: '16px' }}>
         {[
-          { value: '2', label: 'idea pairs with >80% similarity', color: '#D97706', title: 'Duplicates Detected' },
-          { value: '4', label: 'trending categories', color: '#2563EB', title: 'Themes Discovered' },
-          { value: '73%', label: 'ideas tagged to standards', color: '#16A34A', title: 'Compliance Coverage' },
-          { value: '82%', label: 'ideas mapped to pillars', color: '#0D9488', title: 'V2030 Alignment' },
+          { value: '2', label: 'idea pairs with >80% similarity', title: 'Duplicates Detected' },
+          { value: '4', label: 'trending categories', title: 'Themes Discovered' },
+          { value: '73%', label: 'ideas tagged to standards', title: 'Compliance Coverage' },
+          { value: '82%', label: 'ideas mapped to pillars', title: 'V2030 Alignment' },
         ].map(s => (
           <div key={s.title} style={{
-            flex: 1, background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '16px 20px',
+            flex: 1, background: C.surface, border: `1px solid ${C.border}`, borderRadius: '8px', padding: '16px 20px',
           }}>
-            <div style={{ fontSize: '11px', fontWeight: 500, color: '#94A3B8', marginBottom: '2px' }}>{s.title}</div>
-            <div style={{ fontSize: '28px', fontWeight: 800, fontFamily: "'JetBrains Mono', monospace", color: s.color }}>{s.value}</div>
-            <div style={{ fontSize: '11px', fontWeight: 500, color: '#94A3B8', marginTop: '2px' }}>{s.label}</div>
+            <div style={{ fontSize: '12px', fontWeight: 500, color: C.textTertiary, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '2px' }}>{s.title}</div>
+            <div style={{ fontSize: '28px', fontWeight: 700, fontFamily: MONO, color: C.textPrimary }}>{s.value}</div>
+            <div style={{ fontSize: '12px', fontWeight: 400, color: C.textTertiary, marginTop: '2px' }}>{s.label}</div>
           </div>
         ))}
       </div>
 
-      {/* 2×2 Content Grid */}
+      {/* ══ 2×2 Content Grid ══ */}
       <div style={{ padding: '0 32px 32px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-        {/* Card A — Duplicate Detection */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '20px', minHeight: '280px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-            <span style={{ fontSize: '15px', fontWeight: 700, color: '#0F172A' }}>🔍 Duplicate Detection</span>
-            <span style={{ background: '#FEF3C7', color: '#B45309', fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '6px' }}>2 pairs</span>
-          </div>
 
+        {/* ── Card A: Duplicate Detection ── */}
+        <div style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: '12px', padding: '20px', minHeight: '280px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <span style={{ fontSize: '15px', fontWeight: 700, color: C.textPrimary }}>🔍 Duplicate Detection</span>
+            <NeutralBadge>2 pairs</NeutralBadge>
+          </div>
           <DuplicatePair
             match={91}
             idea1={{ key: 'IDH-001', title: 'Unified Digital Services Portal' }}
@@ -93,94 +120,101 @@ export default function IdeationIntelligenceHub({ open, onClose }: Props) {
           />
         </div>
 
-        {/* Card B — Theme Discovery */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '20px', minHeight: '280px' }}>
+        {/* ── Card B: Theme Discovery ── */}
+        <div style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: '12px', padding: '20px', minHeight: '280px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-            <span style={{ fontSize: '15px', fontWeight: 700, color: '#0F172A' }}>💡 Theme Discovery</span>
-            <span style={{ background: '#DBEAFE', color: '#1D4ED8', fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '6px' }}>4 themes</span>
+            <span style={{ fontSize: '15px', fontWeight: 700, color: C.textPrimary }}>💡 Theme Discovery</span>
+            <NeutralBadge>4 themes</NeutralBadge>
           </div>
-
           {[
-            { name: 'Digital Transformation', count: 5, trend: '↑ trending', color: '#2563EB', pct: 100 },
-            { name: 'AI & Automation', count: 3, trend: '↑ trending', color: '#7C3AED', pct: 60 },
-            { name: 'Compliance & Risk', count: 2, trend: '→ stable', color: '#D97706', pct: 40 },
-            { name: 'Sustainability', count: 2, trend: '↑ new', color: '#16A34A', pct: 40 },
+            { name: 'Digital Transformation', count: 5, trend: '↑ trending', pct: 100, opacity: 1.0 },
+            { name: 'AI & Automation', count: 3, trend: '↑ trending', pct: 60, opacity: 0.75 },
+            { name: 'Compliance & Risk', count: 2, trend: '→ stable', pct: 40, opacity: 0.50 },
+            { name: 'Sustainability', count: 2, trend: '↑ new', pct: 40, opacity: 0.35 },
           ].map(t => (
             <div key={t.name} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-              <span style={{
-                background: `${t.color}10`, color: t.color, padding: '3px 8px', borderRadius: '4px',
-                fontSize: '11px', fontWeight: 600, minWidth: '140px',
-              }}>{t.name}</span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', fontWeight: 700, color: '#334155', minWidth: '55px' }}>
+              <span style={{ color: C.textPrimary, fontSize: '14px', fontWeight: 500, minWidth: '140px' }}>{t.name}</span>
+              <span style={{ fontFamily: MONO, fontSize: '12px', fontWeight: 700, color: C.textSecondary, minWidth: '55px' }}>
                 {t.count} ideas
               </span>
-              <span style={{ fontSize: '10px', color: '#94A3B8', minWidth: '60px' }}>{t.trend}</span>
-              <div style={{ flex: 1, height: '6px', background: '#E4E4E7', borderRadius: '3px', overflow: 'hidden' }}>
-                <div style={{ width: `${t.pct}%`, height: '100%', background: t.color, borderRadius: '3px' }} />
+              <span style={{ fontSize: '12px', color: C.textTertiary, minWidth: '60px' }}>{t.trend}</span>
+              <div style={{ flex: 1, height: '8px', background: C.surfaceAlt, borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ width: `${t.pct}%`, height: '100%', background: C.primary, opacity: t.opacity, borderRadius: '4px' }} />
               </div>
             </div>
           ))}
 
-          <div style={{ marginTop: '16px', borderLeft: '3px solid #7C3AED', background: '#F5F3FF', borderRadius: '0 8px 8px 0', padding: '10px 12px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: '#7C3AED', marginBottom: '2px' }}>✦ Emerging Insight</div>
-            <div style={{ fontSize: '12px', color: '#6D28D9', lineHeight: 1.5 }}>
+          {/* Emerging Insight — blue tint, NOT yellow */}
+          <div style={{
+            marginTop: '16px', borderLeft: `3px solid ${C.insightBorder}`,
+            background: C.insightBg, borderRadius: '0 8px 8px 0', padding: '12px 16px',
+          }}>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: C.insightText, marginBottom: '2px' }}>✦ Emerging Insight</div>
+            <div style={{ fontSize: '13px', color: '#1e3a5f', lineHeight: 1.5 }}>
               3 of the last 5 submissions relate to AI & Automation — consider launching a dedicated Innovation Drive.
             </div>
           </div>
         </div>
 
-        {/* Card C — Compliance Mapping */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '20px', minHeight: '280px' }}>
+        {/* ── Card C: Compliance Mapping ── */}
+        <div style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: '12px', padding: '20px', minHeight: '280px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-            <span style={{ fontSize: '15px', fontWeight: 700, color: '#0F172A' }}>🛡️ Compliance Mapping</span>
-            <span style={{ background: '#DCFCE7', color: '#15803D', fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '6px' }}>4 standards</span>
+            <span style={{ fontSize: '15px', fontWeight: 700, color: C.textPrimary }}>🛡️ Compliance Mapping</span>
+            <NeutralBadge>4 standards</NeutralBadge>
           </div>
-
           {[
-            { code: 'DGA-ACC-01', desc: 'Digital Accessibility', tagged: 8, gap: '✅ Good coverage', gapColor: '#16A34A' },
-            { code: 'NCA-SEC-02', desc: 'Security Controls', tagged: 5, gap: '⚠️ 2 ideas untagged', gapColor: '#D97706' },
-            { code: 'NDMO-DG-03', desc: 'Data Governance', tagged: 6, gap: '✅ Good coverage', gapColor: '#16A34A' },
-            { code: 'SDAIA-AI-01', desc: 'AI Ethics', tagged: 3, gap: '🔴 Low — 4 AI ideas untagged', gapColor: '#EF4444' },
+            { code: 'DGA-ACC-01', desc: 'Digital Accessibility', tagged: 8, gap: '✅ Good coverage', gapColor: C.success },
+            { code: 'NCA-SEC-02', desc: 'Security Controls', tagged: 5, gap: '⚠️ 2 ideas untagged', gapColor: C.warning },
+            { code: 'NDMO-DG-03', desc: 'Data Governance', tagged: 6, gap: '✅ Good coverage', gapColor: C.success },
+            { code: 'SDAIA-AI-01', desc: 'AI Ethics', tagged: 3, gap: '🔴 Low — 4 AI ideas untagged', gapColor: C.danger },
           ].map(c => (
-            <div key={c.code} style={{ marginBottom: '14px', paddingBottom: '14px', borderBottom: '1px solid #F4F4F5' }}>
+            <div key={c.code} style={{ marginBottom: '14px', paddingBottom: '14px', borderBottom: `1px solid ${C.surfaceAlt}` }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
                 <div>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 700, color: '#334155' }}>{c.code}</span>
-                  <span style={{ fontSize: '12px', color: '#64748B', marginLeft: '8px' }}>· {c.desc}</span>
+                  <span style={{ fontFamily: MONO, fontSize: '13px', fontWeight: 500, color: C.textPrimary }}>{c.code}</span>
+                  <span style={{ fontSize: '14px', color: C.textSecondary, marginLeft: '8px' }}>· {c.desc}</span>
                 </div>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 600, color: '#334155' }}>{c.tagged} ideas</span>
+                <span style={{ fontFamily: MONO, fontSize: '13px', fontWeight: 600, color: C.textSecondary }}>{c.tagged} ideas</span>
               </div>
-              <div style={{ fontSize: '11px', fontWeight: 600, color: c.gapColor }}>{c.gap}</div>
+              <div style={{ fontSize: '12px', fontWeight: 500, color: c.gapColor }}>{c.gap}</div>
             </div>
           ))}
         </div>
 
-        {/* Card D — V2030 Alignment */}
-        <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '20px', minHeight: '280px' }}>
+        {/* ── Card D: V2030 Alignment ── */}
+        <div style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: '12px', padding: '20px', minHeight: '280px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-            <span style={{ fontSize: '15px', fontWeight: 700, color: '#0F172A' }}>🏛️ V2030 Alignment</span>
-            <span style={{ background: '#CCFBF1', color: '#0F766E', fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '6px' }}>3 pillars</span>
+            <span style={{ fontSize: '15px', fontWeight: 700, color: C.textPrimary }}>🏛️ V2030 Alignment</span>
+            <NeutralBadge>3 pillars</NeutralBadge>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
             {[
-              { name: 'Vibrant Society', score: '3.2', ideas: 4, strongest: 'IDH-005 (4.8)', color: '#2563EB' },
-              { name: 'Thriving Economy', score: '4.5', ideas: 8, strongest: 'IDH-001 (5.0)', color: '#16A34A' },
-              { name: 'Ambitious Nation', score: '4.1', ideas: 6, strongest: 'IDH-011 (4.7)', color: '#D97706' },
+              { name: 'Vibrant Society', score: '3.2', ideas: 4, strongest: 'IDH-005 (4.8)' },
+              { name: 'Thriving Economy', score: '4.5', ideas: 8, strongest: 'IDH-001 (5.0)' },
+              { name: 'Ambitious Nation', score: '4.1', ideas: 6, strongest: 'IDH-011 (4.7)' },
             ].map(p => (
-              <div key={p.name} style={{ borderTop: `3px solid ${p.color}`, background: '#F8FAFC', borderRadius: '0 0 8px 8px', padding: '14px 12px', textAlign: 'center' }}>
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '24px', fontWeight: 800, color: '#0F172A' }}>{p.score}</div>
-                <div style={{ fontSize: '10px', fontWeight: 600, color: '#64748B', marginTop: '2px' }}>/5</div>
-                <div style={{ fontSize: '11px', fontWeight: 600, color: '#334155', marginTop: '6px' }}>{p.name}</div>
-                <div style={{ fontSize: '10px', color: '#94A3B8', marginTop: '4px' }}>{p.ideas} ideas</div>
-                <div style={{ fontSize: '10px', color: p.color, fontWeight: 600, marginTop: '4px' }}>Strongest: {p.strongest}</div>
+              <div key={p.name} style={{ background: C.bg, border: `1px solid ${C.border}`, borderRadius: '8px', padding: '14px 12px', textAlign: 'center' }}>
+                {/* Score bar — single blue */}
+                <div style={{ height: '4px', background: C.border, borderRadius: '2px', marginBottom: '12px', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${(parseFloat(p.score) / 5) * 100}%`, background: C.primary, borderRadius: '2px' }} />
+                </div>
+                <div style={{ fontFamily: MONO, fontSize: '32px', fontWeight: 700, color: C.textPrimary, lineHeight: 1 }}>{p.score}</div>
+                <div style={{ fontSize: '16px', fontWeight: 400, color: C.textTertiary, marginTop: '2px' }}>/5</div>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: C.textPrimary, marginTop: '6px' }}>{p.name}</div>
+                <div style={{ fontSize: '13px', color: C.textTertiary, marginTop: '4px' }}>{p.ideas} ideas</div>
+                <div style={{ fontSize: '12px', color: C.textTertiary, fontWeight: 500, marginTop: '4px' }}>Strongest: {p.strongest}</div>
               </div>
             ))}
           </div>
 
-          <div style={{ background: '#FEF3C7', border: '1px solid #FDE68A', borderRadius: '8px', padding: '10px 12px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: '#B45309', marginBottom: '2px' }}>⚠ Gap Detected</div>
-            <div style={{ fontSize: '12px', color: '#92400E', lineHeight: 1.5 }}>
+          {/* Gap Detected — red tint, NOT yellow */}
+          <div style={{
+            background: C.gapBg, borderLeft: `3px solid ${C.gapBorder}`,
+            borderRadius: '0 6px 6px 0', padding: '12px 16px',
+          }}>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: C.gapText, marginBottom: '2px' }}>⚠ Gap Detected</div>
+            <div style={{ fontSize: '13px', color: C.gapBody, lineHeight: 1.5 }}>
               Only 4 ideas mapped to Vibrant Society. Consider prioritizing citizen-facing submissions in the next Innovation Drive.
             </div>
           </div>
@@ -190,6 +224,19 @@ export default function IdeationIntelligenceHub({ open, onClose }: Props) {
   );
 }
 
+/* ── Neutral Badge ── */
+function NeutralBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span style={{
+      background: C.surfaceAlt, color: C.textTertiary,
+      fontSize: '12px', fontWeight: 500, padding: '2px 10px', borderRadius: '12px',
+    }}>
+      {children}
+    </span>
+  );
+}
+
+/* ── Duplicate Pair Card ── */
 function DuplicatePair({ match, idea1, idea2, signals }: {
   match: number;
   idea1: { key: string; title: string };
@@ -197,33 +244,42 @@ function DuplicatePair({ match, idea1, idea2, signals }: {
   signals: string;
 }) {
   return (
-    <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '12px', marginBottom: '12px' }}>
+    <div style={{
+      background: C.bg, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.primary}`,
+      borderRadius: '8px', padding: '12px 16px', marginBottom: '12px',
+    }}>
       <div style={{ marginBottom: '8px' }}>
-        <span style={{ background: '#FEF3C7', color: '#B45309', fontSize: '12px', fontWeight: 700, padding: '3px 8px', borderRadius: '6px' }}>
+        <span style={{ color: C.primary, fontSize: '13px', fontWeight: 600 }}>
           {match}% match
         </span>
       </div>
-      <div style={{ fontSize: '12px', marginBottom: '2px' }}>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#2563EB' }}>{idea1.key}</span>
-        <span style={{ color: '#334155', marginLeft: '6px' }}>{idea1.title}</span>
+      <div style={{ fontSize: '13px', marginBottom: '2px' }}>
+        <span style={{ fontFamily: MONO, fontWeight: 600, color: C.textPrimary }}>{idea1.key}</span>
+        <span style={{ color: C.textSecondary, marginLeft: '6px' }}>{idea1.title}</span>
       </div>
-      <div style={{ fontSize: '12px', marginBottom: '8px' }}>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#2563EB' }}>{idea2.key}</span>
-        <span style={{ color: '#334155', marginLeft: '6px' }}>{idea2.title}</span>
+      <div style={{ fontSize: '13px', marginBottom: '8px' }}>
+        <span style={{ fontFamily: MONO, fontWeight: 600, color: C.textPrimary }}>{idea2.key}</span>
+        <span style={{ color: C.textSecondary, marginLeft: '6px' }}>{idea2.title}</span>
       </div>
-      <div style={{ fontSize: '11px', color: '#64748B', lineHeight: 1.5, marginBottom: '10px' }}>
+      <div style={{ fontSize: '13px', color: C.textTertiary, lineHeight: 1.5, marginBottom: '10px' }}>
         Shared signals: {signals}
       </div>
       <div style={{ display: 'flex', gap: '8px' }}>
         <button
           onClick={() => toast.success('Merge initiated')}
-          style={{ background: '#7C3AED', color: '#FFFFFF', border: 'none', borderRadius: '6px', padding: '6px 12px', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+          style={{
+            background: C.primary, color: '#ffffff', border: 'none', borderRadius: '6px',
+            padding: '8px 16px', fontSize: '13px', fontWeight: 500, cursor: 'pointer',
+          }}
         >
           🔗 Merge Ideas
         </button>
         <button
           onClick={() => toast('Kept separate')}
-          style={{ background: '#FFFFFF', color: '#64748B', border: '1px solid #E2E8F0', borderRadius: '6px', padding: '6px 12px', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+          style={{
+            background: 'transparent', color: C.textSecondary, border: `1px solid ${C.border}`,
+            borderRadius: '6px', padding: '8px 16px', fontSize: '13px', fontWeight: 500, cursor: 'pointer',
+          }}
         >
           Keep Separate
         </button>
