@@ -1,4 +1,5 @@
 import { Star, ArrowUp, ArrowDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import type { ProjectListItem, SortColumn, SortDirection } from '@/types/projecthub';
 import { ProjectStatusBadge } from './ProjectStatusBadge';
 import { ProjectHealthBadge } from './ProjectHealthBadge';
@@ -68,6 +69,7 @@ function SortHeader({ label, col, currentCol, dir, onSort, center }: {
 }
 
 export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectProject, sortCol, sortDir, onSort, selectedRows, onToggleRow, onToggleAll }: Props) {
+  const navigate = useNavigate();
   const allChecked = projects.length > 0 && projects.every(p => selectedRows.has(p.id));
 
   return (
@@ -99,6 +101,7 @@ export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectP
             <tr
               key={p.id}
               onClick={() => onSelectProject(p.id)}
+              onDoubleClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)}
               className="group"
               style={{
                 height: 36, cursor: 'pointer', transition: 'background 100ms',
@@ -120,10 +123,15 @@ export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectP
                   <Star size={14} fill={isFav ? '#F59E0B' : 'none'} color={isFav ? '#F59E0B' : '#CBD5E1'} />
                 </button>
               </td>
-              <td style={{ padding: '0 16px', fontSize: 12, color: '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>
-                {p.project_key}
+              <td
+                style={{ padding: '0 16px', fontSize: 12, fontFamily: "'JetBrains Mono', monospace" }}
+                onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/dashboard`); }}
+              >
+                <span style={{ color: '#2563EB', cursor: 'pointer', fontWeight: 600 }} className="hover:underline">
+                  {p.project_key}
+                </span>
               </td>
-              <td style={{ padding: '0 16px' }}>
+              <td style={{ padding: '0 16px' }} onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/dashboard`); }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{
                     width: 24, height: 24, borderRadius: 4, flexShrink: 0,

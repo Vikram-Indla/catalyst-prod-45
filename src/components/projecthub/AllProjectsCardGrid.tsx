@@ -1,4 +1,5 @@
 import { Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import type { ProjectListItem } from '@/types/projecthub';
 import { STATUS_CATEGORY_DISPLAY } from '@/types/projecthub';
 import { ProjectHealthBadge } from './ProjectHealthBadge';
@@ -38,6 +39,7 @@ interface Props {
 }
 
 export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSelectProject }: Props) {
+  const navigate = useNavigate();
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 12 }}>
       {projects.map(p => {
@@ -47,7 +49,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
         return (
           <div
             key={p.id}
-            onClick={() => onSelectProject(p.id)}
+            onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)}
             style={{
               background: '#FFF', border: '1px solid #E2E8F0', borderRadius: 8,
               overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
