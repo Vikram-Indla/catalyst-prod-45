@@ -97,7 +97,7 @@ export const ideationService = {
         if (dbStatus) query = query.eq('status', dbStatus);
       }
       if (filters?.search) {
-        query = query.ilike('title', `%${filters.search}%`);
+        query = query.or(`title.ilike.%${filters.search}%,idea_key.ilike.%${filters.search}%`);
       }
 
       const { data, error } = await query.order('created_at', { ascending: false });
