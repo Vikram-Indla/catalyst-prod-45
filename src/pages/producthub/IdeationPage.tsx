@@ -7,8 +7,9 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
-  Search, Sparkles, Download, Plus, ChevronUp, ChevronDown, ArrowUpDown,
+  Search, Download, Plus, ChevronUp, ChevronDown, ArrowUpDown,
 } from 'lucide-react';
+import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import {
   ideas, Idea, IdeationView, IdeaStatus, StatusFilter, VIEW_TITLES,
   STATUS_CONFIG, TYPE_CONFIG, PRIORITY_CONFIG, FILTER_PILLS, getImpactColor,
@@ -146,18 +147,7 @@ export default function IdeationPage() {
             </span>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button
-              onClick={() => setIntelligenceOpen(true)}
-              style={{
-                background: '#7C3AED', color: '#FFFFFF', border: 'none',
-                borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 600,
-                cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#6D28D9'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#7C3AED'; }}
-            >
-              <Sparkles size={14} /> Intelligence
-            </button>
+            <AIIntelligenceButton label="Intelligence" onClick={() => setIntelligenceOpen(true)} />
             <button style={{
               background: '#FFFFFF', color: '#334155', border: '1px solid #E2E8F0',
               borderRadius: '8px', padding: '7px 14px', fontSize: '13px', fontWeight: 500,
@@ -270,18 +260,7 @@ export default function IdeationPage() {
         <button style={{ background: 'none', border: '1px solid #E2E8F0', borderRadius: '6px', padding: '5px 10px', fontSize: '12px', fontWeight: 500, color: '#334155', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
           <ArrowUpDown size={13} /> Rank
         </button>
-        <button
-          onClick={() => setTriageOpen(true)}
-          style={{
-            background: '#7C3AED', color: '#FFFFFF', border: 'none', borderRadius: '8px',
-            padding: '5px 12px', fontSize: '11px', fontWeight: 600, cursor: 'pointer',
-            display: 'inline-flex', alignItems: 'center', gap: '4px',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#6D28D9'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#7C3AED'; }}
-        >
-          <Sparkles size={10} /> AI Triage (4)
-        </button>
+        <AIIntelligenceButton label="AI Triage (4)" onClick={() => setTriageOpen(true)} />
       </div>
 
       {/* ─── View Content ─── */}

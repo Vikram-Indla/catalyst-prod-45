@@ -6,6 +6,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronRight, Settings, Users, CalendarRange } from 'lucide-react';
+import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import '@/components/project-hub/shared/phStyles.css';
 import '@/components/project-hub/dashboard/dashboardPolish.css';
 
@@ -109,9 +110,7 @@ export default function ProjectDashboardPage() {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <ReleaseDropdown projectId={projectId} />
-                <button onClick={openIntelligence} style={{ height: 34, padding: '0 14px', borderRadius: 8, border: 'none', background: 'linear-gradient(135deg, #7C3AED, #6D28D9)', cursor: 'pointer', fontSize: 12, fontWeight: 600, color: '#FFFFFF', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontSize: 12, lineHeight: 1 }}>✦</span> Intelligence
-                </button>
+                <AIIntelligenceButton label="Intelligence" onClick={openIntelligence} />
                 <button onClick={() => navigate(`/project-hub/${key}/settings`)} style={{ width: 34, height: 34, borderRadius: 8, border: `1px solid ${C.bdr}`, background: C.card, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Settings size={15} color={C.ink3} />
                 </button>

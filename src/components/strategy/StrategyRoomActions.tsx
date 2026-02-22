@@ -4,6 +4,7 @@
  */
 
 import { Download } from 'lucide-react';
+import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import type { StrategyDensity } from '@/hooks/useStrategyPreferences';
 
 interface StrategyRoomActionsProps {
@@ -82,29 +83,12 @@ export function StrategyRoomActions({ density, setDensity, isIntelligenceOpen, o
         })}
       </div>
 
-      {/* Intelligence button */}
       {onToggleIntelligence && (
-        <button
+        <AIIntelligenceButton
+          label="Intelligence"
+          isActive={isIntelligenceOpen}
           onClick={onToggleIntelligence}
-          className={`group flex items-center gap-1.5 px-3.5 py-[7px] rounded-lg transition-all duration-200 cursor-pointer ${
-            isIntelligenceOpen
-              ? 'border-[1.5px] border-purple-500 bg-purple-50'
-              : 'border border-slate-200 bg-white hover:border-purple-300 hover:bg-[#FAFAFF] hover:shadow-[0_2px_8px_rgba(124,58,237,0.08)]'
-          }`}
-        >
-          <div className={`w-[18px] h-[18px] rounded-[5px] flex items-center justify-center shrink-0 ${
-            isIntelligenceOpen ? 'bg-purple-600' : ''
-          }`}
-            style={isIntelligenceOpen ? undefined : { background: 'linear-gradient(135deg, #7C3AED, #6D28D9)' }}
-          >
-            <span className="text-white text-[9px] font-extrabold leading-none">✦</span>
-          </div>
-          <span className={`text-[12px] font-semibold transition-colors ${
-            isIntelligenceOpen ? 'text-purple-700' : 'text-slate-600 group-hover:text-purple-700'
-          }`}>
-            Intelligence
-          </span>
-        </button>
+        />
       )}
 
       {/* Export button */}
