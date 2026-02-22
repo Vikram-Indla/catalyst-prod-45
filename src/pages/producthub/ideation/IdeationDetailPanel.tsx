@@ -179,10 +179,10 @@ function DetailsTab({ idea, onConvert }: { idea: Idea; onConvert?: (key: string)
         </div>
       </div>
 
-      {/* Tags */}
+      {/* Tags — deduplicated */}
       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-        {['Digital', 'V2030', idea.dept.split(' ')[0]].map(tag => (
-          <span key={tag} style={{ background: '#F1F5F9', color: '#475569', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500 }}>{tag}</span>
+        {[...new Set(['V2030', idea.dept.split(' ')[0]])].map(tag => (
+          <span key={tag} style={{ background: '#F1F5F9', color: '#475569', padding: '3px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 500, border: '1px solid #E2E8F0' }}>{tag}</span>
         ))}
       </div>
     </div>

@@ -1,9 +1,8 @@
 /**
- * AIIntelligenceButton — Standardized AI button with purple gradient icon + bordered style
- * Matches the compact "Intelligence" button pattern used across the platform.
+ * AIIntelligenceButton — Solid purple AI button
+ * Per platform standard: #7C3AED bg, white text, 8px border-radius
  */
 import React from 'react';
-import { cn } from '@/lib/utils';
 
 interface AIIntelligenceButtonProps {
   label: string;
@@ -21,31 +20,26 @@ export function AIIntelligenceButton({
   return (
     <button
       onClick={onClick}
-      className={cn(
-        "group flex items-center gap-1.5 px-3.5 py-[7px] rounded-lg transition-all duration-200 cursor-pointer",
-        isActive
-          ? "border-[1.5px] border-purple-500 bg-purple-50"
-          : "border border-slate-200 bg-white hover:border-purple-300 hover:bg-[#FAFAFF] hover:shadow-[0_2px_8px_rgba(124,58,237,0.08)]",
-        className
-      )}
+      className={className}
+      style={{
+        background: isActive ? '#6D28D9' : '#7C3AED',
+        color: '#FFFFFF',
+        border: 'none',
+        borderRadius: '8px',
+        padding: '7px 14px',
+        fontSize: '12px',
+        fontWeight: 600,
+        cursor: 'pointer',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '5px',
+        transition: 'background 150ms',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.background = '#6D28D9'; }}
+      onMouseLeave={e => { e.currentTarget.style.background = isActive ? '#6D28D9' : '#7C3AED'; }}
     >
-      <div
-        className={cn(
-          "w-[18px] h-[18px] rounded-[5px] flex items-center justify-center shrink-0",
-          isActive ? "bg-purple-600" : ""
-        )}
-        style={isActive ? undefined : { background: 'linear-gradient(135deg, #7C3AED, #6D28D9)' }}
-      >
-        <span className="text-white text-[9px] font-extrabold leading-none">✦</span>
-      </div>
-      <span
-        className={cn(
-          "text-[12px] font-semibold transition-colors",
-          isActive ? "text-purple-700" : "text-slate-600 group-hover:text-purple-700"
-        )}
-      >
-        {label}
-      </span>
+      <span style={{ fontSize: '11px', fontWeight: 800 }}>✦</span>
+      {label}
     </button>
   );
 }

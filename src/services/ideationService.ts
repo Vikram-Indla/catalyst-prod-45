@@ -62,7 +62,7 @@ function toIdea(row: any): Idea {
     assignee: assigneeName
       ? { name: assigneeName, initials: getInitials(assigneeName), color: pickColor(assigneeName) }
       : null,
-    ai: row.ai_enrichment_status === 'completed' ? 'ready' : row.ai_summary ? 'ready' : 'pending',
+    ai: (row.ai_enrichment_status === 'completed' || row.ai_enrichment_status === 'complete') ? 'ready' : row.ai_summary ? 'ready' : 'pending',
   };
 }
 
@@ -86,22 +86,30 @@ export const ideationService = {
     type?: string;
     search?: string;
   }): Promise<Idea[]> {
-    let query = (supabase as any)
-      .from('ph_ideas_listing')
-      .select('*')
-      .eq('is_deleted', false);
+    try {
+      let query = (supabase as any)
+        .from('ph_ideas_listing')
+        .select('*')
+        .eq('is_deleted', false);
 
-    if (filters?.status && filters.status !== 'all') {
-      const dbStatus = STATUS_REVERSE[filters.status];
-      if (dbStatus) query = query.eq('status', dbStatus);
-    }
-    if (filters?.search) {
-      query = query.ilike('title', `%${filters.search}%`);
-    }
+      if (filters?.status && filters.status !== 'all') {
+        const dbStatus = STATUS_REVERSE[filters.status];
+        if (dbStatus) query = query.eq('status', dbStatus);
+      }
+      if (filters?.search) {
+        query = query.ilike('title', `%${filters.search}%`);
+      }
 
-    const { data, error } = await query.order('created_at', { ascending: false });
-    if (error) throw error;
-    return (data ?? []).map(toIdea);
+      const { data, error } = await query.order('created_at', { ascending: false });
+      if (error) {
+        console.warn('Ideation query error (ph_ideas_listing):', error.message);
+        return [];
+      }
+      return (data ?? []).map(toIdea);
+    } catch (e) {
+      console.warn('Ideation service error:', e);
+      return [];
+    }
   },
 
   async getIdeaRaw(ideaKey: string) {
