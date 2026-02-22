@@ -48,8 +48,9 @@ export default function LatestInProduction({ projectId, releaseMap }: Props) {
             </thead>
             <tbody>
               {items.map((item: any, idx: number) => {
-                const daysSince = item.updated_at
-                  ? Math.ceil((Date.now() - new Date(item.updated_at).getTime()) / 86400000)
+                const deployDate = item.deploy_date || item.updated_at;
+                const daysSince = deployDate
+                  ? Math.ceil((Date.now() - new Date(deployDate).getTime()) / 86400000)
                   : 0;
                 return (
                   <tr key={item.id} style={{ height: 44, borderBottom: '1px solid #F1F5F9', background: idx % 2 === 1 ? '#FAFBFC' : undefined }} className="ph-table-row">
@@ -70,7 +71,7 @@ export default function LatestInProduction({ projectId, releaseMap }: Props) {
                       {item.displayTitle}
                     </td>
                     <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: '#475569', fontWeight: 500 }}>
-                      {item.updated_at ? format(new Date(item.updated_at), 'MMM d') : '—'}
+                      {deployDate ? format(new Date(deployDate), 'MMM d') : '—'}
                     </td>
                     <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: '#15803D' }}>
                       {daysSince}d

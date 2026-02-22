@@ -53,8 +53,8 @@ export default function OnHoldItems({ projectId, releaseMap }: Props) {
                     {item.days_on_hold > 0 ? `${item.days_on_hold}d` : 'N/A'}
                   </span>
                 </td>
-                <td style={{ padding: '0 8px', fontSize: 11, color: '#475569', fontWeight: 500, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'Inter', sans-serif" }} title={item.on_hold_reason || undefined}>
-                  {item.on_hold_reason || 'No reason specified'}
+                <td style={{ padding: '0 8px', fontSize: 11, color: item.on_hold_reason ? '#475569' : '#94A3B8', fontWeight: 500, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'Inter', sans-serif" }} title={item.on_hold_reason || undefined}>
+                  {item.on_hold_reason || '—'}
                 </td>
               </tr>
             ))}

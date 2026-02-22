@@ -105,6 +105,25 @@ export async function fetchInProduction(projectId: string, releaseIds: string[])
     .limit(10);
   if (error) throw error;
 
+  const itemIds = (data ?? []).map(d => d.id);
+  // Fetch transition to in_production for accurate "since" date
+  let deployDateMap: Record<string, string> = {};
+  if (itemIds.length > 0) {
+    const { data: transitions } = await supabase
+      .from('ph_status_transitions')
+      .select('work_item_id, changed_at')
+      .in('work_item_id', itemIds)
+      .eq('to_status', 'in_production')
+      .order('changed_at', { ascending: false });
+    const seen = new Set<string>();
+    for (const t of transitions ?? []) {
+      if (!seen.has(t.work_item_id)) {
+        seen.add(t.work_item_id);
+        deployDateMap[t.work_item_id] = t.changed_at;
+      }
+    }
+  }
+
   const assigneeIds = [...new Set((data ?? []).map(d => d.assignee_id).filter(Boolean))] as string[];
   const profiles = await fetchProfileNames(assigneeIds);
 
@@ -112,6 +131,7 @@ export async function fetchInProduction(projectId: string, releaseIds: string[])
     ...d,
     displayTitle: d.title || d.summary,
     assignee_name: profiles[d.assignee_id ?? ''] ?? null,
+    deploy_date: deployDateMap[d.id] ?? d.updated_at,
   }));
 }
 
