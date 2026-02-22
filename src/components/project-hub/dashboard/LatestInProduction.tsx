@@ -2,6 +2,7 @@
  * LatestInProduction — Recently deployed items
  */
 import WidgetCard from './WidgetCard';
+import { TypeBadge } from './TypeBadge';
 import { WidgetSkeleton } from './WidgetSkeleton';
 import EmptyState from './EmptyState';
 import { useInProduction } from '@/hooks/useProjectDashboard';
@@ -61,9 +62,7 @@ export default function LatestInProduction({ projectId, releaseMap }: Props) {
                       </button>
                     </td>
                     <td style={{ padding: '0 8px' }}>
-                      <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 4, background: item.item_type === 'bug' ? '#FEF2F2' : '#EFF6FF', color: item.item_type === 'bug' ? '#DC2626' : '#2563EB' }}>
-                        {item.item_type === 'bug' ? 'Bug' : 'Story'}
-                      </span>
+                      <TypeBadge type={item.item_type} />
                     </td>
                     <td style={{ padding: '0 8px', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#334155', fontFamily: "'Inter', sans-serif" }} title={item.displayTitle}>
                       {item.displayTitle}

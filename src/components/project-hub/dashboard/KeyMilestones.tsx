@@ -4,6 +4,7 @@
 import { Settings } from 'lucide-react';
 import WidgetCard from './WidgetCard';
 import StatusBadge from './StatusBadge';
+import { TypeBadge } from './TypeBadge';
 import { WidgetSkeleton } from './WidgetSkeleton';
 import EmptyState from './EmptyState';
 import { useKeyMilestones } from '@/hooks/useProjectDashboard';
@@ -54,9 +55,6 @@ export default function KeyMilestones({ projectId, onConfigOpen, releaseMap }: P
           </thead>
           <tbody>
             {items.map((item: any, idx: number) => {
-              const daysInStatus = item.due_date
-                ? Math.ceil((Date.now() - new Date(item.due_date).getTime()) / 86400000)
-                : null;
               return (
                 <tr key={item.id} style={{ height: 44, borderBottom: '1px solid #F8FAFC', background: idx % 2 === 1 ? '#FAFBFC' : undefined, transition: 'background 120ms ease' }} className="ph-table-row">
                   <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: '#0D9488', fontWeight: 600 }}>
@@ -72,23 +70,17 @@ export default function KeyMilestones({ projectId, onConfigOpen, releaseMap }: P
                     </button>
                   </td>
                   <td style={{ padding: '0 8px' }}>
-                    <span style={{
-                      fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 4,
-                      background: item.item_type === 'bug' ? '#FEF2F2' : '#EFF6FF',
-                      color: item.item_type === 'bug' ? '#DC2626' : '#2563EB',
-                    }}>
-                      {item.item_type === 'bug' ? 'Bug' : 'Story'}
-                    </span>
+                    <TypeBadge type={item.item_type} />
                   </td>
                   <td style={{ padding: '0 8px', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#334155', fontFamily: "'Inter', sans-serif" }} title={item.displayTitle}>
                     {item.displayTitle}
                   </td>
                   <td style={{ padding: '0 8px' }}><StatusBadge status={item.status} /></td>
                   <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: '#64748B' }}>
-                    {item.due_date ? format(new Date(item.due_date), 'MMM d') : '—'}
+                    {item.status_date ? format(new Date(item.status_date), 'MMM d') : <span style={{ color: '#94A3B8' }}>N/A</span>}
                   </td>
-                  <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: daysInStatus === null ? '#94A3B8' : daysInStatus === 0 ? '#16A34A' : daysInStatus > 5 ? '#EF4444' : daysInStatus > 2 ? '#D97706' : '#16A34A' }}>
-                    {daysInStatus !== null ? `${Math.abs(daysInStatus)}d` : '—'}
+                  <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: item.days_in_status === 0 ? '#16A34A' : item.days_in_status > 5 ? '#EF4444' : item.days_in_status > 2 ? '#D97706' : '#16A34A' }}>
+                    {item.days_in_status}d
                   </td>
                 </tr>
               );

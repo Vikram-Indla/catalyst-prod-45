@@ -20,7 +20,7 @@ export async function fetchReleases(projectId: string) {
     .from('ph_releases')
     .select('id, name, title, status, target_date, project_id, start_date')
     .eq('project_id', projectId)
-    .in('status', ['in_progress', 'active', 'planning'])
+    .in('status', ['in_progress', 'active'])
     .order('target_date', { ascending: true });
   if (error) throw error;
   return data ?? [];
@@ -51,21 +51,46 @@ export async function fetchKeyMilestones(projectId: string, releaseIds: string[]
 
   const { data, error } = await supabase
     .from('ph_work_items')
-    .select('id, item_key, title, summary, item_type, status, due_date, release_id, assignee_id')
+    .select('id, item_key, title, summary, item_type, status, due_date, release_id, assignee_id, updated_at')
     .eq('project_id', projectId)
     .in('release_id', releaseIds)
     .in('status', milestoneStatuses)
     .order('status');
   if (error) throw error;
 
+  const itemIds = (data ?? []).map(d => d.id);
+  // Fetch last transition to current status for each item
+  let transitionMap: Record<string, string> = {};
+  if (itemIds.length > 0) {
+    const { data: transitions } = await supabase
+      .from('ph_status_transitions')
+      .select('work_item_id, to_status, changed_at')
+      .in('work_item_id', itemIds)
+      .order('changed_at', { ascending: false });
+    const seen = new Set<string>();
+    for (const t of transitions ?? []) {
+      const item = (data ?? []).find(d => d.id === t.work_item_id);
+      if (item && t.to_status === item.status && !seen.has(t.work_item_id)) {
+        seen.add(t.work_item_id);
+        transitionMap[t.work_item_id] = t.changed_at;
+      }
+    }
+  }
+
   const assigneeIds = [...new Set((data ?? []).map(d => d.assignee_id).filter(Boolean))] as string[];
   const profiles = await fetchProfileNames(assigneeIds);
 
-  return (data ?? []).map(d => ({
-    ...d,
-    displayTitle: d.title || d.summary,
-    assignee_name: profiles[d.assignee_id ?? ''] ?? null,
-  }));
+  return (data ?? []).map(d => {
+    const statusDate = transitionMap[d.id] ?? d.updated_at;
+    const daysInStatus = statusDate ? Math.floor((Date.now() - new Date(statusDate).getTime()) / 86400000) : 0;
+    return {
+      ...d,
+      displayTitle: d.title || d.summary,
+      assignee_name: profiles[d.assignee_id ?? ''] ?? null,
+      status_date: statusDate,
+      days_in_status: daysInStatus,
+    };
+  });
 }
 
 // ─── Latest in Production ───
@@ -91,11 +116,11 @@ export async function fetchInProduction(projectId: string, releaseIds: string[])
 }
 
 // ─── Items by Status ───
-export async function fetchItemsByStatus(releaseIds: string[]) {
-  // Direct query since view may not be in types
+export async function fetchItemsByStatus(projectId: string, releaseIds: string[]) {
   const { data, error } = await supabase
     .from('ph_work_items')
     .select('status, release_id')
+    .eq('project_id', projectId)
     .in('release_id', releaseIds);
   if (error) throw error;
 

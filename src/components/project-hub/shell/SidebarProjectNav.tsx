@@ -57,7 +57,7 @@ export function SidebarProjectNav({
     <div
       className="flex flex-col h-full flex-shrink-0"
       style={{
-        width: collapsed ? 56 : 192,
+        width: collapsed ? 56 : 200,
         background: '#FFFFFF',
         borderRight: '1px solid #E2E8F0',
         transition: 'width 200ms ease',
