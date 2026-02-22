@@ -173,7 +173,7 @@ export const fetchWorkItems = async (resourceId: string, jiraAccountId?: string 
       components: i.components,
       type_icon_url: i.type_icon_url,
       assigned_date: i.jira_created_at,
-      reporter_name: i.reporter_display_name || i.assignee_display_name || null,
+      reporter_name: i.reporter_display_name || '—',
       updated_at: i.jira_updated_at,
       source_hub: 'ProjectHub',
       hub: 'ProjectHub',
