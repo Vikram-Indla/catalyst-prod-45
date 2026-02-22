@@ -122,7 +122,7 @@ export const fetchWorkItems = async (resourceId: string, jiraAccountId?: string 
 
   const { data, error } = await supabase
     .from('ph_issues' as any)
-    .select('issue_key, project_key, project_name, issue_type, summary, status, status_category, priority, parent_key, parent_summary, due_date, effective_due_date, story_points, sprint_name, fix_versions, labels, components, type_icon_url, jira_created_at, jira_updated_at, assignee_display_name')
+    .select('issue_key, project_key, project_name, issue_type, summary, status, status_category, priority, parent_key, parent_summary, due_date, effective_due_date, story_points, sprint_name, fix_versions, labels, components, type_icon_url, jira_created_at, jira_updated_at, assignee_display_name, reporter_display_name')
     .eq('assignee_account_id', jiraAccountId)
     .order('jira_updated_at', { ascending: false });
   if (error) throw error;
@@ -173,7 +173,7 @@ export const fetchWorkItems = async (resourceId: string, jiraAccountId?: string 
       components: i.components,
       type_icon_url: i.type_icon_url,
       assigned_date: i.jira_created_at,
-      assigned_by_name: i.assignee_display_name,
+      reporter_name: i.reporter_display_name || null,
       updated_at: i.jira_updated_at,
       source_hub: 'ProjectHub',
       hub: 'ProjectHub',

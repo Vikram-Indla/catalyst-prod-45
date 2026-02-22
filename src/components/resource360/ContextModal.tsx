@@ -126,7 +126,7 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
             </span>
           </Field>
           <Field label="Project">{item.project_name || '—'}</Field>
-          <Field label="Assigned By">{item.assigned_by_name || 'System'}</Field>
+          <Field label="Reported By">{item.reporter_name || '—'}</Field>
           <Field label="Assigned Date">{item.assigned_date?.slice(0, 10) || '—'}</Field>
           <Field label="Priority">
             <span>{PRIORITY_ICONS[item.priority] || ''} {item.priority}</span>
