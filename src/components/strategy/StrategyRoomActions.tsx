@@ -5,6 +5,7 @@
 
 import { Download } from 'lucide-react';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import type { StrategyDensity } from '@/hooks/useStrategyPreferences';
 
 interface StrategyRoomActionsProps {
@@ -51,37 +52,43 @@ export function StrategyRoomActions({ density, setDensity, isIntelligenceOpen, o
   return (
     <div className="flex items-center gap-2">
       {/* Density segmented control */}
-      <div
-        className="flex items-center rounded-md overflow-hidden"
-        role="radiogroup"
-        aria-label="Display density"
-        style={{ border: '1px solid var(--catalyst-border-default, hsl(var(--border)))' }}
-      >
-        {densityOptions.map((opt) => {
-          const isActive = density === opt.value;
-          return (
-            <button
-              key={opt.value}
-              role="radio"
-              aria-checked={isActive}
-              aria-label={opt.label}
-              onClick={() => setDensity(opt.value)}
-              className="flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2"
-              style={{
-                width: '32px',
-                height: '32px',
-                background: isActive ? '#2563EB' : 'hsl(var(--card))',
-                color: isActive ? '#FFFFFF' : 'hsl(var(--muted-foreground))',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 120ms ease',
-              }}
-            >
-              {opt.icon}
-            </button>
-          );
-        })}
-      </div>
+      <TooltipProvider delayDuration={200}>
+        <div
+          className="flex items-center rounded-md overflow-hidden"
+          role="radiogroup"
+          aria-label="Display density"
+          style={{ border: '1px solid var(--catalyst-border-default, hsl(var(--border)))' }}
+        >
+          {densityOptions.map((opt) => {
+            const isActive = density === opt.value;
+            return (
+              <Tooltip key={opt.value}>
+                <TooltipTrigger asChild>
+                  <button
+                    role="radio"
+                    aria-checked={isActive}
+                    aria-label={opt.label}
+                    onClick={() => setDensity(opt.value)}
+                    className="flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2"
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      background: isActive ? '#2563EB' : 'hsl(var(--card))',
+                      color: isActive ? '#FFFFFF' : 'hsl(var(--muted-foreground))',
+                      border: 'none',
+                      cursor: 'pointer',
+                      transition: 'all 120ms ease',
+                    }}
+                  >
+                    {opt.icon}
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="text-xs">{opt.label}</TooltipContent>
+              </Tooltip>
+            );
+          })}
+        </div>
+      </TooltipProvider>
 
       {onToggleIntelligence && (
         <AIIntelligenceButton
