@@ -37,8 +37,9 @@ const Resource360Page = () => {
   const navigate = useNavigate();
   const rid = resourceId ?? '009';
   const { data: resource, isLoading, error, refetch } = useResource(rid);
-  const { data: summary, isLoading: summaryLoading, error: summaryError, refetch: refetchSummary } = useResourceSummary(resource?.id ?? '');
-  const { data: items, isLoading: itemsLoading, error: itemsError, refetch: refetchItems } = useWorkItems(resource?.id ?? '');
+  const jiraAccountId = resource?.jira_account_id ?? null;
+  const { data: summary, isLoading: summaryLoading, error: summaryError, refetch: refetchSummary } = useResourceSummary(resource?.id ?? '', jiraAccountId);
+  const { data: items, isLoading: itemsLoading, error: itemsError, refetch: refetchItems } = useWorkItems(resource?.id ?? '', jiraAccountId);
 
   const viewParam = searchParams.get('view') as R360View | null;
   const [activeView, setActiveView] = useState<R360View>(viewParam || 'tentacle');
