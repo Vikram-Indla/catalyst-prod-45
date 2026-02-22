@@ -142,15 +142,20 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
                   ends {item.release_end_date.slice(0, 10)}
                 </span>}
               </span>
-            ) : <span style={{ color: '#64748B', fontSize: 12 }}>—</span>}
+            ) : <span style={{ color: '#64748B', fontSize: 12 }}>Not Assigned</span>}
           </Field>
 
-          {/* Hierarchy - hidden if null */}
+          {/* Hierarchy - show key + title */}
           {item.parent_item_key && (
             <Field label="Parent" span={2}>
               <span style={{ fontSize: 11.5, fontFamily: 'monospace', color: '#2563EB' }}>
                 {item.parent_item_key}
               </span>
+              {item.parent_summary && (
+                <span style={{ fontSize: 12, color: '#334155', marginLeft: 8 }}>
+                  {item.parent_summary}
+                </span>
+              )}
             </Field>
           )}
 
