@@ -1,11 +1,13 @@
 /**
  * TimeInStatus — The Gold Widget
  * Per-ticket lifecycle with sticky columns, hover tooltips, bottleneck detection
+ * Includes "Show all" for 15+ items
  */
 import { useState } from 'react';
-import { Settings } from 'lucide-react';
 import WidgetCard from './WidgetCard';
 import StatusBadge, { getStatusColor, getStatusCellBg } from './StatusBadge';
+import { WidgetSkeleton } from './WidgetSkeleton';
+import EmptyState from './EmptyState';
 import { useTimeInStatus, useTisConfig } from '@/hooks/useProjectDashboard';
 import { useDashboardStore } from './useDashboardStore';
 import { format } from 'date-fns';
@@ -14,6 +16,7 @@ const DEFAULT_STATUSES = [
   'in_requirements', 'in_design', 'ready_for_development', 'in_development',
   'in_qa', 'in_uat', 'in_beta', 'production_ready', 'in_production',
 ];
+const INITIAL_SHOW = 10;
 
 function formatLabel(s: string) { return s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); }
 
@@ -24,12 +27,14 @@ interface Props {
 
 export default function TimeInStatus({ projectId, releaseMap }: Props) {
   const { selectedReleaseIds, openLifecycle } = useDashboardStore();
-  const { data, isLoading } = useTimeInStatus(projectId, selectedReleaseIds);
+  const { data, isLoading, error, refetch } = useTimeInStatus(projectId, selectedReleaseIds);
   const { data: tisConfig } = useTisConfig(projectId);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; text: string } | null>(null);
+  const [showAll, setShowAll] = useState(false);
 
   const visibleStatuses: string[] = (tisConfig?.visible_statuses as string[]) ?? DEFAULT_STATUSES;
-  const items = data ?? [];
+  const allItems = data ?? [];
+  const displayItems = showAll ? allItems : allItems.slice(0, INITIAL_SHOW);
 
   const isBottleneck = (status: string, days: number): boolean => {
     const color = getStatusColor(status);
@@ -37,39 +42,39 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
   };
 
   return (
-    <WidgetCard title="Time in Status" subtitle="Per-ticket lifecycle · Hover cells for details">
+    <WidgetCard title="Time in Status" subtitle="Per-ticket lifecycle · Hover cells for details" error={error ? error.message : null} onRetry={() => refetch()}>
       {isLoading ? (
-        <div style={{ padding: 20, textAlign: 'center', fontSize: 12, color: '#94A3B8' }}>Loading...</div>
-      ) : items.length === 0 ? (
-        <div style={{ padding: 20, textAlign: 'center', fontSize: 12, color: '#94A3B8' }}>No lifecycle data</div>
+        <WidgetSkeleton rows={5} />
+      ) : allItems.length === 0 ? (
+        <EmptyState message="No lifecycle data available for selected releases" icon="info" />
       ) : (
-        <div style={{ position: 'relative', maxHeight: 400, overflowY: 'auto', overflowX: 'auto' }}>
+        <div style={{ position: 'relative', maxHeight: 440, overflowY: 'auto', overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, minWidth: 800 }}>
             <thead style={{ position: 'sticky', top: 0, zIndex: 2, background: '#FFFFFF' }}>
               <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
                 {['Key', 'Type', 'Title', 'Current'].map(h => (
-                  <th key={h} style={{ padding: '8px 8px', textAlign: 'left', fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.04em', position: 'sticky', left: h === 'Key' ? 0 : undefined, background: '#FFFFFF', zIndex: 3, whiteSpace: 'nowrap' }}>
+                  <th key={h} style={{ padding: '8px 8px', textAlign: 'left', fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.05em', fontFamily: "'Inter', sans-serif", position: 'sticky', left: h === 'Key' ? 0 : undefined, background: '#FFFFFF', zIndex: 3, whiteSpace: 'nowrap' }}>
                     {h}
                   </th>
                 ))}
                 {visibleStatuses.map(s => (
-                  <th key={s} style={{ padding: '8px 4px', textAlign: 'center', fontSize: 9, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.02em', whiteSpace: 'nowrap', minWidth: 64 }}>
+                  <th key={s} style={{ padding: '8px 4px', textAlign: 'center', fontSize: 9, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.02em', whiteSpace: 'nowrap', minWidth: 64, fontFamily: "'Inter', sans-serif" }}>
                     {formatLabel(s).slice(0, 12)}
                   </th>
                 ))}
-                <th style={{ padding: '8px 8px', textAlign: 'right', fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase' }}>Total</th>
+                <th style={{ padding: '8px 8px', textAlign: 'right', fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', fontFamily: "'Inter', sans-serif" }}>Total</th>
               </tr>
             </thead>
             <tbody>
-              {items.map((item: any) => {
+              {displayItems.map((item: any, idx: number) => {
                 const statusMap: Record<string, any> = {};
                 for (const s of item.statuses ?? []) {
                   statusMap[s.status] = s;
                 }
                 return (
-                  <tr key={item.work_item_id} style={{ height: 44, borderBottom: '1px solid #F8FAFC' }}>
-                    <td style={{ padding: '0 8px', position: 'sticky', left: 0, background: '#FFFFFF', zIndex: 1 }}>
-                      <button onClick={() => openLifecycle(item.work_item_id)} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
+                  <tr key={item.work_item_id} style={{ height: 44, borderBottom: '1px solid #F8FAFC', background: idx % 2 === 1 ? '#FAFBFC' : undefined }}>
+                    <td style={{ padding: '0 8px', position: 'sticky', left: 0, background: idx % 2 === 1 ? '#FAFBFC' : '#FFFFFF', zIndex: 1 }}>
+                      <button onClick={() => openLifecycle(item.work_item_id)} className="ph-focus-ring" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
                         {item.work_item_key}
                       </button>
                     </td>
@@ -78,7 +83,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                         {item.work_item_type === 'bug' ? 'Bug' : 'Story'}
                       </span>
                     </td>
-                    <td style={{ padding: '0 8px', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#334155', fontSize: 11 }}>
+                    <td style={{ padding: '0 8px', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#334155', fontSize: 11, fontFamily: "'Inter', sans-serif" }} title={item.work_item_title}>
                       {item.work_item_title}
                     </td>
                     <td style={{ padding: '0 8px' }}><StatusBadge status={item.current_status} /></td>
@@ -90,13 +95,12 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                         <td
                           key={status}
                           style={{
-                            padding: '4px 4px',
-                            textAlign: 'center',
+                            padding: '4px 4px', textAlign: 'center',
                             background: bn ? '#FFFBEB' : getStatusCellBg(status),
                             outline: isCurrent ? '2px solid #2563EB' : undefined,
                             outlineOffset: isCurrent ? -2 : undefined,
-                            position: 'relative',
-                            cursor: entry ? 'default' : undefined,
+                            position: 'relative', cursor: entry ? 'default' : undefined,
+                            transition: 'background 120ms ease',
                           }}
                           onMouseEnter={(e) => {
                             if (!entry) return;
@@ -104,7 +108,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                             setTooltip({
                               x: r.left + r.width / 2,
                               y: r.top - 8,
-                              text: `Entered: ${entry.entered_at ? format(new Date(entry.entered_at), 'MMM d, yyyy') : '—'} · Duration: ${entry.duration_days}d · Changed by: ${entry.changed_by}`,
+                              text: `Entered: ${entry.entered_at ? format(new Date(entry.entered_at), 'MMM d, yyyy') : '—'} · Duration: ${entry.duration_days}d · Changed by: ${entry.changed_by || 'System'}`,
                             });
                           }}
                           onMouseLeave={() => setTooltip(null)}
@@ -114,15 +118,14 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                               <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9.5, color: '#64748B' }}>
                                 {entry.entered_at ? format(new Date(entry.entered_at), 'MMM d') : ''}
                               </div>
-                              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 700, color: bn ? '#D97706' : entry.duration_days > 5 ? '#EF4444' : entry.duration_days > 2 ? '#D97706' : '#16A34A' }}>
+                              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 700, color: bn ? '#D97706' : entry.duration_days === 0 ? '#16A34A' : entry.duration_days > 5 ? '#EF4444' : entry.duration_days > 2 ? '#D97706' : '#16A34A' }}>
                                 {entry.duration_days}d
                               </div>
                               {isCurrent && (
-                                <span style={{
+                                <span className="ph-pulse-dot" style={{
                                   position: 'absolute', top: 4, right: 4,
                                   width: 6, height: 6, borderRadius: '50%',
                                   background: '#2563EB',
-                                  animation: 'pulse 2s infinite',
                                 }} />
                               )}
                             </div>
@@ -141,6 +144,30 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
             </tbody>
           </table>
 
+          {/* Show all toggle */}
+          {allItems.length > INITIAL_SHOW && !showAll && (
+            <div style={{ padding: '10px 16px', borderTop: '1px solid #F1F5F9', textAlign: 'center' }}>
+              <button
+                onClick={() => setShowAll(true)}
+                className="ph-focus-ring"
+                style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer' }}
+              >
+                Show all {allItems.length} items
+              </button>
+            </div>
+          )}
+          {showAll && allItems.length > INITIAL_SHOW && (
+            <div style={{ padding: '10px 16px', borderTop: '1px solid #F1F5F9', textAlign: 'center' }}>
+              <button
+                onClick={() => setShowAll(false)}
+                className="ph-focus-ring"
+                style={{ fontSize: 11, fontWeight: 600, color: '#64748B', background: 'none', border: 'none', cursor: 'pointer' }}
+              >
+                Show less
+              </button>
+            </div>
+          )}
+
           {/* Tooltip */}
           {tooltip && (
             <div style={{
@@ -149,7 +176,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
               background: '#1E293B', color: '#F8FAFC', fontSize: 10, padding: '6px 10px',
               borderRadius: 6, whiteSpace: 'nowrap', zIndex: 50,
               boxShadow: '0 4px 12px rgba(0,0,0,.2)',
-              pointerEvents: 'none',
+              pointerEvents: 'none', fontFamily: "'Inter', sans-serif",
             }}>
               {tooltip.text}
             </div>
@@ -158,10 +185,8 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
       )}
 
       <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.3; }
-        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .ph-pulse-dot { animation: pulse 1.5s infinite; }
       `}</style>
     </WidgetCard>
   );

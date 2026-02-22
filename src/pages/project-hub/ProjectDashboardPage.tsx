@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronRight, Settings, Users, CalendarRange } from 'lucide-react';
 import '@/components/project-hub/shared/phStyles.css';
+import '@/components/project-hub/dashboard/dashboardPolish.css';
 
 import { useDashboardStore } from '@/components/project-hub/dashboard/useDashboardStore';
 import { useReleases } from '@/hooks/useProjectDashboard';
@@ -128,22 +129,22 @@ export default function ProjectDashboardPage() {
             </div>
 
             {/* Widget Grid */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="ph-widget-stagger" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <KeyMilestones projectId={projectId} onConfigOpen={() => setMilestoneConfigOpen(true)} releaseMap={releaseMap} />
                 <LatestInProduction projectId={projectId} releaseMap={releaseMap} />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+              <div className="ph-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
                 <ItemsByStatus />
                 <OverdueItems projectId={projectId} releaseMap={releaseMap} />
                 <OnHoldItems projectId={projectId} releaseMap={releaseMap} />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <ProductionIncidents projectId={projectId} releaseMap={releaseMap} />
                 <QADefects projectId={projectId} releaseMap={releaseMap} />
               </div>
               <TimeInStatus projectId={projectId} releaseMap={releaseMap} />
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <TeamWorkload projectId={projectId} />
                 <RecentActivity projectId={projectId} />
               </div>
