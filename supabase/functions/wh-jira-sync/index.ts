@@ -69,13 +69,15 @@ serve(async (req) => {
     const authHeader = 'Basic ' + btoa(`${conn.auth_email}:${conn.auth_token_encrypted}`)
     const headers = { 'Authorization': authHeader, 'Accept': 'application/json' }
 
-    // 3. Discover actual project keys from Jira
+    // 3. Discover actual project keys from Jira and build name lookup
     let allProjectKeys: string[] = []
+    const projectNameLookup: Record<string, string> = {}
     try {
       const projRes = await fetch(`${base}/rest/api/3/project`, { headers })
       if (projRes.ok) {
         const projects = await projRes.json()
         allProjectKeys = projects.map((p: any) => p.key)
+        projects.forEach((p: any) => { projectNameLookup[p.key] = p.name })
         console.log(`[sync] Jira has ${allProjectKeys.length} accessible projects`)
       }
     } catch (e) {
@@ -209,6 +211,7 @@ serve(async (req) => {
       return {
         issue_key: issue.key,
         project_key: issue.key.split('-')[0],
+        project_name: projectNameLookup[issue.key.split('-')[0]] || null,
         issue_type: issue.fields.issuetype?.name || 'Task',
         summary: issue.fields.summary || '',
         status: issue.fields.status?.name || 'To Do',
