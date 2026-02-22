@@ -1,6 +1,7 @@
-import React, { useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useResource, useResourceSummary, useWorkItems } from '@/hooks/useResource360';
+import { ArrowLeft } from 'lucide-react';
 import ResourceBanner from '@/components/resource360/ResourceBanner';
 import Toolbar, { R360View, RoleFilter } from '@/components/resource360/Toolbar';
 import TentacleView from '@/components/resource360/TentacleView';
@@ -32,12 +33,22 @@ const ErrorBanner = ({ message, onRetry }: { message: string; onRetry: () => voi
 
 const Resource360Page = () => {
   const { resourceId } = useParams<{ resourceId: string }>();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const rid = resourceId ?? '009';
   const { data: resource, isLoading, error, refetch } = useResource(rid);
   const { data: summary, isLoading: summaryLoading, error: summaryError, refetch: refetchSummary } = useResourceSummary(resource?.id ?? '');
   const { data: items, isLoading: itemsLoading, error: itemsError, refetch: refetchItems } = useWorkItems(resource?.id ?? '');
 
-  const [activeView, setActiveView] = useState<R360View>('tentacle');
+  const viewParam = searchParams.get('view') as R360View | null;
+  const [activeView, setActiveView] = useState<R360View>(viewParam || 'tentacle');
+
+  // Sync view from URL query param
+  useEffect(() => {
+    if (viewParam && ['tentacle', 'chronology', 'list'].includes(viewParam)) {
+      setActiveView(viewParam);
+    }
+  }, [viewParam]);
   const [roleFilter, setRoleFilter] = useState<RoleFilter>('all');
   const [groupBy, setGroupBy] = useState('status');
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -97,6 +108,29 @@ const Resource360Page = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', fontFamily: "'Inter', sans-serif" }}>
+      {/* Back navigation */}
+      <div style={{
+        padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '12px',
+        borderBottom: '1px solid #F1F5F9', background: '#FFFFFF',
+      }}>
+        <button
+          onClick={() => navigate('/project-hub/resources')}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px',
+            fontSize: '12px', fontWeight: 600, color: '#374151',
+            border: '1px solid #E2E8F0', borderRadius: '6px',
+            padding: '6px 12px', background: 'transparent', cursor: 'pointer',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#2563EB'; e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.background = '#EFF6FF'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = '#374151'; e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.background = 'transparent'; }}
+        >
+          <ArrowLeft size={14} />
+          All Resources
+        </button>
+        <span style={{ fontSize: '11px', fontWeight: 500, color: '#475569' }}>
+          Resources › <strong style={{ color: '#0F172A' }}>{resource?.full_name || `RID ${rid}`}</strong>
+        </span>
+      </div>
       {summaryLoading ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 20px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>
           <div className="r360-skeleton" style={{ width: 64, height: 64, borderRadius: '50%' }} />
