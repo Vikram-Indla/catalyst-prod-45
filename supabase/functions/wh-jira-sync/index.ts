@@ -85,7 +85,7 @@ serve(async (req) => {
     // 4. Build per-project JQL queries and fetch issues
     let allIssues: any[] = []
     const maxResults = 100
-    const fields = ['summary','status','assignee','issuetype','parent','fixVersions','duedate','labels','components','priority','created','updated','resolution','customfield_10016','description','comment']
+    const fields = ['summary','status','assignee','reporter','issuetype','parent','fixVersions','duedate','labels','components','priority','created','updated','resolution','customfield_10016','description','comment']
     const searchUrl = `${base}/rest/api/3/search/jql`
     const postHeaders = { ...headers, 'Content-Type': 'application/json' }
 
