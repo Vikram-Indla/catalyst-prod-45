@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 export type R360View = 'tentacle' | 'chronology' | 'list';
 export type RoleFilter = 'all' | 'assigned' | 'reported';
@@ -11,6 +11,13 @@ interface ToolbarProps {
   onAiClick: () => void;
   groupBy: string;
   onGroupByChange: (g: string) => void;
+  // Dynamic filter options derived from work items
+  releaseOptions?: string[];
+  projectOptions?: { key: string; name: string }[];
+  selectedRelease?: string;
+  onReleaseChange?: (r: string) => void;
+  selectedProject?: string;
+  onProjectChange?: (p: string) => void;
 }
 
 const views: { key: R360View; label: string }[] = [
@@ -25,9 +32,74 @@ const roles: { key: RoleFilter; label: string }[] = [
   { key: 'reported', label: 'Reported' },
 ];
 
+/* ── tiny dropdown ── */
+function FilterDropdown({ label, value, options, onChange }: {
+  label: string; value: string;
+  options: { key: string; label: string }[];
+  onChange: (k: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const displayLabel = options.find(o => o.key === value)?.label || value;
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          padding: '5px 12px', fontSize: 11.5, fontWeight: 500,
+          color: '#475569', background: '#FFFFFF',
+          border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
+          whiteSpace: 'nowrap',
+        }}
+        aria-label={`${label} filter`}
+      >
+        {label}: {displayLabel}
+      </button>
+      {open && (
+        <div style={{
+          position: 'absolute', top: '100%', left: 0, marginTop: 4,
+          background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 8,
+          boxShadow: '0 4px 12px rgba(0,0,0,.1)', zIndex: 200,
+          minWidth: 180, maxHeight: 240, overflowY: 'auto',
+          padding: 4,
+        }}>
+          {options.map(o => (
+            <button
+              key={o.key}
+              onClick={() => { onChange(o.key); setOpen(false); }}
+              style={{
+                display: 'block', width: '100%', textAlign: 'left',
+                padding: '6px 10px', fontSize: 12, fontWeight: value === o.key ? 600 : 400,
+                color: value === o.key ? '#2563EB' : '#334155',
+                background: value === o.key ? '#EFF6FF' : 'transparent',
+                border: 'none', borderRadius: 4, cursor: 'pointer',
+              }}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 const Toolbar: React.FC<ToolbarProps> = ({
   activeView, onViewChange, roleFilter, onRoleFilterChange,
   onAiClick, groupBy, onGroupByChange,
+  releaseOptions = [], projectOptions = [],
+  selectedRelease = 'all', onReleaseChange,
+  selectedProject = 'all', onProjectChange,
 }) => {
   const tabStyle = (active: boolean): React.CSSProperties => ({
     padding: '6px 14px', fontSize: 12, fontWeight: active ? 600 : 500,
@@ -38,11 +110,15 @@ const Toolbar: React.FC<ToolbarProps> = ({
     transition: 'all 150ms',
   });
 
-  const filterBtnStyle: React.CSSProperties = {
-    padding: '5px 12px', fontSize: 11.5, fontWeight: 500,
-    color: '#475569', background: '#FFFFFF',
-    border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
-  };
+  const releaseDropdownOptions = [
+    { key: 'all', label: 'All' },
+    ...releaseOptions.map(r => ({ key: r, label: r })),
+  ];
+
+  const projectDropdownOptions = [
+    { key: 'all', label: 'All' },
+    ...projectOptions.map(p => ({ key: p.key, label: p.name })),
+  ];
 
   return (
     <div
@@ -76,11 +152,35 @@ const Toolbar: React.FC<ToolbarProps> = ({
 
       <div style={{ width: 1, height: 24, background: '#E2E8F0' }} />
 
-      <button style={filterBtnStyle} aria-label="Release filter">Release: R2026.1</button>
-      <button style={filterBtnStyle} aria-label="Project filter">Project: All</button>
-      <button style={filterBtnStyle} aria-label="Hub filter">Hub: All</button>
+      {/* Dynamic Filters */}
+      <FilterDropdown
+        label="Release"
+        value={selectedRelease}
+        options={releaseDropdownOptions}
+        onChange={onReleaseChange || (() => {})}
+      />
+      <FilterDropdown
+        label="Project"
+        value={selectedProject}
+        options={projectDropdownOptions}
+        onChange={onProjectChange || (() => {})}
+      />
       <button
-        style={filterBtnStyle}
+        style={{
+          padding: '5px 12px', fontSize: 11.5, fontWeight: 500,
+          color: '#475569', background: '#FFFFFF',
+          border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
+        }}
+        aria-label="Hub filter"
+      >
+        Hub: ProjectHub
+      </button>
+      <button
+        style={{
+          padding: '5px 12px', fontSize: 11.5, fontWeight: 500,
+          color: '#475569', background: '#FFFFFF',
+          border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
+        }}
         aria-label="Group by toggle"
         onClick={() => onGroupByChange(groupBy === 'status' ? 'hub' : 'status')}
       >
