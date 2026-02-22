@@ -88,7 +88,7 @@ export default function ProjectDashboardPage() {
           <>
             {/* Header Card with Release Pills */}
             <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 10, marginBottom: 10, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,.08)' }}>
-              <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                   <div style={{ width: 34, height: 34, borderRadius: 8, background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: 14, fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>{initials}</div>
                   <div>
@@ -103,7 +103,7 @@ export default function ProjectDashboardPage() {
                     </div>
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                   <DensityToggle value={density} onChange={setDensity} />
                   <ReleaseDropdown projectId={projectId} />
                   <AIIntelligenceButton label="Intelligence" onClick={openIntelligence} />
@@ -114,38 +114,42 @@ export default function ProjectDashboardPage() {
               </div>
               {/* Release pills row inside header */}
               {selectedReleaseIds.length > 0 && (
-                <div style={{ borderTop: '1px solid #F1F5F9', padding: '8px 20px', display: 'flex', alignItems: 'center', gap: 6, background: '#FAFBFC' }}>
-                  {selectedReleaseIds.map(id => (
-                    <span key={id} style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 6,
-                      fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 8,
-                      background: '#FFFFFF', border: '1px solid #E2E8F0',
-                      boxShadow: '0 1px 2px rgba(0,0,0,.04)',
-                    }}>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", color: '#0F766E', fontWeight: 700 }}>{releaseMap[id] || id.slice(0, 8)}</span>
-                    </span>
-                  ))}
+                <div style={{ borderTop: '1px solid #F1F5F9', padding: '8px 20px', display: 'flex', alignItems: 'center', gap: 6, background: '#FAFBFC', flexWrap: 'wrap' }}>
+                  {selectedReleaseIds.map(id => {
+                    const label = releaseMap[id];
+                    if (!label) return null; // Don't show pills for releases without names
+                    return (
+                      <span key={id} style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 6,
+                        fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 8,
+                        background: '#FFFFFF', border: '1px solid #E2E8F0',
+                        boxShadow: '0 1px 2px rgba(0,0,0,.04)',
+                      }}>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: '#0F766E', fontWeight: 700 }}>{label}</span>
+                      </span>
+                    );
+                  })}
                 </div>
               )}
             </div>
 
             {/* Widget Grid */}
             <div className="ph-widget-stagger" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))', gap: 10 }}>
                 <KeyMilestones projectId={projectId} onConfigOpen={() => setMilestoneConfigOpen(true)} releaseMap={releaseMap} />
                 <LatestInProduction projectId={projectId} releaseMap={releaseMap} />
               </div>
-              <div className="ph-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: 10 }}>
                 <ItemsByStatus projectId={projectId} />
                 <OverdueItems projectId={projectId} releaseMap={releaseMap} />
                 <OnHoldItems projectId={projectId} releaseMap={releaseMap} />
               </div>
-              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))', gap: 10 }}>
                 <ProductionIncidents projectId={projectId} releaseMap={releaseMap} />
                 <QADefects projectId={projectId} releaseMap={releaseMap} />
               </div>
               <TimeInStatus projectId={projectId} releaseMap={releaseMap} />
-              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))', gap: 10 }}>
                 <TeamWorkload projectId={projectId} />
                 <RecentActivity projectId={projectId} />
               </div>
