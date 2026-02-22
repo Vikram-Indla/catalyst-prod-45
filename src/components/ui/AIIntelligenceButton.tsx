@@ -21,27 +21,25 @@ export function AIIntelligenceButton({
     <button
       onClick={onClick}
       className={className}
-      title={label}
       style={{
-        background: isActive ? '#EDE9FE' : '#F5F3FF',
+        background: isActive ? '#F5F3FF' : '#FFFFFF',
         color: '#7C3AED',
         border: '1px solid #DDD6FE',
-        borderRadius: '50%',
-        width: 34,
-        height: 34,
-        padding: 0,
-        fontSize: '15px',
-        fontWeight: 800,
+        borderRadius: '8px',
+        padding: '7px 14px',
+        fontSize: '12px',
+        fontWeight: 600,
         cursor: 'pointer',
         display: 'inline-flex',
         alignItems: 'center',
-        justifyContent: 'center',
+        gap: '5px',
         transition: 'background 150ms, border-color 150ms',
       }}
-      onMouseEnter={e => { e.currentTarget.style.background = '#EDE9FE'; e.currentTarget.style.borderColor = '#C4B5FD'; }}
-      onMouseLeave={e => { e.currentTarget.style.background = isActive ? '#EDE9FE' : '#F5F3FF'; e.currentTarget.style.borderColor = '#DDD6FE'; }}
+      onMouseEnter={e => { e.currentTarget.style.background = '#F5F3FF'; e.currentTarget.style.borderColor = '#C4B5FD'; }}
+      onMouseLeave={e => { e.currentTarget.style.background = isActive ? '#F5F3FF' : '#FFFFFF'; e.currentTarget.style.borderColor = '#DDD6FE'; }}
     >
-      ✦
+      <span style={{ fontSize: '11px', fontWeight: 800 }}>✦</span>
+      {label}
     </button>
   );
 }
