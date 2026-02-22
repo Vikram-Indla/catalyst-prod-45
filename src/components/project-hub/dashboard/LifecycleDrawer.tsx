@@ -1,0 +1,94 @@
+/**
+ * LifecycleDrawer — Vertical timeline for a work item's status transitions
+ */
+import { useEffect } from 'react';
+import { X, Clock } from 'lucide-react';
+import StatusBadge, { getStatusColor } from './StatusBadge';
+import { useLifecycle } from '@/hooks/useProjectDashboard';
+import { useDashboardStore } from './useDashboardStore';
+import { format } from 'date-fns';
+
+const DOT_COLORS: Record<string, string> = { gray: '#94A3B8', blue: '#2563EB', green: '#16A34A' };
+
+export default function LifecycleDrawer() {
+  const { activeDrawer, drawerPayload, closeDrawer } = useDashboardStore();
+  const open = activeDrawer === 'lifecycle';
+  const { data, isLoading } = useLifecycle(open ? drawerPayload.workItemId : undefined);
+
+  useEffect(() => {
+    if (!open) return;
+    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') closeDrawer(); };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  }, [open, closeDrawer]);
+
+  if (!open) return null;
+
+  const transitions = data ?? [];
+  let totalDays = 0;
+  transitions.forEach((t: any, i: number) => {
+    const next = transitions[i + 1];
+    const start = new Date(t.changed_at).getTime();
+    const end = next ? new Date(next.changed_at).getTime() : Date.now();
+    totalDays += (end - start) / 86400000;
+  });
+
+  return (
+    <>
+      <div onClick={closeDrawer} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.15)', zIndex: 200 }} />
+      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 500, background: '#FFFFFF', zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,.08)', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Clock size={16} color="#2563EB" />
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}>
+              Lifecycle Timeline
+            </span>
+          </div>
+          <button onClick={closeDrawer} style={{ width: 32, height: 32, borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <X size={16} color="#94A3B8" />
+          </button>
+        </div>
+
+        <div style={{ padding: '12px 20px', borderBottom: '1px solid #F1F5F9', display: 'flex', gap: 8 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: '#64748B', background: '#F1F5F9', padding: '3px 8px', borderRadius: 6 }}>
+            Total cycle: {Math.round(totalDays)}d
+          </span>
+        </div>
+
+        <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
+          {isLoading ? (
+            <div style={{ textAlign: 'center', fontSize: 12, color: '#94A3B8', padding: 40 }}>Loading...</div>
+          ) : transitions.length === 0 ? (
+            <div style={{ textAlign: 'center', fontSize: 12, color: '#94A3B8', padding: 40 }}>No transitions</div>
+          ) : (
+            transitions.map((t: any, i: number) => {
+              const color = getStatusColor(t.to_status);
+              const dotColor = DOT_COLORS[color];
+              const next = transitions[i + 1];
+              const start = new Date(t.changed_at).getTime();
+              const end = next ? new Date(next.changed_at).getTime() : Date.now();
+              const dur = Math.round((end - start) / 86400000);
+              return (
+                <div key={t.id} style={{ display: 'flex', gap: 12, marginBottom: 0 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 20 }}>
+                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: dotColor, flexShrink: 0, marginTop: 4 }} />
+                    {i < transitions.length - 1 && <div style={{ width: 2, flex: 1, background: '#F1F5F9', minHeight: 24 }} />}
+                  </div>
+                  <div style={{ paddingBottom: 16, flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <StatusBadge status={t.to_status} />
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: '#0F172A' }}>{dur}d</span>
+                    </div>
+                    <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 4 }}>
+                      {format(new Date(t.changed_at), 'MMM d, yyyy')} · Changed by {t.changed_by_name || 'System'}
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
