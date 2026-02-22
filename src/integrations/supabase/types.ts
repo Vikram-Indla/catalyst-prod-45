@@ -879,6 +879,13 @@ export type Database = {
             foreignKeyName: "caty_analytics_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "caty_analytics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -1003,6 +1010,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_project_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "caty_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "caty_conversations_user_id_fkey"
@@ -1253,6 +1267,13 @@ export type Database = {
             foreignKeyName: "caty_suggestions_processed_by_fkey"
             columns: ["processed_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "caty_suggestions_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -1457,6 +1478,13 @@ export type Database = {
             foreignKeyName: "cc_activity_log_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "cc_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -1631,6 +1659,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "change_numbers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "change_numbers_created_by_fkey"
             columns: ["created_by"]
@@ -2077,6 +2112,13 @@ export type Database = {
             foreignKeyName: "dashboard_widgets_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "dashboard_widgets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -2176,6 +2218,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "test_data_sets"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_access_audit_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "data_access_audit_user_id_fkey"
@@ -2294,6 +2343,13 @@ export type Database = {
             foreignKeyName: "defect_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "defect_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -2387,6 +2443,13 @@ export type Database = {
           old_value?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "defect_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "defect_audit_log_actor_id_fkey"
             columns: ["actor_id"]
@@ -2489,6 +2552,13 @@ export type Database = {
             foreignKeyName: "defect_column_preferences_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "defect_column_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -2579,6 +2649,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "defect_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "defect_comments_author_id_fkey"
             columns: ["author_id"]
@@ -2680,6 +2757,13 @@ export type Database = {
           old_value?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "defect_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "defect_history_changed_by_fkey"
             columns: ["changed_by"]
@@ -2803,6 +2887,13 @@ export type Database = {
             foreignKeyName: "defect_links_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -2900,6 +2991,13 @@ export type Database = {
           relationship_type?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "defect_work_item_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "defect_work_item_links_created_by_fkey"
             columns: ["created_by"]
@@ -3095,6 +3193,13 @@ export type Database = {
             foreignKeyName: "defects_assignee_id_fkey"
             columns: ["assignee_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "defects_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -3193,6 +3298,13 @@ export type Database = {
             foreignKeyName: "defects_reporter_id_fkey"
             columns: ["reporter_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "defects_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -3251,6 +3363,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "defects_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "defects_resolved_by_fkey"
@@ -3380,6 +3499,13 @@ export type Database = {
             foreignKeyName: "deleted_items_log_deleted_by_fkey"
             columns: ["deleted_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -3438,6 +3564,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "deleted_items_log_restored_by_fkey"
+            columns: ["restored_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "deleted_items_log_restored_by_fkey"
@@ -6574,6 +6707,13 @@ export type Database = {
             foreignKeyName: "es_strategic_themes_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -6766,6 +6906,13 @@ export type Database = {
             foreignKeyName: "es_theme_groups_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -6824,6 +6971,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "es_theme_groups_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "es_theme_groups_updated_by_fkey"
@@ -6919,6 +7073,13 @@ export type Database = {
           target_theme_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "es_theme_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "es_theme_links_created_by_fkey"
             columns: ["created_by"]
@@ -7122,6 +7283,13 @@ export type Database = {
             foreignKeyName: "es_theme_milestones_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -7222,6 +7390,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_id"]
+          },
+          {
+            foreignKeyName: "es_theme_milestones_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "es_theme_milestones_updated_by_fkey"
@@ -7484,6 +7659,13 @@ export type Database = {
             foreignKeyName: "execution_results_executed_by_fkey"
             columns: ["executed_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "execution_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -7581,6 +7763,13 @@ export type Database = {
           id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "execution_run_audit_logs_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "execution_run_audit_logs_actor_id_fkey"
             columns: ["actor_id"]
@@ -7709,6 +7898,13 @@ export type Database = {
             foreignKeyName: "feature_contributors_added_by_fkey"
             columns: ["added_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "feature_contributors_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -7774,6 +7970,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "features"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feature_contributors_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "feature_contributors_user_id_fkey"
@@ -8196,6 +8399,13 @@ export type Database = {
             foreignKeyName: "features_assignee_id_fkey"
             columns: ["assignee_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "features_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -8476,6 +8686,13 @@ export type Database = {
           snapshot_data?: Json | null
         }
         Relationships: [
+          {
+            foreignKeyName: "generated_reports_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "generated_reports_generated_by_fkey"
             columns: ["generated_by"]
@@ -10732,6 +10949,13 @@ export type Database = {
             foreignKeyName: "injira_ai_suggestions_accepted_by_fkey"
             columns: ["accepted_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "injira_ai_suggestions_accepted_by_fkey"
+            columns: ["accepted_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -10857,6 +11081,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "injira_automation_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "injira_automation_rules_created_by_fkey"
             columns: ["created_by"]
@@ -10999,6 +11230,13 @@ export type Database = {
           tenant_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "injira_changelog_groups_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "injira_changelog_groups_author_id_fkey"
             columns: ["author_id"]
@@ -11289,6 +11527,13 @@ export type Database = {
           total_items?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "injira_import_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "injira_import_jobs_created_by_fkey"
             columns: ["created_by"]
@@ -11698,6 +11943,13 @@ export type Database = {
             foreignKeyName: "injira_issue_versions_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "injira_issue_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -11905,6 +12157,13 @@ export type Database = {
             foreignKeyName: "injira_issues_assignee_id_fkey"
             columns: ["assignee_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -11963,6 +12222,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "injira_issues_created_by_fkey"
@@ -12066,6 +12332,13 @@ export type Database = {
             foreignKeyName: "injira_issues_reporter_id_fkey"
             columns: ["reporter_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "injira_issues_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -12145,6 +12418,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "injira_tenants"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_issues_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "injira_issues_updated_by_fkey"
@@ -12340,6 +12620,13 @@ export type Database = {
             foreignKeyName: "injira_role_assignments_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "injira_role_assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -12412,6 +12699,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "injira_tenants"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "injira_role_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "injira_role_assignments_user_id_fkey"
@@ -13634,6 +13928,13 @@ export type Database = {
             foreignKeyName: "jira_sync_history_triggered_by_fkey"
             columns: ["triggered_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "jira_sync_history_triggered_by_fkey"
+            columns: ["triggered_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -13799,6 +14100,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_project_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jira_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "jira_user_preferences_user_id_fkey"
@@ -14802,6 +15110,13 @@ export type Database = {
             foreignKeyName: "key_result_checkins_created_by_user_id_fkey"
             columns: ["created_by_user_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "key_result_checkins_created_by_user_id_fkey"
+            columns: ["created_by_user_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -15009,6 +15324,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "objectives"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "key_results_v2_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "key_results_v2_owner_user_id_fkey"
@@ -15321,6 +15643,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "masking_rules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "masking_rules_created_by_fkey"
             columns: ["created_by"]
@@ -15676,6 +16005,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "mock_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "mock_runs_created_by_fkey"
             columns: ["created_by"]
@@ -17046,6 +17382,13 @@ export type Database = {
             foreignKeyName: "ph_acceptance_criteria_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "ph_overdue_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_acceptance_criteria_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "ph_work_items"
             referencedColumns: ["id"]
           },
@@ -17111,6 +17454,13 @@ export type Database = {
             foreignKeyName: "ph_activity_log_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "ph_overdue_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_activity_log_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "ph_work_items"
             referencedColumns: ["id"]
           },
@@ -17169,6 +17519,13 @@ export type Database = {
           work_item_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "ph_attachments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_overdue_view"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "ph_attachments_work_item_id_fkey"
             columns: ["work_item_id"]
@@ -17303,6 +17660,13 @@ export type Database = {
             foreignKeyName: "wh_comments_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "ph_overdue_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_comments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "ph_work_items"
             referencedColumns: ["id"]
           },
@@ -17381,6 +17745,359 @@ export type Database = {
           value?: Json
         }
         Relationships: []
+      }
+      ph_dashboard_activity: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          item_key: string | null
+          item_type: string | null
+          project_id: string
+          release_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          item_key?: string | null
+          item_type?: string | null
+          project_id: string
+          release_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          item_key?: string | null
+          item_type?: string | null
+          project_id?: string
+          release_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_dashboard_activity_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "ph_releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_dashboard_activity_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_release_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_dashboard_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_dashboard_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_dashboard_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_dashboard_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_dashboard_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_dashboard_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_dashboard_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_dashboard_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_dashboard_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_dashboard_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+        ]
+      }
+      ph_defects: {
+        Row: {
+          assigned_to: string | null
+          created_at: string | null
+          id: string
+          key: string
+          project_id: string
+          related_item_id: string | null
+          release_id: string | null
+          reported_by: string | null
+          severity: string
+          status: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string | null
+          id?: string
+          key: string
+          project_id: string
+          related_item_id?: string | null
+          release_id?: string | null
+          reported_by?: string | null
+          severity: string
+          status?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string | null
+          id?: string
+          key?: string
+          project_id?: string
+          related_item_id?: string | null
+          release_id?: string | null
+          reported_by?: string | null
+          severity?: string
+          status?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_defects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_defects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_defects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_defects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_defects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_defects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_defects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_defects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_defects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_defects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_defects_related_item_id_fkey"
+            columns: ["related_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_overdue_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_defects_related_item_id_fkey"
+            columns: ["related_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_defects_related_item_id_fkey"
+            columns: ["related_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "ph_defects_related_item_id_fkey"
+            columns: ["related_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
+          },
+          {
+            foreignKeyName: "ph_defects_related_item_id_fkey"
+            columns: ["related_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_defects_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "ph_releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_defects_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_release_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_defects_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_defects_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_defects_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_defects_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_defects_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_defects_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_defects_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_defects_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_defects_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_defects_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+        ]
       }
       ph_departments: {
         Row: {
@@ -18118,6 +18835,206 @@ export type Database = {
           },
         ]
       }
+      ph_incidents: {
+        Row: {
+          assigned_to: string | null
+          created_at: string | null
+          id: string
+          key: string
+          priority: string
+          project_id: string
+          release_id: string | null
+          reported_by: string | null
+          resolved_at: string | null
+          status: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string | null
+          id?: string
+          key: string
+          priority: string
+          project_id: string
+          release_id?: string | null
+          reported_by?: string | null
+          resolved_at?: string | null
+          status?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string | null
+          id?: string
+          key?: string
+          priority?: string
+          project_id?: string
+          release_id?: string | null
+          reported_by?: string | null
+          resolved_at?: string | null
+          status?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_incidents_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "ph_releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_release_progress"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_incidents_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+        ]
+      }
       ph_initiative_attachments: {
         Row: {
           category: string
@@ -18176,6 +19093,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["initiative_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "ph_initiative_attachments_uploaded_by_fkey"
@@ -18344,6 +19268,13 @@ export type Database = {
             foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_budget_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -18464,6 +19395,13 @@ export type Database = {
           url?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "ph_initiative_links_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "ph_initiative_links_added_by_fkey"
             columns: ["added_by"]
@@ -18616,6 +19554,13 @@ export type Database = {
             foreignKeyName: "ph_initiative_milestones_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -18695,6 +19640,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["initiative_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "ph_initiative_milestones_owner_id_fkey"
@@ -18833,6 +19785,13 @@ export type Database = {
             foreignKeyName: "ph_initiative_risks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -18912,6 +19871,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["initiative_id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "ph_initiative_risks_owner_id_fkey"
@@ -19146,6 +20112,13 @@ export type Database = {
             foreignKeyName: "ph_issue_links_source_id_fkey"
             columns: ["source_id"]
             isOneToOne: false
+            referencedRelation: "ph_overdue_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_issue_links_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
             referencedRelation: "ph_work_items"
             referencedColumns: ["id"]
           },
@@ -19168,6 +20141,13 @@ export type Database = {
             columns: ["source_id"]
             isOneToOne: false
             referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_issue_links_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "ph_overdue_view"
             referencedColumns: ["id"]
           },
           {
@@ -19620,6 +20600,101 @@ export type Database = {
           },
         ]
       }
+      ph_milestone_config: {
+        Row: {
+          id: string
+          project_id: string
+          statuses: string[]
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          statuses?: string[]
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          project_id?: string
+          statuses?: string[]
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_milestone_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_milestone_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_milestone_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_milestone_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_milestone_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_milestone_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_milestone_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_milestone_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_milestone_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_milestone_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+        ]
+      }
       ph_project_members: {
         Row: {
           created_at: string | null
@@ -19814,6 +20889,13 @@ export type Database = {
             foreignKeyName: "wh_resource_assignments_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "ph_overdue_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_resource_assignments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "ph_work_items"
             referencedColumns: ["id"]
           },
@@ -19956,6 +21038,139 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      ph_status_transitions: {
+        Row: {
+          changed_at: string | null
+          changed_by: string | null
+          from_status: string | null
+          id: string
+          to_status: string
+          work_item_id: string
+        }
+        Insert: {
+          changed_at?: string | null
+          changed_by?: string | null
+          from_status?: string | null
+          id?: string
+          to_status: string
+          work_item_id: string
+        }
+        Update: {
+          changed_at?: string | null
+          changed_by?: string | null
+          from_status?: string | null
+          id?: string
+          to_status?: string
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_status_transitions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_overdue_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ph_sync_log: {
         Row: {
@@ -20100,6 +21315,101 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      ph_tis_config: {
+        Row: {
+          id: string
+          project_id: string
+          updated_at: string | null
+          updated_by: string | null
+          visible_statuses: string[]
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          updated_at?: string | null
+          updated_by?: string | null
+          visible_statuses?: string[]
+        }
+        Update: {
+          id?: string
+          project_id?: string
+          updated_at?: string | null
+          updated_by?: string | null
+          visible_statuses?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_tis_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_tis_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_tis_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_tis_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_tis_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_tis_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_tis_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_tis_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_tis_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_tis_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+        ]
       }
       ph_type_field_layouts: {
         Row: {
@@ -20313,6 +21623,13 @@ export type Database = {
             foreignKeyName: "ph_watchers_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "ph_overdue_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_watchers_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "ph_work_items"
             referencedColumns: ["id"]
           },
@@ -20364,6 +21681,13 @@ export type Database = {
             foreignKeyName: "ph_work_item_components_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "ph_overdue_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_components_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "ph_work_items"
             referencedColumns: ["id"]
           },
@@ -20409,6 +21733,13 @@ export type Database = {
             columns: ["label_id"]
             isOneToOne: false
             referencedRelation: "ph_labels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_labels_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_overdue_view"
             referencedColumns: ["id"]
           },
           {
@@ -20637,6 +21968,13 @@ export type Database = {
             columns: ["jira_project_id"]
             isOneToOne: false
             referencedRelation: "ph_jira_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "ph_overdue_view"
             referencedColumns: ["id"]
           },
           {
@@ -20880,6 +22218,13 @@ export type Database = {
             foreignKeyName: "plan_team_members_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "plan_team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -20967,6 +22312,13 @@ export type Database = {
           test_case_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "plan_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "plan_test_cases_assigned_to_fkey"
             columns: ["assigned_to"]
@@ -21090,6 +22442,13 @@ export type Database = {
             foreignKeyName: "planhub_activity_log_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "planhub_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -21187,6 +22546,13 @@ export type Database = {
             foreignKeyName: "planhub_ai_config_updated_by_fkey"
             columns: ["updated_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "planhub_ai_config_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -21274,6 +22640,13 @@ export type Database = {
           task_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "planhub_comments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "planhub_comments_created_by_fkey"
             columns: ["created_by"]
@@ -21434,6 +22807,13 @@ export type Database = {
             foreignKeyName: "planhub_plans_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -21492,6 +22872,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_plans_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "planhub_plans_lead_id_fkey"
@@ -21622,6 +23009,13 @@ export type Database = {
             foreignKeyName: "planhub_resources_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "planhub_resources_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -21735,6 +23129,13 @@ export type Database = {
           value?: Json
         }
         Relationships: [
+          {
+            foreignKeyName: "planhub_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "planhub_settings_updated_by_fkey"
             columns: ["updated_by"]
@@ -21860,6 +23261,13 @@ export type Database = {
             foreignKeyName: "planhub_tasks_assignee_id_fkey"
             columns: ["assignee_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "planhub_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -21977,6 +23385,13 @@ export type Database = {
             foreignKeyName: "planhub_templates_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "planhub_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -22065,6 +23480,13 @@ export type Database = {
             foreignKeyName: "planhub_user_roles_granted_by_fkey"
             columns: ["granted_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -22123,6 +23545,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "planhub_user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "planhub_user_roles_user_id_fkey"
@@ -22221,6 +23650,13 @@ export type Database = {
           tag?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "planhub_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "planhub_versions_created_by_fkey"
             columns: ["created_by"]
@@ -22356,6 +23792,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "planner_tasks"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "planner_activity_log_user_id_fkey"
@@ -22564,6 +24007,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "planner_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "planner_saved_filters_user_id_fkey"
             columns: ["user_id"]
@@ -22911,6 +24361,13 @@ export type Database = {
             foreignKeyName: "planner_task_lead_notes_author_id_fkey"
             columns: ["author_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "planner_task_lead_notes_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -23069,6 +24526,13 @@ export type Database = {
             foreignKeyName: "planner_task_mentions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "planner_task_mentions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -23184,6 +24648,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "planner_tasks"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "planner_task_watchers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "planner_task_watchers_user_id_fkey"
@@ -23349,6 +24820,13 @@ export type Database = {
             foreignKeyName: "planner_tasks_assignee_id_fkey"
             columns: ["assignee_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -23407,6 +24885,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "planner_tasks_created_by_fkey"
@@ -23510,6 +24995,13 @@ export type Database = {
             foreignKeyName: "planner_tasks_reporter_id_fkey"
             columns: ["reporter_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -23568,6 +25060,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "planner_tasks_reviewer_id_fkey"
@@ -24585,6 +26084,13 @@ export type Database = {
             foreignKeyName: "products_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "products_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -24861,6 +26367,13 @@ export type Database = {
             foreignKeyName: "portfolio_members_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "portfolio_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -25114,6 +26627,13 @@ export type Database = {
             foreignKeyName: "project_audit_logs_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "project_audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -25208,6 +26728,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_project_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_favorites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "project_favorites_user_id_fkey"
@@ -25379,6 +26906,13 @@ export type Database = {
             foreignKeyName: "project_integrations_connected_by_fkey"
             columns: ["connected_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "project_integrations_connected_by_fkey"
+            columns: ["connected_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -25489,6 +27023,13 @@ export type Database = {
           token?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "project_invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "project_invitations_invited_by_fkey"
             columns: ["invited_by"]
@@ -25672,6 +27213,13 @@ export type Database = {
             foreignKeyName: "program_members_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "program_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -25735,6 +27283,13 @@ export type Database = {
             foreignKeyName: "project_members_added_by_fkey"
             columns: ["added_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "project_members_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -25793,6 +27348,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "project_members_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "project_members_invited_by_fkey"
@@ -25916,6 +27478,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_project_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_notification_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "project_notification_settings_user_id_fkey"
@@ -26069,6 +27638,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_project_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_stars_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "project_stars_user_id_fkey"
@@ -26271,6 +27847,13 @@ export type Database = {
             foreignKeyName: "projects_archived_by_fkey"
             columns: ["archived_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "projects_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -26334,6 +27917,13 @@ export type Database = {
             foreignKeyName: "projects_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -26397,6 +27987,13 @@ export type Database = {
             foreignKeyName: "projects_default_assignee_id_fkey"
             columns: ["default_assignee_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "projects_default_assignee_id_fkey"
+            columns: ["default_assignee_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -26455,6 +28052,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "projects_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "projects_lead_id_fkey"
@@ -26604,6 +28208,13 @@ export type Database = {
             foreignKeyName: "ra_categories_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ra_categories_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -26743,6 +28354,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ra_categories"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ra_documents_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "ra_documents_created_by_fkey"
@@ -27265,6 +28883,13 @@ export type Database = {
             foreignKeyName: "releases_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "releases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -27323,6 +28948,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "releases_owner_id_fkey"
@@ -27405,6 +29037,13 @@ export type Database = {
             foreignKeyName: "releases_qa_lead_id_fkey"
             columns: ["qa_lead_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "releases_qa_lead_id_fkey"
+            columns: ["qa_lead_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -27463,6 +29102,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "releases_release_manager_id_fkey"
+            columns: ["release_manager_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "releases_release_manager_id_fkey"
@@ -27590,6 +29236,13 @@ export type Database = {
             foreignKeyName: "report_configurations_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "report_configurations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -27709,6 +29362,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "report_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "report_definitions_created_by_fkey"
             columns: ["created_by"]
@@ -27842,6 +29502,13 @@ export type Database = {
             foreignKeyName: "report_schedules_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "report_schedules_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -27952,6 +29619,13 @@ export type Database = {
             foreignKeyName: "report_snapshots_generated_by_fkey"
             columns: ["generated_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "report_snapshots_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -28056,6 +29730,13 @@ export type Database = {
           test_case_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "requirement_test_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "requirement_test_links_created_by_fkey"
             columns: ["created_by"]
@@ -28216,6 +29897,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "requirements_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "requirements_owner_id_fkey"
             columns: ["owner_id"]
@@ -28933,6 +30621,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "roadmap_views_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "roadmap_views_user_id_fkey"
             columns: ["user_id"]
@@ -30831,6 +32526,13 @@ export type Database = {
             foreignKeyName: "t10_activity_performed_by_fkey"
             columns: ["performed_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "t10_activity_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -30930,6 +32632,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "t10_ai_suggestions_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "t10_ai_suggestions_assignee_id_fkey"
             columns: ["assignee_id"]
@@ -31366,6 +33075,13 @@ export type Database = {
             foreignKeyName: "task_activity_actor_id_fkey"
             columns: ["actor_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "task_activity_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -31459,6 +33175,13 @@ export type Database = {
           uploaded_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "task_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "task_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
@@ -31584,6 +33307,13 @@ export type Database = {
             foreignKeyName: "task_comments_author_id_fkey"
             columns: ["author_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "task_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -31675,6 +33405,13 @@ export type Database = {
             foreignKeyName: "task_dependencies_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "task_dependencies_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -31762,6 +33499,13 @@ export type Database = {
           url?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "task_external_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "task_external_links_created_by_fkey"
             columns: ["created_by"]
@@ -32045,6 +33789,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "teams"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "team_members_user_id_fkey"
@@ -32615,6 +34366,13 @@ export type Database = {
             foreignKeyName: "test_case_activities_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "test_case_activities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -32790,6 +34548,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "defects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_case_defects_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "test_case_defects_linked_by_fkey"
@@ -33375,6 +35140,13 @@ export type Database = {
             foreignKeyName: "test_cases_deleted_by_fkey"
             columns: ["deleted_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "test_cases_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -33454,6 +35226,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_epic_stories"
             referencedColumns: ["release_id"]
+          },
+          {
+            foreignKeyName: "test_cases_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "test_cases_updated_by_fkey"
@@ -33731,6 +35510,13 @@ export type Database = {
           set_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "test_cycle_sets_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "test_cycle_sets_added_by_fkey"
             columns: ["added_by"]
@@ -34041,6 +35827,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "test_data_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "test_data_sets_created_by_fkey"
             columns: ["created_by"]
@@ -34359,6 +36152,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "test_execution_results_assigned_tester_fkey"
+            columns: ["assigned_tester"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "test_execution_results_assigned_tester_fkey"
             columns: ["assigned_tester"]
@@ -35019,6 +36819,13 @@ export type Database = {
             foreignKeyName: "test_plans_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -35360,6 +37167,13 @@ export type Database = {
             foreignKeyName: "test_step_evidence_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "test_step_evidence_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -35581,6 +37395,13 @@ export type Database = {
             foreignKeyName: "th_app_settings_updated_by_fkey"
             columns: ["updated_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "th_app_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -35707,6 +37528,13 @@ export type Database = {
           user_name?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "th_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "th_audit_log_user_id_fkey"
             columns: ["user_id"]
@@ -35841,6 +37669,13 @@ export type Database = {
             foreignKeyName: "th_cycle_test_cases_assigned_to_fkey"
             columns: ["assigned_to"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -35906,6 +37741,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "th_test_cycles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_cycle_test_cases_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "th_cycle_test_cases_executed_by_fkey"
@@ -36022,6 +37864,13 @@ export type Database = {
             foreignKeyName: "th_defect_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "th_defect_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -36109,6 +37958,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "th_defect_comments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "th_defect_comments_created_by_fkey"
             columns: ["created_by"]
@@ -36214,6 +38070,13 @@ export type Database = {
             foreignKeyName: "th_defect_history_changed_by_fkey"
             columns: ["changed_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "th_defect_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -36312,6 +38175,13 @@ export type Database = {
             foreignKeyName: "th_defect_links_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "th_defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -36403,6 +38273,13 @@ export type Database = {
           tag_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "th_defect_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "th_defect_tags_created_by_fkey"
             columns: ["created_by"]
@@ -36572,6 +38449,13 @@ export type Database = {
             foreignKeyName: "th_defects_assigned_to_fkey"
             columns: ["assigned_to"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "th_defects_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -36644,6 +38528,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_folders_with_counts"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_defects_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "th_defects_reported_by_fkey"
@@ -36746,6 +38637,13 @@ export type Database = {
             foreignKeyName: "th_entity_history_changed_by_fkey"
             columns: ["changed_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "th_entity_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -36839,6 +38737,13 @@ export type Database = {
           old_value?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "th_environment_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "th_environment_history_changed_by_fkey"
             columns: ["changed_by"]
@@ -37012,6 +38917,13 @@ export type Database = {
             foreignKeyName: "th_environments_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "th_environments_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -37116,6 +39028,13 @@ export type Database = {
             foreignKeyName: "th_execution_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "th_execution_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -37209,6 +39128,13 @@ export type Database = {
           old_status?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "th_execution_history_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "th_execution_history_changed_by_fkey"
             columns: ["changed_by"]
@@ -37343,6 +39269,13 @@ export type Database = {
           type?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "th_export_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "th_export_jobs_created_by_fkey"
             columns: ["created_by"]
@@ -37524,6 +39457,13 @@ export type Database = {
             foreignKeyName: "th_import_jobs_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "th_import_jobs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -37614,6 +39554,13 @@ export type Database = {
           type?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "th_import_mappings_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "th_import_mappings_created_by_fkey"
             columns: ["created_by"]
@@ -37754,6 +39701,13 @@ export type Database = {
             foreignKeyName: "th_report_templates_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "th_report_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -37888,6 +39842,13 @@ export type Database = {
             foreignKeyName: "th_reports_generated_by_fkey"
             columns: ["generated_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "th_reports_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -37979,6 +39940,13 @@ export type Database = {
           tag_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "th_requirement_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "th_requirement_tags_created_by_fkey"
             columns: ["created_by"]
@@ -38081,6 +40049,13 @@ export type Database = {
           test_case_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "th_requirement_tests_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "th_requirement_tests_created_by_fkey"
             columns: ["created_by"]
@@ -38226,6 +40201,13 @@ export type Database = {
             foreignKeyName: "th_requirements_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "th_requirements_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -38316,6 +40298,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "th_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "th_saved_filters_user_id_fkey"
             columns: ["user_id"]
@@ -38425,6 +40414,13 @@ export type Database = {
           template_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "th_scheduled_reports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "th_scheduled_reports_created_by_fkey"
             columns: ["created_by"]
@@ -38637,6 +40633,13 @@ export type Database = {
             foreignKeyName: "th_shared_steps_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -38695,6 +40698,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "th_shared_steps_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "th_shared_steps_updated_by_fkey"
@@ -38799,6 +40809,13 @@ export type Database = {
           test_case_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "th_step_attachments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "th_step_attachments_created_by_fkey"
             columns: ["created_by"]
@@ -38918,6 +40935,13 @@ export type Database = {
             foreignKeyName: "th_step_results_executed_by_fkey"
             columns: ["executed_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "th_step_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -39014,6 +41038,13 @@ export type Database = {
           usage_count?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "th_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "th_tags_created_by_fkey"
             columns: ["created_by"]
@@ -39185,6 +41216,13 @@ export type Database = {
           test_case_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "th_test_case_tags_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "th_test_case_tags_created_by_fkey"
             columns: ["created_by"]
@@ -39439,6 +41477,13 @@ export type Database = {
             foreignKeyName: "th_test_cycles_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -39504,6 +41549,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "th_environments"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "th_test_cycles_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "th_test_cycles_owner_id_fkey"
@@ -39703,6 +41755,13 @@ export type Database = {
             foreignKeyName: "th_test_plans_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "th_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -39843,6 +41902,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "th_user_activity_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "th_user_activity_user_id_fkey"
             columns: ["user_id"]
@@ -39988,6 +42054,13 @@ export type Database = {
           week_starts_on?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "th_user_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "th_user_preferences_user_id_fkey"
             columns: ["user_id"]
@@ -40308,6 +42381,13 @@ export type Database = {
             foreignKeyName: "tm_ai_usage_log_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_ai_usage_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -40404,6 +42484,13 @@ export type Database = {
           uploaded_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "tm_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
@@ -40507,6 +42594,13 @@ export type Database = {
           user_agent?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_audit_log_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "tm_audit_log_actor_id_fkey"
             columns: ["actor_id"]
@@ -40643,6 +42737,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_project_list"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tm_audit_logs_user_id_fkey"
@@ -40878,6 +42979,13 @@ export type Database = {
             foreignKeyName: "tm_comments_author_id_fkey"
             columns: ["author_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -40979,6 +43087,13 @@ export type Database = {
             foreignKeyName: "tm_cycle_assignments_assigned_by_fkey"
             columns: ["assigned_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -41072,6 +43187,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_tm_test_cycle_list_metrics"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_assignments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tm_cycle_assignments_user_id_fkey"
@@ -41301,6 +43423,13 @@ export type Database = {
             foreignKeyName: "tm_cycle_milestones_completed_by_fkey"
             columns: ["completed_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_milestones_completed_by_fkey"
+            columns: ["completed_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -41441,6 +43570,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
             columns: ["assigned_to"]
@@ -41590,6 +43726,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "step_result_attachments"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_defect_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tm_defect_links_created_by_fkey"
@@ -41821,6 +43964,13 @@ export type Database = {
             foreignKeyName: "tm_defects_assignee_id_fkey"
             columns: ["assignee_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_defects_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -41893,6 +44043,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_tm_traceability_summary"
             referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_defects_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tm_defects_reporter_id_fkey"
@@ -42085,6 +44242,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "tm_folders_created_by_fkey"
             columns: ["created_by"]
@@ -42457,6 +44621,13 @@ export type Database = {
             foreignKeyName: "tm_notifications_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -42586,6 +44757,13 @@ export type Database = {
             foreignKeyName: "tm_plan_approvals_approver_id_fkey"
             columns: ["approver_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -42651,6 +44829,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_test_plans"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_plan_approvals_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tm_plan_approvals_requested_by_fkey"
@@ -42794,6 +44979,13 @@ export type Database = {
             foreignKeyName: "tm_plan_scope_added_by_fkey"
             columns: ["added_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_scope_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -42892,6 +45084,13 @@ export type Database = {
             foreignKeyName: "tm_plan_team_assigned_by_fkey"
             columns: ["assigned_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -42957,6 +45156,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_test_plans"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_plan_team_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tm_plan_team_user_id_fkey"
@@ -43052,6 +45258,13 @@ export type Database = {
           version?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_plan_versions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "tm_plan_versions_created_by_fkey"
             columns: ["created_by"]
@@ -43159,6 +45372,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_projects_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "tm_projects_created_by_fkey"
             columns: ["created_by"]
@@ -43293,6 +45513,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_tm_test_cycle_list_metrics"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_release_gate_results_evaluated_by_fkey"
+            columns: ["evaluated_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tm_release_gate_results_evaluated_by_fkey"
@@ -43446,6 +45673,13 @@ export type Database = {
             foreignKeyName: "tm_release_quality_gates_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_release_quality_gates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -43581,6 +45815,13 @@ export type Database = {
             foreignKeyName: "tm_release_readiness_approved_by_fkey"
             columns: ["approved_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -43639,6 +45880,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_readiness_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tm_release_readiness_created_by_fkey"
@@ -43781,6 +46029,13 @@ export type Database = {
             foreignKeyName: "tm_release_signoffs_requested_by_fkey"
             columns: ["requested_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -43839,6 +46094,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_release_signoffs_stakeholder_id_fkey"
+            columns: ["stakeholder_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tm_release_signoffs_stakeholder_id_fkey"
@@ -43952,6 +46214,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_requirement_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "tm_requirement_links_created_by_fkey"
             columns: ["created_by"]
@@ -44103,6 +46372,13 @@ export type Database = {
             foreignKeyName: "tm_run_case_assignments_assigned_tester_id_fkey"
             columns: ["assigned_tester_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_run_case_assignments_assigned_tester_id_fkey"
+            columns: ["assigned_tester_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -44233,6 +46509,13 @@ export type Database = {
             foreignKeyName: "tm_run_templates_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_run_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -44359,6 +46642,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_tm_traceability_summary"
             referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tm_saved_filters_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tm_saved_filters_user_id_fkey"
@@ -44511,6 +46801,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_scheduled_runs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "tm_scheduled_runs_created_by_fkey"
             columns: ["created_by"]
@@ -44694,6 +46991,13 @@ export type Database = {
             foreignKeyName: "tm_signoff_templates_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_signoff_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -44793,6 +47097,13 @@ export type Database = {
           usage_count?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_step_definitions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "tm_step_definitions_created_by_fkey"
             columns: ["created_by"]
@@ -44916,6 +47227,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_step_results_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "tm_step_results_executed_by_fkey"
             columns: ["executed_by"]
@@ -45088,6 +47406,13 @@ export type Database = {
             foreignKeyName: "tm_test_attachments_uploaded_by_fkey"
             columns: ["uploaded_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -45175,6 +47500,13 @@ export type Database = {
           test_case_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_test_case_links_linked_by_fkey"
+            columns: ["linked_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "tm_test_case_links_linked_by_fkey"
             columns: ["linked_by"]
@@ -45303,6 +47635,13 @@ export type Database = {
             foreignKeyName: "tm_test_case_templates_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_case_templates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -45413,6 +47752,13 @@ export type Database = {
           version_number?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_test_case_versions_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "tm_test_case_versions_changed_by_fkey"
             columns: ["changed_by"]
@@ -45618,6 +47964,13 @@ export type Database = {
             foreignKeyName: "tm_test_cases_assigned_to_fkey"
             columns: ["assigned_to"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -45697,6 +48050,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_tm_test_cases_full"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tm_test_cases_created_by_fkey"
@@ -45927,6 +48287,13 @@ export type Database = {
             foreignKeyName: "tm_test_cycles_assigned_to_fkey"
             columns: ["assigned_to"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -45985,6 +48352,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tm_test_cycles_created_by_fkey"
@@ -46119,6 +48493,13 @@ export type Database = {
           test_plan_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_test_plan_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "tm_test_plan_cases_added_by_fkey"
             columns: ["added_by"]
@@ -46331,6 +48712,13 @@ export type Database = {
             foreignKeyName: "tm_test_plans_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -46389,6 +48777,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_plans_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tm_test_plans_owner_id_fkey"
@@ -46583,6 +48978,13 @@ export type Database = {
             foreignKeyName: "tm_test_runs_executed_by_fkey"
             columns: ["executed_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_runs_executed_by_fkey"
+            columns: ["executed_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -46677,6 +49079,13 @@ export type Database = {
           test_set_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_test_set_cases_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "tm_test_set_cases_added_by_fkey"
             columns: ["added_by"]
@@ -46817,6 +49226,13 @@ export type Database = {
             foreignKeyName: "tm_test_sets_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_sets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -46875,6 +49291,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_sets_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tm_test_sets_owner_id_fkey"
@@ -47075,6 +49498,13 @@ export type Database = {
             foreignKeyName: "tm_user_presence_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_user_presence_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -47166,6 +49596,13 @@ export type Database = {
             foreignKeyName: "tm_user_roles_assigned_by_fkey"
             columns: ["assigned_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_user_roles_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -47245,6 +49682,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_roles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tm_user_roles_user_id_fkey"
@@ -47395,6 +49839,13 @@ export type Database = {
             foreignKeyName: "transition_approvers_approver_id_fkey"
             columns: ["approver_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "transition_approvers_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -47453,6 +49904,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "transition_approvers_requested_by_fkey"
+            columns: ["requested_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "transition_approvers_requested_by_fkey"
@@ -47740,6 +50198,13 @@ export type Database = {
             foreignKeyName: "user_bulk_update_audit_triggered_by_fkey"
             columns: ["triggered_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_bulk_update_audit_triggered_by_fkey"
+            columns: ["triggered_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -47952,6 +50417,13 @@ export type Database = {
             foreignKeyName: "user_field_change_log_changed_by_fkey"
             columns: ["changed_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_field_change_log_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -48010,6 +50482,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "user_field_change_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "user_field_change_log_user_id_fkey"
@@ -48342,6 +50821,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "user_notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "user_notifications_actor_id_fkey"
             columns: ["actor_id"]
@@ -48874,6 +51360,13 @@ export type Database = {
           url?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "webhooks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "webhooks_created_by_fkey"
             columns: ["created_by"]
@@ -49729,6 +52222,13 @@ export type Database = {
             foreignKeyName: "work_manager_tasks_assignee_id_fkey"
             columns: ["assignee_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -49792,6 +52292,13 @@ export type Database = {
             foreignKeyName: "work_manager_tasks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -49850,6 +52357,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "work_manager_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "work_manager_tasks_reporter_id_fkey"
@@ -50413,6 +52927,13 @@ export type Database = {
             foreignKeyName: "es_strategic_themes_owner_id_fkey"
             columns: ["owner_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "es_strategic_themes_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -50908,6 +53429,97 @@ export type Database = {
           },
         ]
       }
+      ph_items_by_status_view: {
+        Row: {
+          item_count: number | null
+          release_id: string | null
+          release_key: string | null
+          status: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wh_work_items_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "ph_releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_release_progress"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_lifecycle_view: {
+        Row: {
+          changed_at: string | null
+          changed_by_name: string | null
+          current_status: string | null
+          duration_days: number | null
+          from_status: string | null
+          id: string | null
+          release_key: string | null
+          to_status: string | null
+          work_item_id: string | null
+          work_item_key: string | null
+          work_item_title: string | null
+          work_item_type: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_status_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_overdue_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_overdue_view: {
+        Row: {
+          assignee_name: string | null
+          days_overdue: number | null
+          due_date: string | null
+          id: string | null
+          item_key: string | null
+          item_type: string | null
+          release_key: string | null
+          status: string | null
+          title: string | null
+        }
+        Relationships: []
+      }
       ph_overview_stats: {
         Row: {
           active_count: number | null
@@ -50945,6 +53557,27 @@ export type Database = {
           version_name: string | null
         }
         Relationships: []
+      }
+      ph_team_workload_view: {
+        Row: {
+          bug_count: number | null
+          incident_count: number | null
+          name: string | null
+          project_id: string | null
+          story_count: number | null
+          subtask_count: number | null
+          total_count: number | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       planner_board_columns: {
         Row: {
@@ -51041,6 +53674,13 @@ export type Database = {
             foreignKeyName: "planner_tasks_assignee_id_fkey"
             columns: ["assignee_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -51099,6 +53739,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "planner_tasks_created_by_fkey"
@@ -51261,6 +53908,13 @@ export type Database = {
             foreignKeyName: "planner_tasks_assignee_id_fkey"
             columns: ["assignee_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -51388,6 +54042,13 @@ export type Database = {
           workstream_name: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "planner_tasks_assignee_id_fkey"
             columns: ["assignee_id"]
@@ -51553,6 +54214,13 @@ export type Database = {
             foreignKeyName: "planner_tasks_assignee_id_fkey"
             columns: ["assignee_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -51611,6 +54279,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "planner_tasks_created_by_fkey"
@@ -51714,6 +54389,13 @@ export type Database = {
             foreignKeyName: "planner_tasks_reporter_id_fkey"
             columns: ["reporter_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -51772,6 +54454,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "planner_tasks_reviewer_id_fkey"
@@ -51944,6 +54633,13 @@ export type Database = {
             foreignKeyName: "planner_tasks_assignee_id_fkey"
             columns: ["assignee_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_assignee_id_fkey"
+            columns: ["assignee_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -52002,6 +54698,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "planner_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "planner_tasks_created_by_fkey"
@@ -52736,6 +55439,13 @@ export type Database = {
             foreignKeyName: "tm_folders_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -52919,6 +55629,13 @@ export type Database = {
             foreignKeyName: "tm_test_cycles_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -53020,6 +55737,13 @@ export type Database = {
             foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -53110,6 +55834,13 @@ export type Database = {
           work_type: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "tm_cycle_scope_assigned_to_fkey"
             columns: ["user_id"]
@@ -53216,6 +55947,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "tm_case_types"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tm_test_cases_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tm_test_cases_created_by_fkey"
@@ -53351,6 +56089,13 @@ export type Database = {
             foreignKeyName: "tm_test_cycles_assigned_to_fkey"
             columns: ["assigned_to"]
             isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
             referencedRelation: "planner_dashboard_team_workload"
             referencedColumns: ["profile_id"]
           },
@@ -53409,6 +56154,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["theme_owner_id"]
+          },
+          {
+            foreignKeyName: "tm_test_cycles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "tm_test_cycles_created_by_fkey"
@@ -53662,6 +56414,13 @@ export type Database = {
             foreignKeyName: "wh_work_items_parent_id_fkey"
             columns: ["epic_id"]
             isOneToOne: false
+            referencedRelation: "ph_overdue_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
             referencedRelation: "ph_work_items"
             referencedColumns: ["id"]
           },
@@ -53851,6 +56610,13 @@ export type Database = {
             columns: ["jira_project_id"]
             isOneToOne: false
             referencedRelation: "ph_jira_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "ph_overdue_view"
             referencedColumns: ["id"]
           },
           {
