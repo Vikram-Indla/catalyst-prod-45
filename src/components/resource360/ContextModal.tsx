@@ -78,19 +78,8 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
           display: 'flex', alignItems: 'flex-start', gap: 12,
         }}>
           <div style={{ flex: 1 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <span style={{ fontSize: 15, fontWeight: 900, fontFamily: 'monospace', color: '#0F172A' }}>
-                {item.item_key}
-              </span>
-              <span style={{
-                fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
-                background: witStyle.bg, color: witStyle.color,
-              }}>
-                {item.work_item_type}
-              </span>
-            </div>
             {item.parent_item_key && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                 <span style={{ fontSize: 11, fontFamily: 'monospace', color: '#2563EB', fontWeight: 600 }}>
                   {item.parent_item_key}
                 </span>
@@ -102,6 +91,17 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
                 <span style={{ fontSize: 10, color: '#94A3B8' }}>›</span>
               </div>
             )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
+              <span style={{ fontSize: 15, fontWeight: 900, fontFamily: 'monospace', color: '#0F172A' }}>
+                {item.item_key}
+              </span>
+              <span style={{
+                fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
+                background: witStyle.bg, color: witStyle.color,
+              }}>
+                {item.work_item_type}
+              </span>
+            </div>
             <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', margin: 0 }}>{item.title}</h2>
             <div style={{ marginTop: 8, display: 'flex', gap: 6 }}>
               {sc && (
