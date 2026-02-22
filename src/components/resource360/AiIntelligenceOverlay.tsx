@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAiProfile, useBehavioralPatterns, useReleaseStanding, useHubDistribution } from '@/hooks/useResource360';
 import { HUB_COLORS, HUB_SHORT } from '@/constants/resource360';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AiIntelligenceOverlayProps {
   resourceId: string;
@@ -9,12 +10,27 @@ interface AiIntelligenceOverlayProps {
 }
 
 const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceId, resource, onClose }) => {
-  const { data: profile } = useAiProfile(resourceId);
-  const { data: patterns } = useBehavioralPatterns(resourceId);
-  const { data: hubDist } = useHubDistribution(resourceId);
+  const { data: profile, isLoading: profileLoading } = useAiProfile(resourceId);
+  const { data: patterns, isLoading: patternsLoading } = useBehavioralPatterns(resourceId);
+  const { data: hubDist, isLoading: hubDistLoading } = useHubDistribution(resourceId);
 
-  // Get first release standing
-  const { data: standing } = useReleaseStanding(resourceId, profile?.release_id || '');
+  // Fetch release_id from r360_ai_release_standings directly
+  const [releaseId, setReleaseId] = useState<string>('');
+  useEffect(() => {
+    if (!resourceId) return;
+    (supabase
+      .from('r360_ai_release_standings' as any)
+      .select('release_id')
+      .eq('resource_id', resourceId)
+      .order('snapshot_date', { ascending: false })
+      .limit(1)
+      .maybeSingle() as any)
+      .then(({ data }: any) => {
+        if (data?.release_id) setReleaseId(data.release_id);
+      });
+  }, [resourceId]);
+
+  const { data: standing } = useReleaseStanding(resourceId, releaseId);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -69,6 +85,15 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
       </div>
 
       <div style={{ padding: '24px', maxWidth: 1000, margin: '0 auto' }}>
+        {/* Loading skeleton */}
+        {(profileLoading || patternsLoading || hubDistLoading) && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {[120, 80, 100, 60, 90].map((h, i) => (
+              <div key={i} className="r360-skeleton" style={{ height: h, borderRadius: 8 }} />
+            ))}
+          </div>
+        )}
+
         {/* 1. Profile Card */}
         <Section title="Resource Profile">
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
