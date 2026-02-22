@@ -25,16 +25,22 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ resource, summary }) =>
   const vendorName = resource?.r360_vendors?.name || '—';
   const assignmentName = resource?.r360_assignments?.name || '—';
 
-  const metaPills = [
-    deptName,
-    vendorName,
-    `${resource?.contract_start?.slice(0, 10) || '?'} → ${resource?.contract_end?.slice(0, 10) || '?'}`,
-    resource?.country || '—',
-    assignmentName,
-    resource?.location_type || '—',
-  ].filter(Boolean);
+  // Format contract dates — hide pill entirely if both are null
+  const formatDate = (d: string | null | undefined) =>
+    d ? new Date(d).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : null;
+  const contractStart = formatDate(resource?.contract_start);
+  const contractEnd = formatDate(resource?.contract_end);
+  const contractDisplay = contractStart && contractEnd ? `${contractStart} → ${contractEnd}` : null;
 
-  // Only show CTC if present
+  const metaPills = [
+    deptName !== '—' ? deptName : null,
+    vendorName !== '—' ? vendorName : null,
+    contractDisplay,
+    resource?.country || null,
+    assignmentName !== '—' ? assignmentName : null,
+    resource?.location_type || null,
+  ].filter(Boolean) as string[];
+
   if (resource?.ctc) {
     metaPills.push(`CTC: ${resource.ctc}`);
   }
@@ -84,7 +90,7 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ resource, summary }) =>
       <div style={{ display: 'flex', gap: 8, marginLeft: 'auto', flexShrink: 0 }}>
         <StatCard label="Total" value={summary?.total_items ?? '–'} color="#2563EB" />
         <StatCard label="To Do" value={summary?.todo_count ?? '–'} color="#DC2626" />
-        <StatCard label="In Progress" value={summary?.progress_count ?? '–'} color="#2563EB" />
+        <StatCard label="In Progress" value={summary?.in_progress_count ?? summary?.progress_count ?? '–'} color="#2563EB" />
         <StatCard label="Done" value={summary?.done_count ?? '–'} color="#059669" />
       </div>
     </header>
