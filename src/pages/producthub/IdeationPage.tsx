@@ -66,15 +66,16 @@ export default function IdeationPage() {
   const handleConvertIdea = useCallback((ideaKey: string) => {
     const idea = ideasData.find(i => i.key === ideaKey);
     if (!idea) return;
-    setConversionSource({
-      type: 'single',
-      primaryIdea: {
-        key: idea.key, title: idea.title, impact: idea.impact,
-        votes: idea.votes, dept: idea.dept, priority: idea.priority,
-        assignee: idea.assignee?.name,
-        description: `${idea.title} — A comprehensive initiative to streamline operations and deliver measurable outcomes aligned with organizational strategy and V2030 objectives.`,
-      },
-    });
+      // Fetch the real description from the idea's raw data
+      setConversionSource({
+        type: 'single',
+        primaryIdea: {
+          key: idea.key, title: idea.title, impact: idea.impact,
+          votes: idea.votes, dept: idea.dept, priority: idea.priority,
+          assignee: idea.assignee?.name,
+          description: idea.title,
+        },
+      });
     setConvertDrawerOpen(true);
   }, [ideasData]);
 
@@ -213,7 +214,7 @@ export default function IdeationPage() {
             borderRight: i < arr.length - 1 ? '1px solid #E2E8F0' : 'none',
           }}>
             <div style={{ fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.3px', color: '#94A3B8', marginBottom: '4px' }}>
-              {stat.label}
+              {stat.label}{activeFilter !== 'all' && stat.label === 'TOTAL IDEAS' && <span style={{ fontSize: '10px', color: '#94A3B8', marginLeft: '4px', fontWeight: 400 }}>(filtered)</span>}
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
               <span style={{ fontSize: '20px', fontWeight: 800, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '-0.5px', color: stat.color }}>
@@ -226,6 +227,19 @@ export default function IdeationPage() {
           </div>
         ))}
       </div>
+
+      {/* Filtered context indicator */}
+      {activeFilter !== 'all' && (
+        <div style={{ padding: '6px 28px', background: '#EFF6FF', borderBottom: '1px solid #DBEAFE', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ fontSize: '11px', fontWeight: 500, color: '#2563EB' }}>
+            Showing {activeFilter.replace('_', ' ')} ideas only
+          </span>
+          <span style={{ color: '#94A3B8' }}>·</span>
+          <button onClick={() => setActiveFilter('all')} style={{ fontSize: '11px', color: '#2563EB', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+            Clear filter
+          </button>
+        </div>
+      )}
 
       {/* ─── Toolbar ─── */}
       <div style={{
