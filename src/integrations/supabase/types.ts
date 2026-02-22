@@ -29166,6 +29166,78 @@ export type Database = {
         }
         Relationships: []
       }
+      r360_resource_metrics: {
+        Row: {
+          ai_generated_at: string | null
+          computed_at: string
+          created_at: string
+          delivery_metrics: Json
+          done_count: number
+          hub_closure_rates: Json
+          hub_distribution: Json
+          id: string
+          in_progress_count: number
+          metrics_hash: string | null
+          priority_distribution: Json
+          recent_items: Json
+          recompute_needed: boolean
+          release_standings: Json
+          resource_id: string
+          status_distribution: Json
+          todo_count: number
+          total_items: number
+          type_distribution: Json
+          updated_at: string
+          weekly_closure_history: Json
+        }
+        Insert: {
+          ai_generated_at?: string | null
+          computed_at?: string
+          created_at?: string
+          delivery_metrics?: Json
+          done_count?: number
+          hub_closure_rates?: Json
+          hub_distribution?: Json
+          id?: string
+          in_progress_count?: number
+          metrics_hash?: string | null
+          priority_distribution?: Json
+          recent_items?: Json
+          recompute_needed?: boolean
+          release_standings?: Json
+          resource_id: string
+          status_distribution?: Json
+          todo_count?: number
+          total_items?: number
+          type_distribution?: Json
+          updated_at?: string
+          weekly_closure_history?: Json
+        }
+        Update: {
+          ai_generated_at?: string | null
+          computed_at?: string
+          created_at?: string
+          delivery_metrics?: Json
+          done_count?: number
+          hub_closure_rates?: Json
+          hub_distribution?: Json
+          id?: string
+          in_progress_count?: number
+          metrics_hash?: string | null
+          priority_distribution?: Json
+          recent_items?: Json
+          recompute_needed?: boolean
+          release_standings?: Json
+          resource_id?: string
+          status_distribution?: Json
+          todo_count?: number
+          total_items?: number
+          type_distribution?: Json
+          updated_at?: string
+          weekly_closure_history?: Json
+        }
+        Relationships: []
+      }
       r360_resources: {
         Row: {
           assignment_id: string | null
@@ -56613,6 +56685,31 @@ export type Database = {
           rid: string | null
           todo_count: number | null
           total_items: number | null
+        }
+        Relationships: []
+      }
+      r360_unified_activity_view: {
+        Row: {
+          assignee_jira_id: string | null
+          assignee_user_id: string | null
+          created_at: string | null
+          description_text: string | null
+          due_date: string | null
+          fix_versions: Json | null
+          hub_source: string | null
+          item_id: string | null
+          item_type: string | null
+          parent_key: string | null
+          parent_summary: string | null
+          priority: string | null
+          project_key: string | null
+          project_name: string | null
+          resolved_at: string | null
+          status: string | null
+          status_category: string | null
+          story_points: number | null
+          title: string | null
+          updated_at: string | null
         }
         Relationships: []
       }
