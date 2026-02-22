@@ -31,6 +31,15 @@ export const useWorkItems = (resourceId: string, jiraAccountId?: string | null) 
     gcTime: GC_30MIN,
   });
 
+export const useProjectReleases = (jiraAccountId?: string | null) =>
+  useQuery({
+    queryKey: ['r360-project-releases', jiraAccountId],
+    queryFn: () => svc.fetchProjectReleases(jiraAccountId),
+    enabled: !!jiraAccountId,
+    staleTime: STALE_5MIN,
+    gcTime: GC_30MIN,
+  });
+
 export const useTransitions = (workItemId: string | null) =>
   useQuery({
     queryKey: ['r360-transitions', workItemId],
