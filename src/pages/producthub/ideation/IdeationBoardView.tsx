@@ -28,6 +28,13 @@ const INITIATIVE_LINKS: Record<string, string> = {
   'IDH-013': '↗ INIT-2026-002 · 2 ideas merged',
 };
 
+// Generate link text from initiative field if not in static map
+function getInitiativeLink(idea: Idea): string | null {
+  if (INITIATIVE_LINKS[idea.key]) return INITIATIVE_LINKS[idea.key];
+  if (idea.initiative) return `↗ ${idea.initiative} · Linked Initiative`;
+  return null;
+}
+
 export default function IdeationBoardView({ ideas, onOpenDetail, onConvert }: Props) {
   return (
     <div style={{
@@ -78,7 +85,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert }: { idea: Idea;
   const isAiReady = idea.ai === 'ready';
   const showFullAiStrip = isAiReady && TOP_AI_KEYS.has(idea.key) && AI_INSIGHTS[idea.key];
   const aiInsight = AI_INSIGHTS[idea.key];
-  const initLink = INITIATIVE_LINKS[idea.key];
+  const initLink = getInitiativeLink(idea);
 
   const isApproved = columnStatus === 'approved';
   const isConverted = columnStatus === 'converted';
@@ -180,7 +187,7 @@ function IdeaBoardCard({ idea, columnStatus, onClick, onConvert }: { idea: Idea;
       {/* Initiative link (converted) */}
       {isConverted && initLink && (
         <div style={{
-          marginTop: '8px', background: '#CCFBF1', border: '1px solid #0D9488',
+          marginTop: '8px', background: '#CCFBF1', border: '1px solid #99F6E4',
           borderRadius: '6px', padding: '5px 8px', fontSize: '10px', color: '#0F766E', fontWeight: 600,
         }}>
           {initLink}

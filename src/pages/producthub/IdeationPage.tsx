@@ -33,6 +33,8 @@ export default function IdeationPage() {
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState<StatusFilter>('all');
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  // Track converted ideas: key → initiative key (e.g., 'IDH-005' → 'MIM-006')
+  const [convertedIdeas, setConvertedIdeas] = useState<Record<string, string>>({});
 
   // Panel states
   const [detailKey, setDetailKey] = useState<string | null>(null);
@@ -78,8 +80,18 @@ export default function IdeationPage() {
     setTriageOpen(false);
   }, []);
 
+  // Apply conversions to the ideas list
+  const ideasWithConversions = useMemo(() => {
+    return ideas.map(idea => {
+      if (convertedIdeas[idea.key]) {
+        return { ...idea, status: 'converted' as IdeaStatus, initiative: convertedIdeas[idea.key] };
+      }
+      return idea;
+    });
+  }, [convertedIdeas]);
+
   const filteredIdeas = useMemo(() => {
-    let result = ideas;
+    let result = ideasWithConversions;
     if (search) {
       const q = search.toLowerCase();
       result = result.filter(i => i.title.toLowerCase().includes(q) || i.key.toLowerCase().includes(q));
@@ -88,7 +100,7 @@ export default function IdeationPage() {
       result = result.filter(i => i.status === activeFilter);
     }
     return result;
-  }, [search, activeFilter]);
+  }, [search, activeFilter, ideasWithConversions]);
 
   const toggleRow = (key: string) => {
     setSelectedRows(prev => {
@@ -308,6 +320,17 @@ export default function IdeationPage() {
         open={convertDrawerOpen}
         onClose={() => { setConvertDrawerOpen(false); setConversionSource(null); }}
         conversionSource={conversionSource}
+        onCreated={(initiativeKey: string) => {
+          // Mark source ideas as converted
+          if (conversionSource) {
+            const updates: Record<string, string> = {};
+            updates[conversionSource.primaryIdea.key] = initiativeKey;
+            if (conversionSource.type === 'merge' && conversionSource.mergeIdea) {
+              updates[conversionSource.mergeIdea.key] = initiativeKey;
+            }
+            setConvertedIdeas(prev => ({ ...prev, ...updates }));
+          }
+        }}
       />
     </div>
   );

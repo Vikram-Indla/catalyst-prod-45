@@ -61,7 +61,7 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge }: Prop
             fontSize: '16px', color: '#FFFFFF',
           }}>✦</div>
           <div>
-            <div style={{ fontSize: '20px', fontWeight: 800, color: C.textPrimary }}>AI Ideas Hub</div>
+            <div style={{ fontSize: '20px', fontWeight: 800, color: C.textPrimary }}>AI Intelligence Hub</div>
             <div style={{ fontSize: '12px', color: C.textTertiary }}>15 ideas analyzed · 22 signals detected</div>
           </div>
         </div>
@@ -80,17 +80,17 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge }: Prop
 
       {/* ══ KPI Stat Strip ══ */}
       <div style={{ padding: '20px 32px', display: 'flex', gap: '16px' }}>
-        {[
-          { value: '2', label: 'idea pairs with >80% similarity', title: 'DUPLICATES DETECTED' },
-          { value: '4', label: 'trending categories identified', title: 'THEMES DISCOVERED' },
-          { value: '73%', label: 'ideas tagged to standards', title: 'COMPLIANCE COVERAGE' },
-          { value: '82%', label: 'ideas mapped to pillars', title: 'V2030 ALIGNMENT' },
+       {[
+          { value: '2', label: 'idea pairs with >80% similarity', title: 'DUPLICATES DETECTED', valueColor: '#D97706' },
+          { value: '4', label: 'trending categories identified', title: 'THEMES DISCOVERED', valueColor: '#2563EB' },
+          { value: '73%', label: 'ideas tagged to standards', title: 'COMPLIANCE COVERAGE', valueColor: '#16A34A' },
+          { value: '82%', label: 'ideas mapped to pillars', title: 'V2030 ALIGNMENT', valueColor: '#0D9488' },
         ].map(s => (
           <div key={s.title} style={{
             flex: 1, background: C.bg, border: `1px solid ${C.border}`, borderRadius: '10px', padding: '16px 20px',
           }}>
             <div style={{ fontSize: '11px', fontWeight: 700, color: C.textTertiary, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '4px' }}>{s.title}</div>
-            <div style={{ fontSize: '28px', fontWeight: 800, fontFamily: MONO, color: C.textPrimary }}>{s.value}</div>
+            <div style={{ fontSize: '28px', fontWeight: 800, fontFamily: MONO, color: s.valueColor }}>{s.value}</div>
             <div style={{ fontSize: '12px', fontWeight: 500, color: C.textTertiary, marginTop: '2px' }}>{s.label}</div>
           </div>
         ))}
@@ -120,10 +120,10 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge }: Prop
         {/* ── Card B: Theme Discovery ── */}
         <ContentCard title="Theme Discovery" badge="4 themes" badgeColor={C.primary}>
           {[
-            { name: 'Digital Transformation', count: 5, trend: '↑ trending', pct: 100, opacity: 1.0 },
-            { name: 'AI & Automation', count: 3, trend: '↑ trending', pct: 60, opacity: 0.75 },
-            { name: 'Compliance & Risk', count: 2, trend: '→ stable', pct: 40, opacity: 0.50 },
-            { name: 'Sustainability', count: 2, trend: '↑ new', pct: 40, opacity: 0.35 },
+           { name: 'Digital Transformation', count: 5, trend: '↑ trending', pct: 100, barColor: '#2563EB' },
+            { name: 'AI & Automation', count: 3, trend: '↑ trending', pct: 60, barColor: '#7C3AED' },
+            { name: 'Compliance & Risk', count: 2, trend: '→ stable', pct: 40, barColor: '#D97706' },
+            { name: 'Sustainability', count: 2, trend: '↑ new', pct: 40, barColor: '#16A34A' },
           ].map(t => (
             <div key={t.name} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
               <span style={{ color: C.textPrimary, fontSize: '14px', fontWeight: 500, minWidth: '140px' }}>{t.name}</span>
@@ -131,8 +131,8 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge }: Prop
                 {t.count} ideas
               </span>
               <span style={{ fontSize: '12px', color: C.textTertiary, minWidth: '60px' }}>{t.trend}</span>
-              <div style={{ flex: 1, height: '8px', background: C.surfaceAlt, borderRadius: '4px', overflow: 'hidden' }}>
-                <div style={{ width: `${t.pct}%`, height: '100%', background: C.primary, opacity: t.opacity, borderRadius: '4px' }} />
+             <div style={{ flex: 1, height: '8px', background: C.surfaceAlt, borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ width: `${t.pct}%`, height: '100%', background: t.barColor, borderRadius: '4px' }} />
               </div>
             </div>
           ))}
@@ -150,11 +150,11 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge }: Prop
 
         {/* ── Card C: Compliance Mapping ── */}
         <ContentCard title="Compliance Mapping" badge="4 standards" badgeColor={C.success}>
-          {[
-            { code: 'DGA-ACC-01', desc: 'Digital Accessibility', tagged: 8, gap: '✅ Good coverage', gapColor: C.success },
-            { code: 'NCA-SEC-02', desc: 'Security Controls', tagged: 5, gap: '⚠️ 2 ideas untagged', gapColor: C.warning },
-            { code: 'NDMO-DG-03', desc: 'Data Governance', tagged: 6, gap: '✅ Good coverage', gapColor: C.success },
-            { code: 'SDAIA-AI-01', desc: 'AI Ethics', tagged: 3, gap: '🔴 Low — 4 AI ideas untagged', gapColor: C.danger },
+           {[
+            { code: 'DGA-ACC-01', desc: 'Digital Accessibility', tagged: 8, total: 15, gap: '✅ Good coverage', gapColor: C.success, barColor: '#16A34A' },
+            { code: 'NCA-SEC-02', desc: 'Security Controls', tagged: 5, total: 15, gap: '⚠️ 2 ideas untagged', gapColor: C.warning, barColor: '#D97706' },
+            { code: 'NDMO-DG-03', desc: 'Data Governance', tagged: 6, total: 15, gap: '✅ Good coverage', gapColor: C.success, barColor: '#16A34A' },
+            { code: 'SDAIA-AI-01', desc: 'AI Ethics', tagged: 3, total: 15, gap: '🔴 Low — 4 AI ideas untagged', gapColor: C.danger, barColor: '#EF4444' },
           ].map(c => (
             <div key={c.code} style={{ marginBottom: '14px', paddingBottom: '14px', borderBottom: `1px solid ${C.surfaceAlt}` }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
@@ -165,6 +165,10 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge }: Prop
                 <span style={{ fontFamily: MONO, fontSize: '13px', fontWeight: 600, color: C.textSecondary }}>{c.tagged} ideas</span>
               </div>
               <div style={{ fontSize: '12px', fontWeight: 500, color: c.gapColor }}>{c.gap}</div>
+              {/* Coverage progress bar */}
+              <div style={{ marginTop: '4px', height: '4px', background: '#E4E4E7', borderRadius: '2px', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${Math.round((c.tagged / c.total) * 100)}%`, background: c.barColor, borderRadius: '2px' }} />
+              </div>
             </div>
           ))}
         </ContentCard>
