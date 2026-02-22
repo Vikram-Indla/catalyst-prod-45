@@ -1,6 +1,6 @@
 /**
  * WidgetCard — Standard card wrapper for dashboard widgets
- * Catalyst V11 compliant with hover shadow, error state, ARIA
+ * Premium enterprise styling with hover shadow, error state, ARIA
  */
 import type { ReactNode } from 'react';
 
@@ -24,6 +24,15 @@ export function WidgetCard(props: Props) {
 }
 
 function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, headerRight, children, maxHeight, actionLabel, onAction, error, onRetry }: Props) {
+  // Count badge colors based on countColor
+  const getCountBadgeStyle = () => {
+    if (!countColor) return { bg: '#F1F5F9', text: '#475569', border: '#CBD5E1' };
+    if (countColor === '#D97706' || countColor === '#EF4444') return { bg: '#FEF3C7', text: '#92400E', border: '#FCD34D' };
+    if (countColor === '#16A34A') return { bg: '#DCFCE7', text: '#166534', border: '#86EFAC' };
+    return { bg: '#DBEAFE', text: '#1E40AF', border: '#93C5FD' };
+  };
+  const countStyle = getCountBadgeStyle();
+
   return (
     <div
       role="region"
@@ -32,10 +41,10 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
       style={{
         background: '#FFFFFF',
         border: '1px solid #E2E8F0',
-        borderRadius: 12,
+        borderRadius: 10,
         borderLeft: leftBorder ? `3px solid ${leftBorder}` : undefined,
         overflow: 'hidden',
-        boxShadow: '0 1px 3px rgba(0,0,0,.06)',
+        boxShadow: '0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04)',
         display: 'flex',
         flexDirection: 'column',
         transition: 'box-shadow 150ms ease',
@@ -43,7 +52,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
     >
       <div
         style={{
-          padding: '8px 12px',
+          padding: '8px 14px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -52,23 +61,28 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}>
+          <span style={{ fontSize: 14, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.02em' }}>
             {title}
           </span>
           {count !== undefined && (
             <span
               style={{
-                fontSize: 10, fontWeight: 700,
-                color: countColor || '#64748B',
-                background: countColor ? `${countColor}15` : '#F1F5F9',
-                padding: '2px 7px', borderRadius: 8,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minWidth: 22, height: 22,
+                fontSize: 11, fontWeight: 800,
+                color: countStyle.text,
+                background: countStyle.bg,
+                border: `1px solid ${countStyle.border}`,
+                padding: '0 6px', borderRadius: 9999,
                 fontFamily: "'JetBrains Mono', monospace",
               }}
             >
               {count}
             </span>
           )}
-          {subtitle && <span style={{ fontSize: 10, color: '#94A3B8', fontWeight: 500, fontFamily: "'Inter', sans-serif" }}>{subtitle}</span>}
+          {subtitle && <span style={{ fontSize: 11, color: '#64748B', fontWeight: 500, fontFamily: "'Inter', sans-serif" }}>{subtitle}</span>}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {headerRight}
@@ -76,7 +90,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
             <button
               onClick={onAction}
               className="ph-focus-ring"
-              style={{ fontSize: 12, color: '#2563EB', fontWeight: 500, background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: 12, color: '#2563EB', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               {actionLabel}
             </button>
@@ -104,7 +118,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
       )}
 
       <style>{`
-        .ph-widget-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.08) !important; }
+        .ph-widget-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.1) !important; }
         .ph-focus-ring:focus-visible { outline: 2px solid #2563EB; outline-offset: 2px; border-radius: 4px; }
       `}</style>
     </div>

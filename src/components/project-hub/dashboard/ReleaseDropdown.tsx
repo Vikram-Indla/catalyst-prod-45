@@ -35,15 +35,18 @@ export default function ReleaseDropdown({ projectId }: { projectId: string | nul
       <PopoverTrigger asChild>
         <button
           style={{
-            height: 34, padding: '0 12px', borderRadius: 8,
-            border: '1px solid #E2E8F0', background: '#FFFFFF', cursor: 'pointer',
-            fontSize: 12, fontWeight: 600, color: '#334155',
+            height: 34, padding: '0 14px', borderRadius: 8,
+            border: '1px solid #CBD5E1', background: '#FFFFFF', cursor: 'pointer',
+            fontSize: 13, fontWeight: 600, color: '#334155',
             display: 'flex', alignItems: 'center', gap: 6,
+            transition: 'border-color 150ms, box-shadow 150ms',
           }}
+          onMouseEnter={e => { (e.target as HTMLElement).style.borderColor = '#93C5FD'; (e.target as HTMLElement).style.boxShadow = '0 1px 4px rgba(37,99,235,.1)'; }}
+          onMouseLeave={e => { (e.target as HTMLElement).style.borderColor = '#CBD5E1'; (e.target as HTMLElement).style.boxShadow = 'none'; }}
         >
           <Tag size={13} color="#0D9488" />
           {activeCount === (releases?.length ?? 0) ? `All Active Releases (${activeCount})` : `${activeCount} Release${activeCount !== 1 ? 's' : ''}`}
-          <ChevronDown size={14} color="#94A3B8" />
+          <ChevronDown size={14} color="#64748B" />
         </button>
       </PopoverTrigger>
       <PopoverContent align="end" sideOffset={6} style={{ width: 340, padding: 0, borderRadius: 10, border: '1px solid #E2E8F0', background: '#FFFFFF', boxShadow: '0 4px 12px rgba(0,0,0,.08)' }}>

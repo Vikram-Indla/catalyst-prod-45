@@ -1,7 +1,7 @@
 /**
  * TimeInStatus — The Gold Widget
  * Per-ticket lifecycle with sticky columns, hover tooltips, bottleneck detection
- * Includes "Show all" for 15+ items
+ * Abbreviated column headers, micro-card cells, release column
  */
 import { useState } from 'react';
 import WidgetCard from './WidgetCard';
@@ -19,7 +19,33 @@ const DEFAULT_STATUSES = [
 ];
 const INITIAL_SHOW = 10;
 
-function formatLabel(s: string) { return s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); }
+const TIS_ABBREV: Record<string, string> = {
+  'in_requirements': 'REQ',
+  'in_design': 'DESIGN',
+  'ready_for_development': 'READY',
+  'in_development': 'DEV',
+  'in_qa': 'QA',
+  'in_uat': 'UAT',
+  'in_beta': 'BETA',
+  'production_ready': 'PROD R.',
+  'in_production': 'PROD',
+  'on_hold': 'HOLD',
+  'in_entity_integration': 'INTEG',
+  'technical_validation': 'VALID',
+  'end_to_end_testing': 'E2E',
+};
+
+function formatDuration(days: number): string {
+  if (days === 0) return '0d';
+  if (days < 1) return '< 1d';
+  return `${Math.round(days)}d`;
+}
+
+function getDaysColor(days: number): string {
+  if (days <= 1) return '#15803D';
+  if (days <= 4) return '#B45309';
+  return '#DC2626';
+}
 
 interface Props {
   projectId: string | null;
@@ -42,6 +68,9 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
     return color === 'blue' && days > 5;
   };
 
+  // Fixed column count: Release + Key + Type + Title + Current = 5 sticky
+  const stickyColWidths = [60, 70, 55, 130, 100]; // approximate
+
   return (
     <WidgetCard title="Time in Status" subtitle="Per-ticket lifecycle · Hover cells for details" error={error ? error.message : null} onRetry={() => refetch()}>
       {isLoading ? (
@@ -51,19 +80,37 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
       ) : (
         <div className="ph-tis-scroll" style={{ position: 'relative', maxHeight: 440, overflowY: 'auto', overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, minWidth: 900 }}>
-            <thead style={{ position: 'sticky', top: 0, zIndex: 2, background: '#FFFFFF' }}>
-              <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
-                {['Key', 'Type', 'Title', 'Current'].map(h => (
-                  <th key={h} style={{ padding: '8px 8px', textAlign: 'left', fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.05em', fontFamily: "'Inter', sans-serif", position: 'sticky', left: h === 'Key' ? 0 : undefined, background: '#FFFFFF', zIndex: 3, whiteSpace: 'nowrap' }}>
+            <thead style={{ position: 'sticky', top: 0, zIndex: 4, background: '#FFFFFF' }}>
+              <tr style={{ borderBottom: '2px solid #CBD5E1' }}>
+                {['Release', 'Key', 'Type', 'Title', 'Current'].map((h, i) => (
+                  <th key={h} style={{
+                    padding: '8px 8px', textAlign: 'left',
+                    fontSize: 10, fontWeight: 700, color: '#475569',
+                    textTransform: 'uppercase', letterSpacing: '.08em',
+                    fontFamily: "'Inter', sans-serif",
+                    position: 'sticky', left: i === 0 ? 0 : undefined,
+                    background: '#FFFFFF', zIndex: 5, whiteSpace: 'nowrap',
+                  }}>
                     {h}
                   </th>
                 ))}
                 {visibleStatuses.map(s => (
-                  <th key={s} style={{ padding: '8px 4px', textAlign: 'center', fontSize: 9, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.02em', whiteSpace: 'nowrap', minWidth: 64, fontFamily: "'Inter', sans-serif" }}>
-                    {formatLabel(s).slice(0, 12)}
+                  <th key={s} style={{
+                    padding: '8px 4px', textAlign: 'center',
+                    fontSize: 9, fontWeight: 700, color: '#475569',
+                    textTransform: 'uppercase', letterSpacing: '.1em',
+                    whiteSpace: 'nowrap', minWidth: 72,
+                    fontFamily: "'Inter', sans-serif",
+                  }}>
+                    {TIS_ABBREV[s] || s.replace(/_/g, ' ').slice(0, 6).toUpperCase()}
                   </th>
                 ))}
-                <th style={{ padding: '8px 8px', textAlign: 'right', fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', fontFamily: "'Inter', sans-serif" }}>Total</th>
+                <th style={{
+                  padding: '8px 12px', textAlign: 'right',
+                  fontSize: 10, fontWeight: 700, color: '#475569',
+                  textTransform: 'uppercase', fontFamily: "'Inter', sans-serif",
+                  borderLeft: '2px solid #E2E8F0', background: '#F8FAFC',
+                }}>Total</th>
               </tr>
             </thead>
             <tbody>
@@ -72,70 +119,88 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                 for (const s of item.statuses ?? []) {
                   statusMap[s.status] = s;
                 }
+                const rowBg = idx % 2 === 1 ? '#FAFBFC' : '#FFFFFF';
                 return (
-                  <tr key={item.work_item_id} style={{ height: 44, borderBottom: '1px solid #F8FAFC', background: idx % 2 === 1 ? '#FAFBFC' : undefined }}>
-                    <td style={{ padding: '0 8px', position: 'sticky', left: 0, background: idx % 2 === 1 ? '#FAFBFC' : '#FFFFFF', zIndex: 1 }}>
-                      <button onClick={() => openLifecycle(item.work_item_id)} className="ph-focus-ring" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
+                  <tr key={item.work_item_id} style={{ height: 44, borderBottom: '1px solid #F1F5F9', background: rowBg }} className="ph-table-row">
+                    {/* Release */}
+                    <td style={{ padding: '0 8px', position: 'sticky', left: 0, background: rowBg, zIndex: 1 }}>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: '#0F766E', background: '#F0FDFA', padding: '2px 7px', borderRadius: 4, border: '1px solid #99F6E4' }}>
+                        {releaseMap[item.release_key] || '—'}
+                      </span>
+                    </td>
+                    {/* Key */}
+                    <td style={{ padding: '0 8px', background: rowBg }}>
+                      <button onClick={() => openLifecycle(item.work_item_id)} className="ph-focus-ring" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#1D4ED8', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>
                         {item.work_item_key}
                       </button>
                     </td>
+                    {/* Type */}
                     <td style={{ padding: '0 8px' }}>
                       <TypeBadge type={item.work_item_type} />
                     </td>
-                    <td style={{ padding: '0 8px', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#334155', fontSize: 11, fontFamily: "'Inter', sans-serif" }} title={item.work_item_title}>
+                    {/* Title */}
+                    <td style={{ padding: '0 8px', maxWidth: 130, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#1E293B', fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif" }} title={item.work_item_title}>
                       {item.work_item_title}
                     </td>
+                    {/* Current Status */}
                     <td style={{ padding: '0 8px' }}><StatusBadge status={item.current_status} /></td>
+                    {/* Status columns */}
                     {visibleStatuses.map(status => {
                       const entry = statusMap[status];
                       const isCurrent = item.current_status === status;
                       const bn = entry && isBottleneck(status, entry.duration_days);
+                      const days = entry ? Math.round(entry.duration_days) : 0;
                       return (
                         <td
                           key={status}
-                          style={{
-                            padding: '4px 4px', textAlign: 'center',
-                            background: bn ? '#FFFBEB' : getStatusCellBg(status),
-                            outline: isCurrent ? '2px solid #2563EB' : undefined,
-                            outlineOffset: isCurrent ? -2 : undefined,
-                            position: 'relative', cursor: entry ? 'default' : undefined,
-                            transition: 'background 120ms ease',
-                          }}
+                          style={{ padding: '3px 3px', textAlign: 'center', verticalAlign: 'middle' }}
                           onMouseEnter={(e) => {
                             if (!entry) return;
                             const r = (e.target as HTMLElement).getBoundingClientRect();
                             setTooltip({
                               x: r.left + r.width / 2,
                               y: r.top - 8,
-                              text: `Entered: ${entry.entered_at ? format(new Date(entry.entered_at), 'MMM d, yyyy') : '—'} · Duration: ${entry.duration_days}d · Changed by: ${entry.changed_by || 'System'}`,
+                              text: `Entered: ${entry.entered_at ? format(new Date(entry.entered_at), 'MMM d, yyyy') : '—'} · Duration: ${formatDuration(entry.duration_days)} · Changed by: ${entry.changed_by || 'System'}`,
                             });
                           }}
                           onMouseLeave={() => setTooltip(null)}
                         >
                           {entry ? (
-                            <div>
-                              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9.5, color: '#64748B' }}>
+                            <div style={{
+                              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                              padding: '3px 2px', borderRadius: 6, minHeight: 40,
+                              background: bn ? '#FEF3C7' : getStatusCellBg(status),
+                              outline: isCurrent ? '2px solid #2563EB' : undefined,
+                              outlineOffset: isCurrent ? -1 : undefined,
+                              position: 'relative',
+                            }}>
+                              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: '#475569' }}>
                                 {entry.entered_at ? format(new Date(entry.entered_at), 'MMM d') : ''}
-                              </div>
-                              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 700, color: bn ? '#D97706' : entry.duration_days === 0 ? '#16A34A' : entry.duration_days > 5 ? '#EF4444' : entry.duration_days > 2 ? '#D97706' : '#16A34A' }}>
-                                {entry.duration_days}d
-                              </div>
+                              </span>
+                              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: bn ? '#92400E' : getDaysColor(days) }}>
+                                {formatDuration(entry.duration_days)}
+                              </span>
                               {isCurrent && (
                                 <span className="ph-pulse-dot" style={{
-                                  position: 'absolute', top: 4, right: 4,
-                                  width: 6, height: 6, borderRadius: '50%',
+                                  position: 'absolute', top: 3, right: 3,
+                                  width: 5, height: 5, borderRadius: '50%',
                                   background: '#2563EB',
                                 }} />
                               )}
                             </div>
                           ) : (
-                            <span style={{ color: '#CBD5E1', fontSize: 11 }}>—</span>
+                            <span style={{ color: '#CBD5E1', fontSize: 10 }}>—</span>
                           )}
                         </td>
                       );
                     })}
-                    <td style={{ padding: '0 8px', textAlign: 'right', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: '#0F172A' }}>
-                      {item.total_cycle_days}d
+                    {/* Total */}
+                    <td style={{
+                      padding: '0 12px', textAlign: 'right',
+                      fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 800, color: '#0F172A',
+                      background: '#F8FAFC', borderLeft: '2px solid #E2E8F0',
+                    }}>
+                      {Math.round(item.total_cycle_days)}d
                     </td>
                   </tr>
                 );
@@ -146,22 +211,14 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
           {/* Show all toggle */}
           {allItems.length > INITIAL_SHOW && !showAll && (
             <div style={{ padding: '10px 16px', borderTop: '1px solid #F1F5F9', textAlign: 'center' }}>
-              <button
-                onClick={() => setShowAll(true)}
-                className="ph-focus-ring"
-                style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer' }}
-              >
+              <button onClick={() => setShowAll(true)} className="ph-focus-ring" style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer' }}>
                 Show all {allItems.length} items
               </button>
             </div>
           )}
           {showAll && allItems.length > INITIAL_SHOW && (
             <div style={{ padding: '10px 16px', borderTop: '1px solid #F1F5F9', textAlign: 'center' }}>
-              <button
-                onClick={() => setShowAll(false)}
-                className="ph-focus-ring"
-                style={{ fontSize: 11, fontWeight: 600, color: '#64748B', background: 'none', border: 'none', cursor: 'pointer' }}
-              >
+              <button onClick={() => setShowAll(false)} className="ph-focus-ring" style={{ fontSize: 11, fontWeight: 600, color: '#64748B', background: 'none', border: 'none', cursor: 'pointer' }}>
                 Show less
               </button>
             </div>
@@ -182,8 +239,6 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
           )}
         </div>
       )}
-
-      {/* pulse animation is in dashboardPolish.css */}
     </WidgetCard>
   );
 }

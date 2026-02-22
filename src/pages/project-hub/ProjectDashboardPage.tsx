@@ -28,12 +28,6 @@ import WorkloadDrawer from '@/components/project-hub/dashboard/WorkloadDrawer';
 import IntelligenceDrawer from '@/components/project-hub/dashboard/IntelligenceDrawer';
 import MilestoneConfigModal from '@/components/project-hub/dashboard/MilestoneConfigModal';
 
-const C = {
-  bg: '#F8FAFC', card: '#FFFFFF', bdr: '#E2E8F0',
-  ink1: '#0F172A', ink2: '#334155', ink3: '#64748B', ink4: '#94A3B8',
-  primary: '#2563EB', teal: '#0D9488', purple: '#7C3AED', success: '#16A34A',
-};
-
 export default function ProjectDashboardPage() {
   const { key } = useParams<{ key: string }>();
   const navigate = useNavigate();
@@ -58,14 +52,12 @@ export default function ProjectDashboardPage() {
 
   const { data: releases } = useReleases(projectId);
 
-  // Build release ID → name map
   const releaseMap = useMemo(() => {
     const m: Record<string, string> = {};
     for (const r of releases ?? []) m[(r as any).id] = (r as any).name || (r as any).title || (r as any).id?.slice(0, 8);
     return m;
   }, [releases]);
 
-  // Auto-select releases
   const { setSelectedReleaseIds } = useDashboardStore();
   useEffect(() => {
     if (releases?.length && selectedReleaseIds.length === 0) {
@@ -74,76 +66,83 @@ export default function ProjectDashboardPage() {
   }, [releases]);
 
   return (
-    <div className="ph-content-wrapper" style={{ fontFamily: "'Inter', sans-serif", background: C.bg }}>
-      <div className="ph-inner-content">
+    <div className="ph-content-wrapper" style={{ fontFamily: "'Inter', sans-serif", background: '#F8FAFC' }}>
+      <div className="ph-inner-content" style={{ padding: '12px 16px' }}>
         {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 mb-4">
-          <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: C.ink3 }} onClick={() => navigate('/project-hub/projects')}>ProjectHub</span>
-          <ChevronRight size={12} color={C.ink4} />
-          <span style={{ fontSize: 13, color: C.ink3, fontWeight: 500 }}>{pKey}</span>
-          <ChevronRight size={12} color={C.ink4} />
-          <span style={{ fontSize: 13, color: C.ink1, fontWeight: 600 }}>Dashboard</span>
+        <div className="flex items-center gap-1.5 mb-3">
+          <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: '#64748B', fontWeight: 500 }} onClick={() => navigate('/project-hub/projects')}>ProjectHub</span>
+          <ChevronRight size={12} color="#94A3B8" />
+          <span style={{ fontSize: 13, color: '#64748B', fontWeight: 500 }}>{pKey}</span>
+          <ChevronRight size={12} color="#94A3B8" />
+          <span style={{ fontSize: 13, color: '#0F172A', fontWeight: 700 }}>Dashboard</span>
         </div>
 
         {isLoading ? (
           <div className="space-y-4 animate-pulse">
-            <div className="h-28 rounded-xl" style={{ background: C.bdr }} />
-            <div className="grid grid-cols-2 gap-4">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-48 rounded-xl" style={{ background: C.bdr }} />)}</div>
+            <div className="h-28 rounded-xl" style={{ background: '#E2E8F0' }} />
+            <div className="grid grid-cols-2 gap-3">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-48 rounded-xl" style={{ background: '#E2E8F0' }} />)}</div>
           </div>
         ) : (
           <>
-            {/* Header Card */}
-            <div style={{ background: C.card, border: `1px solid ${C.bdr}`, borderRadius: 12, padding: '20px 24px', marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <div style={{ width: 34, height: 34, borderRadius: 8, background: C.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: 14, fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>{initials}</div>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 17, fontWeight: 700, color: C.ink1, fontFamily: "'Sora', sans-serif" }}>{name}</span>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: C.success, background: '#F0FDF4', border: '1px solid #BBF7D0', padding: '2px 8px', borderRadius: 10, textTransform: 'uppercase', letterSpacing: '.04em' }}>On Track</span>
-                    <span style={{ fontSize: 10, fontWeight: 600, color: C.primary, background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '2px 8px', borderRadius: 10, textTransform: 'uppercase', letterSpacing: '.04em' }}>Active</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Users size={12} color={C.ink4} /><span style={{ fontSize: 12, color: C.ink3 }}>8 members</span></div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><CalendarRange size={12} color={C.ink4} /><span style={{ fontSize: 12, color: C.ink3 }}>Jan 15 – Mar 30, 2026</span></div>
+            {/* Header Card with Release Pills */}
+            <div style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 10, marginBottom: 10, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,.08)' }}>
+              <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <div style={{ width: 34, height: 34, borderRadius: 8, background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: 14, fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>{initials}</div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 17, fontWeight: 700, color: '#0F172A', fontFamily: "'Sora', sans-serif" }}>{name}</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: '#166534', background: '#DCFCE7', border: '1px solid #86EFAC', padding: '2px 8px', borderRadius: 10, textTransform: 'uppercase', letterSpacing: '.04em' }}>On Track</span>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: '#1E40AF', background: '#DBEAFE', border: '1px solid #93C5FD', padding: '2px 8px', borderRadius: 10, textTransform: 'uppercase', letterSpacing: '.04em' }}>Active</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 4 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Users size={12} color="#64748B" /><span style={{ fontSize: 12, color: '#475569', fontWeight: 500 }}>8 members</span></div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><CalendarRange size={12} color="#64748B" /><span style={{ fontSize: 12, color: '#475569', fontWeight: 500 }}>Jan 15 – Mar 30, 2026</span></div>
+                    </div>
                   </div>
                 </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <ReleaseDropdown projectId={projectId} />
+                  <AIIntelligenceButton label="Intelligence" onClick={openIntelligence} />
+                  <button onClick={() => navigate(`/project-hub/${key}/settings`)} style={{ width: 34, height: 34, borderRadius: 8, border: '1px solid #E2E8F0', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Settings size={15} color="#64748B" />
+                  </button>
+                </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <ReleaseDropdown projectId={projectId} />
-                <AIIntelligenceButton label="Intelligence" onClick={openIntelligence} />
-                <button onClick={() => navigate(`/project-hub/${key}/settings`)} style={{ width: 34, height: 34, borderRadius: 8, border: `1px solid ${C.bdr}`, background: C.card, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Settings size={15} color={C.ink3} />
-                </button>
-              </div>
-            </div>
-
-            {/* Release Pills */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <span style={{ fontSize: 11, fontWeight: 600, color: C.ink4, textTransform: 'uppercase', letterSpacing: '.04em' }}>Releases:</span>
-              {selectedReleaseIds.map(id => (
-                <span key={id} style={{ fontSize: 11, fontWeight: 600, color: C.ink2, background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '4px 10px', borderRadius: 6, fontFamily: "'JetBrains Mono', monospace" }}>
-                  {releaseMap[id] || id.slice(0, 8)}
-                </span>
-              ))}
+              {/* Release pills row inside header */}
+              {selectedReleaseIds.length > 0 && (
+                <div style={{ borderTop: '1px solid #F1F5F9', padding: '8px 20px', display: 'flex', alignItems: 'center', gap: 6, background: '#FAFBFC' }}>
+                  {selectedReleaseIds.map(id => (
+                    <span key={id} style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 8,
+                      background: '#FFFFFF', border: '1px solid #E2E8F0',
+                      boxShadow: '0 1px 2px rgba(0,0,0,.04)',
+                    }}>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", color: '#0F766E', fontWeight: 700 }}>{releaseMap[id] || id.slice(0, 8)}</span>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Widget Grid */}
-            <div className="ph-widget-stagger" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="ph-widget-stagger" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 <KeyMilestones projectId={projectId} onConfigOpen={() => setMilestoneConfigOpen(true)} releaseMap={releaseMap} />
                 <LatestInProduction projectId={projectId} releaseMap={releaseMap} />
               </div>
-              <div className="ph-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+              <div className="ph-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
                 <ItemsByStatus projectId={projectId} />
                 <OverdueItems projectId={projectId} releaseMap={releaseMap} />
                 <OnHoldItems projectId={projectId} releaseMap={releaseMap} />
               </div>
-              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 <ProductionIncidents projectId={projectId} releaseMap={releaseMap} />
                 <QADefects projectId={projectId} releaseMap={releaseMap} />
               </div>
               <TimeInStatus projectId={projectId} releaseMap={releaseMap} />
-              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 <TeamWorkload projectId={projectId} />
                 <RecentActivity projectId={projectId} />
               </div>

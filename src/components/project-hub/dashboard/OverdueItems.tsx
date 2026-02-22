@@ -1,6 +1,7 @@
 /**
- * OverdueItems widget (real data)
+ * OverdueItems widget — color-coded late badges, capped rows
  */
+import { useState } from 'react';
 import { WidgetCard } from './WidgetCard';
 import PersonAvatar from './PersonAvatar';
 import { WidgetSkeleton } from './WidgetSkeleton';
@@ -11,31 +12,54 @@ import { format } from 'date-fns';
 
 interface Props { projectId: string | null; releaseMap: Record<string, string>; }
 
+const MAX_VISIBLE = 5;
+
 export default function OverdueItems({ projectId, releaseMap }: Props) {
   const { selectedReleaseIds, openLifecycle } = useDashboardStore();
   const { data, isLoading, error, refetch } = useOverdue(projectId, selectedReleaseIds);
   const items = data ?? [];
+  const [showAll, setShowAll] = useState(false);
+  const visible = showAll ? items : items.slice(0, MAX_VISIBLE);
 
   return (
-    <WidgetCard title="Overdue" subtitle="Past due date" count={items.length} countColor="#D97706" maxHeight={280} error={error ? error.message : null} onRetry={() => refetch()}>
+    <WidgetCard title="Overdue" subtitle="Past due date" count={items.length} countColor="#D97706" maxHeight={320} error={error ? error.message : null} onRetry={() => refetch()}>
       {isLoading ? (
         <WidgetSkeleton rows={3} />
       ) : items.length === 0 ? (
         <EmptyState message="All items on track — no overdue" icon="check" />
       ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
-          <thead><tr style={{ borderBottom: '1px solid #F1F5F9' }}>{['Release', 'Key', 'Title', 'Due', 'Late', 'Assignee'].map(h => <th key={h} style={{ padding: '6px 8px', textAlign: 'left', fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.05em', fontFamily: "'Inter', sans-serif" }}>{h}</th>)}</tr></thead>
-          <tbody>{items.map((item: any, idx: number) => (
-            <tr key={item.id} style={{ height: 44, borderBottom: '1px solid #F8FAFC', background: idx % 2 === 1 ? '#FAFBFC' : undefined, transition: 'background 120ms ease' }} className="ph-table-row">
-              <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: '#0D9488', fontWeight: 600 }}>{releaseMap[item.release_id] || '—'}</td>
-              <td style={{ padding: '0 8px' }}><button onClick={() => openLifecycle(item.id)} className="ph-focus-ring" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>{item.item_key}</button></td>
-              <td style={{ padding: '0 8px', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#334155', fontFamily: "'Inter', sans-serif" }} title={item.displayTitle}>{item.displayTitle}</td>
-              <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: '#64748B' }}>{item.due_date ? format(new Date(item.due_date), 'MMM d') : '—'}</td>
-              <td style={{ padding: '0 8px' }}><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 700, color: '#EF4444', background: '#FEF2F2', padding: '2px 6px', borderRadius: 4 }}>{item.days_overdue}d</span></td>
-              <td style={{ padding: '0 8px' }}>{item.assignee_name ? <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><PersonAvatar name={item.assignee_name} size={18} /><span style={{ fontSize: 11, color: '#334155', maxWidth: 80, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>{item.assignee_name.split(' ')[0]}</span></div> : <span style={{ color: '#94A3B8', fontSize: 11, fontStyle: 'italic' }}>Unassigned</span>}</td>
-            </tr>
-          ))}</tbody>
-        </table>
+        <>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+            <thead><tr style={{ borderBottom: '2px solid #CBD5E1' }}>{['Release', 'Key', 'Title', 'Due', 'Late', 'Assignee'].map(h => <th key={h} style={{ padding: '6px 8px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '.08em', fontFamily: "'Inter', sans-serif" }}>{h}</th>)}</tr></thead>
+            <tbody>{visible.map((item: any, idx: number) => (
+              <tr key={item.id} style={{ height: 44, borderBottom: '1px solid #F1F5F9', background: idx % 2 === 1 ? '#FAFBFC' : undefined }} className="ph-table-row">
+                <td style={{ padding: '0 8px' }}>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: '#0F766E', background: '#F0FDFA', padding: '2px 7px', borderRadius: 4, border: '1px solid #99F6E4' }}>{releaseMap[item.release_id] || '—'}</span>
+                </td>
+                <td style={{ padding: '0 8px' }}><button onClick={() => openLifecycle(item.id)} className="ph-focus-ring" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#1D4ED8', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>{item.item_key}</button></td>
+                <td style={{ padding: '0 8px', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#1E293B', fontWeight: 500, fontFamily: "'Inter', sans-serif" }} title={item.displayTitle}>{item.displayTitle}</td>
+                <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: '#475569', fontWeight: 500 }}>{item.due_date ? format(new Date(item.due_date), 'MMM d') : '—'}</td>
+                <td style={{ padding: '0 8px' }}>
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    minWidth: 28, padding: '2px 6px', borderRadius: 9999,
+                    fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 700,
+                    color: '#FFFFFF',
+                    background: item.days_overdue <= 3 ? '#F59E0B' : '#DC2626',
+                  }}>{item.days_overdue}d</span>
+                </td>
+                <td style={{ padding: '0 8px' }}>{item.assignee_name ? <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}><PersonAvatar name={item.assignee_name} size={18} /><span style={{ fontSize: 11, color: '#1E293B', fontWeight: 500, maxWidth: 60, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>{item.assignee_name.split(' ')[0]}</span></div> : <span style={{ color: '#94A3B8', fontSize: 11, fontStyle: 'italic' }}>Unassigned</span>}</td>
+              </tr>
+            ))}</tbody>
+          </table>
+          {items.length > MAX_VISIBLE && !showAll && (
+            <div style={{ padding: '8px 16px', borderTop: '1px solid #F1F5F9', textAlign: 'center' }}>
+              <button onClick={() => setShowAll(true)} className="ph-focus-ring" style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer' }}>
+                Show all {items.length} →
+              </button>
+            </div>
+          )}
+        </>
       )}
     </WidgetCard>
   );

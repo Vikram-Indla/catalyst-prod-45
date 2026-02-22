@@ -1,5 +1,5 @@
 /**
- * QADefects widget
+ * QADefects widget — severity badges with borders
  */
 import WidgetCard from './WidgetCard';
 import PersonAvatar from './PersonAvatar';
@@ -13,11 +13,11 @@ interface Props {
   releaseMap: Record<string, string>;
 }
 
-const SEV_STYLE: Record<string, { bg: string; text: string }> = {
-  critical: { bg: '#FEF2F2', text: '#DC2626' },
-  high: { bg: '#FFFBEB', text: '#D97706' },
-  medium: { bg: '#F0F9FF', text: '#0284C7' },
-  low: { bg: '#F0FDF4', text: '#16A34A' },
+const SEV_STYLE: Record<string, { bg: string; text: string; border: string }> = {
+  critical: { bg: '#FEF2F2', text: '#991B1B', border: '#FCA5A5' },
+  high: { bg: '#FFFBEB', text: '#92400E', border: '#FCD34D' },
+  medium: { bg: '#F0F9FF', text: '#075985', border: '#7DD3FC' },
+  low: { bg: '#F0FDF4', text: '#166534', border: '#86EFAC' },
 };
 
 export default function QADefects({ projectId, releaseMap }: Props) {
@@ -38,9 +38,9 @@ export default function QADefects({ projectId, releaseMap }: Props) {
       onRetry={() => refetch()}
       headerRight={
         <div style={{ display: 'flex', gap: 4 }}>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#DC2626', background: '#FEF2F2', padding: '2px 6px', borderRadius: 6 }}>Crit: {crit}</span>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#D97706', background: '#FFFBEB', padding: '2px 6px', borderRadius: 6 }}>High: {high}</span>
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#0284C7', background: '#F0F9FF', padding: '2px 6px', borderRadius: 6 }}>Med: {med}</span>
+          <span style={{ fontSize: 10, fontWeight: 700, color: '#991B1B', background: '#FEF2F2', border: '1px solid #FCA5A5', padding: '2px 6px', borderRadius: 9999 }}>Crit: {crit}</span>
+          <span style={{ fontSize: 10, fontWeight: 700, color: '#92400E', background: '#FFFBEB', border: '1px solid #FCD34D', padding: '2px 6px', borderRadius: 9999 }}>High: {high}</span>
+          <span style={{ fontSize: 10, fontWeight: 700, color: '#075985', background: '#F0F9FF', border: '1px solid #7DD3FC', padding: '2px 6px', borderRadius: 9999 }}>Med: {med}</span>
         </div>
       }
     >
@@ -51,9 +51,9 @@ export default function QADefects({ projectId, releaseMap }: Props) {
       ) : (
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid #F1F5F9' }}>
+            <tr style={{ borderBottom: '2px solid #CBD5E1' }}>
               {['Rel', 'Key', 'Sev', 'Title', 'Open', 'Reported', 'Assigned'].map(h => (
-                <th key={h} style={{ padding: '6px 6px', textAlign: 'left', fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.05em', fontFamily: "'Inter', sans-serif" }}>{h}</th>
+                <th key={h} style={{ padding: '6px 6px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '.08em', fontFamily: "'Inter', sans-serif" }}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -61,29 +61,31 @@ export default function QADefects({ projectId, releaseMap }: Props) {
             {items.map((item: any, idx: number) => {
               const ss = SEV_STYLE[item.severity] || SEV_STYLE.medium;
               return (
-                <tr key={item.id} style={{ height: 44, borderBottom: '1px solid #F8FAFC', background: idx % 2 === 1 ? '#FAFBFC' : undefined, transition: 'background 120ms ease' }} className="ph-table-row">
-                  <td style={{ padding: '0 6px', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: '#0D9488', fontWeight: 600 }}>
-                    {releaseMap[item.release_id] || '—'}
+                <tr key={item.id} style={{ height: 44, borderBottom: '1px solid #F1F5F9', background: idx % 2 === 1 ? '#FAFBFC' : undefined }} className="ph-table-row">
+                  <td style={{ padding: '0 6px' }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: '#0F766E', background: '#F0FDFA', padding: '2px 7px', borderRadius: 4, border: '1px solid #99F6E4' }}>
+                      {releaseMap[item.release_id] || '—'}
+                    </span>
                   </td>
-                  <td style={{ padding: '0 6px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 600 }}>
+                  <td style={{ padding: '0 6px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#1D4ED8', fontWeight: 700 }}>
                     {item.key}
                   </td>
                   <td style={{ padding: '0 6px' }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: ss.text, background: ss.bg, padding: '2px 6px', borderRadius: 4, textTransform: 'capitalize' }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: ss.text, background: ss.bg, border: `1px solid ${ss.border}`, padding: '2px 7px', borderRadius: 9999, textTransform: 'capitalize' }}>
                       {item.severity}
                     </span>
                   </td>
-                  <td style={{ padding: '0 6px', maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#334155', fontFamily: "'Inter', sans-serif" }} title={item.title}>
+                  <td style={{ padding: '0 6px', maxWidth: 110, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#1E293B', fontWeight: 500, fontFamily: "'Inter', sans-serif" }} title={item.title}>
                     {item.title}
                   </td>
-                  <td style={{ padding: '0 6px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: (item.days_open ?? 0) === 0 ? '#16A34A' : '#334155' }}>
+                  <td style={{ padding: '0 6px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: (item.days_open ?? 0) === 0 ? '#16A34A' : '#1E293B' }}>
                     {item.days_open ?? 0}d
                   </td>
                   <td style={{ padding: '0 6px' }}>
                     {item.reported_by_name ? (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                         <PersonAvatar name={item.reported_by_name} size={16} />
-                        <span style={{ fontSize: 10, color: '#334155', maxWidth: 60, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>{item.reported_by_name.split(' ')[0]}</span>
+                        <span style={{ fontSize: 10, color: '#1E293B', fontWeight: 500, maxWidth: 60, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>{item.reported_by_name.split(' ')[0]}</span>
                       </div>
                     ) : <span style={{ color: '#94A3B8', fontSize: 10, fontStyle: 'italic' }}>Unknown</span>}
                   </td>
@@ -91,7 +93,7 @@ export default function QADefects({ projectId, releaseMap }: Props) {
                     {item.assigned_to_name ? (
                       <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                         <PersonAvatar name={item.assigned_to_name} size={16} />
-                        <span style={{ fontSize: 10, color: '#334155', maxWidth: 60, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>{item.assigned_to_name.split(' ')[0]}</span>
+                        <span style={{ fontSize: 10, color: '#1E293B', fontWeight: 500, maxWidth: 60, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>{item.assigned_to_name.split(' ')[0]}</span>
                       </div>
                     ) : <span style={{ color: '#94A3B8', fontSize: 10, fontStyle: 'italic' }}>Unassigned</span>}
                   </td>

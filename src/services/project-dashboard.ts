@@ -20,7 +20,7 @@ export async function fetchReleases(projectId: string) {
     .from('ph_releases')
     .select('id, name, title, status, target_date, project_id, start_date')
     .eq('project_id', projectId)
-    .in('status', ['in_progress', 'active'])
+    .in('status', ['in_progress', 'active', 'released'])
     .order('target_date', { ascending: true });
   if (error) throw error;
   return data ?? [];
