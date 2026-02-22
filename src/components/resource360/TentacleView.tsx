@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback, useEffect, useRef } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { HUB_COLORS, HUB_SHORT, STATUS_CATEGORY_COLORS, WIT_STYLES, PRIORITY_ICONS } from '@/constants/resource360';
 import type { RoleFilter } from './Toolbar';
 
@@ -9,7 +9,6 @@ interface TentacleViewProps {
   onItemClick: (item: any) => void;
 }
 
-// Force-directed positioning using Fruchterman-Reingold
 function computePositions(items: any[], cx: number, cy: number) {
   const minDist = 195;
   const zones: Record<string, [number, number]> = {
@@ -18,7 +17,6 @@ function computePositions(items: any[], cx: number, cy: number) {
     done: [270, 378],
   };
 
-  // Initial placement
   const grouped: Record<string, any[]> = { todo: [], progress: [], done: [] };
   items.forEach(it => {
     const cat = it.status_category || 'todo';
@@ -43,7 +41,6 @@ function computePositions(items: any[], cx: number, cy: number) {
     });
   });
 
-  // Repulsion iterations
   for (let iter = 0; iter < 8; iter++) {
     for (let i = 0; i < positions.length; i++) {
       for (let j = i + 1; j < positions.length; j++) {
@@ -67,11 +64,26 @@ function computePositions(items: any[], cx: number, cy: number) {
 }
 
 const NODE_W = 185;
-const NODE_H = 120;
+
+const formatAge = (days: number | null | undefined): string => {
+  if (days == null) return '—';
+  if (days === 0) return 'Today';
+  if (days > 365) return `${days}d`;
+  return `${days}d`;
+};
+
+const ageColor = (days: number | null | undefined): string => {
+  if (days == null) return '#64748B';
+  if (days > 365) return '#DC2626';
+  if (days > 14) return '#DC2626';
+  if (days > 7) return '#D97706';
+  return '#059669';
+};
 
 const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter, onItemClick }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ w: 1200, h: 700 });
+  const [pulseCount, setPulseCount] = useState(0);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -84,6 +96,12 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
     return () => obs.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (pulseCount >= 3) return;
+    const timer = setTimeout(() => setPulseCount(c => c + 1), 1500);
+    return () => clearTimeout(timer);
+  }, [pulseCount]);
+
   const filtered = useMemo(() => {
     if (roleFilter === 'all') return items;
     return items.filter(i => i.resource_role === roleFilter);
@@ -95,22 +113,38 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
 
   const initials = resource?.initials || resource?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) || '??';
 
+  // Empty state
+  if (filtered.length === 0) {
+    return (
+      <div ref={containerRef} style={{
+        position: 'relative', width: '100%', minHeight: 500, height: 'calc(100vh - 280px)',
+        background: '#F8FAFC', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        fontFamily: "'Inter', sans-serif",
+      }}>
+        <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+          <span style={{ fontSize: 28, color: '#94A3B8' }}>○</span>
+        </div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>
+          {roleFilter !== 'all' ? 'No items match role filter' : 'No work items assigned yet'}
+        </div>
+        <div style={{ fontSize: 12, color: '#64748B' }}>
+          {roleFilter !== 'all' ? `Try switching to "All" to see all items` : 'Items from across 7 hubs will appear here as they\'re assigned'}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div ref={containerRef} style={{
-      position: 'relative',
-      width: '100%',
-      minHeight: 500,
-      height: 'calc(100vh - 280px)',
-      background: '#F8FAFC',
-      overflow: 'hidden',
-      fontFamily: "'Inter', sans-serif",
+      position: 'relative', width: '100%', minHeight: 500, height: 'calc(100vh - 280px)',
+      background: '#F8FAFC', overflow: 'hidden', fontFamily: "'Inter', sans-serif",
     }}>
       {/* Zone labels */}
       <div style={{ position: 'absolute', left: 40, top: '50%', transform: 'translateY(-50%)', fontSize: 10.5, fontWeight: 800, letterSpacing: '0.1em', color: '#94A3B8', textTransform: 'uppercase' }}>TO DO</div>
       <div style={{ position: 'absolute', right: 40, top: '28%', fontSize: 10.5, fontWeight: 800, letterSpacing: '0.1em', color: '#94A3B8', textTransform: 'uppercase' }}>IN PROGRESS</div>
       <div style={{ position: 'absolute', right: 40, bottom: '20%', fontSize: 10.5, fontWeight: 800, letterSpacing: '0.1em', color: '#94A3B8', textTransform: 'uppercase' }}>DONE</div>
 
-      {/* SVG lines */}
+      {/* SVG lines - single element */}
       <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
         {positions.map((pos, i) => {
           const nx = pos.x;
@@ -122,7 +156,7 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
           const isDashed = pos.item.resource_role === 'reported';
           return (
             <path
-              key={i}
+              key={pos.item.id || i}
               d={`M ${cx} ${cy} C ${cpx1} ${cpy1}, ${cpx2} ${cpy2}, ${nx} ${ny}`}
               fill="none"
               stroke="#E2E8F0"
@@ -134,17 +168,23 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
       </svg>
 
       {/* Center avatar */}
-      <div style={{
-        position: 'absolute',
-        left: cx - 36,
-        top: cy - 36,
-        width: 72, height: 72, borderRadius: '50%',
-        background: 'linear-gradient(135deg, #2563EB, #4F46E5)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: '#FFFFFF', fontSize: 24, fontWeight: 700,
-        boxShadow: '0 0 0 3px #FFFFFF, 0 0 0 5px #2563EB, 0 4px 16px rgba(37,99,235,.25)',
-        zIndex: 10,
-      }}>
+      <div
+        tabIndex={0}
+        aria-label={`Center avatar for ${resource?.full_name || 'resource'}`}
+        style={{
+          position: 'absolute',
+          left: cx - 36, top: cy - 36,
+          width: 72, height: 72, borderRadius: '50%',
+          background: 'linear-gradient(135deg, #2563EB, #4F46E5)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: '#FFFFFF', fontSize: 24, fontWeight: 700,
+          boxShadow: pulseCount < 3
+            ? '0 0 0 3px #FFFFFF, 0 0 0 5px #2563EB, 0 0 0 12px rgba(37,99,235,.15), 0 4px 16px rgba(37,99,235,.25)'
+            : '0 0 0 3px #FFFFFF, 0 0 0 5px #2563EB, 0 4px 16px rgba(37,99,235,.25)',
+          zIndex: 10,
+          animation: pulseCount < 3 ? 'r360pulse 1.5s ease-in-out' : 'none',
+        }}
+      >
         {initials}
       </div>
 
@@ -160,11 +200,15 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
         return (
           <div
             key={it.id}
+            tabIndex={0}
+            role="button"
+            aria-label={`Work item ${it.item_key}: ${it.title}`}
             onClick={() => onItemClick(it)}
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onItemClick(it); } }}
             style={{
               position: 'absolute',
               left: pos.x - NODE_W / 2,
-              top: pos.y - NODE_H / 2,
+              top: pos.y - 60,
               width: NODE_W,
               background: '#FFFFFF',
               borderRadius: 8,
@@ -180,7 +224,7 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
             onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,.14)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
             onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,.08)'; e.currentTarget.style.transform = 'translateY(0)'; }}
           >
-            {/* Top row: key + badges */}
+            {/* Top row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
               <span style={{ fontSize: 10, fontWeight: 800, fontFamily: 'monospace', color: '#0F172A' }}>
                 {it.item_key}
@@ -199,7 +243,7 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
               </span>
             </div>
 
-            {/* Title */}
+            {/* Title - 2-line truncate */}
             <div style={{
               fontSize: 12, fontWeight: 600, color: '#0F172A',
               lineHeight: 1.3,
@@ -222,11 +266,15 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
                   {it.status}
                 </span>
               )}
-              <span style={{ fontSize: 10, color: it.age_days > 14 ? '#DC2626' : it.age_days > 7 ? '#D97706' : '#059669', fontWeight: 600, marginLeft: 'auto' }}>
-                {it.age_days}d
+              <span style={{
+                fontSize: 10, fontWeight: 600, marginLeft: 'auto',
+                color: ageColor(it.age_days),
+                display: 'inline-flex', alignItems: 'center', gap: 2,
+              }}>
+                {it.age_days > 365 && <span>⚠</span>}
+                {formatAge(it.age_days)}
               </span>
               <span style={{ fontSize: 11 }}>{PRIORITY_ICONS[it.priority] || ''}</span>
-              {/* Role indicator */}
               <span style={{
                 width: 18, height: 18, borderRadius: '50%',
                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -239,7 +287,7 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
               </span>
             </div>
 
-            {/* Parent breadcrumb */}
+            {/* Parent breadcrumb - hidden if null */}
             {it.parent_item_key && (
               <div style={{ fontSize: 9, color: '#94A3B8', marginTop: 4, fontFamily: 'monospace' }}>
                 ↳ {it.parent_item_key}
@@ -254,6 +302,11 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
           from { opacity: 0; transform: translateY(8px) scale(0.97); }
           to { opacity: 1; transform: translateY(0) scale(1); }
         }
+        @keyframes r360pulse {
+          0%, 100% { box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 5px #2563EB, 0 4px 16px rgba(37,99,235,.25); }
+          50% { box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 5px #2563EB, 0 0 0 14px rgba(37,99,235,.12), 0 4px 16px rgba(37,99,235,.25); }
+        }
+        *:focus-visible { outline: 2px solid #2563EB; outline-offset: 2px; }
       `}</style>
     </div>
   );
