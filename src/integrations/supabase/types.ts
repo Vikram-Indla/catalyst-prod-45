@@ -31681,6 +31681,7 @@ export type Database = {
           email: string | null
           id: string
           is_active: boolean | null
+          jira_account_id: string | null
           location_id: string | null
           name: string
           notes: string | null
@@ -31707,6 +31708,7 @@ export type Database = {
           email?: string | null
           id?: string
           is_active?: boolean | null
+          jira_account_id?: string | null
           location_id?: string | null
           name: string
           notes?: string | null
@@ -31733,6 +31735,7 @@ export type Database = {
           email?: string | null
           id?: string
           is_active?: boolean | null
+          jira_account_id?: string | null
           location_id?: string | null
           name?: string
           notes?: string | null
