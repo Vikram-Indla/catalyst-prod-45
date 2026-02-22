@@ -34,6 +34,15 @@ export default function IdeationPage() {
 
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState<StatusFilter>('all');
+
+  // FIX 2: Reset filter when view changes
+  const prevViewRef = React.useRef(activeView);
+  React.useEffect(() => {
+    if (prevViewRef.current !== activeView) {
+      setActiveFilter('all');
+      prevViewRef.current = activeView;
+    }
+  }, [activeView]);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   // Track converted ideas: key → initiative key (e.g., 'IDH-005' → 'MIM-006')
   const [convertedIdeas, setConvertedIdeas] = useState<Record<string, string>>({});
@@ -182,12 +191,14 @@ export default function IdeationPage() {
         display: 'flex', alignItems: 'stretch',
       }}>
         {(() => {
-          const total = ideasData.length;
-          const avgImpact = total > 0 ? (ideasData.reduce((s, i) => s + i.impact, 0) / total).toFixed(2) : '0';
-          const pendingReview = ideasData.filter(i => i.status === 'under_review').length;
-          const converted = ideasData.filter(i => i.status === 'converted').length;
+          // Use ideasWithConversions to include local conversion overrides
+          const allIdeas = ideasWithConversions;
+          const total = allIdeas.length;
+          const avgImpact = total > 0 ? (allIdeas.reduce((s, i) => s + i.impact, 0) / total).toFixed(2) : '0';
+          const pendingReview = allIdeas.filter(i => i.status === 'under_review').length;
+          const converted = allIdeas.filter(i => i.status === 'converted').length;
           const convRate = total > 0 ? (converted / total * 100).toFixed(1) + '%' : '0%';
-          const aiReady = ideasData.filter(i => i.ai === 'ready').length;
+          const aiReady = allIdeas.filter(i => i.ai === 'ready').length;
           const aiPct = total > 0 ? Math.round(aiReady / total * 100) + '%' : '0%';
           return [
             { label: 'TOTAL IDEAS', value: String(total), color: '#0F172A', trend: '', trendColor: '#16A34A' },
@@ -499,7 +510,7 @@ function AssigneeCell({ assignee }: { assignee: Idea['assignee'] }) {
 
 function AiBadge({ ai }: { ai: 'ready' | 'pending' }) {
   if (ai === 'ready') {
-    return <span style={{ fontSize: '14px', color: '#7C3AED', textAlign: 'center', display: 'block' }}>✦</span>;
+    return <span style={{ fontSize: '14px', fontWeight: 700, color: '#7C3AED', textAlign: 'center', display: 'block' }}>✦</span>;
   }
-  return <span style={{ fontSize: '14px', color: '#D97706', textAlign: 'center', display: 'block' }}>⏳</span>;
+  return null;
 }
