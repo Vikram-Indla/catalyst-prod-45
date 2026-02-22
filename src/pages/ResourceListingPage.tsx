@@ -15,10 +15,10 @@ interface Resource {
   full_name: string;
   job_role: string | null;
   location_type: string | null;
-  country: string | null;
   dept_name: string | null;
   assignment_name: string | null;
   vendor_name: string | null;
+  avatar_url: string | null;
 }
 
 /* ── Constants ── */
@@ -92,36 +92,41 @@ export default function ResourceListingPage() {
   const [sortDir, setSortDir] = useState<SortDir>('asc');
 
   const { data: resources = [], isLoading } = useQuery({
-    queryKey: ['r360-resources-listing'],
+    queryKey: ['resources-listing'],
     queryFn: async () => {
+      // Fetch resource_inventory with lookups
       const { data, error } = await supabase
-        .from('r360_resources' as any)
-        .select('rid, full_name, job_role, location_type, country, department_id, assignment_id, vendor_id')
+        .from('resource_inventory')
+        .select('rid, name, role_name, profile_id, department_id, assignment_id, vendor_id, vendor_name, department_name, location_id')
         .eq('is_active', true)
-        .is('deleted_at', null)
-        .order('full_name', { ascending: true });
+        .order('name', { ascending: true });
       if (error) throw error;
 
-      // Fetch lookups in parallel
-      const [{ data: depts }, { data: assignments }, { data: vendors }] = await Promise.all([
-        supabase.from('r360_departments' as any).select('id, name'),
-        supabase.from('r360_assignments' as any).select('id, name'),
-        supabase.from('r360_vendors' as any).select('id, name'),
+      // Fetch lookups + profiles for avatars in parallel
+      const profileIds = (data || []).map((r: any) => r.profile_id).filter(Boolean);
+      const [{ data: depts }, { data: assignments }, { data: locations }, { data: profiles }] = await Promise.all([
+        supabase.from('capacity_departments').select('id, name'),
+        supabase.from('resource_assignments').select('id, name'),
+        supabase.from('resource_locations').select('id, name'),
+        profileIds.length > 0
+          ? supabase.from('profiles').select('id, avatar_url').in('id', profileIds)
+          : Promise.resolve({ data: [] }),
       ]);
 
       const deptMap = new Map((depts || []).map((d: any) => [d.id, d.name]));
       const assignMap = new Map((assignments || []).map((a: any) => [a.id, a.name]));
-      const vendorMap = new Map((vendors || []).map((v: any) => [v.id, v.name]));
+      const locMap = new Map((locations || []).map((l: any) => [l.id, l.name]));
+      const avatarMap = new Map((profiles || []).map((p: any) => [p.id, p.avatar_url]));
 
       return ((data || []) as any[]).map((r: any): Resource => ({
         rid: r.rid,
-        full_name: r.full_name,
-        job_role: r.job_role,
-        location_type: r.location_type,
-        country: r.country,
-        dept_name: deptMap.get(r.department_id) || null,
+        full_name: r.name,
+        job_role: r.role_name,
+        location_type: locMap.get(r.location_id) || null,
+        dept_name: deptMap.get(r.department_id) || r.department_name || null,
         assignment_name: assignMap.get(r.assignment_id) || null,
-        vendor_name: vendorMap.get(r.vendor_id) || null,
+        vendor_name: r.vendor_name || null,
+        avatar_url: r.profile_id ? (avatarMap.get(r.profile_id) || null) : null,
       }));
     },
   });
@@ -283,10 +288,26 @@ export default function ResourceListingPage() {
                 {/* RESOURCE */}
                 <td style={{ padding: '8px 16px', height: '52px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {r.avatar_url ? (
+                      <img
+                        src={r.avatar_url}
+                        alt={r.full_name}
+                        style={{
+                          width: '36px', height: '36px', borderRadius: '50%',
+                          objectFit: 'cover', flexShrink: 0,
+                        }}
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
                     <div style={{
                       width: '36px', height: '36px', borderRadius: '50%',
                       background: hashColor(r.full_name), color: '#FFF',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      display: r.avatar_url ? 'none' : 'flex',
+                      alignItems: 'center', justifyContent: 'center',
                       fontSize: '12px', fontWeight: 700, flexShrink: 0,
                     }}>
                       {getInitials(r.full_name)}
