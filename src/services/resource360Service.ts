@@ -2,6 +2,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 // ── Resource Profile ──
 export const fetchResource = async (rid: string) => {
+  // Try r360_resources first (seed data)
   const { data, error } = await supabase
     .from('r360_resources' as any)
     .select(`
@@ -13,8 +14,47 @@ export const fetchResource = async (rid: string) => {
     .eq('rid', rid)
     .maybeSingle();
   if (error) throw error;
-  if (!data) throw new Error(`Resource with RID "${rid}" not found`);
-  return data as any;
+  if (data) return data as any;
+
+  // Fallback: resolve from resource_inventory (admin/users source)
+  const { data: ri, error: riErr } = await supabase
+    .from('resource_inventory')
+    .select('rid, name, role_name, profile_id, department_id, assignment_id, vendor_id, vendor_name, department_name, location_id, email, is_active')
+    .eq('rid', rid)
+    .maybeSingle();
+  if (riErr) throw riErr;
+  if (!ri) throw new Error(`Resource with RID "${rid}" not found`);
+
+  // Fetch lookups + avatar in parallel
+  const [{ data: depts }, { data: assignments }, { data: locations }, { data: profile }] = await Promise.all([
+    supabase.from('capacity_departments').select('id, name'),
+    supabase.from('resource_assignments').select('id, name'),
+    supabase.from('resource_locations').select('id, name'),
+    (ri as any).profile_id
+      ? supabase.from('profiles').select('id, avatar_url').eq('id', (ri as any).profile_id).maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
+
+  const deptMap = new Map((depts || []).map((d: any) => [d.id, d.name]));
+  const assignMap = new Map((assignments || []).map((a: any) => [a.id, a.name]));
+  const locMap = new Map((locations || []).map((l: any) => [l.id, l.name]));
+
+  const r = ri as any;
+  return {
+    rid: r.rid,
+    full_name: r.name,
+    job_role: r.role_name,
+    email: r.email,
+    location_type: locMap.get(r.location_id) || null,
+    is_active: r.is_active,
+    avatar_url: profile?.data?.avatar_url || (profile as any)?.avatar_url || null,
+    r360_departments: { name: deptMap.get(r.department_id) || r.department_name || null },
+    r360_vendors: { name: r.vendor_name || null },
+    r360_assignments: { name: assignMap.get(r.assignment_id) || null },
+    // Provide an id for downstream queries (use rid as fallback)
+    id: r.profile_id || r.rid,
+    _source: 'resource_inventory',
+  } as any;
 };
 
 // ── Summary Stats ──
