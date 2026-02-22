@@ -18394,6 +18394,139 @@ export type Database = {
           },
         ]
       }
+      ph_idea_expert_reviews: {
+        Row: {
+          created_at: string | null
+          id: string
+          idea_id: string
+          notes: string | null
+          recommendation: string
+          reviewer_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          idea_id: string
+          notes?: string | null
+          recommendation: string
+          reviewer_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          idea_id?: string
+          notes?: string | null
+          recommendation?: string
+          reviewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_idea_expert_reviews_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_expert_reviews_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_board"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_expert_reviews_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_listing"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_expert_reviews_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_matrix"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_expert_reviews_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ph_ideas_triage"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_expert_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_idea_expert_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_idea_expert_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_expert_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_idea_expert_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_idea_expert_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_idea_expert_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_idea_expert_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_idea_expert_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_idea_expert_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+        ]
+      }
       ph_idea_scores: {
         Row: {
           alignment_score: number | null
@@ -18660,6 +18793,7 @@ export type Database = {
           impact: number | null
           impact_total: number | null
           imperative: number | null
+          innovation_drive_id: string | null
           is_deleted: boolean | null
           job_size: number | null
           linked_initiative_id: string | null
@@ -18707,6 +18841,7 @@ export type Database = {
           impact?: number | null
           impact_total?: number | null
           imperative?: number | null
+          innovation_drive_id?: string | null
           is_deleted?: boolean | null
           job_size?: number | null
           linked_initiative_id?: string | null
@@ -18754,6 +18889,7 @@ export type Database = {
           impact?: number | null
           impact_total?: number | null
           imperative?: number | null
+          innovation_drive_id?: string | null
           is_deleted?: boolean | null
           job_size?: number | null
           linked_initiative_id?: string | null
@@ -18777,6 +18913,13 @@ export type Database = {
           wsjf_score?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_ideas_drive"
+            columns: ["innovation_drive_id"]
+            isOneToOne: false
+            referencedRelation: "ph_innovation_drives"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
@@ -20079,6 +20222,113 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "ph_departments"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_innovation_drives: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          deadline: string | null
+          description: string
+          id: string
+          status: Database["public"]["Enums"]["drive_status"]
+          target_count: number | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          deadline?: string | null
+          description?: string
+          id?: string
+          status?: Database["public"]["Enums"]["drive_status"]
+          target_count?: number | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          deadline?: string | null
+          description?: string
+          id?: string
+          status?: Database["public"]["Enums"]["drive_status"]
+          target_count?: number | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_innovation_drives_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_innovation_drives_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_innovation_drives_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_innovation_drives_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_innovation_drives_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_innovation_drives_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_innovation_drives_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_innovation_drives_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_innovation_drives_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_innovation_drives_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
           },
         ]
       }
@@ -59051,6 +59301,7 @@ export type Database = {
         | "provides_input"
         | "approves"
         | "governs"
+      drive_status: "active" | "completed" | "upcoming" | "draft"
       epic_state: "not_started" | "in_progress" | "accepted"
       epic_status:
         | "proposed"
@@ -59059,6 +59310,7 @@ export type Database = {
         | "in_progress"
         | "done"
         | "cancelled"
+      evidence_type: "document" | "data" | "benchmark" | "url" | "image"
       exception_reason_code:
         | "moved_to_prod_not_approved"
         | "committee_pending_override"
@@ -59451,6 +59703,7 @@ export type Database = {
         | "completed"
         | "archived"
       track_by_type: "POINTS" | "HOURS"
+      triage_action: "fast_track" | "merge" | "investigate" | "defer"
       urgency_level: "high" | "medium" | "low"
       user_approval_status:
         | "PENDING_APPROVAL"
@@ -59726,6 +59979,7 @@ export const Constants = {
         "approves",
         "governs",
       ],
+      drive_status: ["active", "completed", "upcoming", "draft"],
       epic_state: ["not_started", "in_progress", "accepted"],
       epic_status: [
         "proposed",
@@ -59735,6 +59989,7 @@ export const Constants = {
         "done",
         "cancelled",
       ],
+      evidence_type: ["document", "data", "benchmark", "url", "image"],
       exception_reason_code: [
         "moved_to_prod_not_approved",
         "committee_pending_override",
@@ -60168,6 +60423,7 @@ export const Constants = {
         "archived",
       ],
       track_by_type: ["POINTS", "HOURS"],
+      triage_action: ["fast_track", "merge", "investigate", "defer"],
       urgency_level: ["high", "medium", "low"],
       user_approval_status: [
         "PENDING_APPROVAL",
