@@ -91,10 +91,11 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
                 <span style={{ fontSize: 10, color: '#94A3B8' }}>›</span>
               </div>
             )}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
               <span style={{ fontSize: 15, fontWeight: 900, fontFamily: 'monospace', color: '#0F172A' }}>
                 {item.item_key}
               </span>
+              <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', margin: 0 }}>{item.title}</h2>
               <span style={{
                 fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
                 background: witStyle.bg, color: witStyle.color,
@@ -102,7 +103,6 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
                 {item.work_item_type}
               </span>
             </div>
-            <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', margin: 0 }}>{item.title}</h2>
             <div style={{ marginTop: 8, display: 'flex', gap: 6 }}>
               {sc && (
                 <span style={{
@@ -169,6 +169,32 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
               </span>
             ) : <span style={{ color: '#64748B', fontSize: 12 }}>No due date</span>}
           </Field>
+
+          {/* Description */}
+          <Field label="Description" span={2}>
+            {item.description ? (
+              <span style={{ fontSize: 12, color: '#334155', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
+                {item.description}
+              </span>
+            ) : <span style={{ color: '#64748B', fontSize: 12 }}>No description</span>}
+          </Field>
+
+          {/* Parent Details */}
+          {item.parent_item_key && (
+            <>
+              <Field label="Parent Key">
+                <span style={{ fontFamily: 'monospace', color: '#2563EB', fontWeight: 600 }}>{item.parent_item_key}</span>
+              </Field>
+              <Field label="Parent Name">{item.parent_summary || '—'}</Field>
+              <Field label="Parent Description" span={2}>
+                {item.parent_description ? (
+                  <span style={{ fontSize: 12, color: '#334155', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
+                    {item.parent_description}
+                  </span>
+                ) : <span style={{ color: '#64748B', fontSize: 12 }}>No description</span>}
+              </Field>
+            </>
+          )}
         </div>
 
         {/* Transition Timeline */}

@@ -122,10 +122,31 @@ export const fetchWorkItems = async (resourceId: string, jiraAccountId?: string 
 
   const { data, error } = await supabase
     .from('ph_issues' as any)
-    .select('issue_key, project_key, project_name, issue_type, summary, status, status_category, priority, parent_key, parent_summary, due_date, effective_due_date, story_points, sprint_name, fix_versions, labels, components, type_icon_url, jira_created_at, jira_updated_at, assignee_display_name, reporter_display_name')
+    .select('issue_key, project_key, project_name, issue_type, summary, description_text, status, status_category, priority, parent_key, parent_summary, due_date, effective_due_date, story_points, sprint_name, fix_versions, labels, components, type_icon_url, jira_created_at, jira_updated_at, assignee_display_name, reporter_display_name')
     .eq('assignee_account_id', jiraAccountId)
     .order('jira_updated_at', { ascending: false });
   if (error) throw error;
+
+  // Build a lookup of issue_key -> description_text for parent description resolution
+  const descLookup: Record<string, string> = {};
+  (data ?? []).forEach((i: any) => {
+    if (i.issue_key && i.description_text) descLookup[i.issue_key] = i.description_text;
+  });
+
+  // Collect parent keys that aren't in the current dataset for separate lookup
+  const missingParentKeys = [...new Set(
+    (data ?? []).map((i: any) => i.parent_key).filter((k: string) => k && !descLookup[k])
+  )] as string[];
+
+  if (missingParentKeys.length > 0) {
+    const { data: parentData } = await supabase
+      .from('ph_issues' as any)
+      .select('issue_key, description_text')
+      .in('issue_key', missingParentKeys);
+    (parentData ?? []).forEach((p: any) => {
+      if (p.issue_key && p.description_text) descLookup[p.issue_key] = p.description_text;
+    });
+  }
 
   const items = (data ?? []).map((i: any) => {
     // Extract fix version names as release names
@@ -155,12 +176,14 @@ export const fetchWorkItems = async (resourceId: string, jiraAccountId?: string 
       work_item_type: i.issue_type,
       item_type: i.issue_type,
       title: i.summary,
+      description: i.description_text || null,
       status: i.status,
       status_category: i.status_category,
       priority: i.priority,
       parent_key: i.parent_key,
       parent_item_key: i.parent_key,
       parent_summary: i.parent_summary,
+      parent_description: i.parent_key ? (descLookup[i.parent_key] || null) : null,
       due_date: dueDateStr,
       days_until_due: daysUntilDue,
       story_points: i.story_points,
