@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useResource, useResourceSummary, useWorkItems } from '@/hooks/useResource360';
 import { ArrowLeft } from 'lucide-react';
@@ -54,6 +54,44 @@ const Resource360Page = () => {
   const [groupBy, setGroupBy] = useState('status');
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [showAi, setShowAi] = useState(false);
+  const [selectedRelease, setSelectedRelease] = useState('all');
+  const [selectedProject, setSelectedProject] = useState('all');
+
+  // Derive filter options from work items
+  const releaseOptions = useMemo(() => {
+    if (!items?.length) return [];
+    const set = new Set<string>();
+    items.forEach((i: any) => {
+      (i.release_names || []).forEach((r: string) => set.add(r));
+    });
+    return Array.from(set).sort();
+  }, [items]);
+
+  const projectOptions = useMemo(() => {
+    if (!items?.length) return [];
+    const map = new Map<string, string>();
+    items.forEach((i: any) => {
+      if (i.project_key && !map.has(i.project_key)) {
+        map.set(i.project_key, i.project_name || i.project_key);
+      }
+    });
+    return Array.from(map.entries()).map(([key, name]) => ({ key, name })).sort((a, b) => a.name.localeCompare(b.name));
+  }, [items]);
+
+  // Filter items based on toolbar selections
+  const filteredItems = useMemo(() => {
+    if (!items?.length) return [];
+    return items.filter((i: any) => {
+      if (selectedRelease !== 'all') {
+        const rels = i.release_names || [];
+        if (!rels.includes(selectedRelease)) return false;
+      }
+      if (selectedProject !== 'all') {
+        if (i.project_key !== selectedProject) return false;
+      }
+      return true;
+    });
+  }, [items, selectedRelease, selectedProject]);
 
   const handleItemClick = useCallback((item: any) => {
     setSelectedItem(item);
@@ -155,6 +193,12 @@ const Resource360Page = () => {
         onAiClick={() => setShowAi(true)}
         groupBy={groupBy}
         onGroupByChange={setGroupBy}
+        releaseOptions={releaseOptions}
+        projectOptions={projectOptions}
+        selectedRelease={selectedRelease}
+        onReleaseChange={setSelectedRelease}
+        selectedProject={selectedProject}
+        onProjectChange={setSelectedProject}
       />
 
       <div style={{ flex: 1, overflow: 'auto' }}>
@@ -169,7 +213,7 @@ const Resource360Page = () => {
               </div>
             </div>
           ) : (
-            <TentacleView resource={resource} items={items || []} roleFilter={roleFilter} onItemClick={handleItemClick} />
+            <TentacleView resource={resource} items={filteredItems} roleFilter={roleFilter} onItemClick={handleItemClick} />
           )
         )}
         {activeView === 'chronology' && (
@@ -183,7 +227,7 @@ const Resource360Page = () => {
               ))}
             </div>
           ) : (
-            <ListView items={items || []} roleFilter={roleFilter} onItemClick={handleItemClick} />
+            <ListView items={filteredItems} roleFilter={roleFilter} onItemClick={handleItemClick} />
           )
         )}
       </div>

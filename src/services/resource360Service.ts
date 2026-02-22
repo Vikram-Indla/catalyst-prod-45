@@ -122,33 +122,41 @@ export const fetchWorkItems = async (resourceId: string, jiraAccountId?: string 
 
   const { data, error } = await supabase
     .from('ph_issues' as any)
-    .select('issue_key, project_key, issue_type, summary, status, status_category, priority, parent_key, parent_summary, due_date, effective_due_date, story_points, sprint_name, fix_versions, labels, components, type_icon_url, jira_created_at, jira_updated_at')
+    .select('issue_key, project_key, project_name, issue_type, summary, status, status_category, priority, parent_key, parent_summary, due_date, effective_due_date, story_points, sprint_name, fix_versions, labels, components, type_icon_url, jira_created_at, jira_updated_at')
     .eq('assignee_account_id', jiraAccountId)
     .order('jira_updated_at', { ascending: false });
   if (error) throw error;
 
-  const items = (data ?? []).map((i: any) => ({
-    id: i.issue_key,
-    issue_key: i.issue_key,
-    project_key: i.project_key,
-    item_type: i.issue_type,
-    title: i.summary,
-    status: i.status,
-    status_category: i.status_category,
-    priority: i.priority,
-    parent_key: i.parent_key,
-    parent_summary: i.parent_summary,
-    due_date: i.effective_due_date || i.due_date,
-    story_points: i.story_points,
-    sprint_name: i.sprint_name,
-    fix_versions: i.fix_versions,
-    labels: i.labels,
-    components: i.components,
-    type_icon_url: i.type_icon_url,
-    assigned_date: i.jira_created_at,
-    updated_at: i.jira_updated_at,
-    hub: 'ProjectHub',
-  }));
+  const items = (data ?? []).map((i: any) => {
+    // Extract fix version names as release names
+    const fvList = Array.isArray(i.fix_versions) ? i.fix_versions : [];
+    const releaseNames = fvList.map((fv: any) => fv?.name).filter(Boolean);
+
+    return {
+      id: i.issue_key,
+      issue_key: i.issue_key,
+      project_key: i.project_key,
+      project_name: i.project_name || i.project_key,
+      item_type: i.issue_type,
+      title: i.summary,
+      status: i.status,
+      status_category: i.status_category,
+      priority: i.priority,
+      parent_key: i.parent_key,
+      parent_summary: i.parent_summary,
+      due_date: i.effective_due_date || i.due_date,
+      story_points: i.story_points,
+      sprint_name: i.sprint_name,
+      fix_versions: i.fix_versions,
+      release_names: releaseNames,
+      labels: i.labels,
+      components: i.components,
+      type_icon_url: i.type_icon_url,
+      assigned_date: i.jira_created_at,
+      updated_at: i.jira_updated_at,
+      hub: 'ProjectHub',
+    };
+  });
 
   setCache(cacheKey, items);
   return items;

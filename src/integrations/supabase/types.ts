@@ -20896,6 +20896,7 @@ export type Database = {
           parent_summary: string | null
           priority: string | null
           project_key: string
+          project_name: string | null
           raw_json: Json | null
           reporter_account_id: string | null
           reporter_display_name: string | null
@@ -20931,6 +20932,7 @@ export type Database = {
           parent_summary?: string | null
           priority?: string | null
           project_key: string
+          project_name?: string | null
           raw_json?: Json | null
           reporter_account_id?: string | null
           reporter_display_name?: string | null
@@ -20966,6 +20968,7 @@ export type Database = {
           parent_summary?: string | null
           priority?: string | null
           project_key?: string
+          project_name?: string | null
           raw_json?: Json | null
           reporter_account_id?: string | null
           reporter_display_name?: string | null
