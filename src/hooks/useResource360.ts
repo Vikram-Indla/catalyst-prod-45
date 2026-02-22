@@ -43,11 +43,6 @@ export const useGanttData = (resourceId: string) =>
     enabled: !!resourceId,
   });
 
-export const useConstellation = () =>
-  useQuery({
-    queryKey: ['r360-constellation'],
-    queryFn: () => svc.fetchConstellation(),
-  });
 
 export const useHubDistribution = (resourceId: string) =>
   useQuery({

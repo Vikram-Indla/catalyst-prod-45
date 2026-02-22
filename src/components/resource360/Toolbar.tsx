@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type R360View = 'tentacle' | 'chronology' | 'list' | 'constellation';
+export type R360View = 'tentacle' | 'chronology' | 'list';
 export type RoleFilter = 'all' | 'assigned' | 'reported';
 
 interface ToolbarProps {
@@ -17,7 +17,6 @@ const views: { key: R360View; label: string }[] = [
   { key: 'tentacle', label: '360° View' },
   { key: 'chronology', label: 'Chronology' },
   { key: 'list', label: 'List' },
-  { key: 'constellation', label: 'Constellation' },
 ];
 
 const roles: { key: RoleFilter; label: string }[] = [
