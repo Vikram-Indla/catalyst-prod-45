@@ -2,18 +2,23 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useAiProfile, useBehavioralPatterns, useReleaseStanding, useHubDistribution } from '@/hooks/useResource360';
 import { HUB_COLORS, HUB_SHORT } from '@/constants/resource360';
 import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 interface AiIntelligenceOverlayProps {
   resourceId: string;
   resource: any;
+  rid: string;
   onClose: () => void;
 }
 
-const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceId, resource, onClose }) => {
+const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceId, resource, rid, onClose }) => {
+  const queryClient = useQueryClient();
   const { data: profile, isLoading: profileLoading } = useAiProfile(resourceId);
   const { data: patterns, isLoading: patternsLoading } = useBehavioralPatterns(resourceId);
   const { data: hubDist, isLoading: hubDistLoading } = useHubDistribution(resourceId);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const [generating, setGenerating] = useState(false);
 
   const [releaseId, setReleaseId] = useState<string>('');
   useEffect(() => {
@@ -48,6 +53,28 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
   // Insufficient data check
   const hasInsufficientData = !profile && !isLoading;
 
+  const handleGenerate = async () => {
+    setGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('r360-generate-profile', {
+        body: { resource_id: resourceId, rid },
+      });
+      if (error) throw error;
+      if (data?.error) {
+        toast.error(data.error);
+        return;
+      }
+      toast.success(`Profile generated — ${data.items_analyzed} items analyzed, ${data.patterns_generated} patterns found`);
+      queryClient.invalidateQueries({ queryKey: ['r360-ai-profile', resourceId] });
+      queryClient.invalidateQueries({ queryKey: ['r360-ai-patterns', resourceId] });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.message || 'Failed to generate profile');
+    } finally {
+      setGenerating(false);
+    }
+  };
+
   const completionPct = standing?.completion_pct ?? 0;
   const weeklyHistory = (deliveryMetrics.weekly_closure_history || []) as number[];
   const allZeros = weeklyHistory.length > 0 && weeklyHistory.every((v: number) => v === 0);
@@ -73,6 +100,19 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
       }}>
         <span style={{ fontSize: 14, fontWeight: 800 }}>✦</span>
         <span style={{ fontSize: 14, fontWeight: 700, flex: 1 }}>AI Intelligence — {resource?.full_name}</span>
+        <button
+          onClick={handleGenerate}
+          disabled={generating}
+          aria-label="Generate AI Profile"
+          style={{
+            background: generating ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.2)',
+            border: 'none', borderRadius: 6,
+            padding: '6px 14px', color: '#FFFFFF', fontSize: 12, fontWeight: 600,
+            cursor: generating ? 'wait' : 'pointer', opacity: generating ? 0.6 : 1,
+          }}
+        >
+          {generating ? '⏳ Generating…' : profile ? '🔄 Refresh' : '✨ Generate'}
+        </button>
         <button aria-label="Export PDF" style={{
           background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: 6,
           padding: '6px 14px', color: '#FFFFFF', fontSize: 12, fontWeight: 600, cursor: 'pointer',
@@ -89,7 +129,7 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
 
       <div style={{ padding: '24px', maxWidth: 1000, margin: '0 auto' }}>
         {/* Loading skeleton */}
-        {isLoading && (
+        {isLoading && !generating && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {[120, 80, 100, 60, 90].map((h, i) => (
               <div key={i} className="r360-skeleton" style={{ height: h, borderRadius: 8 }} />
@@ -97,16 +137,46 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
           </div>
         )}
 
-        {/* Insufficient data */}
-        {hasInsufficientData && (
+        {/* Generating state */}
+        {generating && (
+          <div style={{ padding: 48, textAlign: 'center' }}>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>🧠</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#7C3AED', marginBottom: 4 }}>
+              Analyzing {resource?.full_name}'s work data…
+            </div>
+            <div style={{ fontSize: 12, color: '#64748B' }}>
+              Computing delivery metrics, generating behavioral patterns, and building release standings.
+              <br />This may take 15-30 seconds.
+            </div>
+            <div style={{ marginTop: 20 }}>
+              <div style={{ width: 200, height: 4, background: '#EDE9FE', borderRadius: 2, margin: '0 auto', overflow: 'hidden' }}>
+                <div style={{ width: '60%', height: '100%', background: '#7C3AED', borderRadius: 2, animation: 'indeterminate 1.5s ease-in-out infinite' }} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Insufficient data - no profile and not generating */}
+        {hasInsufficientData && !generating && (
           <div style={{ padding: 48, textAlign: 'center' }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>🤖</div>
             <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>
-              Insufficient data to generate AI profile
+              No AI profile generated yet
             </div>
-            <div style={{ fontSize: 12, color: '#64748B' }}>
-              Minimum 5 work items required.
+            <div style={{ fontSize: 12, color: '#64748B', marginBottom: 16 }}>
+              Click "Generate" to analyze this resource's work data and create an AI-powered profile.
             </div>
+            <button
+              onClick={handleGenerate}
+              style={{
+                background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+                color: '#FFFFFF', border: 'none', borderRadius: 8,
+                padding: '10px 24px', fontSize: 13, fontWeight: 700,
+                cursor: 'pointer', boxShadow: '0 2px 8px rgba(124,58,237,.3)',
+              }}
+            >
+              ✨ Generate AI Profile
+            </button>
           </div>
         )}
 
@@ -334,6 +404,10 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
         @keyframes slideInRight {
           from { transform: translateX(100%); }
           to { transform: translateX(0); }
+        }
+        @keyframes indeterminate {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(250%); }
         }
       `}</style>
     </div>

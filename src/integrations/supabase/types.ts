@@ -28828,29 +28828,7 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "r360_ai_behavioral_patterns_resource_id_fkey"
-            columns: ["resource_id"]
-            isOneToOne: false
-            referencedRelation: "r360_constellation_view"
-            referencedColumns: ["resource_id"]
-          },
-          {
-            foreignKeyName: "r360_ai_behavioral_patterns_resource_id_fkey"
-            columns: ["resource_id"]
-            isOneToOne: false
-            referencedRelation: "r360_resource_summary_view"
-            referencedColumns: ["resource_id"]
-          },
-          {
-            foreignKeyName: "r360_ai_behavioral_patterns_resource_id_fkey"
-            columns: ["resource_id"]
-            isOneToOne: false
-            referencedRelation: "r360_resources"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       r360_ai_exports: {
         Row: {
@@ -28962,29 +28940,7 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "r360_ai_profiles_resource_id_fkey"
-            columns: ["resource_id"]
-            isOneToOne: true
-            referencedRelation: "r360_constellation_view"
-            referencedColumns: ["resource_id"]
-          },
-          {
-            foreignKeyName: "r360_ai_profiles_resource_id_fkey"
-            columns: ["resource_id"]
-            isOneToOne: true
-            referencedRelation: "r360_resource_summary_view"
-            referencedColumns: ["resource_id"]
-          },
-          {
-            foreignKeyName: "r360_ai_profiles_resource_id_fkey"
-            columns: ["resource_id"]
-            isOneToOne: true
-            referencedRelation: "r360_resources"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       r360_ai_release_standings: {
         Row: {
@@ -29062,27 +29018,6 @@ export type Database = {
             columns: ["release_id"]
             isOneToOne: false
             referencedRelation: "r360_releases"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "r360_ai_release_standings_resource_id_fkey"
-            columns: ["resource_id"]
-            isOneToOne: false
-            referencedRelation: "r360_constellation_view"
-            referencedColumns: ["resource_id"]
-          },
-          {
-            foreignKeyName: "r360_ai_release_standings_resource_id_fkey"
-            columns: ["resource_id"]
-            isOneToOne: false
-            referencedRelation: "r360_resource_summary_view"
-            referencedColumns: ["resource_id"]
-          },
-          {
-            foreignKeyName: "r360_ai_release_standings_resource_id_fkey"
-            columns: ["resource_id"]
-            isOneToOne: false
-            referencedRelation: "r360_resources"
             referencedColumns: ["id"]
           },
         ]

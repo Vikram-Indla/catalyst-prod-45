@@ -1,0 +1,4 @@
+
+ALTER TABLE r360_ai_profiles DROP CONSTRAINT IF EXISTS r360_ai_profiles_resource_id_fkey;
+ALTER TABLE r360_ai_behavioral_patterns DROP CONSTRAINT IF EXISTS r360_ai_behavioral_patterns_resource_id_fkey;
+ALTER TABLE r360_ai_release_standings DROP CONSTRAINT IF EXISTS r360_ai_release_standings_resource_id_fkey;

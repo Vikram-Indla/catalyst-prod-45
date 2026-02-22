@@ -119,3 +119,6 @@ verify_jwt = false
 
 [functions.alignment-story]
 verify_jwt = false
+
+[functions.r360-generate-profile]
+verify_jwt = false
