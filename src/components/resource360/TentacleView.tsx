@@ -256,13 +256,13 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
 
             {/* Bottom row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              {sc && (
+              {it.status && (
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', gap: 3,
                   fontSize: 9.5, fontWeight: 600, padding: '2px 7px', borderRadius: 10,
-                  background: sc.bg, color: sc.text,
+                  background: sc?.bg || '#F1F5F9', color: sc?.text || '#334155',
                 }}>
-                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: sc.dot }} />
+                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: sc?.dot || '#64748B' }} />
                   {it.status}
                 </span>
               )}
@@ -275,16 +275,6 @@ const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter
                 {formatAge(it.age_days)}
               </span>
               <span style={{ fontSize: 11 }}>{PRIORITY_ICONS[it.priority] || ''}</span>
-              <span style={{
-                width: 18, height: 18, borderRadius: '50%',
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 9, fontWeight: 700,
-                background: isReported ? 'transparent' : sc?.dot || '#64748B',
-                color: isReported ? sc?.dot || '#64748B' : '#FFFFFF',
-                border: isReported ? `1.5px solid ${sc?.dot || '#64748B'}` : 'none',
-              }}>
-                {isReported ? 'R' : 'A'}
-              </span>
             </div>
 
             {/* Parent breadcrumb - hidden if null */}
