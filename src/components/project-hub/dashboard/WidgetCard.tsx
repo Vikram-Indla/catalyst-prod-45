@@ -43,7 +43,7 @@ function WidgetCardInner({ title, subtitle, count, countColor, leftBorder, heade
     >
       <div
         style={{
-          padding: '14px 16px 10px',
+          padding: '8px 12px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',

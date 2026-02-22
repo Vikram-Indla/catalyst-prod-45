@@ -17,12 +17,14 @@ const ICONS = {
 export default function EmptyState({ message, icon = 'info' }: Props) {
   return (
     <div style={{
-      padding: '28px 20px',
+      padding: '12px 12px',
       textAlign: 'center',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      gap: 6,
+      gap: 4,
+      minHeight: 60,
+      justifyContent: 'center',
     }}>
       {ICONS[icon]}
       <span style={{ fontSize: 12, color: '#94A3B8', fontFamily: "'Inter', sans-serif" }}>

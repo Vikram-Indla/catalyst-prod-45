@@ -17,7 +17,7 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
         .ph-widget-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: 16px;
+          gap: 12px;
         }
         @media (max-width: 1200px) {
           .ph-widget-grid { grid-template-columns: repeat(2, 1fr); }
