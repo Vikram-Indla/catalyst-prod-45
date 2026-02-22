@@ -122,3 +122,6 @@ verify_jwt = false
 
 [functions.r360-generate-profile]
 verify_jwt = false
+
+[functions.r360-compute-metrics]
+verify_jwt = false

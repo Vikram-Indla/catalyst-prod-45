@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAiProfile, useBehavioralPatterns, useReleaseStanding, useHubDistribution } from '@/hooks/useResource360';
 import { HUB_COLORS, HUB_SHORT } from '@/constants/resource360';
 import { supabase } from '@/integrations/supabase/client';
-import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 interface AiIntelligenceOverlayProps {
@@ -12,13 +12,33 @@ interface AiIntelligenceOverlayProps {
   onClose: () => void;
 }
 
+// Hook to read pre-computed metrics from cache table (instant read)
+const useCachedMetrics = (resourceId: string) =>
+  useQuery({
+    queryKey: ['r360-cached-metrics', resourceId],
+    queryFn: async () => {
+      const { data, error } = await (supabase
+        .from('r360_resource_metrics' as any)
+        .select('*')
+        .eq('resource_id', resourceId)
+        .maybeSingle() as any);
+      if (error) throw error;
+      return data as any;
+    },
+    enabled: !!resourceId,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+
 const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceId, resource, rid, onClose }) => {
   const queryClient = useQueryClient();
   const { data: profile, isLoading: profileLoading } = useAiProfile(resourceId);
   const { data: patterns, isLoading: patternsLoading } = useBehavioralPatterns(resourceId);
   const { data: hubDist, isLoading: hubDistLoading } = useHubDistribution(resourceId);
+  const { data: cachedMetrics } = useCachedMetrics(resourceId);
   const overlayRef = useRef<HTMLDivElement>(null);
   const [generating, setGenerating] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const [releaseId, setReleaseId] = useState<string>('');
   useEffect(() => {
@@ -45,28 +65,62 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
 
   const initials = resource?.initials || resource?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) || '??';
 
-  const deliveryMetrics = profile?.delivery_metrics || {};
-  const hubClosure = profile?.hub_closure_rates || {};
+  const deliveryMetrics = profile?.delivery_metrics || cachedMetrics?.delivery_metrics || {};
+  const hubClosure = profile?.hub_closure_rates || cachedMetrics?.hub_closure_rates || {};
   const roleExp = profile?.role_expectation || {};
   const isLoading = profileLoading || patternsLoading || hubDistLoading;
 
-  // Insufficient data check
-  const hasInsufficientData = !profile && !isLoading;
+  // Staleness indicator
+  const computedAt = cachedMetrics?.computed_at ? new Date(cachedMetrics.computed_at) : null;
+  const aiGeneratedAt = profile?.generated_at ? new Date(profile.generated_at) : null;
+  const stalenessMinutes = computedAt ? Math.round((Date.now() - computedAt.getTime()) / 60000) : null;
+  const stalenessLabel = stalenessMinutes != null
+    ? stalenessMinutes < 60 ? `${stalenessMinutes}m ago`
+    : stalenessMinutes < 1440 ? `${Math.round(stalenessMinutes / 60)}h ago`
+    : `${Math.round(stalenessMinutes / 1440)}d ago`
+    : null;
 
+  // Insufficient data check
+  const hasInsufficientData = !profile && !cachedMetrics && !isLoading;
+  // Has metrics but no AI narrative yet
+  const hasMetricsNoAI = !profile && cachedMetrics && !isLoading;
+
+  // Step 1: Compute metrics (fast, no AI)
+  const handleComputeMetrics = async () => {
+    setRefreshing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('r360-compute-metrics', {
+        body: { resource_id: resourceId, jira_account_id: resource?.jira_account_id, user_id: resource?.id },
+      });
+      if (error) throw error;
+      if (data?.error) { toast.error(data.error); return; }
+      toast.success(`Metrics computed — ${data.total_items} items across ${data.hubs_found?.length || 0} hubs`);
+      queryClient.invalidateQueries({ queryKey: ['r360-cached-metrics', resourceId] });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.message || 'Failed to compute metrics');
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  // Step 2: Generate AI narrative (uses pre-computed metrics)
   const handleGenerate = async () => {
+    // If no metrics yet, compute first
+    if (!cachedMetrics) {
+      await handleComputeMetrics();
+    }
     setGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke('r360-generate-profile', {
         body: { resource_id: resourceId, rid },
       });
       if (error) throw error;
-      if (data?.error) {
-        toast.error(data.error);
-        return;
-      }
-      toast.success(`Profile generated — ${data.items_analyzed} items analyzed, ${data.patterns_generated} patterns found`);
+      if (data?.error) { toast.error(data.error); return; }
+      toast.success(`Profile generated — ${data.items_analyzed} items, ${data.patterns_generated} patterns`);
       queryClient.invalidateQueries({ queryKey: ['r360-ai-profile', resourceId] });
       queryClient.invalidateQueries({ queryKey: ['r360-ai-patterns', resourceId] });
+      queryClient.invalidateQueries({ queryKey: ['r360-cached-metrics', resourceId] });
     } catch (err: any) {
       console.error(err);
       toast.error(err?.message || 'Failed to generate profile');
@@ -101,8 +155,21 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
         <span style={{ fontSize: 14, fontWeight: 800 }}>✦</span>
         <span style={{ fontSize: 14, fontWeight: 700, flex: 1 }}>AI Intelligence — {resource?.full_name}</span>
         <button
+          onClick={handleComputeMetrics}
+          disabled={refreshing || generating}
+          aria-label="Refresh Metrics"
+          style={{
+            background: refreshing ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.15)',
+            border: 'none', borderRadius: 6,
+            padding: '6px 10px', color: '#FFFFFF', fontSize: 11, fontWeight: 600,
+            cursor: refreshing ? 'wait' : 'pointer', opacity: refreshing ? 0.6 : 1,
+          }}
+        >
+          {refreshing ? '⏳ Syncing…' : '🔄 Sync Data'}
+        </button>
+        <button
           onClick={handleGenerate}
-          disabled={generating}
+          disabled={generating || refreshing}
           aria-label="Generate AI Profile"
           style={{
             background: generating ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.2)',
@@ -111,8 +178,13 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
             cursor: generating ? 'wait' : 'pointer', opacity: generating ? 0.6 : 1,
           }}
         >
-          {generating ? '⏳ Generating…' : profile ? '🔄 Refresh' : '✨ Generate'}
+          {generating ? '⏳ Generating…' : profile ? '✨ Refresh AI' : '✨ Generate'}
         </button>
+        {stalenessLabel && (
+          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>
+            Data: {stalenessLabel}
+          </span>
+        )}
         <button aria-label="Export PDF" style={{
           background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: 6,
           padding: '6px 14px', color: '#FFFFFF', fontSize: 12, fontWeight: 600, cursor: 'pointer',
@@ -156,25 +228,51 @@ const AiIntelligenceOverlay: React.FC<AiIntelligenceOverlayProps> = ({ resourceI
           </div>
         )}
 
-        {/* Insufficient data - no profile and not generating */}
-        {hasInsufficientData && !generating && (
+        {/* Insufficient data - no profile, no metrics, not generating */}
+        {hasInsufficientData && !generating && !refreshing && (
           <div style={{ padding: 48, textAlign: 'center' }}>
             <div style={{ fontSize: 32, marginBottom: 8 }}>🤖</div>
             <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>
-              No AI profile generated yet
+              No data synced yet
             </div>
             <div style={{ fontSize: 12, color: '#64748B', marginBottom: 16 }}>
-              Click "Generate" to analyze this resource's work data and create an AI-powered profile.
+              Click "Sync Data" to pull metrics from all hubs, then "Generate" for AI analysis.
             </div>
-            <button
-              onClick={handleGenerate}
-              style={{
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+              <button onClick={handleComputeMetrics} style={{
+                background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: 8,
+                padding: '10px 24px', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+              }}>
+                🔄 Sync Data
+              </button>
+              <button onClick={handleGenerate} style={{
                 background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
                 color: '#FFFFFF', border: 'none', borderRadius: 8,
                 padding: '10px 24px', fontSize: 13, fontWeight: 700,
                 cursor: 'pointer', boxShadow: '0 2px 8px rgba(124,58,237,.3)',
-              }}
-            >
+              }}>
+                ✨ Generate AI Profile
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Has pre-computed metrics but no AI narrative yet */}
+        {hasMetricsNoAI && !generating && !refreshing && (
+          <div style={{ padding: 32, textAlign: 'center' }}>
+            <div style={{ fontSize: 32, marginBottom: 8 }}>📊</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>
+              Metrics ready — {cachedMetrics?.total_items} items across {Object.keys(cachedMetrics?.hub_distribution || {}).length} hubs
+            </div>
+            <div style={{ fontSize: 12, color: '#64748B', marginBottom: 16 }}>
+              Data synced {stalenessLabel || 'just now'}. Click "Generate" to create the AI narrative.
+            </div>
+            <button onClick={handleGenerate} style={{
+              background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+              color: '#FFFFFF', border: 'none', borderRadius: 8,
+              padding: '10px 24px', fontSize: 13, fontWeight: 700,
+              cursor: 'pointer', boxShadow: '0 2px 8px rgba(124,58,237,.3)',
+            }}>
               ✨ Generate AI Profile
             </button>
           </div>
