@@ -72,15 +72,6 @@ export const fetchGanttData = async (resourceId: string) => {
   return (data ?? []) as any[];
 };
 
-// ── Constellation (Team View) ──
-export const fetchConstellation = async () => {
-  const { data, error } = await supabase
-    .from('r360_constellation_view' as any)
-    .select('*')
-    .order('total_items', { ascending: false });
-  if (error) throw error;
-  return (data ?? []) as any[];
-};
 
 // ── Hub Distribution ──
 export const fetchHubDistribution = async (resourceId: string) => {

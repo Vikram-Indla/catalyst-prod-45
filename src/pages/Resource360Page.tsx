@@ -6,7 +6,7 @@ import Toolbar, { R360View, RoleFilter } from '@/components/resource360/Toolbar'
 import TentacleView from '@/components/resource360/TentacleView';
 import ChronologyView from '@/components/resource360/ChronologyView';
 import ListView from '@/components/resource360/ListView';
-import ConstellationView from '@/components/resource360/ConstellationView';
+
 import ContextModal from '@/components/resource360/ContextModal';
 import AiIntelligenceOverlay from '@/components/resource360/AiIntelligenceOverlay';
 
@@ -150,9 +150,6 @@ const Resource360Page = () => {
           ) : (
             <ListView items={items || []} roleFilter={roleFilter} onItemClick={handleItemClick} />
           )
-        )}
-        {activeView === 'constellation' && (
-          <ConstellationView currentResourceId={resource?.id ?? ''} />
         )}
       </div>
 
