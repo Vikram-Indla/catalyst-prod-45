@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import WidgetCard from './WidgetCard';
 import StatusBadge, { getStatusColor, getStatusCellBg } from './StatusBadge';
+import { TypeBadge } from './TypeBadge';
 import { WidgetSkeleton } from './WidgetSkeleton';
 import EmptyState from './EmptyState';
 import { useTimeInStatus, useTisConfig } from '@/hooks/useProjectDashboard';
@@ -79,9 +80,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                       </button>
                     </td>
                     <td style={{ padding: '0 8px' }}>
-                      <span style={{ fontSize: 10, fontWeight: 600, padding: '2px 5px', borderRadius: 4, background: item.work_item_type === 'bug' ? '#FEF2F2' : '#EFF6FF', color: item.work_item_type === 'bug' ? '#DC2626' : '#2563EB' }}>
-                        {item.work_item_type === 'bug' ? 'Bug' : 'Story'}
-                      </span>
+                      <TypeBadge type={item.work_item_type} />
                     </td>
                     <td style={{ padding: '0 8px', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#334155', fontSize: 11, fontFamily: "'Inter', sans-serif" }} title={item.work_item_title}>
                       {item.work_item_title}

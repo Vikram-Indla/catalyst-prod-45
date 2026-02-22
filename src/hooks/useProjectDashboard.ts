@@ -62,11 +62,11 @@ export function useInProduction(projectId: string | null | undefined, releaseIds
 }
 
 // ─── Items by Status ───
-export function useItemsByStatus(releaseIds: string[]) {
+export function useItemsByStatus(projectId: string | null | undefined, releaseIds: string[]) {
   return useQuery({
-    queryKey: ['ph-items-by-status', releaseIds],
-    queryFn: () => fetchItemsByStatus(releaseIds),
-    enabled: releaseIds.length > 0,
+    queryKey: ['ph-items-by-status', projectId, releaseIds],
+    queryFn: () => fetchItemsByStatus(projectId!, releaseIds),
+    enabled: !!projectId && releaseIds.length > 0,
   });
 }
 

@@ -134,7 +134,7 @@ export default function ProjectDashboardPage() {
                 <LatestInProduction projectId={projectId} releaseMap={releaseMap} />
               </div>
               <div className="ph-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
-                <ItemsByStatus />
+                <ItemsByStatus projectId={projectId} />
                 <OverdueItems projectId={projectId} releaseMap={releaseMap} />
                 <OnHoldItems projectId={projectId} releaseMap={releaseMap} />
               </div>

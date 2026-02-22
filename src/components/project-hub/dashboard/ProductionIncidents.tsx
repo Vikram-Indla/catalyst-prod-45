@@ -32,7 +32,7 @@ export default function ProductionIncidents({ projectId, releaseMap }: Props) {
   return (
     <WidgetCard
       title="Production Incidents"
-      subtitle="from IncidentHub"
+      subtitle={<span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>from IncidentHub <ExternalLink size={9} style={{ opacity: 0.6 }} /></span>}
       leftBorder="#EF4444"
       maxHeight={320}
       error={error ? error.message : null}

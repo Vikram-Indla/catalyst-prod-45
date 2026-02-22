@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 
 interface Props {
   title: string;
-  subtitle?: string;
+  subtitle?: ReactNode;
   count?: number;
   countColor?: string;
   leftBorder?: string;
