@@ -1,10 +1,10 @@
 import { WidgetCard } from './WidgetCard';
 import { CompletionDonut } from './CompletionDonut';
-import { OverdueItems } from './OverdueItems';
+import OverdueItems from './OverdueItems';
 import { BlockedItems } from './BlockedItems';
-import { ItemsByStatus } from './ItemsByStatus';
-import { RecentActivity } from './RecentActivity';
-import { TeamWorkload } from './TeamWorkload';
+import ItemsByStatus from './ItemsByStatus';
+import RecentActivity from './RecentActivity';
+import TeamWorkload from './TeamWorkload';
 
 interface WidgetGridProps {
   projectId?: string;
@@ -34,7 +34,7 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
         </WidgetCard>
 
         <WidgetCard title="Overdue Items">
-          <OverdueItems />
+          <OverdueItems projectId={projectId ?? null} releaseMap={{}} />
         </WidgetCard>
 
         <WidgetCard title="Blocked Items">
@@ -46,11 +46,11 @@ export function WidgetGrid({ projectId }: WidgetGridProps) {
         </WidgetCard>
 
         <WidgetCard title="Recent Activity" actionLabel="View All">
-          <RecentActivity />
+          <RecentActivity projectId={projectId ?? null} />
         </WidgetCard>
 
         <WidgetCard title="Team Workload">
-          <TeamWorkload />
+          <TeamWorkload projectId={projectId ?? null} />
         </WidgetCard>
       </div>
     </>
