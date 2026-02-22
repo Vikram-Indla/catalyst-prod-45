@@ -6,7 +6,8 @@ import React, { useState, useEffect } from 'react';
 import { X, Edit2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Idea, ideas as fallbackIdeas, STATUS_CONFIG, TYPE_CONFIG, PRIORITY_CONFIG, IDEA_IMPACT_FACTORS, getImpactColor } from './ideation-data';
-import { useIdeaRaw, useImpactFactors, useIdeaComments, useComplianceTags, useV2030Mappings, useEvidence } from '@/hooks/useIdeation';
+import { useIdeaRaw, useImpactFactors, useIdeaComments, useComplianceTags, useV2030Mappings, useEvidence, useAddIdeaComment } from '@/hooks/useIdeation';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Props {
   ideaKey: string | null;
@@ -462,14 +463,33 @@ function EvidenceTab({ ideaId }: { ideaId: string | null }) {
 // ─── Comments Tab ────────────────────────────────────────────────
 function CommentsTab({ ideaId }: { ideaId: string | null }) {
   const [comment, setComment] = useState('');
-  const { data: dbComments = [], isLoading } = useIdeaComments(ideaId);
+  const { data: dbComments = [], isLoading, error } = useIdeaComments(ideaId);
+  const addComment = useAddIdeaComment();
+  const { user } = useAuth();
+
+  const handlePost = () => {
+    if (!comment.trim() || !ideaId || !user?.id) return;
+    addComment.mutate(
+      { ideaId, userId: user.id, content: comment.trim() },
+      { onSuccess: () => setComment('') }
+    );
+  };
+
+  if (isLoading) {
+    return <div style={{ fontSize: '13px', color: '#94A3B8', padding: '12px 0' }}>Loading comments...</div>;
+  }
+
+  if (error) {
+    return <div style={{ fontSize: '13px', color: '#EF4444', padding: '12px 0' }}>Failed to load comments</div>;
+  }
 
   return (
     <div>
-      {isLoading && <div style={{ fontSize: '13px', color: '#94A3B8', padding: '12px 0' }}>Loading comments...</div>}
-
-      {!isLoading && dbComments.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '24px', color: '#94A3B8', fontSize: '13px' }}>No comments yet. Be the first to comment!</div>
+      {dbComments.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '24px', color: '#94A3B8', fontSize: '13px' }}>
+          <p>No comments yet</p>
+          <p style={{ fontSize: '11px', marginTop: '4px' }}>Be the first to add a comment</p>
+        </div>
       )}
 
       {dbComments.map((c: any, i: number) => {
@@ -506,9 +526,16 @@ function CommentsTab({ ideaId }: { ideaId: string | null }) {
         />
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '8px' }}>
           <button style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '6px', padding: '6px 12px', fontSize: '12px', cursor: 'pointer', color: '#334155' }}>Attach</button>
-          <button onClick={() => { if (comment.trim()) { setComment(''); toast.success('Comment posted'); } }} style={{
-            background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '6px', padding: '6px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-          }}>Post Comment</button>
+          <button
+            onClick={handlePost}
+            disabled={!comment.trim() || addComment.isPending}
+            style={{
+              background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '6px', padding: '6px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+              opacity: !comment.trim() || addComment.isPending ? 0.5 : 1,
+            }}
+          >
+            {addComment.isPending ? 'Posting...' : 'Post Comment'}
+          </button>
         </div>
       </div>
     </div>

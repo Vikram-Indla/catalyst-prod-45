@@ -125,6 +125,21 @@ export function useEvidence(ideaId: string | null) {
   });
 }
 
+// ======= ADD COMMENT =======
+
+export function useAddIdeaComment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ ideaId, userId, content }: { ideaId: string; userId: string; content: string }) =>
+      ideationService.addComment(ideaId, userId, content),
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: ideationKeys.comments(vars.ideaId) });
+      toast.success('Comment posted');
+    },
+    onError: (e: Error) => toast.error('Failed to post comment: ' + e.message),
+  });
+}
+
 // ======= VOTING =======
 
 export function useCastVote() {

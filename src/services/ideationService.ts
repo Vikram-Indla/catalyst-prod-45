@@ -199,13 +199,38 @@ export const ideationService = {
 
   // === COMMENTS ===
   async getComments(ideaId: string) {
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('ph_idea_comments')
-      .select('*, profiles:author_id(full_name, avatar_url)')
+      .select('*')
       .eq('idea_id', ideaId)
       .order('created_at', { ascending: true });
     if (error) throw error;
-    return (data ?? []) as any[];
+
+    // Resolve author profiles in a single batch query
+    const comments = data ?? [];
+    if (comments.length === 0) return [];
+
+    const userIds = [...new Set(comments.map((c: any) => c.user_id).filter(Boolean))];
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, full_name, avatar_url')
+      .in('id', userIds);
+
+    const profileMap = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+    return comments.map((c: any) => ({
+      ...c,
+      profiles: profileMap.get(c.user_id) || null,
+    }));
+  },
+
+  async addComment(ideaId: string, userId: string, content: string) {
+    const { data, error } = await supabase
+      .from('ph_idea_comments')
+      .insert({ idea_id: ideaId, user_id: userId, content })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
   },
 
   // === VOTES ===
