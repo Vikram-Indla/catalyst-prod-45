@@ -1,10 +1,12 @@
 /**
  * IdeationDetailPanel — Slide-over panel with 5 tabs
+ * Wired to Supabase for real data (descriptions, tags, comments, etc.)
  */
 import React, { useState, useEffect } from 'react';
 import { X, Edit2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Idea, ideas, STATUS_CONFIG, TYPE_CONFIG, PRIORITY_CONFIG, IDEA_IMPACT_FACTORS, getImpactColor } from './ideation-data';
+import { Idea, ideas as fallbackIdeas, STATUS_CONFIG, TYPE_CONFIG, PRIORITY_CONFIG, IDEA_IMPACT_FACTORS, getImpactColor } from './ideation-data';
+import { useIdeaRaw, useImpactFactors, useIdeaComments, useComplianceTags, useV2030Mappings, useEvidence } from '@/hooks/useIdeation';
 
 interface Props {
   ideaKey: string | null;
@@ -22,9 +24,42 @@ const TABS: { key: Tab; label: string; purple?: boolean }[] = [
   { key: 'comments', label: 'Comments' },
 ];
 
+// Source enum formatter
+const formatSource = (source: string): string => {
+  const map: Record<string, string> = {
+    'ministry_directive': 'Ministry Directive',
+    'Ministry Directive': 'Ministry Directive',
+    'internal': 'Internal',
+    'Internal': 'Internal',
+    'stakeholder': 'Stakeholder',
+    'Stakeholder': 'Stakeholder',
+    'customer': 'Customer Feedback',
+    'Customer': 'Customer Feedback',
+    'Customer Feedback': 'Customer Feedback',
+    'research': 'Research',
+    'Research': 'Research',
+  };
+  return map[source] || source;
+};
+
+// Parse tags from DB (handles both array and postgres string format)
+const parseTags = (tags: string | string[] | null | undefined): string[] => {
+  if (!tags) return [];
+  if (Array.isArray(tags)) return tags;
+  if (typeof tags === 'string') {
+    return tags.replace(/[{}]/g, '').split(',').filter(Boolean);
+  }
+  return [];
+};
+
 export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Props) {
   const [tab, setTab] = useState<Tab>('details');
-  const idea = ideas.find(i => i.key === ideaKey);
+  
+  // Fallback idea from hardcoded data for basic fields
+  const localIdea = fallbackIdeas.find(i => i.key === ideaKey);
+  
+  // Fetch raw data from Supabase
+  const { data: rawIdea } = useIdeaRaw(ideaKey);
 
   useEffect(() => {
     if (ideaKey) setTab('details');
@@ -38,7 +73,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
     }
   }, [ideaKey, onClose]);
 
-  if (!idea) return null;
+  if (!localIdea) return null;
 
   return (
     <>
@@ -62,9 +97,9 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
             fontFamily: "'JetBrains Mono', monospace", fontSize: '14px', fontWeight: 700,
             color: '#2563EB', background: '#EFF6FF', padding: '3px 10px', borderRadius: '6px',
           }}>
-            {idea.key}
+            {localIdea.key}
           </span>
-          <span style={{ fontSize: '17px', fontWeight: 700, flex: 1, color: '#0F172A' }}>{idea.title}</span>
+          <span style={{ fontSize: '17px', fontWeight: 700, flex: 1, color: '#0F172A' }}>{localIdea.title}</span>
           <button onClick={() => {}} style={{ background: 'none', border: '1px solid #E2E8F0', borderRadius: '6px', padding: '5px 8px', cursor: 'pointer', color: '#64748B' }}>
             <Edit2 size={14} />
           </button>
@@ -92,11 +127,11 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
 
         {/* Content */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
-          {tab === 'details' && <DetailsTab idea={idea} onConvert={onConvert} />}
-          {tab === 'impact' && <ImpactTab idea={idea} />}
-          {tab === 'ai' && <AiTab idea={idea} />}
-          {tab === 'evidence' && <EvidenceTab idea={idea} />}
-          {tab === 'comments' && <CommentsTab idea={idea} />}
+          {tab === 'details' && <DetailsTab idea={localIdea} rawIdea={rawIdea} onConvert={onConvert} />}
+          {tab === 'impact' && <ImpactTab idea={localIdea} ideaKey={ideaKey} rawIdea={rawIdea} />}
+          {tab === 'ai' && <AiTab idea={localIdea} rawIdea={rawIdea} ideaId={rawIdea?.id} />}
+          {tab === 'evidence' && <EvidenceTab ideaId={rawIdea?.id} />}
+          {tab === 'comments' && <CommentsTab ideaId={rawIdea?.id} />}
         </div>
       </div>
 
@@ -111,10 +146,16 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
 }
 
 // ─── Details Tab ─────────────────────────────────────────────────
-function DetailsTab({ idea, onConvert }: { idea: Idea; onConvert?: (key: string) => void }) {
+function DetailsTab({ idea, rawIdea, onConvert }: { idea: Idea; rawIdea: any; onConvert?: (key: string) => void }) {
   const sc = STATUS_CONFIG[idea.status];
   const tc = TYPE_CONFIG[idea.type];
   const pc = PRIORITY_CONFIG[idea.priority] || PRIORITY_CONFIG.P4;
+
+  // Use DB description, fallback to empty
+  const description = rawIdea?.description || null;
+  const source = rawIdea?.source ? formatSource(rawIdea.source) : idea.subtitle.split(' · ')[0];
+  const tags = parseTags(rawIdea?.tags);
+  const department = rawIdea?.department || idea.dept;
 
   return (
     <div>
@@ -153,8 +194,8 @@ function DetailsTab({ idea, onConvert }: { idea: Idea; onConvert?: (key: string)
         <FieldRow label="Type">
           <span style={{ background: tc.bg, color: tc.text, padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>{tc.label}</span>
         </FieldRow>
-        <FieldRow label="Source"><span style={{ fontSize: '13px', color: '#334155' }}>{idea.subtitle.split(' · ')[0]}</span></FieldRow>
-        <FieldRow label="Department"><span style={{ fontSize: '13px', color: '#334155' }}>{idea.dept}</span></FieldRow>
+        <FieldRow label="Source"><span style={{ fontSize: '13px', color: '#334155' }}>{source}</span></FieldRow>
+        <FieldRow label="Department"><span style={{ fontSize: '13px', color: '#334155' }}>{department}</span></FieldRow>
         <FieldRow label="Assignee">
           {idea.assignee ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -171,19 +212,27 @@ function DetailsTab({ idea, onConvert }: { idea: Idea; onConvert?: (key: string)
         </FieldRow>
       </div>
 
-      {/* Description */}
+      {/* Description — from database */}
       <div style={{ background: '#F8FAFC', padding: '12px', borderRadius: '8px', border: '1px solid #F4F4F5', marginBottom: '16px' }}>
         <div style={{ fontSize: '11px', fontWeight: 600, color: '#94A3B8', marginBottom: '6px', textTransform: 'uppercase' }}>Description</div>
         <div style={{ fontSize: '13px', color: '#334155', lineHeight: 1.6 }}>
-          {idea.title} — A comprehensive initiative to streamline operations, improve efficiency, and deliver measurable outcomes aligned with organizational strategy and V2030 objectives. This idea addresses key pain points identified through stakeholder feedback and data analysis.
+          {description || <span style={{ color: '#94A3B8', fontStyle: 'italic' }}>No description provided</span>}
         </div>
       </div>
 
-      {/* Tags — deduplicated */}
+      {/* Tags — from database array */}
       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-        {[...new Set(['V2030', idea.dept.split(' ')[0]])].map(tag => (
-          <span key={tag} style={{ background: '#F1F5F9', color: '#475569', padding: '3px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: 500, border: '1px solid #E2E8F0' }}>{tag}</span>
-        ))}
+        {tags.length > 0 ? (
+          [...new Set(tags)].map(tag => (
+            <span key={tag} style={{
+              display: 'inline-flex', alignItems: 'center',
+              background: '#F1F5F9', color: '#475569', padding: '3px 8px', borderRadius: '6px',
+              fontSize: '11px', fontWeight: 500, border: '1px solid #E2E8F0',
+            }}>{tag}</span>
+          ))
+        ) : (
+          <span style={{ fontSize: '11px', color: '#94A3B8', fontStyle: 'italic' }}>No tags</span>
+        )}
       </div>
     </div>
   );
@@ -199,12 +248,15 @@ function FieldRow({ label, children }: { label: string; children: React.ReactNod
 }
 
 // ─── IMPACT Tab ──────────────────────────────────────────────────
-function ImpactTab({ idea }: { idea: Idea }) {
-  const factors = IDEA_IMPACT_FACTORS[idea.key] || { I: 3, M: 3, P: 3, A: 3, C: 3, T: 3 };
-  const ic = getImpactColor(idea.impact);
-  const ratingLabel = idea.impact >= 4.0 ? 'Excellent' : idea.impact >= 3.0 ? 'Good' : idea.impact >= 2.0 ? 'Fair' : 'Low';
-  const ratingBg = idea.impact >= 4.0 ? '#DCFCE7' : idea.impact >= 3.0 ? '#DBEAFE' : idea.impact >= 2.0 ? '#FEF3C7' : '#FECACA';
-  const ratingText = idea.impact >= 4.0 ? '#15803D' : idea.impact >= 3.0 ? '#1D4ED8' : idea.impact >= 2.0 ? '#B45309' : '#B91C1C';
+function ImpactTab({ idea, ideaKey, rawIdea }: { idea: Idea; ideaKey: string | null; rawIdea: any }) {
+  const { data: dbFactors } = useImpactFactors(ideaKey);
+  const factors = dbFactors || IDEA_IMPACT_FACTORS[idea.key] || { I: 3, M: 3, P: 3, A: 3, C: 3, T: 3 };
+  
+  const impactScore = rawIdea?.impact_total ? parseFloat(rawIdea.impact_total) : idea.impact;
+  const ic = getImpactColor(impactScore);
+  const ratingLabel = impactScore >= 4.0 ? 'Excellent' : impactScore >= 3.0 ? 'Good' : impactScore >= 2.0 ? 'Fair' : 'Low';
+  const ratingBg = impactScore >= 4.0 ? '#DCFCE7' : impactScore >= 3.0 ? '#DBEAFE' : impactScore >= 2.0 ? '#FEF3C7' : '#FECACA';
+  const ratingText = impactScore >= 4.0 ? '#15803D' : impactScore >= 3.0 ? '#1D4ED8' : impactScore >= 2.0 ? '#B45309' : '#B91C1C';
 
   const FACTOR_DEFS = [
     { key: 'I', name: 'Investment Fit', weight: 25, color: '#2563EB' },
@@ -220,7 +272,7 @@ function ImpactTab({ idea }: { idea: Idea }) {
       {/* Score header */}
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '24px' }}>
         <span style={{ fontSize: '36px', fontWeight: 800, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '-1px', color: ic.text }}>
-          {idea.impact.toFixed(2)}
+          {impactScore.toFixed(2)}
         </span>
         <span style={{ fontSize: '13px', color: '#94A3B8' }}>out of 5.00</span>
         <span style={{ fontSize: '11px', fontWeight: 600, background: ratingBg, color: ratingText, padding: '3px 8px', borderRadius: '10px' }}>{ratingLabel}</span>
@@ -262,67 +314,94 @@ function ImpactTab({ idea }: { idea: Idea }) {
 }
 
 // ─── AI Analysis Tab ─────────────────────────────────────────────
-function AiTab({ idea }: { idea: Idea }) {
+function AiTab({ idea, rawIdea, ideaId }: { idea: Idea; rawIdea: any; ideaId: string | null }) {
+  const { data: compliance = [] } = useComplianceTags(ideaId);
+  const { data: v2030 = [] } = useV2030Mappings(ideaId);
+
+  const isAiEnriched = rawIdea?.ai_enrichment_status === 'completed' || rawIdea?.ai_enrichment_status === 'complete' || rawIdea?.ai_summary;
+  const aiSummary = rawIdea?.ai_summary;
+  const aiTriageAction = rawIdea?.ai_triage_action;
+  const aiTriageReason = rawIdea?.ai_triage_reason;
+  const aiConfidence = rawIdea?.ai_confidence;
+
+  if (!isAiEnriched) {
+    return (
+      <div style={{ textAlign: 'center', padding: '48px 24px' }}>
+        <div style={{ fontSize: '40px', marginBottom: '12px' }}>✦</div>
+        <div style={{ fontSize: '15px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>This idea has not been AI-enriched yet</div>
+        <div style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '20px' }}>Run AI analysis to get automated classification, compliance mapping, and V2030 alignment.</div>
+        <button style={{
+          background: '#7C3AED', color: '#FFFFFF', border: 'none', borderRadius: '8px',
+          padding: '10px 20px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+        }}>
+          ✦ Run AI Analysis
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div>
-      {/* Summary */}
-      <div style={{ background: 'linear-gradient(135deg, #F5F3FF, #EFF6FF)', borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
-        <div style={{ fontSize: '13px', fontWeight: 700, color: '#7C3AED', marginBottom: '6px' }}>✦ AI Summary</div>
-        <div style={{ fontSize: '13px', color: '#334155', lineHeight: 1.6 }}>
-          This idea demonstrates strong alignment with digital transformation objectives and V2030 goals. AI analysis indicates high feasibility with existing infrastructure and team capabilities. Recommended priority: {idea.priority}.
+      {/* AI Summary */}
+      {aiSummary && (
+        <div style={{ background: 'linear-gradient(135deg, #F5F3FF, #EFF6FF)', borderRadius: '12px', padding: '16px', marginBottom: '20px', border: '1px solid #EDE9FE' }}>
+          <div style={{ fontSize: '13px', fontWeight: 700, color: '#7C3AED', marginBottom: '6px' }}>✦ AI Summary</div>
+          <div style={{ fontSize: '13px', color: '#334155', lineHeight: 1.6 }}>{aiSummary}</div>
         </div>
-      </div>
+      )}
 
-      {/* Categories */}
-      <div style={{ marginBottom: '20px' }}>
-        <div style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8', marginBottom: '8px', textTransform: 'uppercase' }}>Suggested Categories</div>
-        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-          {[{ label: '🏢 Digital Transformation', conf: 98 }, { label: '📊 Data Analytics', conf: 72 }, { label: '🤖 AI & Automation', conf: 65 }].map(c => (
-            <span key={c.label} style={{ background: '#EDE9FE', color: '#7C3AED', padding: '4px 10px', borderRadius: '16px', fontSize: '11px', fontWeight: 600 }}>
-              {c.label} <span style={{ opacity: 0.7 }}>{c.conf}%</span>
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Similar ideas */}
-      <div style={{ marginBottom: '20px' }}>
-        <div style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8', marginBottom: '8px', textTransform: 'uppercase' }}>Similar Ideas</div>
-        {[
-          { match: 87, key: 'IDH-010', title: 'Stakeholder Communication Hub', status: 'submitted' },
-          { match: 62, key: 'IDH-004', title: 'Bilingual Document Generation Engine', status: 'under_review' },
-        ].map(s => (
-          <div key={s.key} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 0', borderBottom: '1px solid #F4F4F5' }}>
-            <span style={{ background: '#EDE9FE', color: '#7C3AED', fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', fontFamily: "'JetBrains Mono', monospace" }}>{s.match}%</span>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 600, color: '#2563EB' }}>{s.key}</span>
-            <span style={{ fontSize: '12px', color: '#334155', flex: 1 }}>{s.title}</span>
-            <span style={{ fontSize: '10px', color: '#94A3B8' }}>{s.status.replace('_', ' ')}</span>
+      {/* AI Confidence */}
+      {aiConfidence != null && (
+        <div style={{ marginBottom: '20px' }}>
+          <div style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8', marginBottom: '8px', textTransform: 'uppercase' }}>AI Confidence</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ flex: 1, height: '8px', background: '#E4E4E7', borderRadius: '4px', overflow: 'hidden' }}>
+              <div style={{ width: `${Math.round(aiConfidence * 100)}%`, height: '100%', background: '#7C3AED', borderRadius: '4px' }} />
+            </div>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700, color: '#7C3AED' }}>{Math.round(aiConfidence * 100)}%</span>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
 
-      {/* Compliance */}
+      {/* AI Triage Recommendation */}
+      {aiTriageAction && (
+        <div style={{ marginBottom: '20px', background: '#FFF7ED', border: '1px solid #FED7AA', borderRadius: '8px', padding: '12px' }}>
+          <div style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8', marginBottom: '4px', textTransform: 'uppercase' }}>Triage Recommendation</div>
+          <div style={{ fontSize: '13px', fontWeight: 700, color: '#C2410C', marginBottom: '4px' }}>{aiTriageAction.replace('_', ' ').toUpperCase()}</div>
+          {aiTriageReason && <div style={{ fontSize: '12px', color: '#92400E', lineHeight: 1.5 }}>{aiTriageReason}</div>}
+        </div>
+      )}
+
+      {/* Compliance Tags from DB */}
       <div style={{ marginBottom: '20px' }}>
         <div style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8', marginBottom: '8px', textTransform: 'uppercase' }}>Compliance Auto-Tags</div>
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-          {['DGA-ACC-01', 'NCA-SEC-02', 'NDMO-DG-03'].map(c => (
-            <span key={c} style={{ background: '#F1F5F9', color: '#334155', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>
-              ✓ {c}
+          {compliance.length > 0 ? compliance.map((c: any) => (
+            <span key={c.id || c.tag_code} style={{ background: '#F1F5F9', color: '#334155', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>
+              ✓ {c.tag_code || c.tag_name}
             </span>
-          ))}
+          )) : (
+            <span style={{ fontSize: '11px', color: '#94A3B8', fontStyle: 'italic' }}>No compliance tags</span>
+          )}
         </div>
       </div>
 
-      {/* V2030 */}
+      {/* V2030 Mappings from DB */}
       <div>
         <div style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8', marginBottom: '8px', textTransform: 'uppercase' }}>V2030 Mapping</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-          {[{ name: 'Vibrant Society', score: 3.2, bg: '#DBEAFE' }, { name: 'Thriving Economy', score: 4.5, bg: '#DCFCE7' }, { name: 'Ambitious Nation', score: 4.1, bg: '#FEF3C7' }].map(p => (
-            <div key={p.name} style={{ background: p.bg, borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
-              <div style={{ fontSize: '18px', fontWeight: 800, fontFamily: "'JetBrains Mono', monospace", color: '#0F172A' }}>{p.score}</div>
-              <div style={{ fontSize: '10px', fontWeight: 600, color: '#64748B', marginTop: '2px' }}>{p.name}</div>
-            </div>
-          ))}
+          {v2030.length > 0 ? v2030.map((p: any) => {
+            const bgMap: Record<string, string> = { 'vibrant_society': '#DBEAFE', 'thriving_economy': '#DCFCE7', 'ambitious_nation': '#FEF3C7' };
+            const nameMap: Record<string, string> = { 'vibrant_society': 'Vibrant Society', 'thriving_economy': 'Thriving Economy', 'ambitious_nation': 'Ambitious Nation' };
+            return (
+              <div key={p.id || p.pillar_key} style={{ background: bgMap[p.pillar_key] || '#F4F4F5', borderRadius: '8px', padding: '10px', textAlign: 'center' }}>
+                <div style={{ fontSize: '18px', fontWeight: 800, fontFamily: "'JetBrains Mono', monospace", color: '#0F172A' }}>{parseFloat(p.alignment_score || 0).toFixed(1)}</div>
+                <div style={{ fontSize: '10px', fontWeight: 600, color: '#64748B', marginTop: '2px' }}>{nameMap[p.pillar_key] || p.pillar_key}</div>
+              </div>
+            );
+          }) : (
+            <div style={{ gridColumn: '1 / -1', fontSize: '11px', color: '#94A3B8', fontStyle: 'italic' }}>No V2030 mappings</div>
+          )}
         </div>
       </div>
     </div>
@@ -330,56 +409,92 @@ function AiTab({ idea }: { idea: Idea }) {
 }
 
 // ─── Evidence Tab ────────────────────────────────────────────────
-function EvidenceTab({ idea }: { idea: Idea }) {
-  const evidence = [
-    { type: 'Document', color: '#2563EB', bg: '#EFF6FF', title: 'V2030 Digital Government Strategy — Section 4.2', desc: 'National digital transformation framework mandating unified service portals for all government entities.', uploader: 'Sarah K.', date: 'Feb 5, 2026' },
-    { type: 'Data', color: '#16A34A', bg: '#F0FDF4', title: 'Citizen Service Survey Results (Q3 2025)', desc: 'Survey of 12,000 citizens showing 78% satisfaction improvement with digital-first services.', uploader: 'Ahmed M.', date: 'Feb 6, 2026' },
-    { type: 'Benchmark', color: '#D97706', bg: '#FFFBEB', title: 'UAE Ministry of Economy — Unified Portal Case Study', desc: 'Benchmark analysis of UAE unified portal implementation achieving 40% efficiency gain.', uploader: 'Fatima R.', date: 'Feb 7, 2026' },
-  ];
+function EvidenceTab({ ideaId }: { ideaId: string | null }) {
+  const { data: evidence = [], isLoading } = useEvidence(ideaId);
+
+  if (isLoading) {
+    return <div style={{ padding: '24px', textAlign: 'center', color: '#94A3B8', fontSize: '13px' }}>Loading evidence...</div>;
+  }
+
+  if (evidence.length === 0) {
+    return (
+      <div style={{ textAlign: 'center', padding: '48px 24px' }}>
+        <div style={{ fontSize: '40px', marginBottom: '12px' }}>📎</div>
+        <div style={{ fontSize: '15px', fontWeight: 600, color: '#334155', marginBottom: '6px' }}>No evidence attached yet</div>
+        <div style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '20px' }}>Attach documents, data, or benchmarks to strengthen this idea.</div>
+        <button style={{
+          background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '8px',
+          padding: '10px 20px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+        }}>
+          + Add Evidence
+        </button>
+      </div>
+    );
+  }
+
+  const typeColors: Record<string, { color: string; bg: string }> = {
+    document: { color: '#2563EB', bg: '#EFF6FF' },
+    data: { color: '#16A34A', bg: '#F0FDF4' },
+    benchmark: { color: '#D97706', bg: '#FFFBEB' },
+  };
 
   return (
     <div>
-      {evidence.map((ev, i) => (
-        <div key={i} style={{ border: '1px solid #E2E8F0', borderRadius: '8px', padding: '14px', marginBottom: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-            <span style={{ background: ev.bg, color: ev.color, padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 700 }}>{ev.type}</span>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>{ev.title}</span>
+      {evidence.map((ev: any, i: number) => {
+        const tc = typeColors[ev.evidence_type] || { color: '#64748B', bg: '#F8FAFC' };
+        return (
+          <div key={ev.id || i} style={{ border: '1px solid #E2E8F0', borderRadius: '8px', padding: '14px', marginBottom: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+              <span style={{ background: tc.bg, color: tc.color, padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 700 }}>{ev.evidence_type}</span>
+              <span style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>{ev.title}</span>
+            </div>
+            {ev.description && <div style={{ fontSize: '12px', color: '#64748B', lineHeight: 1.5, marginBottom: '8px' }}>{ev.description}</div>}
+            <div style={{ fontSize: '11px', color: '#94A3B8' }}>
+              {ev.created_at ? new Date(ev.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}
+            </div>
           </div>
-          <div style={{ fontSize: '12px', color: '#64748B', lineHeight: 1.5, marginBottom: '8px' }}>{ev.desc}</div>
-          <div style={{ fontSize: '11px', color: '#94A3B8' }}>Uploaded by {ev.uploader} · {ev.date}</div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
 
 // ─── Comments Tab ────────────────────────────────────────────────
-function CommentsTab({ idea }: { idea: Idea }) {
+function CommentsTab({ ideaId }: { ideaId: string | null }) {
   const [comment, setComment] = useState('');
-  const comments = [
-    { name: 'Sarah K.', initials: 'SK', color: '#0D9488', time: '2 days ago', text: "The Minister's directive specifically mentions this as a Q1 2026 priority. We should fast-track the evaluation.", isAi: false },
-    { name: 'Ahmed M.', initials: 'AM', color: '#2563EB', time: '1 day ago', text: 'Agreed. I\'ve reviewed the technical feasibility — our current infrastructure can support this with minimal additional investment.', isAi: false },
-    { name: 'AI Assistant', initials: '✦', color: '#7C3AED', time: '12 min ago', text: 'Note: IDH-013 (Integrated Payment Gateway) has an 87% similarity score with this idea. Consider merging to consolidate effort and increase impact.', isAi: true },
-  ];
+  const { data: dbComments = [], isLoading } = useIdeaComments(ideaId);
 
   return (
     <div>
-      {comments.map((c, i) => (
-        <div key={i} style={{
-          marginBottom: '16px', padding: c.isAi ? '10px' : undefined,
-          background: c.isAi ? '#F5F3FF' : undefined, borderRadius: c.isAi ? '8px' : undefined,
-          border: c.isAi ? '1px solid #EDE9FE' : undefined,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-            <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: c.color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: '10px', fontWeight: 700 }}>
-              {c.initials}
+      {isLoading && <div style={{ fontSize: '13px', color: '#94A3B8', padding: '12px 0' }}>Loading comments...</div>}
+
+      {!isLoading && dbComments.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '24px', color: '#94A3B8', fontSize: '13px' }}>No comments yet. Be the first to comment!</div>
+      )}
+
+      {dbComments.map((c: any, i: number) => {
+        const authorName = c.profiles?.full_name || 'Unknown';
+        const initials = authorName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+        const timeAgo = c.created_at ? new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+        const isAi = c.is_ai_generated;
+
+        return (
+          <div key={c.id || i} style={{
+            marginBottom: '16px', padding: isAi ? '10px' : undefined,
+            background: isAi ? '#F5F3FF' : undefined, borderRadius: isAi ? '8px' : undefined,
+            border: isAi ? '1px solid #EDE9FE' : undefined,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: isAi ? '#7C3AED' : '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: '10px', fontWeight: 700 }}>
+                {isAi ? '✦' : initials}
+              </div>
+              <span style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>{isAi ? 'AI Assistant' : authorName}</span>
+              <span style={{ fontSize: '11px', color: '#94A3B8' }}>{timeAgo}</span>
             </div>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>{c.name}</span>
-            <span style={{ fontSize: '11px', color: '#94A3B8' }}>{c.time}</span>
+            <div style={{ fontSize: '13px', color: '#334155', lineHeight: 1.6, marginLeft: '36px' }}>{c.content}</div>
           </div>
-          <div style={{ fontSize: '13px', color: '#334155', lineHeight: 1.6, marginLeft: '36px' }}>{c.text}</div>
-        </div>
-      ))}
+        );
+      })}
 
       {/* Comment input */}
       <div style={{ marginTop: '20px', borderTop: '1px solid #E2E8F0', paddingTop: '16px' }}>
