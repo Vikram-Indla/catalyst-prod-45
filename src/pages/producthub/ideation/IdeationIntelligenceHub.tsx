@@ -61,7 +61,7 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge }: Prop
             fontSize: '16px', color: '#FFFFFF',
           }}>✦</div>
           <div>
-            <div style={{ fontSize: '20px', fontWeight: 800, color: C.textPrimary }}>AI Intelligence Hub</div>
+            <div style={{ fontSize: '20px', fontWeight: 800, color: C.textPrimary }}>AI Ideas Hub</div>
             <div style={{ fontSize: '12px', color: C.textTertiary }}>15 ideas analyzed · 22 signals detected</div>
           </div>
         </div>
