@@ -286,7 +286,7 @@ export default function IdeationPage() {
           </div>
         )}
         {activeView === 'board' && (
-          <IdeationBoardView ideas={ideas} onOpenDetail={setDetailKey} onConvert={handleConvertIdea} />
+          <IdeationBoardView ideas={filteredIdeas} onOpenDetail={setDetailKey} onConvert={handleConvertIdea} />
         )}
         {activeView === 'matrix' && (
           <IdeationMatrixView onOpenDetail={setDetailKey} />
