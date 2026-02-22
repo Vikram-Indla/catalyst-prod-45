@@ -1,0 +1,92 @@
+import React from 'react';
+
+interface ResourceBannerProps {
+  resource: any;
+  summary: any;
+}
+
+const StatCard = ({ label, value, color }: { label: string; value: number | string; color: string }) => (
+  <div style={{
+    background: '#FFFFFF',
+    border: '1px solid #E2E8F0',
+    borderRadius: 8,
+    padding: '10px 16px',
+    minWidth: 90,
+    textAlign: 'center',
+  }}>
+    <div style={{ fontSize: 22, fontWeight: 900, color, lineHeight: 1.1 }}>{value}</div>
+    <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748B', marginTop: 4 }}>{label}</div>
+  </div>
+);
+
+const ResourceBanner: React.FC<ResourceBannerProps> = ({ resource, summary }) => {
+  const initials = resource?.initials || resource?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) || '??';
+  const deptName = resource?.r360_departments?.name || '—';
+  const vendorName = resource?.r360_vendors?.name || '—';
+  const assignmentName = resource?.r360_assignments?.name || '—';
+
+  const metaPills = [
+    { label: deptName },
+    { label: vendorName },
+    { label: `${resource?.contract_start?.slice(0, 10) || '?'} → ${resource?.contract_end?.slice(0, 10) || '?'}` },
+    { label: resource?.country || '—' },
+    { label: assignmentName },
+    { label: resource?.location_type || '—' },
+  ];
+
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 20,
+      padding: '16px 20px',
+      background: '#FFFFFF',
+      borderBottom: '1px solid #E2E8F0',
+      fontFamily: "'Inter', sans-serif",
+    }}>
+      {/* Avatar */}
+      <div style={{ position: 'relative', flexShrink: 0 }}>
+        <div style={{
+          width: 64, height: 64, borderRadius: '50%',
+          background: 'linear-gradient(135deg, #2563EB, #4F46E5)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: '#FFFFFF', fontSize: 22, fontWeight: 700,
+          boxShadow: '0 0 0 3px #FFFFFF, 0 0 0 5px #2563EB',
+        }}>
+          {initials}
+        </div>
+      </div>
+
+      {/* Info */}
+      <div style={{ flex: 1 }}>
+        <h1 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0, lineHeight: 1.3 }}>
+          {resource?.full_name || 'Unknown'}
+        </h1>
+        <p style={{ fontSize: 13, fontWeight: 500, color: '#334155', margin: '2px 0 8px 0' }}>
+          {resource?.job_role || 'No role'}
+        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {metaPills.map((p, i) => (
+            <span key={i} style={{
+              fontSize: 11.5, color: '#475569',
+              background: '#F1F5F9', borderRadius: 4,
+              padding: '3px 8px', fontWeight: 500,
+            }}>
+              {p.label}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Stat Cards */}
+      <div style={{ display: 'flex', gap: 8, marginLeft: 'auto', flexShrink: 0 }}>
+        <StatCard label="Total" value={summary?.total_items ?? '–'} color="#2563EB" />
+        <StatCard label="To Do" value={summary?.todo_count ?? '–'} color="#DC2626" />
+        <StatCard label="In Progress" value={summary?.progress_count ?? '–'} color="#2563EB" />
+        <StatCard label="Done" value={summary?.done_count ?? '–'} color="#059669" />
+      </div>
+    </div>
+  );
+};
+
+export default ResourceBanner;
