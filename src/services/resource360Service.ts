@@ -135,10 +135,11 @@ export const fetchWorkItems = async (resourceId: string, jiraAccountId?: string 
     if (i.issue_key && Array.isArray(i.fix_versions) && i.fix_versions.length > 0) fvLookup[i.issue_key] = i.fix_versions;
   });
 
-  // Collect parent keys that aren't in the current dataset for separate lookup
-  const missingParentKeys = [...new Set(
-    (data ?? []).map((i: any) => i.parent_key).filter((k: string) => k && !(descLookup[k] || fvLookup[k]))
+  // Collect parent keys that need additional data (description or fix_versions)
+  const allParentKeys = [...new Set(
+    (data ?? []).map((i: any) => i.parent_key).filter(Boolean)
   )] as string[];
+  const missingParentKeys = allParentKeys.filter(k => !descLookup[k] || !fvLookup[k]);
 
   if (missingParentKeys.length > 0) {
     const { data: parentData } = await supabase
