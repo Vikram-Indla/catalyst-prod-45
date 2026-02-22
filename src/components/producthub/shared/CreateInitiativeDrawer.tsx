@@ -229,7 +229,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource }: Crea
                   onClick={handleCreate}
                   disabled={createMutation.isPending}
                   className={cn(
-                    'px-4 h-9 text-sm font-semibold rounded-lg transition-colors flex items-center gap-2',
+                    'px-5 h-9 text-sm font-bold rounded-lg transition-colors flex items-center gap-2',
                     form.title.trim()
                       ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm'
                       : 'bg-zinc-300 text-zinc-500 cursor-not-allowed'
