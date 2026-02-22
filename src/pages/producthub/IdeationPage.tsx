@@ -137,19 +137,14 @@ export default function IdeationPage() {
             <button
               onClick={() => setIntelligenceOpen(true)}
               style={{
-                background: '#FFFFFF', color: '#334155', border: '1px solid #E2E8F0',
-                borderRadius: '8px', padding: '7px 14px', fontSize: '13px', fontWeight: 600,
+                background: '#7C3AED', color: '#FFFFFF', border: 'none',
+                borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 600,
                 cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
               }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#6D28D9'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#7C3AED'; }}
             >
-              <span style={{
-                width: 22, height: 22, borderRadius: 6,
-                background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <Sparkles size={12} color="#FFFFFF" />
-              </span>
-              Intelligence
+              <Sparkles size={14} /> Intelligence
             </button>
             <button style={{
               background: '#FFFFFF', color: '#334155', border: '1px solid #E2E8F0',
@@ -162,11 +157,11 @@ export default function IdeationPage() {
               onClick={() => setWizardOpen(true)}
               style={{
                 background: '#2563EB', color: '#FFFFFF', border: 'none',
-                borderRadius: '8px', padding: '7px 14px', fontSize: '13px', fontWeight: 600,
-                cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
+                borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 600,
+                cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px',
               }}
             >
-              <Plus size={14} /> New Idea
+              + New Idea
             </button>
           </div>
         </div>
@@ -266,19 +261,14 @@ export default function IdeationPage() {
         <button
           onClick={() => setTriageOpen(true)}
           style={{
-            background: '#FFFFFF', color: '#334155', border: '1px solid #E2E8F0', borderRadius: '6px',
-            padding: '5px 10px', fontSize: '11px', fontWeight: 600, cursor: 'pointer',
+            background: '#7C3AED', color: '#FFFFFF', border: 'none', borderRadius: '8px',
+            padding: '5px 12px', fontSize: '11px', fontWeight: 600, cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: '4px',
           }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#6D28D9'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#7C3AED'; }}
         >
-          <span style={{
-            width: 20, height: 20, borderRadius: 5,
-            background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <Sparkles size={10} color="#FFFFFF" />
-          </span>
-          AI Triage (4)
+          <Sparkles size={10} /> AI Triage (4)
         </button>
       </div>
 
@@ -313,7 +303,7 @@ export default function IdeationPage() {
       {detailKey && <IdeationDetailPanel ideaKey={detailKey} onClose={() => setDetailKey(null)} onConvert={handleConvertIdea} />}
       <IdeationCreateWizard open={wizardOpen} onClose={() => setWizardOpen(false)} />
       <IdeationTriagePanel open={triageOpen} onClose={() => setTriageOpen(false)} onMerge={handleMergeIdeas} onConvert={handleConvertIdea} />
-      <IdeationIntelligenceHub open={intelligenceOpen} onClose={() => setIntelligenceOpen(false)} />
+      <IdeationIntelligenceHub open={intelligenceOpen} onClose={() => setIntelligenceOpen(false)} onMerge={(pk, mk) => { setIntelligenceOpen(false); handleMergeIdeas(pk, mk); }} />
       <CreateInitiativeDrawer
         open={convertDrawerOpen}
         onClose={() => { setConvertDrawerOpen(false); setConversionSource(null); }}
