@@ -36,7 +36,7 @@ const MODULE_NAV_CONFIG: SidebarConfig = {
       title: '',
       items: [
         { id: 'all-projects', title: 'All Projects', path: '/project-hub/projects', icon: LayoutGrid, exact: false },
-        { id: 'resource360-new', title: 'Resource 360°', path: '/resource-360/009', icon: Radar, exact: false },
+        { id: 'resource360-new', title: 'Resource 360°', path: '/project-hub/resource-360/009', icon: Radar, exact: false },
       ],
     },
     {
