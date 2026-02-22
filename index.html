@@ -58,21 +58,9 @@
     <!-- No-flash theme initialization - MUST run before React -->
     <script>
       (function() {
-        var isAdmin = window.location.pathname.indexOf('/admin') === 0;
-        var isAuth = window.location.pathname === '/auth' || window.location.pathname.indexOf('/auth') === 0;
-        // Force light mode on admin and auth routes - no dark mode allowed
-        if (isAdmin || isAuth) {
-          document.documentElement.setAttribute('data-theme', 'light');
-          document.documentElement.classList.remove('dark');
-        } else {
-          var stored = localStorage.getItem('catalyst_theme');
-          var system = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-          var theme = stored || system;
-          document.documentElement.setAttribute('data-theme', theme);
-          if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-          }
-        }
+        // Catalyst is light-mode only — always force light
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.documentElement.classList.remove('dark');
       })();
     </script>
   </head>
