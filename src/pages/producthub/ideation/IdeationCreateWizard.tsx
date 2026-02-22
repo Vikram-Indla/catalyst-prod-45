@@ -1,61 +1,155 @@
 /**
- * IdeationCreateWizard — 8-step centered modal wizard for new idea submission
+ * IdeationCreateWizard — Single-page modal for new idea submission
  */
-import React, { useState, useEffect } from 'react';
-import { X, Sparkles, Check, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { X, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface Props {
   open: boolean;
   onClose: () => void;
 }
 
-const STEPS = [
-  { num: 1, label: 'Basics' },
-  { num: 2, label: 'Classify' },
-  { num: 3, label: 'Evidence' },
-  { num: 4, label: 'IMPACT' },
-  { num: 5, label: 'V2030' },
-  { num: 6, label: 'Compliance' },
-  { num: 7, label: 'AI Review' },
-  { num: 8, label: 'Submit' },
-];
-
 const IDEA_TYPES = [
   { key: 'problem', label: 'Problem', dot: '#EF4444' },
   { key: 'opportunity', label: 'Opportunity', dot: '#16A34A' },
-  { key: 'feature', label: 'Feature', dot: '#2563EB' },
+  { key: 'feature_request', label: 'Feature', dot: '#2563EB' },
   { key: 'solution', label: 'Solution', dot: '#7C3AED' },
   { key: 'improvement', label: 'Improvement', dot: '#D97706' },
 ];
 
-const IMPACT_FACTORS = [
-  { key: 'I', name: 'Investment Fit', weight: 25, color: '#2563EB' },
-  { key: 'M', name: 'Market Size', weight: 20, color: '#0D9488' },
-  { key: 'P', name: 'Problem Severity', weight: 20, color: '#D97706' },
-  { key: 'A', name: 'Advantage', weight: 15, color: '#7C3AED' },
-  { key: 'C', name: 'Complexity (inv.)', weight: 10, color: '#16A34A' },
-  { key: 'T', name: 'Time to Value', weight: 10, color: '#EF4444' },
+const PRIORITIES = [
+  { key: 'P1', label: 'P1 — Critical' },
+  { key: 'P2', label: 'P2 — High' },
+  { key: 'P3', label: 'P3 — Medium' },
+  { key: 'P4', label: 'P4 — Low' },
 ];
 
+const DEPARTMENTS = [
+  'Digital Transformation',
+  'IT Operations',
+  'Data & Analytics',
+  'Customer Experience',
+  'Risk & Compliance',
+  'Cybersecurity',
+  'Human Resources',
+];
+
+const SOURCES = [
+  { key: 'ministry_directive', label: 'Ministry Directive' },
+  { key: 'internal', label: 'Internal' },
+  { key: 'stakeholder', label: 'Stakeholder' },
+  { key: 'customer_feedback', label: 'Customer Feedback' },
+  { key: 'research', label: 'Research' },
+];
+
+const inputBase: React.CSSProperties = {
+  width: '100%',
+  height: '44px',
+  border: '1px solid #E2E8F0',
+  borderRadius: '8px',
+  padding: '0 14px',
+  fontSize: '14px',
+  color: '#0F172A',
+  background: '#FFFFFF',
+  outline: 'none',
+};
+
+const labelBase: React.CSSProperties = {
+  display: 'block',
+  fontSize: '13px',
+  fontWeight: 600,
+  color: '#0F172A',
+  marginBottom: '6px',
+};
+
+const focusHandlers = {
+  onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    e.currentTarget.style.borderColor = '#2563EB';
+    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)';
+  },
+  onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    e.currentTarget.style.borderColor = '#E2E8F0';
+    e.currentTarget.style.boxShadow = 'none';
+  },
+};
+
 export default function IdeationCreateWizard({ open, onClose }: Props) {
-  const [step, setStep] = useState(1);
+  const queryClient = useQueryClient();
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
   const [ideaType, setIdeaType] = useState('');
-  const [ideaTypeOpen, setIdeaTypeOpen] = useState(false);
-  const [category, setCategory] = useState('');
-  const [dept, setDept] = useState('');
-  const [source, setSource] = useState('');
   const [priority, setPriority] = useState('');
-  const [tags, setTags] = useState('');
-  const [scores, setScores] = useState<Record<string, number>>({ I: 3, M: 3, P: 3, A: 3, C: 3, T: 3 });
-  const [v2030, setV2030] = useState<string[]>(['thriving', 'ambitious']);
-  const [compliance, setCompliance] = useState<string[]>([]);
-  const [aiReviewDone, setAiReviewDone] = useState(false);
+  const [department, setDepartment] = useState('');
+  const [source, setSource] = useState('');
+  const [assignee, setAssignee] = useState('');
+  const [category, setCategory] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
+  const [titleError, setTitleError] = useState(false);
+  const [descError, setDescError] = useState(false);
+
+  // Fetch profiles for assignee
+  const { data: profiles = [] } = useQuery({
+    queryKey: ['idea-profiles'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .eq('approval_status', 'APPROVED')
+        .order('full_name');
+      return data || [];
+    },
+    enabled: open,
+  });
+
+  // Generate next idea_key
+  const generateKey = useCallback(async () => {
+    const { data } = await supabase
+      .from('ph_ideas')
+      .select('idea_key')
+      .order('created_at', { ascending: false })
+      .limit(1);
+    if (data && data.length > 0) {
+      const last = data[0].idea_key;
+      const num = parseInt(last.replace(/\D/g, ''), 10) || 0;
+      return `IDH-${String(num + 1).padStart(3, '0')}`;
+    }
+    return 'IDH-001';
+  }, []);
+
+  // Submit mutation
+  const createIdea = useMutation({
+    mutationFn: async (payload: Record<string, any>) => {
+      const { error } = await supabase.from('ph_ideas').insert(payload as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ideation'] });
+      queryClient.invalidateQueries({ queryKey: ['ph-ideas'] });
+      toast.success('✓ Idea submitted successfully');
+      onClose();
+    },
+    onError: (err: any) => {
+      toast.error(err.message || 'Failed to submit idea');
+    },
+  });
 
   useEffect(() => {
-    if (open) { setStep(1); setTitle(''); setDesc(''); setIdeaType(''); setAiReviewDone(false); }
+    if (open) {
+      setTitle(''); setDesc(''); setIdeaType(''); setPriority('');
+      setDepartment(''); setSource(''); setAssignee(''); setCategory('');
+      setTags([]); setTagInput(''); setTitleError(false); setDescError(false);
+    }
   }, [open]);
 
   useEffect(() => {
@@ -65,32 +159,93 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
 
   if (!open) return null;
 
-  const impactScore = (scores.I * 0.25) + (scores.M * 0.20) + (scores.P * 0.20) + (scores.A * 0.15) + (scores.C * 0.10) + (scores.T * 0.10);
-  const selectedType = IDEA_TYPES.find(t => t.key === ideaType);
+  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if ((e.key === 'Enter' || e.key === ',') && tagInput.trim()) {
+      e.preventDefault();
+      const newTag = tagInput.trim().replace(/,$/, '');
+      if (newTag && !tags.includes(newTag)) {
+        setTags([...tags, newTag]);
+      }
+      setTagInput('');
+    }
+  };
 
-  const handleSubmit = () => {
-    onClose();
-    toast.success('✓ Idea submitted successfully!');
+  const removeTag = (tag: string) => setTags(tags.filter(t => t !== tag));
+
+  const handleSubmit = async () => {
+    const hasTitle = title.trim().length > 0;
+    const hasDesc = desc.trim().length > 0;
+    setTitleError(!hasTitle);
+    setDescError(!hasDesc);
+    if (!hasTitle || !hasDesc) return;
+
+    const ideaKey = await generateKey();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    createIdea.mutate({
+      idea_key: ideaKey,
+      title: title.trim(),
+      description: desc.trim(),
+      idea_type: ideaType || 'feature_request',
+      priority: priority || 'P2',
+      source: source || 'internal',
+      department: department || '',
+      category: category || '',
+      tags: tags.length > 0 ? tags : null,
+      assigned_to: assignee || null,
+      submitted_by: user?.id || null,
+      status: 'submitted',
+    });
+  };
+
+  const getInitials = (name: string) => {
+    const parts = name.split(' ').filter(Boolean);
+    return parts.length >= 2
+      ? `${parts[0][0]}${parts[1][0]}`.toUpperCase()
+      : (parts[0]?.[0] || '?').toUpperCase();
   };
 
   return (
     <>
       {/* Overlay */}
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {/* Modal Container */}
-        <div onClick={e => e.stopPropagation()} style={{
-          background: '#FFFFFF', borderRadius: '16px', width: '640px', maxHeight: '85vh',
-          overflow: 'hidden', display: 'flex', flexDirection: 'column',
-          boxShadow: '0 24px 64px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05)',
-        }}>
+      <div
+        onClick={onClose}
+        style={{
+          position: 'fixed', inset: 0,
+          background: 'rgba(0,0,0,0.4)',
+          zIndex: 300,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+      >
+        {/* Modal */}
+        <div
+          onClick={e => e.stopPropagation()}
+          style={{
+            background: '#FFFFFF',
+            borderRadius: '16px',
+            width: '720px',
+            maxHeight: '90vh',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: '0 24px 64px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.05)',
+          }}
+        >
           {/* Header */}
-          <div style={{ padding: '20px 28px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '18px', fontWeight: 700, color: '#0F172A' }}>Submit New Idea</span>
-            <button onClick={onClose} style={{
-              width: '32px', height: '32px', borderRadius: '8px', background: 'transparent',
-              border: 'none', color: '#94A3B8', fontSize: '16px', cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}
+          <div style={{
+            padding: '24px 32px 16px',
+            borderBottom: '1px solid #E2E8F0',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}>
+            <span style={{ fontSize: '20px', fontWeight: 700, color: '#0F172A' }}>Submit New Idea</span>
+            <button
+              onClick={onClose}
+              style={{
+                width: '32px', height: '32px', borderRadius: '8px',
+                background: 'transparent', border: 'none', color: '#94A3B8',
+                fontSize: '16px', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}
               onMouseEnter={e => { e.currentTarget.style.background = '#F4F4F5'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
@@ -98,304 +253,247 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
             </button>
           </div>
 
-          {/* Step Navigation */}
+          {/* AI Auto-fill Bar */}
           <div style={{
-            padding: '12px 28px 0', borderBottom: '1px solid #E2E8F0',
-            display: 'flex', gap: 0, overflowX: 'auto', scrollbarWidth: 'none' as any,
+            margin: '16px 32px 0',
+            background: '#F5F3FF',
+            border: '1px solid #EDE9FE',
+            borderRadius: '10px',
+            padding: '12px 16px',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
-            {STEPS.map(s => {
-              const active = step === s.num;
-              const completed = step > s.num;
-              return (
-                <button key={s.num} onClick={() => setStep(s.num)} style={{
-                  padding: '8px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-                  background: 'none', border: 'none', whiteSpace: 'nowrap',
-                  color: completed ? '#16A34A' : active ? '#2563EB' : '#94A3B8',
-                  borderBottom: active ? '2px solid #2563EB' : '2px solid transparent',
-                  display: 'flex', alignItems: 'center', gap: '4px',
-                }}>
-                  {completed ? <Check size={12} /> : null}
-                  {s.label}
-                </button>
-              );
-            })}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Sparkles size={14} style={{ color: '#7C3AED' }} />
+              <span style={{ fontSize: '13px', color: '#7C3AED', fontWeight: 500 }}>
+                AI can auto-fill fields from a short description
+              </span>
+            </div>
+            <button style={{
+              background: '#7C3AED', color: '#FFF', border: 'none',
+              borderRadius: '6px', padding: '6px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+            }}>Auto-fill</button>
           </div>
 
-          {/* Step Content */}
-          <div style={{ padding: '24px 28px', flex: 1, overflowY: 'auto' }}>
-            {step === 1 && (
+          {/* Form Body */}
+          <div style={{
+            padding: '24px 32px',
+            overflowY: 'auto',
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px',
+          }}>
+            {/* Row 1: Title */}
+            <div>
+              <label style={labelBase}>Title *</label>
+              <input
+                value={title}
+                onChange={e => { setTitle(e.target.value); setTitleError(false); }}
+                placeholder="Enter idea title..."
+                style={{ ...inputBase, borderColor: titleError ? '#EF4444' : '#E2E8F0' }}
+                {...focusHandlers}
+              />
+              {titleError && <span style={{ fontSize: '12px', color: '#EF4444', marginTop: '4px', display: 'block' }}>Required</span>}
+            </div>
+
+            {/* Row 2: Description */}
+            <div>
+              <label style={labelBase}>Description *</label>
+              <textarea
+                value={desc}
+                onChange={e => { setDesc(e.target.value); setDescError(false); }}
+                placeholder="Describe the idea, its expected impact, and any supporting context..."
+                style={{
+                  ...inputBase,
+                  height: 'auto',
+                  minHeight: '120px',
+                  padding: '12px 14px',
+                  lineHeight: '1.6',
+                  resize: 'vertical' as const,
+                  borderColor: descError ? '#EF4444' : '#E2E8F0',
+                }}
+                {...focusHandlers}
+              />
+              {descError && <span style={{ fontSize: '12px', color: '#EF4444', marginTop: '4px', display: 'block' }}>Required</span>}
+            </div>
+
+            {/* Row 3: Type + Priority */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               <div>
-                {/* AI autofill bar */}
-                <div style={{ background: '#F5F3FF', border: '1px solid #EDE9FE', borderRadius: '8px', padding: '10px 14px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Sparkles size={14} style={{ color: '#7C3AED' }} />
-                    <span style={{ fontSize: '13px', color: '#7C3AED', fontWeight: 600 }}>AI can auto-fill fields from a short description</span>
-                  </div>
-                  <button style={{ background: '#7C3AED', color: '#FFF', border: 'none', borderRadius: '6px', padding: '5px 12px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>Auto-fill</button>
-                </div>
-
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#0F172A', marginBottom: '6px' }}>Title *</label>
-                <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Enter idea title..."
-                  style={{ ...inputStyle, height: '40px' }}
-                  onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
-                  onBlur={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
-                />
-
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#0F172A', marginBottom: '6px', marginTop: '16px' }}>Description *</label>
-                <textarea value={desc} onChange={e => setDesc(e.target.value)}
-                  placeholder="Describe the idea, its expected impact, and any supporting context..."
-                  style={{ ...inputStyle, minHeight: '140px', resize: 'vertical', lineHeight: '1.6', padding: '12px' }}
-                  onFocus={e => { e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}
-                  onBlur={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
-                />
-
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#0F172A', marginBottom: '6px', marginTop: '16px' }}>Idea Type</label>
-                <div style={{ position: 'relative' }}>
-                  <button onClick={() => setIdeaTypeOpen(!ideaTypeOpen)} style={{
-                    ...inputStyle, height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    cursor: 'pointer', color: selectedType ? '#0F172A' : '#94A3B8',
-                  }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      {selectedType && <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: selectedType.dot }} />}
-                      {selectedType ? selectedType.label : 'Select type...'}
-                    </span>
-                    <ChevronDown size={14} style={{ color: '#94A3B8' }} />
-                  </button>
-                  {ideaTypeOpen && (
-                    <div style={{
-                      position: 'absolute', top: '100%', left: 0, right: 0, marginTop: '4px',
-                      background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '8px',
-                      boxShadow: '0 8px 24px rgba(0,0,0,0.12)', zIndex: 50, overflow: 'hidden',
-                    }}>
-                      {IDEA_TYPES.map(t => (
-                        <button key={t.key} onClick={() => { setIdeaType(t.key); setIdeaTypeOpen(false); }} style={{
-                          display: 'flex', alignItems: 'center', gap: '10px', width: '100%', textAlign: 'left',
-                          padding: '10px 14px', fontSize: '13px', border: 'none', cursor: 'pointer',
-                          background: ideaType === t.key ? '#EFF6FF' : 'transparent',
-                          color: ideaType === t.key ? '#2563EB' : '#334155',
-                        }}
-                          onMouseEnter={e => { if (ideaType !== t.key) e.currentTarget.style.background = '#F8FAFC'; }}
-                          onMouseLeave={e => { if (ideaType !== t.key) e.currentTarget.style.background = 'transparent'; }}
-                        >
-                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: t.dot, flexShrink: 0 }} />
+                <label style={labelBase}>Idea Type</label>
+                <Select value={ideaType} onValueChange={setIdeaType}>
+                  <SelectTrigger className="h-[44px] border-[#E2E8F0] rounded-lg text-sm">
+                    <SelectValue placeholder="Select type..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {IDEA_TYPES.map(t => (
+                      <SelectItem key={t.key} value={t.key}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: t.dot, display: 'inline-block', flexShrink: 0 }} />
                           {t.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {step === 2 && (
-              <div>
-                <label style={labelStyle}>Category</label>
-                <CustomSelect value={category} onChange={setCategory} options={['Digital Transformation', 'Regulatory Compliance', 'AI & Automation', 'Data & Analytics', 'Citizen Services', 'Sustainability']} />
-                <label style={{ ...labelStyle, marginTop: '16px' }}>Department</label>
-                <CustomSelect value={dept} onChange={setDept} options={['Digital Trans.', 'IT Ops', 'Data & Analytics', 'Customer Exp.', 'Risk & Comp.', 'HR', 'Cybersecurity']} />
-                <label style={{ ...labelStyle, marginTop: '16px' }}>Source</label>
-                <CustomSelect value={source} onChange={setSource} options={['Ministry Directive', 'Internal', 'Stakeholder', 'Customer', 'Research']} />
-                <label style={{ ...labelStyle, marginTop: '16px' }}>Priority</label>
-                <CustomSelect value={priority} onChange={setPriority} options={['P1 — Critical', 'P2 — High', 'P3 — Medium', 'P4 — Low']} />
-                <label style={{ ...labelStyle, marginTop: '16px' }}>Tags</label>
-                <input value={tags} onChange={e => setTags(e.target.value)} placeholder="Add tags separated by commas..." style={{ ...inputStyle, height: '40px' }} />
-              </div>
-            )}
-
-            {step === 3 && (
-              <div>
-                <div style={{ border: '2px dashed #E2E8F0', borderRadius: '12px', padding: '40px 20px', textAlign: 'center', marginBottom: '16px' }}>
-                  <div style={{ fontSize: '28px', marginBottom: '8px' }}>📎</div>
-                  <div style={{ fontSize: '13px', color: '#64748B', marginBottom: '8px' }}>Drop files or click to upload</div>
-                  <button style={{ background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '6px', padding: '6px 14px', fontSize: '12px', cursor: 'pointer', color: '#334155' }}>Browse Files</button>
-                </div>
-                <label style={labelStyle}>Evidence URL</label>
-                <input placeholder="https://..." style={{ ...inputStyle, height: '40px' }} />
-                <label style={{ ...labelStyle, marginTop: '16px' }}>Evidence Notes</label>
-                <textarea placeholder="Add notes about the evidence..." style={{ ...inputStyle, minHeight: '80px', resize: 'vertical' }} />
-              </div>
-            )}
-
-            {step === 4 && (
-              <div>
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '10px 14px', marginBottom: '20px', fontSize: '12px', color: '#64748B' }}>
-                  Rate each factor 1–5. The weighted IMPACT score will be calculated automatically.
-                </div>
-                {IMPACT_FACTORS.map(f => (
-                  <div key={f.key} style={{ marginBottom: '16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                      <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: f.color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: '12px', fontWeight: 700, flexShrink: 0 }}>{f.key}</div>
-                      <span style={{ fontSize: '13px', fontWeight: 600, color: '#334155', flex: 1 }}>{f.name}</span>
-                      <span style={{ fontSize: '11px', color: '#94A3B8' }}>{f.weight}%</span>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '14px', fontWeight: 700, color: f.color, minWidth: '28px', textAlign: 'right' }}>{scores[f.key].toFixed(1)}</span>
-                    </div>
-                    <input type="range" min={1} max={5} step={0.5} value={scores[f.key]}
-                      onChange={e => setScores(prev => ({ ...prev, [f.key]: parseFloat(e.target.value) }))}
-                      style={{ width: '100%', accentColor: f.color }}
-                    />
-                  </div>
-                ))}
-                <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '16px', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>Calculated IMPACT Score</span>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '24px', fontWeight: 800, color: impactScore >= 4 ? '#16A34A' : impactScore >= 3 ? '#2563EB' : '#D97706' }}>
-                    {impactScore.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {step === 5 && (
-              <div>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8', marginBottom: '12px', textTransform: 'uppercase' }}>V2030 Pillars</div>
-                {[{ key: 'vibrant', emoji: '🏛️', name: 'Vibrant Society' }, { key: 'thriving', emoji: '📈', name: 'Thriving Economy' }, { key: 'ambitious', emoji: '🏆', name: 'Ambitious Nation' }].map(p => (
-                  <label key={p.key} style={{
-                    display: 'flex', alignItems: 'center', gap: '12px', padding: '14px',
-                    border: `1.5px solid ${v2030.includes(p.key) ? '#2563EB' : '#E2E8F0'}`,
-                    borderRadius: '8px', marginBottom: '8px', cursor: 'pointer',
-                    background: v2030.includes(p.key) ? '#EFF6FF' : '#FFF',
-                  }}>
-                    <input type="checkbox" checked={v2030.includes(p.key)} onChange={() => setV2030(prev => prev.includes(p.key) ? prev.filter(v => v !== p.key) : [...prev, p.key])} style={{ accentColor: '#2563EB' }} />
-                    <span style={{ fontSize: '18px' }}>{p.emoji}</span>
-                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>{p.name}</span>
-                  </label>
-                ))}
-              </div>
-            )}
-
-            {step === 6 && (
-              <div>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: '#94A3B8', marginBottom: '12px', textTransform: 'uppercase' }}>Compliance Standards</div>
-                {['DGA-ACC-01', 'NCA-SEC-02', 'NDMO-DG-03', 'SDAIA-AI-01'].map(c => (
-                  <label key={c} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderBottom: '1px solid #F4F4F5', cursor: 'pointer' }}>
-                    <input type="checkbox" checked={compliance.includes(c)} onChange={() => setCompliance(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c])} style={{ accentColor: '#2563EB' }} />
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', fontWeight: 600, color: '#334155' }}>{c}</span>
-                  </label>
-                ))}
-              </div>
-            )}
-
-            {step === 7 && (
-              <div>
-                {!aiReviewDone ? (
-                  <div style={{ textAlign: 'center', padding: '40px' }}>
-                    <button onClick={() => setAiReviewDone(true)} style={{
-                      background: '#7C3AED', color: '#FFF', border: 'none', borderRadius: '8px', padding: '10px 20px',
-                      fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
-                    }}>
-                      <Sparkles size={14} /> Run Analysis
-                    </button>
-                  </div>
-                ) : (
-                  <div>
-                    {[
-                      { icon: '✅', text: 'No duplicates found', color: '#16A34A' },
-                      { icon: '💡', text: 'Category suggestion: Digital Transformation (98%)', color: '#2563EB' },
-                      { icon: '🛡️', text: 'Compliance auto-tagged: DGA-ACC-01, NCA-SEC-02', color: '#0D9488' },
-                      { icon: '📊', text: `Predicted IMPACT: ${impactScore.toFixed(2)}`, color: '#7C3AED' },
-                    ].map((r, i) => (
-                      <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px', borderBottom: '1px solid #F4F4F5' }}>
-                        <span style={{ fontSize: '16px' }}>{r.icon}</span>
-                        <span style={{ fontSize: '13px', fontWeight: 600, color: r.color }}>{r.text}</span>
-                      </div>
+                        </span>
+                      </SelectItem>
                     ))}
-                  </div>
-                )}
+                  </SelectContent>
+                </Select>
               </div>
-            )}
+              <div>
+                <label style={labelBase}>Priority</label>
+                <Select value={priority} onValueChange={setPriority}>
+                  <SelectTrigger className="h-[44px] border-[#E2E8F0] rounded-lg text-sm">
+                    <SelectValue placeholder="Select priority..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PRIORITIES.map(p => (
+                      <SelectItem key={p.key} value={p.key}>{p.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
-            {step === 8 && (
-              <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                <div style={{ fontSize: '28px', marginBottom: '8px' }}>🎯</div>
-                <div style={{ fontSize: '17px', fontWeight: 700, color: '#0F172A', marginBottom: '16px' }}>Ready to Submit</div>
-                <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '20px', textAlign: 'left' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '13px' }}>
-                    <div><span style={{ color: '#94A3B8', fontSize: '11px', textTransform: 'uppercase' }}>IMPACT Score</span><div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '20px', fontWeight: 800, color: impactScore >= 4 ? '#16A34A' : '#2563EB' }}>{impactScore.toFixed(2)}</div></div>
-                    <div><span style={{ color: '#94A3B8', fontSize: '11px', textTransform: 'uppercase' }}>V2030 Pillars</span><div style={{ fontWeight: 600 }}>{v2030.length} selected</div></div>
-                    <div><span style={{ color: '#94A3B8', fontSize: '11px', textTransform: 'uppercase' }}>Compliance</span><div style={{ fontWeight: 600 }}>{compliance.length} tags</div></div>
-                    <div><span style={{ color: '#94A3B8', fontSize: '11px', textTransform: 'uppercase' }}>AI Review</span><div style={{ fontWeight: 600, color: aiReviewDone ? '#16A34A' : '#D97706' }}>{aiReviewDone ? '✓ Complete' : 'Pending'}</div></div>
-                  </div>
-                </div>
+            {/* Row 4: Department + Source */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div>
+                <label style={labelBase}>Department</label>
+                <Select value={department} onValueChange={setDepartment}>
+                  <SelectTrigger className="h-[44px] border-[#E2E8F0] rounded-lg text-sm">
+                    <SelectValue placeholder="Select department..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DEPARTMENTS.map(d => (
+                      <SelectItem key={d} value={d}>{d}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-            )}
+              <div>
+                <label style={labelBase}>Source</label>
+                <Select value={source} onValueChange={setSource}>
+                  <SelectTrigger className="h-[44px] border-[#E2E8F0] rounded-lg text-sm">
+                    <SelectValue placeholder="Select source..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SOURCES.map(s => (
+                      <SelectItem key={s.key} value={s.key}>{s.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Row 5: Assignee + Category */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div>
+                <label style={labelBase}>Assignee</label>
+                <Select value={assignee} onValueChange={setAssignee}>
+                  <SelectTrigger className="h-[44px] border-[#E2E8F0] rounded-lg text-sm">
+                    <SelectValue placeholder="Select assignee..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {profiles.map((p: any) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{
+                            width: '22px', height: '22px', borderRadius: '50%',
+                            background: '#2563EB', color: '#FFF',
+                            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '10px', fontWeight: 700, flexShrink: 0,
+                          }}>
+                            {getInitials(p.full_name || 'NA')}
+                          </span>
+                          {p.full_name || 'Unknown'}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label style={labelBase}>Category</label>
+                <input
+                  value={category}
+                  onChange={e => setCategory(e.target.value)}
+                  placeholder="e.g., Process Improvement, Digital Services..."
+                  style={inputBase}
+                  {...focusHandlers}
+                />
+              </div>
+            </div>
+
+            {/* Row 6: Tags */}
+            <div>
+              <label style={labelBase}>Tags</label>
+              <div style={{
+                display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px',
+                minHeight: '44px', border: '1px solid #E2E8F0', borderRadius: '8px',
+                padding: '6px 10px', background: '#FFFFFF',
+              }}>
+                {tags.map(tag => (
+                  <span key={tag} style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '4px',
+                    padding: '2px 8px', background: '#F1F5F9', border: '1px solid #E2E8F0',
+                    borderRadius: '4px', fontSize: '12px', color: '#334155',
+                  }}>
+                    {tag}
+                    <button
+                      onClick={() => removeTag(tag)}
+                      style={{
+                        background: 'none', border: 'none', color: '#94A3B8',
+                        cursor: 'pointer', padding: 0, fontSize: '14px', lineHeight: 1,
+                      }}
+                    >×</button>
+                  </span>
+                ))}
+                <input
+                  value={tagInput}
+                  onChange={e => setTagInput(e.target.value)}
+                  onKeyDown={handleTagKeyDown}
+                  placeholder={tags.length === 0 ? 'Type a tag and press Enter...' : ''}
+                  style={{
+                    flex: 1, minWidth: '120px', border: 'none', outline: 'none',
+                    fontSize: '13px', color: '#0F172A', background: 'transparent',
+                    height: '28px',
+                  }}
+                />
+              </div>
+            </div>
           </div>
 
           {/* Footer */}
           <div style={{
-            padding: '14px 28px', borderTop: '1px solid #E2E8F0',
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            padding: '16px 32px',
+            borderTop: '1px solid #E2E8F0',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            gap: '12px',
             background: '#FAFAFA',
+            borderRadius: '0 0 16px 16px',
           }}>
-            {step > 1 ? (
-              <button onClick={() => setStep(step - 1)} style={{
-                background: 'none', border: 'none', cursor: 'pointer',
-                color: '#64748B', fontSize: '13px', fontWeight: 600, padding: '8px 0',
+            <button
+              onClick={onClose}
+              style={{
+                background: 'transparent', color: '#64748B',
+                border: '1px solid #E2E8F0', borderRadius: '8px',
+                padding: '10px 20px', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
               }}
-                onMouseEnter={e => { e.currentTarget.style.color = '#334155'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = '#64748B'; }}
-              >
-                ← Previous
-              </button>
-            ) : <div />}
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button onClick={onClose} style={{
-                background: 'transparent', color: '#64748B', border: '1px solid #E2E8F0',
-                borderRadius: '8px', padding: '8px 16px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-              }}>Cancel</button>
-              {step < 8 ? (
-                <button onClick={() => setStep(step + 1)} style={{
-                  background: '#2563EB', color: '#FFF', border: 'none',
-                  borderRadius: '8px', padding: '8px 20px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-                }}>Next →</button>
-              ) : (
-                <button onClick={handleSubmit} style={{
-                  background: '#16A34A', color: '#FFF', border: 'none',
-                  borderRadius: '8px', padding: '8px 20px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-                }}>Submit Idea</button>
-              )}
-            </div>
+            >Cancel</button>
+            <button
+              onClick={handleSubmit}
+              disabled={createIdea.isPending}
+              style={{
+                background: '#2563EB', color: '#FFF', border: 'none',
+                borderRadius: '8px', padding: '10px 24px', fontSize: '14px',
+                fontWeight: 600, cursor: 'pointer',
+                opacity: createIdea.isPending ? 0.7 : 1,
+              }}
+            >
+              {createIdea.isPending ? 'Submitting...' : 'Submit Idea'}
+            </button>
           </div>
         </div>
       </div>
     </>
   );
 }
-
-// ─── Custom select (no native <select>) ──────────────────────────
-function CustomSelect({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: string[] }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div style={{ position: 'relative' }}>
-      <button onClick={() => setOpen(!open)} style={{
-        width: '100%', textAlign: 'left', background: '#FFFFFF', border: '1px solid #E2E8F0',
-        borderRadius: '8px', padding: '0 12px', height: '40px', fontSize: '13px', cursor: 'pointer',
-        color: value ? '#0F172A' : '#94A3B8', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      }}>
-        <span>{value || 'Select...'}</span>
-        <ChevronDown size={14} style={{ color: '#94A3B8' }} />
-      </button>
-      {open && (
-        <div style={{
-          position: 'absolute', top: '100%', left: 0, right: 0, background: '#FFFFFF',
-          border: '1px solid #E2E8F0', borderRadius: '8px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
-          zIndex: 50, marginTop: '4px', maxHeight: '200px', overflowY: 'auto',
-        }}>
-          {options.map(opt => (
-            <button key={opt} onClick={() => { onChange(opt); setOpen(false); }} style={{
-              display: 'block', width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: '13px',
-              border: 'none', background: value === opt ? '#EFF6FF' : 'transparent', cursor: 'pointer',
-              color: value === opt ? '#2563EB' : '#334155',
-            }}
-              onMouseEnter={e => { if (value !== opt) e.currentTarget.style.background = '#F8FAFC'; }}
-              onMouseLeave={e => { if (value !== opt) e.currentTarget.style.background = 'transparent'; }}
-            >
-              {opt}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-const labelStyle: React.CSSProperties = { display: 'block', fontSize: '13px', fontWeight: 600, color: '#0F172A', marginBottom: '6px' };
-const inputStyle: React.CSSProperties = { width: '100%', padding: '0 12px', border: '1px solid #E2E8F0', borderRadius: '8px', fontSize: '14px', outline: 'none', background: '#FFFFFF', color: '#0F172A' };
