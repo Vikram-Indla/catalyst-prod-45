@@ -81,17 +81,17 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge }: Prop
       {/* ══ KPI Stat Strip ══ */}
       <div style={{ padding: '20px 32px', display: 'flex', gap: '16px' }}>
         {[
-          { value: '2', label: 'idea pairs with >80% similarity', title: 'DUPLICATES DETECTED', color: C.warning },
-          { value: '4', label: 'trending categories identified', title: 'THEMES DISCOVERED', color: C.primary },
-          { value: '73%', label: 'ideas tagged to standards', title: 'COMPLIANCE COVERAGE', color: C.success },
-          { value: '82%', label: 'ideas mapped to pillars', title: 'V2030 ALIGNMENT', color: C.success },
+          { value: '2', label: 'idea pairs with >80% similarity', title: 'DUPLICATES DETECTED' },
+          { value: '4', label: 'trending categories identified', title: 'THEMES DISCOVERED' },
+          { value: '73%', label: 'ideas tagged to standards', title: 'COMPLIANCE COVERAGE' },
+          { value: '82%', label: 'ideas mapped to pillars', title: 'V2030 ALIGNMENT' },
         ].map(s => (
           <div key={s.title} style={{
             flex: 1, background: C.bg, border: `1px solid ${C.border}`, borderRadius: '10px', padding: '16px 20px',
           }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>{s.title}</div>
-            <div style={{ fontSize: '28px', fontWeight: 800, fontFamily: MONO, color: s.color }}>{s.value}</div>
-            <div style={{ fontSize: '12px', fontWeight: 500, color: '#94A3B8', marginTop: '2px' }}>{s.label}</div>
+            <div style={{ fontSize: '11px', fontWeight: 700, color: C.textTertiary, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '4px' }}>{s.title}</div>
+            <div style={{ fontSize: '28px', fontWeight: 800, fontFamily: MONO, color: C.textPrimary }}>{s.value}</div>
+            <div style={{ fontSize: '12px', fontWeight: 500, color: C.textTertiary, marginTop: '2px' }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -173,17 +173,20 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge }: Prop
         <ContentCard title="V2030 Alignment" badge="3 pillars" badgeColor={C.success}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginBottom: '16px' }}>
             {[
-              { name: 'Vibrant Society', score: '3.2', ideas: 4, color: C.primary, strongest: 'IDH-005 (4.8)' },
-              { name: 'Thriving Economy', score: '4.5', ideas: 8, color: '#16A34A', strongest: 'IDH-001 (5.0)' },
-              { name: 'Ambitious Nation', score: '4.1', ideas: 6, color: C.warning, strongest: 'IDH-011 (4.7)' },
+              { name: 'Vibrant Society', score: '3.2', ideas: 4, pct: 64, strongest: 'IDH-005 (4.8)' },
+              { name: 'Thriving Economy', score: '4.5', ideas: 8, pct: 90, strongest: 'IDH-001 (5.0)' },
+              { name: 'Ambitious Nation', score: '4.1', ideas: 6, pct: 82, strongest: 'IDH-011 (4.7)' },
             ].map(p => (
               <div key={p.name} style={{
-                borderTop: `3px solid ${p.color}`, background: '#FAFAFA',
+                background: C.surface, border: `1px solid ${C.border}`,
                 borderRadius: '8px', padding: '14px', textAlign: 'center',
               }}>
-                <div style={{ fontFamily: MONO, fontSize: '24px', fontWeight: 800, color: p.color, lineHeight: 1 }}>{p.score}</div>
+                <div style={{ height: '4px', background: C.border, borderRadius: '2px', marginBottom: '12px', overflow: 'hidden' }}>
+                  <div style={{ height: '100%', width: `${p.pct}%`, background: C.primary, borderRadius: '2px' }} />
+                </div>
+                <div style={{ fontFamily: MONO, fontSize: '24px', fontWeight: 800, color: C.textPrimary, lineHeight: 1 }}>{p.score}<span style={{ fontSize: '14px', fontWeight: 400, color: C.textTertiary }}>/5</span></div>
                 <div style={{ fontSize: '12px', fontWeight: 600, color: C.textSecondary, marginTop: '6px' }}>{p.name}</div>
-                <div style={{ fontSize: '11px', fontWeight: 500, color: '#94A3B8', marginTop: '2px' }}>{p.ideas} ideas</div>
+                <div style={{ fontSize: '11px', fontWeight: 500, color: C.textTertiary, marginTop: '2px' }}>{p.ideas} ideas</div>
               </div>
             ))}
           </div>
@@ -241,12 +244,12 @@ function DuplicatePair({ match, idea1, idea2, signals, onMerge }: {
         </span>
       </div>
       <div style={{ fontSize: '13px', marginBottom: '2px' }}>
-        <span style={{ fontFamily: MONO, fontWeight: 600, color: C.primary }}>{idea1.key}</span>
-        <span style={{ color: C.textSecondary, marginLeft: '6px', fontWeight: 600 }}>{idea1.title}</span>
+        <span style={{ fontFamily: MONO, fontWeight: 600, color: C.textPrimary }}>{idea1.key}</span>
+        <span style={{ color: C.textSecondary, marginLeft: '6px', fontWeight: 400 }}>{idea1.title}</span>
       </div>
       <div style={{ fontSize: '13px', marginBottom: '8px' }}>
-        <span style={{ fontFamily: MONO, fontWeight: 600, color: C.primary }}>{idea2.key}</span>
-        <span style={{ color: C.textSecondary, marginLeft: '6px', fontWeight: 600 }}>{idea2.title}</span>
+        <span style={{ fontFamily: MONO, fontWeight: 600, color: C.textPrimary }}>{idea2.key}</span>
+        <span style={{ color: C.textSecondary, marginLeft: '6px', fontWeight: 400 }}>{idea2.title}</span>
       </div>
       <div style={{ fontSize: '12px', color: C.textTertiary, lineHeight: 1.5, marginBottom: '10px' }}>
         Shared signals: {signals}
@@ -258,7 +261,7 @@ function DuplicatePair({ match, idea1, idea2, signals, onMerge }: {
             else toast.success('Merge initiated');
           }}
           style={{
-            background: '#7C3AED', color: '#ffffff', border: 'none', borderRadius: '6px',
+            background: C.primary, color: '#ffffff', border: 'none', borderRadius: '6px',
             padding: '6px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
           }}
         >
