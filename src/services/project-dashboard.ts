@@ -431,6 +431,14 @@ export async function fetchTisConfig(projectId: string) {
   return data;
 }
 
+// ─── Update TIS Config ───
+export async function updateTisConfig(projectId: string, visibleStatuses: string[]) {
+  const { error } = await supabase
+    .from('ph_tis_config')
+    .upsert({ project_id: projectId, visible_statuses: visibleStatuses, updated_at: new Date().toISOString() } as any, { onConflict: 'project_id' });
+  if (error) throw error;
+}
+
 // ─── Helper: batch fetch profile names ───
 async function fetchProfileNames(ids: string[]): Promise<Record<string, string>> {
   if (ids.length === 0) return {};
