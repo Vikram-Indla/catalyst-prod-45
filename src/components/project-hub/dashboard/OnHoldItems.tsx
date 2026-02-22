@@ -1,5 +1,5 @@
 /**
- * OnHoldItems widget
+ * OnHoldItems widget (real data)
  */
 import WidgetCard from './WidgetCard';
 import { useOnHold } from '@/hooks/useProjectDashboard';
@@ -45,9 +45,13 @@ export default function OnHoldItems({ projectId, releaseMap }: Props) {
                   {item.displayTitle}
                 </td>
                 <td style={{ padding: '0 8px' }}>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 700, color: '#EF4444' }}>—</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 700, color: '#EF4444', background: '#FEF2F2', padding: '2px 6px', borderRadius: 4 }}>
+                    {item.days_on_hold > 0 ? `${item.days_on_hold}d` : '—'}
+                  </span>
                 </td>
-                <td style={{ padding: '0 8px', fontSize: 10, color: '#94A3B8' }}>Pending review</td>
+                <td style={{ padding: '0 8px', fontSize: 10, color: '#94A3B8', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {item.on_hold_reason || 'No reason specified'}
+                </td>
               </tr>
             ))}
           </tbody>
