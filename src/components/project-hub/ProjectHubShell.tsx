@@ -20,11 +20,13 @@ export function ProjectHubShell() {
   // Determine if we're inside a project context (has :key param and a project route)
   const isInProjectContext = !!params.key && /\/(list|board|backlog|timeline)/.test(location.pathname);
 
-  // Auto-collapse on small viewport
+  // Auto-collapse only on mobile (< 768px); always expanded on desktop
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth <= 1280) {
+      if (window.innerWidth < 768) {
         setCollapsed(true);
+      } else {
+        setCollapsed(false);
       }
     };
     handleResize();
