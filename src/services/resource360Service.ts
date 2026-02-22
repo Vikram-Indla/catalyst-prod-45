@@ -127,30 +127,35 @@ export const fetchWorkItems = async (resourceId: string, jiraAccountId?: string 
     .order('jira_updated_at', { ascending: false });
   if (error) throw error;
 
-  // Build a lookup of issue_key -> description_text for parent description resolution
+  // Build lookups of issue_key -> description_text and fix_versions for parent resolution
   const descLookup: Record<string, string> = {};
+  const fvLookup: Record<string, any[]> = {};
   (data ?? []).forEach((i: any) => {
     if (i.issue_key && i.description_text) descLookup[i.issue_key] = i.description_text;
+    if (i.issue_key && Array.isArray(i.fix_versions) && i.fix_versions.length > 0) fvLookup[i.issue_key] = i.fix_versions;
   });
 
   // Collect parent keys that aren't in the current dataset for separate lookup
   const missingParentKeys = [...new Set(
-    (data ?? []).map((i: any) => i.parent_key).filter((k: string) => k && !descLookup[k])
+    (data ?? []).map((i: any) => i.parent_key).filter((k: string) => k && !(descLookup[k] || fvLookup[k]))
   )] as string[];
 
   if (missingParentKeys.length > 0) {
     const { data: parentData } = await supabase
       .from('ph_issues' as any)
-      .select('issue_key, description_text')
+      .select('issue_key, description_text, fix_versions')
       .in('issue_key', missingParentKeys);
     (parentData ?? []).forEach((p: any) => {
       if (p.issue_key && p.description_text) descLookup[p.issue_key] = p.description_text;
+      if (p.issue_key && Array.isArray(p.fix_versions) && p.fix_versions.length > 0) fvLookup[p.issue_key] = p.fix_versions;
     });
   }
 
   const items = (data ?? []).map((i: any) => {
-    // Extract fix version names as release names
-    const fvList = Array.isArray(i.fix_versions) ? i.fix_versions : [];
+    // Extract fix version names — inherit from parent if empty
+    let fvList = Array.isArray(i.fix_versions) && i.fix_versions.length > 0
+      ? i.fix_versions
+      : (i.parent_key && fvLookup[i.parent_key] ? fvLookup[i.parent_key] : []);
     const releaseNames = fvList.map((fv: any) => fv?.name).filter(Boolean);
 
     // Get the latest fix version with a releaseDate for due date
