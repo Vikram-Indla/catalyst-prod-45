@@ -25,6 +25,7 @@ interface CreateInitiativeDrawerProps {
   open: boolean;
   onClose: () => void;
   conversionSource?: ConversionSource | null;
+  onCreated?: (initiativeKey: string) => void;
 }
 
 function useNextInitiativeKey() {
@@ -94,7 +95,7 @@ function useCreateInitiative() {
   });
 }
 
-export function CreateInitiativeDrawer({ open, onClose, conversionSource }: CreateInitiativeDrawerProps) {
+export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCreated }: CreateInitiativeDrawerProps) {
   const { data: nextKey } = useNextInitiativeKey();
   const createMutation = useCreateInitiative();
   const { data: departmentOptions } = useDepartmentOptions();
@@ -122,16 +123,31 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource }: Crea
         // Resolve department name to UUID
         const resolveDeptId = (deptName?: string): string => {
           if (!deptName || !departmentOptions) return '';
-          const match = departmentOptions.find(
+          const q = deptName.toLowerCase().replace(/[.\s]+/g, '');
+          // Exact match first, then partial/fuzzy
+          const exact = departmentOptions.find(
             (d: any) => d.label.toLowerCase() === deptName.toLowerCase()
           );
-          return match?.value || '';
+          if (exact) return exact.value;
+          const partial = departmentOptions.find(
+            (d: any) => {
+              const dl = d.label.toLowerCase().replace(/[.\s]+/g, '');
+              return dl.includes(q) || q.includes(dl);
+            }
+          );
+          return partial?.value || '';
         };
         // Resolve assignee name to UUID
         const resolveAssigneeId = (name?: string): string => {
           if (!name || !profileOptions) return '';
+          const q = name.toLowerCase().replace(/[.\s]+/g, '');
           const match = profileOptions.find(
-            (p: any) => p.label.toLowerCase().includes(name.toLowerCase()) || name.toLowerCase().includes(p.label.toLowerCase())
+            (p: any) => {
+              const pl = (p.label || '').toLowerCase().replace(/[.\s]+/g, '');
+              return pl.includes(q) || q.includes(pl) ||
+                p.label.toLowerCase().includes(name.toLowerCase()) ||
+                name.toLowerCase().includes(p.label.toLowerCase());
+            }
           );
           return match?.value || '';
         };
@@ -201,10 +217,12 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource }: Crea
       setTitleError(true);
       return;
     }
+    const key = nextKey || 'MIM-001';
     await createMutation.mutateAsync({
       ...form,
-      initiative_key: nextKey || 'MIM-001',
+      initiative_key: key,
     });
+    onCreated?.(key);
     onClose();
   };
 
