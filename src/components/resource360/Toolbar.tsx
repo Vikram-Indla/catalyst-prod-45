@@ -214,14 +214,14 @@ const Toolbar: React.FC<ToolbarProps> = ({
         onClick={onAiClick}
         aria-label="Open AI Intelligence overlay"
         style={{
-          background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
-          color: '#FFFFFF', border: 'none', borderRadius: 8,
+          background: '#FFFFFF', color: '#7C3AED',
+          border: '1.5px solid #DDD6FE', borderRadius: 8,
           padding: '7px 16px', fontSize: 12, fontWeight: 600,
           cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6,
         }}
       >
         <span style={{ fontSize: 11, fontWeight: 800 }}>✦</span>
-        AI Intelligence
+        Intelligence
       </button>
     </div>
   );
