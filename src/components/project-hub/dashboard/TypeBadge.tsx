@@ -1,19 +1,18 @@
 /**
- * TypeBadge — Color-coded work item type badge
- * Story: blue, Bug: red, Incident: amber, Subtask: slate, Feature: blue, Task: amber
+ * TypeBadge — Solid color with white text, enterprise style
  */
 
-const TYPE_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-  story: { bg: '#EFF6FF', text: '#2563EB', label: 'Story' },
-  feature: { bg: '#EFF6FF', text: '#2563EB', label: 'Feature' },
-  bug: { bg: '#FEF2F2', text: '#DC2626', label: 'Bug' },
-  incident: { bg: '#FFFBEB', text: '#D97706', label: 'Incident' },
-  subtask: { bg: '#F8FAFC', text: '#64748B', label: 'Subtask' },
-  task: { bg: '#FFFBEB', text: '#D97706', label: 'Task' },
-  epic: { bg: '#F5F3FF', text: '#7C3AED', label: 'Epic' },
+const TYPE_STYLES: Record<string, { bg: string; label: string }> = {
+  story: { bg: '#2563EB', label: 'Story' },
+  feature: { bg: '#2563EB', label: 'Feature' },
+  bug: { bg: '#EF4444', label: 'Bug' },
+  incident: { bg: '#F59E0B', label: 'Incident' },
+  subtask: { bg: '#64748B', label: 'Subtask' },
+  task: { bg: '#64748B', label: 'Task' },
+  epic: { bg: '#7C3AED', label: 'Epic' },
 };
 
-const DEFAULT_STYLE = { bg: '#F1F5F9', text: '#64748B', label: 'Item' };
+const DEFAULT_STYLE = { bg: '#64748B', label: 'Item' };
 
 export function TypeBadge({ type }: { type: string }) {
   const key = (type || '').toLowerCase();
@@ -21,14 +20,16 @@ export function TypeBadge({ type }: { type: string }) {
   return (
     <span
       style={{
-        fontSize: 10,
-        fontWeight: 600,
-        padding: '2px 6px',
-        borderRadius: 4,
+        fontSize: 9,
+        fontWeight: 700,
+        padding: '2px 7px',
+        borderRadius: 9999,
         background: s.bg,
-        color: s.text,
+        color: '#FFFFFF',
         whiteSpace: 'nowrap',
         fontFamily: "'Inter', sans-serif",
+        textTransform: 'uppercase',
+        letterSpacing: '0.04em',
       }}
     >
       {s.label}

@@ -1,5 +1,5 @@
 /**
- * OnHoldItems widget (real data)
+ * OnHoldItems widget — high contrast text
  */
 import WidgetCard from './WidgetCard';
 import { WidgetSkeleton } from './WidgetSkeleton';
@@ -26,32 +26,34 @@ export default function OnHoldItems({ projectId, releaseMap }: Props) {
       ) : (
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid #F1F5F9' }}>
+            <tr style={{ borderBottom: '2px solid #CBD5E1' }}>
               {['Release', 'Key', 'Title', 'Days', 'Reason'].map(h => (
-                <th key={h} style={{ padding: '6px 8px', textAlign: 'left', fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.05em', fontFamily: "'Inter', sans-serif" }}>{h}</th>
+                <th key={h} style={{ padding: '6px 8px', textAlign: 'left', fontSize: 10, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '.08em', fontFamily: "'Inter', sans-serif" }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {items.map((item: any, idx: number) => (
-              <tr key={item.id} style={{ height: 44, borderBottom: '1px solid #F8FAFC', background: idx % 2 === 1 ? '#FAFBFC' : undefined, transition: 'background 120ms ease' }} className="ph-table-row">
-                <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: '#0D9488', fontWeight: 600 }}>
-                  {releaseMap[item.release_id] || '—'}
+              <tr key={item.id} style={{ height: 44, borderBottom: '1px solid #F1F5F9', background: idx % 2 === 1 ? '#FAFBFC' : undefined }} className="ph-table-row">
+                <td style={{ padding: '0 8px' }}>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, fontWeight: 600, color: '#0F766E', background: '#F0FDFA', padding: '2px 7px', borderRadius: 4, border: '1px solid #99F6E4' }}>
+                    {releaseMap[item.release_id] || '—'}
+                  </span>
                 </td>
                 <td style={{ padding: '0 8px' }}>
-                  <button onClick={() => openLifecycle(item.id)} className="ph-focus-ring" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
+                  <button onClick={() => openLifecycle(item.id)} className="ph-focus-ring" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#1D4ED8', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>
                     {item.item_key}
                   </button>
                 </td>
-                <td style={{ padding: '0 8px', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#334155', fontFamily: "'Inter', sans-serif" }} title={item.displayTitle}>
+                <td style={{ padding: '0 8px', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#1E293B', fontWeight: 500, fontFamily: "'Inter', sans-serif" }} title={item.displayTitle}>
                   {item.displayTitle}
                 </td>
                 <td style={{ padding: '0 8px' }}>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 700, color: '#EF4444', background: '#FEF2F2', padding: '2px 6px', borderRadius: 4 }}>
-                    {item.days_on_hold > 0 ? `${item.days_on_hold}d` : <span style={{ color: '#94A3B8' }}>N/A</span>}
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 700, color: '#FFFFFF', background: item.days_on_hold > 3 ? '#DC2626' : '#F59E0B', padding: '2px 7px', borderRadius: 9999 }}>
+                    {item.days_on_hold > 0 ? `${item.days_on_hold}d` : 'N/A'}
                   </span>
                 </td>
-                <td style={{ padding: '0 8px', fontSize: 10, color: '#94A3B8', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'Inter', sans-serif" }} title={item.on_hold_reason || undefined}>
+                <td style={{ padding: '0 8px', fontSize: 11, color: '#475569', fontWeight: 500, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'Inter', sans-serif" }} title={item.on_hold_reason || undefined}>
                   {item.on_hold_reason || 'No reason specified'}
                 </td>
               </tr>
