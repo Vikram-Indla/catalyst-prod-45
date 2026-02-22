@@ -89,6 +89,19 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
                 {item.work_item_type}
               </span>
             </div>
+            {item.parent_item_key && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                <span style={{ fontSize: 11, fontFamily: 'monospace', color: '#2563EB', fontWeight: 600 }}>
+                  {item.parent_item_key}
+                </span>
+                {item.parent_summary && (
+                  <span style={{ fontSize: 11, color: '#64748B' }}>
+                    {item.parent_summary}
+                  </span>
+                )}
+                <span style={{ fontSize: 10, color: '#94A3B8' }}>›</span>
+              </div>
+            )}
             <h2 style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', margin: 0 }}>{item.title}</h2>
             <div style={{ marginTop: 8, display: 'flex', gap: 6 }}>
               {sc && (
@@ -144,20 +157,6 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
               </span>
             ) : <span style={{ color: '#64748B', fontSize: 12 }}>Not Assigned</span>}
           </Field>
-
-          {/* Hierarchy - show key + title */}
-          {item.parent_item_key && (
-            <Field label="Parent" span={2}>
-              <span style={{ fontSize: 11.5, fontFamily: 'monospace', color: '#2563EB' }}>
-                {item.parent_item_key}
-              </span>
-              {item.parent_summary && (
-                <span style={{ fontSize: 12, color: '#334155', marginLeft: 8 }}>
-                  {item.parent_summary}
-                </span>
-              )}
-            </Field>
-          )}
 
           {/* Due Date */}
           <Field label="Due Date Countdown" span={2}>
