@@ -28785,6 +28785,811 @@ export type Database = {
           },
         ]
       }
+      r360_ai_behavioral_patterns: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          evidence_filter: string | null
+          evidence_refs: string[] | null
+          id: string
+          pattern_text: string
+          resource_id: string
+          sort_order: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          evidence_filter?: string | null
+          evidence_refs?: string[] | null
+          id?: string
+          pattern_text: string
+          resource_id: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          evidence_filter?: string | null
+          evidence_refs?: string[] | null
+          id?: string
+          pattern_text?: string
+          resource_id?: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "r360_ai_behavioral_patterns_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_constellation_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_ai_behavioral_patterns_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resource_summary_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_ai_behavioral_patterns_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      r360_ai_exports: {
+        Row: {
+          created_at: string
+          export_date: string
+          export_format: string
+          file_url: string | null
+          id: string
+          requested_by: string
+          resource_id: string
+        }
+        Insert: {
+          created_at?: string
+          export_date?: string
+          export_format?: string
+          file_url?: string | null
+          id?: string
+          requested_by: string
+          resource_id: string
+        }
+        Update: {
+          created_at?: string
+          export_date?: string
+          export_format?: string
+          file_url?: string | null
+          id?: string
+          requested_by?: string
+          resource_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "r360_ai_exports_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_constellation_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_ai_exports_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resource_summary_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_ai_exports_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      r360_ai_profiles: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          delivery_metrics: Json
+          delivery_summary: string | null
+          generated_at: string
+          generation_version: string
+          hub_closure_rates: Json
+          hub_distribution: Json
+          id: string
+          next_refresh_at: string | null
+          resource_id: string
+          resource_pattern: string
+          role_expectation: Json
+          strength_analysis: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          delivery_metrics?: Json
+          delivery_summary?: string | null
+          generated_at?: string
+          generation_version?: string
+          hub_closure_rates?: Json
+          hub_distribution?: Json
+          id?: string
+          next_refresh_at?: string | null
+          resource_id: string
+          resource_pattern: string
+          role_expectation?: Json
+          strength_analysis?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          delivery_metrics?: Json
+          delivery_summary?: string | null
+          generated_at?: string
+          generation_version?: string
+          hub_closure_rates?: Json
+          hub_distribution?: Json
+          id?: string
+          next_refresh_at?: string | null
+          resource_id?: string
+          resource_pattern?: string
+          role_expectation?: Json
+          strength_analysis?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "r360_ai_profiles_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: true
+            referencedRelation: "r360_constellation_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_ai_profiles_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: true
+            referencedRelation: "r360_resource_summary_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_ai_profiles_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: true
+            referencedRelation: "r360_resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      r360_ai_release_standings: {
+        Row: {
+          completion_pct: number
+          confidence_score: number | null
+          created_at: string
+          created_by: string | null
+          critical_path_items: Json
+          current_closure_rate: number | null
+          deleted_at: string | null
+          done_count: number
+          id: string
+          progress_count: number
+          project_standings: Json
+          release_id: string
+          required_closure_rate: number | null
+          resource_id: string
+          snapshot_date: string
+          todo_count: number
+          total_items: number
+          updated_at: string
+          updated_by: string | null
+          verdict: string
+          verdict_text: string | null
+        }
+        Insert: {
+          completion_pct?: number
+          confidence_score?: number | null
+          created_at?: string
+          created_by?: string | null
+          critical_path_items?: Json
+          current_closure_rate?: number | null
+          deleted_at?: string | null
+          done_count?: number
+          id?: string
+          progress_count?: number
+          project_standings?: Json
+          release_id: string
+          required_closure_rate?: number | null
+          resource_id: string
+          snapshot_date?: string
+          todo_count?: number
+          total_items?: number
+          updated_at?: string
+          updated_by?: string | null
+          verdict?: string
+          verdict_text?: string | null
+        }
+        Update: {
+          completion_pct?: number
+          confidence_score?: number | null
+          created_at?: string
+          created_by?: string | null
+          critical_path_items?: Json
+          current_closure_rate?: number | null
+          deleted_at?: string | null
+          done_count?: number
+          id?: string
+          progress_count?: number
+          project_standings?: Json
+          release_id?: string
+          required_closure_rate?: number | null
+          resource_id?: string
+          snapshot_date?: string
+          todo_count?: number
+          total_items?: number
+          updated_at?: string
+          updated_by?: string | null
+          verdict?: string
+          verdict_text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "r360_ai_release_standings_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "r360_releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360_ai_release_standings_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_constellation_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_ai_release_standings_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resource_summary_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_ai_release_standings_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      r360_assignments: {
+        Row: {
+          assignment_code: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          id: string
+          name: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          assignment_code: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          assignment_code?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      r360_departments: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          dept_code: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          dept_code: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          dept_code?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      r360_projects: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          id: string
+          name: string
+          project_key: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          id?: string
+          name: string
+          project_key: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          id?: string
+          name?: string
+          project_key?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      r360_releases: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          end_date: string
+          id: string
+          name: string
+          release_key: string
+          start_date: string
+          status: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          end_date: string
+          id?: string
+          name: string
+          release_key: string
+          start_date: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          end_date?: string
+          id?: string
+          name?: string
+          release_key?: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      r360_resources: {
+        Row: {
+          assignment_id: string | null
+          avatar_url: string | null
+          contract_end: string
+          contract_start: string
+          contract_type: string
+          country: string
+          created_at: string
+          created_by: string | null
+          ctc: number | null
+          deleted_at: string | null
+          department_id: string
+          email: string
+          full_name: string
+          id: string
+          initials: string | null
+          is_active: boolean
+          job_role: string
+          location_type: string
+          rid: string
+          updated_at: string
+          updated_by: string | null
+          user_id: string | null
+          vendor_id: string
+        }
+        Insert: {
+          assignment_id?: string | null
+          avatar_url?: string | null
+          contract_end: string
+          contract_start: string
+          contract_type: string
+          country: string
+          created_at?: string
+          created_by?: string | null
+          ctc?: number | null
+          deleted_at?: string | null
+          department_id: string
+          email: string
+          full_name: string
+          id?: string
+          initials?: string | null
+          is_active?: boolean
+          job_role: string
+          location_type: string
+          rid: string
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string | null
+          vendor_id: string
+        }
+        Update: {
+          assignment_id?: string | null
+          avatar_url?: string | null
+          contract_end?: string
+          contract_start?: string
+          contract_type?: string
+          country?: string
+          created_at?: string
+          created_by?: string | null
+          ctc?: number | null
+          deleted_at?: string | null
+          department_id?: string
+          email?: string
+          full_name?: string
+          id?: string
+          initials?: string | null
+          is_active?: boolean
+          job_role?: string
+          location_type?: string
+          rid?: string
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string | null
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "r360_resources_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "r360_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360_resources_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "r360_departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360_resources_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "r360_vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      r360_status_transitions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          dwell_days: number | null
+          from_category:
+            | Database["public"]["Enums"]["r360_status_category"]
+            | null
+          from_status: string | null
+          id: string
+          to_category: Database["public"]["Enums"]["r360_status_category"]
+          to_status: string
+          transitioned_at: string
+          work_item_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          dwell_days?: number | null
+          from_category?:
+            | Database["public"]["Enums"]["r360_status_category"]
+            | null
+          from_status?: string | null
+          id?: string
+          to_category: Database["public"]["Enums"]["r360_status_category"]
+          to_status: string
+          transitioned_at?: string
+          work_item_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          dwell_days?: number | null
+          from_category?:
+            | Database["public"]["Enums"]["r360_status_category"]
+            | null
+          from_status?: string | null
+          id?: string
+          to_category?: Database["public"]["Enums"]["r360_status_category"]
+          to_status?: string
+          transitioned_at?: string
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "r360_status_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "r360_gantt_view"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "r360_status_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "r360_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360_status_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "r360_work_items_enriched_view"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      r360_vendors: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          id: string
+          name: string
+          updated_at: string
+          updated_by: string | null
+          vendor_code: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          updated_by?: string | null
+          vendor_code: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          updated_by?: string | null
+          vendor_code?: string
+        }
+        Relationships: []
+      }
+      r360_work_items: {
+        Row: {
+          assigned_by: string | null
+          assigned_date: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          item_key: string
+          parent_item_id: string | null
+          priority: Database["public"]["Enums"]["r360_priority"]
+          project_id: string | null
+          release_id: string | null
+          resolved_date: string | null
+          resource_id: string
+          resource_role: Database["public"]["Enums"]["r360_resource_role"]
+          source_hub: Database["public"]["Enums"]["r360_hub"]
+          source_id: string | null
+          source_table: string | null
+          status: string
+          status_category: Database["public"]["Enums"]["r360_status_category"]
+          title: string
+          updated_at: string
+          updated_by: string | null
+          work_item_type: Database["public"]["Enums"]["r360_work_item_type"]
+        }
+        Insert: {
+          assigned_by?: string | null
+          assigned_date: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          item_key: string
+          parent_item_id?: string | null
+          priority?: Database["public"]["Enums"]["r360_priority"]
+          project_id?: string | null
+          release_id?: string | null
+          resolved_date?: string | null
+          resource_id: string
+          resource_role?: Database["public"]["Enums"]["r360_resource_role"]
+          source_hub: Database["public"]["Enums"]["r360_hub"]
+          source_id?: string | null
+          source_table?: string | null
+          status: string
+          status_category: Database["public"]["Enums"]["r360_status_category"]
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+          work_item_type: Database["public"]["Enums"]["r360_work_item_type"]
+        }
+        Update: {
+          assigned_by?: string | null
+          assigned_date?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          item_key?: string
+          parent_item_id?: string | null
+          priority?: Database["public"]["Enums"]["r360_priority"]
+          project_id?: string | null
+          release_id?: string | null
+          resolved_date?: string | null
+          resource_id?: string
+          resource_role?: Database["public"]["Enums"]["r360_resource_role"]
+          source_hub?: Database["public"]["Enums"]["r360_hub"]
+          source_id?: string | null
+          source_table?: string | null
+          status?: string
+          status_category?: Database["public"]["Enums"]["r360_status_category"]
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+          work_item_type?: Database["public"]["Enums"]["r360_work_item_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "r360_work_items_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "r360_constellation_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "r360_resource_summary_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "r360_resources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_parent_item_id_fkey"
+            columns: ["parent_item_id"]
+            isOneToOne: false
+            referencedRelation: "r360_gantt_view"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_parent_item_id_fkey"
+            columns: ["parent_item_id"]
+            isOneToOne: false
+            referencedRelation: "r360_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_parent_item_id_fkey"
+            columns: ["parent_item_id"]
+            isOneToOne: false
+            referencedRelation: "r360_work_items_enriched_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "r360_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "r360_releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_constellation_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resource_summary_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ra_agent_runs: {
         Row: {
           agent_name: string
@@ -55740,6 +56545,262 @@ export type Database = {
           },
         ]
       }
+      r360_chronology_events_view: {
+        Row: {
+          actor_name: string | null
+          event_date: string | null
+          event_type: string | null
+          item_key: string | null
+          release_key: string | null
+          resource_id: string | null
+          source_hub: Database["public"]["Enums"]["r360_hub"] | null
+          status_category:
+            | Database["public"]["Enums"]["r360_status_category"]
+            | null
+          title: string | null
+          work_item_id: string | null
+          work_item_type:
+            | Database["public"]["Enums"]["r360_work_item_type"]
+            | null
+        }
+        Relationships: []
+      }
+      r360_constellation_view: {
+        Row: {
+          done_items: number | null
+          full_name: string | null
+          initials: string | null
+          job_role: string | null
+          project_count: number | null
+          resource_id: string | null
+          total_items: number | null
+          vendor_id: string | null
+          vendor_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "r360_resources_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "r360_vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      r360_gantt_view: {
+        Row: {
+          bar_days: number | null
+          bar_end: string | null
+          bar_start: string | null
+          item_key: string | null
+          project_name: string | null
+          release_key: string | null
+          resource_id: string | null
+          status_category:
+            | Database["public"]["Enums"]["r360_status_category"]
+            | null
+          title: string | null
+          work_item_id: string | null
+          work_item_type:
+            | Database["public"]["Enums"]["r360_work_item_type"]
+            | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "r360_work_items_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_constellation_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resource_summary_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      r360_resource_hub_distribution_view: {
+        Row: {
+          hub_closure_pct: number | null
+          hub_done_count: number | null
+          hub_item_count: number | null
+          hub_pct: number | null
+          resource_id: string | null
+          source_hub: Database["public"]["Enums"]["r360_hub"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "r360_work_items_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_constellation_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resource_summary_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      r360_resource_summary_view: {
+        Row: {
+          done_count: number | null
+          full_name: string | null
+          job_role: string | null
+          progress_count: number | null
+          resource_id: string | null
+          rid: string | null
+          todo_count: number | null
+          total_items: number | null
+        }
+        Relationships: []
+      }
+      r360_work_items_enriched_view: {
+        Row: {
+          age_days: number | null
+          assigned_by: string | null
+          assigned_by_name: string | null
+          assigned_date: string | null
+          created_at: string | null
+          created_by: string | null
+          days_until_due: number | null
+          deleted_at: string | null
+          description: string | null
+          due_date: string | null
+          effective_due_date: string | null
+          id: string | null
+          item_key: string | null
+          parent_item_id: string | null
+          parent_item_key: string | null
+          priority: Database["public"]["Enums"]["r360_priority"] | null
+          project_id: string | null
+          project_key: string | null
+          project_name: string | null
+          release_end_date: string | null
+          release_id: string | null
+          release_key: string | null
+          resolved_date: string | null
+          resource_id: string | null
+          resource_initials: string | null
+          resource_job_role: string | null
+          resource_name: string | null
+          resource_role:
+            | Database["public"]["Enums"]["r360_resource_role"]
+            | null
+          source_hub: Database["public"]["Enums"]["r360_hub"] | null
+          source_id: string | null
+          source_table: string | null
+          status: string | null
+          status_category:
+            | Database["public"]["Enums"]["r360_status_category"]
+            | null
+          title: string | null
+          updated_at: string | null
+          updated_by: string | null
+          work_item_type:
+            | Database["public"]["Enums"]["r360_work_item_type"]
+            | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "r360_work_items_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "r360_constellation_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "r360_resource_summary_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "r360_resources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_parent_item_id_fkey"
+            columns: ["parent_item_id"]
+            isOneToOne: false
+            referencedRelation: "r360_gantt_view"
+            referencedColumns: ["work_item_id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_parent_item_id_fkey"
+            columns: ["parent_item_id"]
+            isOneToOne: false
+            referencedRelation: "r360_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_parent_item_id_fkey"
+            columns: ["parent_item_id"]
+            isOneToOne: false
+            referencedRelation: "r360_work_items_enriched_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "r360_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "r360_releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_constellation_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resource_summary_view"
+            referencedColumns: ["resource_id"]
+          },
+          {
+            foreignKeyName: "r360_work_items_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "r360_resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resource_current_cost: {
         Row: {
           annual_cost: number | null
@@ -58802,6 +59863,10 @@ export type Database = {
         }
         Returns: Json
       }
+      r360_effective_due_date: {
+        Args: { p_work_item_id: string }
+        Returns: string
+      }
       reassign_workers: {
         Args: {
           p_from_pool_id: string
@@ -60072,6 +61137,30 @@ export type Database = {
       portfolio_status: "active" | "archived"
       priority_level: "P1" | "P2" | "P3" | "P4"
       program_status: "active" | "archived"
+      r360_hub:
+        | "StrategyHub"
+        | "ProductHub"
+        | "ProjectHub"
+        | "ReleaseHub"
+        | "TestHub"
+        | "IncidentHub"
+        | "TaskHub"
+      r360_priority: "Critical" | "High" | "Medium" | "Low"
+      r360_resource_role: "assigned" | "reported"
+      r360_status_category: "todo" | "progress" | "done"
+      r360_work_item_type:
+        | "Initiative"
+        | "Epic"
+        | "Feature"
+        | "Story"
+        | "Subtask"
+        | "Bug"
+        | "Task"
+        | "Test Case"
+        | "Test Plan"
+        | "Incident"
+        | "Release"
+        | "Requirement"
       release_health: "healthy" | "at_risk" | "critical"
       release_status:
         | "planned"
@@ -60773,6 +61862,32 @@ export const Constants = {
       portfolio_status: ["active", "archived"],
       priority_level: ["P1", "P2", "P3", "P4"],
       program_status: ["active", "archived"],
+      r360_hub: [
+        "StrategyHub",
+        "ProductHub",
+        "ProjectHub",
+        "ReleaseHub",
+        "TestHub",
+        "IncidentHub",
+        "TaskHub",
+      ],
+      r360_priority: ["Critical", "High", "Medium", "Low"],
+      r360_resource_role: ["assigned", "reported"],
+      r360_status_category: ["todo", "progress", "done"],
+      r360_work_item_type: [
+        "Initiative",
+        "Epic",
+        "Feature",
+        "Story",
+        "Subtask",
+        "Bug",
+        "Task",
+        "Test Case",
+        "Test Plan",
+        "Incident",
+        "Release",
+        "Requirement",
+      ],
       release_health: ["healthy", "at_risk", "critical"],
       release_status: [
         "planned",
