@@ -147,7 +147,7 @@ export const fetchWorkItems = async (resourceId: string, jiraAccountId?: string 
     type_icon_url: i.type_icon_url,
     assigned_date: i.jira_created_at,
     updated_at: i.jira_updated_at,
-    hub: 'Jira',
+    hub: 'ProjectHub',
   }));
 
   setCache(cacheKey, items);
