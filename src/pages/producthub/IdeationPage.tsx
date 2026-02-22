@@ -11,9 +11,10 @@ import {
 } from 'lucide-react';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import {
-  ideas, Idea, IdeationView, IdeaStatus, StatusFilter, VIEW_TITLES,
+  Idea, IdeationView, IdeaStatus, StatusFilter, VIEW_TITLES,
   STATUS_CONFIG, TYPE_CONFIG, PRIORITY_CONFIG, FILTER_PILLS, getImpactColor,
 } from './ideation/ideation-data';
+import { useIdeas } from '@/hooks/useIdeation';
 import IdeationBoardView from './ideation/IdeationBoardView';
 import IdeationMatrixView from './ideation/IdeationMatrixView';
 import IdeationAnalyticsView from './ideation/IdeationAnalyticsView';
@@ -47,8 +48,14 @@ export default function IdeationPage() {
   const [convertDrawerOpen, setConvertDrawerOpen] = useState(false);
   const [conversionSource, setConversionSource] = useState<ConversionSource | null>(null);
 
+  // ── Supabase data ──
+  const { data: ideasData = [], isLoading } = useIdeas({
+    status: activeFilter !== 'all' && activeFilter !== 'my_ideas' ? activeFilter : undefined,
+    search: search || undefined,
+  });
+
   const handleConvertIdea = useCallback((ideaKey: string) => {
-    const idea = ideas.find(i => i.key === ideaKey);
+    const idea = ideasData.find(i => i.key === ideaKey);
     if (!idea) return;
     setConversionSource({
       type: 'single',
@@ -60,11 +67,11 @@ export default function IdeationPage() {
       },
     });
     setConvertDrawerOpen(true);
-  }, []);
+  }, [ideasData]);
 
   const handleMergeIdeas = useCallback((primaryKey: string, mergeKey: string) => {
-    const primary = ideas.find(i => i.key === primaryKey);
-    const merge = ideas.find(i => i.key === mergeKey);
+    const primary = ideasData.find(i => i.key === primaryKey);
+    const merge = ideasData.find(i => i.key === mergeKey);
     if (!primary || !merge) return;
     setConversionSource({
       type: 'merge',
@@ -79,29 +86,22 @@ export default function IdeationPage() {
     });
     setConvertDrawerOpen(true);
     setTriageOpen(false);
-  }, []);
+  }, [ideasData]);
 
   // Apply conversions to the ideas list
   const ideasWithConversions = useMemo(() => {
-    return ideas.map(idea => {
+    return ideasData.map(idea => {
       if (convertedIdeas[idea.key]) {
         return { ...idea, status: 'converted' as IdeaStatus, initiative: convertedIdeas[idea.key] };
       }
       return idea;
     });
-  }, [convertedIdeas]);
+  }, [convertedIdeas, ideasData]);
 
   const filteredIdeas = useMemo(() => {
-    let result = ideasWithConversions;
-    if (search) {
-      const q = search.toLowerCase();
-      result = result.filter(i => i.title.toLowerCase().includes(q) || i.key.toLowerCase().includes(q));
-    }
-    if (activeFilter !== 'all' && activeFilter !== 'my_ideas') {
-      result = result.filter(i => i.status === activeFilter);
-    }
-    return result;
-  }, [search, activeFilter, ideasWithConversions]);
+    // Filtering is now done server-side via useIdeas, just apply local conversions
+    return ideasWithConversions;
+  }, [ideasWithConversions]);
 
   const toggleRow = (key: string) => {
     setSelectedRows(prev => {
@@ -143,7 +143,7 @@ export default function IdeationPage() {
               padding: '1px 7px', fontSize: '11px', fontWeight: 600,
               fontFamily: "'JetBrains Mono', monospace", color: '#94A3B8',
             }}>
-              15
+              {isLoading ? '…' : ideasData.length}
             </span>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
@@ -181,13 +181,22 @@ export default function IdeationPage() {
         background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
         display: 'flex', alignItems: 'stretch',
       }}>
-        {[
-          { label: 'TOTAL IDEAS', value: '15', color: '#0F172A', trend: '↑ 3 this week', trendColor: '#16A34A' },
-          { label: 'AVG IMPACT', value: '3.72', color: '#2563EB', trend: '↑ 0.4', trendColor: '#16A34A' },
-          { label: 'PENDING REVIEW', value: '4', color: '#D97706', trend: '—', trendColor: '#94A3B8' },
-          { label: 'CONVERSION RATE', value: '13.3%', color: '#0D9488', trend: '2 → Initiatives', trendColor: '#16A34A' },
-          { label: 'AI ENRICHED', value: '11', color: '#7C3AED', trend: '73%', trendColor: '#7C3AED' },
-        ].map((stat, i, arr) => (
+        {(() => {
+          const total = ideasData.length;
+          const avgImpact = total > 0 ? (ideasData.reduce((s, i) => s + i.impact, 0) / total).toFixed(2) : '0';
+          const pendingReview = ideasData.filter(i => i.status === 'under_review').length;
+          const converted = ideasData.filter(i => i.status === 'converted').length;
+          const convRate = total > 0 ? (converted / total * 100).toFixed(1) + '%' : '0%';
+          const aiReady = ideasData.filter(i => i.ai === 'ready').length;
+          const aiPct = total > 0 ? Math.round(aiReady / total * 100) + '%' : '0%';
+          return [
+            { label: 'TOTAL IDEAS', value: String(total), color: '#0F172A', trend: '', trendColor: '#16A34A' },
+            { label: 'AVG IMPACT', value: avgImpact, color: '#2563EB', trend: '', trendColor: '#16A34A' },
+            { label: 'PENDING REVIEW', value: String(pendingReview), color: '#D97706', trend: '—', trendColor: '#94A3B8' },
+            { label: 'CONVERSION RATE', value: convRate, color: '#0D9488', trend: `${converted} → Initiatives`, trendColor: '#16A34A' },
+            { label: 'AI ENRICHED', value: String(aiReady), color: '#7C3AED', trend: aiPct, trendColor: '#7C3AED' },
+          ];
+        })().map((stat, i, arr) => (
           <div key={stat.label} style={{
             flex: 1, padding: '14px 20px',
             borderRight: i < arr.length - 1 ? '1px solid #E2E8F0' : 'none',
