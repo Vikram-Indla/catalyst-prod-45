@@ -122,7 +122,7 @@ export const fetchWorkItems = async (resourceId: string, jiraAccountId?: string 
 
   const { data, error } = await supabase
     .from('ph_issues' as any)
-    .select('issue_key, project_key, project_name, issue_type, summary, status, status_category, priority, parent_key, parent_summary, due_date, effective_due_date, story_points, sprint_name, fix_versions, labels, components, type_icon_url, jira_created_at, jira_updated_at')
+    .select('issue_key, project_key, project_name, issue_type, summary, status, status_category, priority, parent_key, parent_summary, due_date, effective_due_date, story_points, sprint_name, fix_versions, labels, components, type_icon_url, jira_created_at, jira_updated_at, assignee_display_name')
     .eq('assignee_account_id', jiraAccountId)
     .order('jira_updated_at', { ascending: false });
   if (error) throw error;
@@ -132,28 +132,50 @@ export const fetchWorkItems = async (resourceId: string, jiraAccountId?: string 
     const fvList = Array.isArray(i.fix_versions) ? i.fix_versions : [];
     const releaseNames = fvList.map((fv: any) => fv?.name).filter(Boolean);
 
+    // Get the latest fix version with a releaseDate for due date
+    const fvWithDate = fvList.filter((fv: any) => fv?.releaseDate).sort((a: any, b: any) => (b.releaseDate || '').localeCompare(a.releaseDate || ''));
+    const latestFv = fvWithDate[0];
+    const releaseDueDate = latestFv?.releaseDate || null;
+    const releaseKey = releaseNames.join(', ') || null;
+
+    // Compute days_until_due from fix version releaseDate
+    const dueDateStr = releaseDueDate || i.effective_due_date || i.due_date;
+    let daysUntilDue: number | null = null;
+    if (dueDateStr) {
+      const diff = new Date(dueDateStr).getTime() - Date.now();
+      daysUntilDue = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    }
+
     return {
       id: i.issue_key,
+      item_key: i.issue_key,
       issue_key: i.issue_key,
       project_key: i.project_key,
       project_name: i.project_name || i.project_key,
+      work_item_type: i.issue_type,
       item_type: i.issue_type,
       title: i.summary,
       status: i.status,
       status_category: i.status_category,
       priority: i.priority,
       parent_key: i.parent_key,
+      parent_item_key: i.parent_key,
       parent_summary: i.parent_summary,
-      due_date: i.effective_due_date || i.due_date,
+      due_date: dueDateStr,
+      days_until_due: daysUntilDue,
       story_points: i.story_points,
       sprint_name: i.sprint_name,
       fix_versions: i.fix_versions,
       release_names: releaseNames,
+      release_key: releaseKey,
+      release_end_date: releaseDueDate,
       labels: i.labels,
       components: i.components,
       type_icon_url: i.type_icon_url,
       assigned_date: i.jira_created_at,
+      assigned_by_name: i.assignee_display_name,
       updated_at: i.jira_updated_at,
+      source_hub: 'ProjectHub',
       hub: 'ProjectHub',
     };
   });
