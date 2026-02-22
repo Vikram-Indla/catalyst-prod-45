@@ -181,11 +181,6 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
 
           {/* Parent Details */}
           {item.parent_item_key && (
-            <>
-              <Field label="Parent Key">
-                <span style={{ fontFamily: 'monospace', color: '#2563EB', fontWeight: 600 }}>{item.parent_item_key}</span>
-              </Field>
-              <Field label="Parent Name">{item.parent_summary || '—'}</Field>
               <Field label="Parent Description" span={2}>
                 {item.parent_description ? (
                   <span style={{ fontSize: 12, color: '#334155', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
@@ -193,7 +188,6 @@ const ContextModal: React.FC<ContextModalProps> = ({ item, onClose }) => {
                   </span>
                 ) : <span style={{ color: '#64748B', fontSize: 12 }}>No description</span>}
               </Field>
-            </>
           )}
         </div>
 
