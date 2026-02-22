@@ -1,4 +1,4 @@
-import { LayoutGrid, Star, ChevronsLeft, ChevronsRight, Users, FolderKanban, Radar } from 'lucide-react';
+import { LayoutGrid, Star, ChevronsLeft, ChevronsRight, Users, FolderKanban } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { NavItem } from './NavItem';
 
@@ -77,13 +77,6 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
           label="Resource 360"
           isActive={location.pathname.startsWith('/project-hub/resource360')}
           onClick={() => navigate('/project-hub/resource360')}
-          collapsed={collapsed}
-        />
-        <NavItem
-          icon={Radar}
-          label="Resource 360°"
-          isActive={location.pathname.startsWith('/resource-360')}
-          onClick={() => navigate('/resource-360/009')}
           collapsed={collapsed}
         />
 
