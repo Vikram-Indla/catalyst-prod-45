@@ -74,11 +74,11 @@ export default function ReleaseDropdown({ projectId }: { projectId: string | nul
                 />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: '#0D9488' }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 700, color: '#0F172A' }}>
                       {rKey}
                     </span>
                   </div>
-                  <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 1 }}>
+                  <div style={{ fontSize: 11, color: '#64748B', marginTop: 2 }}>
                     {r.status} · {r.target_date ? format(new Date(r.target_date), 'MMM d, yyyy') : 'No date'}
                   </div>
                 </div>
