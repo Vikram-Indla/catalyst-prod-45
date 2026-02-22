@@ -155,7 +155,7 @@ export default function ProjectDashboardPage() {
       {/* Drawers & Modals */}
       <LifecycleDrawer />
       <WorkloadDrawer />
-      <IntelligenceDrawer />
+      <IntelligenceDrawer projectId={projectId} />
       {projectId && <MilestoneConfigModal open={milestoneConfigOpen} onClose={() => setMilestoneConfigOpen(false)} projectId={projectId} />}
     </div>
   );

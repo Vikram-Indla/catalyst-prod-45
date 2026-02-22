@@ -1,13 +1,32 @@
 /**
- * IntelligenceDrawer — AI project intelligence panel
+ * IntelligenceDrawer — AI project intelligence panel (wired to real data)
  */
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { X, Star } from 'lucide-react';
+import PersonAvatar from './PersonAvatar';
 import { useDashboardStore } from './useDashboardStore';
+import {
+  useReleases, useOverdue, useTeamWorkload,
+  useIncidents, useDefects, useTimeInStatus,
+  useKeyMilestones, useInProduction,
+} from '@/hooks/useProjectDashboard';
 
-export default function IntelligenceDrawer() {
-  const { activeDrawer, closeDrawer } = useDashboardStore();
+interface Props {
+  projectId?: string | null;
+}
+
+export default function IntelligenceDrawer({ projectId }: Props) {
+  const { activeDrawer, closeDrawer, selectedReleaseIds } = useDashboardStore();
   const open = activeDrawer === 'intelligence';
+
+  const { data: releases } = useReleases(open ? projectId : undefined);
+  const { data: overdue } = useOverdue(open ? projectId : undefined, selectedReleaseIds);
+  const { data: workload } = useTeamWorkload(open ? projectId : undefined);
+  const { data: incidents } = useIncidents(open ? projectId : undefined, selectedReleaseIds);
+  const { data: defects } = useDefects(open ? projectId : undefined, selectedReleaseIds);
+  const { data: tis } = useTimeInStatus(open ? projectId : undefined, selectedReleaseIds);
+  const { data: milestones } = useKeyMilestones(open ? projectId : undefined, selectedReleaseIds);
+  const { data: inProd } = useInProduction(open ? projectId : undefined, selectedReleaseIds);
 
   useEffect(() => {
     if (!open) return;
@@ -15,6 +34,57 @@ export default function IntelligenceDrawer() {
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
   }, [open, closeDrawer]);
+
+  // Compute insights from real data
+  const insights = useMemo(() => {
+    const overdueItems = overdue ?? [];
+    const incidentItems = incidents ?? [];
+    const defectItems = defects ?? [];
+    const tisItems = tis ?? [];
+    const workloadItems = workload ?? [];
+    const prodItems = inProd ?? [];
+
+    // Bottlenecks: items >5 days in blue statuses
+    const bottlenecks = tisItems.flatMap((item: any) =>
+      (item.statuses ?? []).filter((s: any) => s.duration_days > 5).map((s: any) => ({
+        key: item.work_item_key,
+        status: s.status,
+        days: s.duration_days,
+      }))
+    ).sort((a: any, b: any) => b.days - a.days).slice(0, 3);
+
+    const p1Count = incidentItems.filter((i: any) => i.priority === 'P1').length;
+    const critDefects = defectItems.filter((d: any) => d.severity === 'critical').length;
+
+    // Overloaded members (>8 items)
+    const overloaded = workloadItems.filter((m: any) => m.total_count > 8);
+    const underloaded = workloadItems.filter((m: any) => m.total_count <= 2 && m.total_count > 0);
+
+    // Recommendations
+    const recs: string[] = [];
+    if (overdueItems.length > 0) recs.push(`Review ${overdueItems.length} overdue item${overdueItems.length > 1 ? 's' : ''}: ${overdueItems.slice(0, 3).map((i: any) => i.item_key).join(', ')}`);
+    if (bottlenecks.length > 0) recs.push(`Unblock bottleneck: ${bottlenecks[0].key} stuck ${bottlenecks[0].days}d in ${bottlenecks[0].status.replace(/_/g, ' ')}`);
+    if (p1Count > 0) recs.push(`Prioritize ${p1Count} P1 incident${p1Count > 1 ? 's' : ''} for immediate resolution`);
+    if (critDefects > 0) recs.push(`Address ${critDefects} critical defect${critDefects > 1 ? 's' : ''} blocking pipeline`);
+    if (overloaded.length > 0) recs.push(`Rebalance load: ${overloaded.map((m: any) => `${m.name} (${m.total_count})`).join(', ')} overloaded`);
+    if (recs.length === 0) recs.push('Project health is good — no urgent action items');
+
+    return {
+      overdueCount: overdueItems.length,
+      overdueKeys: overdueItems.slice(0, 5).map((i: any) => i.item_key),
+      bottlenecks,
+      p1Count,
+      critDefects,
+      totalIncidents: incidentItems.length,
+      totalDefects: defectItems.length,
+      workloadItems,
+      overloaded,
+      underloaded,
+      prodCount: prodItems.length,
+      milestoneCount: (milestones ?? []).length,
+      recs,
+    };
+  }, [overdue, incidents, defects, tis, workload, inProd, milestones]);
 
   if (!open) return null;
 
@@ -38,31 +108,69 @@ export default function IntelligenceDrawer() {
 
         <div style={{ padding: '12px 20px', borderBottom: '1px solid #F1F5F9' }}>
           <span style={{ fontSize: 10, fontWeight: 600, color: '#7C3AED', background: '#F5F3FF', padding: '3px 8px', borderRadius: 6 }}>
-            ✦ AI · Powered by project data
+            ✦ AI · {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </span>
         </div>
 
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
           {/* Recommendations */}
-          <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 8 }}>Recommendations</div>
+          <Section label="Recommendations">
             <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 8, padding: '12px 14px' }}>
-              <div style={{ fontSize: 12, color: '#92400E', lineHeight: 1.6 }}>
+              <div style={{ fontSize: 12, color: '#92400E', lineHeight: 1.7 }}>
                 <div style={{ fontWeight: 700, marginBottom: 4 }}>Action Items</div>
-                1. Review overdue items and reassign if needed<br />
-                2. Monitor bottleneck statuses (&gt;5 days in QA/UAT)<br />
-                3. Prioritize P1 incident resolution<br />
-                4. Balance team workload across members
+                {insights.recs.map((r, i) => (
+                  <div key={i}>{i + 1}. {r}</div>
+                ))}
               </div>
             </div>
-          </div>
+          </Section>
 
-          <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 9, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 8 }}>Release Health</div>
+          {/* Scope & Delays */}
+          <Section label="Scope & Delays">
             <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', fontSize: 12, color: '#334155', lineHeight: 1.6 }}>
-              Analysis based on current release data. Check the dashboard widgets for detailed metrics on milestones, incidents, and defects.
+              <div><strong>{insights.overdueCount}</strong> overdue items{insights.overdueKeys.length > 0 && `: ${insights.overdueKeys.join(', ')}`}</div>
+              {insights.bottlenecks.length > 0 && (
+                <div style={{ marginTop: 6 }}>
+                  <strong>Bottlenecks:</strong>
+                  {insights.bottlenecks.map((b: any, i: number) => (
+                    <div key={i} style={{ marginLeft: 8, fontSize: 11, color: '#D97706' }}>
+                      • {b.key}: {b.days}d in {b.status.replace(/_/g, ' ')}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div style={{ marginTop: 4 }}><strong>{insights.milestoneCount}</strong> items at milestone gates · <strong>{insights.prodCount}</strong> in production</div>
             </div>
-          </div>
+          </Section>
+
+          {/* People & Capacity */}
+          <Section label="People & Capacity">
+            <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', fontSize: 12, color: '#334155', lineHeight: 1.6 }}>
+              {insights.workloadItems.map((m: any) => (
+                <div key={m.user_id} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <PersonAvatar name={m.name} size={18} />
+                  <span style={{ fontWeight: 600, flex: 1 }}>{m.name}</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: m.total_count > 8 ? '#EF4444' : '#2563EB' }}>
+                    {m.total_count}
+                  </span>
+                  {m.total_count > 8 && <span style={{ fontSize: 9, color: '#EF4444', fontWeight: 600 }}>OVERLOADED</span>}
+                </div>
+              ))}
+              {insights.underloaded.length > 0 && (
+                <div style={{ fontSize: 11, color: '#64748B', marginTop: 4 }}>
+                  Underutilized: {insights.underloaded.map((m: any) => m.name).join(', ')}
+                </div>
+              )}
+            </div>
+          </Section>
+
+          {/* Incidents & Quality */}
+          <Section label="Incidents & Quality">
+            <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', fontSize: 12, color: '#334155', lineHeight: 1.6 }}>
+              <div><strong>{insights.totalIncidents}</strong> active incidents{insights.p1Count > 0 && <span style={{ color: '#EF4444', fontWeight: 700 }}> ({insights.p1Count} P1)</span>}</div>
+              <div><strong>{insights.totalDefects}</strong> defects{insights.critDefects > 0 && <span style={{ color: '#EF4444', fontWeight: 700 }}> ({insights.critDefects} critical)</span>}</div>
+            </div>
+          </Section>
         </div>
 
         <div style={{ padding: '12px 20px', borderTop: '1px solid #E2E8F0' }}>
@@ -72,5 +180,14 @@ export default function IntelligenceDrawer() {
         </div>
       </div>
     </>
+  );
+}
+
+function Section({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div style={{ marginBottom: 20 }}>
+      <div style={{ fontSize: 9, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 8 }}>{label}</div>
+      {children}
+    </div>
   );
 }

@@ -136,11 +136,30 @@ export async function fetchOverdue(projectId: string, releaseIds: string[]) {
 export async function fetchOnHold(projectId: string, releaseIds: string[]) {
   const { data, error } = await supabase
     .from('ph_work_items')
-    .select('id, item_key, title, summary, item_type, status, release_id, assignee_id')
+    .select('id, item_key, title, summary, item_type, status, release_id, assignee_id, on_hold_reason')
     .eq('project_id', projectId)
     .in('release_id', releaseIds)
     .eq('status', 'on_hold');
   if (error) throw error;
+
+  const itemIds = (data ?? []).map(d => d.id);
+  // Fetch the last transition to on_hold for each item to compute days
+  let daysMap: Record<string, number> = {};
+  if (itemIds.length > 0) {
+    const { data: transitions } = await supabase
+      .from('ph_status_transitions')
+      .select('work_item_id, changed_at')
+      .in('work_item_id', itemIds)
+      .eq('to_status', 'on_hold')
+      .order('changed_at', { ascending: false });
+    const seen = new Set<string>();
+    for (const t of transitions ?? []) {
+      if (!seen.has(t.work_item_id)) {
+        seen.add(t.work_item_id);
+        daysMap[t.work_item_id] = Math.ceil((Date.now() - new Date(t.changed_at).getTime()) / 86400000);
+      }
+    }
+  }
 
   const assigneeIds = [...new Set((data ?? []).map(d => d.assignee_id).filter(Boolean))] as string[];
   const profiles = await fetchProfileNames(assigneeIds);
@@ -149,6 +168,7 @@ export async function fetchOnHold(projectId: string, releaseIds: string[]) {
     ...d,
     displayTitle: d.title || d.summary,
     assignee_name: profiles[d.assignee_id ?? ''] ?? null,
+    days_on_hold: daysMap[d.id] ?? 0,
   }));
 }
 
@@ -318,14 +338,60 @@ export async function fetchTeamWorkload(projectId: string) {
 export async function fetchAssignedItems(userId: string, releaseIds: string[]) {
   const { data, error } = await supabase
     .from('ph_work_items')
-    .select('id, item_key, title, summary, item_type, status, release_id, parent_id')
+    .select('id, item_key, title, summary, item_type, status, release_id, parent_id, assigned_at, assigned_by')
     .eq('assignee_id', userId)
     .in('release_id', releaseIds)
     .order('updated_at', { ascending: false });
   if (error) throw error;
-  return (data ?? []).map(d => ({
+
+  const items = (data ?? []).map(d => ({
     ...d,
     displayTitle: d.title || d.summary,
+  }));
+
+  // Fetch parent info for items with parent_id
+  const parentIds = [...new Set(items.map(i => (i as any).parent_id).filter(Boolean))] as string[];
+  let parentMap: Record<string, { item_key: string; title: string; item_type: string }> = {};
+  if (parentIds.length > 0) {
+    const { data: parents } = await supabase
+      .from('ph_work_items')
+      .select('id, item_key, title, summary, item_type')
+      .in('id', parentIds);
+    for (const p of parents ?? []) {
+      parentMap[p.id] = { item_key: p.item_key, title: p.title || p.summary || '', item_type: p.item_type };
+    }
+  }
+
+  // Fetch siblings (same parent, different item) and their assignee names
+  const siblingsByParent: Record<string, any[]> = {};
+  if (parentIds.length > 0) {
+    const { data: siblings } = await supabase
+      .from('ph_work_items')
+      .select('id, item_key, title, summary, item_type, status, parent_id, assignee_id')
+      .in('parent_id', parentIds);
+    
+    const sibAssigneeIds = [...new Set((siblings ?? []).map(s => s.assignee_id).filter(Boolean))] as string[];
+    const sibProfiles = await fetchProfileNames(sibAssigneeIds);
+
+    for (const s of siblings ?? []) {
+      if (!siblingsByParent[s.parent_id!]) siblingsByParent[s.parent_id!] = [];
+      siblingsByParent[s.parent_id!].push({
+        ...s,
+        displayTitle: s.title || s.summary,
+        assignee_name: sibProfiles[s.assignee_id ?? ''] ?? null,
+      });
+    }
+  }
+
+  // Fetch assigned_by profile names
+  const assignedByIds = [...new Set(items.map(i => (i as any).assigned_by).filter(Boolean))] as string[];
+  const assignedByProfiles = await fetchProfileNames(assignedByIds);
+
+  return items.map(item => ({
+    ...item,
+    parent: parentMap[(item as any).parent_id] ?? null,
+    siblings: (item as any).parent_id ? (siblingsByParent[(item as any).parent_id] ?? []).filter((s: any) => s.id !== item.id) : [],
+    assigned_by_name: assignedByProfiles[(item as any).assigned_by ?? ''] ?? null,
   }));
 }
 

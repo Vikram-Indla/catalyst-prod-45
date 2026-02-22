@@ -21775,6 +21775,8 @@ export type Database = {
       ph_work_items: {
         Row: {
           actual_hours: number | null
+          assigned_at: string | null
+          assigned_by: string | null
           assignee_id: string | null
           assignee_user_id: string | null
           backlog_order: number | null
@@ -21803,6 +21805,7 @@ export type Database = {
           jira_story_points: number | null
           jira_url: string | null
           last_synced_at: string | null
+          on_hold_reason: string | null
           parent_id: string | null
           priority: string | null
           project_id: string | null
@@ -21831,6 +21834,8 @@ export type Database = {
         }
         Insert: {
           actual_hours?: number | null
+          assigned_at?: string | null
+          assigned_by?: string | null
           assignee_id?: string | null
           assignee_user_id?: string | null
           backlog_order?: number | null
@@ -21859,6 +21864,7 @@ export type Database = {
           jira_story_points?: number | null
           jira_url?: string | null
           last_synced_at?: string | null
+          on_hold_reason?: string | null
           parent_id?: string | null
           priority?: string | null
           project_id?: string | null
@@ -21887,6 +21893,8 @@ export type Database = {
         }
         Update: {
           actual_hours?: number | null
+          assigned_at?: string | null
+          assigned_by?: string | null
           assignee_id?: string | null
           assignee_user_id?: string | null
           backlog_order?: number | null
@@ -21915,6 +21923,7 @@ export type Database = {
           jira_story_points?: number | null
           jira_url?: string | null
           last_synced_at?: string | null
+          on_hold_reason?: string | null
           parent_id?: string | null
           priority?: string | null
           project_id?: string | null
