@@ -31,16 +31,21 @@ function useNextInitiativeKey() {
   return useQuery({
     queryKey: ['next-initiative-key'],
     queryFn: async () => {
+      // Fetch ALL keys to find the true maximum number, avoiding duplicate key errors
       const { data } = await (supabase as any)
         .from('ph_initiatives')
-        .select('initiative_key')
-        .order('created_at', { ascending: false })
-        .limit(1);
+        .select('initiative_key');
 
       if (data && data.length > 0) {
-        const lastKey = data[0].initiative_key;
-        const lastNum = parseInt(lastKey.split('-')[1]);
-        return `MIM-${String(lastNum + 1).padStart(3, '0')}`;
+        let maxNum = 0;
+        for (const row of data) {
+          const match = row.initiative_key?.match(/MIM-(\d+)/);
+          if (match) {
+            const num = parseInt(match[1], 10);
+            if (num > maxNum) maxNum = num;
+          }
+        }
+        return `MIM-${String(maxNum + 1).padStart(3, '0')}`;
       }
       return 'MIM-001';
     },
