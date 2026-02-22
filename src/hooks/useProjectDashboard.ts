@@ -21,6 +21,7 @@ import {
   fetchMilestoneConfig,
   updateMilestoneConfig,
   fetchTisConfig,
+  updateTisConfig,
 } from '@/services/project-dashboard';
 
 // ─── Resolve project key → UUID ───
@@ -177,5 +178,17 @@ export function useTisConfig(projectId: string | null | undefined) {
     queryKey: ['ph-tis-config', projectId],
     queryFn: () => fetchTisConfig(projectId!),
     enabled: !!projectId,
+  });
+}
+
+// ─── Update TIS Config ───
+export function useUpdateTisConfig(projectId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (visibleStatuses: string[]) => updateTisConfig(projectId, visibleStatuses),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['ph-tis-config', projectId] });
+      qc.invalidateQueries({ queryKey: ['ph-time-in-status', projectId] });
+    },
   });
 }
