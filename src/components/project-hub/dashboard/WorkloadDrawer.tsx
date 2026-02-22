@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { X, User } from 'lucide-react';
 import StatusBadge from './StatusBadge';
 import PersonAvatar from './PersonAvatar';
+import { DrawerSkeleton } from './WidgetSkeleton';
 import { useAssignedItems } from '@/hooks/useProjectDashboard';
 import { useDashboardStore } from './useDashboardStore';
 import { format } from 'date-fns';
@@ -27,8 +28,8 @@ export default function WorkloadDrawer() {
 
   return (
     <>
-      <div onClick={closeDrawer} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.15)', zIndex: 200 }} />
-      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 500, background: '#FFFFFF', zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,.08)', display: 'flex', flexDirection: 'column' }}>
+      <div onClick={closeDrawer} className="ph-drawer-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.15)', zIndex: 200, backdropFilter: 'blur(2px)' }} />
+      <div role="dialog" aria-label={`${name} assigned items`} className="ph-drawer-panel" style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 500, background: '#FFFFFF', zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,.08)', display: 'flex', flexDirection: 'column' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <User size={16} color="#2563EB" />
@@ -36,19 +37,19 @@ export default function WorkloadDrawer() {
               {name} — Assigned Items
             </span>
           </div>
-          <button onClick={closeDrawer} style={{ width: 32, height: 32, borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={closeDrawer} aria-label="Close drawer" className="ph-focus-ring" style={{ width: 32, height: 32, borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={16} color="#94A3B8" />
           </button>
         </div>
 
         <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
           {isLoading ? (
-            <div style={{ textAlign: 'center', fontSize: 12, color: '#94A3B8', padding: 40 }}>Loading...</div>
+            <DrawerSkeleton />
           ) : items.length === 0 ? (
-            <div style={{ textAlign: 'center', fontSize: 12, color: '#94A3B8', padding: 40 }}>No assigned items</div>
+            <div style={{ textAlign: 'center', fontSize: 12, color: '#94A3B8', padding: 40, fontFamily: "'Inter', sans-serif" }}>No assigned items</div>
           ) : (
             items.map((item: any) => (
-              <div key={item.id} style={{ border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', marginBottom: 10 }}>
+              <div key={item.id} style={{ border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 14px', marginBottom: 10, transition: 'box-shadow 150ms ease' }} className="ph-widget-card">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: '#2563EB' }}>{item.item_key}</span>
@@ -58,18 +59,20 @@ export default function WorkloadDrawer() {
                     <StatusBadge status={item.status} />
                   </div>
                 </div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#0F172A' }}>{item.displayTitle}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#0F172A', fontFamily: "'Inter', sans-serif" }}>{item.displayTitle}</div>
 
                 {/* Parent hierarchy */}
-                {item.parent && (
-                  <div style={{ fontSize: 10, color: '#64748B', marginTop: 4 }}>
+                {item.parent ? (
+                  <div style={{ fontSize: 10, color: '#64748B', marginTop: 4, fontFamily: "'Inter', sans-serif" }}>
                     Parent: <span style={{ fontWeight: 600, textTransform: 'capitalize' }}>{item.parent.item_type}</span>: {item.parent.item_key} — {item.parent.title}
                   </div>
+                ) : (
+                  <div style={{ fontSize: 10, color: '#CBD5E1', marginTop: 4, fontStyle: 'italic', fontFamily: "'Inter', sans-serif" }}>No parent</div>
                 )}
 
                 {/* Assigned metadata */}
                 {item.assigned_at && (
-                  <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 2 }}>
+                  <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 2, fontFamily: "'Inter', sans-serif" }}>
                     Assigned: {format(new Date(item.assigned_at), 'MMM d')}{item.assigned_by_name ? ` by ${item.assigned_by_name}` : ''}
                   </div>
                 )}
@@ -77,7 +80,7 @@ export default function WorkloadDrawer() {
                 {/* Sibling discovery */}
                 {item.siblings && item.siblings.length > 0 && (
                   <div style={{ marginTop: 8, background: '#FEFCE8', border: '1px solid #FEF08A', borderRadius: 6, padding: '8px 10px' }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, color: '#92400E', marginBottom: 4 }}>Working with (same parent):</div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: '#92400E', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>Working with (same parent):</div>
                     {item.siblings.map((sib: any) => (
                       <div
                         key={sib.id}
@@ -88,14 +91,16 @@ export default function WorkloadDrawer() {
                         }}
                       >
                         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: '#2563EB', fontWeight: 600 }}>{sib.item_key}</span>
-                        <span style={{ fontSize: 10, color: '#334155', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sib.displayTitle}</span>
-                        {sib.assignee_name && (
+                        <span style={{ fontSize: 10, color: '#334155', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'Inter', sans-serif" }}>{sib.displayTitle}</span>
+                        {sib.assignee_name ? (
                           <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                             <PersonAvatar name={sib.assignee_name} size={14} />
                             <span style={{ fontSize: 9, color: '#64748B' }}>
                               {sib.assignee_id === drawerPayload.userId ? 'me' : sib.assignee_name.split(' ')[0]}
                             </span>
                           </div>
+                        ) : (
+                          <span style={{ fontSize: 9, color: '#CBD5E1', fontStyle: 'italic' }}>Unassigned</span>
                         )}
                         <StatusBadge status={sib.status} />
                       </div>

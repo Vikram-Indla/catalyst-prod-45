@@ -2,7 +2,8 @@
  * LatestInProduction — Recently deployed items
  */
 import WidgetCard from './WidgetCard';
-import StatusBadge from './StatusBadge';
+import { WidgetSkeleton } from './WidgetSkeleton';
+import EmptyState from './EmptyState';
 import { useInProduction } from '@/hooks/useProjectDashboard';
 import { useDashboardStore } from './useDashboardStore';
 import { format } from 'date-fns';
@@ -15,7 +16,7 @@ interface Props {
 
 export default function LatestInProduction({ projectId, releaseMap }: Props) {
   const { selectedReleaseIds, openLifecycle } = useDashboardStore();
-  const { data, isLoading } = useInProduction(projectId, selectedReleaseIds);
+  const { data, isLoading, error, refetch } = useInProduction(projectId, selectedReleaseIds);
   const items = data ?? [];
 
   return (
@@ -25,35 +26,37 @@ export default function LatestInProduction({ projectId, releaseMap }: Props) {
       countColor="#16A34A"
       leftBorder="#16A34A"
       maxHeight={320}
+      error={error ? error.message : null}
+      onRetry={() => refetch()}
     >
       {isLoading ? (
-        <div style={{ padding: 20, textAlign: 'center', fontSize: 12, color: '#94A3B8' }}>Loading...</div>
+        <WidgetSkeleton rows={3} />
       ) : items.length === 0 ? (
-        <div style={{ padding: 20, textAlign: 'center', fontSize: 12, color: '#94A3B8' }}>No items in production</div>
+        <EmptyState message="No items deployed yet in active releases" icon="info" />
       ) : (
         <>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
             <thead>
               <tr style={{ borderBottom: '1px solid #F1F5F9' }}>
                 {['Release', 'Key', 'Type', 'Title', 'Deployed', 'Since'].map(h => (
-                  <th key={h} style={{ padding: '6px 8px', textAlign: 'left', fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.04em' }}>
+                  <th key={h} style={{ padding: '6px 8px', textAlign: 'left', fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '.05em', fontFamily: "'Inter', sans-serif" }}>
                     {h}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {items.map((item: any) => {
+              {items.map((item: any, idx: number) => {
                 const daysSince = item.updated_at
                   ? Math.ceil((Date.now() - new Date(item.updated_at).getTime()) / 86400000)
                   : 0;
                 return (
-                  <tr key={item.id} style={{ height: 44, borderBottom: '1px solid #F8FAFC' }} className="hover:bg-slate-50">
+                  <tr key={item.id} style={{ height: 44, borderBottom: '1px solid #F8FAFC', background: idx % 2 === 1 ? '#FAFBFC' : undefined, transition: 'background 120ms ease' }} className="ph-table-row">
                     <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: '#0D9488', fontWeight: 600 }}>
                       {releaseMap[item.release_id] || '—'}
                     </td>
                     <td style={{ padding: '0 8px' }}>
-                      <button onClick={() => openLifecycle(item.id)} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
+                      <button onClick={() => openLifecycle(item.id)} className="ph-focus-ring" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
                         {item.item_key}
                       </button>
                     </td>
@@ -62,13 +65,13 @@ export default function LatestInProduction({ projectId, releaseMap }: Props) {
                         {item.item_type === 'bug' ? 'Bug' : 'Story'}
                       </span>
                     </td>
-                    <td style={{ padding: '0 8px', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#334155' }}>
+                    <td style={{ padding: '0 8px', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#334155', fontFamily: "'Inter', sans-serif" }} title={item.displayTitle}>
                       {item.displayTitle}
                     </td>
-                    <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: '#94A3B8' }}>
+                    <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: '#64748B' }}>
                       {item.updated_at ? format(new Date(item.updated_at), 'MMM d') : '—'}
                     </td>
-                    <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: '#16A34A' }}>
+                    <td style={{ padding: '0 8px', fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600, color: daysSince === 0 ? '#16A34A' : '#16A34A' }}>
                       {daysSince}d
                     </td>
                   </tr>

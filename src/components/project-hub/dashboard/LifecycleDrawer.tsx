@@ -4,6 +4,7 @@
 import { useEffect } from 'react';
 import { X, Clock } from 'lucide-react';
 import StatusBadge, { getStatusColor } from './StatusBadge';
+import { DrawerSkeleton } from './WidgetSkeleton';
 import { useLifecycle } from '@/hooks/useProjectDashboard';
 import { useDashboardStore } from './useDashboardStore';
 import { format } from 'date-fns';
@@ -35,8 +36,8 @@ export default function LifecycleDrawer() {
 
   return (
     <>
-      <div onClick={closeDrawer} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.15)', zIndex: 200 }} />
-      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 500, background: '#FFFFFF', zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,.08)', display: 'flex', flexDirection: 'column' }}>
+      <div onClick={closeDrawer} className="ph-drawer-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.15)', zIndex: 200, backdropFilter: 'blur(2px)' }} />
+      <div role="dialog" aria-label="Lifecycle Timeline" className="ph-drawer-panel" style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 500, background: '#FFFFFF', zIndex: 201, boxShadow: '-4px 0 24px rgba(0,0,0,.08)', display: 'flex', flexDirection: 'column' }}>
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Clock size={16} color="#2563EB" />
@@ -44,22 +45,22 @@ export default function LifecycleDrawer() {
               Lifecycle Timeline
             </span>
           </div>
-          <button onClick={closeDrawer} style={{ width: 32, height: 32, borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={closeDrawer} aria-label="Close drawer" className="ph-focus-ring" style={{ width: 32, height: 32, borderRadius: 8, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X size={16} color="#94A3B8" />
           </button>
         </div>
 
         <div style={{ padding: '12px 20px', borderBottom: '1px solid #F1F5F9', display: 'flex', gap: 8 }}>
-          <span style={{ fontSize: 11, fontWeight: 600, color: '#64748B', background: '#F1F5F9', padding: '3px 8px', borderRadius: 6 }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: '#64748B', background: '#F1F5F9', padding: '3px 8px', borderRadius: 6, fontFamily: "'JetBrains Mono', monospace" }}>
             Total cycle: {Math.round(totalDays)}d
           </span>
         </div>
 
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
           {isLoading ? (
-            <div style={{ textAlign: 'center', fontSize: 12, color: '#94A3B8', padding: 40 }}>Loading...</div>
+            <DrawerSkeleton />
           ) : transitions.length === 0 ? (
-            <div style={{ textAlign: 'center', fontSize: 12, color: '#94A3B8', padding: 40 }}>No transitions</div>
+            <div style={{ textAlign: 'center', fontSize: 12, color: '#94A3B8', padding: 40, fontFamily: "'Inter', sans-serif" }}>No transitions recorded</div>
           ) : (
             transitions.map((t: any, i: number) => {
               const color = getStatusColor(t.to_status);
@@ -77,9 +78,9 @@ export default function LifecycleDrawer() {
                   <div style={{ paddingBottom: 16, flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <StatusBadge status={t.to_status} />
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: '#0F172A' }}>{dur}d</span>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: dur === 0 ? '#16A34A' : '#0F172A' }}>{dur}d</span>
                     </div>
-                    <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 4 }}>
+                    <div style={{ fontSize: 10, color: '#94A3B8', marginTop: 4, fontFamily: "'Inter', sans-serif" }}>
                       {format(new Date(t.changed_at), 'MMM d, yyyy')} · Changed by {t.changed_by_name || 'System'}
                     </div>
                   </div>
