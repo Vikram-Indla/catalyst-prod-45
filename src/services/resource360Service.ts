@@ -184,6 +184,43 @@ export const fetchWorkItems = async (resourceId: string, jiraAccountId?: string 
   return items;
 };
 
+// ── Releases from all projects this resource works on (from fix_versions in ph_issues) ──
+export const fetchProjectReleases = async (jiraAccountId?: string | null): Promise<string[]> => {
+  if (!jiraAccountId) return [];
+
+  const cacheKey = `releases:${jiraAccountId}`;
+  const cached = getCached<string[]>(cacheKey);
+  if (cached) return cached;
+
+  // 1. Get distinct project keys for this resource
+  const { data: projectRows } = await supabase
+    .from('ph_issues' as any)
+    .select('project_key')
+    .eq('assignee_account_id', jiraAccountId);
+
+  const projectKeys = [...new Set((projectRows ?? []).map((r: any) => r.project_key).filter(Boolean))];
+  if (!projectKeys.length) return [];
+
+  // 2. Get all issues with fix_versions in those projects
+  const { data: fvRows } = await supabase
+    .from('ph_issues' as any)
+    .select('fix_versions')
+    .in('project_key', projectKeys)
+    .not('fix_versions', 'is', null);
+
+  const releaseSet = new Set<string>();
+  (fvRows ?? []).forEach((row: any) => {
+    const fvList = Array.isArray(row.fix_versions) ? row.fix_versions : [];
+    fvList.forEach((fv: any) => {
+      if (fv?.name) releaseSet.add(fv.name);
+    });
+  });
+
+  const result = Array.from(releaseSet).sort();
+  setCache(cacheKey, result);
+  return result;
+};
+
 // ── Status Transitions (for Context Modal) ──
 export const fetchTransitions = async (workItemId: string) => {
   const { data, error } = await supabase

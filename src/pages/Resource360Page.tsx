@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { useResource, useResourceSummary, useWorkItems } from '@/hooks/useResource360';
+import { useResource, useResourceSummary, useWorkItems, useProjectReleases } from '@/hooks/useResource360';
 import { ArrowLeft } from 'lucide-react';
 import ResourceBanner from '@/components/resource360/ResourceBanner';
 import Toolbar, { R360View, RoleFilter } from '@/components/resource360/Toolbar';
@@ -40,6 +40,7 @@ const Resource360Page = () => {
   const jiraAccountId = resource?.jira_account_id ?? null;
   const { data: summary, isLoading: summaryLoading, error: summaryError, refetch: refetchSummary } = useResourceSummary(resource?.id ?? '', jiraAccountId);
   const { data: items, isLoading: itemsLoading, error: itemsError, refetch: refetchItems } = useWorkItems(resource?.id ?? '', jiraAccountId);
+  const { data: projectReleases } = useProjectReleases(jiraAccountId);
 
   const viewParam = searchParams.get('view') as R360View | null;
   const [activeView, setActiveView] = useState<R360View>(viewParam || 'tentacle');
@@ -57,15 +58,10 @@ const Resource360Page = () => {
   const [selectedRelease, setSelectedRelease] = useState('all');
   const [selectedProject, setSelectedProject] = useState('all');
 
-  // Derive filter options from work items
+  // Derive release options from all projects this resource works on
   const releaseOptions = useMemo(() => {
-    if (!items?.length) return [];
-    const set = new Set<string>();
-    items.forEach((i: any) => {
-      (i.release_names || []).forEach((r: string) => set.add(r));
-    });
-    return Array.from(set).sort();
-  }, [items]);
+    return projectReleases ?? [];
+  }, [projectReleases]);
 
   const projectOptions = useMemo(() => {
     if (!items?.length) return [];
