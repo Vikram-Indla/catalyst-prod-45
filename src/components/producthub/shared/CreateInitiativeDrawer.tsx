@@ -119,6 +119,23 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource }: Crea
     if (open) {
       if (conversionSource) {
         const src = conversionSource;
+        // Resolve department name to UUID
+        const resolveDeptId = (deptName?: string): string => {
+          if (!deptName || !departmentOptions) return '';
+          const match = departmentOptions.find(
+            (d: any) => d.label.toLowerCase() === deptName.toLowerCase()
+          );
+          return match?.value || '';
+        };
+        // Resolve assignee name to UUID
+        const resolveAssigneeId = (name?: string): string => {
+          if (!name || !profileOptions) return '';
+          const match = profileOptions.find(
+            (p: any) => p.label.toLowerCase().includes(name.toLowerCase()) || name.toLowerCase().includes(p.label.toLowerCase())
+          );
+          return match?.value || '';
+        };
+
         if (src.type === 'single') {
           const p = src.primaryIdea;
           const desc = `Converted from Ideation · ${p.key}\n\n${p.description || p.title}\n\n---\nIMPACT Score: ${p.impact.toFixed(2)}/5.00\nVotes: ${p.votes} · Priority: ${p.priority}`;
@@ -126,8 +143,8 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource }: Crea
             title: p.title,
             description: desc,
             status: 'new_demand',
-            department_id: '',
-            assignee_id: '',
+            department_id: resolveDeptId(p.dept),
+            assignee_id: resolveAssigneeId(p.assignee),
             business_owner_id: '',
             reporter_id: '',
             target_quarter: '',
@@ -145,8 +162,8 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource }: Crea
             title: `${p.title} & ${m.title.split(' ').slice(0, 3).join(' ')} Platform`,
             description: desc,
             status: 'new_demand',
-            department_id: '',
-            assignee_id: '',
+            department_id: resolveDeptId(p.dept),
+            assignee_id: resolveAssigneeId(p.assignee),
             business_owner_id: '',
             reporter_id: '',
             target_quarter: '',
@@ -165,7 +182,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource }: Crea
       }
       setTitleError(false);
     }
-  }, [open, conversionSource]);
+  }, [open, conversionSource, departmentOptions, profileOptions]);
 
   useEffect(() => {
     if (!open) return;
