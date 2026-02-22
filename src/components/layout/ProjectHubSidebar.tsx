@@ -18,6 +18,7 @@ import {
   BarChart3,
   Settings,
   Star,
+  UserSearch,
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
@@ -36,6 +37,7 @@ const MODULE_NAV_CONFIG: SidebarConfig = {
       title: '',
       items: [
         { id: 'all-projects', title: 'All Projects', path: '/project-hub/projects', icon: LayoutGrid, exact: false },
+        { id: 'all-resources', title: 'All Resources', path: '/project-hub/resources', icon: UserSearch, exact: true },
         { id: 'resource360-new', title: 'Resource 360°', path: '/project-hub/resource-360/009', icon: Radar, exact: false },
       ],
     },
