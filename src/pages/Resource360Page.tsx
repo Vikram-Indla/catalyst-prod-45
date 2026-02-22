@@ -236,6 +236,7 @@ const Resource360Page = () => {
         <AiIntelligenceOverlay
           resourceId={resource.id}
           resource={resource}
+          rid={rid!}
           onClose={() => setShowAi(false)}
         />
       )}
