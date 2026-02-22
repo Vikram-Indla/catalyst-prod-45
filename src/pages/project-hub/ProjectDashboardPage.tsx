@@ -93,12 +93,12 @@ export default function ProjectDashboardPage() {
         ) : (
           <>
             {/* Header Card */}
-            <div style={{ background: C.card, border: `1px solid ${C.bdr}`, borderRadius: 12, padding: '20px 24px', marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ background: C.card, border: `1px solid ${C.bdr}`, borderRadius: 12, padding: '20px 24px', marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <div style={{ width: 44, height: 44, borderRadius: 10, background: C.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: 16, fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>{initials}</div>
+                <div style={{ width: 34, height: 34, borderRadius: 8, background: C.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: 14, fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>{initials}</div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontSize: 18, fontWeight: 800, color: C.ink1, fontFamily: "'Sora', sans-serif" }}>{name}</span>
+                    <span style={{ fontSize: 17, fontWeight: 700, color: C.ink1, fontFamily: "'Sora', sans-serif" }}>{name}</span>
                     <span style={{ fontSize: 10, fontWeight: 700, color: C.success, background: '#F0FDF4', border: '1px solid #BBF7D0', padding: '2px 8px', borderRadius: 10, textTransform: 'uppercase', letterSpacing: '.04em' }}>On Track</span>
                     <span style={{ fontSize: 10, fontWeight: 600, color: C.primary, background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '2px 8px', borderRadius: 10, textTransform: 'uppercase', letterSpacing: '.04em' }}>Active</span>
                   </div>
@@ -118,7 +118,7 @@ export default function ProjectDashboardPage() {
             </div>
 
             {/* Release Pills */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <span style={{ fontSize: 11, fontWeight: 600, color: C.ink4, textTransform: 'uppercase', letterSpacing: '.04em' }}>Releases:</span>
               {selectedReleaseIds.map(id => (
                 <span key={id} style={{ fontSize: 11, fontWeight: 600, color: C.ink2, background: '#EFF6FF', border: '1px solid #BFDBFE', padding: '4px 10px', borderRadius: 6, fontFamily: "'JetBrains Mono', monospace" }}>
@@ -128,22 +128,22 @@ export default function ProjectDashboardPage() {
             </div>
 
             {/* Widget Grid */}
-            <div className="ph-widget-stagger" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="ph-widget-stagger" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <KeyMilestones projectId={projectId} onConfigOpen={() => setMilestoneConfigOpen(true)} releaseMap={releaseMap} />
                 <LatestInProduction projectId={projectId} releaseMap={releaseMap} />
               </div>
-              <div className="ph-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+              <div className="ph-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
                 <ItemsByStatus />
                 <OverdueItems projectId={projectId} releaseMap={releaseMap} />
                 <OnHoldItems projectId={projectId} releaseMap={releaseMap} />
               </div>
-              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <ProductionIncidents projectId={projectId} releaseMap={releaseMap} />
                 <QADefects projectId={projectId} releaseMap={releaseMap} />
               </div>
               <TimeInStatus projectId={projectId} releaseMap={releaseMap} />
-              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="ph-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <TeamWorkload projectId={projectId} />
                 <RecentActivity projectId={projectId} />
               </div>

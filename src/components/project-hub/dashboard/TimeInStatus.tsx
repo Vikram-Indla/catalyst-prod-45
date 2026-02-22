@@ -48,8 +48,8 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
       ) : allItems.length === 0 ? (
         <EmptyState message="No lifecycle data available for selected releases" icon="info" />
       ) : (
-        <div style={{ position: 'relative', maxHeight: 440, overflowY: 'auto', overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, minWidth: 800 }}>
+        <div className="ph-tis-scroll" style={{ position: 'relative', maxHeight: 440, overflowY: 'auto', overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, minWidth: 900 }}>
             <thead style={{ position: 'sticky', top: 0, zIndex: 2, background: '#FFFFFF' }}>
               <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
                 {['Key', 'Type', 'Title', 'Current'].map(h => (
@@ -184,10 +184,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
         </div>
       )}
 
-      <style>{`
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        .ph-pulse-dot { animation: pulse 1.5s infinite; }
-      `}</style>
+      {/* pulse animation is in dashboardPolish.css */}
     </WidgetCard>
   );
 }

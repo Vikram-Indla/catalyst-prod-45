@@ -40,19 +40,51 @@
 .ph-widget-stagger > *:nth-child(5) { animation-delay: 160ms; }
 .ph-widget-stagger > *:nth-child(6) { animation-delay: 200ms; }
 .ph-widget-stagger > *:nth-child(7) { animation-delay: 240ms; }
+.ph-widget-stagger > *:nth-child(8) { animation-delay: 280ms; }
+.ph-widget-stagger > *:nth-child(9) { animation-delay: 320ms; }
+.ph-widget-stagger > *:nth-child(10) { animation-delay: 360ms; }
 
 @keyframes ph-widget-enter {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* Pulse animation for current status dot */
+@keyframes ph-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.ph-pulse-dot {
+  animation: ph-pulse 1.5s infinite;
+}
+
 /* Responsive grid */
+@media (max-width: 1280px) {
+  .ph-grid-3 { grid-template-columns: 1fr 1fr !important; }
+}
 @media (max-width: 1024px) {
   .ph-grid-2 { grid-template-columns: 1fr 1fr !important; }
-  .ph-grid-3 { grid-template-columns: 1fr 1fr !important; }
+  .ph-grid-3 { grid-template-columns: 1fr !important; }
 }
 @media (max-width: 768px) {
   .ph-grid-2 { grid-template-columns: 1fr !important; }
   .ph-grid-3 { grid-template-columns: 1fr !important; }
   .ph-drawer-panel { width: 100% !important; }
+}
+
+/* Scrollbar styling for TIS widget */
+.ph-tis-scroll::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.ph-tis-scroll::-webkit-scrollbar-track {
+  background: #F1F5F9;
+  border-radius: 3px;
+}
+.ph-tis-scroll::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+.ph-tis-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
 }
