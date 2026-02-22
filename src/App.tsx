@@ -790,7 +790,7 @@ const App = () => (
               <Route path="/workhub" element={<Navigate to="/project-hub" replace />} />
               <Route path="/workhub/*" element={<Navigate to="/project-hub" replace />} />
               <Route path="/projecthub" element={<Navigate to="/project-hub" replace />} />
-              <Route path="/projecthub/resource360" element={<Navigate to="/project-hub/resource360" replace />} />
+              <Route path="/projecthub/resource360" element={<Navigate to="/resource-360/009" replace />} />
               <Route path="/projecthub/resource360/:id" element={<Resource360Redirect />} />
               <Route path="/projecthub/*" element={<Navigate to="/project-hub" replace />} />
 
@@ -1141,8 +1141,8 @@ const App = () => (
               <Route path="/project-hub/projects" element={<Suspense fallback={<div />}><AllProjectsPageLazy /></Suspense>} />
               <Route path="/project/all-projects" element={<Suspense fallback={<div />}><AllProjectsPageLazy /></Suspense>} />
               <Route path="/project-hub/projects-legacy" element={<Suspense fallback={<div />}><ProjectListPageLazy /></Suspense>} />
-              <Route path="/project-hub/resource360" element={<Suspense fallback={<div />}><WorkHubResource360Page /></Suspense>} />
-              <Route path="/project-hub/resource360/:id" element={<Suspense fallback={<div />}><WorkHubResourceDetail /></Suspense>} />
+              <Route path="/project-hub/resource360" element={<Navigate to="/resource-360/009" replace />} />
+              <Route path="/project-hub/resource360/:id" element={<Navigate to="/resource-360/009" replace />} />
               <Route path="/project-hub/:key" element={<Navigate to="dashboard" replace />} />
               <Route path="/project-hub/:key/dashboard" element={<Suspense fallback={<div />}><ProjectDashboardPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/settings" element={<Suspense fallback={<div />}><PHProjectSettingsPageLazy /></Suspense>} />
