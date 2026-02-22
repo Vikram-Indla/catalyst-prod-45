@@ -110,6 +110,8 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                   fontSize: 10, fontWeight: 700, color: '#475569',
                   textTransform: 'uppercase', fontFamily: "'Inter', sans-serif",
                   borderLeft: '2px solid #E2E8F0', background: '#F8FAFC',
+                  position: 'sticky', right: 0, zIndex: 5,
+                  boxShadow: '-4px 0 8px rgba(0,0,0,0.06)',
                 }}>Total</th>
               </tr>
             </thead>
@@ -170,6 +172,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                               padding: '3px 2px', borderRadius: 6, minHeight: 40,
                               background: bn ? '#FEF3C7' : getStatusCellBg(status),
+                              border: bn ? '1px solid #FDE68A' : undefined,
                               outline: isCurrent ? '2px solid #2563EB' : undefined,
                               outlineOffset: isCurrent ? -1 : undefined,
                               position: 'relative',
@@ -177,7 +180,7 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: '#475569' }}>
                                 {entry.entered_at ? format(new Date(entry.entered_at), 'MMM d') : ''}
                               </span>
-                              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 700, color: bn ? '#92400E' : getDaysColor(days) }}>
+                              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: bn ? 12 : 11, fontWeight: 800, color: bn ? '#92400E' : getDaysColor(days) }}>
                                 {formatDuration(entry.duration_days)}
                               </span>
                               {isCurrent && (
@@ -198,7 +201,9 @@ export default function TimeInStatus({ projectId, releaseMap }: Props) {
                     <td style={{
                       padding: '0 12px', textAlign: 'right',
                       fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 800, color: '#0F172A',
-                      background: '#F8FAFC', borderLeft: '2px solid #E2E8F0',
+                      background: rowBg === '#FAFBFC' ? '#F1F5F9' : '#F8FAFC', borderLeft: '2px solid #E2E8F0',
+                      position: 'sticky', right: 0, zIndex: 2,
+                      boxShadow: '-4px 0 8px rgba(0,0,0,0.06)',
                     }}>
                       {Math.round(item.total_cycle_days)}d
                     </td>

@@ -13,7 +13,24 @@ const STATUS_ORDER = [
   'in_development', 'on_hold', 'in_qa', 'in_uat', 'in_entity_integration', 'technical_validation',
   'in_beta', 'end_to_end_testing', 'production_ready', 'beta_ready', 'in_production',
 ];
-function formatLabel(s: string) { return s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); }
+const STATUS_BAR_LABELS: Record<string, string> = {
+  'start': 'Start',
+  'in_requirements': 'Requirements',
+  'in_design': 'Design',
+  'ready_for_development': 'Ready for Dev',
+  'in_development': 'Development',
+  'on_hold': 'On Hold',
+  'in_qa': 'QA',
+  'in_uat': 'UAT',
+  'in_entity_integration': 'Entity Integ.',
+  'technical_validation': 'Tech Valid.',
+  'in_beta': 'Beta',
+  'end_to_end_testing': 'E2E Testing',
+  'production_ready': 'Prod Ready',
+  'beta_ready': 'Beta Ready',
+  'in_production': 'Production',
+};
+function formatLabel(s: string) { return STATUS_BAR_LABELS[s] || s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()); }
 
 interface Props { projectId?: string | null; }
 

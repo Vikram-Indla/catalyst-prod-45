@@ -38,16 +38,10 @@
 /* Content area responsive */
 .ph-content-wrapper {
   width: 100%;
-  padding: 24px 28px;
+  padding: 0;
 }
 
 .ph-inner-content {
   width: 100%;
-  margin: 0 auto;
-}
-
-@media (min-width: 1441px) {
-  .ph-inner-content {
-    max-width: 1140px;
-  }
+  margin: 0;
 }
