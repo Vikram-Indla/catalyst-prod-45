@@ -183,6 +183,10 @@ const skeletonCSS = `
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
   }
+  *:focus-visible {
+    outline: 2px solid #2563EB;
+    outline-offset: 2px;
+  }
 `;
 
 export default Resource360Page;

@@ -8,6 +8,20 @@ interface ListViewProps {
   onItemClick: (item: any) => void;
 }
 
+const formatAge = (days: number | null | undefined): string => {
+  if (days == null) return '—';
+  if (days === 0) return 'Today';
+  return `${days}d`;
+};
+
+const ageColor = (days: number | null | undefined): string => {
+  if (days == null) return '#64748B';
+  if (days > 365) return '#DC2626';
+  if (days > 14) return '#DC2626';
+  if (days > 7) return '#D97706';
+  return '#059669';
+};
+
 const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) => {
   const filtered = useMemo(() => {
     if (roleFilter === 'all') return items;
@@ -26,22 +40,28 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
   const cols = ['Key', 'Title', 'Type', 'Hub', 'Status', 'Priority', 'Project', 'Age', 'Role'];
 
   const headerStyle: React.CSSProperties = {
-    fontSize: 10.5,
-    fontWeight: 800,
-    textTransform: 'uppercase',
-    letterSpacing: '0.08em',
-    color: '#64748B',
-    padding: '8px 10px',
-    background: '#F1F5F9',
-    borderBottom: '2px solid #E2E8F0',
-    whiteSpace: 'nowrap',
+    fontSize: 10.5, fontWeight: 800, textTransform: 'uppercase',
+    letterSpacing: '0.08em', color: '#64748B',
+    padding: '8px 10px', background: '#F1F5F9',
+    borderBottom: '2px solid #E2E8F0', whiteSpace: 'nowrap',
   };
 
-  const groupLabel: Record<string, string> = {
-    todo: 'To Do',
-    progress: 'In Progress',
-    done: 'Done',
-  };
+  const groupLabel: Record<string, string> = { todo: 'To Do', progress: 'In Progress', done: 'Done' };
+
+  // Empty state
+  if (filtered.length === 0) {
+    return (
+      <div style={{ padding: '48px 20px', textAlign: 'center', fontFamily: "'Inter', sans-serif" }}>
+        <div style={{ fontSize: 32, marginBottom: 8 }}>📋</div>
+        <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>
+          {roleFilter !== 'all' ? 'No items match role filter' : 'No work items'}
+        </div>
+        <div style={{ fontSize: 12, color: '#64748B' }}>
+          {roleFilter !== 'all' ? 'Try switching to "All" to see all items' : 'Work items will appear here as they are assigned'}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: '0 20px 20px', fontFamily: "'Inter', sans-serif" }}>
@@ -61,11 +81,8 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
                 <React.Fragment key={cat}>
                   <tr>
                     <td colSpan={9} style={{
-                      padding: '8px 10px',
-                      background: sc.bg,
-                      fontSize: 11,
-                      fontWeight: 700,
-                      color: sc.text,
+                      padding: '8px 10px', background: sc.bg,
+                      fontSize: 11, fontWeight: 700, color: sc.text,
                     }}>
                       {groupLabel[cat]} <span style={{ fontWeight: 400, marginLeft: 4 }}>({catItems.length})</span>
                     </td>
@@ -77,10 +94,13 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
                     return (
                       <tr
                         key={it.id}
+                        tabIndex={0}
+                        role="button"
+                        aria-label={`${it.item_key}: ${it.title}`}
                         onClick={() => onItemClick(it)}
+                        onKeyDown={e => { if (e.key === 'Enter') onItemClick(it); }}
                         style={{
-                          height: 44, maxHeight: 44,
-                          cursor: 'pointer',
+                          height: 44, maxHeight: 44, cursor: 'pointer',
                           borderBottom: '1px solid #F1F5F9',
                         }}
                         onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; }}
@@ -120,9 +140,11 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
                         </td>
                         <td style={{
                           padding: '0 10px', fontSize: 11, fontWeight: 600,
-                          color: it.age_days > 14 ? '#DC2626' : it.age_days > 7 ? '#D97706' : '#059669',
+                          color: ageColor(it.age_days),
+                          display: 'flex', alignItems: 'center', gap: 2, height: 44,
                         }}>
-                          {it.age_days}d
+                          {it.age_days > 365 && <span>⚠</span>}
+                          {formatAge(it.age_days)}
                         </td>
                         <td style={{ padding: '0 10px' }}>
                           <span style={{

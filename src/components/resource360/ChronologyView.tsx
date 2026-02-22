@@ -9,6 +9,13 @@ interface ChronologyViewProps {
   onItemClick: (item: any) => void;
 }
 
+const EmptyState = ({ message }: { message: string }) => (
+  <div style={{ padding: 48, textAlign: 'center', color: '#94A3B8', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ fontSize: 32, marginBottom: 8 }}>📭</div>
+    {message}
+  </div>
+);
+
 const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick }) => {
   const [subTab, setSubTab] = useState<SubTab>('events');
   const { data: events } = useChronologyEvents(resourceId);
@@ -22,14 +29,27 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
     boxShadow: active ? '0 1px 3px rgba(0,0,0,.1)' : 'none',
   });
 
+  const tabs: { key: SubTab; label: string }[] = [
+    { key: 'events', label: 'Event Stream' },
+    { key: 'gantt', label: 'Gantt Timeline' },
+    { key: 'journal', label: 'Milestone Journal' },
+  ];
+
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", padding: '0 20px 20px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0' }}>
         <span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>Assignment Chronology</span>
-        <div style={{ display: 'flex', background: '#F1F5F9', borderRadius: 6, padding: 2, gap: 1 }}>
-          {(['events', 'gantt', 'journal'] as SubTab[]).map(t => (
-            <button key={t} style={tabStyle(subTab === t)} onClick={() => setSubTab(t)}>
-              {t === 'events' ? 'Event Stream' : t === 'gantt' ? 'Gantt Timeline' : 'Milestone Journal'}
+        <div role="tablist" aria-label="Chronology sub-tabs" style={{ display: 'flex', background: '#F1F5F9', borderRadius: 6, padding: 2, gap: 1 }}>
+          {tabs.map(t => (
+            <button
+              key={t.key}
+              role="tab"
+              aria-selected={subTab === t.key}
+              aria-label={t.label}
+              style={tabStyle(subTab === t.key)}
+              onClick={() => setSubTab(t.key)}
+            >
+              {t.label}
             </button>
           ))}
         </div>
@@ -53,23 +73,32 @@ const EventStream = ({ events, onItemClick }: { events: any[]; onItemClick: (i: 
     return map[type] || { bg: '#F1F5F9', color: '#64748B' };
   };
 
+  if (events.length === 0) return <EmptyState message="No events to display" />;
+
   return (
     <div style={{ maxHeight: 500, overflow: 'auto' }}>
       {events.map((ev, i) => {
         const badge = evtBadge(ev.event_type);
         const witStyle = WIT_STYLES[ev.work_item_type] || { bg: '#F1F5F9', color: '#334155' };
         return (
-          <div key={i} onClick={() => onItemClick(ev)} style={{
-            display: 'flex', alignItems: 'flex-start', gap: 12, padding: '10px 0',
-            borderBottom: '1px solid #F1F5F9', cursor: 'pointer',
-          }}>
-            {/* Timeline dot */}
+          <div
+            key={ev.id || i}
+            role="button"
+            tabIndex={0}
+            aria-label={`${ev.event_type} event: ${ev.item_key} ${ev.title}`}
+            onClick={() => onItemClick(ev)}
+            onKeyDown={e => { if (e.key === 'Enter') onItemClick(ev); }}
+            style={{
+              display: 'flex', alignItems: 'flex-start', gap: 12, padding: '10px 0',
+              borderBottom: '1px solid #F1F5F9', cursor: 'pointer',
+            }}
+          >
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 20 }}>
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: badge.color, marginTop: 4 }} />
               {i < events.length - 1 && <div style={{ width: 1, flex: 1, minHeight: 20, background: '#E2E8F0' }} />}
             </div>
             <div style={{ fontSize: 11, color: '#64748B', fontWeight: 600, minWidth: 50 }}>
-              {ev.event_date?.slice(5, 10)}
+              {ev.event_date?.slice(5, 10) || '—'}
             </div>
             <span style={{
               fontSize: 9.5, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
@@ -100,7 +129,6 @@ const EventStream = ({ events, onItemClick }: { events: any[]; onItemClick: (i: 
           </div>
         );
       })}
-      {events.length === 0 && <div style={{ padding: 40, textAlign: 'center', color: '#94A3B8', fontSize: 13 }}>No events found</div>}
     </div>
   );
 };
@@ -122,19 +150,20 @@ const GanttTimeline = ({ data, onItemClick }: { data: any[]; onItemClick: (i: an
     return { minDate: min, maxDate: max, todayOffset: todayOff };
   }, [data]);
 
+  if (data.length === 0) return <EmptyState message="No timeline data to display" />;
+
   const totalDays = Math.ceil((maxDate.getTime() - minDate.getTime()) / 86400000);
   const trackW = totalDays * PX_PER_DAY;
 
   return (
     <div style={{ overflow: 'auto', maxHeight: 500, border: '1px solid #E2E8F0', borderRadius: 8 }}>
       <div style={{ display: 'flex', minWidth: LABEL_W + trackW }}>
-        {/* Labels */}
         <div style={{ width: LABEL_W, flexShrink: 0, borderRight: '1px solid #E2E8F0' }}>
           <div style={{ height: 32, background: '#F1F5F9', borderBottom: '1px solid #E2E8F0' }} />
           {data.map((d, i) => {
             const witStyle = WIT_STYLES[d.work_item_type] || { bg: '#F1F5F9', color: '#334155' };
             return (
-              <div key={i} onClick={() => onItemClick(d)} style={{
+              <div key={d.id || i} onClick={() => onItemClick(d)} style={{
                 height: 36, display: 'flex', alignItems: 'center', gap: 6, padding: '0 8px',
                 borderBottom: '1px solid #F1F5F9', cursor: 'pointer', fontSize: 11,
               }}>
@@ -147,10 +176,8 @@ const GanttTimeline = ({ data, onItemClick }: { data: any[]; onItemClick: (i: an
           })}
         </div>
 
-        {/* Track area */}
         <div style={{ position: 'relative', width: trackW }}>
           <div style={{ height: 32, background: '#F1F5F9', borderBottom: '1px solid #E2E8F0' }} />
-          {/* Today marker */}
           <div style={{
             position: 'absolute', left: todayOffset, top: 0, bottom: 0,
             width: 2, background: '#DC2626', zIndex: 5,
@@ -167,16 +194,18 @@ const GanttTimeline = ({ data, onItemClick }: { data: any[]; onItemClick: (i: an
             const width = Math.max(d.bar_days * PX_PER_DAY, 4);
             const sc = STATUS_CATEGORY_COLORS[d.status_category as keyof typeof STATUS_CATEGORY_COLORS];
             return (
-              <div key={i} style={{ height: 36, position: 'relative', borderBottom: '1px solid #F1F5F9' }}>
+              <div key={d.id || i} style={{ height: 36, position: 'relative', borderBottom: '1px solid #F1F5F9' }}>
                 <div
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`${d.item_key} bar`}
                   onClick={() => onItemClick(d)}
+                  onKeyDown={e => { if (e.key === 'Enter') onItemClick(d); }}
                   style={{
                     position: 'absolute', left: start, top: 10,
                     width, height: 16, borderRadius: 4,
-                    background: sc?.dot || '#94A3B8',
-                    opacity: 0.7,
-                    cursor: 'pointer',
-                    transition: 'opacity 150ms',
+                    background: sc?.dot || '#94A3B8', opacity: 0.7,
+                    cursor: 'pointer', transition: 'opacity 150ms',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.opacity = '1'; }}
                   onMouseLeave={e => { e.currentTarget.style.opacity = '0.7'; }}
@@ -208,6 +237,8 @@ const MilestoneJournal = ({ events, onItemClick }: { events: any[]; onItemClick:
     return Object.entries(weeks).sort(([a], [b]) => b.localeCompare(a));
   }, [milestones]);
 
+  if (grouped.length === 0) return <EmptyState message="No milestones to display" />;
+
   return (
     <div style={{ maxHeight: 500, overflow: 'auto' }}>
       {grouped.map(([weekKey, items]) => {
@@ -229,12 +260,20 @@ const MilestoneJournal = ({ events, onItemClick }: { events: any[]; onItemClick:
             {items.map((it: any, i: number) => {
               const witStyle = WIT_STYLES[it.work_item_type] || { bg: '#F1F5F9', color: '#334155' };
               return (
-                <div key={i} onClick={() => onItemClick(it)} style={{
-                  display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0 6px 12px',
-                  borderLeft: '2px solid #E2E8F0', cursor: 'pointer',
-                }}>
+                <div
+                  key={it.id || i}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`${it.event_type} ${it.item_key}`}
+                  onClick={() => onItemClick(it)}
+                  onKeyDown={e => { if (e.key === 'Enter') onItemClick(it); }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0 6px 12px',
+                    borderLeft: '2px solid #E2E8F0', cursor: 'pointer',
+                  }}
+                >
                   <span style={{ fontSize: 11, color: '#64748B', minWidth: 50 }}>
-                    {it.event_date?.slice(5, 10)}
+                    {it.event_date?.slice(5, 10) || '—'}
                   </span>
                   <span>{it.event_type === 'assigned' ? '📌' : '✅'}</span>
                   <span style={{
@@ -253,7 +292,6 @@ const MilestoneJournal = ({ events, onItemClick }: { events: any[]; onItemClick:
           </div>
         );
       })}
-      {grouped.length === 0 && <div style={{ padding: 40, textAlign: 'center', color: '#94A3B8', fontSize: 13 }}>No milestones found</div>}
     </div>
   );
 };

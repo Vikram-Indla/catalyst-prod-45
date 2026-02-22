@@ -6,14 +6,14 @@ interface ResourceBannerProps {
 }
 
 const StatCard = ({ label, value, color }: { label: string; value: number | string; color: string }) => (
-  <div style={{
-    background: '#FFFFFF',
-    border: '1px solid #E2E8F0',
-    borderRadius: 8,
-    padding: '10px 16px',
-    minWidth: 90,
-    textAlign: 'center',
-  }}>
+  <div
+    tabIndex={0}
+    aria-label={`${label}: ${value}`}
+    style={{
+      background: '#FFFFFF', border: '1px solid #E2E8F0',
+      borderRadius: 8, padding: '10px 16px', minWidth: 90, textAlign: 'center',
+    }}
+  >
     <div style={{ fontSize: 22, fontWeight: 900, color, lineHeight: 1.1 }}>{value}</div>
     <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748B', marginTop: 4 }}>{label}</div>
   </div>
@@ -26,21 +26,23 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ resource, summary }) =>
   const assignmentName = resource?.r360_assignments?.name || '—';
 
   const metaPills = [
-    { label: deptName },
-    { label: vendorName },
-    { label: `${resource?.contract_start?.slice(0, 10) || '?'} → ${resource?.contract_end?.slice(0, 10) || '?'}` },
-    { label: resource?.country || '—' },
-    { label: assignmentName },
-    { label: resource?.location_type || '—' },
-  ];
+    deptName,
+    vendorName,
+    `${resource?.contract_start?.slice(0, 10) || '?'} → ${resource?.contract_end?.slice(0, 10) || '?'}`,
+    resource?.country || '—',
+    assignmentName,
+    resource?.location_type || '—',
+  ].filter(Boolean);
+
+  // Only show CTC if present
+  if (resource?.ctc) {
+    metaPills.push(`CTC: ${resource.ctc}`);
+  }
 
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 20,
-      padding: '16px 20px',
-      background: '#FFFFFF',
+    <header style={{
+      display: 'flex', alignItems: 'center', gap: 20,
+      padding: '16px 20px', background: '#FFFFFF',
       borderBottom: '1px solid #E2E8F0',
       fontFamily: "'Inter', sans-serif",
     }}>
@@ -66,13 +68,13 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ resource, summary }) =>
           {resource?.job_role || 'No role'}
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-          {metaPills.map((p, i) => (
+          {metaPills.map((label, i) => (
             <span key={i} style={{
               fontSize: 11.5, color: '#475569',
               background: '#F1F5F9', borderRadius: 4,
               padding: '3px 8px', fontWeight: 500,
             }}>
-              {p.label}
+              {label}
             </span>
           ))}
         </div>
@@ -85,7 +87,7 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ resource, summary }) =>
         <StatCard label="In Progress" value={summary?.progress_count ?? '–'} color="#2563EB" />
         <StatCard label="Done" value={summary?.done_count ?? '–'} color="#059669" />
       </div>
-    </div>
+    </header>
   );
 };
 
