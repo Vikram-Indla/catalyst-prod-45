@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import { Resource360Redirect } from './components/workhub/resource360/Resource360Redirect';
-const Resource360PageNew = lazy(() => import("./pages/Resource360Page"));
+const Resource360PageNew = lazy(() => import("./components/resource360/Resource360PageNew"));
 const ResourceListingPageLazy = lazy(() => import("./pages/ResourceListingPage"));
 
 // ProjectHub V5 lazy imports
