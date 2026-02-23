@@ -15,7 +15,7 @@ const COLUMNS: { key: SortKey; label: string; width: string }[] = [
   { key: 'item_type',      label: 'Type',      width: '70px' },
   { key: 'title',          label: 'Title',     width: '1fr' },
   { key: 'hub',            label: 'Hub',       width: '80px' },
-  { key: 'status',         label: 'Status',    width: '100px' },
+  { key: 'status',         label: 'Status',    width: '130px' },
   { key: 'priority',       label: 'Priority',  width: '70px' },
   { key: 'assigner_name',  label: 'Assigner',  width: '110px' },
   { key: 'age_days',       label: 'Age',       width: '50px' },
@@ -113,7 +113,7 @@ export function Resource360List({ items, onItemClick }: Props) {
           gridTemplateColumns: gridTemplate,
           height: 32,
           padding: '0 12px',
-          background: '#F9FAFB',
+          background: '#F1F5F9',
           borderBottom: '1px solid #E5E7EB',
         }}
       >
@@ -144,24 +144,32 @@ export function Resource360List({ items, onItemClick }: Props) {
               onClick={() => toggleHub(hub)}
               className="flex items-center gap-2 cursor-pointer"
               style={{
-                padding: '6px 12px',
-                background: '#F9FAFB',
-                borderBottom: '1px solid #F0F0F3',
+                padding: '8px 12px',
+                background: '#F3F4F6',
+                borderBottom: '1px solid #E5E7EB',
+                borderLeft: `3px solid ${hubColor}`,
               }}
             >
-              <span style={{ fontSize: 10, color: '#9CA3AF', transform: collapsed ? 'rotate(-90deg)' : 'none', transition: 'transform 150ms' }}>
+              <span style={{
+                fontSize: 11, color: '#6B7280', transition: 'transform .15s',
+                transform: collapsed ? 'rotate(-90deg)' : 'rotate(0)',
+                display: 'inline-block',
+              }}>
                 ▼
               </span>
-              <span style={{ fontSize: 11, fontWeight: 700, color: hubColor }}>
+              <span
+                className="text-white font-bold"
+                style={{ fontSize: 9, padding: '2px 7px', borderRadius: 4, background: hubColor }}
+              >
                 {hub}
               </span>
-              <span style={{ fontSize: 10, color: '#9CA3AF' }}>
+              <span style={{ fontSize: 11, fontWeight: 600, color: '#374151' }}>
                 {hubItems.length} items
               </span>
             </div>
 
             {/* Rows */}
-            {!collapsed && hubItems.map((item) => {
+            {!collapsed && hubItems.map((item, rowIdx) => {
               const cat = getStatusCategory(item.status, item.status_category);
               const sc = STATUS_COLORS[cat];
               const priColor = PRIORITY_COLORS[item.priority] ?? '#6B7280';
@@ -175,11 +183,15 @@ export function Resource360List({ items, onItemClick }: Props) {
                   style={{
                     gridTemplateColumns: gridTemplate,
                     height: 36,
+                    minHeight: 36,
+                    maxHeight: 36,
+                    overflow: 'hidden',
                     padding: '0 12px',
-                    borderColor: '#F7F7F8',
+                    borderColor: '#F0F0F3',
+                    background: rowIdx % 2 === 1 ? '#FAFBFC' : 'transparent',
                   }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = '#F9FAFB'; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = '#EFF6FF'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = rowIdx % 2 === 1 ? '#FAFBFC' : 'transparent'; }}
                 >
                   <span style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', fontFamily: 'monospace' }}>
                     {item.item_key}
@@ -193,9 +205,16 @@ export function Resource360List({ items, onItemClick }: Props) {
                   <span style={{ fontSize: 9, fontWeight: 600, color: hubColor }}>
                     {WH_HUB_SHORT[item.hub] ?? item.hub}
                   </span>
-                  <span style={{ fontSize: 10, color: sc.text, display: 'flex', alignItems: 'center', gap: 3 }}>
-                    <span style={{ width: 5, height: 5, borderRadius: '50%', background: sc.dot }} />
-                    {item.status}
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 3,
+                    fontSize: 9, fontWeight: 600,
+                    padding: '2px 7px', borderRadius: 100,
+                    background: sc.bg, color: sc.text, border: `1px solid ${sc.border}`,
+                    width: 'fit-content', maxWidth: '100%',
+                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  }}>
+                    <span style={{ width: 4, height: 4, borderRadius: '50%', background: sc.dot, display: 'inline-block', flexShrink: 0 }} />
+                    {item.status.length > 16 ? item.status.slice(0, 14) + '…' : item.status}
                   </span>
                   <span style={{ fontSize: 10, color: priColor }}>
                     {priIcon} {item.priority}
