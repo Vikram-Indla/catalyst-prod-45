@@ -32,6 +32,15 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
     label: 'Product Hub',
     sections: [
       {
+        title: 'Product Hub',
+        items: [
+          { id: 'backlog', title: 'Product Backlog', path: '/producthub/backlog', icon: ClipboardList, exact: true },
+          { id: 'kanban', title: 'Product Kanban', path: '/producthub/kanban', icon: Columns3, exact: true },
+          { id: 'roadmap', title: 'Product Roadmap', path: '/producthub/roadmaps', icon: GanttChart, exact: false },
+          { id: 'cards', title: 'Product Cards', path: '/producthub/cards', icon: LayoutGrid, exact: true },
+        ],
+      },
+      {
         title: 'Ideation',
         items: [
           { id: 'idea-backlog', title: 'Idea Backlog', path: '/producthub/ideation', icon: Lightbulb, exact: true, badge: 15 },
@@ -39,15 +48,6 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
           { id: 'impact-matrix', title: 'Impact Matrix', path: '/producthub/ideation?view=matrix', icon: ScatterChart, exact: true },
           { id: 'ideation-analytics', title: 'Analytics', path: '/producthub/ideation?view=analytics', icon: BarChart3, exact: true },
           { id: 'innovation-drives', title: 'Innovation Drives', path: '/producthub/ideation?view=drives', icon: Rocket, exact: true },
-        ],
-      },
-      {
-        title: 'Product Hub',
-        items: [
-          { id: 'backlog', title: 'Product Backlog', path: '/producthub/backlog', icon: ClipboardList, exact: true },
-          { id: 'kanban', title: 'Product Kanban', path: '/producthub/kanban', icon: Columns3, exact: true },
-          { id: 'roadmap', title: 'Product Roadmap', path: '/producthub/roadmaps', icon: GanttChart, exact: false },
-          { id: 'cards', title: 'Product Cards', path: '/producthub/cards', icon: LayoutGrid, exact: true },
         ],
       },
       {
