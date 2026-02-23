@@ -70,15 +70,16 @@ export default function Resource360PageNew() {
     );
   }
 
-  // Loading state — only show skeleton on initial load, not on error/empty
-  if (itemsLoading && !items.length && !summary) {
+  // Loading state — only show skeleton while both queries are still fetching
+  const isInitialLoad = (itemsLoading || summaryLoading) && !items.length && !summary;
+  if (isInitialLoad) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: "'Inter', sans-serif" }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 20px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>
           <div className="r360-skeleton" style={{ width: 64, height: 64, borderRadius: '50%' }} />
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div className="r360-skeleton" style={{ height: 20, borderRadius: 6, width: '100%' }} />
-            <div className="r360-skeleton" style={{ height: 14, borderRadius: 6, width: '60%' }} />
+            <div className="r360-skeleton" style={{ height: 20, borderRadius: 6, width: '40%' }} />
+            <div className="r360-skeleton" style={{ height: 14, borderRadius: 6, width: '25%' }} />
           </div>
         </div>
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
