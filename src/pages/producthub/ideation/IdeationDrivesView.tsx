@@ -1,10 +1,11 @@
 /**
  * IdeationDrivesView — Innovation Drives with progress tracking (Supabase-wired)
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import CreateDriveModal from './CreateDriveModal';
 
 const MONO = "'JetBrains Mono', monospace";
 
@@ -58,6 +59,7 @@ function getEmoji(title: string): string {
 
 export default function IdeationDrivesView() {
   const { data: drives = [], isLoading, error } = useDrives();
+  const [createOpen, setCreateOpen] = useState(false);
 
   return (
     <div style={{ padding: '16px 28px 32px' }}>
@@ -76,14 +78,19 @@ export default function IdeationDrivesView() {
             Themed innovation campaigns to focus idea generation around strategic priorities
           </p>
         </div>
-        <button style={{
-          background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '8px',
-          padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-          display: 'inline-flex', alignItems: 'center', gap: '6px',
-        }}>
+        <button
+          onClick={() => setCreateOpen(true)}
+          style={{
+            background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '8px',
+            padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+            display: 'inline-flex', alignItems: 'center', gap: '6px',
+          }}
+        >
           <Plus size={14} /> New Drive
         </button>
       </div>
+
+      <CreateDriveModal open={createOpen} onClose={() => setCreateOpen(false)} />
 
       {isLoading && (
         <div style={{ color: '#94A3B8', fontSize: 13, padding: 20 }}>Loading drives...</div>
