@@ -1,0 +1,171 @@
+/* ═══════════════════════════════════════════════════════
+   RESOURCE 360° — RING-FENCED DESIGN TOKENS
+   Overrides Catalyst V11 within .r360-root scope ONLY.
+   ═══════════════════════════════════════════════════════ */
+
+.r360-root {
+  /* ─── CANVAS ─── */
+  --r360-bg: #F5F0EB;
+  --r360-bg-alt: #EDE7E0;
+  --r360-surface: #FFFFFF;
+  --r360-surface-hover: #FAF8F5;
+  --r360-surface-active: #F0ECE6;
+
+  /* ─── TEXT — JET BLACK HIERARCHY ─── */
+  --r360-text-1: #0A0A0A;
+  --r360-text-2: #1A1A2E;
+  --r360-text-3: #3D3D56;
+  --r360-text-4: #6B6B80;
+
+  /* ─── BORDERS — VISIBLE ─── */
+  --r360-border: #C5BDB3;
+  --r360-border-light: #D9D2C9;
+  --r360-border-strong: #9E968C;
+
+  /* ─── STATUS — BOLD SOLID FILLS ─── */
+  --r360-todo: #E23636;
+  --r360-todo-bg: #E23636;
+  --r360-todo-text: #FFFFFF;
+  --r360-todo-soft: #FDE8E8;
+
+  --r360-progress: #2563EB;
+  --r360-progress-bg: #2563EB;
+  --r360-progress-text: #FFFFFF;
+  --r360-progress-soft: #E0EDFF;
+
+  --r360-done: #0E8A5F;
+  --r360-done-bg: #0E8A5F;
+  --r360-done-text: #FFFFFF;
+  --r360-done-soft: #DFF5E9;
+
+  /* ─── HUB COLORS — SATURATED ─── */
+  --r360-hub-strategy: #0284C7;
+  --r360-hub-product: #7C3AED;
+  --r360-hub-project: #2563EB;
+  --r360-hub-release: #0D9488;
+  --r360-hub-test: #C2410C;
+  --r360-hub-incident: #DC2626;
+  --r360-hub-task: #4F46E5;
+
+  /* ─── PRIORITY — WARM SPECTRUM ─── */
+  --r360-pri-critical: #BE123C;
+  --r360-pri-highest: #DC2626;
+  --r360-pri-high: #EA580C;
+  --r360-pri-medium: #CA8A04;
+  --r360-pri-low: #57534E;
+
+  /* ─── SHADOWS — SUBSTANTIAL ─── */
+  --r360-shadow-card: 0 2px 8px rgba(0,0,0,.12);
+  --r360-shadow-hover: 0 6px 20px rgba(0,0,0,.15);
+  --r360-shadow-modal: 0 12px 40px rgba(0,0,0,.2);
+
+  /* ─── RADIUS ─── */
+  --r360-radius-sm: 4px;
+  --r360-radius-md: 6px;
+  --r360-radius-lg: 10px;
+  --r360-radius-xl: 14px;
+
+  /* ─── TYPOGRAPHY — CRISPER ─── */
+  --r360-font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --r360-font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+  /* Apply canvas */
+  background: var(--r360-bg);
+  color: var(--r360-text-1);
+  font-family: var(--r360-font);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── GLOBAL STATUS PILL — BOLD SOLID ─── */
+.r360-root .r360-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+.r360-root .r360-pill-todo { background: var(--r360-todo-bg); color: var(--r360-todo-text); }
+.r360-root .r360-pill-progress { background: var(--r360-progress-bg); color: var(--r360-progress-text); }
+.r360-root .r360-pill-done { background: var(--r360-done-bg); color: var(--r360-done-text); }
+
+/* ─── HUB BADGE — PUNCHY ─── */
+.r360-root .r360-hub-badge {
+  font-size: 9px;
+  font-weight: 800;
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ─── PRIORITY INDICATOR ─── */
+.r360-root .r360-pri {
+  font-size: 10px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* ─── CARD BASE ─── */
+.r360-root .r360-card {
+  background: var(--r360-surface);
+  border: 1px solid var(--r360-border-light);
+  border-radius: var(--r360-radius-lg);
+  box-shadow: var(--r360-shadow-card);
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.r360-root .r360-card:hover {
+  box-shadow: var(--r360-shadow-hover);
+  transform: translateY(-1px);
+}
+
+/* ─── SECTION HEADER ─── */
+.r360-root .r360-section-hdr {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--r360-text-1);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ─── TABLE/LIST ROW ─── */
+.r360-root .r360-row {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--r360-border-light);
+  transition: background 0.1s;
+  cursor: pointer;
+}
+.r360-root .r360-row:hover {
+  background: var(--r360-surface-hover);
+}
+.r360-root .r360-row-alt {
+  background: #FAF8F5;
+}
+
+/* ─── KEY (monospace) ─── */
+.r360-root .r360-key {
+  font-family: var(--r360-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--r360-text-1);
+  letter-spacing: -0.02em;
+}
+
+/* ─── AGE INDICATOR ─── */
+.r360-root .r360-age {
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--r360-font-mono);
+}
+.r360-root .r360-age-warn { color: var(--r360-pri-high); }
+.r360-root .r360-age-danger { color: var(--r360-pri-critical); }
+.r360-root .r360-age-normal { color: var(--r360-text-4); }

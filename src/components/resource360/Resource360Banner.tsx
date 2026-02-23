@@ -59,23 +59,12 @@ export function Resource360Banner({ summary, isLoading }: Props) {
 
       {/* Name + role */}
       <div className="flex flex-col min-w-0">
-        <p style={{ fontSize: 15, fontWeight: 700, color: '#0F172A', margin: 0, lineHeight: 1.3 }}>
+        <p style={{ fontSize: 22, fontWeight: 900, color: 'var(--r360-text-1, #0A0A0A)', margin: 0, lineHeight: 1.3 }}>
           {summary.name}
         </p>
-        <p style={{ fontSize: 12, fontWeight: 500, color: '#64748B', margin: 0, lineHeight: 1.3 }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--r360-text-2, #1A1A2E)', margin: 0, lineHeight: 1.3 }}>
           {summary.role} · {summary.department}
         </p>
-      </div>
-
-      {/* Quarterly view label */}
-      <div
-        className="ml-auto flex-shrink-0"
-        style={{
-          fontSize: 10, fontWeight: 600, letterSpacing: '0.06em',
-          color: '#94A3B8', textTransform: 'uppercase',
-        }}
-      >
-        Quarterly View
       </div>
     </div>
   );
