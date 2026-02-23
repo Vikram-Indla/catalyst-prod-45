@@ -59159,6 +59159,60 @@ export type Database = {
         }
         Relationships: []
       }
+      vw_wh_resource_360: {
+        Row: {
+          age_days: number | null
+          allocation_percent: number | null
+          assigned_at: string | null
+          assigner_name: string | null
+          avatar_url: string | null
+          department: string | null
+          hub: string | null
+          item_created_at: string | null
+          item_key: string | null
+          item_type: string | null
+          job_role: string | null
+          parent_hub: string | null
+          parent_id: string | null
+          parent_key: string | null
+          parent_status: string | null
+          parent_title: string | null
+          parent_type: string | null
+          priority: string | null
+          project_key: string | null
+          project_name: string | null
+          release_end_date: string | null
+          release_name: string | null
+          release_status: string | null
+          resource_email: string | null
+          resource_id: string | null
+          resource_name: string | null
+          role_on_item: string | null
+          status: string | null
+          status_transitions: Json | null
+          title: string | null
+          total_cycle_days: number | null
+          work_item_id: string | null
+        }
+        Relationships: []
+      }
+      vw_wh_resource_360_summary: {
+        Row: {
+          avatar_url: string | null
+          department: string | null
+          done_count: number | null
+          email: string | null
+          hub_count: number | null
+          name: string | null
+          progress_count: number | null
+          project_count: number | null
+          resource_id: string | null
+          role: string | null
+          todo_count: number | null
+          total_items: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       add_test_cases_to_run: {
@@ -59538,6 +59592,19 @@ export type Database = {
         }[]
       }
       fn_ph_work_item_filters: { Args: never; Returns: Json }
+      fn_resource_360_siblings: {
+        Args: { p_work_item_id: string }
+        Returns: {
+          age_days: number
+          assigner_name: string
+          hub: string
+          id: string
+          item_key: string
+          item_type: string
+          status: string
+          title: string
+        }[]
+      }
       generate_change_number: { Args: never; Returns: string }
       generate_cycle_key: { Args: never; Returns: string }
       generate_cycle_report_data: {

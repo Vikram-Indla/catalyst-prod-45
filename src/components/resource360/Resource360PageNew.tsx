@@ -70,8 +70,8 @@ export default function Resource360PageNew() {
     );
   }
 
-  // Loading state
-  if (itemsLoading && items.length === 0) {
+  // Loading state — only show skeleton on initial load, not on error/empty
+  if (itemsLoading && !items.length && !summary) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: "'Inter', sans-serif" }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 20px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>

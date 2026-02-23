@@ -3,8 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Resource360Summary } from '@/types/resource360';
 
 /**
- * Fetches aggregated summary stats for a resource (total items, status counts, hub/project counts).
- * Powers the Resource 360° banner section.
+ * Fetches aggregated summary stats for a resource.
+ * resourceId here is the short `rid` (e.g. "038") from the URL.
  */
 export function useResource360Summary(resourceId: string | undefined) {
   return useQuery({
@@ -19,6 +19,8 @@ export function useResource360Summary(resourceId: string | undefined) {
         .single();
 
       if (error) {
+        // If no rows found, return null gracefully
+        if (error.code === 'PGRST116') return null;
         console.error('[Resource360] Failed to fetch summary:', error.message);
         throw error;
       }
