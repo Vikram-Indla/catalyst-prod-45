@@ -507,6 +507,7 @@ export interface RingPeriod {
   sub: string;
   startDate: string;
   endDate: string;
+  items?: Resource360Item[];
 }
 
 /**
