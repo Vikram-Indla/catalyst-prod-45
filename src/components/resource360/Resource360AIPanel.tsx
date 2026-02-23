@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useMemo } from 'react';
 import type { Resource360Item, Resource360Summary } from '@/types/resource360';
-import { getStatusCategory, WH_HUB_COLORS } from '@/types/resource360';
+import { getStatusCategory } from '@/types/resource360';
 
 interface Props {
   items: Resource360Item[];
@@ -10,385 +10,207 @@ interface Props {
   onClose: () => void;
 }
 
-/* ═══════════════════════════════════════
-   DESIGN TOKENS — V7 spec
-   ═══════════════════════════════════════ */
-const PURPLE = '#7C3AED';
-const PRIMARY = '#2563EB';
-const TEAL = '#0D9488';
-const WARNING = '#D97706';
-const DANGER = '#DC2626';
-const SUCCESS = '#059669';
-const TEXT_PRIMARY = '#0F172A';
-const TEXT_SECONDARY = '#334155';
-const TEXT_MUTED = '#475569';
-const SURFACE_ALT = '#F1F5F9';
-const BORDER_LIGHT = '#CBD5E1';
-const BG = '#F8FAFC';
-
-const HUB_TOKEN: Record<string, string> = {
-  StrategyHub: '#0EA5E9', ProductHub: '#7C3AED', ProjectHub: '#2563EB',
-  ReleaseHub: '#0D9488', TestHub: '#D97706', IncidentHub: '#DC2626', TaskHub: '#4F46E5',
+/* Ring-fenced tokens — warm, high-contrast, NO purple */
+const C = {
+  bg: '#F5F0EB', surface: '#FFFFFF', text1: '#0A0A0A', text2: '#1A1A2E',
+  text3: '#3D3D56', text4: '#6B6B80', border: '#D9D2C9', borderStrong: '#C5BDB3',
+  accent: '#1A1A2E', accentLight: '#2D2D4A',
+  todo: '#E23636', progress: '#2563EB', done: '#0E8A5F',
+  shadow: '0 2px 8px rgba(0,0,0,.12)',
+  mono: "'JetBrains Mono', 'SF Mono', monospace",
+  /* Warm bar colors — NO RED */
+  barColors: ['#0D9488', '#1A1A2E', '#4F46E5', '#CA8A04', '#0284C7', '#7C3AED', '#57534E'],
 };
 
-const STATUS_CAT_COLORS = {
-  todo: { c: DANGER, bg: '#FEE2E2', border: '#FCA5A5' },
-  progress: { c: PRIMARY, bg: '#DBEAFE', border: '#93C5FD' },
-  done: { c: SUCCESS, bg: '#D1FAE5', border: '#6EE7B7' },
-};
-
-const TYPE_BAR_COLORS: Record<string, string> = {
-  Story: PRIMARY, Subtask: PRIMARY, Feature: PRIMARY,
-  Bug: DANGER, 'QA Bug': DANGER,
-  'Test Case': WARNING, Task: '#4F46E5',
-  Incident: DANGER, Epic: TEAL, Initiative: '#0EA5E9',
-  Release: TEAL,
-};
-
-/**
- * AI Intelligence Panel — V7 spec compliant.
- * Light-mode, prose-first, executive-grade intelligence report.
- */
 export function Resource360AIPanel({ items, summary, resourceName, isOpen, onClose }: Props) {
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape') onClose();
-  }, [onClose]);
-
+  const handleKeyDown = useCallback((e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); }, [onClose]);
   useEffect(() => {
     if (isOpen) {
       document.addEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'hidden';
-      return () => {
-        document.removeEventListener('keydown', handleKeyDown);
-        document.body.style.overflow = '';
-      };
+      return () => { document.removeEventListener('keydown', handleKeyDown); document.body.style.overflow = ''; };
     }
   }, [isOpen, handleKeyDown]);
 
-  // ═══ COMPUTED ANALYTICS ═══
-  const analytics = useMemo(() => {
+  const a = useMemo(() => {
     const total = items.length;
     const todoItems = items.filter(i => getStatusCategory(i.status, i.status_category) === 'todo');
     const progressItems = items.filter(i => getStatusCategory(i.status, i.status_category) === 'progress');
     const doneItems = items.filter(i => getStatusCategory(i.status, i.status_category) === 'done');
 
-    const byHub: Record<string, { count: number; done: number; totalAge: number }> = {};
-    items.forEach(item => {
-      const hub = item.hub ?? 'Other';
-      if (!byHub[hub]) byHub[hub] = { count: 0, done: 0, totalAge: 0 };
-      byHub[hub].count++;
-      byHub[hub].totalAge += item.age_days;
-      if (getStatusCategory(item.status, item.status_category) === 'done') byHub[hub].done++;
+    const byHub: Record<string, { count: number; done: number }> = {};
+    items.forEach(i => {
+      const h = i.hub ?? 'Other';
+      if (!byHub[h]) byHub[h] = { count: 0, done: 0 };
+      byHub[h].count++;
+      if (getStatusCategory(i.status, i.status_category) === 'done') byHub[h].done++;
     });
-
     const hubDist = Object.entries(byHub)
       .sort((a, b) => b[1].count - a[1].count)
-      .map(([hub, data]) => ({
-        hub,
-        color: HUB_TOKEN[hub] ?? '#64748B',
-        pct: total > 0 ? Math.round((data.count / total) * 100) : 0,
-        items: data.count,
-        closureRate: data.count > 0 ? Math.round((data.done / data.count) * 100) : 0,
-        avgAge: data.count > 0 ? (data.totalAge / data.count).toFixed(1) + 'd' : '—',
+      .map(([hub, d]) => ({
+        hub, pct: total > 0 ? Math.round((d.count / total) * 100) : 0,
+        items: d.count, closure: d.count > 0 ? Math.round((d.done / d.count) * 100) : 0,
       }));
 
     const byType: Record<string, number> = {};
-    items.forEach(item => { byType[item.item_type] = (byType[item.item_type] ?? 0) + 1; });
+    items.forEach(i => { byType[i.item_type] = (byType[i.item_type] ?? 0) + 1; });
     const typeDist = Object.entries(byType)
       .sort((a, b) => b[1] - a[1])
       .map(([type, count]) => ({ type, count, pct: total > 0 ? Math.round((count / total) * 100) : 0 }));
 
     const byAssigner: Record<string, number> = {};
-    items.forEach(item => {
-      const name = item.assigner_name ?? 'Unknown';
-      byAssigner[name] = (byAssigner[name] ?? 0) + 1;
-    });
+    items.forEach(i => { const n = i.assigner_name ?? 'Unknown'; byAssigner[n] = (byAssigner[n] ?? 0) + 1; });
     const assignerDist = Object.entries(byAssigner).sort((a, b) => b[1] - a[1]);
 
-    const avgAgeDone = doneItems.length > 0
-      ? (doneItems.reduce((s, i) => s + i.age_days, 0) / doneItems.length).toFixed(1) : '—';
-    const avgAgeProgress = progressItems.length > 0
-      ? (progressItems.reduce((s, i) => s + i.age_days, 0) / progressItems.length).toFixed(1) : '—';
-    const totalAge = total > 0
-      ? (items.reduce((s, i) => s + i.age_days, 0) / total).toFixed(1) : '0';
-
     const closureRate = total > 0 ? Math.round((doneItems.length / total) * 100) : 0;
+    const avgAge = total > 0 ? (items.reduce((s, i) => s + i.age_days, 0) / total).toFixed(1) : '0';
 
-    const overdueItems = items.filter(i =>
-      getStatusCategory(i.status, i.status_category) !== 'done' && i.age_days > 14
-    ).sort((a, b) => b.age_days - a.age_days);
+    const overdueItems = items
+      .filter(i => getStatusCategory(i.status, i.status_category) !== 'done' && i.age_days > 14)
+      .sort((a, b) => b.age_days - a.age_days);
 
     const criticalPath = items
       .filter(i => getStatusCategory(i.status, i.status_category) === 'progress')
       .filter(i => ['Critical', 'Highest', 'High'].includes(i.priority))
-      .sort((a, b) => b.age_days - a.age_days)
-      .slice(0, 4);
-
-    const weeklyCounts: number[] = [];
-    const now = Date.now();
-    for (let w = 11; w >= 0; w--) {
-      const weekStart = now - (w + 1) * 7 * 86400000;
-      const weekEnd = now - w * 7 * 86400000;
-      const count = doneItems.filter(i => {
-        const d = new Date(i.assigned_at).getTime();
-        return d >= weekStart && d < weekEnd;
-      }).length;
-      weeklyCounts.push(count);
-    }
-    const avgWeekly = weeklyCounts.reduce((a, b) => a + b, 0) / 12;
+      .sort((a, b) => b.age_days - a.age_days).slice(0, 4);
 
     const releaseName = items.find(i => i.release_name)?.release_name ?? 'Current Release';
     const releaseEnd = items.find(i => i.release_end_date)?.release_end_date ?? '2026-03-30';
-    const releaseDaysLeft = Math.max(0, Math.ceil((new Date(releaseEnd).getTime() - now) / 86400000));
-
-    const primaryHub = hubDist[0]?.hub ?? 'ProjectHub';
-    const primaryHubPct = hubDist[0]?.pct ?? 0;
-    const primaryHubItems = hubDist[0]?.items ?? 0;
+    const releaseDaysLeft = Math.max(0, Math.ceil((new Date(releaseEnd).getTime() - Date.now()) / 86400000));
 
     const byProject: Record<string, { total: number; done: number }> = {};
-    items.forEach(item => {
-      const proj = item.project_name ?? 'Unassigned';
-      if (!byProject[proj]) byProject[proj] = { total: 0, done: 0 };
-      byProject[proj].total++;
-      if (getStatusCategory(item.status, item.status_category) === 'done') byProject[proj].done++;
+    items.forEach(i => {
+      const p = i.project_name ?? 'Unassigned';
+      if (!byProject[p]) byProject[p] = { total: 0, done: 0 };
+      byProject[p].total++;
+      if (getStatusCategory(i.status, i.status_category) === 'done') byProject[p].done++;
     });
 
+    const remaining = todoItems.length + progressItems.length;
+    const isAtRisk = closureRate < 60 || overdueItems.length > 3;
+    const confidence = Math.min(100, Math.max(20, Math.round(closureRate * 0.6 + (100 - overdueItems.length * 8) * 0.4)));
+
     return {
-      total, todoItems, progressItems, doneItems,
-      hubDist, typeDist, assignerDist,
-      avgAgeDone, avgAgeProgress, totalAge,
-      closureRate, overdueItems, criticalPath,
-      weeklyCounts, avgWeekly,
-      releaseName, releaseEnd, releaseDaysLeft,
-      primaryHub, primaryHubPct, primaryHubItems,
-      byProject,
+      total, todoItems, progressItems, doneItems, hubDist, typeDist, assignerDist,
+      closureRate, avgAge, overdueItems, criticalPath,
+      releaseName, releaseEnd, releaseDaysLeft, byProject, remaining, isAtRisk, confidence,
     };
   }, [items]);
 
   if (!isOpen) return null;
 
-  const a = analytics;
   const role = summary?.role ?? 'Developer';
   const dept = summary?.department ?? 'Delivery';
+  const firstName = resourceName.split(' ')[0];
   const initials = resourceName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-
-  // Donut chart calculations
-  const donutR = 58;
-  const donutC = 2 * Math.PI * donutR;
-  const donePct = a.total > 0 ? a.doneItems.length / a.total : 0;
-  const progPct = a.total > 0 ? a.progressItems.length / a.total : 0;
-
-  const isAtRisk = a.closureRate < 60 || a.overdueItems.length > 3;
-  const confidenceScore = Math.min(100, Math.max(20,
-    Math.round(a.closureRate * 0.6 + (100 - a.overdueItems.length * 8) * 0.4)
-  ));
-
-  const weeklyMax = Math.max(...a.weeklyCounts, 1);
 
   return (
     <>
       {/* Overlay */}
-      <div
-        onClick={onClose}
-        style={{
-          position: 'fixed', inset: 0, zIndex: 998,
-          background: 'rgba(15,23,42,.6)', backdropFilter: 'blur(4px)',
-        }}
-      />
+      <div onClick={onClose} style={{
+        position: 'fixed', inset: 0, zIndex: 998,
+        background: 'rgba(10,10,10,.55)', backdropFilter: 'blur(4px)',
+      }} />
 
       {/* Panel */}
       <div style={{
         position: 'fixed', top: 0, right: 0, bottom: 0, left: 220,
-        zIndex: 999, background: BG, overflowY: 'auto',
-        animation: 'aiSlideIn 300ms ease-out forwards',
+        zIndex: 999, background: C.bg, overflowY: 'auto',
+        animation: 'aiSlide 250ms ease-out forwards',
       }}>
-        {/* ═══ STICKY HEADER ═══ */}
-        <div style={{
-          position: 'sticky', top: 0, zIndex: 10, background: '#fff',
-          borderBottom: `2.5px solid ${PURPLE}`,
-          padding: '12px 24px', display: 'flex', alignItems: 'center', gap: 12,
-        }}>
-          <span style={{
-            background: `linear-gradient(135deg, ${PURPLE}, #9333EA)`,
-            color: '#fff', fontSize: 10, fontWeight: 800,
-            padding: '4px 10px', borderRadius: 4, letterSpacing: '.06em',
-            display: 'inline-flex', alignItems: 'center', gap: 4,
-          }}>
-            ✦ AI INTELLIGENCE
-          </span>
 
-          <span style={{ fontSize: 14, fontWeight: 700, color: TEXT_PRIMARY }}>
+        {/* ═══ HEADER — DARK NAVY, NO PURPLE ═══ */}
+        <div style={{
+          position: 'sticky', top: 0, zIndex: 10,
+          background: `linear-gradient(135deg, ${C.accent}, ${C.accentLight})`,
+          padding: '10px 24px', display: 'flex', alignItems: 'center', gap: 12,
+        }}>
+          <span style={{ fontSize: 15, fontWeight: 800, color: '#fff', letterSpacing: '.01em' }}>
             Resource Intelligence Profile
           </span>
-
-          <button
-            onClick={() => window.print()}
-            style={{
-              marginLeft: 'auto', padding: '6px 14px',
-              fontSize: 11, fontWeight: 700, color: TEXT_SECONDARY,
-              background: '#fff', border: `1.5px solid ${BORDER_LIGHT}`,
-              borderRadius: 6, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: 5,
-            }}
-          >
-            📤 Export PDF
-          </button>
-
-          <button
-            onClick={onClose}
-            style={{
-              background: 'none', border: 'none', fontSize: 18,
-              color: '#94A3B8', cursor: 'pointer', padding: '4px 8px',
-            }}
-          >
-            ✕
-          </button>
+          <button onClick={() => window.print()} style={{
+            marginLeft: 'auto', padding: '5px 14px', fontSize: 11, fontWeight: 700,
+            color: '#fff', background: 'rgba(255,255,255,.12)',
+            border: '1px solid rgba(255,255,255,.2)', borderRadius: 5, cursor: 'pointer',
+          }}>📤 Export</button>
+          <button onClick={onClose} style={{
+            background: 'none', border: 'none', fontSize: 18,
+            color: 'rgba(255,255,255,.7)', cursor: 'pointer', padding: '4px 8px',
+          }}>✕</button>
         </div>
 
-        {/* ═══ CONTENT ═══ */}
-        <div style={{ padding: '24px 28px', maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ padding: '16px 24px', maxWidth: 1200, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
           {/* ═══ PROFILE CARD ═══ */}
           <div style={{
             display: 'flex', alignItems: 'center', gap: 16,
-            background: '#fff', borderRadius: 12, padding: '16px 20px',
-            border: `1px solid ${BORDER_LIGHT}`,
+            background: C.surface, borderRadius: 10, padding: '14px 20px',
+            border: `1px solid ${C.border}`, boxShadow: C.shadow,
           }}>
             <div style={{
-              width: 56, height: 56, borderRadius: '50%',
-              background: `linear-gradient(135deg, ${PURPLE}, #9333EA)`,
+              width: 52, height: 52, borderRadius: '50%',
+              background: `linear-gradient(135deg, ${C.accent}, ${C.accentLight})`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#fff', fontSize: 18, fontWeight: 800,
-              overflow: 'hidden', flexShrink: 0,
+              color: '#fff', fontSize: 17, fontWeight: 800, overflow: 'hidden', flexShrink: 0,
             }}>
               {summary?.avatar_url ? (
                 <img src={summary.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : initials}
             </div>
-
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 16, fontWeight: 700, color: TEXT_PRIMARY }}>{resourceName}</div>
-              <div style={{ fontSize: 12, color: TEXT_MUTED, marginTop: 2 }}>{role} · {dept}</div>
-              <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
+              <div style={{ fontSize: 18, fontWeight: 900, color: C.text1 }}>{resourceName}</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.text2, marginTop: 1 }}>{role} · {dept}</div>
+              <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
                 {[
-                  `Total Items: ${a.total}`,
-                  `Closure Rate: ${a.closureRate}%`,
-                  `Primary Hub: ${a.primaryHub.replace('Hub', '')}`,
-                  `Avg Age: ${a.totalAge}d`,
+                  { l: 'Items', v: String(a.total), c: C.text1 },
+                  { l: 'Closure', v: `${a.closureRate}%`, c: a.closureRate >= 60 ? C.done : C.todo },
+                  { l: 'Pending', v: String(a.remaining), c: a.remaining > 0 ? C.todo : C.done },
+                  { l: 'Avg Age', v: `${a.avgAge}d`, c: Number(a.avgAge) > 20 ? C.todo : C.text1 },
                 ].map((s, i) => (
-                  <span key={i} style={{
-                    fontSize: 10, fontWeight: 600, color: TEXT_SECONDARY,
-                    background: SURFACE_ALT, padding: '3px 8px', borderRadius: 4,
+                  <div key={i} style={{
+                    textAlign: 'center', padding: '4px 12px',
+                    background: C.bg, borderRadius: 6, border: `1px solid ${C.border}`,
                   }}>
-                    {s}
-                  </span>
+                    <div style={{ fontSize: 16, fontWeight: 900, color: s.c }}>{s.v}</div>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: C.text4, textTransform: 'uppercase', letterSpacing: '.03em' }}>{s.l}</div>
+                  </div>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* ═══ SECTION 1: RESOURCE PATTERN ═══ */}
-          <Section icon="📋" iconBg="#DBEAFE" iconColor={PRIMARY} title="Resource Pattern">
-            <div style={{ fontSize: 13, lineHeight: 1.7, color: TEXT_SECONDARY }}>
-              <strong style={{ color: TEXT_PRIMARY }}>{resourceName}</strong> serves as a <strong>{role}</strong> in the <strong>{dept}</strong> department.
-              Over the current quarter, they have been assigned <BlueLink>{a.total} work items</BlueLink> and
-              completed <BlueLink>{a.doneItems.length}</BlueLink> ({a.closureRate}% closure rate).
-              Their primary operational hub is <strong>{a.primaryHub.replace('Hub', '')}</strong> ({a.primaryHubPct}%, {a.primaryHubItems} items)
-              {a.hubDist.length > 1 && (<>, with secondary contributions to{' '}
-                {a.hubDist.slice(1, 3).map((h, i) => (
-                  <span key={h.hub}>
-                    {i > 0 && ' and '}
-                    <strong>{h.hub.replace('Hub', '')}</strong> ({h.pct}%, {h.items} items)
-                  </span>
-                ))}
-              </>)}.
+          {/* ═══ SECTION 1: {NAME}'S PROFILE ═══ */}
+          <SectionCard title={`${firstName}'s Profile`}>
+            <div style={{ fontSize: 13, lineHeight: 1.7, color: C.text2 }}>
+              <strong style={{ color: C.text1 }}>{resourceName}</strong> serves as a <strong>{role}</strong> in the <strong>{dept}</strong> department.
+              This quarter, they have been assigned <B>{a.total} work items</B> and
+              completed <B>{a.doneItems.length}</B> ({a.closureRate}% closure rate).
+              {a.hubDist.length > 0 && (<>
+                {' '}Their primary hub is <strong>{a.hubDist[0].hub.replace('Hub', '')}</strong> ({a.hubDist[0].pct}%)
+                {a.hubDist.length > 1 && (<>, with activity in {a.hubDist.slice(1, 3).map((h, i) => (
+                  <span key={h.hub}>{i > 0 && ' and '}<strong>{h.hub.replace('Hub', '')}</strong> ({h.pct}%)</span>
+                ))}</>)}.
+              </>)}
               <br /><br />
-              The items currently in their backlog include{' '}
-              <span style={{ color: STATUS_CAT_COLORS.todo.c, fontWeight: 600 }}>{a.todoItems.length} To Do</span>,{' '}
-              <span style={{ color: STATUS_CAT_COLORS.progress.c, fontWeight: 600 }}>{a.progressItems.length} In Progress</span>, and{' '}
-              <span style={{ color: STATUS_CAT_COLORS.done.c, fontWeight: 600 }}>{a.doneItems.length} completed</span>.
+              Current backlog: <span style={{ color: C.todo, fontWeight: 600 }}>{a.todoItems.length} To Do</span>,{' '}
+              <span style={{ color: C.progress, fontWeight: 600 }}>{a.progressItems.length} In Progress</span>, and{' '}
+              <span style={{ color: C.done, fontWeight: 600 }}>{a.doneItems.length} Completed</span>.
               {a.overdueItems.length > 0 && (<>
-                {' '}Notable attention items: <span style={{ color: DANGER, fontWeight: 600 }}>{a.overdueItems.length} items</span> exceed the 14-day age threshold, with the oldest at {a.overdueItems[0]?.age_days}d (<BlueLink>{a.overdueItems[0]?.item_key}</BlueLink>).
+                {' '}<span style={{ color: C.todo, fontWeight: 600 }}>{a.overdueItems.length} items</span> exceed the 14-day threshold
+                (oldest: <B>{a.overdueItems[0]?.item_key}</B> at {a.overdueItems[0]?.age_days}d).
               </>)}
             </div>
-          </Section>
+          </SectionCard>
 
-          {/* ═══ SECTION 2: DELIVERY PATTERN ═══ */}
-          <Section icon="📊" iconBg="#EDE9FE" iconColor={PURPLE} title="Delivery Pattern">
-            {/* 4 Metric cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
-              <MetricCard value={String(a.total)} label="Total Assigned" color={PRIMARY} trend={`${a.hubDist.length} hubs`} trendColor={TEXT_MUTED} />
-              <MetricCard value={String(a.doneItems.length)} label="Completed" color={SUCCESS} trend={`${a.avgAgeDone}d avg`} trendColor={SUCCESS} />
-              <MetricCard value={`${a.closureRate}%`} label="Closure Rate" color={a.closureRate >= 60 ? SUCCESS : DANGER}
-                trend={a.closureRate >= 70 ? '→ Strong' : a.closureRate >= 40 ? '→ Moderate' : '↓ Low'}
-                trendColor={a.closureRate >= 70 ? SUCCESS : WARNING} />
-              <MetricCard value={`${a.totalAge}d`} label="Avg Item Age" color={Number(a.totalAge) > 20 ? WARNING : PRIMARY}
-                trend={Number(a.totalAge) > 20 ? '↑ High' : '→ Normal'} trendColor={Number(a.totalAge) > 20 ? WARNING : SUCCESS} />
-            </div>
-
-            {/* Weekly closures bar chart */}
-            <div style={{
-              background: SURFACE_ALT, borderRadius: 8, padding: 14,
-              border: `1px solid ${BORDER_LIGHT}`, marginBottom: 16,
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: TEXT_PRIMARY }}>Weekly Closures (12 weeks)</span>
-                <span style={{ fontSize: 10, color: TEXT_MUTED }}>Avg: {a.avgWeekly.toFixed(1)} closures/week</span>
-              </div>
-              <div style={{ display: 'flex', gap: 4, height: 60, alignItems: 'flex-end' }}>
-                {a.weeklyCounts.map((v, i) => (
-                  <div key={i} style={{
-                    flex: 1, height: `${(v / weeklyMax) * 100}%`, minHeight: 2,
-                    background: v >= a.avgWeekly ? PRIMARY : '#BFDBFE',
-                    borderRadius: '2px 2px 0 0', transition: 'height .3s',
-                  }} title={`Week ${i + 1}: ${v} items`} />
-                ))}
-              </div>
-            </div>
-
-            {/* Hub Contribution */}
-            <div style={{ background: '#fff', borderRadius: 8, padding: 14, border: `1px solid ${BORDER_LIGHT}` }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: TEXT_PRIMARY, margin: '0 0 10px' }}>Hub Contribution</p>
-              <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(a.hubDist.length, 7)}, 1fr)`, gap: 8 }}>
-                {a.hubDist.slice(0, 7).map(h => (
-                  <div key={h.hub} style={{
-                    textAlign: 'center', padding: '8px 4px',
-                    borderTop: `3px solid ${h.color}`, borderRadius: 6,
-                    background: SURFACE_ALT,
-                  }}>
-                    <div style={{ fontSize: 9, fontWeight: 600, color: TEXT_MUTED, marginBottom: 4, textTransform: 'uppercase' }}>
-                      {h.hub.replace('Hub', '')}
-                    </div>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: h.color }}>{h.pct}%</div>
-                    <div style={{ fontSize: 9, color: TEXT_MUTED }}>{h.items} items</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Section>
-
-          {/* ═══ SECTION 3: ROLE EXPECTATION VS ACTUAL ═══ */}
-          <Section icon="🎯" iconBg="#CCFBF1" iconColor={TEAL} title="Role Expectation vs Actual">
-            {/* Hub indicators */}
-            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(a.hubDist.length, 7)}, 1fr)`, gap: 8, marginBottom: 16 }}>
-              {a.hubDist.slice(0, 7).map(h => (
-                <div key={h.hub} style={{
-                  textAlign: 'center', padding: '6px 4px',
-                  background: SURFACE_ALT, borderRadius: 6,
-                  borderLeft: `3px solid ${h.color}`,
-                }}>
-                  <div style={{ fontSize: 9, fontWeight: 600, color: TEXT_MUTED }}>{h.hub.replace('Hub', '')}</div>
-                  <div style={{ fontSize: 14, fontWeight: 800, color: h.color }}>{h.pct}%</div>
-                  <div style={{ fontSize: 9, color: TEXT_MUTED }}>{h.items} items</div>
-                </div>
-              ))}
-            </div>
-
-            {/* 2-column */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              <div style={{ background: SURFACE_ALT, borderRadius: 8, padding: 14, border: `1px solid ${BORDER_LIGHT}` }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: TEXT_PRIMARY, margin: '0 0 10px' }}>Expected ({role})</p>
-                <div style={{ fontSize: 12, color: TEXT_SECONDARY, lineHeight: 2 }}>
+          {/* ═══ SECTION 2: ROLE CONTRIBUTION ═══ */}
+          <SectionCard title="Role Contribution">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              {/* Left: Contribution context */}
+              <div style={{ background: C.bg, borderRadius: 8, padding: 12, border: `1px solid ${C.border}` }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: C.text1, margin: '0 0 8px' }}>
+                  Contribution from {role}
+                </p>
+                <div style={{ fontSize: 12, color: C.text2, lineHeight: 2 }}>
                   <div>✓ Close assigned work items</div>
                   <div>✓ Fix Bugs & Defects</div>
                   <div>✓ Resolve assigned Incidents</div>
@@ -397,143 +219,86 @@ export function Resource360AIPanel({ items, summary, resourceName, isOpen, onClo
                 </div>
               </div>
 
-              <div style={{ background: SURFACE_ALT, borderRadius: 8, padding: 14, border: `1px solid ${BORDER_LIGHT}` }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: TEXT_PRIMARY, margin: '0 0 10px' }}>Actual Work Distribution</p>
-                {a.typeDist.map(t => (
-                  <div key={t.type} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                    <div style={{ flex: 1, height: 8, borderRadius: 4, background: '#E2E8F0' }}>
+              {/* Right: Actual distribution — NO RED, warm colors */}
+              <div style={{ background: C.bg, borderRadius: 8, padding: 12, border: `1px solid ${C.border}` }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: C.text1, margin: '0 0 8px' }}>
+                  Actual Work Distribution
+                </p>
+                {a.typeDist.map((t, idx) => (
+                  <div key={t.type} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
+                    <div style={{ flex: 1, height: 8, borderRadius: 4, background: C.border }}>
                       <div style={{
                         height: '100%', borderRadius: 4, width: `${t.pct}%`,
-                        background: TYPE_BAR_COLORS[t.type] ?? '#64748B',
+                        background: C.barColors[idx % C.barColors.length],
                         transition: 'width .3s',
                       }} />
                     </div>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: TEXT_PRIMARY, width: 30, textAlign: 'right' }}>{t.pct}%</span>
-                    <span style={{ fontSize: 10, color: TEXT_MUTED, width: 70 }}>{t.type}</span>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: C.text1, width: 28, textAlign: 'right' }}>{t.pct}%</span>
+                    <span style={{ fontSize: 10, color: C.text3, width: 70 }}>{t.type}</span>
                   </div>
                 ))}
               </div>
             </div>
-          </Section>
+          </SectionCard>
 
-          {/* ═══ SECTION 4: BEHAVIORAL PATTERN ═══ */}
-          <Section icon="🧠" iconBg="#EDE9FE" iconColor={PURPLE} title="Evidence-Based Behavioral Pattern"
-            subtitle={<span>Based on {a.total} items this quarter</span>}>
-            <PatternRow>
-              Average item age is <strong>{a.totalAge} days</strong>.
-              {Number(a.totalAge) < 20
-                ? ' This is within acceptable thresholds for the team.'
-                : ' This exceeds the 20-day team threshold — review oldest items.'}
-            </PatternRow>
-            <PatternRow>
-              <strong>{a.closureRate}%</strong> closure rate this quarter.
-              {a.closureRate >= 70 ? ' Strong execution velocity.' :
-               a.closureRate >= 40 ? ' Moderate throughput — some items may need attention.' :
-               ' Low completion rate. Review workload and blockers.'}
-            </PatternRow>
-            {a.assignerDist.length > 0 && (
-              <PatternRow>
-                Primary work source: <strong>{a.assignerDist[0][0]}</strong> ({a.assignerDist[0][1]} items, {a.total > 0 ? Math.round((a.assignerDist[0][1] / a.total) * 100) : 0}% of total).
-                {a.assignerDist.length > 1 && (<> Secondary: <strong>{a.assignerDist[1][0]}</strong> ({a.assignerDist[1][1]} items).</>)}
-              </PatternRow>
-            )}
-            <PatternRow>
-              Hub concentration: <strong>{a.primaryHub.replace('Hub', '')}</strong> at {a.primaryHubPct}%.
-              {a.primaryHubPct > 80 ? ' Single-hub concentration risk — no cross-hub diversification.' :
-               a.primaryHubPct > 50 ? ' Moderate concentration with some cross-hub activity.' :
-               ' Well-distributed across multiple hubs.'}
-            </PatternRow>
-            {a.overdueItems.length > 0 && (
-              <PatternRow>
-                <span style={{ color: DANGER, fontWeight: 600 }}>{a.overdueItems.length} items</span> exceed 14-day threshold. Oldest: <BlueLink>{a.overdueItems[0]?.item_key}</BlueLink> at {a.overdueItems[0]?.age_days}d.
-                Evidence: {a.overdueItems.slice(0, 4).map(i => i.item_key).join(', ')}
-              </PatternRow>
-            )}
-            <PatternRow>
-              Context switching: active across <strong>{Object.keys(a.byProject).length}</strong> project{Object.keys(a.byProject).length !== 1 ? 's' : ''} and <strong>{a.hubDist.length}</strong> hub{a.hubDist.length !== 1 ? 's' : ''}.
-            </PatternRow>
-
-            <div style={{
-              marginTop: 12, padding: '8px 12px', borderRadius: 6,
-              background: '#FFFBEB', border: '1px solid #FDE68A',
-              fontSize: 11, color: '#92400E', fontStyle: 'italic',
-            }}>
-              ⓘ Pattern based on system data only. Context such as leave, meetings, and external factors is not captured.
-            </div>
-          </Section>
-
-          {/* ═══ SECTION 5: CURRENT RELEASE STANDING ═══ */}
-          <Section icon="🚀" iconBg="#DBEAFE" iconColor={PRIMARY} title="Current Release Standing">
-            <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 20, marginBottom: 16 }}>
-              {/* Left: Donut */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                <div style={{ position: 'relative', width: 160, height: 160 }}>
-                  <svg viewBox="0 0 160 160" style={{ width: '100%', height: '100%' }}>
-                    <circle cx="80" cy="80" r={donutR} fill="none" stroke="#F1F5F9" strokeWidth="16" />
-                    <circle cx="80" cy="80" r={donutR} fill="none" stroke={SUCCESS} strokeWidth="16"
-                      strokeDasharray={`${donePct * donutC} ${donutC}`}
-                      strokeDashoffset={donutC * 0.25}
-                      strokeLinecap="round" style={{ transition: 'stroke-dasharray .5s' }} />
-                    <circle cx="80" cy="80" r={donutR} fill="none" stroke={PRIMARY} strokeWidth="16"
-                      strokeDasharray={`${progPct * donutC} ${donutC}`}
-                      strokeDashoffset={donutC * 0.25 - donePct * donutC}
-                      strokeLinecap="round" style={{ transition: 'stroke-dasharray .5s' }} />
-                  </svg>
-                  <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                    <div style={{ fontSize: 28, fontWeight: 800, color: TEXT_PRIMARY }}>{a.closureRate}%</div>
-                    <div style={{ fontSize: 10, color: TEXT_MUTED }}>Complete</div>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: 12 }}>
-                  {([
-                    { label: 'DONE', count: a.doneItems.length, c: SUCCESS },
-                    { label: 'IN PROGRESS', count: a.progressItems.length, c: PRIMARY },
-                    { label: 'TO DO', count: a.todoItems.length, c: DANGER },
-                  ] as const).map(s => (
-                    <div key={s.label} style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: 18, fontWeight: 800, color: s.c }}>{s.count}</div>
-                      <div style={{ fontSize: 8, fontWeight: 700, color: TEXT_MUTED, letterSpacing: '.04em' }}>{s.label}</div>
-                    </div>
-                  ))}
-                </div>
+          {/* ═══ SECTION 3: CURRENT WORKLOAD — HORIZONTAL BAR, NO DONUT ═══ */}
+          <SectionCard title="Current Workload" subtitle={`${a.releaseName} · ${a.releaseDaysLeft}d remaining`}>
+            {/* Horizontal progress bar */}
+            <div style={{ marginBottom: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: C.text1 }}>Completion Progress</span>
+                <span style={{ fontSize: 13, fontWeight: 900, color: C.text1, fontFamily: C.mono }}>{a.closureRate}%</span>
               </div>
+              <div style={{ height: 14, borderRadius: 7, background: C.border, overflow: 'hidden', display: 'flex' }}>
+                <div style={{ width: `${a.total > 0 ? Math.round((a.doneItems.length / a.total) * 100) : 0}%`, background: C.done, transition: 'width .3s' }} />
+                <div style={{ width: `${a.total > 0 ? Math.round((a.progressItems.length / a.total) * 100) : 0}%`, background: C.progress, transition: 'width .3s' }} />
+              </div>
+              <div style={{ display: 'flex', gap: 14, marginTop: 5 }}>
+                <span style={{ fontSize: 10, fontWeight: 600, color: C.done }}>■ Done {a.doneItems.length}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, color: C.progress }}>■ In Progress {a.progressItems.length}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, color: C.text4 }}>■ To Do {a.todoItems.length}</span>
+              </div>
+            </div>
 
-              {/* Right: Critical Path + Per-Project */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+              {/* Critical Path */}
               <div>
-                <p style={{ fontSize: 12, fontWeight: 700, color: TEXT_PRIMARY, margin: '0 0 8px' }}>Critical Path Items</p>
-
+                <p style={{ fontSize: 11, fontWeight: 700, color: C.text1, margin: '0 0 6px' }}>Critical Path Items</p>
                 {a.criticalPath.length > 0 ? a.criticalPath.map(item => (
                   <div key={item.work_item_id} style={{
-                    display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px',
-                    background: '#FEF2F2', borderRadius: 6, marginBottom: 4,
-                    border: '1px solid #FECACA', fontSize: 11,
+                    display: 'flex', alignItems: 'center', gap: 6, padding: '5px 8px',
+                    background: '#FEF2F2', borderRadius: 5, marginBottom: 3,
+                    border: '1px solid #FECACA', fontSize: 10,
                   }}>
-                    <span style={{ color: DANGER, fontWeight: 700, flexShrink: 0 }}>{item.item_key}</span>
-                    <span style={{ color: TEXT_MUTED, fontSize: 9, flexShrink: 0 }}>{item.item_type}</span>
-                    <span style={{ color: TEXT_SECONDARY, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</span>
-                    <span style={{ color: DANGER, fontWeight: 700, flexShrink: 0 }}>{item.age_days}d</span>
+                    <span style={{ color: C.todo, fontWeight: 700, fontFamily: C.mono, flexShrink: 0 }}>{item.item_key}</span>
+                    <span style={{ color: C.text4, fontSize: 9, flexShrink: 0 }}>{item.item_type}</span>
+                    <span style={{ color: C.text2, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</span>
+                    <span style={{ color: C.todo, fontWeight: 700, fontFamily: C.mono, flexShrink: 0 }}>{item.age_days}d</span>
                   </div>
-                )) : (
-                  <div style={{ fontSize: 11, color: TEXT_MUTED, padding: '8px 0' }}>No critical path items detected</div>
-                )}
+                )) : <p style={{ fontSize: 11, color: C.text4 }}>No critical items</p>}
+              </div>
 
-                <p style={{ fontSize: 12, fontWeight: 700, color: TEXT_PRIMARY, margin: '16px 0 8px' }}>Per-Project Standing</p>
-
-                {Object.entries(a.byProject).map(([proj, data]) => {
-                  const pct = data.total > 0 ? Math.round((data.done / data.total) * 100) : 0;
+              {/* Per-Project */}
+              <div>
+                <p style={{ fontSize: 11, fontWeight: 700, color: C.text1, margin: '0 0 6px' }}>Per-Project Standing</p>
+                {Object.entries(a.byProject).map(([proj, d]) => {
+                  const pct = d.total > 0 ? Math.round((d.done / d.total) * 100) : 0;
                   const emoji = pct >= 70 ? '🟢' : pct >= 40 ? '🟡' : '🔴';
                   return (
-                    <div key={proj} style={{ marginBottom: 8 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 3 }}>
-                        <span style={{ color: TEXT_SECONDARY, fontWeight: 600 }}>{proj}</span>
+                    <div key={proj} style={{ marginBottom: 6 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, marginBottom: 2 }}>
+                        <span style={{ color: C.text2, fontWeight: 600 }}>{proj}</span>
                         <span>{emoji}</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <div style={{ flex: 1, height: 6, borderRadius: 3, background: '#E2E8F0' }}>
-                          <div style={{ height: '100%', borderRadius: 3, width: `${pct}%`, background: pct >= 70 ? SUCCESS : pct >= 40 ? WARNING : DANGER, transition: 'width .3s' }} />
+                        <div style={{ flex: 1, height: 5, borderRadius: 3, background: C.border }}>
+                          <div style={{
+                            height: '100%', borderRadius: 3, width: `${pct}%`,
+                            background: pct >= 70 ? C.done : pct >= 40 ? '#CA8A04' : C.todo,
+                            transition: 'width .3s',
+                          }} />
                         </div>
-                        <span style={{ fontSize: 10, color: TEXT_MUTED }}>{data.done}/{data.total}</span>
+                        <span style={{ fontSize: 10, color: C.text4, fontFamily: C.mono }}>{d.done}/{d.total}</span>
                       </div>
                     </div>
                   );
@@ -541,139 +306,109 @@ export function Resource360AIPanel({ items, summary, resourceName, isOpen, onClo
               </div>
             </div>
 
-            {/* VERDICT BOX */}
+            {/* Verdict */}
             <div style={{
               borderRadius: 8, overflow: 'hidden',
-              border: `1.5px solid ${isAtRisk ? '#F59E0B' : SUCCESS}`,
+              border: `1.5px solid ${a.isAtRisk ? '#CA8A04' : C.done}`,
             }}>
               <div style={{
-                padding: '10px 16px', fontWeight: 800, fontSize: 12,
-                background: isAtRisk
+                padding: '8px 14px', fontWeight: 800, fontSize: 12,
+                background: a.isAtRisk
                   ? 'linear-gradient(135deg, #FEF3C7, #FDE68A)'
                   : 'linear-gradient(135deg, #D1FAE5, #A7F3D0)',
-                color: isAtRisk ? '#92400E' : '#065F46',
+                color: a.isAtRisk ? '#92400E' : '#065F46',
               }}>
-                {isAtRisk ? '⚠' : '✓'} RELEASE STANDING: {isAtRisk ? 'AT RISK' : 'ON TRACK'}
+                {a.isAtRisk ? '⚠ AT RISK' : '✓ ON TRACK'}
               </div>
-              <div style={{ padding: '10px 16px', fontSize: 12, color: TEXT_SECONDARY, background: '#fff', lineHeight: 1.6 }}>
-                Current closure rate of <strong>{a.closureRate}%</strong> with{' '}
-                {a.todoItems.length + a.progressItems.length} remaining items and{' '}
-                {a.releaseDaysLeft} days until release end.
-                {a.overdueItems.length > 0 && (<> {a.overdueItems.length} items exceed the age threshold.</>)}
-                {a.criticalPath.length > 0 && (<> Critical path: {a.criticalPath.map(i => i.item_key).join(', ')}.</>)}
+              <div style={{ padding: '8px 14px', fontSize: 12, color: C.text2, background: C.surface, lineHeight: 1.6 }}>
+                Closure rate <strong>{a.closureRate}%</strong> with {a.remaining} remaining and {a.releaseDaysLeft}d left.
+                {a.overdueItems.length > 0 && <> {a.overdueItems.length} items past threshold.</>}
               </div>
-              <div style={{ padding: '8px 16px', fontSize: 11, fontWeight: 700, color: TEXT_MUTED, background: SURFACE_ALT, borderTop: `1px solid ${BORDER_LIGHT}` }}>
-                Confidence: {confidenceScore}/100
+              <div style={{
+                padding: '6px 14px', fontSize: 11, fontWeight: 700, color: C.text4,
+                background: C.bg, borderTop: `1px solid ${C.border}`,
+              }}>
+                Confidence: {a.confidence}/100
               </div>
             </div>
-          </Section>
+          </SectionCard>
 
-          {/* ═══ SECTION 6: HUB CLOSURE PERFORMANCE ═══ */}
-          <Section icon="📈" iconBg="#CCFBF1" iconColor={TEAL} title="Hub Closure Performance">
-            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(a.hubDist.length, 7)}, 1fr)`, gap: 8 }}>
-              {a.hubDist.slice(0, 7).map(h => (
-                <div key={h.hub} style={{
-                  textAlign: 'center', padding: '12px 8px',
-                  background: '#fff', borderRadius: 8,
-                  border: `1px solid ${BORDER_LIGHT}`,
-                  borderTop: `3px solid ${h.color}`,
-                }}>
-                  <div style={{ fontSize: 9, fontWeight: 600, color: TEXT_MUTED, textTransform: 'uppercase', marginBottom: 6 }}>
-                    {h.hub.replace('Hub', '')}
-                  </div>
-                  <div style={{ fontSize: 22, fontWeight: 800, color: h.closureRate >= 70 ? SUCCESS : h.closureRate >= 40 ? WARNING : DANGER }}>
-                    {h.closureRate}%
-                  </div>
-                  <div style={{ fontSize: 9, color: TEXT_MUTED, marginTop: 2 }}>
-                    closure · {h.avgAge}
-                  </div>
-                </div>
-              ))}
+          {/* ═══ SECTION 4: BEHAVIORAL INSIGHTS (LAST) ═══ */}
+          <SectionCard title="Behavioral Insights" subtitle={`Based on ${a.total} items`}>
+            <Insight>
+              Average item age is <strong>{a.avgAge} days</strong>. {Number(a.avgAge) < 20 ? 'Within acceptable threshold.' : 'Exceeds 20-day threshold — review oldest items.'}
+            </Insight>
+            <Insight>
+              <strong>{a.closureRate}%</strong> closure rate this quarter. {a.closureRate >= 70 ? 'Strong velocity.' : a.closureRate >= 40 ? 'Moderate — some items may need attention.' : 'Low completion. Review blockers.'}
+            </Insight>
+            {a.assignerDist.length > 0 && (
+              <Insight>
+                Primary work source: <strong>{a.assignerDist[0][0]}</strong> ({a.assignerDist[0][1]} items, {a.total > 0 ? Math.round((a.assignerDist[0][1] / a.total) * 100) : 0}%).
+                {a.assignerDist.length > 1 && <> Secondary: <strong>{a.assignerDist[1][0]}</strong> ({a.assignerDist[1][1]} items).</>}
+              </Insight>
+            )}
+            <Insight>
+              Hub focus: <strong>{a.hubDist[0]?.hub.replace('Hub', '') ?? 'N/A'}</strong> at {a.hubDist[0]?.pct ?? 0}%. {(a.hubDist[0]?.pct ?? 0) > 80 ? 'Single-hub concentration.' : 'Multi-hub distribution.'}
+            </Insight>
+            {a.overdueItems.length > 0 && (
+              <Insight>
+                <span style={{ color: C.todo, fontWeight: 600 }}>{a.overdueItems.length} items</span> past 14-day threshold. Oldest: <B>{a.overdueItems[0]?.item_key}</B> at {a.overdueItems[0]?.age_days}d.
+              </Insight>
+            )}
+            <Insight>
+              Active across <strong>{Object.keys(a.byProject).length}</strong> project{Object.keys(a.byProject).length !== 1 ? 's' : ''} and <strong>{a.hubDist.length}</strong> hub{a.hubDist.length !== 1 ? 's' : ''}.
+            </Insight>
+            <div style={{
+              marginTop: 8, padding: '6px 10px', borderRadius: 5,
+              background: '#FFFBEB', border: '1px solid #FDE68A',
+              fontSize: 10, color: '#92400E', fontStyle: 'italic',
+            }}>
+              ⓘ Based on system data. Leave, meetings, and external context not captured.
             </div>
-          </Section>
+          </SectionCard>
 
           {/* ═══ FOOTER ═══ */}
           <div style={{
-            textAlign: 'center', padding: '20px 0 32px',
-            fontSize: 10, color: '#94A3B8', lineHeight: 1.8,
+            textAlign: 'center', padding: '12px 0 24px',
+            fontSize: 10, color: C.text4,
           }}>
-            <span style={{ color: PURPLE }}>✦</span>{' '}
             Generated: {new Date().toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}, {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-            {' '} · Next Refresh: Tomorrow ·{' '}
-            <strong>Catalyst AI Intelligence Engine v2.0</strong>
-            <br />
-            Executive Export available via 📤 Export PDF button above
+            {' · '}Catalyst Intelligence Engine v2.0
           </div>
         </div>
       </div>
 
-      <style>{`
-        @keyframes aiSlideIn {
-          from { transform: translateX(100%); }
-          to { transform: translateX(0); }
-        }
-      `}</style>
+      <style>{`@keyframes aiSlide { from { transform: translateX(100%); } to { transform: translateX(0); } }`}</style>
     </>
   );
 }
 
 /* ─── Sub-components ─── */
 
-function Section({ icon, iconBg, iconColor, title, subtitle, children }: {
-  icon: string; iconBg: string; iconColor: string;
-  title: string; subtitle?: React.ReactNode; children: React.ReactNode;
-}) {
+function SectionCard({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
     <div style={{
-      background: '#fff', borderRadius: 12, padding: '16px 20px',
-      border: `1px solid ${BORDER_LIGHT}`,
+      background: C.surface, borderRadius: 10, padding: '12px 16px',
+      border: `1px solid ${C.border}`, boxShadow: C.shadow,
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
-        <span style={{
-          width: 28, height: 28, borderRadius: 6,
-          background: iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 14,
-        }}>
-          {icon}
-        </span>
-        <span style={{ fontSize: 13, fontWeight: 700, color: TEXT_PRIMARY }}>{title}</span>
-        {subtitle && (
-          <span style={{ fontSize: 10, color: TEXT_MUTED, marginLeft: 'auto' }}>{subtitle}</span>
-        )}
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 10 }}>
+        <h3 style={{ fontSize: 13, fontWeight: 800, color: C.text1, margin: 0 }}>{title}</h3>
+        {subtitle && <span style={{ fontSize: 10, color: C.text4 }}>{subtitle}</span>}
       </div>
       {children}
     </div>
   );
 }
 
-function MetricCard({ value, label, color, trend, trendColor }: {
-  value: string; label: string; color: string; trend: string; trendColor: string;
-}) {
-  return (
-    <div style={{
-      background: SURFACE_ALT, borderRadius: 8, padding: '12px 14px',
-      border: `1px solid ${BORDER_LIGHT}`, textAlign: 'center',
-    }}>
-      <div style={{ fontSize: 22, fontWeight: 800, color }}>{value}</div>
-      <div style={{ fontSize: 10, color: TEXT_MUTED, marginTop: 2 }}>{label}</div>
-      <div style={{ fontSize: 9, color: trendColor, fontWeight: 600, marginTop: 4 }}>{trend}</div>
-    </div>
-  );
+function B({ children }: { children: React.ReactNode }) {
+  return <strong style={{ color: C.progress, fontWeight: 700 }}>{children}</strong>;
 }
 
-function PatternRow({ children }: { children: React.ReactNode }) {
+function Insight({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', marginBottom: 8, fontSize: 12, color: TEXT_SECONDARY, lineHeight: 1.6 }}>
-      <span style={{ color: PURPLE, fontSize: 8, marginTop: 5, flexShrink: 0 }}>●</span>
+    <div style={{ display: 'flex', gap: 7, alignItems: 'flex-start', marginBottom: 6, fontSize: 12, color: C.text2, lineHeight: 1.6 }}>
+      <span style={{ color: C.accent, fontSize: 7, marginTop: 6, flexShrink: 0 }}>●</span>
       <div>{children}</div>
     </div>
-  );
-}
-
-function BlueLink({ children }: { children: React.ReactNode }) {
-  return (
-    <span style={{ color: PRIMARY, fontWeight: 600, cursor: 'pointer', textDecoration: 'underline', textDecorationColor: '#93C5FD' }}>
-      {children}
-    </span>
   );
 }
