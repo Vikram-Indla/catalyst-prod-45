@@ -529,10 +529,7 @@ function CommentsTab({ ideaId }: { ideaId: string | null }) {
           <button
             onClick={handlePost}
             disabled={!comment.trim() || addComment.isPending}
-            style={{
-              background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: '6px', padding: '6px 14px', fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-              opacity: !comment.trim() || addComment.isPending ? 0.5 : 1,
-            }}
+            className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50 transition-colors cursor-pointer"
           >
             {addComment.isPending ? 'Posting...' : 'Post Comment'}
           </button>
