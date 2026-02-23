@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useResource, useResourceSummary, useWorkItems, useProjectReleases } from '@/hooks/useResource360';
-import { ArrowLeft } from 'lucide-react';
 import ResourceBanner from '@/components/resource360/ResourceBanner';
 import Toolbar, { R360View, RoleFilter } from '@/components/resource360/Toolbar';
 import TentacleView from '@/components/resource360/TentacleView';
@@ -10,6 +9,7 @@ import ListView from '@/components/resource360/ListView';
 
 import ContextModal from '@/components/resource360/ContextModal';
 import AiIntelligenceOverlay from '@/components/resource360/AiIntelligenceOverlay';
+import '@/components/resource360/r360-tokens.css';
 
 const SkeletonBlock = ({ height = 40 }: { height?: number }) => (
   <div className="r360-skeleton" style={{ height, borderRadius: 6, width: '100%' }} />
@@ -142,30 +142,7 @@ const Resource360Page = () => {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', fontFamily: "'Inter', sans-serif" }}>
-      {/* Back navigation */}
-      <div style={{
-        padding: '10px 20px', display: 'flex', alignItems: 'center', gap: '12px',
-        borderBottom: '1px solid #F1F5F9', background: '#FFFFFF',
-      }}>
-        <button
-          onClick={() => navigate('/project-hub/resources')}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: '6px',
-            fontSize: '12px', fontWeight: 600, color: '#374151',
-            border: '1px solid #E2E8F0', borderRadius: '6px',
-            padding: '6px 12px', background: 'transparent', cursor: 'pointer',
-          }}
-          onMouseEnter={e => { e.currentTarget.style.color = '#2563EB'; e.currentTarget.style.borderColor = '#2563EB'; e.currentTarget.style.background = '#EFF6FF'; }}
-          onMouseLeave={e => { e.currentTarget.style.color = '#374151'; e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.background = 'transparent'; }}
-        >
-          <ArrowLeft size={14} />
-          All Resources
-        </button>
-        <span style={{ fontSize: '11px', fontWeight: 500, color: '#475569' }}>
-          Resources › <strong style={{ color: '#0F172A' }}>{resource?.full_name || `RID ${rid}`}</strong>
-        </span>
-      </div>
+    <div className="r360-root" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', fontFamily: "'Inter', sans-serif" }}>
       {summaryLoading ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 20px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>
           <div className="r360-skeleton" style={{ width: 64, height: 64, borderRadius: '50%' }} />

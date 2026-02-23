@@ -10,12 +10,13 @@ const StatCard = ({ label, value, color }: { label: string; value: number | stri
     tabIndex={0}
     aria-label={`${label}: ${value}`}
     style={{
-      background: '#FFFFFF', border: '1px solid #E2E8F0',
+      background: 'var(--r360-surface, #FFFFFF)', border: '1px solid var(--r360-border, #C5BDB3)',
       borderRadius: 8, padding: '10px 16px', minWidth: 90, textAlign: 'center',
+      boxShadow: '0 1px 3px rgba(0,0,0,.06)',
     }}
   >
-    <div style={{ fontSize: 22, fontWeight: 900, color, lineHeight: 1.1 }}>{value}</div>
-    <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#64748B', marginTop: 4 }}>{label}</div>
+    <div style={{ fontSize: 28, fontWeight: 900, color, lineHeight: 1.1 }}>{value}</div>
+    <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--r360-text-4, #6B6B80)', marginTop: 4 }}>{label}</div>
   </div>
 );
 
@@ -48,18 +49,19 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ resource, summary }) =>
   return (
     <header style={{
       display: 'flex', alignItems: 'center', gap: 20,
-      padding: '16px 20px', background: '#FFFFFF',
-      borderBottom: '1px solid #E2E8F0',
+      padding: '16px 20px', background: 'var(--r360-surface, #FFFFFF)',
+      borderBottom: '1px solid var(--r360-border-light, #D9D2C9)',
+      boxShadow: 'var(--r360-shadow-card, 0 2px 8px rgba(0,0,0,.12))',
       fontFamily: "'Inter', sans-serif",
     }}>
       {/* Avatar */}
       <div style={{ position: 'relative', flexShrink: 0 }}>
         <div style={{
           width: 64, height: 64, borderRadius: '50%',
-          background: 'linear-gradient(135deg, #2563EB, #4F46E5)',
+          background: 'linear-gradient(135deg, #1A1A2E, #2D2D4A)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           color: '#FFFFFF', fontSize: 22, fontWeight: 700,
-          boxShadow: '0 0 0 3px #FFFFFF, 0 0 0 5px #2563EB',
+          boxShadow: '0 0 0 3px #FFFFFF, 0 0 0 5px #1A1A2E',
         }}>
           {initials}
         </div>
@@ -67,18 +69,19 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ resource, summary }) =>
 
       {/* Info */}
       <div style={{ flex: 1 }}>
-        <h1 style={{ fontSize: 18, fontWeight: 700, color: '#0F172A', margin: 0, lineHeight: 1.3 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 900, color: 'var(--r360-text-1, #0A0A0A)', margin: 0, lineHeight: 1.3 }}>
           {resource?.full_name || 'Unknown'}
         </h1>
-        <p style={{ fontSize: 13, fontWeight: 500, color: '#334155', margin: '2px 0 8px 0' }}>
+        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--r360-text-2, #1A1A2E)', margin: '2px 0 8px 0' }}>
           {resource?.job_role || 'No role'}
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {metaPills.map((label, i) => (
             <span key={i} style={{
-              fontSize: 11.5, color: '#475569',
-              background: '#F1F5F9', borderRadius: 4,
-              padding: '3px 8px', fontWeight: 500,
+              fontSize: 11.5, color: 'var(--r360-text-2, #1A1A2E)',
+              background: 'var(--r360-surface, #FFFFFF)', borderRadius: 4,
+              padding: '3px 8px', fontWeight: 600,
+              border: '1px solid var(--r360-border, #C5BDB3)',
             }}>
               {label}
             </span>
@@ -88,10 +91,10 @@ const ResourceBanner: React.FC<ResourceBannerProps> = ({ resource, summary }) =>
 
       {/* Stat Cards */}
       <div style={{ display: 'flex', gap: 8, marginLeft: 'auto', flexShrink: 0 }}>
-        <StatCard label="Total" value={summary?.total_items ?? '–'} color="#2563EB" />
-        <StatCard label="To Do" value={summary?.todo_count ?? '–'} color="#DC2626" />
-        <StatCard label="In Progress" value={summary?.in_progress_count ?? summary?.progress_count ?? '–'} color="#2563EB" />
-        <StatCard label="Done" value={summary?.done_count ?? '–'} color="#059669" />
+        <StatCard label="Total" value={summary?.total_items ?? '–'} color="var(--r360-text-1, #0A0A0A)" />
+        <StatCard label="To Do" value={summary?.todo_count ?? '–'} color="var(--r360-todo, #E23636)" />
+        <StatCard label="In Progress" value={summary?.in_progress_count ?? summary?.progress_count ?? '–'} color="var(--r360-progress, #2563EB)" />
+        <StatCard label="Done" value={summary?.done_count ?? '–'} color="var(--r360-done, #0E8A5F)" />
       </div>
     </header>
   );

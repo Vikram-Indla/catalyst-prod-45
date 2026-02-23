@@ -56,9 +56,9 @@ function FilterDropdown({ label, value, options, onChange }: {
       <button
         onClick={() => setOpen(!open)}
         style={{
-          padding: '5px 12px', fontSize: 11.5, fontWeight: 500,
-          color: '#475569', background: '#FFFFFF',
-          border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
+          padding: '5px 12px', fontSize: 11.5, fontWeight: 600,
+          color: 'var(--r360-text-3, #3D3D56)', background: 'var(--r360-surface, #FFFFFF)',
+          border: '1px solid var(--r360-border, #C5BDB3)', borderRadius: 6, cursor: 'pointer',
           whiteSpace: 'nowrap',
         }}
         aria-label={`${label} filter`}
@@ -102,11 +102,11 @@ const Toolbar: React.FC<ToolbarProps> = ({
   selectedProject = 'all', onProjectChange,
 }) => {
   const tabStyle = (active: boolean): React.CSSProperties => ({
-    padding: '6px 14px', fontSize: 12, fontWeight: active ? 600 : 500,
-    color: active ? '#2563EB' : '#64748B',
-    background: active ? '#FFFFFF' : 'transparent',
+    padding: '6px 14px', fontSize: 12, fontWeight: active ? 700 : 600,
+    color: active ? '#FFFFFF' : 'var(--r360-text-3, #3D3D56)',
+    background: active ? '#1A1A2E' : 'transparent',
     border: 'none', borderRadius: 6, cursor: 'pointer',
-    boxShadow: active ? '0 1px 3px rgba(0,0,0,.1)' : 'none',
+    boxShadow: active ? '0 1px 3px rgba(0,0,0,.15)' : 'none',
     transition: 'all 150ms',
   });
 
@@ -126,8 +126,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
       aria-label="Resource 360 toolbar"
       style={{
         display: 'flex', alignItems: 'center', gap: 12,
-        padding: '8px 20px', background: '#FFFFFF',
-        borderBottom: '1px solid #E2E8F0',
+        padding: '8px 20px', background: 'var(--r360-surface, #FFFFFF)',
+        borderBottom: '1px solid var(--r360-border, #C5BDB3)',
         position: 'sticky', top: 48, zIndex: 80,
         fontFamily: "'Inter', sans-serif",
       }}
@@ -167,9 +167,9 @@ const Toolbar: React.FC<ToolbarProps> = ({
       />
       <button
         style={{
-          padding: '5px 12px', fontSize: 11.5, fontWeight: 500,
-          color: '#475569', background: '#FFFFFF',
-          border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
+          padding: '5px 12px', fontSize: 11.5, fontWeight: 600,
+          color: 'var(--r360-text-3, #3D3D56)', background: 'var(--r360-surface, #FFFFFF)',
+          border: '1px solid var(--r360-border, #C5BDB3)', borderRadius: 6, cursor: 'pointer',
         }}
         aria-label="Hub filter"
       >
@@ -177,9 +177,9 @@ const Toolbar: React.FC<ToolbarProps> = ({
       </button>
       <button
         style={{
-          padding: '5px 12px', fontSize: 11.5, fontWeight: 500,
-          color: '#475569', background: '#FFFFFF',
-          border: '1px solid #E2E8F0', borderRadius: 6, cursor: 'pointer',
+          padding: '5px 12px', fontSize: 11.5, fontWeight: 600,
+          color: 'var(--r360-text-3, #3D3D56)', background: 'var(--r360-surface, #FFFFFF)',
+          border: '1px solid var(--r360-border, #C5BDB3)', borderRadius: 6, cursor: 'pointer',
         }}
         aria-label="Group by toggle"
         onClick={() => onGroupByChange(groupBy === 'status' ? 'hub' : 'status')}
@@ -214,10 +214,11 @@ const Toolbar: React.FC<ToolbarProps> = ({
         onClick={onAiClick}
         aria-label="Open AI Intelligence overlay"
         style={{
-          background: '#FFFFFF', color: '#7C3AED',
-          border: '1.5px solid #DDD6FE', borderRadius: 8,
-          padding: '7px 16px', fontSize: 12, fontWeight: 600,
+          background: 'linear-gradient(135deg, #1A1A2E, #2D2D4A)', color: '#FFFFFF',
+          border: 'none', borderRadius: 8,
+          padding: '7px 16px', fontSize: 12, fontWeight: 700,
           cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6,
+          boxShadow: '0 2px 6px rgba(26,26,46,.3)',
         }}
       >
         <span style={{ fontSize: 11, fontWeight: 800 }}>✦</span>
