@@ -37,7 +37,7 @@ export function Resource360AIPanel({ items, resourceName, isOpen, onClose }: Pro
     let overdueCount = 0;
 
     items.forEach((item) => {
-      const cat = getStatusCategory(item.status);
+      const cat = getStatusCategory(item.status, item.status_category);
       if (cat === 'todo') byStatus.todo++;
       else if (cat === 'progress') byStatus.progress++;
       else byStatus.done++;

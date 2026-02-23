@@ -162,7 +162,7 @@ export function Resource360List({ items, onItemClick }: Props) {
 
             {/* Rows */}
             {!collapsed && hubItems.map((item) => {
-              const cat = getStatusCategory(item.status);
+              const cat = getStatusCategory(item.status, item.status_category);
               const sc = STATUS_COLORS[cat];
               const priColor = PRIORITY_COLORS[item.priority] ?? '#6B7280';
               const priIcon = PRIORITY_ICONS[item.priority] ?? '';

@@ -59189,6 +59189,7 @@ export type Database = {
           resource_name: string | null
           role_on_item: string | null
           status: string | null
+          status_category: string | null
           status_transitions: Json | null
           title: string | null
           total_cycle_days: number | null

@@ -68,7 +68,7 @@ function EventStream({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {items.map((item) => {
-        const cat = getStatusCategory(item.status);
+        const cat = getStatusCategory(item.status, item.status_category);
         const sc = STATUS_COLORS[cat];
         const hubColor = WH_HUB_COLORS[item.hub] ?? '#64748B';
         const hubShort = WH_HUB_SHORT[item.hub] ?? item.hub?.slice(0, 4).toUpperCase();
@@ -193,7 +193,7 @@ function GanttTimeline({
             </div>
 
             {hubItems.map((item) => {
-              const cat = getStatusCategory(item.status);
+              const cat = getStatusCategory(item.status, item.status_category);
               const sc = STATUS_COLORS[cat];
               const startMs = new Date(item.assigned_at).getTime() - minDate.getTime();
               const durationMs = item.age_days * 86400000;
@@ -304,7 +304,7 @@ function MilestoneJournal({
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {monthItems.map((item) => {
-              const cat = getStatusCategory(item.status);
+              const cat = getStatusCategory(item.status, item.status_category);
               const sc = STATUS_COLORS[cat];
               const hubColor = WH_HUB_COLORS[item.hub] ?? '#64748B';
 
