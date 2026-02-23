@@ -20,11 +20,11 @@ interface Props {
 }
 
 const IDEA_TYPES = [
-  { key: 'problem', label: 'Problem', dot: '#EF4444' },
-  { key: 'opportunity', label: 'Opportunity', dot: '#16A34A' },
-  { key: 'feature_request', label: 'Feature', dot: '#2563EB' },
-  { key: 'solution', label: 'Solution', dot: '#7C3AED' },
-  { key: 'improvement', label: 'Improvement', dot: '#D97706' },
+  { key: 'Problem', label: 'Problem', dot: '#EF4444' },
+  { key: 'Opportunity', label: 'Opportunity', dot: '#16A34A' },
+  { key: 'Feature Request', label: 'Feature', dot: '#2563EB' },
+  { key: 'Solution', label: 'Solution', dot: '#7C3AED' },
+  { key: 'Improvement', label: 'Improvement', dot: '#D97706' },
 ];
 
 const PRIORITIES = [
@@ -45,11 +45,11 @@ const DEPARTMENTS = [
 ];
 
 const SOURCES = [
-  { key: 'ministry_directive', label: 'Ministry Directive' },
-  { key: 'internal', label: 'Internal' },
-  { key: 'stakeholder', label: 'Stakeholder' },
-  { key: 'customer_feedback', label: 'Customer Feedback' },
-  { key: 'research', label: 'Research' },
+  { key: 'Ministry Directive', label: 'Ministry Directive' },
+  { key: 'Internal', label: 'Internal' },
+  { key: 'Stakeholder', label: 'Stakeholder' },
+  { key: 'Customer Feedback', label: 'Customer Feedback' },
+  { key: 'Research', label: 'Research' },
 ];
 
 const inputBase: React.CSSProperties = {
@@ -186,15 +186,15 @@ export default function IdeationCreateWizard({ open, onClose }: Props) {
       idea_key: ideaKey,
       title: title.trim(),
       description: desc.trim(),
-      idea_type: ideaType || 'feature_request',
+      idea_type: ideaType || 'Feature Request',
       priority: priority || 'P2',
-      source: source || 'internal',
+      source: source || 'Internal',
       department: department || '',
       category: category || '',
       tags: tags.length > 0 ? tags : null,
       assigned_to: assignee || null,
       submitted_by: user?.id || null,
-      status: 'submitted',
+      status: 'Submitted',
     });
   };
 
