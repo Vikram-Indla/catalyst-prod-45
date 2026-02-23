@@ -1,47 +1,17 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import type { Resource360Item, StatusCategory, RingPeriod } from '@/types/resource360';
-import { getStatusCategory, getStaleIndicator, STATUS_COLORS, WH_HUB_COLORS, WH_HUB_SHORT } from '@/types/resource360';
-import { Resource360CompactNode } from './Resource360CompactNode';
+import type { Resource360Item, StatusCategory } from '@/types/resource360';
+import { getStatusCategory, getStaleIndicator, WH_HUB_COLORS, WH_HUB_SHORT, STATUS_COLORS } from '@/types/resource360';
 
-/* ═══ CONFIG ═══ */
-const MAX_FULL_NODES = 10;
-const MAX_COMPACT_NODES = 20;
+const MAX_PER_PAGE = 8;
+const T = {
+  bg: '#F5F0EB', surface: '#FFFFFF', text1: '#0A0A0A', text2: '#1A1A2E',
+  text3: '#3D3D56', text4: '#6B6B80', border: '#D9D2C9', borderStrong: '#C5BDB3',
+  todo: '#E23636', progress: '#2563EB', done: '#0E8A5F',
+  shadow: '0 2px 8px rgba(0,0,0,.12)', shadowHover: '0 6px 20px rgba(0,0,0,.15)',
+  mono: "'JetBrains Mono','SF Mono',monospace",
+};
 
-/** Build dynamic date periods from actual data */
-function buildPeriods(items: Resource360Item[]): RingPeriod[] {
-  if (items.length === 0) return [];
-
-  const sorted = [...items].sort(
-    (a, b) => new Date(b.assigned_at).getTime() - new Date(a.assigned_at).getTime()
-  );
-
-  const perBucket = Math.ceil(sorted.length / 4);
-  const buckets: Resource360Item[][] = [];
-  for (let i = 0; i < sorted.length; i += perBucket) {
-    buckets.push(sorted.slice(i, i + perBucket));
-  }
-
-  const labels = ['Recent', 'Previous', 'Earlier', 'Oldest'];
-  const fmtDate = (d: string) => {
-    if (!d) return '';
-    const dt = new Date(d);
-    return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  };
-
-  return buckets.map((bucket, idx) => {
-    const newest = bucket[0]?.assigned_at?.slice(0, 10) ?? '';
-    const oldest = bucket[bucket.length - 1]?.assigned_at?.slice(0, 10) ?? '';
-    return {
-      label: labels[idx] ?? `Period ${idx + 1}`,
-      sub: `${fmtDate(oldest)} – ${fmtDate(newest)} · ${bucket.length} items`,
-      startDate: oldest,
-      endDate: newest,
-      items: bucket,
-    };
-  });
-}
-
-interface Resource360RingProps {
+interface Props {
   items: Resource360Item[];
   resourceName: string;
   resourceAvatar: string | null;
@@ -52,406 +22,172 @@ interface Resource360RingProps {
   onItemClick: (item: Resource360Item) => void;
 }
 
-export function Resource360Ring({
-  items, resourceName, resourceAvatar, jobRole, department,
-  statusFilter, onStatusFilterChange, onItemClick,
-}: Resource360RingProps) {
-  const [ringLevel, setRingLevel] = useState(0);
-  const [pageOffset, setPageOffset] = useState(0);
+export function Resource360Ring({ items, resourceName, resourceAvatar, jobRole, department, statusFilter, onStatusFilterChange, onItemClick }: Props) {
+  const [page, setPage] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [dims, setDims] = useState({ w: 960, h: 740 });
+  const [dims, setDims] = useState({ w: 680, h: 640 });
 
   useEffect(() => {
-    const measure = () => {
+    const m = () => {
       if (containerRef.current) {
-        const w = containerRef.current.offsetWidth || 960;
-        setDims({ w, h: Math.max(700, Math.min(w * 0.82, 820)) });
+        const w = Math.min(containerRef.current.offsetWidth * 0.65, 720);
+        setDims({ w, h: Math.max(600, w * 0.9) });
       }
     };
-    measure();
-    window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
+    m(); window.addEventListener('resize', m); return () => window.removeEventListener('resize', m);
   }, []);
 
-  const filtered = useMemo(() =>
-    statusFilter === 'all'
-      ? items
-      : items.filter(t => getStatusCategory(t.status, t.status_category) === statusFilter),
-    [items, statusFilter]
-  );
+  const activeItems = useMemo(() =>
+    items.filter(i => {
+      const cat = getStatusCategory(i.status, i.status_category);
+      if (cat === 'done') return false;
+      if (statusFilter !== 'all' && statusFilter !== 'todo' && statusFilter !== 'progress') return true;
+      if (statusFilter === 'todo' && cat !== 'todo') return false;
+      if (statusFilter === 'progress' && cat !== 'progress') return false;
+      return true;
+    }).sort((a, b) => b.age_days - a.age_days), [items, statusFilter]);
 
-  const periods = useMemo(() => buildPeriods(filtered), [filtered]);
+  const doneItems = useMemo(() =>
+    items.filter(i => getStatusCategory(i.status, i.status_category) === 'done')
+      .sort((a, b) => new Date(b.assigned_at).getTime() - new Date(a.assigned_at).getTime()), [items]);
 
-  useEffect(() => { setPageOffset(0); }, [ringLevel]);
-
-  // Clamp ringLevel if periods shrink (e.g. filter change)
-  const safeLevel = Math.min(ringLevel, Math.max(0, periods.length - 1));
-  useEffect(() => {
-    if (ringLevel !== safeLevel) setRingLevel(safeLevel);
-  }, [safeLevel, ringLevel]);
-
-  const currentPeriod = periods[safeLevel];
-  const allCurrentItems = currentPeriod?.items ?? [];
-  const totalPages = Math.max(1, Math.ceil(allCurrentItems.length / MAX_FULL_NODES));
-  const safePage = pageOffset % totalPages;
-  const pageStart = safePage * MAX_FULL_NODES;
-  const visibleFull = allCurrentItems.slice(pageStart, pageStart + MAX_FULL_NODES);
-
-  const compactItems = useMemo(() => {
-    const acc: Resource360Item[] = [];
-    for (let i = safeLevel + 1; i < periods.length; i++) {
-      acc.push(...(periods[i]?.items ?? []));
-    }
-    return acc.slice(0, MAX_COMPACT_NODES);
-  }, [periods, safeLevel]);
-
-  const canExpand = safeLevel < periods.length - 1;
-  const canCollapse = safeLevel > 0;
+  const totalPages = Math.max(1, Math.ceil(activeItems.length / MAX_PER_PAGE));
+  useEffect(() => { setPage(0); }, [statusFilter]);
+  const visible = activeItems.slice(page * MAX_PER_PAGE, (page + 1) * MAX_PER_PAGE);
 
   const { w: W, h: H } = dims;
-  const cx = W / 2;
-  const cy = H / 2 + 8;
-  const avatarR = 36;
-  const fullR = Math.max(240, Math.min(W, H) / 2 - 90);
-  const compactR = compactItems.length > 0 ? Math.max(100, fullR * 0.45) : 0;
-
+  const cx = W / 2, cy = H / 2;
+  const R = Math.min(W, H) / 2 - 100;
   const initials = resourceName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-
-  const filterOpts: { value: StatusCategory; label: string }[] = [
-    { value: 'all', label: 'All' },
-    { value: 'todo', label: 'To Do' },
-    { value: 'progress', label: 'In Progress' },
-    { value: 'done', label: 'Done' },
-  ];
-
-  const placeOnRing = (idx: number, total: number, radius: number) => {
-    const angle = (-90 + (360 / Math.max(total, 1)) * idx) * (Math.PI / 180);
-    return { x: cx + Math.cos(angle) * radius, y: cy + Math.sin(angle) * radius };
+  const placeOnRing = (i: number, total: number) => {
+    const angle = (-90 + (360 / Math.max(total, 1)) * i) * (Math.PI / 180);
+    return { x: cx + Math.cos(angle) * R, y: cy + Math.sin(angle) * R };
   };
 
+  const todoCount = items.filter(i => getStatusCategory(i.status, i.status_category) === 'todo').length;
+  const progCount = items.filter(i => getStatusCategory(i.status, i.status_category) === 'progress').length;
+
   return (
-    <div className="flex flex-col w-full" ref={containerRef}>
-      {/* Status filter bar */}
-      <div className="flex items-center gap-5 px-4 py-2" style={{ fontFamily: 'Inter, sans-serif', fontSize: 13 }}>
-        {filterOpts.map(opt => (
-          <label key={opt.value} className="flex items-center gap-1.5 cursor-pointer select-none" style={{ color: '#334155', fontWeight: 500 }}>
-            <input
-              type="radio"
-              name="r360-status-filter"
-              checked={statusFilter === opt.value}
-              onChange={() => { onStatusFilterChange(opt.value); setPageOffset(0); }}
-              style={{ width: 14, height: 14, accentColor: '#2563EB', cursor: 'pointer' }}
-            />
-            {opt.label}
-            <span style={{ color: '#94A3B8', fontSize: 11 }}>
-              ({opt.value === 'all' ? items.length :
-                items.filter(t => getStatusCategory(t.status, t.status_category) === opt.value).length})
-            </span>
-          </label>
-        ))}
-      </div>
-
-      {/* Ring canvas */}
-      <div className="relative" style={{ width: W, height: H }}>
-        <div className="relative" style={{ width: W, height: H }}>
-
-          {/* SVG layer */}
-          <svg width={W} height={H} className="absolute inset-0" style={{ pointerEvents: 'none' }}>
-            <circle cx={cx} cy={cy} r={fullR} fill="none" stroke="#E2E8F0" strokeWidth={1} />
-            <circle cx={cx} cy={cy} r={fullR} fill="none" stroke="#F1F5F9" strokeWidth={40} opacity={0.25} />
-
-            {compactR > 0 && compactItems.length > 0 && (
-              <>
-                <circle cx={cx} cy={cy} r={compactR} fill="none" stroke="#E2E8F0" strokeWidth={1} strokeDasharray="4 4" />
-                <circle cx={cx} cy={cy} r={compactR} fill="none" stroke="#F8FAFC" strokeWidth={24} opacity={0.3} />
-              </>
-            )}
-
-            <circle cx={cx} cy={cy} r={avatarR + 10} fill="none" stroke="#DBEAFE" strokeWidth={3} opacity={0.5} />
-
-            {/* Spokes to full nodes */}
-            {visibleFull.map((_, i) => {
-              const { x: nx, y: ny } = placeOnRing(i, visibleFull.length, fullR);
-              const aR = avatarR + 16;
-              const angle = Math.atan2(ny - cy, nx - cx);
+    <div ref={containerRef} style={{ display: 'flex', fontFamily: "'Inter', sans-serif", height: '100%' }}>
+      {/* LEFT: Ring */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+        {/* Filter bar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 16px', borderBottom: `1px solid ${T.border}` }}>
+          <span style={{ fontSize: 11, fontWeight: 800, color: T.text1, letterSpacing: '.04em', textTransform: 'uppercase' }}>Active Work</span>
+          <span style={{ fontSize: 10, color: T.text4 }}>{activeItems.length} items</span>
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
+            {(['all', 'todo', 'progress'] as const).map(f => {
+              const active = statusFilter === f;
+              const label = f === 'all' ? `All (${todoCount + progCount})` : f === 'todo' ? `To Do (${todoCount})` : `In Progress (${progCount})`;
               return (
-                <line key={`s-${i}`}
-                  x1={cx + Math.cos(angle) * aR} y1={cy + Math.sin(angle) * aR}
-                  x2={cx + Math.cos(angle) * (fullR - 18)} y2={cy + Math.sin(angle) * (fullR - 18)}
-                  stroke="#E2E8F0" strokeWidth={1} />
+                <button key={f} onClick={() => onStatusFilterChange(f as StatusCategory)}
+                  style={{
+                    padding: '4px 12px', fontSize: 10, fontWeight: 700, borderRadius: 5, cursor: 'pointer',
+                    background: active ? T.text1 : T.surface, color: active ? '#fff' : T.text3,
+                    border: active ? 'none' : `1px solid ${T.borderStrong}`, transition: 'all .12s',
+                  }}>{label}</button>
               );
             })}
+          </div>
+        </div>
 
-            {/* Spokes to compact nodes */}
-            {compactItems.map((_, i) => {
-              const { x: nx, y: ny } = placeOnRing(i, compactItems.length, compactR);
-              const angle = Math.atan2(ny - cy, nx - cx);
-              return (
-                <line key={`cs-${i}`}
-                  x1={cx + Math.cos(angle) * (avatarR + 16)} y1={cy + Math.sin(angle) * (avatarR + 16)}
-                  x2={cx + Math.cos(angle) * (compactR - 10)} y2={cy + Math.sin(angle) * (compactR - 10)}
-                  stroke="#E2E8F0" strokeWidth={1} strokeDasharray="3 3" />
-              );
+        {/* Ring canvas */}
+        <div style={{ position: 'relative', width: W, height: H, margin: '0 auto' }}>
+          <svg width={W} height={H} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+            <circle cx={cx} cy={cy} r={R} fill="none" stroke={T.border} strokeWidth={1} />
+            {visible.map((_, i) => {
+              const { x, y } = placeOnRing(i, visible.length);
+              const a = Math.atan2(y - cy, x - cx);
+              return <line key={i} x1={cx + Math.cos(a) * 46} y1={cy + Math.sin(a) * 46} x2={cx + Math.cos(a) * (R - 20)} y2={cy + Math.sin(a) * (R - 20)} stroke={T.border} strokeWidth={1} />;
             })}
-
-            {/* Period label at 3 o'clock */}
-            {currentPeriod && visibleFull.length > 0 && (
-              <>
-                <text x={cx + fullR + 26} y={cy - 12} fill="#334155" fontSize={11} fontWeight={700} fontFamily="Inter, sans-serif" letterSpacing="0.04em">
-                  {currentPeriod.label.toUpperCase()}
-                </text>
-                <text x={cx + fullR + 26} y={cy + 4} fill="#94A3B8" fontSize={10} fontFamily="Inter, sans-serif">
-                  {currentPeriod.sub}
-                </text>
-                {totalPages > 1 && (
-                  <text x={cx + fullR + 26} y={cy + 18} fill="#2563EB" fontSize={10} fontWeight={600} fontFamily="Inter, sans-serif">
-                    Page {safePage + 1} of {totalPages}
-                  </text>
-                )}
-              </>
-            )}
-
-            {/* Compact ring label */}
-            {compactR > 0 && compactItems.length > 0 && (
-              <text x={cx + compactR + 14} y={cy - 4} fill="#94A3B8" fontSize={9} fontWeight={600} fontFamily="Inter, sans-serif" letterSpacing="0.06em">
-                OLDER · {compactItems.length}{compactItems.length < periods.slice(safeLevel + 1).reduce((s, p) => s + (p.items?.length ?? 0), 0) ? '+' : ''}
-              </text>
-            )}
           </svg>
 
           {/* Avatar */}
-          <div
-            className="absolute rounded-full overflow-hidden flex items-center justify-center"
-            style={{
-              left: cx - avatarR, top: cy - avatarR,
-              width: avatarR * 2, height: avatarR * 2,
-              background: '#2563EB',
-              boxShadow: '0 0 0 4px #DBEAFE, 0 4px 16px rgba(37,99,235,.12)',
-              zIndex: 10,
-            }}
-          >
-            {resourceAvatar ? (
-              <img src={resourceAvatar} alt={resourceName} className="w-full h-full object-cover"
-                onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-            ) : null}
-            <span
-              className={`absolute inset-0 flex items-center justify-center text-white font-bold ${resourceAvatar ? 'hidden' : ''}`}
-              style={{ fontSize: 18, fontFamily: 'Inter, sans-serif' }}
-            >
-              {initials}
+          <div style={{
+            position: 'absolute', left: cx - 36, top: cy - 36, width: 72, height: 72,
+            borderRadius: '50%', background: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 0 0 4px #DBEAFE', zIndex: 10, overflow: 'hidden',
+          }}>
+            {resourceAvatar ? <img src={resourceAvatar} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} /> : null}
+            <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800, fontSize: 18 }}>
+              {!resourceAvatar && initials}
             </span>
           </div>
-
-          {/* Name below avatar */}
-          <div className="absolute text-center" style={{ left: cx - 100, top: cy + avatarR + 12, width: 200, zIndex: 10 }}>
-            <p style={{ fontSize: 14, fontWeight: 700, color: '#0F172A', fontFamily: 'Inter, sans-serif', margin: 0, lineHeight: 1.3 }}>
-              {resourceName}
-            </p>
-            <p style={{ fontSize: 11, fontWeight: 500, color: '#64748B', fontFamily: 'Inter, sans-serif', margin: '2px 0 0', lineHeight: 1.3 }}>
-              {jobRole} · {department}
-            </p>
+          <div style={{ position: 'absolute', left: cx - 80, top: cy + 44, width: 160, textAlign: 'center', zIndex: 10 }}>
+            <p style={{ fontSize: 13, fontWeight: 700, color: T.text1, margin: 0 }}>{resourceName}</p>
+            <p style={{ fontSize: 10, color: T.text4, margin: 0 }}>{jobRole}</p>
           </div>
 
-          {/* Full detail cards */}
-          {visibleFull.map((item, i) => {
-            const { x, y } = placeOnRing(i, visibleFull.length, fullR);
+          {/* Cards */}
+          {visible.map((item, i) => {
+            const { x, y } = placeOnRing(i, visible.length);
+            const cat = getStatusCategory(item.status, item.status_category);
+            const sc = cat === 'todo' ? T.todo : T.progress;
+            const hc = WH_HUB_COLORS[item.hub] ?? '#64748B';
+            const hs = WH_HUB_SHORT[item.hub] ?? item.hub?.slice(0, 4).toUpperCase();
+            const stale = getStaleIndicator(item.age_days, item.status, item.status_category);
             return (
-              <FullNode key={item.work_item_id} item={item} x={x} y={y} onClick={() => onItemClick(item)} />
+              <div key={item.work_item_id} onClick={() => onItemClick(item)} style={{
+                position: 'absolute', zIndex: 5, cursor: 'pointer', left: x, top: y, transform: 'translate(-50%,-50%)',
+                width: 162, background: T.surface, borderRadius: 8, padding: '8px 10px 8px 13px',
+                border: `1px solid ${stale ? stale.color : T.border}`, borderLeft: `4px solid ${sc}`,
+                boxShadow: T.shadow, transition: 'all .15s',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = T.shadowHover; e.currentTarget.style.zIndex = '20'; e.currentTarget.style.transform = 'translate(-50%,-50%) translateY(-3px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = T.shadow; e.currentTarget.style.zIndex = '5'; e.currentTarget.style.transform = 'translate(-50%,-50%)'; }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 3 }}>
+                  <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.text1 }}>{item.item_key}</span>
+                  <span style={{ fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px', borderRadius: 3, background: hc }}>{hs}</span>
+                </div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: T.text2, lineHeight: 1.3, marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>{item.title}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ fontSize: 9, fontWeight: 700, color: '#fff', background: sc, padding: '1px 6px', borderRadius: 3 }}>
+                    {item.status.length > 14 ? item.status.slice(0, 12) + '…' : item.status}
+                  </span>
+                  <span style={{ fontFamily: T.mono, fontSize: 9, fontWeight: 700, color: item.age_days > 14 ? T.todo : T.text4 }}>{item.age_days}d</span>
+                  {stale && <span title={stale.label} style={{ fontSize: 10 }}>{stale.icon}</span>}
+                </div>
+              </div>
             );
           })}
 
-          {/* Compact pills on inner ring */}
-          {compactItems.map((item, i) => {
-            const { x, y } = placeOnRing(i, compactItems.length, compactR);
-            return (
-              <Resource360CompactNode key={`c-${item.work_item_id}`} item={item} x={x} y={y} onClick={() => onItemClick(item)} />
-            );
-          })}
-
-          {/* Carousel: rotate right — 3 o'clock */}
+          {/* Pagination */}
           {totalPages > 1 && (
-            <button
-              onClick={() => setPageOffset(p => p + 1)}
-              title="Next page"
-              className="absolute flex items-center justify-center rounded-full transition-all"
-              style={{
-                zIndex: 30,
-                left: cx + fullR - 22, top: cy - 22,
-                width: 44, height: 44,
-                background: '#fff', border: '2px solid #2563EB',
-                cursor: 'pointer', fontSize: 18, fontWeight: 700, color: '#2563EB',
-                boxShadow: '0 4px 16px rgba(37,99,235,.12)',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#2563EB'; e.currentTarget.style.color = '#fff'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#2563EB'; }}>
-              ›
-            </button>
-          )}
-
-          {/* Carousel: rotate left — 9 o'clock */}
-          {totalPages > 1 && (
-            <button
-              onClick={() => setPageOffset(p => Math.max(0, p - 1))}
-              title="Previous page"
-              className="absolute flex items-center justify-center rounded-full transition-all"
-              style={{
-                zIndex: 30,
-                left: cx - fullR - 22, top: cy - 22,
-                width: 44, height: 44,
-                background: '#fff', border: '2px solid #2563EB',
-                cursor: 'pointer', fontSize: 18, fontWeight: 700, color: '#2563EB',
-                boxShadow: '0 4px 16px rgba(37,99,235,.12)',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#2563EB'; e.currentTarget.style.color = '#fff'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#2563EB'; }}>
-              ‹
-            </button>
-          )}
-
-          {/* Expand/Collapse level — bottom center */}
-          <div className="absolute flex items-center gap-3" style={{ left: cx - 120, bottom: 12, width: 240, justifyContent: 'center', zIndex: 10 }}>
-            {canCollapse && (
-              <button
-                onClick={() => setRingLevel(l => l - 1)}
-                style={{
-                  padding: '4px 12px', borderRadius: 6,
-                  background: '#fff', border: '1.5px solid #2563EB',
-                  color: '#2563EB', fontSize: 10, fontWeight: 700,
-                  cursor: 'pointer',
-                }}>
-                ← Newer
-              </button>
-            )}
-
-            {/* Level dots */}
-            <div className="flex items-center gap-1.5">
-              {periods.map((_, i) => (
-                <div
-                  key={i}
-                  className="rounded-full transition-all cursor-pointer"
-                  style={{
-                    width: i === safeLevel ? 16 : 6,
-                    height: 6,
-                    background: i === safeLevel ? '#2563EB' : '#CBD5E1',
-                    borderRadius: i === safeLevel ? 3 : '50%',
-                  }}
-                  onClick={() => { setRingLevel(i); setPageOffset(0); }}
-                />
-              ))}
-            </div>
-
-            {canExpand && (
-              <button
-                onClick={() => setRingLevel(l => l + 1)}
-                style={{
-                  padding: '4px 12px', borderRadius: 6,
-                  background: '#fff', border: '1.5px solid #2563EB',
-                  color: '#2563EB', fontSize: 10, fontWeight: 700,
-                  cursor: 'pointer',
-                }}>
-                Older →
-              </button>
-            )}
-          </div>
-
-          {/* Empty state */}
-          {visibleFull.length === 0 && compactItems.length === 0 && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ zIndex: 15 }}>
-              <p style={{ fontSize: 14, fontWeight: 600, color: '#334155' }}>No tickets match</p>
-              <p style={{ fontSize: 12, color: '#94A3B8', marginTop: 4 }}>Try a different filter</p>
+            <div style={{ position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', gap: 8, zIndex: 20 }}>
+              <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} style={{ width: 32, height: 32, borderRadius: 6, background: page === 0 ? T.bg : T.text1, color: page === 0 ? T.text4 : '#fff', border: `1px solid ${T.borderStrong}`, cursor: page === 0 ? 'default' : 'pointer', fontWeight: 700, fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>‹</button>
+              <span style={{ fontSize: 10, fontWeight: 600, color: T.text3 }}>{page + 1}/{totalPages}</span>
+              <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page === totalPages - 1} style={{ width: 32, height: 32, borderRadius: 6, background: page === totalPages - 1 ? T.bg : T.text1, color: page === totalPages - 1 ? T.text4 : '#fff', border: `1px solid ${T.borderStrong}`, cursor: page === totalPages - 1 ? 'default' : 'pointer', fontWeight: 700, fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>›</button>
             </div>
           )}
+          {visible.length === 0 && <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><p style={{ fontSize: 14, fontWeight: 600, color: T.text4 }}>No active items</p></div>}
         </div>
       </div>
-    </div>
-  );
-}
 
-/* ═══ FULL DETAIL NODE — inline ═══ */
-
-function FullNode({ item, x, y, onClick }: {
-  item: Resource360Item; x: number; y: number; onClick: () => void;
-}) {
-  const cat = getStatusCategory(item.status, item.status_category);
-  const sc = STATUS_COLORS[cat];
-  const hubColor = WH_HUB_COLORS[item.hub] ?? '#64748B';
-  const hubShort = WH_HUB_SHORT[item.hub] ?? item.hub?.slice(0, 4).toUpperCase();
-
-  return (
-    <div
-      className="absolute cursor-pointer transition-all"
-      style={{
-        left: x, top: y,
-        transform: 'translate(-50%, -50%)',
-        width: 156, minHeight: 72,
-        background: '#FFFFFF',
-        border: '1px solid #E2E8F0',
-        borderRadius: 10,
-        padding: '8px 10px 8px 13px',
-        boxShadow: '0 2px 6px rgba(0,0,0,.06)',
-        zIndex: 5,
-        fontFamily: 'Inter, sans-serif',
-      }}
-      onClick={onClick}
-      onMouseEnter={e => {
-        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,.1)';
-        e.currentTarget.style.zIndex = '20';
-        e.currentTarget.style.transform = 'translate(-50%, -50%) translateY(-3px)';
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.boxShadow = '0 2px 6px rgba(0,0,0,.06)';
-        e.currentTarget.style.zIndex = '5';
-        e.currentTarget.style.transform = 'translate(-50%, -50%)';
-      }}>
-
-      {/* Left status color bar */}
-      <div
-        className="absolute left-0 top-2 bottom-2 rounded-full"
-        style={{ width: 3, background: sc.dot }}
-      />
-
-      {/* Row 1: Key + Hub */}
-      <div className="flex items-center gap-1.5 mb-1">
-        <span style={{ fontSize: 11, fontWeight: 600, color: '#64748B', fontFamily: "'Inter', monospace" }}>
-          {item.item_key}
-        </span>
-        <span style={{
-          fontSize: 9, fontWeight: 700, letterSpacing: '0.04em',
-          color: hubColor, background: `${hubColor}12`,
-          padding: '1px 5px', borderRadius: 3,
-        }}>
-          {hubShort}
-        </span>
-      </div>
-
-      {/* Row 2: Title */}
-      <div style={{
-        fontSize: 12, fontWeight: 600, color: '#0F172A',
-        lineHeight: 1.35,
-        display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-        overflow: 'hidden', marginBottom: 4,
-      }}>
-        {item.title}
-      </div>
-
-      {/* Row 3: Status pill + date + stale */}
-      <div className="flex items-center gap-1.5">
-        <span style={{
-          display: 'inline-flex', alignItems: 'center', gap: 3,
-          fontSize: 9, fontWeight: 600,
-          color: sc.text, background: sc.bg,
-          padding: '1px 6px', borderRadius: 3,
-        }}>
-          <span style={{ width: 5, height: 5, borderRadius: '50%', background: sc.dot }} />
-          {item.status.length > 14 ? item.status.slice(0, 12) + '…' : item.status}
-        </span>
-        <span style={{ fontSize: 9, color: '#94A3B8' }}>
-          {item.age_days}d
-        </span>
-        {(() => {
-          const stale = getStaleIndicator(item.age_days, item.status, item.status_category);
-          return stale ? <span title={stale.label} style={{ fontSize: 10 }}>{stale.icon}</span> : null;
-        })()}
+      {/* RIGHT: Completed sidebar */}
+      <div style={{ width: 260, borderLeft: `1px solid ${T.border}`, background: T.surface, overflowY: 'auto', flexShrink: 0 }}>
+        <div style={{ padding: '10px 14px', borderBottom: `1px solid ${T.border}`, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ fontSize: 11, fontWeight: 800, color: T.done }}>✓ Completed</span>
+          <span style={{ fontSize: 10, fontWeight: 700, color: T.text4, marginLeft: 'auto' }}>{doneItems.length}</span>
+        </div>
+        {doneItems.map((item, idx) => {
+          const hc = WH_HUB_COLORS[item.hub] ?? '#64748B';
+          const hs = WH_HUB_SHORT[item.hub] ?? item.hub?.slice(0, 4).toUpperCase();
+          return (
+            <div key={item.work_item_id} onClick={() => onItemClick(item)} style={{
+              padding: '8px 12px', cursor: 'pointer', borderBottom: `1px solid ${T.border}`,
+              background: idx % 2 === 0 ? T.surface : '#FAF8F5', transition: 'background .1s',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#EDE7E0'; }} onMouseLeave={e => { e.currentTarget.style.background = idx % 2 === 0 ? T.surface : '#FAF8F5'; }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 2 }}>
+                <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.text3 }}>{item.item_key}</span>
+                <span style={{ fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px', borderRadius: 3, background: hc }}>{hs}</span>
+                <span style={{ fontSize: 9, color: T.text4, marginLeft: 'auto' }}>{item.assigned_at?.slice(5, 10)}</span>
+              </div>
+              <div style={{ fontSize: 11, fontWeight: 500, color: T.text2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</div>
+            </div>
+          );
+        })}
+        {doneItems.length === 0 && <div style={{ padding: 20, textAlign: 'center', fontSize: 11, color: T.text4 }}>No completed items</div>}
       </div>
     </div>
   );
