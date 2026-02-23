@@ -1,9 +1,13 @@
 /**
  * CreateDriveModal — Create Innovation Drive modal
- * Single-page form with emoji picker, status toggle, date picker, stepper
+ * Lucide icon picker, status toggle, date picker, stepper
  */
 import React, { useState, useCallback } from 'react';
-import { X, Minus, Plus, Loader2, CalendarIcon } from 'lucide-react';
+import {
+  X, Minus, Plus, Loader2, CalendarIcon,
+  Building2, Bot, Leaf, Rocket, Lightbulb, Target, BarChart3, Microscope,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { format, addDays } from 'date-fns';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -21,7 +25,16 @@ interface CreateDriveModalProps {
   onClose: () => void;
 }
 
-const EMOJI_OPTIONS = ['🏛️', '🤖', '🌿', '🚀', '💡', '🎯', '📊', '🔬'];
+const ICON_OPTIONS: { name: string; Icon: LucideIcon }[] = [
+  { name: 'Building2', Icon: Building2 },
+  { name: 'Bot', Icon: Bot },
+  { name: 'Leaf', Icon: Leaf },
+  { name: 'Rocket', Icon: Rocket },
+  { name: 'Lightbulb', Icon: Lightbulb },
+  { name: 'Target', Icon: Target },
+  { name: 'BarChart3', Icon: BarChart3 },
+  { name: 'Microscope', Icon: Microscope },
+];
 
 interface FormErrors {
   title?: string;
@@ -36,7 +49,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [emoji, setEmoji] = useState('🏛️');
+  const [selectedIcon, setSelectedIcon] = useState('Building2');
   const [status, setStatus] = useState<'active' | 'draft'>('active');
   const [deadline, setDeadline] = useState<Date>(addDays(new Date(), 30));
   const [targetCount, setTargetCount] = useState(10);
@@ -58,7 +71,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      const fullTitle = `${emoji} ${title.trim()}`;
+      const fullTitle = `[${selectedIcon}] ${title.trim()}`;
       const { error } = await supabase
         .from('ph_innovation_drives')
         .insert({
@@ -97,13 +110,14 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
   if (!open) return null;
 
   const labelStyle: React.CSSProperties = {
-    fontSize: '12px', fontWeight: 500, color: '#64748B',
+    fontSize: '11px', fontWeight: 600, color: '#475569',
     textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px', display: 'block',
+    fontFamily: 'Inter, sans-serif',
   };
   const inputStyle: React.CSSProperties = {
-    width: '100%', border: '1px solid #E2E8F0', borderRadius: '8px',
-    padding: '8px 12px', fontSize: '14px', color: '#0F172A', outline: 'none',
-    fontFamily: 'Inter, sans-serif',
+    width: '100%', border: '1.5px solid #CBD5E1', borderRadius: '8px',
+    padding: '10px 12px', fontSize: '14px', color: '#0F172A', outline: 'none',
+    fontFamily: 'Inter, sans-serif', background: '#FFFFFF',
   };
   const errorStyle: React.CSSProperties = {
     fontSize: '12px', color: '#EF4444', marginTop: '4px',
@@ -122,19 +136,18 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
         width: '640px', maxHeight: '90vh', background: '#FFFFFF',
         borderRadius: '16px', display: 'flex', flexDirection: 'column',
         boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+        padding: '28px',
       }}>
         {/* Header */}
-        <div style={{
-          padding: '24px 24px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#0F172A', margin: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 600, color: '#0F172A', margin: 0, fontFamily: 'Inter, sans-serif' }}>
             Create Innovation Drive
           </h3>
           <button
             onClick={onClose}
             style={{
-              background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8',
-              padding: '4px', borderRadius: '6px',
+              background: 'none', border: 'none', cursor: 'pointer', color: '#64748B',
+              padding: '4px', borderRadius: '6px', display: 'flex',
             }}
           >
             <X size={18} />
@@ -142,7 +155,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
         </div>
 
         {/* Form */}
-        <div style={{ padding: '24px', overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* Title */}
           <div>
             <label style={labelStyle}>Title</label>
@@ -152,7 +165,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               onBlur={() => handleBlur('title')}
-              onFocus={(e) => (e.target.style.borderColor = '#2563EB')}
+              onFocus={(e) => { e.target.style.borderColor = '#2563EB'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
               maxLength={100}
             />
             {touched.title && errors.title && <div style={errorStyle}>{errors.title}</div>}
@@ -164,40 +177,44 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             <textarea
               rows={3}
               style={{
-                ...inputStyle, resize: 'none',
+                ...inputStyle, resize: 'vertical', minHeight: '80px',
                 ...(touched.description && errors.description ? { borderColor: '#EF4444' } : {}),
               }}
               placeholder="Describe the theme and goals of this innovation drive..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               onBlur={() => handleBlur('description')}
-              onFocus={(e) => (e.target.style.borderColor = '#2563EB')}
+              onFocus={(e) => { e.target.style.borderColor = '#2563EB'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)'; }}
               maxLength={500}
             />
             {touched.description && errors.description && <div style={errorStyle}>{errors.description}</div>}
           </div>
 
-          {/* Icon Emoji Picker */}
+          {/* Lucide Icon Picker */}
           <div>
             <label style={labelStyle}>Icon</label>
             <div style={{ display: 'flex', gap: '8px' }}>
-              {EMOJI_OPTIONS.map((em) => (
-                <button
-                  key={em}
-                  type="button"
-                  onClick={() => setEmoji(em)}
-                  style={{
-                    width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '18px', borderRadius: '8px', cursor: 'pointer',
-                    border: emoji === em ? '2px solid #2563EB' : '1px solid #E2E8F0',
-                    background: emoji === em ? '#EFF6FF' : '#FFFFFF',
-                    boxShadow: emoji === em ? '0 0 0 2px rgba(37,99,235,0.2)' : 'none',
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  {em}
-                </button>
-              ))}
+              {ICON_OPTIONS.map(({ name, Icon }) => {
+                const isSelected = selectedIcon === name;
+                return (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => setSelectedIcon(name)}
+                    style={{
+                      width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      borderRadius: '8px', cursor: 'pointer',
+                      border: isSelected ? '1.5px solid #2563EB' : '1.5px solid #E2E8F0',
+                      background: isSelected ? '#EFF6FF' : '#FFFFFF',
+                      transition: 'all 150ms ease',
+                    }}
+                    onMouseEnter={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = '#CBD5E1'; e.currentTarget.style.background = '#F8FAFC'; } }}
+                    onMouseLeave={(e) => { if (!isSelected) { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.background = '#FFFFFF'; } }}
+                  >
+                    <Icon size={20} strokeWidth={1.75} color={isSelected ? '#2563EB' : '#334155'} />
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -207,7 +224,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             <div style={{ display: 'flex', gap: '8px' }}>
               {(['active', 'draft'] as const).map((s) => {
                 const isSelected = status === s;
-                const dotColor = s === 'active' ? '#16A34A' : '#A1A1AA';
+                const isActive = s === 'active';
                 return (
                   <button
                     key={s}
@@ -215,26 +232,35 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     onClick={() => setStatus(s)}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '6px',
-                      padding: '6px 14px', borderRadius: '20px', cursor: 'pointer',
-                      fontSize: '13px', fontWeight: 600,
-                      border: isSelected ? (s === 'active' ? '1px solid #86EFAC' : '1px solid #D4D4D8') : '1px solid #E2E8F0',
-                      background: isSelected ? (s === 'active' ? '#DCFCE7' : '#F4F4F5') : '#FFFFFF',
-                      color: isSelected ? (s === 'active' ? '#15803D' : '#71717A') : '#94A3B8',
-                      transition: 'all 0.15s',
+                      padding: '6px 16px', borderRadius: '20px', cursor: 'pointer',
+                      fontSize: '13px', fontWeight: isSelected ? 600 : 500,
+                      border: isSelected
+                        ? (isActive ? '1.5px solid #16A34A' : '1.5px solid #CBD5E1')
+                        : '1.5px solid #E2E8F0',
+                      background: isSelected
+                        ? (isActive ? '#F0FDF4' : '#F8FAFC')
+                        : '#FFFFFF',
+                      color: isSelected
+                        ? (isActive ? '#15803D' : '#64748B')
+                        : '#94A3B8',
+                      transition: 'all 150ms ease',
+                      fontFamily: 'Inter, sans-serif',
                     }}
                   >
                     <span style={{
                       width: '6px', height: '6px', borderRadius: '50%',
-                      background: isSelected ? dotColor : '#CBD5E1',
+                      background: isSelected
+                        ? (isActive ? '#16A34A' : '#94A3B8')
+                        : '#CBD5E1',
                     }} />
-                    {s === 'active' ? 'Active' : 'Draft'}
+                    {isActive ? 'Active' : 'Draft'}
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Deadline — shadcn Calendar */}
+          {/* Deadline */}
           <div>
             <label style={labelStyle}>Deadline</label>
             <Popover>
@@ -248,8 +274,8 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                     ...(touched.deadline && errors.deadline ? { borderColor: '#EF4444' } : {}),
                   }}
                 >
-                  <CalendarIcon size={14} style={{ color: '#94A3B8', flexShrink: 0 }} />
-                  <span>{format(deadline, 'MMM d, yyyy')}</span>
+                  <CalendarIcon size={16} style={{ color: '#64748B', flexShrink: 0 }} />
+                  <span style={{ fontWeight: 500, color: '#0F172A' }}>{format(deadline, 'MMM d, yyyy')}</span>
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start" style={{ zIndex: 400 }}>
@@ -269,18 +295,23 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
           {/* Target Ideas Stepper */}
           <div>
             <label style={labelStyle}>Target Ideas</label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0' }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center',
+              border: '1.5px solid #CBD5E1', borderRadius: '8px', overflow: 'hidden',
+            }}>
               <button
                 type="button"
                 onClick={() => setTargetCount(Math.max(1, targetCount - 1))}
                 style={{
                   width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  border: '1px solid #E2E8F0', borderRadius: '8px 0 0 8px', background: '#F8FAFC',
-                  cursor: targetCount <= 1 ? 'not-allowed' : 'pointer', color: targetCount <= 1 ? '#CBD5E1' : '#334155',
+                  border: 'none', background: '#FFFFFF',
+                  cursor: targetCount <= 1 ? 'not-allowed' : 'pointer',
+                  color: targetCount <= 1 ? '#CBD5E1' : '#334155',
+                  fontSize: '18px', fontWeight: 500,
                 }}
                 disabled={targetCount <= 1}
               >
-                <Minus size={14} />
+                <Minus size={16} />
               </button>
               <input
                 type="number"
@@ -293,9 +324,11 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                 }}
                 onBlur={() => handleBlur('target_count')}
                 style={{
-                  width: '60px', height: '36px', border: '1px solid #E2E8F0', borderLeft: 'none', borderRight: 'none',
-                  textAlign: 'center', fontSize: '14px', fontWeight: 600, color: '#0F172A', outline: 'none',
-                  fontFamily: "'JetBrains Mono', monospace",
+                  width: '48px', height: '36px',
+                  borderLeft: '1.5px solid #CBD5E1', borderRight: '1.5px solid #CBD5E1',
+                  borderTop: 'none', borderBottom: 'none',
+                  textAlign: 'center', fontSize: '16px', fontWeight: 600, color: '#0F172A', outline: 'none',
+                  fontFamily: 'Inter, sans-serif', background: '#FFFFFF',
                 }}
               />
               <button
@@ -303,12 +336,14 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                 onClick={() => setTargetCount(Math.min(50, targetCount + 1))}
                 style={{
                   width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  border: '1px solid #E2E8F0', borderRadius: '0 8px 8px 0', background: '#F8FAFC',
-                  cursor: targetCount >= 50 ? 'not-allowed' : 'pointer', color: targetCount >= 50 ? '#CBD5E1' : '#334155',
+                  border: 'none', background: '#FFFFFF',
+                  cursor: targetCount >= 50 ? 'not-allowed' : 'pointer',
+                  color: targetCount >= 50 ? '#CBD5E1' : '#334155',
+                  fontSize: '18px', fontWeight: 500,
                 }}
                 disabled={targetCount >= 50}
               >
-                <Plus size={14} />
+                <Plus size={16} />
               </button>
             </div>
             {touched.target_count && errors.target_count && <div style={errorStyle}>{errors.target_count}</div>}
@@ -317,17 +352,19 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
 
         {/* Footer */}
         <div style={{
-          padding: '16px 24px', borderTop: '1px solid #F1F5F9',
+          paddingTop: '20px', borderTop: '1px solid #E2E8F0', marginTop: '24px',
           display: 'flex', justifyContent: 'flex-end', gap: '10px',
         }}>
           <button
             type="button"
             onClick={onClose}
             style={{
-              padding: '8px 16px', fontSize: '13px', fontWeight: 600,
-              color: '#64748B', background: 'transparent', border: 'none',
-              borderRadius: '8px', cursor: 'pointer',
+              padding: '10px 20px', fontSize: '14px', fontWeight: 500,
+              color: '#475569', background: 'transparent', border: 'none',
+              borderRadius: '8px', cursor: 'pointer', fontFamily: 'Inter, sans-serif',
             }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = '#0F172A'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = '#475569'; }}
           >
             Cancel
           </button>
@@ -336,13 +373,17 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             onClick={handleSubmit}
             disabled={!isValid || createMutation.isPending}
             style={{
-              padding: '8px 20px', fontSize: '13px', fontWeight: 600,
-              color: '#FFFFFF', background: (!isValid || createMutation.isPending) ? '#93C5FD' : '#2563EB',
+              padding: '10px 24px', fontSize: '14px', fontWeight: 600,
+              color: '#FFFFFF',
+              background: (!isValid || createMutation.isPending) ? '#93C5FD' : '#2563EB',
               border: 'none', borderRadius: '8px',
               cursor: (!isValid || createMutation.isPending) ? 'not-allowed' : 'pointer',
               display: 'inline-flex', alignItems: 'center', gap: '6px',
-              transition: 'background 0.15s',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+              transition: 'background 150ms ease', fontFamily: 'Inter, sans-serif',
             }}
+            onMouseEnter={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = '#1D4ED8'; }}
+            onMouseLeave={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = '#2563EB'; }}
           >
             {createMutation.isPending && <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />}
             Create Drive
