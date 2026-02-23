@@ -1,7 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import type { Resource360Item, StatusCategory, ViewMode, Quarter } from '@/types/resource360';
+import { getStatusCategory, getStaleIndicator } from '@/types/resource360';
 import { useResource360Items } from './hooks/useResource360Items';
 import { useResource360Summary } from './hooks/useResource360Summary';
 import { Resource360Banner } from './Resource360Banner';
@@ -9,6 +10,7 @@ import { Resource360Toolbar } from './Resource360Toolbar';
 import { Resource360Ring } from './Resource360Ring';
 import { Resource360Chronology } from './Resource360Chronology';
 import { Resource360List } from './Resource360List';
+import { Resource360Board } from './Resource360Board';
 import { Resource360ContextModal } from './Resource360ContextModal';
 import { Resource360AIPanel } from './Resource360AIPanel';
 
@@ -27,27 +29,44 @@ export default function Resource360PageNew() {
   const [selectedItem, setSelectedItem] = useState<Resource360Item | null>(null);
   const [aiOpen, setAIOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [prevQuarterStats, setPrevQuarterStats] = useState<{ label: string; total: number; closureRate: number; avgAge: number } | null>(null);
 
   // Data
   const { data: items = [], isLoading: itemsLoading } = useResource360Items(resourceId);
   const { data: summary, isLoading: summaryLoading } = useResource360Summary(resourceId);
 
+  // Computed stats
+  const staleCount = useMemo(() =>
+    items.filter(i => getStaleIndicator(i.age_days, i.status, i.status_category) !== null).length,
+    [items]
+  );
+
+  const currentClosureRate = useMemo(() => {
+    if (items.length === 0) return 0;
+    return Math.round((items.filter(i => getStatusCategory(i.status, i.status_category) === 'done').length / items.length) * 100);
+  }, [items]);
+
+  const currentAvgAge = useMemo(() => {
+    if (items.length === 0) return 0;
+    return +(items.reduce((s, i) => s + i.age_days, 0) / items.length).toFixed(1);
+  }, [items]);
+
   // Handlers
-  const handleItemClick = useCallback((item: Resource360Item) => {
-    setSelectedItem(item);
-  }, []);
+  const handleItemClick = useCallback((item: Resource360Item) => setSelectedItem(item), []);
+  const handleModalClose = useCallback(() => setSelectedItem(null), []);
+  const handleModalNavigate = useCallback((item: Resource360Item) => setSelectedItem(item), []);
+  const handleFullscreenToggle = useCallback(() => setIsFullscreen(prev => !prev), []);
 
-  const handleModalClose = useCallback(() => {
-    setSelectedItem(null);
-  }, []);
-
-  const handleModalNavigate = useCallback((item: Resource360Item) => {
-    setSelectedItem(item);
-  }, []);
-
-  const handleFullscreenToggle = useCallback(() => {
-    setIsFullscreen((prev) => !prev);
-  }, []);
+  const handleQuarterChange = useCallback((newQuarter: Quarter) => {
+    // Save current stats as previous for comparison
+    setPrevQuarterStats({
+      label: quarter,
+      total: items.length,
+      closureRate: currentClosureRate,
+      avgAge: currentAvgAge,
+    });
+    setQuarter(newQuarter);
+  }, [quarter, items.length, currentClosureRate, currentAvgAge]);
 
   // Resource info
   const resourceName = summary?.name ?? 'Resource';
@@ -62,15 +81,13 @@ export default function Resource360PageNew() {
         <div style={{ textAlign: 'center' }}>
           <p style={{ fontSize: 40, marginBottom: 8 }}>👤</p>
           <p style={{ fontSize: 16, fontWeight: 600, color: '#374151' }}>No resource selected</p>
-          <p style={{ fontSize: 13, color: '#9CA3AF', marginTop: 4 }}>
-            Select a team member to view their 360° workload
-          </p>
+          <p style={{ fontSize: 13, color: '#9CA3AF', marginTop: 4 }}>Select a team member to view their 360° workload</p>
         </div>
       </div>
     );
   }
 
-  // Loading state — only show skeleton while both queries are still fetching
+  // Loading state
   const isInitialLoad = (itemsLoading || summaryLoading) && !items.length && !summary;
   if (isInitialLoad) {
     return (
@@ -94,10 +111,7 @@ export default function Resource360PageNew() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', fontFamily: "'Inter', sans-serif" }}>
       {/* Back navigation */}
       {!isFullscreen && (
-        <div style={{
-          padding: '10px 20px', display: 'flex', alignItems: 'center', gap: 12,
-          borderBottom: '1px solid #F1F5F9', background: '#FFFFFF',
-        }}>
+        <div style={{ padding: '10px 20px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: '1px solid #F1F5F9', background: '#FFFFFF' }}>
           <button
             onClick={() => navigate('/project-hub/resources')}
             style={{
@@ -115,70 +129,96 @@ export default function Resource360PageNew() {
           <span style={{ fontSize: 11, fontWeight: 500, color: '#475569' }}>
             Resources › <strong style={{ color: '#0F172A' }}>{resourceName}</strong>
           </span>
+
+          {/* Stale count badge in header */}
+          {staleCount > 0 && (
+            <div style={{ marginLeft: 'auto', textAlign: 'center', padding: '2px 10px', background: '#FEE2E2', borderRadius: 6, border: '1px solid #FCA5A5' }}>
+              <div style={{ fontSize: 14, fontWeight: 900, color: '#DC2626' }}>{staleCount}</div>
+              <div style={{ fontSize: 8, fontWeight: 700, color: '#DC2626', textTransform: 'uppercase', letterSpacing: '.04em' }}>STALE</div>
+            </div>
+          )}
         </div>
       )}
 
       {/* Banner */}
-      {!isFullscreen && (
-        <Resource360Banner summary={summary ?? null} isLoading={summaryLoading} />
-      )}
+      {!isFullscreen && <Resource360Banner summary={summary ?? null} isLoading={summaryLoading} />}
 
       {/* Toolbar */}
       <Resource360Toolbar
         activeView={activeView}
         onViewChange={setActiveView}
         quarter={quarter}
-        onQuarterChange={setQuarter}
+        onQuarterChange={handleQuarterChange}
         onAIOpen={() => setAIOpen(true)}
         isFullscreen={isFullscreen}
         onFullscreenToggle={handleFullscreenToggle}
       />
 
+      {/* Cross-Quarter Comparison Stripe */}
+      {prevQuarterStats && items.length > 0 && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 14,
+          padding: '6px 20px', background: '#EFF6FF', borderBottom: '1px solid #BFDBFE',
+          fontSize: 11, fontWeight: 600,
+        }}>
+          <span style={{ color: '#2563EB', fontWeight: 700 }}>vs {prevQuarterStats.label}</span>
+          <span style={{ color: '#374151' }}>
+            Items: {items.length}
+            <ComparisonArrow current={items.length} prev={prevQuarterStats.total} />
+          </span>
+          <span style={{ color: '#374151' }}>
+            Closure: {currentClosureRate}%
+            <ComparisonArrow current={currentClosureRate} prev={prevQuarterStats.closureRate} />
+          </span>
+          <span style={{ color: '#374151' }}>
+            Avg Age: {currentAvgAge}d
+            <ComparisonArrow current={currentAvgAge} prev={prevQuarterStats.avgAge} lowerIsBetter />
+          </span>
+          <button onClick={() => setPrevQuarterStats(null)} style={{
+            marginLeft: 'auto', fontSize: 9, color: '#6B7280', background: 'transparent',
+            border: 'none', cursor: 'pointer', textDecoration: 'underline',
+          }}>Dismiss</button>
+        </div>
+      )}
+
       {/* View container */}
       <div style={{ flex: 1, overflow: 'auto' }}>
         {activeView === 'ring' && (
           <Resource360Ring
-            items={items}
-            resourceName={resourceName}
-            resourceAvatar={resourceAvatar}
-            jobRole={jobRole}
-            department={department}
-            statusFilter={statusFilter}
-            onStatusFilterChange={setStatusFilter}
+            items={items} resourceName={resourceName} resourceAvatar={resourceAvatar}
+            jobRole={jobRole} department={department}
+            statusFilter={statusFilter} onStatusFilterChange={setStatusFilter}
             onItemClick={handleItemClick}
           />
         )}
-
-        {activeView === 'chronology' && (
-          <Resource360Chronology items={items} onItemClick={handleItemClick} />
-        )}
-
-        {activeView === 'list' && (
-          <Resource360List items={items} onItemClick={handleItemClick} />
-        )}
+        {activeView === 'chronology' && <Resource360Chronology items={items} onItemClick={handleItemClick} />}
+        {activeView === 'list' && <Resource360List items={items} onItemClick={handleItemClick} />}
+        {activeView === 'board' && <Resource360Board items={items} onItemClick={handleItemClick} />}
       </div>
 
       {/* Context Modal */}
       {selectedItem && (
-        <Resource360ContextModal
-          item={selectedItem}
-          allItems={items}
-          onClose={handleModalClose}
-          onNavigate={handleModalNavigate}
-        />
+        <Resource360ContextModal item={selectedItem} allItems={items} onClose={handleModalClose} onNavigate={handleModalNavigate} />
       )}
 
       {/* AI Intelligence Panel */}
-      <Resource360AIPanel
-        items={items}
-        summary={summary ?? null}
-        resourceName={resourceName}
-        isOpen={aiOpen}
-        onClose={() => setAIOpen(false)}
-      />
+      <Resource360AIPanel items={items} summary={summary ?? null} resourceName={resourceName} isOpen={aiOpen} onClose={() => setAIOpen(false)} />
 
       <style>{skeletonCSS}</style>
     </div>
+  );
+}
+
+function ComparisonArrow({ current, prev, lowerIsBetter }: { current: number; prev: number; lowerIsBetter?: boolean }) {
+  const diff = +(current - prev).toFixed(1);
+  if (diff === 0) return <span style={{ marginLeft: 4, fontSize: 9, color: '#6B7280' }}>→ same</span>;
+  const isUp = diff > 0;
+  const isGood = lowerIsBetter ? !isUp : isUp;
+  const color = isGood ? '#0E8A5F' : '#E23636';
+  return (
+    <span style={{ marginLeft: 4, fontSize: 10, fontWeight: 700, color }}>
+      {isUp ? '↑' : '↓'} {Math.abs(diff)}
+    </span>
   );
 }
 

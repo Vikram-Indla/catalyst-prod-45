@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import type { Resource360Item, StatusCategory, RingPeriod } from '@/types/resource360';
-import { getStatusCategory, STATUS_COLORS, WH_HUB_COLORS, WH_HUB_SHORT } from '@/types/resource360';
+import { getStatusCategory, getStaleIndicator, STATUS_COLORS, WH_HUB_COLORS, WH_HUB_SHORT } from '@/types/resource360';
 import { Resource360CompactNode } from './Resource360CompactNode';
 
 /* ═══ CONFIG ═══ */
@@ -434,7 +434,7 @@ function FullNode({ item, x, y, onClick }: {
         {item.title}
       </div>
 
-      {/* Row 3: Status pill + date */}
+      {/* Row 3: Status pill + date + stale */}
       <div className="flex items-center gap-1.5">
         <span style={{
           display: 'inline-flex', alignItems: 'center', gap: 3,
@@ -446,8 +446,12 @@ function FullNode({ item, x, y, onClick }: {
           {item.status.length > 14 ? item.status.slice(0, 12) + '…' : item.status}
         </span>
         <span style={{ fontSize: 9, color: '#94A3B8' }}>
-          {item.assigned_at?.slice(5, 10)}
+          {item.age_days}d
         </span>
+        {(() => {
+          const stale = getStaleIndicator(item.age_days, item.status, item.status_category);
+          return stale ? <span title={stale.label} style={{ fontSize: 10 }}>{stale.icon}</span> : null;
+        })()}
       </div>
     </div>
   );

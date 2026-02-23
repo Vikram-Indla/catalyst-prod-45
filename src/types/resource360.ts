@@ -495,8 +495,17 @@ export interface Resource360Sibling {
 /** Status filter categories */
 export type StatusCategory = 'all' | 'todo' | 'progress' | 'done';
 
+/** Stale item indicator — returns badge info for items exceeding age thresholds */
+export function getStaleIndicator(ageDays: number, status: string, statusCategory?: string): { icon: string; color: string; label: string } | null {
+  const cat = getStatusCategory(status, statusCategory);
+  if (cat === 'done') return null;
+  if (ageDays > 21) return { icon: '⚠️', color: '#CA8A04', label: 'Critically stale (>21d)' };
+  if (ageDays > 14) return { icon: '🔴', color: '#E23636', label: 'Stale (>14d)' };
+  return null;
+}
+
 /** View modes for the 360° page */
-export type ViewMode = 'ring' | 'chronology' | 'list';
+export type ViewMode = 'ring' | 'chronology' | 'list' | 'board';
 
 /** Quarter selector options */
 export type Quarter = 'Q4-2025' | 'Q1-2026' | 'Q2-2026';

@@ -15,6 +15,7 @@ const VIEW_TABS: { key: ViewMode; label: string }[] = [
   { key: 'ring', label: '360° View' },
   { key: 'chronology', label: 'Chronology' },
   { key: 'list', label: 'List' },
+  { key: 'board', label: 'Board' },
 ];
 
 const QUARTERS: Quarter[] = ['Q4-2025', 'Q1-2026', 'Q2-2026'];
