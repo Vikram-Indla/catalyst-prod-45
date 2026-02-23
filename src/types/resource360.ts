@@ -440,6 +440,7 @@ export interface Resource360Item {
   title: string;
   item_type: string;
   status: string;
+  status_category: string;
   priority: string;
   hub: string;
   item_created_at: string;
@@ -508,18 +509,32 @@ export interface RingPeriod {
   endDate: string;
 }
 
-/** Status-to-category mapping helper */
-export function getStatusCategory(status: string): StatusCategory {
-  const todoStatuses = ['To Do', 'Open', 'Backlog', 'In Requirements', 'Ready for Dev'];
-  const progressStatuses = [
-    'In Progress', 'In Development', 'In Design', 'In QA',
-    'In Review', 'Investigation', 'Fix in Progress',
-  ];
-  const doneStatuses = ['Done', 'Resolved', 'Closed', 'In Beta', 'In Production'];
+/**
+ * Status-to-category mapping helper.
+ * Prefers the Jira status_category field when available,
+ * falls back to string matching on the raw status.
+ */
+export function getStatusCategory(status: string, statusCategory?: string): StatusCategory {
+  // Use Jira status_category directly if provided
+  if (statusCategory) {
+    const cat = statusCategory.toLowerCase().trim();
+    if (cat === 'to do' || cat === 'new') return 'todo';
+    if (cat === 'in progress' || cat === 'in review') return 'progress';
+    if (cat === 'done' || cat === 'complete') return 'done';
+  }
 
-  if (todoStatuses.includes(status)) return 'todo';
-  if (progressStatuses.includes(status)) return 'progress';
-  if (doneStatuses.includes(status)) return 'done';
+  // Fallback: match on raw status string
+  const s = status.toLowerCase().trim();
+  const todoStatuses = ['to do', 'open', 'backlog', 'in requirements', 'ready for dev', 'new'];
+  const progressStatuses = [
+    'in progress', 'in development', 'in design', 'in qa',
+    'in review', 'investigation', 'fix in progress',
+  ];
+  const doneStatuses = ['done', 'resolved', 'closed', 'in beta', 'in production', 'released'];
+
+  if (todoStatuses.includes(s)) return 'todo';
+  if (progressStatuses.includes(s)) return 'progress';
+  if (doneStatuses.includes(s)) return 'done';
   return 'todo';
 }
 

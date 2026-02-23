@@ -8,7 +8,7 @@ interface Props {
 }
 
 export function Resource360ContextLeft({ item, onClose }: Props) {
-  const cat = getStatusCategory(item.status);
+  const cat = getStatusCategory(item.status, item.status_category);
   const sc = STATUS_COLORS[cat];
   const hubColor = WH_HUB_COLORS[item.hub] ?? '#64748B';
 

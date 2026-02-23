@@ -11,7 +11,7 @@ interface Props {
 
 /** Full detail card positioned on the outer ring */
 export function Resource360RingNode({ item, x, y, onClick }: Props) {
-  const cat = getStatusCategory(item.status);
+  const cat = getStatusCategory(item.status, item.status_category);
   const sc = STATUS_COLORS[cat];
   const hubColor = WH_HUB_COLORS[item.hub] ?? '#64748B';
   const hubShort = WH_HUB_SHORT[item.hub] ?? item.hub?.slice(0, 4).toUpperCase();

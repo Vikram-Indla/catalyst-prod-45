@@ -11,7 +11,7 @@ interface Props {
 
 /** Compact pill node positioned on the inner ring */
 export function Resource360CompactNode({ item, x, y, onClick }: Props) {
-  const cat = getStatusCategory(item.status);
+  const cat = getStatusCategory(item.status, item.status_category);
   const sc = STATUS_COLORS[cat];
 
   return (

@@ -67,7 +67,7 @@ export function Resource360Ring({
 
   const filtered = statusFilter === 'all'
     ? items
-    : items.filter((t) => getStatusCategory(t.status) === statusFilter);
+    : items.filter((t) => getStatusCategory(t.status, t.status_category) === statusFilter);
 
   const buckets = bucketItems(filtered);
 
