@@ -171,6 +171,7 @@ export default function Resource360PageNew() {
       {/* AI Intelligence Panel */}
       <Resource360AIPanel
         items={items}
+        summary={summary ?? null}
         resourceName={resourceName}
         isOpen={aiOpen}
         onClose={() => setAIOpen(false)}
