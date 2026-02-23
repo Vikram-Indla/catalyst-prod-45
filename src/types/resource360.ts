@@ -415,3 +415,140 @@ export interface R360TimeLapseResponse {
   totalSteps: number;
   dateRange: { start: string; end: string };
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// R360 V3 — WorkHub-aligned types (from vw_wh_resource_360)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/** Single status transition event */
+export interface StatusTransition {
+  status: string;
+  days: number;
+  changed_at: string;
+}
+
+/** Main data row from vw_wh_resource_360 — one row per work item assigned to a resource */
+export interface Resource360Item {
+  resource_id: string;
+  resource_name: string;
+  resource_email: string;
+  job_role: string;
+  department: string;
+  avatar_url: string | null;
+  work_item_id: string;
+  item_key: string;
+  title: string;
+  item_type: string;
+  status: string;
+  priority: string;
+  hub: string;
+  item_created_at: string;
+  assigned_at: string;
+  role_on_item: string;
+  allocation_percent: number;
+  age_days: number;
+  project_name: string | null;
+  project_key: string | null;
+  release_name: string | null;
+  release_end_date: string | null;
+  release_status: string | null;
+  parent_id: string | null;
+  parent_key: string | null;
+  parent_title: string | null;
+  parent_type: string | null;
+  parent_status: string | null;
+  parent_hub: string | null;
+  assigner_name: string | null;
+  status_transitions: StatusTransition[];
+  total_cycle_days: number;
+}
+
+/** Summary stats from vw_wh_resource_360_summary */
+export interface Resource360Summary {
+  resource_id: string;
+  name: string;
+  email: string;
+  role: string;
+  department: string;
+  avatar_url: string | null;
+  total_items: number;
+  todo_count: number;
+  progress_count: number;
+  done_count: number;
+  hub_count: number;
+  project_count: number;
+}
+
+/** Sibling work item from fn_resource_360_siblings */
+export interface Resource360Sibling {
+  id: string;
+  item_key: string;
+  title: string;
+  item_type: string;
+  status: string;
+  hub: string;
+  assigner_name: string | null;
+  age_days: number;
+}
+
+/** Status filter categories */
+export type StatusCategory = 'all' | 'todo' | 'progress' | 'done';
+
+/** View modes for the 360° page */
+export type ViewMode = 'ring' | 'chronology' | 'list';
+
+/** Quarter selector options */
+export type Quarter = 'Q4-2025' | 'Q1-2026' | 'Q2-2026';
+
+/** Time period bucket for progressive disclosure rings */
+export interface RingPeriod {
+  label: string;
+  sub: string;
+  startDate: string;
+  endDate: string;
+}
+
+/** Status-to-category mapping helper */
+export function getStatusCategory(status: string): StatusCategory {
+  const todoStatuses = ['To Do', 'Open', 'Backlog', 'In Requirements', 'Ready for Dev'];
+  const progressStatuses = [
+    'In Progress', 'In Development', 'In Design', 'In QA',
+    'In Review', 'Investigation', 'Fix in Progress',
+  ];
+  const doneStatuses = ['Done', 'Resolved', 'Closed', 'In Beta', 'In Production'];
+
+  if (todoStatuses.includes(status)) return 'todo';
+  if (progressStatuses.includes(status)) return 'progress';
+  if (doneStatuses.includes(status)) return 'done';
+  return 'todo';
+}
+
+/** Status category color tokens — Catalyst V5 compliant */
+export const STATUS_COLORS: Record<StatusCategory, { bg: string; text: string; border: string; dot: string }> = {
+  all:      { bg: '#F3F4F6', text: '#374151', border: '#D1D5DB', dot: '#6B7280' },
+  todo:     { bg: '#F1F5F9', text: '#64748B', border: '#CBD5E1', dot: '#64748B' },
+  progress: { bg: '#DBEAFE', text: '#2563EB', border: '#93C5FD', dot: '#2563EB' },
+  done:     { bg: '#D1FAE5', text: '#059669', border: '#6EE7B7', dot: '#059669' },
+};
+
+/** Hub color mapping (V3) */
+export const WH_HUB_COLORS: Record<string, string> = {
+  StrategyHub:  '#7C3AED',
+  ProductHub:   '#0D9488',
+  ProjectHub:   '#2563EB',
+  ReleaseHub:   '#D97706',
+  TestHub:      '#DC2626',
+  IncidentHub:  '#EF4444',
+  TaskHub:      '#64748B',
+};
+
+/** Hub short names for badges (V3) */
+export const WH_HUB_SHORT: Record<string, string> = {
+  StrategyHub:  'STRAT',
+  ProductHub:   'PROD',
+  ProjectHub:   'PROJ',
+  ReleaseHub:   'REL',
+  TestHub:      'TEST',
+  IncidentHub:  'INC',
+  TaskHub:      'TASK',
+};
