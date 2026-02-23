@@ -17734,6 +17734,13 @@ export type Database = {
             foreignKeyName: "ph_acceptance_criteria_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_acceptance_criteria_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["epic_id"]
           },
@@ -17800,6 +17807,13 @@ export type Database = {
             columns: ["work_item_id"]
             isOneToOne: false
             referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_activity_log_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
             referencedColumns: ["id"]
           },
           {
@@ -17875,6 +17889,13 @@ export type Database = {
             foreignKeyName: "ph_attachments_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_attachments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["epic_id"]
           },
@@ -17890,6 +17911,187 @@ export type Database = {
             columns: ["work_item_id"]
             isOneToOne: false
             referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_backlog_config: {
+        Row: {
+          created_at: string | null
+          group_by: string | null
+          id: string
+          project_id: string
+          quick_filters: string[] | null
+          show_completed: boolean | null
+          show_empty_groups: boolean | null
+          show_subtasks: boolean | null
+          updated_at: string | null
+          user_id: string
+          visible_columns: string[] | null
+        }
+        Insert: {
+          created_at?: string | null
+          group_by?: string | null
+          id?: string
+          project_id: string
+          quick_filters?: string[] | null
+          show_completed?: boolean | null
+          show_empty_groups?: boolean | null
+          show_subtasks?: boolean | null
+          updated_at?: string | null
+          user_id: string
+          visible_columns?: string[] | null
+        }
+        Update: {
+          created_at?: string | null
+          group_by?: string | null
+          id?: string
+          project_id?: string
+          quick_filters?: string[] | null
+          show_completed?: boolean | null
+          show_empty_groups?: boolean | null
+          show_subtasks?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+          visible_columns?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_backlog_config_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_backlog_config_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_project_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_backlog_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_backlog_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_backlog_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_backlog_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_backlog_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_backlog_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_backlog_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_backlog_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_backlog_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_backlog_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+        ]
+      }
+      ph_board_config: {
+        Row: {
+          color_group: string
+          column_label: string
+          column_order: number
+          created_at: string | null
+          id: string
+          is_visible: boolean | null
+          project_id: string
+          status_key: string
+          updated_at: string | null
+          wip_limit: number | null
+        }
+        Insert: {
+          color_group?: string
+          column_label: string
+          column_order: number
+          created_at?: string | null
+          id?: string
+          is_visible?: boolean | null
+          project_id: string
+          status_key: string
+          updated_at?: string | null
+          wip_limit?: number | null
+        }
+        Update: {
+          color_group?: string
+          column_label?: string
+          column_order?: number
+          created_at?: string | null
+          id?: string
+          is_visible?: boolean | null
+          project_id?: string
+          status_key?: string
+          updated_at?: string | null
+          wip_limit?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_board_config_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_board_config_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_project_list"
             referencedColumns: ["id"]
           },
         ]
@@ -18006,6 +18208,13 @@ export type Database = {
             columns: ["work_item_id"]
             isOneToOne: false
             referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_comments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
             referencedColumns: ["id"]
           },
           {
@@ -18328,6 +18537,13 @@ export type Database = {
             columns: ["related_item_id"]
             isOneToOne: false
             referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_defects_related_item_id_fkey"
+            columns: ["related_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
             referencedColumns: ["id"]
           },
           {
@@ -20777,6 +20993,13 @@ export type Database = {
             foreignKeyName: "ph_issue_links_source_id_fkey"
             columns: ["source_id"]
             isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_issue_links_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["epic_id"]
           },
@@ -20806,6 +21029,13 @@ export type Database = {
             columns: ["target_id"]
             isOneToOne: false
             referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_issue_links_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
             referencedColumns: ["id"]
           },
           {
@@ -21201,6 +21431,136 @@ export type Database = {
           },
         ]
       }
+      ph_list_config: {
+        Row: {
+          column_order: string[] | null
+          created_at: string | null
+          group_by: string | null
+          id: string
+          project_id: string
+          rows_per_page: number | null
+          show_subtasks: boolean | null
+          sort_column: string | null
+          sort_direction: string | null
+          updated_at: string | null
+          user_id: string
+          visible_columns: string[] | null
+        }
+        Insert: {
+          column_order?: string[] | null
+          created_at?: string | null
+          group_by?: string | null
+          id?: string
+          project_id: string
+          rows_per_page?: number | null
+          show_subtasks?: boolean | null
+          sort_column?: string | null
+          sort_direction?: string | null
+          updated_at?: string | null
+          user_id: string
+          visible_columns?: string[] | null
+        }
+        Update: {
+          column_order?: string[] | null
+          created_at?: string | null
+          group_by?: string | null
+          id?: string
+          project_id?: string
+          rows_per_page?: number | null
+          show_subtasks?: boolean | null
+          sort_column?: string | null
+          sort_direction?: string | null
+          updated_at?: string | null
+          user_id?: string
+          visible_columns?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_list_config_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_config_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_project_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "ph_team_workload_view"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "planner_dashboard_team_workload"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "ph_list_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["auth_user_id"]
+          },
+          {
+            foreignKeyName: "ph_list_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "tm_users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_list_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["goal_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["initiative_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["kr_owner_id"]
+          },
+          {
+            foreignKeyName: "ph_list_config_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["theme_owner_id"]
+          },
+        ]
+      }
       ph_list_view_configs: {
         Row: {
           columns: Json
@@ -21557,6 +21917,13 @@ export type Database = {
             foreignKeyName: "wh_resource_assignments_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_resource_assignments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["epic_id"]
           },
@@ -21801,6 +22168,13 @@ export type Database = {
             columns: ["work_item_id"]
             isOneToOne: false
             referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
             referencedColumns: ["id"]
           },
           {
@@ -22291,6 +22665,13 @@ export type Database = {
             foreignKeyName: "ph_watchers_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_watchers_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["epic_id"]
           },
@@ -22343,6 +22724,13 @@ export type Database = {
             columns: ["work_item_id"]
             isOneToOne: false
             referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_components_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
             referencedColumns: ["id"]
           },
           {
@@ -22407,6 +22795,13 @@ export type Database = {
             foreignKeyName: "ph_work_item_labels_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_work_item_labels_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["epic_id"]
           },
@@ -22437,11 +22832,13 @@ export type Database = {
           completed_at: string | null
           created_at: string | null
           cycle_time_days: number | null
+          deleted_at: string | null
           department: string | null
           depth: number | null
           description: string | null
           due_date: string | null
           environment: string | null
+          estimate: number | null
           estimated_hours: number | null
           flag_reason: string | null
           hierarchy_path: string[] | null
@@ -22458,6 +22855,7 @@ export type Database = {
           jira_status: string | null
           jira_story_points: number | null
           jira_url: string | null
+          labels: string[] | null
           last_synced_at: string | null
           on_hold_reason: string | null
           parent_id: string | null
@@ -22496,11 +22894,13 @@ export type Database = {
           completed_at?: string | null
           created_at?: string | null
           cycle_time_days?: number | null
+          deleted_at?: string | null
           department?: string | null
           depth?: number | null
           description?: string | null
           due_date?: string | null
           environment?: string | null
+          estimate?: number | null
           estimated_hours?: number | null
           flag_reason?: string | null
           hierarchy_path?: string[] | null
@@ -22517,6 +22917,7 @@ export type Database = {
           jira_status?: string | null
           jira_story_points?: number | null
           jira_url?: string | null
+          labels?: string[] | null
           last_synced_at?: string | null
           on_hold_reason?: string | null
           parent_id?: string | null
@@ -22555,11 +22956,13 @@ export type Database = {
           completed_at?: string | null
           created_at?: string | null
           cycle_time_days?: number | null
+          deleted_at?: string | null
           department?: string | null
           depth?: number | null
           description?: string | null
           due_date?: string | null
           environment?: string | null
+          estimate?: number | null
           estimated_hours?: number | null
           flag_reason?: string | null
           hierarchy_path?: string[] | null
@@ -22576,6 +22979,7 @@ export type Database = {
           jira_status?: string | null
           jira_story_points?: number | null
           jira_url?: string | null
+          labels?: string[] | null
           last_synced_at?: string | null
           on_hold_reason?: string | null
           parent_id?: string | null
@@ -22645,6 +23049,13 @@ export type Database = {
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
             referencedColumns: ["id"]
           },
           {
@@ -54578,6 +54989,35 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_board_column_counts_view: {
+        Row: {
+          color_group: string | null
+          column_label: string | null
+          column_order: number | null
+          is_visible: boolean | null
+          item_count: number | null
+          project_id: string | null
+          status_key: string | null
+          wip_limit: number | null
+          wip_status: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_board_config_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_board_config_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "v_project_list"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ph_exceptions: {
         Row: {
           effective_due_date: string | null
@@ -55102,6 +55542,13 @@ export type Database = {
             foreignKeyName: "ph_status_transitions_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_status_transitions_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["epic_id"]
           },
@@ -55190,6 +55637,116 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "ph_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_work_items_full_view: {
+        Row: {
+          assignee_avatar: string | null
+          assignee_id: string | null
+          assignee_name: string | null
+          backlog_order: number | null
+          created_at: string | null
+          cycle_time_days: number | null
+          days_in_status: number | null
+          days_overdue: number | null
+          deleted_at: string | null
+          department: string | null
+          description: string | null
+          due_date: string | null
+          environment: string | null
+          estimate: number | null
+          flag_reason: string | null
+          id: string | null
+          is_flagged: boolean | null
+          is_overdue: boolean | null
+          item_key: string | null
+          item_type: string | null
+          labels: string[] | null
+          on_hold_reason: string | null
+          parent_id: string | null
+          parent_key: string | null
+          parent_title: string | null
+          priority: string | null
+          project_id: string | null
+          release_id: string | null
+          release_name: string | null
+          release_status: string | null
+          reporter_id: string | null
+          reporter_name: string | null
+          resolved_at: string | null
+          security_level: string | null
+          sort_order: number | null
+          status: string | null
+          status_changed_at: string | null
+          sub_issue_count: number | null
+          team: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "ph_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "ph_overdue_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "vw_chain_intelligence"
+            referencedColumns: ["epic_id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "vw_epic_stories"
+            referencedColumns: ["story_id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_work_items_full"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "ph_releases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "vw_ph_release_progress"
             referencedColumns: ["id"]
           },
         ]
@@ -58324,6 +58881,13 @@ export type Database = {
             foreignKeyName: "wh_work_items_parent_id_fkey"
             columns: ["epic_id"]
             isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
             referencedRelation: "vw_chain_intelligence"
             referencedColumns: ["epic_id"]
           },
@@ -58520,6 +59084,13 @@ export type Database = {
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "ph_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wh_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "ph_work_items_full_view"
             referencedColumns: ["id"]
           },
           {
