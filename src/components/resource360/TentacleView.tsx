@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
-import { HUB_COLORS, HUB_SHORT, WIT_STYLES } from '@/constants/resource360';
-import { getStatusCategory, SC_COLORS, type StatusCategory } from '@/utils/statusCategory';
+import { HUB_COLORS, HUB_SHORT } from '@/constants/resource360';
+import { getStatusCategory, type StatusCategory } from '@/utils/statusCategory';
 import type { RoleFilter } from './Toolbar';
 
 interface TentacleViewProps {
@@ -10,308 +10,365 @@ interface TentacleViewProps {
   onItemClick: (item: any) => void;
 }
 
-const NODE_W = 185;
-const ITEMS_PER_RING = 8;
-const FIRST_RING_RADIUS = 200;
-const RING_GAP = 130;
+const MAX_PER_PAGE = 8;
 
-interface NodePosition { x: number; y: number; item: any; }
-
-function deriveHub(item: any): string {
-  if (item.source_hub && item.source_hub !== 'ProjectHub') return item.source_hub;
-  const type = (item.work_item_type || '').toLowerCase();
-  if (['test case', 'test plan'].includes(type)) return 'TestHub';
-  if (['incident'].includes(type)) return 'IncidentHub';
-  if (['task'].includes(type)) return 'TaskHub';
-  return item.source_hub || 'ProjectHub';
-}
-
-function calculateNodePositions(items: any[], canvasW: number, canvasH: number): NodePosition[] {
-  const cx = canvasW / 2;
-  const cy = canvasH / 2;
-
-  const todoItems = items.filter(i => getStatusCategory(i.status_category || i.status) === 'todo');
-  const progressItems = items.filter(i => getStatusCategory(i.status_category || i.status) === 'progress');
-  const doneItems = items.filter(i => getStatusCategory(i.status_category || i.status) === 'done');
-
-  const zones = [
-    { items: todoItems,     startDeg: 126, endDeg: 234,  label: 'TO DO' },
-    { items: progressItems, startDeg: 306, endDeg: 414,  label: 'IN PROGRESS' },
-    { items: doneItems,     startDeg: 54,  endDeg: 126,  label: 'DONE' },
-  ];
-
-  const positions: NodePosition[] = [];
-
-  zones.forEach(zone => {
-    const count = zone.items.length;
-    if (count === 0) return;
-
-    const rings = Math.ceil(count / ITEMS_PER_RING);
-    let itemIndex = 0;
-
-    for (let ring = 0; ring < rings; ring++) {
-      const radius = FIRST_RING_RADIUS + (ring * RING_GAP);
-      const itemsThisRing = Math.min(ITEMS_PER_RING, count - itemIndex);
-      const angleSpan = zone.endDeg - zone.startDeg;
-      const angleStep = angleSpan / (itemsThisRing + 1);
-
-      for (let j = 0; j < itemsThisRing; j++) {
-        const angleDeg = zone.startDeg + angleStep * (j + 1);
-        const angleRad = (angleDeg * Math.PI) / 180;
-        const x = cx + Math.cos(angleRad) * radius;
-        const y = cy + Math.sin(angleRad) * radius;
-
-        const clampedX = Math.max(NODE_W / 2 + 10, Math.min(canvasW - NODE_W / 2 - 10, x));
-        const clampedY = Math.max(70, Math.min(canvasH - 70, y));
-
-        positions.push({ x: clampedX, y: clampedY, item: zone.items[itemIndex] });
-        itemIndex++;
-      }
-    }
-  });
-
-  return positions;
-}
-
-const ageColor = (days: number | null | undefined): string => {
-  if (days == null) return '#64748B';
-  if (days > 14) return '#DC2626';
-  if (days > 7) return '#D97706';
-  return '#64748B';
+// Ring-fenced tokens
+const T = {
+  bg: '#F5F0EB', surface: '#FFFFFF', text1: '#0A0A0A', text2: '#1A1A2E',
+  text3: '#3D3D56', text4: '#6B6B80', border: '#D9D2C9', borderStrong: '#C5BDB3',
+  todo: '#E23636', progress: '#2563EB', done: '#0E8A5F',
+  shadow: '0 2px 8px rgba(0,0,0,.12)', shadowHover: '0 6px 20px rgba(0,0,0,.15)',
+  mono: "'JetBrains Mono', 'SF Mono', monospace",
 };
 
+type ActiveFilter = 'all' | 'todo' | 'progress';
+
 const TentacleView: React.FC<TentacleViewProps> = ({ resource, items, roleFilter, onItemClick }) => {
+  const [page, setPage] = useState(0);
+  const [statusFilter, setStatusFilter] = useState<ActiveFilter>('all');
   const containerRef = useRef<HTMLDivElement>(null);
-  const [dims, setDims] = useState({ w: 1200, h: 700 });
-  const [pulseCount, setPulseCount] = useState(0);
+  const [dims, setDims] = useState({ w: 700, h: 680 });
 
   useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const obs = new ResizeObserver(entries => {
-      const { width, height } = entries[0].contentRect;
-      if (width > 0 && height > 0) setDims({ w: width, h: height });
-    });
-    obs.observe(el);
-    return () => obs.disconnect();
+    const measure = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const w = Math.min(rect.width * 0.65, 720);
+        setDims({ w, h: Math.max(640, w * 0.95) });
+      }
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
   }, []);
 
-  useEffect(() => {
-    if (pulseCount >= 3) return;
-    const timer = setTimeout(() => setPulseCount(c => c + 1), 1500);
-    return () => clearTimeout(timer);
-  }, [pulseCount]);
+  // Split: active vs done
+  const activeItems = useMemo(() =>
+    items.filter(i => {
+      const cat = getStatusCategory(i.status_category || i.status);
+      if (statusFilter !== 'all' && cat !== statusFilter) return false;
+      return cat !== 'done';
+    }).sort((a: any, b: any) => (b.age_days ?? 0) - (a.age_days ?? 0)),
+    [items, statusFilter]
+  );
 
-  // Enrich items with computed status category + age + hub
-  const enriched = useMemo(() => {
-    return items.map(it => {
-      const sc = getStatusCategory(it.status_category || it.status);
-      const createdAt = it.assigned_date || it.jira_created_at;
-      let ageDays: number | null = null;
-      if (createdAt) {
-        ageDays = Math.floor((Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24));
-      }
-      return { ...it, _sc: sc, age_days: it.age_days ?? ageDays, _hub: deriveHub(it) };
-    });
-  }, [items]);
+  const doneItems = useMemo(() =>
+    items.filter(i => getStatusCategory(i.status_category || i.status) === 'done')
+      .sort((a: any, b: any) => new Date(b.assigned_at || 0).getTime() - new Date(a.assigned_at || 0).getTime()),
+    [items]
+  );
 
-  const filtered = useMemo(() => {
-    if (roleFilter === 'all') return enriched;
-    return enriched.filter(i => i.resource_role === roleFilter);
-  }, [enriched, roleFilter]);
+  // Pagination for ring
+  const totalPages = Math.max(1, Math.ceil(activeItems.length / MAX_PER_PAGE));
+  useEffect(() => { setPage(0); }, [statusFilter]);
+  const visibleItems = activeItems.slice(page * MAX_PER_PAGE, (page + 1) * MAX_PER_PAGE);
 
-  const cx = dims.w / 2;
-  const cy = dims.h / 2;
-  const positions = useMemo(() => calculateNodePositions(filtered, dims.w, dims.h), [filtered, dims.w, dims.h]);
+  // Geometry
+  const { w: W, h: H } = dims;
+  const cx = W / 2;
+  const cy = H / 2;
+  const R = Math.min(W, H) / 2 - 100;
 
-  const initials = resource?.initials || resource?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) || '??';
+  const resourceName = resource?.full_name || 'Unknown';
+  const jobRole = resource?.job_role || '';
+  const initials = resourceName.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase();
 
-  if (filtered.length === 0) {
-    return (
-      <div ref={containerRef} style={{
-        position: 'relative', width: '100%', minHeight: 500, height: 'calc(100vh - 280px)',
-        background: '#F8FAFC', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        fontFamily: "'Inter', sans-serif",
-      }}>
-        <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-          <span style={{ fontSize: 28, color: '#94A3B8' }}>○</span>
-        </div>
-        <div style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>
-          {roleFilter !== 'all' ? 'No items match role filter' : 'No work items assigned yet'}
-        </div>
-        <div style={{ fontSize: 12, color: '#64748B' }}>
-          {roleFilter !== 'all' ? 'Try switching to "All" to see all items' : 'Items from across 7 hubs will appear here as they\'re assigned'}
-        </div>
-      </div>
-    );
-  }
+  const placeOnRing = (i: number, total: number) => {
+    const angle = (-90 + (360 / Math.max(total, 1)) * i) * (Math.PI / 180);
+    return { x: cx + Math.cos(angle) * R, y: cy + Math.sin(angle) * R };
+  };
+
+  const todoCount = items.filter(i => getStatusCategory(i.status_category || i.status) === 'todo').length;
+  const progCount = items.filter(i => getStatusCategory(i.status_category || i.status) === 'progress').length;
 
   return (
-    <div ref={containerRef} style={{
-      position: 'relative', width: '100%', minHeight: 500, height: 'calc(100vh - 280px)',
-      background: '#F8FAFC', overflow: 'auto', fontFamily: "'Inter', sans-serif",
-    }}>
-      {/* Zone labels */}
-      <div style={{ position: 'absolute', left: 24, top: '50%', transform: 'translateY(-50%)', fontSize: 10.5, fontWeight: 800, letterSpacing: '0.1em', color: '#94A3B8', textTransform: 'uppercase', zIndex: 2 }}>TO DO</div>
-      <div style={{ position: 'absolute', right: 24, top: '22%', fontSize: 10.5, fontWeight: 800, letterSpacing: '0.1em', color: '#94A3B8', textTransform: 'uppercase', zIndex: 2 }}>IN PROGRESS</div>
-      <div style={{ position: 'absolute', right: 24, bottom: '22%', fontSize: 10.5, fontWeight: 800, letterSpacing: '0.1em', color: '#94A3B8', textTransform: 'uppercase', zIndex: 2 }}>DONE</div>
+    <div ref={containerRef} style={{ display: 'flex', height: '100%', width: '100%', overflow: 'hidden' }}>
 
-      {/* SVG bezier lines */}
-      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 1 }}>
-        {positions.map((pos, i) => {
-          const midX = (cx + pos.x) / 2;
-          const sc = pos.item._sc as StatusCategory;
-          const lineColor = sc === 'todo' ? '#FCA5A5' : sc === 'progress' ? '#93C5FD' : '#6EE7B7';
-          const isDashed = pos.item.resource_role === 'reported';
-          return (
-            <path
-              key={pos.item.id || i}
-              d={`M ${cx} ${cy} Q ${midX} ${cy}, ${pos.x} ${pos.y}`}
-              fill="none"
-              stroke={lineColor}
-              strokeWidth={1.5}
-              strokeDasharray={isDashed ? '6 4' : 'none'}
-              opacity={0.7}
-            />
-          );
-        })}
-      </svg>
+      {/* ═══ LEFT: Ring Area ═══ */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        {/* Filter bar */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '10px 16px', borderBottom: `1px solid ${T.border}`,
+        }}>
+          <span style={{ fontSize: 11, fontWeight: 800, color: T.text1, letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>
+            ACTIVE WORK
+          </span>
+          <span style={{ fontSize: 10, fontWeight: 600, color: T.text4, marginRight: 8 }}>
+            {activeItems.length} items
+          </span>
+          <div style={{ width: 1, height: 18, background: T.borderStrong }} />
 
-      {/* Center avatar */}
-      <div
-        tabIndex={0}
-        aria-label={`Center avatar for ${resource?.full_name || 'resource'}`}
-        style={{
-          position: 'absolute',
-          left: cx - 36, top: cy - 36,
-          width: 72, height: 72, borderRadius: '50%',
-          background: 'linear-gradient(135deg, #2563EB, #4F46E5)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#FFFFFF', fontSize: 24, fontWeight: 700,
-          zIndex: 10,
-          animation: pulseCount < 3 ? 'r360pulse 1.5s ease-in-out' : 'none',
-          boxShadow: '0 0 0 4px #FFFFFF, 0 0 0 6px #2563EB, 0 4px 16px rgba(37,99,235,.25)',
-        }}
-      >
-        {initials}
-      </div>
+          {(['all', 'todo', 'progress'] as ActiveFilter[]).map(f => {
+            const active = statusFilter === f;
+            const label = f === 'all' ? `All (${todoCount + progCount})` :
+              f === 'todo' ? `To Do (${todoCount})` : `In Progress (${progCount})`;
+            return (
+              <button key={f} onClick={() => setStatusFilter(f)}
+                style={{
+                  padding: '4px 12px', fontSize: 10, fontWeight: 700,
+                  borderRadius: 5, cursor: 'pointer', transition: 'all .12s',
+                  background: active ? T.text1 : T.surface,
+                  color: active ? '#fff' : T.text3,
+                  border: active ? 'none' : `1px solid ${T.borderStrong}`,
+                }}>
+                {label}
+              </button>
+            );
+          })}
+        </div>
 
-      {/* Ticket node cards */}
-      {positions.map((pos, i) => {
-        const it = pos.item;
-        const sc = it._sc as StatusCategory;
-        const colors = SC_COLORS[sc];
-        const witStyle = WIT_STYLES[it.work_item_type] || { bg: '#F1F5F9', color: '#334155' };
-        const hub = it._hub;
-        const hubColor = HUB_COLORS[hub] || '#64748B';
-        const hubShort = HUB_SHORT[hub] || '';
-        const isReported = it.resource_role === 'reported';
+        {/* Ring canvas */}
+        <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+          {/* SVG rings and spokes */}
+          <svg width={W} height={H} style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}>
+            {/* Outer ring band */}
+            <circle cx={cx} cy={cy} r={R} fill="none" stroke={T.border} strokeWidth={1.5} opacity={0.5} />
+            <circle cx={cx} cy={cy} r={R + 60} fill="none" stroke={T.border} strokeWidth={0.5} opacity={0.2} />
 
-        return (
-          <div
-            key={it.id || i}
-            tabIndex={0}
-            role="button"
-            aria-label={`Work item ${it.item_key}: ${it.title}`}
-            onClick={() => onItemClick(it)}
-            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onItemClick(it); } }}
-            style={{
-              position: 'absolute',
-              left: pos.x - NODE_W / 2,
-              top: pos.y - 60,
-              width: NODE_W,
-              background: '#FFFFFF',
-              borderRadius: 8,
-              borderLeft: `3.5px ${isReported ? 'dashed' : 'solid'} ${colors.dot}`,
-              boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-              padding: '8px 10px',
-              cursor: 'pointer',
-              zIndex: 5,
-              animation: `nodeAppear 300ms ease-out ${i * 40}ms both`,
-              transition: 'box-shadow 150ms, transform 150ms',
-              fontFamily: "'Inter', sans-serif",
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.12)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.06)'; }}
-          >
-            {/* Row 1: Key + Type badge + Hub badge */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
-              <span style={{ fontSize: 10, fontWeight: 800, fontFamily: 'monospace', color: '#0F172A' }}>
-                {it.item_key}
-              </span>
-              <span style={{
-                fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3,
-                background: witStyle.bg, color: witStyle.color,
-              }}>
-                {it.work_item_type}
-              </span>
-              <span style={{
-                fontSize: 8.5, fontWeight: 700, padding: '1px 5px', borderRadius: 3,
-                background: hubColor, color: '#FFFFFF', marginLeft: 'auto',
-              }}>
-                {hubShort}
-              </span>
-            </div>
+            {/* Status arc: todo portion */}
+            {activeItems.length > 0 && (() => {
+              const todoPct = activeItems.filter(i => getStatusCategory(i.status_category || i.status) === 'todo').length / activeItems.length;
+              const circumference = 2 * Math.PI * R;
+              return (
+                <>
+                  <circle cx={cx} cy={cy} r={R} fill="none" stroke={T.todo} strokeWidth={3}
+                    strokeDasharray={`${todoPct * circumference} ${circumference}`}
+                    strokeDashoffset={circumference * 0.25} opacity={0.4} />
+                  <circle cx={cx} cy={cy} r={R} fill="none" stroke={T.progress} strokeWidth={3}
+                    strokeDasharray={`${(1 - todoPct) * circumference} ${circumference}`}
+                    strokeDashoffset={circumference * 0.25 - todoPct * circumference} opacity={0.4} />
+                </>
+              );
+            })()}
 
-            {/* Row 2: Title (2-line clamp) */}
-            <div style={{
-              fontSize: 12, fontWeight: 600, color: '#0F172A',
-              lineHeight: 1.3,
-              overflow: 'hidden', display: '-webkit-box',
-              WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-              marginBottom: 6,
-            }}>
-              {it.title}
-            </div>
+            {/* Spokes */}
+            {visibleItems.map((_: any, i: number) => {
+              const { x, y } = placeOnRing(i, visibleItems.length);
+              const angle = Math.atan2(y - cy, x - cx);
+              return (
+                <line key={i} x1={cx + Math.cos(angle) * 44} y1={cy + Math.sin(angle) * 44}
+                  x2={cx + Math.cos(angle) * (R - 10)} y2={cy + Math.sin(angle) * (R - 10)}
+                  stroke={T.border} strokeWidth={1} opacity={0.3} />
+              );
+            })}
+          </svg>
 
-            {/* Row 3: Status pill + Age + Role circle */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', gap: 3,
-                fontSize: 9.5, fontWeight: 600, padding: '2px 7px', borderRadius: 10,
-                background: colors.bg, color: colors.text,
-              }}>
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: colors.dot }} />
-                {it.status}
-              </span>
+          {/* Center avatar */}
+          <div style={{
+            position: 'absolute', left: cx, top: cy, transform: 'translate(-50%, -50%)',
+            width: 80, height: 80, borderRadius: '50%',
+            background: 'linear-gradient(135deg, #1A1A2E, #2D2D4A)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#fff', fontSize: 24, fontWeight: 800, zIndex: 10,
+            boxShadow: '0 0 0 4px #FFFFFF, 0 0 0 6px #1A1A2E, 0 4px 16px rgba(0,0,0,.2)',
+            overflow: 'hidden',
+          }}>
+            {!resource?.avatar_url && initials}
+          </div>
 
-              {/* Age badge */}
-              <span style={{
-                fontSize: 10, fontWeight: 600, marginLeft: 'auto',
-                color: ageColor(it.age_days),
-              }}>
-                {it.age_days != null ? `${it.age_days}d` : '—'}
-              </span>
+          {/* Name + role below avatar */}
+          <div style={{
+            position: 'absolute', left: cx, top: cy + 56,
+            transform: 'translateX(-50%)', textAlign: 'center', zIndex: 10,
+          }}>
+            <p style={{ fontSize: 13, fontWeight: 800, color: T.text1, margin: 0 }}>{resourceName}</p>
+            <p style={{ fontSize: 10, fontWeight: 600, color: T.text4, margin: 0 }}>{jobRole}</p>
+          </div>
 
-              {/* Role indicator: solid = assigned, outline = reported. Color from status category */}
-              <span style={{
-                width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
-                background: isReported ? 'transparent' : colors.dot,
-                border: isReported ? `1.5px solid ${colors.dot}` : 'none',
-              }} />
-            </div>
+          {/* Item cards on ring */}
+          {visibleItems.map((item: any, i: number) => {
+            const { x, y } = placeOnRing(i, visibleItems.length);
+            const cat = getStatusCategory(item.status_category || item.status);
+            const statusColor = cat === 'todo' ? T.todo : T.progress;
+            const hubColor = HUB_COLORS[item.hub || item.source_hub] ?? '#64748B';
+            const hub = item.hub || item.source_hub || 'ProjectHub';
+            const key = item.item_key || item.key || '—';
+            const title = item.title || '';
+            const status = item.status || '';
+            const ageDays = item.age_days ?? 0;
 
-            {/* Row 4: Parent chain */}
-            {it.parent_item_key && (
-              <div style={{ fontSize: 9, color: '#94A3B8', marginTop: 4, fontFamily: 'monospace' }}>
-                ↳ {it.parent_item_key}
+            return (
+              <div key={item.id || i} onClick={() => onItemClick(item)}
+                style={{
+                  position: 'absolute', zIndex: 5, cursor: 'pointer',
+                  left: x, top: y, transform: 'translate(-50%, -50%)',
+                  width: 162, background: T.surface,
+                  borderRadius: 8, padding: '8px 10px 8px 13px',
+                  border: `1px solid ${T.border}`,
+                  boxShadow: T.shadow, transition: 'all .15s',
+                  borderLeft: `4px solid ${statusColor}`,
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.boxShadow = T.shadowHover;
+                  e.currentTarget.style.zIndex = '20';
+                  e.currentTarget.style.transform = 'translate(-50%, -50%) translateY(-3px)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.boxShadow = T.shadow;
+                  e.currentTarget.style.zIndex = '5';
+                  e.currentTarget.style.transform = 'translate(-50%, -50%)';
+                }}>
+                {/* Row 1: Key + Hub */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
+                  <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.text1 }}>
+                    {key}
+                  </span>
+                  <span style={{
+                    fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px',
+                    borderRadius: 3, background: hubColor, textTransform: 'uppercase' as const,
+                  }}>
+                    {HUB_SHORT[hub] ?? hub.replace('Hub', '').slice(0, 4).toUpperCase()}
+                  </span>
+                </div>
+
+                {/* Row 2: Title */}
+                <div style={{
+                  fontSize: 11, fontWeight: 600, color: T.text2, lineHeight: 1.3,
+                  overflow: 'hidden', textOverflow: 'ellipsis',
+                  display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any,
+                }}>
+                  {title}
+                </div>
+
+                {/* Row 3: Status + Age */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 5 }}>
+                  <span style={{
+                    fontSize: 9, fontWeight: 700, color: '#fff', padding: '1px 6px',
+                    borderRadius: 3, background: statusColor,
+                  }}>
+                    {status.length > 14 ? status.slice(0, 12) + '…' : status}
+                  </span>
+                  <span style={{
+                    fontFamily: T.mono, fontSize: 9, fontWeight: 700,
+                    color: ageDays > 14 ? T.todo : T.text4, marginLeft: 'auto',
+                  }}>
+                    {ageDays}d
+                  </span>
+                </div>
               </div>
+            );
+          })}
+
+          {/* Pagination — bottom center */}
+          <div style={{
+            position: 'absolute', bottom: 12, left: '50%', transform: 'translateX(-50%)',
+            display: 'flex', alignItems: 'center', gap: 8, zIndex: 15,
+          }}>
+            {totalPages > 1 && (
+              <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
+                style={{
+                  width: 32, height: 32, borderRadius: 6,
+                  background: page === 0 ? T.bg : T.text1, color: page === 0 ? T.text4 : '#fff',
+                  border: `1px solid ${T.borderStrong}`, cursor: page === 0 ? 'default' : 'pointer',
+                  fontWeight: 700, fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                ‹
+              </button>
+            )}
+            {totalPages > 1 && (
+              <span style={{ fontSize: 11, fontWeight: 700, color: T.text3 }}>
+                {page + 1} / {totalPages}
+              </span>
+            )}
+            {totalPages > 1 && (
+              <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page === totalPages - 1}
+                style={{
+                  width: 32, height: 32, borderRadius: 6,
+                  background: page === totalPages - 1 ? T.bg : T.text1, color: page === totalPages - 1 ? T.text4 : '#fff',
+                  border: `1px solid ${T.borderStrong}`, cursor: page === totalPages - 1 ? 'default' : 'pointer',
+                  fontWeight: 700, fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                ›
+              </button>
             )}
           </div>
-        );
-      })}
 
-      <style>{`
-        @keyframes nodeAppear {
-          from { opacity: 0; transform: scale(0.85); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes r360pulse {
-          0% { box-shadow: 0 0 0 4px #fff, 0 0 0 6px #2563EB, 0 0 0 6px rgba(37,99,235,0.4); }
-          100% { box-shadow: 0 0 0 4px #fff, 0 0 0 6px #2563EB, 0 0 0 24px rgba(37,99,235,0); }
-        }
-        *:focus-visible { outline: 2px solid #2563EB; outline-offset: 2px; }
-      `}</style>
+          {/* Empty state */}
+          {visibleItems.length === 0 && (
+            <div style={{
+              position: 'absolute', left: cx, top: cy + 100, transform: 'translateX(-50%)',
+              textAlign: 'center', zIndex: 10,
+            }}>
+              <p style={{ fontSize: 14, fontWeight: 700, color: T.text3, margin: 0 }}>No active items</p>
+              <p style={{ fontSize: 11, color: T.text4, margin: '4px 0 0' }}>All work is completed</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ═══ RIGHT: Completed Sidebar ═══ */}
+      <div style={{
+        width: 260, borderLeft: `1px solid ${T.borderStrong}`,
+        background: T.surface, display: 'flex', flexDirection: 'column',
+        overflow: 'hidden', flexShrink: 0,
+      }}>
+        {/* Header */}
+        <div style={{
+          padding: '12px 14px', borderBottom: `1px solid ${T.border}`,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <span style={{ fontSize: 12, fontWeight: 800, color: T.done, letterSpacing: '0.03em' }}>
+            ✓ Completed
+          </span>
+          <span style={{
+            fontSize: 10, fontWeight: 800, color: '#fff',
+            background: T.done, borderRadius: 10, padding: '2px 8px',
+          }}>
+            {doneItems.length}
+          </span>
+        </div>
+
+        {/* Done items list */}
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          {doneItems.map((item: any, idx: number) => {
+            const hub = item.hub || item.source_hub || 'ProjectHub';
+            const hubColor = HUB_COLORS[hub] ?? '#64748B';
+            const key = item.item_key || item.key || '—';
+            const title = item.title || '';
+            return (
+              <div key={item.id || idx} onClick={() => onItemClick(item)}
+                style={{
+                  padding: '8px 12px', cursor: 'pointer',
+                  borderBottom: `1px solid ${T.border}`,
+                  background: idx % 2 === 0 ? T.surface : '#FAF8F5',
+                  transition: 'background .1s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#EDE7E0'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = idx % 2 === 0 ? T.surface : '#FAF8F5'; }}>
+                {/* Key + Hub + Date */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 3 }}>
+                  <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.text1 }}>
+                    {key}
+                  </span>
+                  <span style={{
+                    fontSize: 8, fontWeight: 800, color: '#fff', padding: '1px 5px',
+                    borderRadius: 3, background: hubColor,
+                  }}>
+                    {HUB_SHORT[hub] ?? hub.replace('Hub', '').slice(0, 4).toUpperCase()}
+                  </span>
+                  <span style={{ fontSize: 9, color: T.text4, marginLeft: 'auto', fontFamily: T.mono }}>
+                    {item.assigned_at?.slice(5, 10) || ''}
+                  </span>
+                </div>
+                {/* Title */}
+                <div style={{
+                  fontSize: 11, fontWeight: 500, color: T.text3, lineHeight: 1.3,
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
+                }}>
+                  {title}
+                </div>
+              </div>
+            );
+          })}
+
+          {doneItems.length === 0 && (
+            <div style={{ padding: 20, textAlign: 'center', fontSize: 11, color: T.text4 }}>
+              No completed items
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
