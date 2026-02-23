@@ -4,7 +4,7 @@ import type { Resource360Item } from '@/types/resource360';
 
 /**
  * Fetches all work items assigned to a resource via vw_wh_resource_360.
- * Returns one row per work item with full context: parent, release, transitions.
+ * resourceId here is the short `rid` (e.g. "038") from the URL.
  */
 export function useResource360Items(resourceId: string | undefined) {
   return useQuery({
@@ -23,7 +23,13 @@ export function useResource360Items(resourceId: string | undefined) {
         throw error;
       }
 
-      return (data ?? []) as unknown as Resource360Item[];
+      // Normalize status_transitions from jsonb to array
+      return ((data ?? []) as unknown as Resource360Item[]).map((item) => ({
+        ...item,
+        status_transitions: Array.isArray(item.status_transitions)
+          ? item.status_transitions
+          : [],
+      }));
     },
     enabled: !!resourceId,
     staleTime: 30_000,
