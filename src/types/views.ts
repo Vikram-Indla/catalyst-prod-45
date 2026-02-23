@@ -401,3 +401,166 @@ export function calculateProgress(completed: number, total: number): number {
   if (total === 0) return 0;
   return Math.round((completed / total) * 100);
 }
+
+// ═══════════════════════════════════════════════════════════
+// SDLC View Types — Board, List, Backlog
+// ═══════════════════════════════════════════════════════════
+
+export type WorkItemPriority = 'critical' | 'high' | 'medium' | 'low' | 'none';
+
+export const WORK_ITEM_PRIORITY_CONFIG: Record<WorkItemPriority, {
+  label: string;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+  icon: string;
+  sortWeight: number;
+}> = {
+  critical: { label: 'Critical', color: '#DC2626', bgColor: '#FEF2F2', borderColor: '#FECACA', icon: 'AlertTriangle', sortWeight: 1 },
+  high:     { label: 'High',     color: '#D97706', bgColor: '#FFFBEB', borderColor: '#FDE68A', icon: 'ArrowUp',       sortWeight: 2 },
+  medium:   { label: 'Medium',   color: '#2563EB', bgColor: '#EFF6FF', borderColor: '#BFDBFE', icon: 'Minus',         sortWeight: 3 },
+  low:      { label: 'Low',      color: '#64748B', bgColor: '#F8FAFC', borderColor: '#E2E8F0', icon: 'ArrowDown',     sortWeight: 4 },
+  none:     { label: 'None',     color: '#94A3B8', bgColor: '#F8FAFC', borderColor: '#E2E8F0', icon: 'Minus',         sortWeight: 5 },
+};
+
+export interface WorkItemFull {
+  id: string;
+  item_key: string;
+  title: string;
+  item_type: string;
+  status: string;
+  priority: WorkItemPriority;
+  sort_order: number;
+  due_date: string | null;
+  estimate: number | null;
+  labels: string[];
+  description: string | null;
+  parent_id: string | null;
+  project_id: string;
+  release_id: string | null;
+  assignee_id: string | null;
+  reporter_id: string | null;
+  deleted_at: string | null;
+  created_at: string;
+  updated_at: string;
+  department: string | null;
+  team: string | null;
+  environment: string | null;
+  security_level: string | null;
+  is_flagged: boolean;
+  flag_reason: string | null;
+  cycle_time_days: number | null;
+  status_changed_at: string | null;
+  resolved_at: string | null;
+  on_hold_reason: string | null;
+  backlog_order: number | null;
+  // Joined
+  release_name: string | null;
+  release_status: string | null;
+  assignee_name: string | null;
+  assignee_avatar: string | null;
+  reporter_name: string | null;
+  parent_key: string | null;
+  parent_title: string | null;
+  // Computed
+  days_in_status: number;
+  is_overdue: boolean;
+  days_overdue: number | null;
+  sub_issue_count: number;
+}
+
+export interface BoardColumn {
+  id: string;
+  project_id: string;
+  status_key: string;
+  column_label: string;
+  column_order: number;
+  wip_limit: number | null;
+  is_visible: boolean;
+  color_group: 'gray' | 'blue' | 'green' | 'amber';
+}
+
+export interface BoardColumnWithCounts extends BoardColumn {
+  item_count: number;
+  wip_status: 'ok' | 'at_limit' | 'exceeded';
+}
+
+export type ListColumnKey =
+  | 'release' | 'key' | 'type' | 'title' | 'status'
+  | 'priority' | 'assignee' | 'due_date' | 'estimate'
+  | 'created' | 'updated' | 'days_in_status' | 'parent' | 'reporter';
+
+export type GroupByKey = 'status' | 'release' | 'type' | 'priority' | 'assignee' | null;
+export type SortDirection = 'asc' | 'desc';
+
+export interface ListConfig {
+  id: string;
+  project_id: string;
+  user_id: string;
+  visible_columns: ListColumnKey[];
+  column_order: ListColumnKey[];
+  sort_column: string;
+  sort_direction: SortDirection;
+  group_by: GroupByKey;
+  rows_per_page: 25 | 50 | 100;
+  show_subtasks: boolean;
+}
+
+export type QuickFilterKey = 'my_items' | 'bugs' | 'unassigned' | 'overdue' | 'on_hold';
+
+export interface BacklogConfig {
+  id: string;
+  project_id: string;
+  user_id: string;
+  group_by: GroupByKey;
+  show_completed: boolean;
+  show_subtasks: boolean;
+  show_empty_groups: boolean;
+  quick_filters: QuickFilterKey[];
+  visible_columns: ListColumnKey[];
+}
+
+export interface ViewFilterState {
+  statuses: string[];
+  types: string[];
+  priorities: WorkItemPriority[];
+  assigneeIds: string[];
+  releaseIds: string[];
+  searchQuery: string;
+  quickFilters: QuickFilterKey[];
+}
+
+export const EMPTY_FILTER_STATE: ViewFilterState = {
+  statuses: [],
+  types: [],
+  priorities: [],
+  assigneeIds: [],
+  releaseIds: [],
+  searchQuery: '',
+  quickFilters: [],
+};
+
+export interface BulkAction {
+  type: 'assign' | 'status' | 'priority' | 'release' | 'delete';
+  itemIds: string[];
+  value?: string;
+}
+
+export interface DragResult {
+  itemId: string;
+  fromStatus: string;
+  toStatus: string;
+  newSortOrder: number;
+}
+
+export interface ItemDetailUpdate {
+  status?: string;
+  assignee_id?: string | null;
+  priority?: WorkItemPriority;
+  release_id?: string | null;
+  due_date?: string | null;
+  title?: string;
+  description?: string | null;
+  estimate?: number | null;
+  labels?: string[];
+}
