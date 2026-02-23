@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useMemo } from 'react';
 import type { Resource360Item, Resource360Summary } from '@/types/resource360';
-import { getStatusCategory } from '@/types/resource360';
+import { getStatusCategory, getStaleIndicator } from '@/types/resource360';
 
 interface Props {
   items: Resource360Item[];
@@ -273,7 +273,10 @@ export function Resource360AIPanel({ items, summary, resourceName, isOpen, onClo
                     <span style={{ color: C.todo, fontWeight: 700, fontFamily: C.mono, flexShrink: 0 }}>{item.item_key}</span>
                     <span style={{ color: C.text4, fontSize: 9, flexShrink: 0 }}>{item.item_type}</span>
                     <span style={{ color: C.text2, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</span>
-                    <span style={{ color: C.todo, fontWeight: 700, fontFamily: C.mono, flexShrink: 0 }}>{item.age_days}d</span>
+                    <span style={{ color: C.todo, fontWeight: 700, fontFamily: C.mono, flexShrink: 0 }}>
+                      {item.age_days}d
+                      {(() => { const s = getStaleIndicator(item.age_days, item.status, item.status_category); return s ? <span title={s.label} style={{ fontSize: 10, marginLeft: 2 }}>{s.icon}</span> : null; })()}
+                    </span>
                   </div>
                 )) : <p style={{ fontSize: 11, color: C.text4 }}>No critical items</p>}
               </div>
