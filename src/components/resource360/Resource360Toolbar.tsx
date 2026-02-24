@@ -26,7 +26,7 @@ export function Resource360Toolbar({
     <div style={{
       display: 'flex', alignItems: 'center', gap: 12,
       padding: '8px 20px', background: '#FFFFFF',
-      borderBottom: '1px solid #E5E7EB', flexShrink: 0,
+      borderBottom: '1px solid #D9D2C9', flexShrink: 0,
     }}>
       {/* View tabs — dark navy active */}
       <div style={{ display: 'flex', borderRadius: 8, overflow: 'hidden', border: '1px solid #D9D2C9' }}>
