@@ -7,8 +7,6 @@ interface ToolbarProps {
   onViewChange: (v: ViewMode) => void;
   filters: ProjectFilters;
   onFilterChange: (f: ProjectFilters) => void;
-  onToggleAdvanced: () => void;
-  showAdvanced: boolean;
   stats: {
     total: number;
     statusActive: number;
@@ -26,7 +24,7 @@ const CHIPS = [
   { label: 'Completed', key: 'Completed', countKey: 'statusCompleted' as const },
 ];
 
-export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange, onToggleAdvanced, showAdvanced, stats }: ToolbarProps) {
+export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange, stats }: ToolbarProps) {
   const [localSearch, setLocalSearch] = useState(filters.search);
 
   useEffect(() => {
@@ -34,7 +32,7 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
     return () => clearTimeout(t);
   }, [localSearch]);
 
-  const advFilterCount = filters.departments.length + filters.healths.length + filters.categories.length;
+  
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
@@ -80,35 +78,6 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
         })}
       </div>
 
-      {/* Filter button */}
-      <button
-        onClick={onToggleAdvanced}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 5,
-          height: 28,
-          padding: '0 10px',
-          fontSize: 12,
-          fontWeight: 500,
-          color: advFilterCount > 0 || showAdvanced ? '#2563EB' : '#334155',
-          background: advFilterCount > 0 || showAdvanced ? '#EFF6FF' : '#FFF',
-          border: `1px solid ${advFilterCount > 0 || showAdvanced ? '#2563EB' : '#E2E8F0'}`,
-          borderRadius: 6,
-          cursor: 'pointer',
-        }}
-      >
-        <SlidersHorizontal size={13} />
-        Filter
-        {advFilterCount > 0 && (
-          <span style={{
-            fontSize: 10, fontWeight: 700, background: '#2563EB', color: '#FFF',
-            borderRadius: 99, padding: '1px 6px',
-          }}>
-            {advFilterCount}
-          </span>
-        )}
-      </button>
 
       <div style={{ flex: 1 }} />
 
