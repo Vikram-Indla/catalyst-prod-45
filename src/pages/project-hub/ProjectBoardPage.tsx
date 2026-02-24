@@ -5,7 +5,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import {
-  Columns3, List, Kanban, GanttChart,
+  Columns3, Kanban, GanttChart,
   AlertTriangle, CheckCircle2, Clock, BarChart3, Sparkles,
   Settings, Filter, Search, ChevronDown, X,
 } from 'lucide-react';
@@ -17,7 +17,7 @@ import {
   type PHIssue, type IssueFilters,
 } from '@/services/project-hub.service';
 import { PHBoardView } from '@/components/project-hub/sdlc/PHBoardView';
-import { PHListView } from '@/components/project-hub/sdlc/PHListView';
+
 import { PHBacklogView } from '@/components/project-hub/sdlc/PHBacklogView';
 import { PHDetailDrawer } from '@/components/project-hub/sdlc/PHDetailDrawer';
 import { PHConfigPanel } from '@/components/project-hub/sdlc/PHConfigPanel';
@@ -102,7 +102,6 @@ export default function ProjectBoardPage() {
   const views: { key: ProjectView; label: string; icon: typeof Columns3 }[] = [
     { key: 'backlog', label: 'Backlog', icon: Kanban },
     { key: 'board', label: 'Board', icon: Columns3 },
-    { key: 'list', label: 'List', icon: List },
     { key: 'timeline', label: 'Timeline', icon: GanttChart },
   ];
 
@@ -369,17 +368,6 @@ export default function ProjectBoardPage() {
           loading={issuesLoading}
           onSelectIssue={handleSelectIssue}
           onUpdateIssue={handleUpdateIssue}
-        />
-      )}
-
-      {activeView === 'list' && (
-        <PHListView
-          issues={issues}
-          releases={releases}
-          loading={issuesLoading}
-          onSelectIssue={handleSelectIssue}
-          onUpdateIssue={handleUpdateIssue}
-          onClearFilters={hasActiveFilters ? clearFilters : undefined}
         />
       )}
 
