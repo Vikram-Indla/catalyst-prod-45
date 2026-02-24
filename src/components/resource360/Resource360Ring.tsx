@@ -93,7 +93,7 @@ export function Resource360Ring({ items, resourceName, resourceAvatar, jobRole, 
                 <button key={f} onClick={() => onStatusFilterChange(f as StatusCategory)}
                   style={{
                     padding: '4px 12px', fontSize: 10, fontWeight: 700, borderRadius: 5, cursor: 'pointer',
-                    background: active ? T.text1 : T.surface,
+                    background: active ? '#2563EB' : T.surface,
                     color: active ? '#fff' : T.text3,
                     border: active ? 'none' : `1.5px solid ${T.borderStrong}`,
                     transition: 'all .12s',
