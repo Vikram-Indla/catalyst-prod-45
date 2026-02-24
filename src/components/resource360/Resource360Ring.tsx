@@ -81,7 +81,7 @@ export function Resource360Ring({ items, resourceName, resourceAvatar, jobRole, 
           <span style={{ fontSize: 11, fontWeight: 900, color: T.text2, letterSpacing: '.08em', textTransform: 'uppercase' }}>Active Work</span>
           {/* D14: Item count as dark pill */}
           <span style={{
-            background: T.text2, color: '#fff', padding: '2px 8px', borderRadius: 10,
+            background: '#2563EB', color: '#fff', padding: '2px 8px', borderRadius: 10,
             fontSize: 10, fontWeight: 700,
           }}>{activeItems.length} Items</span>
           {/* D15: Filter buttons with visible borders when inactive */}
