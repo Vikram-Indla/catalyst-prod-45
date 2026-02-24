@@ -14,7 +14,6 @@ interface Props {
 const VIEW_TABS: { key: ViewMode; label: string }[] = [
   { key: 'ring', label: '360° View' },
   { key: 'chronology', label: 'Chronology' },
-  { key: 'list', label: 'List' },
   { key: 'board', label: 'Board' },
 ];
 
