@@ -2,7 +2,7 @@
  * ProjectHub List View — Hierarchical table with tree connectors, bulk actions, column toggles
  */
 import React, { useState, useMemo, useCallback } from 'react';
-import { ChevronRight, ChevronDown, MoreHorizontal, Check } from 'lucide-react';
+import { ChevronRight, ChevronDown, MoreHorizontal, SearchX } from 'lucide-react';
 import type { PHIssue } from '@/services/project-hub.service';
 import type { PHRelease } from '@/services/project-hub.service';
 import { getDisplayKey } from '@/services/project-hub.service';
@@ -11,6 +11,7 @@ import { PHIssueTypeIcon, TYPE_ACCENT } from './PHIssueTypeIcon';
 import { PHSourceTag } from './PHSourceTag';
 import { PHStatusLozenge } from './PHStatusLozenge';
 import { PHPriorityIcon } from './PHPriorityIcon';
+import { SkeletonTable } from '@/components/project-hub/shared/SkeletonPulse';
 
 const COLUMNS = [
   { key: 'issue', label: 'Issue', default: true, locked: true },
@@ -27,11 +28,13 @@ type ColKey = typeof COLUMNS[number]['key'];
 interface Props {
   issues: PHIssue[];
   releases: PHRelease[];
+  loading?: boolean;
   onSelectIssue: (issue: PHIssue) => void;
   onUpdateIssue: (id: string, updates: Partial<PHIssue>) => void;
+  onClearFilters?: () => void;
 }
 
-export function PHListView({ issues, releases, onSelectIssue, onUpdateIssue }: Props) {
+export function PHListView({ issues, releases, loading, onSelectIssue, onUpdateIssue, onClearFilters }: Props) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [visibleCols, setVisibleCols] = useState<Set<ColKey>>(
@@ -57,7 +60,7 @@ export function PHListView({ issues, releases, onSelectIssue, onUpdateIssue }: P
     return m;
   }, [issues]);
 
-  const toggleSelect = useCallback((id: string, shiftKey?: boolean) => {
+  const toggleSelect = useCallback((id: string) => {
     setSelectedIds(prev => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
@@ -91,12 +94,13 @@ export function PHListView({ issues, releases, onSelectIssue, onUpdateIssue }: P
     return (
       <React.Fragment key={issue.id}>
         <tr
-          className="group transition-colors cursor-pointer"
+          className="group cursor-pointer"
           style={{
             height: 44,
             maxHeight: 44, /* FP-002 */
-            background: isSelected ? '#EFF6FF' : isHovered ? 'rgba(37,99,235,.03)' : (undefined),
+            background: isSelected ? '#EFF6FF' : isHovered ? 'rgba(37,99,235,.03)' : undefined,
             borderLeft: `3px solid ${accentColor}`,
+            transition: 'background 120ms ease',
           }}
           onClick={() => onSelectIssue(issue)}
           onMouseEnter={() => setHoveredId(issue.id)}
@@ -119,16 +123,16 @@ export function PHListView({ issues, releases, onSelectIssue, onUpdateIssue }: P
           {visibleCols.has('issue') && (
             <td style={{ padding: '0 8px' }}>
               <div className="flex items-center gap-1.5" style={{ paddingLeft: depth * 24 }}>
-                {/* Tree connector line */}
                 {depth > 0 && (
                   <span className="flex-shrink-0" style={{ width: 12, height: 1, background: '#E2E8F0' }} />
                 )}
-                {/* Expand chevron */}
                 {hasChildren ? (
                   <button
                     onClick={e => { e.stopPropagation(); toggleExpand(issue.id); }}
-                    className="flex-shrink-0 p-0.5 rounded hover:bg-gray-100"
+                    className="flex-shrink-0 p-0.5 rounded transition-colors"
                     style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#E2E8F0'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                   >
                     {isExpanded
                       ? <ChevronDown size={12} color="#64748B" />
@@ -161,7 +165,6 @@ export function PHListView({ issues, releases, onSelectIssue, onUpdateIssue }: P
                 >
                   {issue.title}
                 </span>
-                {/* Progress bar for parents */}
                 {hasChildren && (
                   <div className="flex items-center gap-1 ml-1">
                     <div
@@ -202,9 +205,14 @@ export function PHListView({ issues, releases, onSelectIssue, onUpdateIssue }: P
             <td style={{ padding: '0 8px' }}>
               <span
                 className="rounded-full inline-flex items-center justify-center"
-                style={{ width: 22, height: 22, background: '#E2E8F0', fontSize: 9, fontWeight: 700, color: '#64748B' }}
+                style={{
+                  width: 22, height: 22,
+                  background: issue.assignee_id ? '#E2E8F0' : 'transparent',
+                  border: issue.assignee_id ? 'none' : '1.5px dashed #CBD5E1',
+                  fontSize: 9, fontWeight: 700, color: '#64748B',
+                }}
               >
-                {issue.assignee_id ? '👤' : '—'}
+                {issue.assignee_id ? '👤' : ''}
               </span>
             </td>
           )}
@@ -220,13 +228,13 @@ export function PHListView({ issues, releases, onSelectIssue, onUpdateIssue }: P
               padding: '0 8px',
               fontSize: 11,
               fontFamily: "'JetBrains Mono', monospace",
-              color: issue.overdue_days > 0 ? '#EF4444' : '#64748B',
-              fontWeight: issue.overdue_days > 0 ? 600 : 400,
+              color: (issue.overdue_days ?? 0) > 0 ? '#EF4444' : '#64748B',
+              fontWeight: (issue.overdue_days ?? 0) > 0 ? 600 : 400,
             }}>
               {issue.due_date
                 ? new Date(issue.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
                 : '—'}
-              {issue.overdue_days > 0 && (
+              {(issue.overdue_days ?? 0) > 0 && (
                 <span style={{ color: '#EF4444', fontSize: 9, marginLeft: 4 }}>+{issue.overdue_days}d</span>
               )}
             </td>
@@ -240,15 +248,19 @@ export function PHListView({ issues, releases, onSelectIssue, onUpdateIssue }: P
 
           {/* Hover more */}
           <td style={{ width: 32, padding: '0 4px' }}>
-            {isHovered && (
-              <button
-                className="p-1 rounded hover:bg-gray-100"
-                style={{ border: 'none', background: 'transparent', cursor: 'pointer', opacity: 1 }}
-                onClick={e => e.stopPropagation()}
-              >
-                <MoreHorizontal size={14} color="#94A3B8" />
-              </button>
-            )}
+            <button
+              className="p-1 rounded transition-colors"
+              style={{
+                border: 'none', background: 'transparent', cursor: 'pointer',
+                opacity: isHovered ? 1 : 0,
+                transition: 'opacity 120ms ease',
+              }}
+              onClick={e => e.stopPropagation()}
+              onMouseEnter={e => { e.currentTarget.style.background = '#F1F5F9'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            >
+              <MoreHorizontal size={14} color="#94A3B8" />
+            </button>
           </td>
         </tr>
 
@@ -271,12 +283,15 @@ export function PHListView({ issues, releases, onSelectIssue, onUpdateIssue }: P
             fontSize: 12,
             fontWeight: 600,
             fontFamily: "'Inter', sans-serif",
+            transition: 'all 200ms ease',
           }}
         >
           <span>{selectedIds.size} selected</span>
           <button
-            className="px-3 py-1 rounded text-white hover:bg-white/20 transition"
+            className="px-3 py-1 rounded transition-colors"
             style={{ fontSize: 11, border: '1px solid rgba(255,255,255,.3)', background: 'transparent', cursor: 'pointer', color: '#fff' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,.15)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             onClick={() => {
               selectedIds.forEach(id => onUpdateIssue(id, { status: 'in_dev' } as any));
               setSelectedIds(new Set());
@@ -285,8 +300,10 @@ export function PHListView({ issues, releases, onSelectIssue, onUpdateIssue }: P
             Move to In Progress
           </button>
           <button
-            className="px-3 py-1 rounded text-white hover:bg-white/20 transition"
+            className="px-3 py-1 rounded transition-colors"
             style={{ fontSize: 11, border: '1px solid rgba(255,255,255,.3)', background: 'transparent', cursor: 'pointer', color: '#fff' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,.15)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             onClick={() => {
               selectedIds.forEach(id => onUpdateIssue(id, { status: 'production' } as any));
               setSelectedIds(new Set());
@@ -295,7 +312,7 @@ export function PHListView({ issues, releases, onSelectIssue, onUpdateIssue }: P
             Mark Done
           </button>
           <button
-            className="ml-auto px-3 py-1 rounded text-white hover:bg-white/20 transition"
+            className="ml-auto px-3 py-1 rounded transition-colors"
             style={{ fontSize: 11, border: 'none', background: 'transparent', cursor: 'pointer', color: 'rgba(255,255,255,.7)' }}
             onClick={() => setSelectedIds(new Set())}
           >
@@ -304,106 +321,143 @@ export function PHListView({ issues, releases, onSelectIssue, onUpdateIssue }: P
         </div>
       )}
 
-      {/* Table */}
-      <div className="overflow-auto rounded-xl border" style={{ borderColor: '#E2E8F0' }}>
-        <table className="w-full" style={{ borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif" }}>
-          <thead>
-            <tr
+      {/* Loading */}
+      {loading ? (
+        <div className="p-4">
+          <SkeletonTable rows={8} />
+        </div>
+      ) : issues.length === 0 ? (
+        /* Empty state */
+        <div
+          className="flex flex-col items-center justify-center rounded-xl border"
+          style={{ padding: '60px 40px', background: '#FFFFFF', borderColor: '#E2E8F0' }}
+        >
+          <SearchX size={32} color="#94A3B8" strokeWidth={1.5} />
+          <span style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginTop: 12, fontFamily: "'Inter', sans-serif" }}>
+            No items match filters
+          </span>
+          <span style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
+            Try adjusting your filters or search criteria
+          </span>
+          {onClearFilters && (
+            <button
+              onClick={onClearFilters}
+              className="mt-4 px-4 py-1.5 rounded-md transition-colors"
               style={{
-                position: 'sticky',
-                top: 0,
-                zIndex: 10,
-                background: '#F8FAFC',
-                borderBottom: '1px solid #E2E8F0',
-                height: 36,
+                fontSize: 12, fontWeight: 600, border: '1px solid #BFDBFE',
+                background: '#EFF6FF', color: '#2563EB', cursor: 'pointer',
               }}
             >
-              <th style={{ width: 36, padding: '0 8px' }}>
-                <input
-                  type="checkbox"
-                  className="accent-blue-600"
-                  style={{ width: 14, height: 14 }}
-                  checked={selectedIds.size === issues.length && issues.length > 0}
-                  onChange={() => {
-                    if (selectedIds.size === issues.length) setSelectedIds(new Set());
-                    else setSelectedIds(new Set(issues.map(i => i.id)));
-                  }}
-                />
-              </th>
-              {COLUMNS.filter(c => visibleCols.has(c.key)).map(c => (
-                <th
-                  key={c.key}
-                  style={{
-                    padding: '0 8px',
-                    fontSize: 10.5,
-                    fontWeight: 600,
-                    color: '#64748B',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px',
-                    textAlign: 'left',
-                    fontFamily: "'Inter', sans-serif",
-                  }}
-                >
-                  {c.label}
-                </th>
-              ))}
-              <th style={{ width: 32 }} />
-            </tr>
-          </thead>
-          <tbody>
-            {rootIssues.map((issue, i) => renderRow(issue, 0, i === rootIssues.length - 1))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Footer */}
-      <div className="flex items-center justify-between px-2 mt-2" style={{ height: 32 }}>
-        <span style={{ fontSize: 11, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>
-          {issues.length} items · {completedCount} completed
-        </span>
-        <div className="relative">
-          <button
-            onClick={() => setShowColPicker(!showColPicker)}
-            className="flex items-center gap-1 px-3 py-1 rounded-md transition"
-            style={{
-              fontSize: 11, fontWeight: 500, color: '#64748B',
-              border: '1px solid #E2E8F0', background: '#fff', cursor: 'pointer',
-            }}
-          >
-            Columns
-          </button>
-          {showColPicker && (
-            <div
-              className="absolute bottom-full right-0 mb-1 rounded-lg shadow-lg border p-2 z-20"
-              style={{ background: '#fff', borderColor: '#E2E8F0', minWidth: 160 }}
-            >
-              {COLUMNS.map(c => (
-                <label
-                  key={c.key}
-                  className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-50 cursor-pointer"
-                  style={{ fontSize: 12, color: '#334155' }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={visibleCols.has(c.key)}
-                    disabled={'locked' in c && c.locked}
-                    onChange={() => {
-                      setVisibleCols(prev => {
-                        const next = new Set(prev);
-                        if (next.has(c.key)) next.delete(c.key); else next.add(c.key);
-                        return next;
-                      });
-                    }}
-                    className="accent-blue-600"
-                    style={{ width: 13, height: 13 }}
-                  />
-                  {c.label}
-                </label>
-              ))}
-            </div>
+              Clear filters
+            </button>
           )}
         </div>
-      </div>
+      ) : (
+        <>
+          {/* Table */}
+          <div className="overflow-auto rounded-xl border" style={{ borderColor: '#E2E8F0' }}>
+            <table className="w-full" style={{ borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif" }}>
+              <thead>
+                <tr
+                  style={{
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 10,
+                    background: '#F8FAFC',
+                    borderBottom: '1px solid #E2E8F0',
+                    height: 36,
+                  }}
+                >
+                  <th style={{ width: 36, padding: '0 8px' }}>
+                    <input
+                      type="checkbox"
+                      className="accent-blue-600"
+                      style={{ width: 14, height: 14 }}
+                      checked={selectedIds.size === issues.length && issues.length > 0}
+                      onChange={() => {
+                        if (selectedIds.size === issues.length) setSelectedIds(new Set());
+                        else setSelectedIds(new Set(issues.map(i => i.id)));
+                      }}
+                    />
+                  </th>
+                  {COLUMNS.filter(c => visibleCols.has(c.key)).map(c => (
+                    <th
+                      key={c.key}
+                      style={{
+                        padding: '0 8px',
+                        fontSize: 10.5,
+                        fontWeight: 600,
+                        color: '#94A3B8',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.06em',
+                        textAlign: 'left',
+                        fontFamily: "'Inter', sans-serif",
+                      }}
+                    >
+                      {c.label}
+                    </th>
+                  ))}
+                  <th style={{ width: 32 }} />
+                </tr>
+              </thead>
+              <tbody>
+                {rootIssues.map((issue, i) => renderRow(issue, 0, i === rootIssues.length - 1))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-between px-2 mt-2" style={{ height: 32 }}>
+            <span style={{ fontSize: 11, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>
+              {issues.length} items · {completedCount} completed
+            </span>
+            <div className="relative">
+              <button
+                onClick={() => setShowColPicker(!showColPicker)}
+                className="flex items-center gap-1 px-3 py-1 rounded-md transition-colors"
+                style={{
+                  fontSize: 11, fontWeight: 500, color: '#64748B',
+                  border: '1px solid #E2E8F0', background: '#fff', cursor: 'pointer',
+                }}
+              >
+                Columns
+              </button>
+              {showColPicker && (
+                <div
+                  className="absolute bottom-full right-0 mb-1 rounded-lg shadow-lg border p-2 z-20"
+                  style={{ background: '#fff', borderColor: '#E2E8F0', minWidth: 160 }}
+                >
+                  {COLUMNS.map(c => (
+                    <label
+                      key={c.key}
+                      className="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer transition-colors"
+                      style={{ fontSize: 12, color: '#334155' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={visibleCols.has(c.key)}
+                        disabled={'locked' in c && c.locked}
+                        onChange={() => {
+                          setVisibleCols(prev => {
+                            const next = new Set(prev);
+                            if (next.has(c.key)) next.delete(c.key); else next.add(c.key);
+                            return next;
+                          });
+                        }}
+                        className="accent-blue-600"
+                        style={{ width: 13, height: 13 }}
+                      />
+                      {c.label}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
