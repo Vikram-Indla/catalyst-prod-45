@@ -4,13 +4,20 @@ import { PeriodControls } from './components/PeriodControls';
 import { ProductionEventsTable } from './components/ProductionEventsTable';
 import { useProductionEvents } from './hooks/useProductionEvents';
 import { usePeriodNavigation } from './hooks/usePeriodNavigation';
+import { classifyEventType } from './utils/event-colors';
 
 export default function ProductionEventsPage() {
   const { periodType, label, startISO, endISO, handlePeriodTypeChange, handleNavigate } = usePeriodNavigation();
   const [filterType, setFilterType] = useState<string>('all');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const { data: events = [], isLoading: eventsLoading } = useProductionEvents(periodType, startISO, endISO);
+  const { data: rawEvents = [], isLoading: eventsLoading } = useProductionEvents(periodType, startISO, endISO);
+
+  // Classify events
+  const events = useMemo(() =>
+    rawEvents.map(e => ({ ...e, eventType: classifyEventType(e.issueType, []) })),
+    [rawEvents]
+  );
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -26,15 +33,14 @@ export default function ProductionEventsPage() {
 
   const filteredEvents = useMemo(() => {
     if (filterType === 'all') return events;
-    return events.filter(e => e.issueType.toLowerCase() === filterType);
+    return events.filter(e => e.eventType === filterType);
   }, [events, filterType]);
 
-  // Compute counts for chips
+  // Compute counts by event type
   const typeCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const e of events) {
-      const t = e.issueType.toLowerCase();
-      counts[t] = (counts[t] || 0) + 1;
+      counts[e.eventType] = (counts[e.eventType] || 0) + 1;
     }
     return counts;
   }, [events]);
@@ -43,19 +49,28 @@ export default function ProductionEventsPage() {
     ? `Last deployed: ${new Date(events[0].deployedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
     : '';
 
+  // AI Summary
+  const releaseSet = new Set(events.map(e => e.release).filter(Boolean));
+  const periodLabel = periodType === 'weekly' ? 'week' : periodType === 'monthly' ? 'month' : 'quarter';
+  const summaryLead = `${events.length} production event${events.length !== 1 ? 's' : ''} deployed this ${periodLabel} across ${releaseSet.size} release${releaseSet.size !== 1 ? 's' : ''}.`;
+  const summaryBody = events.length > 0
+    ? `Key events: ${events.slice(0, 4).map(e => e.title).join(', ')}${events.length > 4 ? '…' : '.'}`
+    : '';
+
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", padding: '24px 28px', background: '#FFFFFF', minHeight: '100vh' }}>
-      {/* Page Header */}
+      {/* Page Header — Fix 28: weight 800, tracking */}
       <div className="flex items-start justify-between mb-1">
         <div>
           <h1 style={{
-            fontSize: 24, fontWeight: 750, color: '#020617',
-            fontFamily: "'Inter', sans-serif", margin: 0, letterSpacing: '-0.3px',
+            fontSize: 24, fontWeight: 800, color: '#020617',
+            fontFamily: "'Inter', sans-serif", margin: 0, letterSpacing: '-0.02em',
           }}>
             Production Events
           </h1>
+          {/* Fix 5: updated subtitle */}
           <p style={{ fontSize: 13, color: '#64748B', fontWeight: 400, margin: '4px 0 0' }}>
-            Tickets marked "In Production" from Jira, grouped by deployment date
+            Curated record of production deployments and their business impact
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -85,19 +100,32 @@ export default function ProductionEventsPage() {
         </div>
       </div>
 
-      {/* Stats bar */}
-      <div className="flex items-center gap-4 mt-4 mb-4">
-        <div style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>
-          {events.length} items in production
+      {/* Fix 1: AI Summary Block (replaces Fix 6 stats bar) */}
+      {events.length > 0 && (
+        <div
+          className="mb-5 mt-4"
+          style={{
+            background: '#FFFFFF',
+            border: '1px solid #E2E8F0',
+            borderLeft: '4px solid #2563EB',
+            borderRadius: '2px 8px 8px 2px',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)',
+          }}
+        >
+          <div style={{ padding: '16px 24px' }}>
+            <p style={{ fontSize: 14.5, fontWeight: 600, color: '#0F172A', lineHeight: 1.5, margin: 0 }}>
+              {summaryLead}
+            </p>
+            {summaryBody && (
+              <p style={{ fontSize: 14, fontWeight: 400, color: '#334155', lineHeight: 1.5, margin: '4px 0 0' }}>
+                {summaryBody}
+              </p>
+            )}
+          </div>
         </div>
-        {Object.entries(typeCounts).map(([type, count]) => (
-          <span key={type} style={{ fontSize: 12, color: '#64748B' }}>
-            {type}: <strong>{count}</strong>
-          </span>
-        ))}
-      </div>
+      )}
 
-      {/* Controls */}
+      {/* Controls — Fix 4 filter chips are inside PeriodControls */}
       <div style={{ marginBottom: 16 }}>
         <PeriodControls
           periodType={periodType}

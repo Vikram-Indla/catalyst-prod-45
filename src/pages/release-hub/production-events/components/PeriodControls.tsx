@@ -7,12 +7,13 @@ const PERIOD_TABS: { key: PcPeriodType; label: string }[] = [
   { key: 'quarterly', label: 'Quarterly' },
 ];
 
+// Fix 4: Use event types not Jira types
 const FILTER_CHIPS: { key: string; label: string }[] = [
   { key: 'all', label: 'All' },
-  { key: 'story', label: 'Stories' },
-  { key: 'change request', label: 'Change Requests' },
-  { key: 'bug', label: 'Bugs' },
-  { key: 'task', label: 'Tasks' },
+  { key: 'feature', label: 'Features' },
+  { key: 'incident', label: 'Incidents' },
+  { key: 'improvement', label: 'Improvements' },
+  { key: 'security', label: 'Security' },
 ];
 
 interface PeriodControlsProps {
@@ -29,7 +30,7 @@ export function PeriodControls({
 }: PeriodControlsProps) {
   return (
     <div className="flex items-center gap-4 flex-wrap" style={{ fontFamily: "'Inter', sans-serif" }}>
-      {/* Period Tabs */}
+      {/* Period Tabs — Fix 26: active shadow */}
       <div className="flex items-center rounded-lg" style={{ background: '#F1F5F9', padding: 3 }}>
         {PERIOD_TABS.map(t => (
           <button
@@ -40,7 +41,7 @@ export function PeriodControls({
               borderRadius: 6, border: 'none', cursor: 'pointer',
               background: periodType === t.key ? '#FFFFFF' : 'transparent',
               color: periodType === t.key ? '#2563EB' : '#64748B',
-              boxShadow: periodType === t.key ? '0 1px 3px rgba(0,0,0,.08)' : 'none',
+              boxShadow: periodType === t.key ? '0 1px 3px rgba(0,0,0,0.04)' : 'none',
               transition: 'all 150ms ease',
             }}
           >
@@ -76,7 +77,7 @@ export function PeriodControls({
 
       <div className="flex-1" />
 
-      {/* Filter Chips */}
+      {/* Fix 4 + Fix 27: Filter Chips with correct active styling */}
       <div className="flex items-center gap-1.5">
         {FILTER_CHIPS.map(f => (
           <button
@@ -85,7 +86,7 @@ export function PeriodControls({
             style={{
               padding: '4px 12px', fontSize: 11.5, fontWeight: filterType === f.key ? 600 : 500,
               borderRadius: 16, cursor: 'pointer',
-              border: filterType === f.key ? '1px solid #BFDBFE' : '1px solid #E2E8F0',
+              border: filterType === f.key ? '1px solid #2563EB' : '1px solid #E2E8F0',
               background: filterType === f.key ? '#EFF6FF' : '#FFFFFF',
               color: filterType === f.key ? '#2563EB' : '#64748B',
               transition: 'all 150ms ease',

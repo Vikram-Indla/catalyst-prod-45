@@ -2,7 +2,7 @@ import type { ProductionEvent } from '../hooks/useProductionEvents';
 import { ProductionEventRow } from './ProductionEventRow';
 
 interface Props {
-  events: ProductionEvent[];
+  events: (ProductionEvent & { eventType: string })[];
   loading: boolean;
   expandedId: string | null;
   onToggleExpand: (id: string) => void;
@@ -16,18 +16,21 @@ export function ProductionEventsTable({ events, loading, expandedId, onToggleExp
       style={{
         background: '#FFFFFF', borderRadius: 10,
         border: '1px solid #E2E8F0',
+        // Fix 13: box shadow
         boxShadow: '0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)',
         overflow: 'hidden',
       }}
     >
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        {/* Fix 14: 2px bottom border on thead */}
         <thead>
-          <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
+          <tr style={{ background: '#F8FAFC', borderBottom: '2px solid #E2E8F0' }}>
             {COLUMNS.map(col => (
               <th
                 key={col}
                 style={{
-                  padding: '10px 14px',
+                  padding: '10px 16px',
+                  paddingLeft: col === '#' ? 20 : 16,
                   fontSize: 11, fontWeight: 700, color: '#475569',
                   textTransform: 'uppercase', letterSpacing: '0.06em',
                   textAlign: col === '#' || col === 'Stories' ? 'center' : 'left',
@@ -47,7 +50,7 @@ export function ProductionEventsTable({ events, loading, expandedId, onToggleExp
             Array.from({ length: 4 }).map((_, i) => (
               <tr key={`skel-${i}`}>
                 {COLUMNS.map((_, ci) => (
-                  <td key={ci} style={{ padding: '12px 14px' }}>
+                  <td key={ci} style={{ padding: '14px 16px' }}>
                     <div style={{
                       height: 14, width: ci === 1 ? '80%' : '50%',
                       background: '#F1F5F9', borderRadius: 4,
