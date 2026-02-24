@@ -1,8 +1,9 @@
 /**
  * Issue Detail Drawer — 560px slide-in from right
+ * Cycle 2: Replaced native <select> with custom status dropdown
  */
-import React, { useEffect, useCallback } from 'react';
-import { X, ExternalLink } from 'lucide-react';
+import React, { useEffect, useCallback, useState, useRef } from 'react';
+import { X, ChevronDown } from 'lucide-react';
 import type { PHIssue, PHRelease } from '@/services/project-hub.service';
 import { getDisplayKey } from '@/services/project-hub.service';
 import { PHIssueTypeIcon } from './PHIssueTypeIcon';
@@ -41,7 +42,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
       {/* Backdrop */}
       <div
         className="fixed inset-0 z-40"
-        style={{ background: 'rgba(15,23,42,.4)' }}
+        style={{ background: 'rgba(15,23,42,.4)', animation: 'phFadeIn 200ms ease' }}
         onClick={onClose}
       />
 
@@ -53,7 +54,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
           background: '#fff',
           borderLeft: '1px solid #E2E8F0',
           boxShadow: '-8px 0 30px rgba(15,23,42,.1)',
-          animation: 'slideInRight .2s ease',
+          animation: 'phSlideInRight 200ms ease',
           fontFamily: "'Inter', sans-serif",
         }}
       >
@@ -70,8 +71,10 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
           <div className="flex-1" />
           <button
             onClick={onClose}
-            className="p-1.5 rounded-md hover:bg-gray-100 transition"
+            className="p-1.5 rounded-md transition-colors"
             style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#F1F5F9'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
             <X size={16} color="#64748B" />
           </button>
@@ -87,7 +90,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
 
             {/* Description */}
             <div className="mb-5">
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
+              <div style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                 Description
               </div>
               <div
@@ -108,16 +111,18 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
             {/* Child Issues */}
             {childIssues.length > 0 && (
               <div className="mb-5">
-                <div style={{ fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
+                <div style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                   Child Issues ({childIssues.length})
                 </div>
                 <div className="flex flex-col gap-1">
                   {childIssues.map(child => (
                     <div
                       key={child.id}
-                      className="flex items-center gap-2 px-3 rounded-md cursor-pointer hover:bg-gray-50 transition"
+                      className="flex items-center gap-2 px-3 rounded-md cursor-pointer transition-colors"
                       style={{ height: 36, border: '1px solid #F1F5F9' }}
                       onClick={() => onSelectIssue(child as unknown as PHIssue)}
+                      onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                     >
                       <PHIssueTypeIcon type={child.type} size={14} />
                       <span style={{ fontSize: 11, fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>
@@ -133,9 +138,9 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
               </div>
             )}
 
-            {/* Activity placeholder */}
+            {/* Activity */}
             <div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 6 }}>
+              <div style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
                 Activity
               </div>
               <div className="rounded-lg p-4 flex items-center justify-center" style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', color: '#94A3B8', fontSize: 12 }}>
@@ -149,79 +154,147 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
             className="flex-shrink-0 border-l overflow-y-auto"
             style={{ width: 200, borderColor: '#E2E8F0', background: '#FAFBFC', padding: 16 }}
           >
-            {[
-              {
-                label: 'Status',
-                content: (
-                  <select
-                    value={issue.status}
-                    onChange={e => onUpdateIssue(issue.id, { status: e.target.value as IssueStatus } as any)}
-                    className="w-full rounded-md text-xs font-medium px-2 py-1.5"
-                    style={{ border: '1px solid #E2E8F0', background: '#fff', cursor: 'pointer', fontSize: 11 }}
-                  >
-                    {Object.entries(STATUS_CONFIG).map(([k, v]) => (
-                      <option key={k} value={k}>{v.label}</option>
-                    ))}
-                  </select>
-                ),
-              },
-              {
-                label: 'Priority',
-                content: <PHPriorityIcon priority={issue.priority} showLabel />,
-              },
-              {
-                label: 'Assignee',
-                content: (
-                  <span style={{ fontSize: 12, color: '#64748B' }}>
-                    {issue.assignee_id ? 'Assigned' : 'Unassigned'}
-                  </span>
-                ),
-              },
-              {
-                label: 'Release',
-                content: <span style={{ fontSize: 12, color: '#334155', fontWeight: 500 }}>{relName}</span>,
-              },
-              {
-                label: 'Due Date',
-                content: (
-                  <span style={{
-                    fontSize: 12,
-                    fontFamily: "'JetBrains Mono', monospace",
-                    color: issue.overdue_days > 0 ? '#EF4444' : '#334155',
-                    fontWeight: 500,
-                  }}>
-                    {issue.due_date
-                      ? new Date(issue.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                      : '—'}
-                  </span>
-                ),
-              },
-              {
-                label: 'Source',
-                content: <PHSourceTag source={issue.source} />,
-              },
-            ].map(field => (
-              <div key={field.label} className="mb-4">
-                <div style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 4 }}>
-                  {field.label}
-                </div>
-                {field.content}
-              </div>
-            ))}
+            {/* Status — custom dropdown, NO native select */}
+            <AsideField label="Status">
+              <StatusDropdown
+                value={issue.status}
+                onChange={s => onUpdateIssue(issue.id, { status: s } as any)}
+              />
+            </AsideField>
+
+            <AsideField label="Priority">
+              <PHPriorityIcon priority={issue.priority} showLabel />
+            </AsideField>
+
+            <AsideField label="Assignee">
+              <span className="flex items-center gap-1.5" style={{ fontSize: 12, color: '#64748B' }}>
+                <span
+                  className="rounded-full inline-flex items-center justify-center"
+                  style={{
+                    width: 20, height: 20,
+                    background: issue.assignee_id ? '#E2E8F0' : 'transparent',
+                    border: issue.assignee_id ? 'none' : '1.5px dashed #CBD5E1',
+                    fontSize: 8, color: '#64748B',
+                  }}
+                >
+                  {issue.assignee_id ? '👤' : ''}
+                </span>
+                {issue.assignee_id ? 'Assigned' : 'Unassigned'}
+              </span>
+            </AsideField>
+
+            <AsideField label="Release">
+              <span style={{ fontSize: 12, color: '#334155', fontWeight: 500 }}>{relName}</span>
+            </AsideField>
+
+            <AsideField label="Due Date">
+              <span style={{
+                fontSize: 12,
+                fontFamily: "'JetBrains Mono', monospace",
+                color: (issue.overdue_days ?? 0) > 0 ? '#EF4444' : '#334155',
+                fontWeight: 500,
+              }}>
+                {issue.due_date
+                  ? new Date(issue.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                  : '—'}
+              </span>
+            </AsideField>
+
+            <AsideField label="Source">
+              <PHSourceTag source={issue.source} />
+            </AsideField>
           </div>
         </div>
       </div>
 
       <style>{`
-        @keyframes slideInRight {
+        @keyframes phSlideInRight {
           from { transform: translateX(100%); }
           to { transform: translateX(0); }
         }
-        @keyframes fadeIn {
+        @keyframes phFadeIn {
           from { opacity: 0; }
           to { opacity: 1; }
         }
       `}</style>
     </>
+  );
+}
+
+/* ── Aside field wrapper ── */
+function AsideField({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="mb-4">
+      <div style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+        {label}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+/* ── Custom Status Dropdown (replaces banned native <select>) ── */
+function StatusDropdown({ value, onChange }: { value: IssueStatus; onChange: (s: IssueStatus) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const cfg = STATUS_CONFIG[value];
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between gap-1 rounded-md transition-colors"
+        style={{
+          padding: '4px 8px',
+          fontSize: 11, fontWeight: 600,
+          border: '1px solid #E2E8F0',
+          background: '#fff',
+          color: '#334155',
+          cursor: 'pointer',
+        }}
+      >
+        <PHStatusLozenge status={value} compact />
+        <ChevronDown size={12} color="#94A3B8" />
+      </button>
+      {open && (
+        <div
+          className="absolute left-0 top-full mt-1 rounded-lg shadow-lg border z-50"
+          style={{ background: '#fff', borderColor: '#E2E8F0', minWidth: 160, padding: 4 }}
+        >
+          {(Object.keys(STATUS_CONFIG) as IssueStatus[]).map(s => {
+            const sc = STATUS_CONFIG[s];
+            return (
+              <button
+                key={s}
+                onClick={() => { onChange(s); setOpen(false); }}
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded transition-colors text-left"
+                style={{
+                  fontSize: 11, fontWeight: value === s ? 600 : 500,
+                  color: '#334155',
+                  background: value === s ? '#F1F5F9' : 'transparent',
+                  border: 'none', cursor: 'pointer',
+                }}
+                onMouseEnter={e => { if (value !== s) e.currentTarget.style.background = '#F8FAFC'; }}
+                onMouseLeave={e => { if (value !== s) e.currentTarget.style.background = 'transparent'; }}
+              >
+                <span className="rounded-full flex-shrink-0" style={{ width: 6, height: 6, background: sc.color }} />
+                {sc.label}
+                {value === s && <span className="ml-auto" style={{ fontSize: 10, color: '#2563EB' }}>✓</span>}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }

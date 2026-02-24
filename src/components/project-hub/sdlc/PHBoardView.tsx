@@ -1,7 +1,7 @@
 /**
  * ProjectHub Board View — Full Kanban with board switcher, typed cards, WIP limits, hover actions
  */
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Plus, Check, UserPlus, Flag, MoreHorizontal, AlertTriangle, Calendar } from 'lucide-react';
 import type { PHIssue, PHBoard } from '@/services/project-hub.service';
 import { getDisplayKey } from '@/services/project-hub.service';
@@ -9,15 +9,17 @@ import type { IssueType } from '@/types/project-hub.types';
 import { PHIssueTypeIcon, TYPE_ACCENT } from './PHIssueTypeIcon';
 import { PHSourceTag } from './PHSourceTag';
 import { PHPriorityIcon } from './PHPriorityIcon';
+import { SkeletonCard } from '@/components/project-hub/shared/SkeletonPulse';
 
 interface Props {
   issues: PHIssue[];
   boards: PHBoard[];
+  loading?: boolean;
   onSelectIssue: (issue: PHIssue) => void;
   onUpdateIssue: (id: string, updates: Partial<PHIssue>) => void;
 }
 
-export function PHBoardView({ issues, boards, onSelectIssue, onUpdateIssue }: Props) {
+export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIssue }: Props) {
   const [activeBoardIdx, setActiveBoardIdx] = useState(0);
   const activeBoard = boards[activeBoardIdx] ?? boards[0];
   const columns = activeBoard?.columns ?? [];
@@ -87,13 +89,13 @@ export function PHBoardView({ issues, boards, onSelectIssue, onUpdateIssue }: Pr
                   }}
                 />
                 <span
-                  className="uppercase tracking-wider"
+                  className="uppercase"
                   style={{
                     fontSize: 11,
                     fontWeight: 700,
                     color: isOnHold ? '#D97706' : '#64748B',
                     fontFamily: "'Inter', sans-serif",
-                    letterSpacing: '0.5px',
+                    letterSpacing: '0.06em',
                   }}
                 >
                   {col.name}
@@ -127,7 +129,12 @@ export function PHBoardView({ issues, boards, onSelectIssue, onUpdateIssue }: Pr
 
               {/* Cards container */}
               <div className="flex flex-col gap-1.5 flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 400px)' }}>
-                {colIssues.length === 0 ? (
+                {loading ? (
+                  <>
+                    <SkeletonCard height={100} />
+                    <SkeletonCard height={100} />
+                  </>
+                ) : colIssues.length === 0 ? (
                   <div
                     className="flex items-center justify-center rounded-lg"
                     style={{
@@ -206,7 +213,7 @@ function BoardCard({
           ? '0 4px 12px rgba(15,23,42,.1), 0 1px 3px rgba(15,23,42,.06)'
           : '0 1px 2px rgba(15,23,42,.06), 0 1px 3px rgba(15,23,42,.1)',
         transform: hovered ? 'translateY(-1px)' : 'none',
-        transition: 'all .15s ease',
+        transition: 'all 150ms ease',
         overflow: 'hidden',
       }}
       onClick={onClick}
@@ -220,35 +227,40 @@ function BoardCard({
       />
 
       {/* Hover quick-actions */}
-      {hovered && (
-        <div
-          className="absolute top-1 right-1 flex items-center gap-0.5 rounded-md z-10"
-          style={{
-            background: '#fff',
-            boxShadow: '0 2px 8px rgba(15,23,42,.12)',
-            padding: '2px 4px',
-            animation: 'fadeIn .12s ease',
-          }}
-          onClick={e => e.stopPropagation()}
-        >
-          {[
-            { icon: Check, label: 'Done', fn: onMarkDone },
-            { icon: UserPlus, label: 'Assign', fn: () => {} },
-            { icon: Flag, label: 'Flag', fn: () => {} },
-            { icon: MoreHorizontal, label: 'More', fn: () => {} },
-          ].map(a => (
-            <button
-              key={a.label}
-              title={a.label}
-              onClick={a.fn}
-              className="p-1 rounded hover:bg-gray-100 transition-colors"
-              style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
-            >
-              <a.icon size={12} color="#64748B" />
-            </button>
-          ))}
-        </div>
-      )}
+      <div
+        className="absolute top-1 right-1 flex items-center gap-0.5 rounded-md z-10"
+        style={{
+          background: '#fff',
+          boxShadow: '0 2px 8px rgba(15,23,42,.12)',
+          padding: '2px 4px',
+          opacity: hovered ? 1 : 0,
+          transform: hovered ? 'translateY(0)' : 'translateY(-4px)',
+          transition: 'opacity 150ms ease, transform 150ms ease',
+          pointerEvents: hovered ? 'auto' : 'none',
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        {[
+          { icon: Check, label: 'Done', fn: onMarkDone },
+          { icon: UserPlus, label: 'Assign', fn: () => {} },
+          { icon: Flag, label: 'Flag', fn: () => {} },
+          { icon: MoreHorizontal, label: 'More', fn: () => {} },
+        ].map(a => (
+          <button
+            key={a.label}
+            title={a.label}
+            onClick={a.fn}
+            className="p-1 rounded transition-colors"
+            style={{
+              border: 'none', background: 'transparent', cursor: 'pointer',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#F1F5F9'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+          >
+            <a.icon size={12} color="#64748B" />
+          </button>
+        ))}
+      </div>
 
       <div style={{ padding: '10px 12px 10px 14px' }}>
         {/* Top: Type icon + Key + Source */}
@@ -267,18 +279,18 @@ function BoardCard({
           <PHSourceTag source={issue.source} />
         </div>
 
-        {/* Overdue warning */}
-        {issue.overdue_days > 0 && (
+        {/* Overdue warning — only when > 0 */}
+        {(issue.overdue_days ?? 0) > 0 && (
           <div
             className="flex items-center gap-1 mb-1"
             style={{ fontSize: 10, fontWeight: 600, color: '#D97706' }}
           >
             <AlertTriangle size={10} />
-            <span>⚠ {issue.overdue_days}d overdue</span>
+            <span>{issue.overdue_days}d overdue</span>
           </div>
         )}
 
-        {/* Title */}
+        {/* Title — 2-line clamp */}
         <div
           style={{
             fontSize: 13,
@@ -300,23 +312,25 @@ function BoardCard({
         <div className="flex items-center justify-between">
           <PHPriorityIcon priority={issue.priority} />
           <div className="flex items-center gap-2">
-            {issue.due_date && (
+            {issue.due_date ? (
               <span className="flex items-center gap-1" style={{ fontSize: 10, color: '#94A3B8' }}>
                 <Calendar size={10} />
                 {new Date(issue.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </span>
-            )}
+            ) : null}
+            {/* Assignee avatar — dashed circle when null */}
             <span
               className="rounded-full flex items-center justify-center flex-shrink-0"
               style={{
                 width: 20, height: 20,
-                background: '#E2E8F0',
+                background: issue.assignee_id ? '#E2E8F0' : 'transparent',
+                border: issue.assignee_id ? 'none' : '1.5px dashed #CBD5E1',
                 fontSize: 8,
                 fontWeight: 700,
                 color: '#64748B',
               }}
             >
-              {issue.assignee_id ? '👤' : '?'}
+              {issue.assignee_id ? '👤' : ''}
             </span>
           </div>
         </div>

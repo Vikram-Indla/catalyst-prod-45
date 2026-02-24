@@ -1,7 +1,8 @@
 /**
  * Board Config Panel — 460px slide-in from right with 4 tabs
+ * Cycle 3: ESC close, save prompt
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { X, GripVertical, Trash2 } from 'lucide-react';
 import type { PHBoard } from '@/services/project-hub.service';
 import type { CardFieldConfig } from '@/types/project-hub.types';
@@ -34,6 +35,34 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
   );
   const [boardName, setBoardName] = useState(board?.name ?? '');
   const [filterJql, setFilterJql] = useState('');
+  const [dirty, setDirty] = useState(false);
+
+  // Reset state when board changes
+  useEffect(() => {
+    if (board) {
+      setCardFields(board.card_fields ?? { type: true, key: true, title: true, priority: true, assignee: true, due: true, source: true, overdue: true });
+      setBoardName(board.name ?? '');
+      setDirty(false);
+    }
+  }, [board?.id]);
+
+  // ESC close
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') handleClose();
+  }, [dirty]);
+
+  useEffect(() => {
+    if (open) document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [open, handleKeyDown]);
+
+  const handleClose = () => {
+    if (dirty) {
+      // Auto-save on close
+      onSave({ card_fields: cardFields, name: boardName || board?.name } as any);
+    }
+    onClose();
+  };
 
   if (!board || !open) return null;
 
@@ -47,7 +76,11 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
 
   return (
     <>
-      <div className="fixed inset-0 z-40" style={{ background: 'rgba(15,23,42,.4)' }} onClick={onClose} />
+      <div
+        className="fixed inset-0 z-40"
+        style={{ background: 'rgba(15,23,42,.4)', animation: 'phFadeIn 200ms ease' }}
+        onClick={handleClose}
+      />
       <div
         className="fixed top-0 right-0 bottom-0 z-50 flex flex-col"
         style={{
@@ -55,20 +88,26 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
           background: '#fff',
           borderLeft: '1px solid #E2E8F0',
           boxShadow: '-8px 0 30px rgba(15,23,42,.1)',
-          animation: 'slideInRight .2s ease',
+          animation: 'phSlideInRight 200ms ease',
           fontFamily: "'Inter', sans-serif",
         }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 flex-shrink-0" style={{ height: 52, borderBottom: '1px solid #E2E8F0' }}>
           <span style={{ fontSize: 14, fontWeight: 700, color: '#0F172A' }}>Board Configuration</span>
-          <button onClick={onClose} className="p-1.5 rounded-md hover:bg-gray-100" style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
+          <button
+            onClick={handleClose}
+            className="p-1.5 rounded-md transition-colors"
+            style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#F1F5F9'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+          >
             <X size={16} color="#64748B" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b px-5" style={{ borderColor: '#E2E8F0' }}>
+        <div className="flex px-5" style={{ borderBottom: '1px solid #E2E8F0' }}>
           {tabs.map(t => (
             <button
               key={t.key}
@@ -78,14 +117,12 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                 fontSize: 12,
                 fontWeight: activeTab === t.key ? 600 : 500,
                 color: activeTab === t.key ? '#2563EB' : '#64748B',
-                borderBottom: activeTab === t.key ? '2px solid #2563EB' : '2px solid transparent',
                 background: 'transparent',
                 border: 'none',
-                borderBottomWidth: 2,
-                borderBottomStyle: 'solid',
-                borderBottomColor: activeTab === t.key ? '#2563EB' : 'transparent',
+                borderBottom: `2px solid ${activeTab === t.key ? '#2563EB' : 'transparent'}`,
                 cursor: 'pointer',
                 fontFamily: "'Inter', sans-serif",
+                transition: 'color 120ms ease',
               }}
             >
               {t.label}
@@ -124,7 +161,12 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                     <span style={{ fontSize: 10, color: '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>
                       WIP {col.wip_limit || '∞'}
                     </span>
-                    <button className="p-1 rounded hover:bg-red-50 transition" style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}>
+                    <button
+                      className="p-1 rounded transition-colors"
+                      style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = '#FEF2F2'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                    >
                       <Trash2 size={12} color="#EF4444" />
                     </button>
                   </div>
@@ -135,15 +177,17 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
 
           {activeTab === 'cards' && (
             <div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', marginBottom: 12 }}>
+              <div style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
                 Card Field Visibility
               </div>
               <div className="flex flex-col gap-1">
                 {CARD_FIELDS.map(f => (
                   <label
                     key={f.key}
-                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 cursor-pointer"
+                    className="flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer transition-colors"
                     style={{ fontSize: 13, color: '#334155' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                   >
                     <input
                       type="checkbox"
@@ -152,6 +196,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                       onChange={() => {
                         if (!f.locked) {
                           setCardFields(prev => ({ ...prev, [f.key]: !prev[f.key] }));
+                          setDirty(true);
                         }
                       }}
                       className="accent-blue-600"
@@ -164,7 +209,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
               </div>
 
               {/* Live Preview Card */}
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', marginTop: 20, marginBottom: 8 }}>
+              <div style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 20, marginBottom: 8 }}>
                 Live Preview
               </div>
               <div className="rounded-xl border p-3" style={{ borderColor: '#E2E8F0', background: '#F8FAFC' }}>
@@ -190,16 +235,22 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
 
           {activeTab === 'filters' && (
             <div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', marginBottom: 12 }}>
+              <div style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
                 Quick Filters
               </div>
               {['My Items', 'Bugs Only', 'Unassigned', 'Overdue', 'On Hold'].map(f => (
-                <label key={f} className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 cursor-pointer" style={{ fontSize: 13, color: '#334155' }}>
+                <label
+                  key={f}
+                  className="flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer transition-colors"
+                  style={{ fontSize: 13, color: '#334155' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#F8FAFC'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                >
                   <input type="checkbox" className="accent-blue-600" style={{ width: 14, height: 14 }} />
                   {f}
                 </label>
               ))}
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', marginTop: 16, marginBottom: 8 }}>
+              <div style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 16, marginBottom: 8 }}>
                 JQL Filter
               </div>
               <textarea
@@ -221,24 +272,24 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
 
           {activeTab === 'general' && (
             <div>
-              <div style={{ fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', marginBottom: 8 }}>
+              <div style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
                 Board Name
               </div>
               <input
                 value={boardName}
-                onChange={e => setBoardName(e.target.value)}
+                onChange={e => { setBoardName(e.target.value); setDirty(true); }}
                 className="w-full rounded-md px-3 py-2 mb-6"
                 style={{ border: '1px solid #E2E8F0', fontSize: 13, color: '#0F172A' }}
               />
               <div className="flex gap-2">
                 <button
-                  className="px-4 py-2 rounded-md transition"
+                  className="px-4 py-2 rounded-md transition-colors"
                   style={{ fontSize: 12, fontWeight: 500, border: '1px solid #E2E8F0', background: '#fff', color: '#334155', cursor: 'pointer' }}
                 >
                   Duplicate Board
                 </button>
                 <button
-                  className="px-4 py-2 rounded-md transition"
+                  className="px-4 py-2 rounded-md transition-colors"
                   style={{ fontSize: 12, fontWeight: 500, border: '1px solid #FCA5A5', background: '#FEF2F2', color: '#EF4444', cursor: 'pointer' }}
                 >
                   Delete Board
@@ -254,24 +305,36 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
           style={{ height: 52, borderTop: '1px solid #E2E8F0' }}
         >
           <button
-            onClick={onClose}
-            className="px-4 py-1.5 rounded-md transition"
-            style={{ fontSize: 12, fontWeight: 500, border: '1px solid #E2E8F0', background: '#fff', color: '#64748B', cursor: 'pointer' }}
+            onClick={() => { setDirty(false); onClose(); }}
+            className="px-4 py-1.5 rounded-md transition-colors"
+            style={{ fontSize: 12, fontWeight: 500, border: '1px solid #E2E8F0', background: '#fff', color: '#64748B', cursor: 'pointer', borderRadius: 6 }}
           >
             Cancel
           </button>
           <button
             onClick={() => {
               onSave({ card_fields: cardFields, name: boardName || board.name } as any);
+              setDirty(false);
               onClose();
             }}
-            className="px-4 py-1.5 rounded-md transition"
-            style={{ fontSize: 12, fontWeight: 600, border: 'none', background: '#2563EB', color: '#fff', cursor: 'pointer' }}
+            className="px-4 py-1.5 rounded-md transition-colors"
+            style={{ fontSize: 12, fontWeight: 600, border: 'none', background: '#2563EB', color: '#fff', cursor: 'pointer', borderRadius: 6 }}
           >
             Save
           </button>
         </div>
       </div>
+
+      <style>{`
+        @keyframes phSlideInRight {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
+        }
+        @keyframes phFadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+      `}</style>
     </>
   );
 }
