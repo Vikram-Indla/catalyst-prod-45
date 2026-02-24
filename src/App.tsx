@@ -11,6 +11,9 @@ const PHProjectSettingsPageLazy = lazy(() => import("./pages/project-hub/Project
 const WorkItemsListPageLazy = lazy(() => import("./pages/project-hub/WorkItemsListPage"));
 const ProjectBoardPageLazy = lazy(() => import("./pages/project-hub/ProjectBoardPage"));
 const AllProjectsPageLazy = lazy(() => import("./pages/projecthub/AllProjectsPage"));
+const ProjectEpicBacklogPageLazy = lazy(() => import("./pages/project-hub/ProjectEpicBacklogPage"));
+const ProjectFeatureBacklogPageLazy = lazy(() => import("./pages/project-hub/ProjectFeatureBacklogPage"));
+const ProjectStoryBacklogPageLazy = lazy(() => import("./pages/project-hub/ProjectStoryBacklogPage"));
 import { List, Columns3, AlignJustify, GanttChart, Tag, BarChart3, Sparkles as SparklesIcon, Activity as ActivityIcon } from 'lucide-react';
 import PHPlaceholderBase from "./pages/project-hub/PhasePlaceholderPage";
 const PH_ICONS: Record<string, any> = { Backlog: List, Board: Columns3, List: AlignJustify, Timeline: GanttChart, Releases: Tag, Reports: BarChart3, 'Sprint Predictor': SparklesIcon, 'Risk Scanner': ActivityIcon };
@@ -1155,9 +1158,9 @@ const App = () => (
               <Route path="/project-hub/:key/dashboard" element={<Suspense fallback={<div />}><ProjectDashboardPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/settings" element={<Suspense fallback={<div />}><PHProjectSettingsPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/backlog" element={<Suspense fallback={<div />}><PHPlaceholder title="Backlog" phase="Phase 2" /></Suspense>} />
-              <Route path="/project-hub/:key/epic-backlog" element={<Suspense fallback={<div />}><PHPlaceholder title="Epic Backlog" phase="Phase 2" /></Suspense>} />
-              <Route path="/project-hub/:key/feature-backlog" element={<Suspense fallback={<div />}><PHPlaceholder title="Feature Backlog" phase="Phase 2" /></Suspense>} />
-              <Route path="/project-hub/:key/story-backlog" element={<Suspense fallback={<div />}><PHPlaceholder title="Story Backlog" phase="Phase 2" /></Suspense>} />
+              <Route path="/project-hub/:key/epic-backlog" element={<Suspense fallback={<div />}><ProjectEpicBacklogPageLazy /></Suspense>} />
+              <Route path="/project-hub/:key/feature-backlog" element={<Suspense fallback={<div />}><ProjectFeatureBacklogPageLazy /></Suspense>} />
+              <Route path="/project-hub/:key/story-backlog" element={<Suspense fallback={<div />}><ProjectStoryBacklogPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/board" element={<Suspense fallback={<div />}><ProjectBoardPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/list" element={<Suspense fallback={<div />}><WorkItemsListPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/timeline" element={<Suspense fallback={<div />}><PHPlaceholder title="Timeline" phase="Phase 3" /></Suspense>} />
