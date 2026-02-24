@@ -21,13 +21,14 @@ export function getEventColors(type: PcEventType, isPinned: boolean) {
 /** Fix 3: Map Jira issue types to event types */
 export type ClassifiedEventType = 'feature' | 'incident' | 'improvement' | 'security';
 
-export function classifyEventType(jiraIssueType: string, labels: string[]): ClassifiedEventType {
-  const type = jiraIssueType.toLowerCase();
-  if (type === 'bug' || type === 'qa bug' || type === 'defect' || type === 'production incident') return 'incident';
-  if (labels.includes('security')) return 'security';
-  if (labels.includes('performance')) return 'improvement';
-  if (type === 'story' || type === 'change request' || type === 'business request' || type === 'business gap') return 'feature';
-  if (type === 'task' || type === 'technical task' || type === 'sub-task' || type === 'backend' || type === 'frontend') return 'improvement';
+export function classifyEventType(jiraIssueType: string, labels: string[] = []): ClassifiedEventType {
+  const type = jiraIssueType.toLowerCase().replace(/\s+/g, '');
+  if (type === 'bug' || type === 'qabug' || type === 'defect' || type === 'productionincident') return 'incident';
+  if (labels.some(l => l.toLowerCase().includes('security'))) return 'security';
+  if (labels.some(l => l.toLowerCase().includes('performance'))) return 'improvement';
+  if (type === 'changerequest' || type === 'technicaltask') return 'improvement';
+  if (type === 'task' || type === 'sub-task' || type === 'backend' || type === 'frontend') return 'improvement';
+  if (type === 'story' || type === 'businessrequest' || type === 'businessgap') return 'feature';
   return 'feature';
 }
 
