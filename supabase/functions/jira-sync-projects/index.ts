@@ -92,8 +92,12 @@ serve(async (req) => {
     const defaultProgramId = "00000000-0000-0000-0000-000000000001";
     const colors = ["#2563EB", "#7C3AED", "#0D9488", "#D97706", "#EF4444", "#059669", "#8B5CF6", "#EC4899", "#F59E0B", "#06B6D4"];
 
-    const projectRows = jiraProjects.map((jp: any, idx: number) => {
-      const counts = countMap[jp.key] || { total: 0, todo: 0, in_progress: 0, done: 0, epics: 0, stories: 0, tasks: 0 };
+    // Only include projects that have synced issues (active projects)
+    const activeJiraProjects = jiraProjects.filter((jp: any) => countMap[jp.key] && countMap[jp.key].total > 0);
+    console.log(`[jira-sync-projects] ${activeJiraProjects.length} active projects (with issues)`);
+
+    const projectRows = activeJiraProjects.map((jp: any, idx: number) => {
+      const counts = countMap[jp.key];
       const completion = counts.total > 0 ? Math.round((counts.done / counts.total) * 100) : 0;
       
       return {
