@@ -1,14 +1,14 @@
-import type { ProductionIssue } from '../hooks/useProductionEvents';
+import type { ProductionEvent } from '../hooks/useProductionEvents';
 import { ProductionEventRow } from './ProductionEventRow';
 
 interface Props {
-  events: ProductionIssue[];
+  events: ProductionEvent[];
   loading: boolean;
   expandedId: string | null;
   onToggleExpand: (id: string) => void;
 }
 
-const COLUMNS = ['#', 'Ticket', 'Type', 'Project', 'Summary', 'Assignee', 'Deployed'];
+const COLUMNS = ['#', 'Event', 'Type', 'Release', 'Deployed', 'Stories'];
 
 export function ProductionEventsTable({ events, loading, expandedId, onToggleExpand }: Props) {
   return (
@@ -27,10 +27,10 @@ export function ProductionEventsTable({ events, loading, expandedId, onToggleExp
               <th
                 key={col}
                 style={{
-                  padding: '10px 12px',
+                  padding: '10px 14px',
                   fontSize: 11, fontWeight: 700, color: '#475569',
                   textTransform: 'uppercase', letterSpacing: '0.06em',
-                  textAlign: col === '#' ? 'center' : 'left',
+                  textAlign: col === '#' || col === 'Stories' ? 'center' : 'left',
                   fontFamily: "'Inter', sans-serif",
                   position: 'sticky', top: 0, zIndex: 1,
                   background: '#F8FAFC',
@@ -47,9 +47,9 @@ export function ProductionEventsTable({ events, loading, expandedId, onToggleExp
             Array.from({ length: 4 }).map((_, i) => (
               <tr key={`skel-${i}`}>
                 {COLUMNS.map((_, ci) => (
-                  <td key={ci} style={{ padding: '10px 12px' }}>
+                  <td key={ci} style={{ padding: '12px 14px' }}>
                     <div style={{
-                      height: 12, width: ci === 4 ? '80%' : '60%',
+                      height: 14, width: ci === 1 ? '80%' : '50%',
                       background: '#F1F5F9', borderRadius: 4,
                       animation: 'pulse 1.5s ease-in-out infinite',
                     }} />
@@ -75,11 +75,11 @@ export function ProductionEventsTable({ events, loading, expandedId, onToggleExp
 
           {!loading && events.map((event, i) => (
             <ProductionEventRow
-              key={event.issue_key}
+              key={event.id}
               event={event}
               index={i}
-              expanded={expandedId === event.issue_key}
-              onToggle={() => onToggleExpand(event.issue_key)}
+              expanded={expandedId === event.id}
+              onToggle={() => onToggleExpand(event.id)}
             />
           ))}
         </tbody>

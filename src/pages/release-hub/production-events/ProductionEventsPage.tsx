@@ -26,21 +26,21 @@ export default function ProductionEventsPage() {
 
   const filteredEvents = useMemo(() => {
     if (filterType === 'all') return events;
-    return events.filter(e => e.issue_type.toLowerCase() === filterType);
+    return events.filter(e => e.issueType.toLowerCase() === filterType);
   }, [events, filterType]);
 
   // Compute counts for chips
   const typeCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const e of events) {
-      const t = e.issue_type.toLowerCase();
+      const t = e.issueType.toLowerCase();
       counts[t] = (counts[t] || 0) + 1;
     }
     return counts;
   }, [events]);
 
   const syncedAt = events.length > 0
-    ? `Last deployed: ${new Date(events[0].jira_updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
+    ? `Last deployed: ${new Date(events[0].deployedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
     : '';
 
   return (
