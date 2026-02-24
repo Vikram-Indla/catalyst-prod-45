@@ -149,11 +149,11 @@ export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange
           <List size={14} />
         </button>
         <button
-          onClick={() => onViewChange('card')}
+          onClick={() => onViewChange('cards')}
           style={{
             width: 32, height: 30, border: 'none',
-            background: view === 'card' ? '#EFF6FF' : '#FFF',
-            color: view === 'card' ? '#2563EB' : '#94A3B8',
+            background: view === 'cards' || view === 'card' ? '#EFF6FF' : '#FFF',
+            color: view === 'cards' || view === 'card' ? '#2563EB' : '#94A3B8',
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
         >

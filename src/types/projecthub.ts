@@ -124,7 +124,7 @@ export interface ProjectTeamMember {
   project_role: string;  // project_members.role (admin/contributor/viewer)
 }
 
-export type ViewMode = 'list' | 'card';
+export type ViewMode = 'list' | 'card' | 'cards';
 export type SortColumn = 'name' | 'department' | 'status' | 'health_status' | 'total_epics' | 'total_stories' | 'total_tasks';
 export type SortDirection = 'asc' | 'desc';
 
