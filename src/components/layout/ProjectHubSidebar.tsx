@@ -3,21 +3,23 @@
  *
  * Two modes:
  * - Module nav (All Projects, Resource 360) when no project :key
- * - Project nav (Dashboard, List, Board, etc.) when inside a project
+ * - Project nav with PLANNING / TRACKING / AI INTELLIGENCE sections when inside a project
  */
 
 import {
   LayoutGrid,
-  Users,
   LayoutDashboard,
   List,
   Columns3,
   AlignJustify,
   GanttChart,
   BarChart3,
+  Rocket,
+  Sparkles,
+  Activity,
   Settings,
-  Star,
   UserSearch,
+  Kanban,
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
@@ -37,13 +39,6 @@ const MODULE_NAV_CONFIG: SidebarConfig = {
       items: [
         { id: 'all-projects', title: 'All Projects', path: '/project-hub/projects', icon: LayoutGrid, exact: false },
         { id: 'all-resources', title: 'All Resources', path: '/project-hub/resources', icon: UserSearch, exact: true },
-        
-      ],
-    },
-    {
-      title: 'FAVORITES',
-      items: [
-        // Placeholder — no starred projects by default
       ],
     },
   ],
@@ -53,23 +48,41 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
   const params = useParams<{ key?: string }>();
   const projectKey = params.key;
 
-  // If inside a project context, show project-specific nav
+  // If inside a project context, show project-specific nav with sections
   if (projectKey) {
+    const base = `/project-hub/${projectKey}`;
     const projectConfig: SidebarConfig = {
       badge: projectKey.slice(0, 2).toUpperCase(),
       label: projectKey.toUpperCase(),
-      items: [
-        { id: 'dashboard', title: 'Dashboard', path: `/project-hub/${projectKey}/dashboard`, icon: LayoutDashboard, exact: true },
-        { id: 'backlog', title: 'Backlog', path: `/project-hub/${projectKey}/backlog`, icon: List, exact: false },
-        { id: 'board', title: 'Board', path: `/project-hub/${projectKey}/board`, icon: Columns3, exact: false },
-        { id: 'list', title: 'List', path: `/project-hub/${projectKey}/list`, icon: AlignJustify, exact: false },
-        { id: 'timeline', title: 'Timeline', path: `/project-hub/${projectKey}/timeline`, icon: GanttChart, exact: false },
-        { id: 'reports', title: 'Reports', path: `/project-hub/${projectKey}/reports`, icon: BarChart3, exact: false },
+      sections: [
+        {
+          title: 'Planning',
+          items: [
+            { id: 'backlog',  title: 'Backlog',  path: `${base}/backlog`,  icon: Kanban,     exact: false },
+            { id: 'board',    title: 'Board',     path: `${base}/board`,    icon: Columns3,   exact: false },
+            { id: 'list',     title: 'List',      path: `${base}/list`,     icon: List,        exact: false },
+            { id: 'timeline', title: 'Timeline',  path: `${base}/timeline`, icon: GanttChart,  exact: false },
+          ],
+        },
+        {
+          title: 'Tracking',
+          items: [
+            { id: 'reports',  title: 'Reports',   path: `${base}/reports`,  icon: BarChart3, exact: false },
+            { id: 'releases', title: 'Releases',  path: `${base}/releases`, icon: Rocket,    exact: false, badge: 3, badgeVariant: 'info' },
+          ],
+        },
+        {
+          title: 'AI Intelligence',
+          items: [
+            { id: 'sprint-predictor', title: 'Sprint Predictor', path: `${base}/sprint-predictor`, icon: Sparkles, exact: false, textBadge: 'AI' },
+            { id: 'risk-scanner',     title: 'Risk Scanner',     path: `${base}/risk-scanner`,     icon: Activity, exact: false, textBadge: 'AI' },
+          ],
+        },
       ],
       footerItem: {
         id: 'settings',
         title: 'Settings',
-        path: `/project-hub/${projectKey}/settings`,
+        path: `${base}/settings`,
         icon: Settings,
         exact: true,
       },

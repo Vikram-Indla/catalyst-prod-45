@@ -9,10 +9,11 @@ const ProjectListPageLazy = lazy(() => import("./pages/project-hub/ProjectListPa
 const ProjectDashboardPageLazy = lazy(() => import("./pages/project-hub/ProjectDashboardPage"));
 const PHProjectSettingsPageLazy = lazy(() => import("./pages/project-hub/ProjectSettingsPage"));
 const WorkItemsListPageLazy = lazy(() => import("./pages/project-hub/WorkItemsListPage"));
+const ProjectBoardPageLazy = lazy(() => import("./pages/project-hub/ProjectBoardPage"));
 const AllProjectsPageLazy = lazy(() => import("./pages/projecthub/AllProjectsPage"));
-import { List, Columns3, AlignJustify, GanttChart, Tag, BarChart3 } from 'lucide-react';
+import { List, Columns3, AlignJustify, GanttChart, Tag, BarChart3, Sparkles as SparklesIcon, Activity as ActivityIcon } from 'lucide-react';
 import PHPlaceholderBase from "./pages/project-hub/PhasePlaceholderPage";
-const PH_ICONS: Record<string, any> = { Backlog: List, Board: Columns3, List: AlignJustify, Timeline: GanttChart, Releases: Tag, Reports: BarChart3 };
+const PH_ICONS: Record<string, any> = { Backlog: List, Board: Columns3, List: AlignJustify, Timeline: GanttChart, Releases: Tag, Reports: BarChart3, 'Sprint Predictor': SparklesIcon, 'Risk Scanner': ActivityIcon };
 const PH_DESCRIPTIONS: Record<string, string> = {
   Backlog: 'Sprint backlog with drag-and-drop prioritization.',
   Board: 'Kanban board with customizable swim lanes.',
@@ -20,6 +21,8 @@ const PH_DESCRIPTIONS: Record<string, string> = {
   Timeline: 'Gantt-style timeline with dependency tracking.',
   Releases: 'Release planning and version management.',
   Reports: 'Velocity charts, burn-down, and team analytics.',
+  'Sprint Predictor': 'AI-powered sprint completion predictions.',
+  'Risk Scanner': 'AI-driven risk detection and mitigation.',
 };
 function PHPlaceholder({ title, phase }: { title: string; phase: string }) {
   return <PHPlaceholderBase title={title} phase={phase} icon={PH_ICONS[title] || List} description={PH_DESCRIPTIONS[title] || `Coming in ${phase}`} />;
@@ -1150,11 +1153,13 @@ const App = () => (
               <Route path="/project-hub/:key/dashboard" element={<Suspense fallback={<div />}><ProjectDashboardPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/settings" element={<Suspense fallback={<div />}><PHProjectSettingsPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/backlog" element={<Suspense fallback={<div />}><PHPlaceholder title="Backlog" phase="Phase 2" /></Suspense>} />
-              <Route path="/project-hub/:key/board" element={<Suspense fallback={<div />}><PHPlaceholder title="Board" phase="Phase 2" /></Suspense>} />
+              <Route path="/project-hub/:key/board" element={<Suspense fallback={<div />}><ProjectBoardPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/list" element={<Suspense fallback={<div />}><WorkItemsListPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/timeline" element={<Suspense fallback={<div />}><PHPlaceholder title="Timeline" phase="Phase 3" /></Suspense>} />
               <Route path="/project-hub/:key/releases" element={<Suspense fallback={<div />}><PHPlaceholder title="Releases" phase="Phase 3" /></Suspense>} />
               <Route path="/project-hub/:key/reports" element={<Suspense fallback={<div />}><PHPlaceholder title="Reports" phase="Phase 4" /></Suspense>} />
+              <Route path="/project-hub/:key/sprint-predictor" element={<Suspense fallback={<div />}><PHPlaceholder title="Sprint Predictor" phase="Phase 5" /></Suspense>} />
+              <Route path="/project-hub/:key/risk-scanner" element={<Suspense fallback={<div />}><PHPlaceholder title="Risk Scanner" phase="Phase 5" /></Suspense>} />
             </Route>
 
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
