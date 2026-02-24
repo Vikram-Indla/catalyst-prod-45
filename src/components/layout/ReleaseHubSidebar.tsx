@@ -20,6 +20,7 @@ import {
   PieChart,
   ShieldCheck,
   Network,
+  Newspaper,
   Settings,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
@@ -44,6 +45,12 @@ const releaseHubSections: SidebarSection[] = [
       { id: 'all-releases', title: 'All Releases', path: '/releasehub/all', icon: Package, exact: false },
       { id: 'calendar', title: 'Calendar View', path: '/releasehub/calendar', icon: Calendar, exact: false },
       { id: 'compare', title: 'Release Compare', path: '/releasehub/compare', icon: GitCompare, exact: false },
+    ],
+  },
+  {
+    title: 'Production',
+    items: [
+      { id: 'production-events', title: 'Production Events', path: '/releasehub/production-events', icon: Newspaper, exact: false },
     ],
   },
   {

@@ -17666,6 +17666,216 @@ export type Database = {
         }
         Relationships: []
       }
+      pc_audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          event_id: string | null
+          id: string
+          new_narrative: string | null
+          old_narrative: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          new_narrative?: string | null
+          old_narrative?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          event_id?: string | null
+          id?: string
+          new_narrative?: string | null
+          old_narrative?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pc_audit_log_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "pc_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pc_audit_log_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "pc_events_list_view"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pc_event_tickets: {
+        Row: {
+          change_number: string | null
+          created_at: string
+          event_id: string
+          fix_version: string | null
+          id: string
+          summary: string | null
+          ticket_key: string
+          type: string | null
+        }
+        Insert: {
+          change_number?: string | null
+          created_at?: string
+          event_id: string
+          fix_version?: string | null
+          id?: string
+          summary?: string | null
+          ticket_key: string
+          type?: string | null
+        }
+        Update: {
+          change_number?: string | null
+          created_at?: string
+          event_id?: string
+          fix_version?: string | null
+          id?: string
+          summary?: string | null
+          ticket_key?: string
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pc_event_tickets_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "pc_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pc_event_tickets_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "pc_events_list_view"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pc_events: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          deployment_date: string
+          event_description: string | null
+          event_number: number
+          event_title: string
+          event_type: string
+          id: string
+          investor_impact: string | null
+          is_pinned: boolean
+          linked_change_numbers: string[] | null
+          linked_release_versions: string[] | null
+          narrative_version: number
+          period_end: string
+          period_start: string
+          period_type: string
+          source_epic_key: string | null
+          source_epic_summary: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          deployment_date?: string
+          event_description?: string | null
+          event_number?: number
+          event_title: string
+          event_type?: string
+          id?: string
+          investor_impact?: string | null
+          is_pinned?: boolean
+          linked_change_numbers?: string[] | null
+          linked_release_versions?: string[] | null
+          narrative_version?: number
+          period_end: string
+          period_start: string
+          period_type?: string
+          source_epic_key?: string | null
+          source_epic_summary?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          deployment_date?: string
+          event_description?: string | null
+          event_number?: number
+          event_title?: string
+          event_type?: string
+          id?: string
+          investor_impact?: string | null
+          is_pinned?: boolean
+          linked_change_numbers?: string[] | null
+          linked_release_versions?: string[] | null
+          narrative_version?: number
+          period_end?: string
+          period_start?: string
+          period_type?: string
+          source_epic_key?: string | null
+          source_epic_summary?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      pc_period_summaries: {
+        Row: {
+          created_at: string
+          event_count: number
+          feature_count: number
+          id: string
+          improvement_count: number
+          incident_count: number
+          performance_count: number
+          period_end: string
+          period_start: string
+          period_type: string
+          security_count: number
+          summary_text: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          event_count?: number
+          feature_count?: number
+          id?: string
+          improvement_count?: number
+          incident_count?: number
+          performance_count?: number
+          period_end: string
+          period_start: string
+          period_type: string
+          security_count?: number
+          summary_text: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          event_count?: number
+          feature_count?: number
+          id?: string
+          improvement_count?: number
+          incident_count?: number
+          performance_count?: number
+          period_end?: string
+          period_start?: string
+          period_type?: string
+          security_count?: number
+          summary_text?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       permission_roles: {
         Row: {
           created_at: string | null
@@ -55121,6 +55331,81 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      pc_events_list_view: {
+        Row: {
+          created_at: string | null
+          deleted_at: string | null
+          deployment_date: string | null
+          event_description: string | null
+          event_number: number | null
+          event_title: string | null
+          event_type: string | null
+          id: string | null
+          investor_impact: string | null
+          is_pinned: boolean | null
+          linked_change_numbers: string[] | null
+          linked_release_versions: string[] | null
+          linked_ticket_count: number | null
+          narrative_version: number | null
+          period_end: string | null
+          period_start: string | null
+          period_type: string | null
+          source_epic_key: string | null
+          source_epic_summary: string | null
+          status: string | null
+          ticket_details: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          deleted_at?: string | null
+          deployment_date?: string | null
+          event_description?: string | null
+          event_number?: number | null
+          event_title?: string | null
+          event_type?: string | null
+          id?: string | null
+          investor_impact?: string | null
+          is_pinned?: boolean | null
+          linked_change_numbers?: string[] | null
+          linked_release_versions?: string[] | null
+          linked_ticket_count?: never
+          narrative_version?: number | null
+          period_end?: string | null
+          period_start?: string | null
+          period_type?: string | null
+          source_epic_key?: string | null
+          source_epic_summary?: string | null
+          status?: string | null
+          ticket_details?: never
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          deleted_at?: string | null
+          deployment_date?: string | null
+          event_description?: string | null
+          event_number?: number | null
+          event_title?: string | null
+          event_type?: string | null
+          id?: string | null
+          investor_impact?: string | null
+          is_pinned?: boolean | null
+          linked_change_numbers?: string[] | null
+          linked_release_versions?: string[] | null
+          linked_ticket_count?: never
+          narrative_version?: number | null
+          period_end?: string | null
+          period_start?: string | null
+          period_type?: string | null
+          source_epic_key?: string | null
+          source_epic_summary?: string | null
+          status?: string | null
+          ticket_details?: never
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       ph_at_risk_items: {
         Row: {

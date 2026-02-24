@@ -27,6 +27,7 @@ const PH_DESCRIPTIONS: Record<string, string> = {
 function PHPlaceholder({ title, phase }: { title: string; phase: string }) {
   return <PHPlaceholderBase title={title} phase={phase} icon={PH_ICONS[title] || List} description={PH_DESCRIPTIONS[title] || `Coming in ${phase}`} />;
 }
+const ProductionEventsPageLazy = lazy(() => import("./pages/release-hub/production-events/ProductionEventsPage"));
 const StrategicThemesPage = lazy(() => import("./pages/strategyhub/StrategicThemesPage"));
 const GoalsKeyResultsPage = lazy(() => import("./pages/strategyhub/GoalsKeyResultsPage"));
 // ProdHubAppShell removed — /producthub/* now uses CatalystShell
@@ -643,6 +644,7 @@ const App = () => (
               <Route path="/releasehub/coverage" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CoverageReportsPage /></Suspense>} />
               <Route path="/releasehub/quality-gates" element={<Suspense fallback={<div className="p-8">Loading...</div>}><QualityGatesPage /></Suspense>} />
               <Route path="/releasehub/rtm" element={<Suspense fallback={<div className="p-8">Loading...</div>}><RTMPage /></Suspense>} />
+              <Route path="/releasehub/production-events" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ProductionEventsPageLazy /></Suspense>} />
               <Route path="/releasehub/:releaseId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ReleaseDashboardV5Page /></Suspense>} />
               
                {/* Priorities Module */}
