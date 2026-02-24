@@ -295,7 +295,7 @@ function FilterPill({ label, active, onClick, dotColor }: {
       display: 'inline-flex', alignItems: 'center', gap: 3,
       fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 4,
       cursor: 'pointer', transition: 'all .12s',
-      background: active ? T.text1 : T.surface,
+      background: active ? '#2563EB' : T.surface,
       color: active ? '#fff' : T.text3,
       border: active ? 'none' : `1px solid ${T.borderStrong}`,
     }}>
