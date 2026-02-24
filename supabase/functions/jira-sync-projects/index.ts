@@ -312,6 +312,11 @@ serve(async (req) => {
         if (rows.length < 1000) rHasMore = false;
       }
 
+      // Delete existing releases before re-inserting
+      for (const phId of Object.values(keyToPhId)) {
+        await supabase.from("ph_releases").delete().eq("project_id", phId);
+      }
+
       const releaseRows: any[] = [];
       const today = new Date().toISOString().slice(0, 10);
       for (const [, rel] of Object.entries(releaseMap)) {
@@ -338,6 +343,159 @@ serve(async (req) => {
         }
         console.log(`[jira-sync-projects] Inserted ${releaseRows.length} releases from Jira fix versions`);
       }
+
+      // 9. Sync ph_issues → ph_work_items
+      console.log("[jira-sync-projects] Syncing ph_issues → ph_work_items...");
+
+      // Build release name→id lookup per project
+      const { data: allReleases } = await supabase
+        .from("ph_releases")
+        .select("id, name, project_id");
+      const releaseNameToId: Record<string, string> = {};
+      for (const r of allReleases ?? []) {
+        releaseNameToId[`${r.project_id}::${r.name}`] = r.id;
+      }
+
+      // Normalize Jira status to dashboard-friendly status
+      function normalizeStatus(jiraStatus: string): string {
+        const s = jiraStatus.toLowerCase().trim();
+        if (['backlog', 'new'].includes(s)) return 'backlog';
+        if (['to do', 'todo', 'selected for development', 'ready for development', 'figma design', 'ready for entity', 'entity input', 'brd backlog', 'brd preparation', 'brd under review', 'req submitted', 'in requirements'].includes(s)) return 'to_do';
+        if (['in progress', 'in-progress', 'in development', 'under implementation', 'in design', 'brd sign off', 'implementation review', 'technical validation', 'in rfp'].includes(s)) return 'in_progress';
+        if (['in qa', 'internal qa', 'staging/qa', 'ready for qa', 'end to end testing', 'retest', 'qa fail'].includes(s)) return 'in_qa';
+        if (['in uat', 'uat ready'].includes(s)) return 'in_uat';
+        if (['in beta', 'beta ready'].includes(s)) return 'in_beta';
+        if (['production ready', 'ready for production'].includes(s)) return 'production_ready';
+        if (['in production', 'done', 'closed', 'resolved'].includes(s)) return 'in_production';
+        if (['on hold', 'blocked', 'awaiting info'].includes(s)) return 'on_hold';
+        if (['canceled', 'rejected'].includes(s)) return 'Cancelled';
+        return s; // fallback
+      }
+
+      // Normalize Jira issue type
+      function normalizeType(jiraType: string): string {
+        const t = jiraType.toLowerCase().trim();
+        if (t === 'epic') return 'Epic';
+        if (['story', 'business request', 'change request', 'business gap'].includes(t)) return 'Story';
+        if (['bug', 'qa bug', 'defect'].includes(t)) return 'Bug';
+        if (['sub-task', 'subtask'].includes(t)) return 'Subtask';
+        if (['feature', 'frontend', 'backend', 'integration', 'api requirement', 'brd task', 'entity figma', 'figma'].includes(t)) return 'Feature';
+        if (t === 'production incident') return 'Incident';
+        return 'Task'; // default fallback
+      }
+
+      // Normalize priority
+      function normalizePriority(jiraPrio: string): string {
+        const p = jiraPrio?.toLowerCase()?.trim() ?? 'medium';
+        if (p === 'highest') return 'critical';
+        if (p === 'high') return 'high';
+        if (p === 'medium') return 'medium';
+        return 'low'; // low, lowest
+      }
+
+      // Process issues in pages
+      let wiOffset = 0;
+      let wiHasMore = true;
+      let totalSynced = 0;
+      // First pass: collect all issues and build parent_key→id map
+      const allIssueRows: any[] = [];
+      const issueKeyToId: Record<string, string> = {};
+
+      while (wiHasMore) {
+        const { data: issues } = await supabase
+          .from("ph_issues")
+          .select("issue_key, project_key, issue_type, summary, status, status_category, priority, assignee_account_id, parent_key, fix_versions, due_date, jira_created_at, jira_updated_at, labels")
+          .range(wiOffset, wiOffset + 999);
+        if (!issues || issues.length === 0) { wiHasMore = false; break; }
+
+        for (const issue of issues) {
+          const phProjectId = keyToPhId[issue.project_key];
+          if (!phProjectId) continue;
+
+          // Resolve release_id from first fix_version
+          let releaseId: string | null = null;
+          const fvs = issue.fix_versions as any[];
+          if (fvs && Array.isArray(fvs) && fvs.length > 0 && fvs[0].name) {
+            releaseId = releaseNameToId[`${phProjectId}::${fvs[0].name}`] ?? null;
+          }
+
+          // Resolve assignee
+          const assigneeId = issue.assignee_account_id ? (jiraToProfile[issue.assignee_account_id] ?? null) : null;
+
+          // Generate deterministic UUID from issue_key for stable IDs
+          const id = crypto.randomUUID();
+          issueKeyToId[issue.issue_key] = id;
+
+          const labels = issue.labels as any[];
+          
+          allIssueRows.push({
+            id,
+            jira_issue_id: issue.issue_key,
+            item_key: issue.issue_key,
+            item_type: normalizeType(issue.issue_type),
+            title: issue.summary,
+            summary: issue.summary,
+            status: normalizeStatus(issue.status),
+            priority: normalizePriority(issue.priority),
+            jira_status: issue.status,
+            jira_priority: issue.priority,
+            project_id: phProjectId,
+            release_id: releaseId,
+            assignee_id: assigneeId,
+            assignee_user_id: assigneeId,
+            due_date: issue.due_date ?? null,
+            parent_key: issue.parent_key,
+            sync_source: 'jira',
+            is_jira_locked: true,
+            last_synced_at: new Date().toISOString(),
+            created_at: issue.jira_created_at ?? new Date().toISOString(),
+            updated_at: issue.jira_updated_at ?? new Date().toISOString(),
+            labels: Array.isArray(labels) ? labels.map((l: any) => typeof l === 'string' ? l : l?.name ?? '') : [],
+          });
+        }
+        wiOffset += 1000;
+        if (issues.length < 1000) wiHasMore = false;
+      }
+
+      // Build parent_key→id map but don't set parent_id yet (FK constraint)
+      const parentUpdates: { id: string; parent_id: string }[] = [];
+      for (const row of allIssueRows) {
+        if (row.parent_key && issueKeyToId[row.parent_key]) {
+          parentUpdates.push({ id: row.id, parent_id: issueKeyToId[row.parent_key] });
+        }
+        delete row.parent_key; // not a column
+      }
+
+      // Delete existing work items for these projects and insert fresh
+      for (const phId of Object.values(keyToPhId)) {
+        await supabase.from("ph_work_items").delete().eq("project_id", phId);
+      }
+
+      // Insert in batches WITHOUT parent_id
+      for (let i = 0; i < allIssueRows.length; i += 500) {
+        const batch = allIssueRows.slice(i, i + 500);
+        const { error: wiErr } = await supabase.from("ph_work_items").insert(batch);
+        if (wiErr) {
+          console.warn(`[jira-sync-projects] Work item insert batch ${i} error:`, wiErr.message);
+        } else {
+          totalSynced += batch.length;
+        }
+      }
+
+      // Now update parent_id references
+      if (parentUpdates.length > 0) {
+        let parentUpdated = 0;
+        for (let i = 0; i < parentUpdates.length; i += 200) {
+          const batch = parentUpdates.slice(i, i + 200);
+          for (const pu of batch) {
+            const { error: puErr } = await supabase.from("ph_work_items").update({ parent_id: pu.parent_id }).eq("id", pu.id);
+            if (!puErr) parentUpdated++;
+          }
+        }
+        console.log(`[jira-sync-projects] Updated ${parentUpdated} parent references`);
+      }
+
+      console.log(`[jira-sync-projects] Synced ${totalSynced} work items to ph_work_items`);
     }
 
     return new Response(
