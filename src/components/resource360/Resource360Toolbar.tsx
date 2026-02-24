@@ -1,5 +1,6 @@
 import React from 'react';
 import type { ViewMode, Quarter } from '@/types/resource360';
+import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 
 interface Props {
   activeView: ViewMode;
@@ -38,7 +39,7 @@ export function Resource360Toolbar({
               padding: '6px 16px', fontSize: 12, cursor: 'pointer', border: 'none',
               borderRight: '1px solid #D9D2C9',
               fontWeight: activeView === tab.key ? 700 : 600,
-              background: activeView === tab.key ? '#1A1A2E' : 'transparent',
+              background: activeView === tab.key ? '#2563EB' : 'transparent',
               color: activeView === tab.key ? '#fff' : '#3D3D56',
               transition: 'all .12s',
             }}
@@ -71,21 +72,11 @@ export function Resource360Toolbar({
 
       {/* Right side */}
       <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-        {/* Intelligence button — dark navy gradient, NO purple */}
-        <button
+        {/* Intelligence button — purple outlined style */}
+        <AIIntelligenceButton
+          label="Intelligence"
           onClick={onAIOpen}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '6px 14px', borderRadius: 8,
-            background: 'linear-gradient(135deg, #1A1A2E, #2D2D4A)',
-            border: 'none', color: '#fff', fontSize: 12, fontWeight: 700,
-            cursor: 'pointer', transition: 'opacity 150ms',
-          }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = '0.9'; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
-        >
-          Intelligence
-        </button>
+        />
 
         {/* Fullscreen toggle */}
         <button
