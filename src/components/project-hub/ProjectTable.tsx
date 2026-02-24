@@ -4,7 +4,7 @@ const COLUMNS = [
   { key: 'star', label: '', width: 40 },
   { key: 'key', label: 'KEY', width: 80 },
   { key: 'name', label: 'PROJECT NAME', width: undefined },
-  { key: 'department', label: 'DEPARTMENT', width: 140 },
+  
   { key: 'status', label: 'STATUS', width: 100 },
   { key: 'members', label: 'MEMBERS', width: 100 },
   { key: 'items', label: 'ITEMS', width: 70 },

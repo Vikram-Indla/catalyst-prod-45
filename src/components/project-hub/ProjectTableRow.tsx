@@ -83,10 +83,6 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
         </div>
       </td>
 
-      {/* Department */}
-      <td style={{ padding: '0 8px', fontSize: 12, color: '#334155' }}>
-        {project.department}
-      </td>
 
       {/* Status */}
       <td style={{ padding: '0 8px' }}>
