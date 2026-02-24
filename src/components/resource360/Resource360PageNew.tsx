@@ -79,15 +79,15 @@ export default function Resource360PageNew() {
   if (isInitialLoad) {
     return (
       <div className="r360-root" style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: "'Inter', sans-serif" }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 20px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 20px', background: '#FFFFFF', borderBottom: '1px solid #D9D2C9' }}>
           <div className="r360-skeleton" style={{ width: 64, height: 64, borderRadius: '50%' }} />
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div className="r360-skeleton" style={{ height: 20, borderRadius: 6, width: '40%' }} />
             <div className="r360-skeleton" style={{ height: 14, borderRadius: 6, width: '25%' }} />
           </div>
         </div>
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ textAlign: 'center', color: '#9CA3AF', fontSize: 13 }}>Loading Resource 360°...</div>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F5F0EB' }}>
+          <div style={{ textAlign: 'center', color: '#6B6B80', fontSize: 13 }}>Loading Resource 360°...</div>
         </div>
         <style>{skeletonCSS}</style>
       </div>
@@ -95,14 +95,20 @@ export default function Resource360PageNew() {
   }
 
   return (
-    <div className="r360-root" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', fontFamily: "'Inter', sans-serif" }}>
-      {/* Banner — NO breadcrumb */}
+    <div className="r360-root" style={{
+      display: 'flex', flexDirection: 'column', height: '100%', width: '100%',
+      fontFamily: "'Inter', sans-serif", maxWidth: 1440, margin: '0 auto',
+    }}>
+      {/* D16: Banner with white bg, shadow, bottom border — clear separation */}
       {!isFullscreen && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '0 20px' }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12, padding: '0 20px',
+          background: '#FFFFFF', boxShadow: '0 2px 6px rgba(0,0,0,.04)',
+          borderBottom: '1px solid #D9D2C9',
+        }}>
           <div style={{ flex: 1 }}>
             <Resource360Banner summary={summary ?? null} isLoading={summaryLoading} />
           </div>
-          {/* Stale count badge */}
           {staleCount > 0 && (
             <div style={{ textAlign: 'center', padding: '2px 10px', background: '#FEE2E2', borderRadius: 6, border: '1px solid #FCA5A5' }}>
               <div style={{ fontSize: 14, fontWeight: 900, color: '#DC2626' }}>{staleCount}</div>
@@ -112,7 +118,7 @@ export default function Resource360PageNew() {
         </div>
       )}
 
-      {/* Toolbar */}
+      {/* D17: Toolbar with container background */}
       <Resource360Toolbar
         activeView={activeView}
         onViewChange={setActiveView}
@@ -123,7 +129,7 @@ export default function Resource360PageNew() {
         onFullscreenToggle={handleFullscreenToggle}
       />
 
-      {/* Cross-Quarter Comparison Stripe */}
+      {/* D18/D24: Cross-Quarter Comparison Stripe — stronger gradient + dismiss fix */}
       {prevQuarterStats && items.length > 0 && (() => {
         const done = items.filter(i => getStatusCategory(i.status, i.status_category) === 'done').length;
         const cr = items.length > 0 ? Math.round((done / items.length) * 100) : 0;
@@ -131,10 +137,13 @@ export default function Resource360PageNew() {
         return (
           <div style={{
             display: 'flex', alignItems: 'center', gap: 14,
-            padding: '6px 20px', background: '#EFF6FF', borderBottom: '1px solid #BFDBFE',
-            fontSize: 11, fontWeight: 600,
+            padding: '8px 16px',
+            background: 'linear-gradient(90deg, #EFF6FF 0%, #DBEAFE 100%)',
+            borderLeft: '4px solid #2563EB',
+            borderBottom: '1px solid #BFDBFE',
+            fontSize: 11, fontWeight: 700,
           }}>
-            <span style={{ color: '#2563EB', fontWeight: 700 }}>vs {prevQuarterStats.label}</span>
+            <span style={{ color: '#2563EB', fontWeight: 800 }}>vs {prevQuarterStats.label}</span>
             <span style={{ color: '#374151' }}>
               Items: {items.length}
               <ComparisonArrow current={items.length} prev={prevQuarterStats.total} />
@@ -147,16 +156,21 @@ export default function Resource360PageNew() {
               Avg Age: {aa}d
               <ComparisonArrow current={aa} prev={prevQuarterStats.avgAge} lowerIsBetter />
             </span>
+            {/* D24: Dismiss with ✕ prefix and hover */}
             <button onClick={() => setPrevQuarterStats(null)} style={{
-              marginLeft: 'auto', fontSize: 9, color: '#6B7280', background: 'transparent',
-              border: 'none', cursor: 'pointer', textDecoration: 'underline',
-            }}>Dismiss</button>
+              marginLeft: 'auto', fontSize: 10, color: '#6B6B80', fontWeight: 700,
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              padding: '2px 6px', borderRadius: 4, transition: 'background .1s',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#F5F0EB'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            >✕ Dismiss</button>
           </div>
         );
       })()}
 
-      {/* View container */}
-      <div style={{ flex: 1, overflow: 'auto' }}>
+      {/* View container — warm ivory background */}
+      <div style={{ flex: 1, overflow: 'auto', background: '#F5F0EB' }}>
         {activeView === 'ring' && (
           <Resource360Ring
             items={items} resourceName={resourceName} resourceAvatar={resourceAvatar}
@@ -188,7 +202,7 @@ function ComparisonArrow({ current, prev, lowerIsBetter }: { current: number; pr
   const isGood = lowerIsBetter ? !isUp : isUp;
   const color = isGood ? '#0E8A5F' : '#E23636';
   return (
-    <span style={{ marginLeft: 4, fontSize: 10, fontWeight: 700, color }}>
+    <span style={{ marginLeft: 4, fontSize: 13, fontWeight: 700, color }}>
       {isUp ? '↑' : '↓'} {Math.abs(diff)}
     </span>
   );
@@ -196,7 +210,7 @@ function ComparisonArrow({ current, prev, lowerIsBetter }: { current: number; pr
 
 const skeletonCSS = `
   .r360-skeleton {
-    background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+    background: linear-gradient(90deg, #EDE7E0 25%, #D9D2C9 50%, #EDE7E0 75%);
     background-size: 200% 100%;
     animation: r360shimmer 1.5s infinite;
   }
