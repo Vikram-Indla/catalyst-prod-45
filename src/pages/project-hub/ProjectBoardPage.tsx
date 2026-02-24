@@ -1,65 +1,38 @@
 /**
  * ProjectHub Board View — SDLC Kanban Board Shell
- * Stage A: Skeleton layout with header, stat cards, toolbar, and empty board columns
+ * Wired to ph_sdlc_issues, ph_sdlc_releases, ph_boards via service layer
  */
 
 import { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { Columns3, List, Kanban, GanttChart, AlertTriangle, CheckCircle2, Clock, BarChart3, Sparkles } from 'lucide-react';
 import type { ProjectView } from '@/types/project-hub.types';
-import { DEFAULT_BOARD_COLUMNS } from '@/types/project-hub.types';
+import { useProjectIssues, useBoards, useSDLCReleases, getDisplayKey } from '@/services/project-hub.service';
 
 export default function ProjectBoardPage() {
   const { key } = useParams<{ key: string }>();
   const [activeView, setActiveView] = useState<ProjectView>('board');
 
-  // Fetch project info
-  const { data: project } = useQuery({
-    queryKey: ['ph-project-board', key],
-    queryFn: async () => {
-      if (!key) return null;
-      const { data } = await supabase
-        .from('ph_projects')
-        .select('id, key, name, color, status')
-        .eq('key', key.toUpperCase())
-        .maybeSingle();
-      return data;
-    },
-    enabled: !!key,
-  });
+  const { data: issues = [] } = useProjectIssues();
+  const { data: boards = [] } = useBoards();
+  const { data: releases = [] } = useSDLCReleases();
 
-  // Fetch work items count
-  const { data: stats } = useQuery({
-    queryKey: ['ph-board-stats', project?.id],
-    queryFn: async () => {
-      if (!project?.id) return null;
-      const { data: items } = await supabase
-        .from('ph_work_items')
-        .select('id, status')
-        .eq('project_id', project.id);
+  const defaultBoard = useMemo(() => boards.find(b => b.is_default) ?? boards[0], [boards]);
+  const boardColumns = defaultBoard?.columns ?? [];
 
-      const all = items ?? [];
-      return {
-        total: all.length,
-        completed: all.filter(i => i.status === 'done' || i.status === 'closed').length,
-        inProgress: all.filter(i => i.status === 'in_progress' || i.status === 'in_dev').length,
-        overdue: 0, // Placeholder — needs due_date logic
-        aiFeatures: 0,
-      };
-    },
-    enabled: !!project?.id,
-  });
-
-  const projectName = project?.name ?? key?.toUpperCase() ?? 'Project';
+  const stats = useMemo(() => {
+    const completed = issues.filter(i => i.status === 'production' || i.status === 'prod_ready').length;
+    const inProgress = issues.filter(i => ['in_dev', 'in_qa', 'in_uat', 'in_beta'].includes(i.status)).length;
+    const overdue = issues.filter(i => i.overdue_days > 0).length;
+    return { total: issues.length, completed, inProgress, overdue };
+  }, [issues]);
 
   const statCards = [
-    { label: 'Total Issues', value: stats?.total ?? 0, icon: BarChart3, color: '#2563EB', bg: '#EFF6FF' },
-    { label: 'Completed', value: stats?.completed ?? 0, icon: CheckCircle2, color: '#16A34A', bg: '#DCFCE7' },
-    { label: 'In Progress', value: stats?.inProgress ?? 0, icon: Clock, color: '#2563EB', bg: '#EFF6FF' },
-    { label: 'Overdue', value: stats?.overdue ?? 0, icon: AlertTriangle, color: '#EF4444', bg: '#FEF2F2' },
-    { label: 'AI Features', value: `${stats?.aiFeatures ?? 0}%`, icon: Sparkles, color: '#7C3AED', bg: '#F5F3FF' },
+    { label: 'Total Issues', value: stats.total, icon: BarChart3, color: '#2563EB', bg: '#EFF6FF' },
+    { label: 'Completed', value: stats.completed, icon: CheckCircle2, color: '#16A34A', bg: '#DCFCE7' },
+    { label: 'In Progress', value: stats.inProgress, icon: Clock, color: '#2563EB', bg: '#EFF6FF' },
+    { label: 'Overdue', value: stats.overdue, icon: AlertTriangle, color: '#EF4444', bg: '#FEF2F2' },
+    { label: 'AI Features', value: '0%', icon: Sparkles, color: '#7C3AED', bg: '#F5F3FF' },
   ];
 
   const views: { key: ProjectView; label: string; icon: typeof Columns3 }[] = [
@@ -68,6 +41,8 @@ export default function ProjectBoardPage() {
     { key: 'list', label: 'List', icon: List },
     { key: 'timeline', label: 'Timeline', icon: GanttChart },
   ];
+
+  const projectName = key?.toUpperCase() ?? 'Project';
 
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", padding: '24px 24px 16px' }}>
@@ -80,7 +55,7 @@ export default function ProjectBoardPage() {
           color: '#fff', fontSize: 14, fontWeight: 700,
           fontFamily: "'JetBrains Mono', monospace",
         }}>
-          {(key ?? 'PH').slice(0, 2).toUpperCase()}
+          {projectName.slice(0, 2)}
         </div>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -165,69 +140,128 @@ export default function ProjectBoardPage() {
       </div>
 
       {/* ─── BOARD CONTENT ─── */}
-      {activeView === 'board' && (
+      {activeView === 'board' && boardColumns.length > 0 && (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: `repeat(${DEFAULT_BOARD_COLUMNS.length}, minmax(180px, 1fr))`,
+          gridTemplateColumns: `repeat(${boardColumns.length}, minmax(180px, 1fr))`,
           gap: 12,
           overflowX: 'auto',
         }}>
-          {DEFAULT_BOARD_COLUMNS.map(col => (
-            <div key={col.name} style={{
-              background: '#F8FAFC', borderRadius: 10, padding: '10px 12px',
-              minHeight: 400, border: '1px solid #E2E8F0',
-            }}>
-              {/* Column header */}
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                marginBottom: 12, padding: '4px 0',
+          {boardColumns.map((col: any) => {
+            const colIssues = issues.filter(i => col.statuses?.includes(i.status));
+            return (
+              <div key={col.name} style={{
+                background: '#F8FAFC', borderRadius: 10, padding: '10px 12px',
+                minHeight: 400, border: '1px solid #E2E8F0',
               }}>
-                <span style={{
-                  width: 8, height: 8, borderRadius: '50%',
-                  background: col.color, flexShrink: 0,
-                }} />
-                <span style={{
-                  fontSize: 12, fontWeight: 700, color: '#0F172A',
-                  textTransform: 'uppercase', letterSpacing: '0.4px',
-                  fontFamily: "'Sora', sans-serif",
+                {/* Column header */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  marginBottom: 12, padding: '4px 0',
                 }}>
-                  {col.name}
-                </span>
-                <span style={{
-                  fontSize: 10, fontWeight: 600, color: '#94A3B8',
-                  fontFamily: "'JetBrains Mono', monospace",
-                  marginLeft: 'auto',
-                }}>
-                  0
-                </span>
-                {col.wip_limit > 0 && (
                   <span style={{
-                    fontSize: 9, fontWeight: 600, color: '#94A3B8',
-                    background: '#F1F5F9', padding: '1px 6px', borderRadius: 4,
+                    width: 8, height: 8, borderRadius: '50%',
+                    background: col.color, flexShrink: 0,
+                  }} />
+                  <span style={{
+                    fontSize: 12, fontWeight: 700, color: '#0F172A',
+                    textTransform: 'uppercase' as const, letterSpacing: '0.4px',
+                    fontFamily: "'Sora', sans-serif",
                   }}>
-                    WIP {col.wip_limit}
+                    {col.name}
                   </span>
+                  <span style={{
+                    fontSize: 10, fontWeight: 600, color: '#94A3B8',
+                    fontFamily: "'JetBrains Mono', monospace",
+                    marginLeft: 'auto',
+                  }}>
+                    {colIssues.length}
+                  </span>
+                  {col.wip_limit > 0 && (
+                    <span style={{
+                      fontSize: 9, fontWeight: 600, color: '#94A3B8',
+                      background: '#F1F5F9', padding: '1px 6px', borderRadius: 4,
+                    }}>
+                      WIP {col.wip_limit}
+                    </span>
+                  )}
+                </div>
+
+                {/* Issue cards or empty */}
+                {colIssues.length === 0 ? (
+                  <div style={{
+                    display: 'flex', flexDirection: 'column' as const, alignItems: 'center',
+                    justifyContent: 'center', padding: '40px 16px',
+                    border: '2px dashed #E2E8F0', borderRadius: 8,
+                    color: '#94A3B8', fontSize: 12, fontWeight: 500,
+                  }}>
+                    No items
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 6 }}>
+                    {colIssues.map(issue => (
+                      <div key={issue.id} style={{
+                        background: '#FFFFFF', borderRadius: 8, padding: '10px 12px',
+                        border: '1px solid #E2E8F0', cursor: 'pointer',
+                        transition: 'box-shadow .12s',
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                          <span style={{
+                            fontSize: 10, fontWeight: 700, color: '#64748B',
+                            fontFamily: "'JetBrains Mono', monospace",
+                          }}>
+                            {getDisplayKey(issue)}
+                          </span>
+                          {issue.source === 'jira' && (
+                            <span style={{
+                              fontSize: 8, fontWeight: 700, padding: '1px 4px', borderRadius: 3,
+                              background: '#EFF6FF', color: '#2563EB',
+                            }}>JIRA</span>
+                          )}
+                          {issue.overdue_days > 0 && (
+                            <span style={{
+                              fontSize: 8, fontWeight: 700, padding: '1px 4px', borderRadius: 3,
+                              background: '#FEF2F2', color: '#EF4444', marginLeft: 'auto',
+                            }}>+{issue.overdue_days}d</span>
+                          )}
+                        </div>
+                        <div style={{
+                          fontSize: 12, fontWeight: 500, color: '#0F172A',
+                          lineHeight: 1.3, marginBottom: 6,
+                          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const,
+                          overflow: 'hidden',
+                        }}>
+                          {issue.title}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <span style={{
+                            fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 4,
+                            background: issue.priority === 'urgent' ? '#FEF2F2' : issue.priority === 'high' ? '#FFFBEB' : '#F1F5F9',
+                            color: issue.priority === 'urgent' ? '#DC2626' : issue.priority === 'high' ? '#D97706' : '#64748B',
+                          }}>
+                            {issue.priority}
+                          </span>
+                          <span style={{
+                            fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 4,
+                            background: '#F5F3FF', color: '#7C3AED',
+                          }}>
+                            {issue.type}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
-
-              {/* Empty column placeholder */}
-              <div style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center',
-                justifyContent: 'center', padding: '40px 16px',
-                border: '2px dashed #E2E8F0', borderRadius: 8,
-                color: '#94A3B8', fontSize: 12, fontWeight: 500,
-              }}>
-                No items
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
       {/* Placeholder for other views */}
       {activeView !== 'board' && (
         <div style={{
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          display: 'flex', flexDirection: 'column' as const, alignItems: 'center',
           justifyContent: 'center', padding: '80px 40px',
           background: '#FFFFFF', borderRadius: 12, border: '1px solid #E2E8F0',
         }}>

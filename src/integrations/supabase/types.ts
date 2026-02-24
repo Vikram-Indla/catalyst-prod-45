@@ -18096,6 +18096,39 @@ export type Database = {
           },
         ]
       }
+      ph_boards: {
+        Row: {
+          card_fields: Json
+          columns: Json
+          created_at: string | null
+          filters: Json | null
+          id: string
+          is_default: boolean | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          card_fields?: Json
+          columns?: Json
+          created_at?: string | null
+          filters?: Json | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          card_fields?: Json
+          columns?: Json
+          created_at?: string | null
+          filters?: Json | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       ph_bulk_ops_log: {
         Row: {
           affected_item_ids: string[]
@@ -22057,6 +22090,123 @@ export type Database = {
           name?: string
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      ph_sdlc_issues: {
+        Row: {
+          assignee_id: string | null
+          created_at: string | null
+          created_by: string | null
+          deleted_at: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          jira_key: string | null
+          key: string
+          overdue_days: number | null
+          parent_id: string | null
+          priority: string
+          release_id: string | null
+          sort_order: number | null
+          source: string
+          status: string
+          title: string
+          type: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          assignee_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          jira_key?: string | null
+          key: string
+          overdue_days?: number | null
+          parent_id?: string | null
+          priority?: string
+          release_id?: string | null
+          sort_order?: number | null
+          source?: string
+          status?: string
+          title: string
+          type?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          assignee_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          jira_key?: string | null
+          key?: string
+          overdue_days?: number | null
+          parent_id?: string | null
+          priority?: string
+          release_id?: string | null
+          sort_order?: number | null
+          source?: string
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_sdlc_issues_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "ph_sdlc_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_sdlc_issues_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "ph_sdlc_releases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_sdlc_releases: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          name: string
+          start_date: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name?: string
+          start_date?: string | null
+          status?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
