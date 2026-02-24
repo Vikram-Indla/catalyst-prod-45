@@ -23,17 +23,14 @@ export interface JiraBacklogIssue {
 
 export type BacklogLevel = 'epic' | 'story' | 'feature';
 
-const FEATURE_TYPES = [
-  'Change Request', 'Business Gap', 'Business Request', 'BRD Task',
-  'API Requirement', 'Backend', 'Frontend', 'Integration',
-  'Entity FIGMA', 'Figma', 'Task', 'Production Incident', 'Defect', 'QA Bug',
-];
-
 export function useJiraBacklogIssues(projectKey: string | undefined, level: BacklogLevel) {
   return useQuery({
     queryKey: ['jira-backlog', projectKey, level],
     queryFn: async () => {
       if (!projectKey) return [];
+
+      // Feature type doesn't exist in Jira — return empty until features are created in ProjectHub
+      if (level === 'feature') return [] as JiraBacklogIssue[];
 
       let query = supabase
         .from('ph_issues')
@@ -45,9 +42,6 @@ export function useJiraBacklogIssues(projectKey: string | undefined, level: Back
         query = query.eq('issue_type', 'Epic');
       } else if (level === 'story') {
         query = query.eq('issue_type', 'Story');
-      } else {
-        // feature = everything that's not Epic, Story, or Sub-task
-        query = query.not('issue_type', 'in', '("Epic","Story","Sub-task")');
       }
 
       const { data, error } = await query.limit(500);
