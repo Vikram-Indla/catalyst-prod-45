@@ -76,10 +76,11 @@ const ClockIcon = () => (
   </svg>
 );
 
-const ListIcon = () => (
+const BoardIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <path d="M8 6h13M8 12h13M8 18h13" />
-    <path d="M3 6h.01M3 12h.01M3 18h.01" strokeWidth="3" />
+    <rect x="3" y="3" width="5" height="18" rx="1" />
+    <rect x="10" y="3" width="5" height="12" rx="1" />
+    <rect x="17" y="3" width="5" height="15" rx="1" />
   </svg>
 );
 
@@ -370,8 +371,8 @@ export default function ResourceListingPage() {
                       <ActionButton tooltip="Chronology" onClick={() => navTo(r.rid, 'chronology')}>
                         <ClockIcon />
                       </ActionButton>
-                      <ActionButton tooltip="List View" onClick={() => navTo(r.rid, 'list')}>
-                        <ListIcon />
+                      <ActionButton tooltip="Board View" onClick={() => navTo(r.rid, 'board')}>
+                        <BoardIcon />
                       </ActionButton>
                     </div>
                   </TooltipProvider>
