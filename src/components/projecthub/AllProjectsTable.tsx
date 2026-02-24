@@ -82,11 +82,7 @@ export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectP
           <th style={{ width: 36, padding: '0 4px', height: 36, borderBottom: '2px solid #E2E8F0', background: '#F8FAFC' }} />
           <SortHeader label="Key" col="name" currentCol={sortCol} dir={sortDir} onSort={onSort} />
           <SortHeader label="Project Name" col="name" currentCol={sortCol} dir={sortDir} onSort={onSort} />
-          <SortHeader label="Department" col="department" currentCol={sortCol} dir={sortDir} onSort={onSort} />
           <SortHeader label="Status" col="status" currentCol={sortCol} dir={sortDir} onSort={onSort} />
-          <SortHeader label="Epics" col="total_epics" currentCol={sortCol} dir={sortDir} onSort={onSort} center />
-          <SortHeader label="Stories" col="total_stories" currentCol={sortCol} dir={sortDir} onSort={onSort} center />
-          <th style={{ padding: '0 12px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '2px solid #E2E8F0', background: '#F8FAFC' }}>Distribution</th>
           
           <th style={{ padding: '0 12px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '2px solid #E2E8F0', background: '#F8FAFC' }}>Members</th>
           <th style={{ padding: '0 16px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '2px solid #E2E8F0', background: '#F8FAFC', textAlign: 'right' }}>Updated</th>
@@ -146,16 +142,8 @@ export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectP
                   </span>
                 </div>
               </td>
-              <td style={{ padding: '0 16px', fontSize: 13, color: '#334155', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {p.department || '—'}
-              </td>
               <td style={{ padding: '0 16px' }}>
                 <ProjectStatusBadge status={p.status} />
-              </td>
-              <td style={{ padding: '0 16px', textAlign: 'center', fontSize: 12, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>{p.total_epics}</td>
-              <td style={{ padding: '0 16px', textAlign: 'center', fontSize: 12, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>{p.total_stories}</td>
-              <td style={{ padding: '0 12px' }}>
-                <DistributionBar todo={p.work_items_todo} inProgress={p.work_items_in_progress} done={p.work_items_done} showNumbers />
               </td>
               
               <td style={{ padding: '0 12px' }}>
