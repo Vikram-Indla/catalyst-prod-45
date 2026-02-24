@@ -82,9 +82,6 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
         <HealthBadge health={project.health} />
       </div>
 
-      {/* Department */}
-      <div style={{ fontSize: 12, color: '#64748B', marginBottom: 10 }}>{project.department}</div>
-
       {/* Progress bar placeholder */}
       <div className="w-full rounded-full mb-3" style={{ height: 6, background: '#F1F5F9' }}>
         <div className="rounded-full" style={{ height: 6, width: '0%', background: '#0D9488' }} />
