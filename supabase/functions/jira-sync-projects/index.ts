@@ -151,9 +151,10 @@ serve(async (req) => {
     // First delete dependent records that reference projects
     console.log("[jira-sync-projects] Clearing existing projects...");
     
-    // Delete project_favorites and project_members first
+    // Delete project_favorites, project_members, and ph_releases first
     await supabase.from("project_favorites").delete().neq("id", "00000000-0000-0000-0000-000000000000");
     await supabase.from("project_members").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabase.from("ph_releases").delete().neq("id", "00000000-0000-0000-0000-000000000000");
     
     // Delete all projects except TestHub default
     const { error: delErr } = await supabase
@@ -180,15 +181,42 @@ serve(async (req) => {
 
     console.log(`[jira-sync-projects] Successfully synced ${inserted?.length ?? 0} projects`);
 
+    // 6b. Also upsert into ph_projects (SDLC schema) for dashboard compatibility
+    // Get a valid user ID for created_by
+    const { data: anyUser } = await supabase.from("profiles").select("id").limit(1).single();
+    const systemUserId = anyUser?.id ?? "00000000-0000-0000-0000-000000000000";
+
+    const phProjectRows = activeJiraProjects.map((jp: any, idx: number) => ({
+      key: jp.key,
+      name: jp.name,
+      description: jp.description ?? "",
+      department: "Technology",
+      status: "active",
+      color: colors[idx % colors.length],
+      created_by: systemUserId,
+    }));
+
+    const { data: phInserted, error: phErr } = await supabase
+      .from("ph_projects")
+      .upsert(phProjectRows, { onConflict: "key" })
+      .select("id, key, name");
+
+    if (phErr) console.error("[jira-sync-projects] ph_projects upsert error:", phErr.message);
+    console.log(`[jira-sync-projects] Synced ${phInserted?.length ?? 0} ph_projects`);
+
+    // Build key->id maps for both tables
+    const keyToId: Record<string, string> = {};
+    const keyToPhId: Record<string, string> = {};
+    if (inserted) {
+      for (const p of inserted) keyToId[p.key] = p.id;
+    }
+    if (phInserted) {
+      for (const p of phInserted) keyToPhId[p.key] = p.id;
+    }
+
     // 7. Populate project_members from Jira assignees
     if (inserted && inserted.length > 0) {
       console.log("[jira-sync-projects] Resolving Jira assignees to members...");
-
-      // Build a map of project_key -> project_id
-      const keyToId: Record<string, string> = {};
-      for (const p of inserted) {
-        keyToId[p.key] = p.id;
-      }
 
       // Get unique assignee_account_ids per project from ph_issues (paginated)
       const projectAssignees: Record<string, Set<string>> = {};
@@ -255,6 +283,60 @@ serve(async (req) => {
           if (memErr) console.warn("[jira-sync-projects] Member insert warning:", memErr.message);
         }
         console.log(`[jira-sync-projects] Inserted ${memberRows.length} project members from Jira`);
+      }
+
+      // 8. Sync releases from Jira fix_versions in ph_issues
+      console.log("[jira-sync-projects] Syncing releases from Jira fix versions...");
+      const releaseMap: Record<string, { projectKey: string; name: string; releaseDate: string | null }> = {};
+      let rOffset = 0;
+      let rHasMore = true;
+      while (rHasMore) {
+        const { data: rows } = await supabase
+          .from("ph_issues")
+          .select("project_key, fix_versions")
+          .not("fix_versions", "is", null)
+          .range(rOffset, rOffset + 999);
+        if (!rows || rows.length === 0) { rHasMore = false; break; }
+        for (const r of rows) {
+          const fvs = r.fix_versions as any[];
+          if (!fvs || !Array.isArray(fvs)) continue;
+          for (const fv of fvs) {
+            if (!fv.name) continue;
+            const mapKey = `${r.project_key}::${fv.name}`;
+            if (!releaseMap[mapKey]) {
+              releaseMap[mapKey] = { projectKey: r.project_key, name: fv.name, releaseDate: fv.releaseDate || null };
+            }
+          }
+        }
+        rOffset += 1000;
+        if (rows.length < 1000) rHasMore = false;
+      }
+
+      const releaseRows: any[] = [];
+      const today = new Date().toISOString().slice(0, 10);
+      for (const [, rel] of Object.entries(releaseMap)) {
+        const projectId = keyToPhId[rel.projectKey];
+        if (!projectId) continue;
+        const status = rel.releaseDate
+          ? (rel.releaseDate < today ? "released" : "in_progress")
+          : "planning";
+        releaseRows.push({
+          project_id: projectId,
+          name: rel.name,
+          title: rel.name,
+          status,
+          target_date: rel.releaseDate || today,
+          release_date: rel.releaseDate && rel.releaseDate < today ? rel.releaseDate : null,
+        });
+      }
+
+      if (releaseRows.length > 0) {
+        for (let i = 0; i < releaseRows.length; i += 200) {
+          const batch = releaseRows.slice(i, i + 200);
+          const { error: relErr } = await supabase.from("ph_releases").insert(batch);
+          if (relErr) console.warn("[jira-sync-projects] Release insert warning:", relErr.message);
+        }
+        console.log(`[jira-sync-projects] Inserted ${releaseRows.length} releases from Jira fix versions`);
       }
     }
 
