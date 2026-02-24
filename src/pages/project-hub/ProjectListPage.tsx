@@ -20,7 +20,7 @@ export default function ProjectListPage() {
   const queryClient = useQueryClient();
   const [view, setView] = useState<'table' | 'card'>('table');
   const [search, setSearch] = useState('');
-  const [filters, setFilters] = useState<FilterState>({ departments: [], statuses: [], healths: [] });
+  const [filters, setFilters] = useState<FilterState>({ statuses: [], healths: [] });
   const [page, setPage] = useState(0);
   const [perPage, setPerPage] = useState(25);
   const [starredIds, setStarredIds] = useState<Set<string>>(new Set());
@@ -134,18 +134,12 @@ export default function ProjectListPage() {
     }
   }, [queryClient]);
 
-  const departments = useMemo(
-    () => [...new Set(rawProjects.map(p => p.department))].sort(),
-    [rawProjects]
-  );
-
   const filtered = useMemo(() => {
     let list = rawProjects.map(p => ({ ...p, member_count: memberCounts[p.id] || 0 }));
     if (search) {
       const q = search.toLowerCase();
       list = list.filter(p => p.name.toLowerCase().includes(q) || p.key.toLowerCase().includes(q));
     }
-    if (filters.departments.length) list = list.filter(p => filters.departments.includes(p.department));
     if (filters.statuses.length) list = list.filter(p => filters.statuses.includes(p.status));
     if (filters.healths.length) list = list.filter(p => p.health && filters.healths.includes(p.health));
     return list;
@@ -162,7 +156,7 @@ export default function ProjectListPage() {
     setCtxMenu({ x, y, project });
   }, []);
 
-  const hasFilters = search || filters.departments.length + filters.statuses.length + filters.healths.length > 0;
+  const hasFilters = search || filters.statuses.length + filters.healths.length > 0;
 
   return (
     <div className="ph-content-wrapper" style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -182,7 +176,6 @@ export default function ProjectListPage() {
           <ProjectToolbar
             view={view} onViewChange={setView}
             search={search} onSearchChange={s => { setSearch(s); setPage(0); }}
-            departments={departments}
             filters={filters} onFilterChange={f => { setFilters(f); setPage(0); }}
             onNewProject={onNewProject}
           />

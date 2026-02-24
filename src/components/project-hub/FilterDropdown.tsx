@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { Filter, X } from 'lucide-react';
 
 export interface FilterState {
-  departments: string[];
   statuses: string[];
   healths: string[];
 }
@@ -11,12 +10,11 @@ const STATUS_OPTIONS = ['active', 'on_hold', 'completed', 'archived'];
 const HEALTH_OPTIONS = ['on_track', 'at_risk', 'off_track'];
 
 interface FilterDropdownProps {
-  departments: string[];
   filters: FilterState;
   onChange: (filters: FilterState) => void;
 }
 
-export function FilterDropdown({ departments, filters, onChange }: FilterDropdownProps) {
+export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -34,7 +32,7 @@ export function FilterDropdown({ departments, filters, onChange }: FilterDropdow
     };
   }, [open]);
 
-  const hasFilters = filters.departments.length + filters.statuses.length + filters.healths.length > 0;
+  const hasFilters = filters.statuses.length + filters.healths.length > 0;
 
   const toggle = (arr: string[], val: string) =>
     arr.includes(val) ? arr.filter(v => v !== val) : [...arr, val];
@@ -63,7 +61,7 @@ export function FilterDropdown({ departments, filters, onChange }: FilterDropdow
             className="flex items-center justify-center rounded-full"
             style={{ width: 18, height: 18, background: '#2563EB', color: '#FFF', fontSize: 10, fontWeight: 600 }}
           >
-            {filters.departments.length + filters.statuses.length + filters.healths.length}
+            {filters.statuses.length + filters.healths.length}
           </span>
         )}
       </button>
@@ -81,13 +79,6 @@ export function FilterDropdown({ departments, filters, onChange }: FilterDropdow
           }}
         >
           <div className="max-h-[400px] overflow-y-auto">
-            {/* Department */}
-            <FilterSection
-              title="Department"
-              options={departments}
-              selected={filters.departments}
-              onToggle={v => onChange({ ...filters, departments: toggle(filters.departments, v) })}
-            />
             {/* Status */}
             <FilterSection
               title="Status"
@@ -109,7 +100,7 @@ export function FilterDropdown({ departments, filters, onChange }: FilterDropdow
           {/* Footer */}
           <div className="flex items-center justify-between px-3 py-2" style={{ borderTop: '1px solid #E2E8F0' }}>
             <button
-              onClick={() => onChange({ departments: [], statuses: [], healths: [] })}
+              onClick={() => onChange({ statuses: [], healths: [] })}
               style={{ fontSize: 12, color: '#64748B', background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               Clear all
@@ -201,9 +192,6 @@ export function FilterChips({
   onChange: (f: FilterState) => void;
 }) {
   const chips: { label: string; remove: () => void }[] = [];
-  filters.departments.forEach(d =>
-    chips.push({ label: d, remove: () => onChange({ ...filters, departments: filters.departments.filter(x => x !== d) }) })
-  );
   filters.statuses.forEach(s =>
     chips.push({
       label: formatStatusLabel(s),
@@ -243,7 +231,7 @@ export function FilterChips({
         </span>
       ))}
       <button
-        onClick={() => onChange({ departments: [], statuses: [], healths: [] })}
+        onClick={() => onChange({ statuses: [], healths: [] })}
         style={{ fontSize: 11, color: '#64748B', background: 'transparent', border: 'none', cursor: 'pointer' }}
       >
         Clear all

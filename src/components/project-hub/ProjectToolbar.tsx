@@ -8,7 +8,6 @@ interface ProjectToolbarProps {
   onViewChange: (v: 'table' | 'card') => void;
   search: string;
   onSearchChange: (s: string) => void;
-  departments: string[];
   filters: FilterState;
   onFilterChange: (f: FilterState) => void;
   onNewProject?: () => void;
@@ -19,7 +18,6 @@ export function ProjectToolbar({
   onViewChange,
   search,
   onSearchChange,
-  departments,
   filters,
   onFilterChange,
   onNewProject,
@@ -57,7 +55,6 @@ export function ProjectToolbar({
 
         {/* Filter */}
         <FilterDropdown
-          departments={departments}
           filters={filters}
           onChange={onFilterChange}
         />
