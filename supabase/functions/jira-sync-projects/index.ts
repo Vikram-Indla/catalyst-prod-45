@@ -65,12 +65,22 @@ serve(async (req) => {
         countMap[row.project_key] = row;
       }
     } else {
-      // Direct query fallback
-      const { data: issues } = await supabase
-        .from("ph_issues")
-        .select("project_key, status_category, hierarchy_level");
+      // Direct query fallback - paginate to get ALL issues (bypass 1000 row limit)
+      let offset = 0;
+      const batchSize = 1000;
+      let hasMore = true;
 
-      if (issues) {
+      while (hasMore) {
+        const { data: issues } = await supabase
+          .from("ph_issues")
+          .select("project_key, status_category, hierarchy_level")
+          .range(offset, offset + batchSize - 1);
+
+        if (!issues || issues.length === 0) {
+          hasMore = false;
+          break;
+        }
+
         for (const issue of issues) {
           if (!countMap[issue.project_key]) {
             countMap[issue.project_key] = { total: 0, todo: 0, in_progress: 0, done: 0, epics: 0, stories: 0, tasks: 0 };
@@ -81,11 +91,16 @@ serve(async (req) => {
           else if (issue.status_category === 'In Progress' || issue.status_category === 'indeterminate') c.in_progress++;
           else if (issue.status_category === 'Done' || issue.status_category === 'done') c.done++;
           
-          if (issue.hierarchy_level >= 3) c.epics++;       // Epic = hierarchy 3+
-          else if (issue.hierarchy_level === 2) c.stories++;  // Story/Task = hierarchy 2
-          else if (issue.hierarchy_level === 1) c.tasks++;    // Sub-task = hierarchy 1
+          if (issue.hierarchy_level >= 3) c.epics++;
+          else if (issue.hierarchy_level === 2) c.stories++;
+          else if (issue.hierarchy_level === 1) c.tasks++;
         }
+
+        offset += batchSize;
+        if (issues.length < batchSize) hasMore = false;
       }
+
+      console.log(`[jira-sync-projects] Counted issues for ${Object.keys(countMap).length} projects`);
     }
 
     // 4. Build project rows
@@ -93,7 +108,17 @@ serve(async (req) => {
     const colors = ["#2563EB", "#7C3AED", "#0D9488", "#D97706", "#EF4444", "#059669", "#8B5CF6", "#EC4899", "#F59E0B", "#06B6D4"];
 
     // Only include projects that have synced issues (active projects)
+    const jiraKeySet = new Set(jiraProjects.map((jp: any) => jp.key));
     const activeJiraProjects = jiraProjects.filter((jp: any) => countMap[jp.key] && countMap[jp.key].total > 0);
+
+    // Also add projects from accessible_projects that have issues but weren't in the REST API response
+    const accessibleProjects = conn.accessible_projects || [];
+    for (const ap of accessibleProjects) {
+      if (!jiraKeySet.has(ap.key) && countMap[ap.key] && countMap[ap.key].total > 0) {
+        activeJiraProjects.push({ key: ap.key, name: ap.name, projectTypeKey: ap.type });
+      }
+    }
+
     console.log(`[jira-sync-projects] ${activeJiraProjects.length} active projects (with issues)`);
 
     const projectRows = activeJiraProjects.map((jp: any, idx: number) => {
