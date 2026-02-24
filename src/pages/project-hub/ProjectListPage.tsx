@@ -11,6 +11,7 @@ import { PHProject } from '@/components/project-hub/ProjectTableRow';
 import { FilterState } from '@/components/project-hub/FilterDropdown';
 import { SkeletonTable } from '@/components/project-hub/shared/SkeletonPulse';
 import { CreateProjectModal } from '@/components/project-hub/CreateProjectModal';
+import { ProjectStatusTabs, ProjectTab } from '@/components/project-hub/ProjectStatusTabs';
 import '@/components/project-hub/shared/phStyles.css';
 
 export default function ProjectListPage() {
@@ -21,6 +22,7 @@ export default function ProjectListPage() {
   const [view, setView] = useState<'table' | 'card'>('table');
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState<FilterState>({ statuses: [], healths: [] });
+  const [activeTab, setActiveTab] = useState<ProjectTab>('all');
   const [page, setPage] = useState(0);
   const [perPage, setPerPage] = useState(25);
   const [starredIds, setStarredIds] = useState<Set<string>>(new Set());
@@ -134,8 +136,26 @@ export default function ProjectListPage() {
     }
   }, [queryClient]);
 
+  const projectsWithMembers = useMemo(
+    () => rawProjects.map(p => ({ ...p, member_count: memberCounts[p.id] || 0 })),
+    [rawProjects, memberCounts]
+  );
+
+  const tabCounts = useMemo(() => ({
+    all: projectsWithMembers.length,
+    starred: projectsWithMembers.filter(p => starredIds.has(p.id)).length,
+    active: projectsWithMembers.filter(p => p.status === 'active').length,
+    on_hold: projectsWithMembers.filter(p => p.status === 'on_hold').length,
+    planning: projectsWithMembers.filter(p => p.status === 'planning').length,
+    completed: projectsWithMembers.filter(p => p.status === 'completed').length,
+  }), [projectsWithMembers, starredIds]);
+
   const filtered = useMemo(() => {
-    let list = rawProjects.map(p => ({ ...p, member_count: memberCounts[p.id] || 0 }));
+    let list = projectsWithMembers;
+    // Tab filter
+    if (activeTab === 'starred') list = list.filter(p => starredIds.has(p.id));
+    else if (activeTab !== 'all') list = list.filter(p => p.status === activeTab);
+    // Search
     if (search) {
       const q = search.toLowerCase();
       list = list.filter(p => p.name.toLowerCase().includes(q) || p.key.toLowerCase().includes(q));
@@ -143,7 +163,7 @@ export default function ProjectListPage() {
     if (filters.statuses.length) list = list.filter(p => filters.statuses.includes(p.status));
     if (filters.healths.length) list = list.filter(p => p.health && filters.healths.includes(p.health));
     return list;
-  }, [rawProjects, memberCounts, search, filters]);
+  }, [projectsWithMembers, activeTab, starredIds, search, filters]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   const paginated = filtered.slice(page * perPage, (page + 1) * perPage);
@@ -156,7 +176,7 @@ export default function ProjectListPage() {
     setCtxMenu({ x, y, project });
   }, []);
 
-  const hasFilters = search || filters.statuses.length + filters.healths.length > 0;
+  const hasFilters = search || activeTab !== 'all' || filters.statuses.length + filters.healths.length > 0;
 
   return (
     <div className="ph-content-wrapper" style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -172,13 +192,21 @@ export default function ProjectListPage() {
           All Projects
         </h1>
 
-        <div className="mb-4">
-          <ProjectToolbar
-            view={view} onViewChange={setView}
-            search={search} onSearchChange={s => { setSearch(s); setPage(0); }}
-            filters={filters} onFilterChange={f => { setFilters(f); setPage(0); }}
-            onNewProject={onNewProject}
+        {/* Status Tabs */}
+        <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
+          <ProjectStatusTabs
+            activeTab={activeTab}
+            onTabChange={t => { setActiveTab(t); setPage(0); }}
+            counts={tabCounts}
           />
+          <div className="flex items-center gap-2">
+            <ProjectToolbar
+              view={view} onViewChange={setView}
+              search={search} onSearchChange={s => { setSearch(s); setPage(0); }}
+              filters={filters} onFilterChange={f => { setFilters(f); setPage(0); }}
+              onNewProject={onNewProject}
+            />
+          </div>
         </div>
 
         {/* Content */}
