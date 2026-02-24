@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { ChevronRight, Pin } from 'lucide-react';
 import type { ProductionEvent } from '../hooks/useProductionEvents';
 import { formatDeploymentDate } from '../utils/period-helpers';
-import { getIssueTypeColor } from '../utils/event-colors';
+import { getClassifiedColors, type ClassifiedEventType } from '../utils/event-colors';
 
 interface Props {
-  event: ProductionEvent;
+  event: ProductionEvent & { eventType: string };
   index: number;
   expanded: boolean;
   onToggle: () => void;
@@ -13,13 +13,47 @@ interface Props {
 
 const JIRA_BASE = 'https://jira.example.com/browse/';
 
+// Fix 7: Smart impact text
+function generateImpactText(event: ProductionEvent & { eventType: string }): string {
+  const count = event.stories.length;
+  const epicName = event.parentSummary || event.title;
+  if (event.eventType === 'incident') {
+    return `This fix resolves ${event.title.toLowerCase()}, ensuring uninterrupted service and data integrity for all platform users.`;
+  }
+  return `This ${count > 1 ? count + '-story' : ''} enhancement to ${epicName} strengthens the platform's capabilities for investors and stakeholders.`;
+}
+
+// Fix 8: Clean narrative text
+function formatNarrative(stories: ProductionEvent['stories']): string {
+  const summaries = stories
+    .map(s => s.summary?.trim())
+    .filter(Boolean)
+    .map(s => s!.replace(/\.\s*$/, '').replace(/-CR\s*\.?/g, '').trim())
+    .map(s => s.endsWith('.') ? s : s + '.');
+
+  if (summaries.length === 0) return '';
+  if (summaries.length === 1) return summaries[0];
+  return `This update encompasses ${summaries.length} changes: ${summaries.join(' ')}`;
+}
+
+// Fix 3: Event type label
+const EVENT_TYPE_LABELS: Record<string, string> = {
+  feature: 'Feature',
+  incident: 'Incident',
+  improvement: 'Improvement',
+  security: 'Security',
+};
+
 export function ProductionEventRow({ event, index, expanded, onToggle }: Props) {
   const [hovered, setHovered] = useState(false);
-  const typeColor = getIssueTypeColor(event.issueType);
+  const colors = getClassifiedColors(event.eventType as ClassifiedEventType);
+
+  // Fix 2: Impact label
+  const impactLabel = event.eventType === 'incident' ? 'Resolution Impact' : 'Investor Impact';
 
   return (
     <>
-      {/* Summary Row */}
+      {/* Summary Row — Fix 22: 4px left border, Fix 30: hover bg-blue-50 */}
       <tr
         onClick={onToggle}
         onMouseEnter={() => setHovered(true)}
@@ -28,15 +62,15 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
           cursor: 'pointer',
           background: hovered ? '#EFF6FF' : expanded ? '#FAFBFD' : '#FFFFFF',
           transition: 'background 120ms ease',
-          borderLeft: `3px solid ${typeColor}`,
           borderBottom: expanded ? 'none' : '1px solid #F1F5F9',
         }}
       >
-        {/* # */}
+        {/* # — Fix 16: padding, Fix 22: 4px left border via box-shadow */}
         <td style={{
-          width: 48, padding: '12px 14px', textAlign: 'center',
+          width: 48, padding: '14px 16px', paddingLeft: 20, textAlign: 'center',
           fontSize: 13, fontWeight: 500, color: '#64748B',
           fontFamily: "'Inter', sans-serif", verticalAlign: 'top',
+          boxShadow: `inset 4px 0 0 ${colors.border}`,
         }}>
           {index + 1}
           {event.stories.length > 3 && (
@@ -46,8 +80,8 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
           )}
         </td>
 
-        {/* Event — title + subtitle */}
-        <td style={{ padding: '12px 14px', maxWidth: 380, verticalAlign: 'top' }}>
+        {/* Event — Fix 17: 14px/650, Fix 18: subtitle distinct */}
+        <td style={{ padding: '14px 16px', maxWidth: 380, verticalAlign: 'top' }}>
           <div className="flex items-start gap-2">
             <ChevronRight
               size={14}
@@ -61,7 +95,7 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
             />
             <div style={{ minWidth: 0 }}>
               <div style={{
-                fontSize: 14, fontWeight: 700, color: '#0F172A',
+                fontSize: 14, fontWeight: 650, color: '#0F172A',
                 fontFamily: "'Inter', sans-serif",
                 lineHeight: 1.35,
               }}>
@@ -69,7 +103,7 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
               </div>
               {event.subtitle && (
                 <div style={{
-                  fontSize: 12.5, color: '#64748B', marginTop: 3,
+                  fontSize: 12.5, fontWeight: 400, color: '#475569', marginTop: 2,
                   lineHeight: 1.4,
                   overflow: 'hidden', textOverflow: 'ellipsis',
                   display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
@@ -81,43 +115,42 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
           </div>
         </td>
 
-        {/* Type pill */}
-        <td style={{ width: 130, padding: '12px 14px', verticalAlign: 'top' }}>
+        {/* Type pill — Fix 3: classified type, exact pill colors */}
+        <td style={{ width: 130, padding: '14px 16px', verticalAlign: 'top' }}>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
-            padding: '4px 12px', fontSize: 12, fontWeight: 600,
-            borderRadius: 14,
-            background: `${typeColor}14`, color: typeColor,
-            border: `1px solid ${typeColor}30`,
+            padding: '4px 12px', fontSize: 11.5, fontWeight: 700,
+            borderRadius: 4,
+            background: colors.pillBg, color: colors.pillText,
           }}>
             <span style={{
               width: 7, height: 7, borderRadius: '50%',
-              background: typeColor, flexShrink: 0,
+              background: colors.dot, flexShrink: 0,
             }} />
-            {event.issueType}
+            {EVENT_TYPE_LABELS[event.eventType] || event.eventType}
           </span>
         </td>
 
-        {/* Release */}
-        <td style={{ width: 130, padding: '12px 14px', verticalAlign: 'top' }}>
+        {/* Release — Fix 29: styled tag */}
+        <td style={{ width: 130, padding: '14px 16px', verticalAlign: 'top' }}>
           {event.release ? (
             <span style={{
               display: 'inline-block',
               padding: '3px 10px', fontSize: 12, fontWeight: 600,
-              borderRadius: 5, border: '1px solid #E2E8F0',
-              color: '#334155', background: '#F8FAFC',
+              borderRadius: 4, border: '1px solid #E2E8F0',
+              color: '#1E293B', background: '#F8FAFC',
               fontFamily: "'Inter', sans-serif",
             }}>
               {event.release}
             </span>
           ) : (
-            <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>
+            <span style={{ fontSize: 12, color: '#64748B' }}>—</span>
           )}
         </td>
 
         {/* Deployed */}
         <td style={{
-          width: 160, padding: '12px 14px', verticalAlign: 'top',
+          width: 160, padding: '14px 16px', verticalAlign: 'top',
           fontSize: 13, fontWeight: 400, color: '#475569',
         }}>
           {formatDeploymentDate(event.deployedAt)}
@@ -125,78 +158,82 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
 
         {/* Stories count */}
         <td style={{
-          width: 80, padding: '12px 14px', textAlign: 'center', verticalAlign: 'top',
+          width: 80, padding: '14px 16px', textAlign: 'center', verticalAlign: 'top',
           fontSize: 13, fontWeight: 600, color: '#334155',
         }}>
-          {event.stories.length} {event.stories.length === 1 ? 'story' : 'stories'}
+          {event.stories.length}
         </td>
       </tr>
 
       {/* Expanded Detail Panel */}
       {expanded && (
         <tr>
-          <td colSpan={6} style={{ padding: 0, borderLeft: `3px solid ${typeColor}`, borderBottom: '1px solid #E2E8F0' }}>
-            <div style={{ padding: '32px 48px 32px 64px', background: '#FFFFFF' }}>
+          <td colSpan={6} style={{ padding: 0, borderBottom: '1px solid #E2E8F0' }}>
+            {/* Fix 22: 4px left border, Fix 23: bg #FAFBFD, Fix 24: 68px left pad */}
+            <div style={{
+              padding: '28px 32px 28px 68px',
+              background: '#FAFBFD',
+              boxShadow: `inset 4px 0 0 ${colors.border}`,
+            }}>
 
-              {/* Title */}
+              {/* Fix 10: Georgia serif 20px title */}
               <h2 style={{
-                fontSize: 22, fontWeight: 800, color: '#0F172A',
-                fontFamily: "'Georgia', serif", margin: '0 0 24px',
-                lineHeight: 1.3,
+                fontSize: 20, fontWeight: 700, color: '#020617',
+                fontFamily: "Georgia, 'Times New Roman', serif",
+                margin: '0 0 20px',
+                lineHeight: 1.3, letterSpacing: '-0.01em',
               }}>
                 {event.title}
               </h2>
 
-              {/* WHAT CHANGED */}
-              <div style={{ marginBottom: 28 }}>
+              {/* WHAT CHANGED — Fix 25: section label, Fix 11: Georgia 15px, Fix 20: 22px spacing */}
+              <div style={{ marginBottom: 22 }}>
                 <h3 style={{
-                  fontSize: 11, fontWeight: 700, color: '#0F172A',
-                  textTransform: 'uppercase', letterSpacing: '0.08em',
-                  margin: '0 0 10px',
+                  fontSize: 11.5, fontWeight: 700, color: '#475569',
+                  textTransform: 'uppercase', letterSpacing: '0.06em',
+                  margin: '0 0 8px',
                   fontFamily: "'Inter', sans-serif",
                 }}>
                   What Changed
                 </h3>
                 <p style={{
-                  fontSize: 15, color: '#334155', lineHeight: 1.7,
-                  fontFamily: "'Georgia', serif", margin: 0,
+                  fontSize: 15, color: '#1E293B', lineHeight: 1.72,
+                  fontFamily: "Georgia, 'Times New Roman', serif", margin: 0,
                 }}>
-                  {event.stories.map(s => s.summary).join('. ')}.
+                  {formatNarrative(event.stories)}
                 </p>
               </div>
 
-              {/* IMPACT BLOCK */}
+              {/* IMPACT BLOCK — Fix 2: label, Fix 12: Georgia 14.5px, Fix 19: asymmetric radius */}
               <div style={{
-                borderLeft: `3px solid ${typeColor}`,
+                borderLeft: `3px solid ${colors.border}`,
                 background: '#F8FAFC',
                 padding: '16px 20px',
-                borderRadius: '0 8px 8px 0',
-                marginBottom: 28,
+                borderRadius: '2px 8px 8px 2px',
+                marginBottom: 22,
               }}>
                 <h4 style={{
-                  fontSize: 11, fontWeight: 700, color: typeColor,
-                  textTransform: 'uppercase', letterSpacing: '0.08em',
+                  fontSize: 11.5, fontWeight: 700, color: colors.border,
+                  textTransform: 'uppercase', letterSpacing: '0.06em',
                   margin: '0 0 8px',
                   fontFamily: "'Inter', sans-serif",
                 }}>
-                  Business Impact
+                  {impactLabel}
                 </h4>
                 <p style={{
-                  fontSize: 14, color: '#334155', lineHeight: 1.65,
-                  fontFamily: "'Georgia', serif", margin: 0,
+                  fontSize: 14.5, color: '#0F172A', lineHeight: 1.65,
+                  fontFamily: "Georgia, 'Times New Roman', serif", margin: 0,
                 }}>
-                  {event.stories.length} ticket{event.stories.length > 1 ? 's' : ''} deployed to production
-                  covering {event.issueType.toLowerCase()} work
-                  {event.parentKey ? ` under ${event.parentKey}` : ''}.
+                  {generateImpactText(event)}
                 </p>
               </div>
 
-              {/* CONSOLIDATED TICKETS */}
-              <div style={{ marginBottom: 28 }}>
+              {/* CONSOLIDATED TICKETS — Fix 25: section label */}
+              <div style={{ marginBottom: 22 }}>
                 <h3 style={{
-                  fontSize: 11, fontWeight: 700, color: '#0F172A',
-                  textTransform: 'uppercase', letterSpacing: '0.08em',
-                  margin: '0 0 12px',
+                  fontSize: 11.5, fontWeight: 700, color: '#475569',
+                  textTransform: 'uppercase', letterSpacing: '0.06em',
+                  margin: '0 0 8px',
                   fontFamily: "'Inter', sans-serif",
                 }}>
                   Consolidated Tickets
@@ -212,7 +249,7 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
                         style={{
                           fontFamily: "'JetBrains Mono', monospace",
                           fontSize: 13, fontWeight: 700,
-                          color: typeColor, textDecoration: 'none',
+                          color: colors.ticketColor, textDecoration: 'none',
                           minWidth: 120,
                         }}
                       >
@@ -226,36 +263,41 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
                 </div>
               </div>
 
-              {/* Footer metadata */}
+              {/* Fix 9: Metadata bar — Epic | Release | Change | Status */}
+              {/* Fix 21: exact styling */}
               <div style={{
-                display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
-                border: '1px solid #E2E8F0', borderRadius: 8,
+                display: 'flex',
+                background: '#F8FAFC',
+                border: '1px solid #F1F5F9',
+                borderRadius: 6,
                 overflow: 'hidden',
+                marginTop: 24,
               }}>
                 {[
                   { label: 'Epic', value: event.parentKey ? `${event.parentSummary} (${event.parentKey})` : '—' },
                   { label: 'Release', value: event.release || '—', isLink: !!event.release },
-                  { label: 'Project', value: event.stories[0]?.project_name || event.stories[0]?.project_key || '—' },
+                  { label: 'Change', value: '—' },
                   { label: 'Status', value: 'In Production' },
                 ].map((item, i) => (
                   <div
                     key={item.label}
                     style={{
-                      padding: '14px 16px',
-                      borderRight: i < 3 ? '1px solid #E2E8F0' : 'none',
-                      background: '#FAFBFD',
+                      padding: '10px 16px',
+                      borderRight: i < 3 ? '1px solid #F1F5F9' : 'none',
+                      flex: 1,
                     }}
                   >
-                    <div style={{
-                      fontSize: 11, fontWeight: 700, color: '#64748B',
+                    <strong style={{
+                      display: 'block',
+                      fontWeight: 700, color: '#0F172A',
+                      fontSize: 12, marginBottom: 1,
                       fontFamily: "'Inter', sans-serif",
-                      marginBottom: 4,
                     }}>
                       {item.label}
-                    </div>
+                    </strong>
                     <div style={{
-                      fontSize: 13, fontWeight: 500,
-                      color: item.isLink ? '#2563EB' : '#0F172A',
+                      fontSize: 12.5, fontWeight: 500,
+                      color: item.isLink ? '#2563EB' : '#1E293B',
                       fontFamily: "'Inter', sans-serif",
                       lineHeight: 1.4,
                     }}>
@@ -264,6 +306,32 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
                   </div>
                 ))}
               </div>
+
+              {/* Fix 15: Regenerate Narrative button */}
+              <button
+                onClick={e => e.stopPropagation()}
+                style={{
+                  marginTop: 16,
+                  fontSize: 11.5, fontWeight: 500,
+                  color: '#94A3B8', background: 'transparent',
+                  border: '1px solid transparent',
+                  borderRadius: 6, padding: '4px 12px',
+                  cursor: 'pointer',
+                  transition: 'all 150ms ease',
+                }}
+                onMouseEnter={e => {
+                  (e.target as HTMLButtonElement).style.background = '#F8FAFC';
+                  (e.target as HTMLButtonElement).style.color = '#475569';
+                  (e.target as HTMLButtonElement).style.borderColor = '#E2E8F0';
+                }}
+                onMouseLeave={e => {
+                  (e.target as HTMLButtonElement).style.background = 'transparent';
+                  (e.target as HTMLButtonElement).style.color = '#94A3B8';
+                  (e.target as HTMLButtonElement).style.borderColor = 'transparent';
+                }}
+              >
+                ↻ Regenerate Narrative
+              </button>
             </div>
           </td>
         </tr>

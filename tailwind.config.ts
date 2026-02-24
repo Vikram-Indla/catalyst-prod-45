@@ -424,6 +424,7 @@ export default {
         sans: ['"Plus Jakarta Sans"', "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
         body: ['"Plus Jakarta Sans"', "-apple-system", "BlinkMacSystemFont", "sans-serif"],
         display: ['"Plus Jakarta Sans"', "-apple-system", "sans-serif"],
+        serif: ["Georgia", "'Times New Roman'", "serif"],
         mono: ['"JetBrains Mono"', "SF Mono", "Monaco", "Consolas", "monospace"],
       },
       
