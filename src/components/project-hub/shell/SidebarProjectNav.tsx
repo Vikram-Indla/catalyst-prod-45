@@ -32,6 +32,7 @@ interface SidebarProjectNavProps {
   projects: ProjectEntry[];
 }
 
+// Planning navigation items including all backlog types
 const PLANNING_NAV = [
   { icon: List, label: 'Backlog', path: 'backlog' },
   { icon: Layers, label: 'Epic Backlog', path: 'epic-backlog' },

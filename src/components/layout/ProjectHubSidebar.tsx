@@ -19,6 +19,9 @@ import {
   Settings,
   UserSearch,
   Kanban,
+  Layers,
+  LayoutList,
+  BookOpen,
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
@@ -57,9 +60,12 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
         {
           title: 'Planning',
           items: [
-            { id: 'backlog',  title: 'Backlog',  path: `${base}/backlog`,  icon: Kanban,     exact: false },
-            { id: 'board',    title: 'Board',     path: `${base}/board`,    icon: Columns3,   exact: false },
-            { id: 'timeline', title: 'Timeline',  path: `${base}/timeline`, icon: GanttChart,  exact: false },
+            { id: 'backlog',         title: 'Backlog',         path: `${base}/backlog`,         icon: Kanban,     exact: false },
+            { id: 'epic-backlog',    title: 'Epic Backlog',    path: `${base}/epic-backlog`,    icon: Layers,     exact: false },
+            { id: 'feature-backlog', title: 'Feature Backlog', path: `${base}/feature-backlog`, icon: LayoutList, exact: false },
+            { id: 'story-backlog',   title: 'Story Backlog',   path: `${base}/story-backlog`,   icon: BookOpen,   exact: false },
+            { id: 'board',           title: 'Board',           path: `${base}/board`,           icon: Columns3,   exact: false },
+            { id: 'timeline',        title: 'Timeline',        path: `${base}/timeline`,        icon: GanttChart, exact: false },
           ],
         },
         {
