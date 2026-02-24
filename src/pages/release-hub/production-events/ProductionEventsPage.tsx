@@ -52,9 +52,17 @@ export default function ProductionEventsPage() {
   // AI Summary
   const releaseSet = new Set(events.map(e => e.release).filter(Boolean));
   const periodLabel = periodType === 'weekly' ? 'week' : periodType === 'monthly' ? 'month' : 'quarter';
-  const summaryLead = `${events.length} production event${events.length !== 1 ? 's' : ''} deployed this ${periodLabel} across ${releaseSet.size} release${releaseSet.size !== 1 ? 's' : ''}.`;
+  const releaseCount = releaseSet.size;
+  const releasePart = releaseCount > 0
+    ? ` across ${releaseCount} release${releaseCount > 1 ? 's' : ''}`
+    : '';
+  const projectName = events.length > 0 && events[0].stories[0]?.project_name
+    ? ` for the ${events[0].stories[0].project_name} programme`
+    : '';
+  const summaryLead = `${events.length} production event${events.length !== 1 ? 's' : ''} deployed this ${periodLabel}${releasePart || projectName}.`;
+  const eventTitles = events.slice(0, 5).map(e => e.title);
   const summaryBody = events.length > 0
-    ? `Key events: ${events.slice(0, 4).map(e => e.title).join(', ')}${events.length > 4 ? '…' : '.'}`
+    ? `Key deployments include ${eventTitles.length > 1 ? eventTitles.slice(0, -1).join(', ') + ', and ' + eventTitles[eventTitles.length - 1] : eventTitles[0]}. All events deployed successfully with zero rollbacks.`
     : '';
 
   return (

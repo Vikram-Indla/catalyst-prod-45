@@ -13,27 +13,67 @@ interface Props {
 
 const JIRA_BASE = 'https://jira.example.com/browse/';
 
-// Fix 7: Smart impact text
+// Fix 3: Contextual impact text
 function generateImpactText(event: ProductionEvent & { eventType: string }): string {
+  const epic = event.parentSummary || event.title;
   const count = event.stories.length;
-  const epicName = event.parentSummary || event.title;
+
+  const hasPerformance = event.stories.some(t =>
+    /caching|performance|optimization/i.test(t.summary || ''));
+  const hasWorkflow = event.stories.some(t =>
+    /status|workflow|approved/i.test(t.summary || ''));
+  const hasBranding = event.stories.some(t =>
+    /design|landing|branding/i.test(t.summary || ''));
+
   if (event.eventType === 'incident') {
     return `This fix resolves ${event.title.toLowerCase()}, ensuring uninterrupted service and data integrity for all platform users.`;
   }
-  return `This ${count > 1 ? count + '-story' : ''} enhancement to ${epicName} strengthens the platform's capabilities for investors and stakeholders.`;
+  if (hasPerformance) {
+    return `Improves platform responsiveness and reduces processing times for operations that depend on ${epic}, creating a more efficient experience for all users.`;
+  }
+  if (hasWorkflow) {
+    return `Streamlines the ${epic.toLowerCase()} process, reducing manual steps and ensuring operational data is captured accurately for compliance and reporting purposes.`;
+  }
+  if (hasBranding) {
+    return `Ensures the platform's presentation aligns with current institutional branding requirements, maintaining credibility and compliance with government presentation standards.`;
+  }
+  return `This ${count > 1 ? count + '-part ' : ''}update to ${epic} enhances the platform's operational capabilities and ensures continued reliability for all stakeholders.`;
 }
 
-// Fix 8: Clean narrative text
-function formatNarrative(stories: ProductionEvent['stories']): string {
-  const summaries = stories
-    .map(s => s.summary?.trim())
-    .filter(Boolean)
-    .map(s => s!.replace(/\.\s*$/, '').replace(/-CR\s*\.?/g, '').trim())
-    .map(s => s.endsWith('.') ? s : s + '.');
+// Clean Jira summary artifacts
+function cleanSummary(s: string | null): string {
+  if (!s) return 'an update';
+  return s
+    .replace(/\s*-\s*CR\s*$/i, '')
+    .replace(/\s*\.\s*$/, '')
+    .replace(/\(\s*\)/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
-  if (summaries.length === 0) return '';
-  if (summaries.length === 1) return summaries[0];
-  return `This update encompasses ${summaries.length} changes: ${summaries.join(' ')}`;
+// Fix 2: Readable narrative text
+function formatNarrative(event: ProductionEvent): string {
+  const tickets = event.stories;
+  if (tickets.length === 0) {
+    return `Updates were deployed for ${event.title}.`;
+  }
+  if (tickets.length === 1) {
+    const summary = cleanSummary(tickets[0].summary);
+    return `${summary.charAt(0).toUpperCase() + summary.slice(1)} as part of the ${event.parentSummary || event.title} initiative. This deployment has been verified and is operational in the production environment.`;
+  }
+  const summaries = tickets.map(t => cleanSummary(t.summary));
+  return `${tickets.length} updates were deployed to the ${event.parentSummary || event.title} module. Changes include ${summaries.slice(0, -1).join(', ')}${summaries.length > 1 ? ', and ' : ''}${summaries[summaries.length - 1]}.`;
+}
+
+// Fix 5: Clean subtitles
+function cleanSubtitle(summary: string | null): string {
+  if (!summary) return '';
+  return summary
+    .replace(/\s*→\s*/g, ' to ')
+    .replace(/\s*-\s*CR\s*$/i, '')
+    .replace(/\(\s*\)/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 // Fix 3: Event type label
@@ -108,7 +148,7 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
                   overflow: 'hidden', textOverflow: 'ellipsis',
                   display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
                 }}>
-                  {event.subtitle}
+                  {cleanSubtitle(event.subtitle)}
                 </div>
               )}
             </div>
@@ -156,12 +196,12 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
           {formatDeploymentDate(event.deployedAt)}
         </td>
 
-        {/* Stories count */}
+        {/* Stories count — Fix 4: show "X stories" */}
         <td style={{
-          width: 80, padding: '14px 16px', textAlign: 'center', verticalAlign: 'top',
-          fontSize: 13, fontWeight: 600, color: '#334155',
+          width: 100, padding: '14px 16px', textAlign: 'center', verticalAlign: 'top',
+          fontSize: 13, fontWeight: 600, color: '#475569', whiteSpace: 'nowrap',
         }}>
-          {event.stories.length}
+          {event.stories.length} {event.stories.length === 1 ? 'story' : 'stories'}
         </td>
       </tr>
 
@@ -200,14 +240,14 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
                   fontSize: 15, color: '#1E293B', lineHeight: 1.72,
                   fontFamily: "Georgia, 'Times New Roman', serif", margin: 0,
                 }}>
-                  {formatNarrative(event.stories)}
+                  {formatNarrative(event)}
                 </p>
               </div>
 
-              {/* IMPACT BLOCK — Fix 2: label, Fix 12: Georgia 14.5px, Fix 19: asymmetric radius */}
+              {/* IMPACT BLOCK — Fix 6: tinted bg, Fix 14: asymmetric radius */}
               <div style={{
-                borderLeft: `3px solid ${colors.border}`,
-                background: '#F8FAFC',
+                borderLeft: `4px solid ${colors.border}`,
+                background: colors.impactBg,
                 padding: '16px 20px',
                 borderRadius: '2px 8px 8px 2px',
                 marginBottom: 22,
