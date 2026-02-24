@@ -2,7 +2,7 @@ import { Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { ProjectListItem } from '@/types/projecthub';
 import { STATUS_CATEGORY_DISPLAY } from '@/types/projecthub';
-import { ProjectHealthBadge } from './ProjectHealthBadge';
+
 import { DistributionBar } from './DistributionBar';
 import { MemberStack } from './MemberStack';
 import { formatDistanceToNowStrict } from 'date-fns';
@@ -91,7 +91,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
                   <span style={{ width: 6, height: 6, borderRadius: 3, background: CAT_DOT[p.status_category] || '#94A3B8' }} />
                   {STATUS_CATEGORY_DISPLAY[p.status_category] || p.status_category}
                 </span>
-                <ProjectHealthBadge health={p.health_status} />
+                
               </div>
 
               {/* Work items */}

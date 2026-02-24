@@ -180,6 +180,84 @@ serve(async (req) => {
 
     console.log(`[jira-sync-projects] Successfully synced ${inserted?.length ?? 0} projects`);
 
+    // 7. Populate project_members from Jira assignees
+    if (inserted && inserted.length > 0) {
+      console.log("[jira-sync-projects] Resolving Jira assignees to members...");
+
+      // Build a map of project_key -> project_id
+      const keyToId: Record<string, string> = {};
+      for (const p of inserted) {
+        keyToId[p.key] = p.id;
+      }
+
+      // Get unique assignee_account_ids per project from ph_issues (paginated)
+      const projectAssignees: Record<string, Set<string>> = {};
+      let mOffset = 0;
+      let mHasMore = true;
+      while (mHasMore) {
+        const { data: rows } = await supabase
+          .from("ph_issues")
+          .select("project_key, assignee_account_id")
+          .not("assignee_account_id", "is", null)
+          .range(mOffset, mOffset + 999);
+        if (!rows || rows.length === 0) { mHasMore = false; break; }
+        for (const r of rows) {
+          if (!projectAssignees[r.project_key]) projectAssignees[r.project_key] = new Set();
+          projectAssignees[r.project_key].add(r.assignee_account_id);
+        }
+        mOffset += 1000;
+        if (rows.length < 1000) mHasMore = false;
+      }
+
+      // Get Jira account_id -> profile_id mapping from resource_inventory
+      const allJiraIds = new Set<string>();
+      for (const s of Object.values(projectAssignees)) {
+        for (const id of s) allJiraIds.add(id);
+      }
+
+      const jiraIdArr = Array.from(allJiraIds);
+      const jiraToProfile: Record<string, string> = {};
+      // Batch in groups of 100 for the IN filter
+      for (let i = 0; i < jiraIdArr.length; i += 100) {
+        const batch = jiraIdArr.slice(i, i + 100);
+        const { data: resources } = await supabase
+          .from("resource_inventory")
+          .select("jira_account_id, profile_id")
+          .in("jira_account_id", batch)
+          .not("profile_id", "is", null);
+        if (resources) {
+          for (const r of resources) {
+            jiraToProfile[r.jira_account_id] = r.profile_id;
+          }
+        }
+      }
+
+      console.log(`[jira-sync-projects] Mapped ${Object.keys(jiraToProfile).length} Jira accounts to profiles`);
+
+      // Build project_members rows
+      const memberRows: { project_id: string; user_id: string; role: string }[] = [];
+      for (const [projectKey, assigneeSet] of Object.entries(projectAssignees)) {
+        const projectId = keyToId[projectKey];
+        if (!projectId) continue;
+        for (const jiraId of assigneeSet) {
+          const profileId = jiraToProfile[jiraId];
+          if (profileId) {
+            memberRows.push({ project_id: projectId, user_id: profileId, role: "member" });
+          }
+        }
+      }
+
+      if (memberRows.length > 0) {
+        // Insert in batches
+        for (let i = 0; i < memberRows.length; i += 500) {
+          const batch = memberRows.slice(i, i + 500);
+          const { error: memErr } = await supabase.from("project_members").insert(batch);
+          if (memErr) console.warn("[jira-sync-projects] Member insert warning:", memErr.message);
+        }
+        console.log(`[jira-sync-projects] Inserted ${memberRows.length} project members from Jira`);
+      }
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
