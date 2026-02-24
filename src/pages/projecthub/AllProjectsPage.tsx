@@ -11,7 +11,7 @@ import {
   computePortfolioStats,
 } from '@/hooks/useProjectHub';
 import { useMemberProfiles } from '@/components/projecthub/MemberStack';
-import { ProjectStatsStrip } from '@/components/projecthub/ProjectStatsStrip';
+
 import { AllProjectsToolbar } from '@/components/projecthub/AllProjectsToolbar';
 import { ProjectAdvancedFilters } from '@/components/projecthub/ProjectAdvancedFilters';
 import { AllProjectsTable } from '@/components/projecthub/AllProjectsTable';
@@ -23,12 +23,12 @@ import { toast } from 'sonner';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 
 export default function AllProjectsPage() {
-  const [view, setView] = useState<ViewMode>('list');
+  const [view, setView] = useState<ViewMode>('cards');
   const [filters, setFilters] = useState<ProjectFilters>(DEFAULT_FILTERS);
   const [sortCol, setSortCol] = useState<SortColumn>('name');
   const [sortDir, setSortDir] = useState<SortDirection>('asc');
   const [page, setPage] = useState(0);
-  const [perPage, setPerPage] = useState(12);
+  const [perPage, setPerPage] = useState(50);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [showAdvFilters, setShowAdvFilters] = useState(false);
@@ -114,12 +114,7 @@ export default function AllProjectsPage() {
         }
       />
 
-      <div style={{ flex: 1, overflow: 'auto', padding: '16px 24px' }}>
-
-      {/* Stats */}
-      <div style={{ marginBottom: 16, flexShrink: 0 }}>
-        <ProjectStatsStrip stats={stats} />
-      </div>
+      <div style={{ flex: 1, overflow: 'auto', padding: '12px 24px' }}>
 
       {/* Toolbar */}
       <div style={{ marginBottom: 10, flexShrink: 0 }}>
@@ -208,73 +203,17 @@ export default function AllProjectsPage() {
           </div>
           {/* Footer */}
           <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '8px 16px', borderTop: '1px solid #F1F5F9', background: '#FAFBFC',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '6px 16px', borderTop: '1px solid #F1F5F9', background: '#FAFBFC',
             fontSize: 12, color: '#64748B', flexShrink: 0,
           }}>
-            <span>Showing {page * perPage + 1}–{Math.min((page + 1) * perPage, filtered.length)} of {filtered.length} projects</span>
-            <div style={{ display: 'flex', gap: 4 }}>
-              <button
-                disabled={page === 0}
-                onClick={() => setPage(p => p - 1)}
-                style={{
-                  width: 28, height: 28, border: '1px solid #E2E8F0', background: '#FFF', borderRadius: 4,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: page === 0 ? 'not-allowed' : 'pointer',
-                  opacity: page === 0 ? 0.4 : 1,
-                }}
-              >
-                <ChevronLeft size={14} color="#334155" />
-              </button>
-              {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
-                const pn = totalPages <= 5 ? i : Math.max(0, Math.min(page - 2, totalPages - 5)) + i;
-                return (
-                  <button
-                    key={pn}
-                    onClick={() => setPage(pn)}
-                    style={{
-                      width: 28, height: 28, borderRadius: 4,
-                      border: pn === page ? 'none' : '1px solid #E2E8F0',
-                      background: pn === page ? '#2563EB' : '#FFF',
-                      color: pn === page ? '#FFF' : '#334155',
-                      fontSize: 12, fontWeight: pn === page ? 600 : 400, cursor: 'pointer',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}
-                  >
-                    {pn + 1}
-                  </button>
-                );
-              })}
-              <button
-                disabled={page >= totalPages - 1}
-                onClick={() => setPage(p => p + 1)}
-                style={{
-                  width: 28, height: 28, border: '1px solid #E2E8F0', background: '#FFF', borderRadius: 4,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer',
-                  opacity: page >= totalPages - 1 ? 0.4 : 1,
-                }}
-              >
-                <ChevronRightIcon size={14} color="#334155" />
-              </button>
-            </div>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, color: '#64748B' }}>
-              Rows per page:
-              <select
-                value={perPage}
-                onChange={e => { setPerPage(Number(e.target.value)); setPage(0); }}
-                style={{ height: 26, padding: '0 4px', border: '1px solid #E2E8F0', fontSize: 12, color: '#334155', background: '#FFF', borderRadius: 4, cursor: 'pointer' }}
-              >
-                <option value={12}>12</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-              </select>
-            </span>
+            <span>Showing {filtered.length} projects</span>
           </div>
         </div>
       ) : (
         <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
           <AllProjectsCardGrid
-            projects={pageData}
+            projects={filtered}
             favoriteIds={favorites}
             onToggleFav={(id, fav) => toggleFav.mutate({ projectId: id, isFavorited: fav })}
             onSelectProject={id => setSelectedProject(id)}
