@@ -2,7 +2,7 @@ import { Star, ArrowUp, ArrowDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { ProjectListItem, SortColumn, SortDirection } from '@/types/projecthub';
 import { ProjectStatusBadge } from './ProjectStatusBadge';
-import { ProjectHealthBadge } from './ProjectHealthBadge';
+
 import { DistributionBar } from './DistributionBar';
 import { MemberStack } from './MemberStack';
 import { STATUS_CATEGORY_DISPLAY } from '@/types/projecthub';
@@ -87,7 +87,7 @@ export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectP
           <SortHeader label="Epics" col="total_epics" currentCol={sortCol} dir={sortDir} onSort={onSort} center />
           <SortHeader label="Stories" col="total_stories" currentCol={sortCol} dir={sortDir} onSort={onSort} center />
           <th style={{ padding: '0 12px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '2px solid #E2E8F0', background: '#F8FAFC' }}>Distribution</th>
-          <SortHeader label="Health" col="health_status" currentCol={sortCol} dir={sortDir} onSort={onSort} />
+          
           <th style={{ padding: '0 12px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '2px solid #E2E8F0', background: '#F8FAFC' }}>Members</th>
           <th style={{ padding: '0 16px', height: 36, fontSize: 11, fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em', borderBottom: '2px solid #E2E8F0', background: '#F8FAFC', textAlign: 'right' }}>Updated</th>
         </tr>
@@ -157,9 +157,7 @@ export function AllProjectsTable({ projects, favoriteIds, onToggleFav, onSelectP
               <td style={{ padding: '0 12px' }}>
                 <DistributionBar todo={p.work_items_todo} inProgress={p.work_items_in_progress} done={p.work_items_done} showNumbers />
               </td>
-              <td style={{ padding: '0 16px' }}>
-                <ProjectHealthBadge health={p.health_status} />
-              </td>
+              
               <td style={{ padding: '0 12px' }}>
                 <MemberStack memberIds={p.member_ids} memberCount={p.member_count} />
               </td>
