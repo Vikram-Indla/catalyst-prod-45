@@ -1,21 +1,17 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { FileDown, RefreshCw } from 'lucide-react';
-import { PeriodSummary } from './components/PeriodSummary';
 import { PeriodControls } from './components/PeriodControls';
 import { ProductionEventsTable } from './components/ProductionEventsTable';
-import { useProductionEvents, usePeriodSummary } from './hooks/useProductionEvents';
+import { useProductionEvents } from './hooks/useProductionEvents';
 import { usePeriodNavigation } from './hooks/usePeriodNavigation';
-import type { PcEventType } from './types/production-events.types';
 
 export default function ProductionEventsPage() {
   const { periodType, label, startISO, endISO, handlePeriodTypeChange, handleNavigate } = usePeriodNavigation();
-  const [filterType, setFilterType] = useState<PcEventType | 'all'>('all');
+  const [filterType, setFilterType] = useState<string>('all');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const { data: events = [], isLoading: eventsLoading } = useProductionEvents(periodType, startISO, endISO);
-  const { data: summary, isLoading: summaryLoading } = usePeriodSummary(periodType, startISO);
 
-  // ESC collapses expanded rows
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setExpandedId(null);
@@ -30,10 +26,22 @@ export default function ProductionEventsPage() {
 
   const filteredEvents = useMemo(() => {
     if (filterType === 'all') return events;
-    return events.filter(e => e.event_type === filterType);
+    return events.filter(e => e.issue_type.toLowerCase() === filterType);
   }, [events, filterType]);
 
-  const syncedAt = 'Synced 24 Feb 2026, 09:15';
+  // Compute counts for chips
+  const typeCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const e of events) {
+      const t = e.issue_type.toLowerCase();
+      counts[t] = (counts[t] || 0) + 1;
+    }
+    return counts;
+  }, [events]);
+
+  const syncedAt = events.length > 0
+    ? `Last deployed: ${new Date(events[0].jira_updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
+    : '';
 
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", padding: '24px 28px', background: '#FFFFFF', minHeight: '100vh' }}>
@@ -47,18 +55,17 @@ export default function ProductionEventsPage() {
             Production Events
           </h1>
           <p style={{ fontSize: 13, color: '#64748B', fontWeight: 400, margin: '4px 0 0' }}>
-            Curated record of production deployments with AI-generated narratives
+            Tickets marked "In Production" from Jira, grouped by deployment date
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span style={{ fontSize: 11, color: '#94A3B8', fontWeight: 500, marginRight: 8 }}>{syncedAt}</span>
+          {syncedAt && <span style={{ fontSize: 11, color: '#94A3B8', fontWeight: 500, marginRight: 8 }}>{syncedAt}</span>}
           <button
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '6px 14px', fontSize: 12, fontWeight: 600,
               borderRadius: 6, border: '1px solid #E2E8F0',
               background: '#FFFFFF', color: '#475569', cursor: 'pointer',
-              transition: 'all 150ms ease',
             }}
           >
             <FileDown size={14} />
@@ -70,7 +77,6 @@ export default function ProductionEventsPage() {
               padding: '6px 14px', fontSize: 12, fontWeight: 600,
               borderRadius: 6, border: '1px solid #E2E8F0',
               background: '#FFFFFF', color: '#475569', cursor: 'pointer',
-              transition: 'all 150ms ease',
             }}
           >
             <RefreshCw size={14} />
@@ -79,9 +85,16 @@ export default function ProductionEventsPage() {
         </div>
       </div>
 
-      {/* AI Summary */}
-      <div style={{ margin: '20px 0 16px' }}>
-        <PeriodSummary summary={summary ?? null} loading={summaryLoading} />
+      {/* Stats bar */}
+      <div className="flex items-center gap-4 mt-4 mb-4">
+        <div style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>
+          {events.length} items in production
+        </div>
+        {Object.entries(typeCounts).map(([type, count]) => (
+          <span key={type} style={{ fontSize: 12, color: '#64748B' }}>
+            {type}: <strong>{count}</strong>
+          </span>
+        ))}
       </div>
 
       {/* Controls */}

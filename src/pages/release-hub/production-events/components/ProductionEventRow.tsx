@@ -1,23 +1,22 @@
 import { useState } from 'react';
-import { ChevronRight, Pin } from 'lucide-react';
-import type { PcEvent } from '../types/production-events.types';
-import { getEventColors, PINNED_BORDER } from '../utils/event-colors';
+import { ChevronRight } from 'lucide-react';
+import type { ProductionIssue } from '../hooks/useProductionEvents';
 import { formatDeploymentDate } from '../utils/period-helpers';
-import { ProductionEventDetail } from './ProductionEventDetail';
+import { getIssueTypeColor } from '../utils/event-colors';
 
 interface Props {
-  event: PcEvent;
+  event: ProductionIssue;
   index: number;
   expanded: boolean;
   onToggle: () => void;
 }
 
-export function ProductionEventRow({ event, index, expanded, onToggle }: Props) {
-  const colors = getEventColors(event.event_type, event.is_pinned);
-  const [hovered, setHovered] = useState(false);
+const JIRA_BASE = 'https://jira.example.com/browse/';
 
-  // Build subtitle from epic summary
-  const subtitle = event.source_epic_summary ?? '';
+export function ProductionEventRow({ event, index, expanded, onToggle }: Props) {
+  const [hovered, setHovered] = useState(false);
+  const typeColor = getIssueTypeColor(event.issue_type);
+  const releaseLabel = event.fix_versions?.[0]?.name ?? null;
 
   return (
     <>
@@ -29,27 +28,67 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
           cursor: 'pointer',
           background: hovered ? '#EFF6FF' : expanded ? '#FAFBFD' : '#FFFFFF',
           transition: 'background 120ms ease',
-          borderLeft: `4px solid ${colors.border}`,
+          borderLeft: `3px solid ${typeColor}`,
+          borderBottom: '1px solid #F1F5F9',
         }}
       >
         {/* # */}
         <td style={{
-          width: 48, padding: '10px 12px', textAlign: 'center',
+          width: 44, padding: '8px 12px', textAlign: 'center',
           fontSize: 12, fontWeight: 500, color: '#64748B',
           fontFamily: "'JetBrains Mono', monospace",
-          verticalAlign: 'middle',
         }}>
-          <div className="flex items-center justify-center gap-1">
-            {event.is_pinned && <Pin size={11} color={PINNED_BORDER} strokeWidth={2.5} />}
-            <span>{index + 1}</span>
-          </div>
+          {index + 1}
         </td>
 
-        {/* Event */}
-        <td style={{ padding: '10px 12px', verticalAlign: 'middle' }}>
+        {/* Ticket Key */}
+        <td style={{ width: 110, padding: '8px 12px' }}>
+          <a
+            href={`${JIRA_BASE}${event.issue_key}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={e => e.stopPropagation()}
+            style={{
+              fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600,
+              color: typeColor, textDecoration: 'none',
+            }}
+          >
+            {event.issue_key}
+          </a>
+        </td>
+
+        {/* Type */}
+        <td style={{ width: 120, padding: '8px 12px' }}>
+          <span
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+              padding: '3px 10px', fontSize: 11, fontWeight: 600,
+              borderRadius: 12,
+              background: `${typeColor}14`, color: typeColor,
+            }}
+          >
+            {event.type_icon_url && (
+              <img src={event.type_icon_url} alt="" style={{ width: 13, height: 13 }} />
+            )}
+            {event.issue_type}
+          </span>
+        </td>
+
+        {/* Project */}
+        <td style={{ width: 140, padding: '8px 12px', fontSize: 12, fontWeight: 500, color: '#475569' }}>
+          <span style={{
+            background: '#F1F5F9', padding: '2px 8px', borderRadius: 4,
+            fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 600,
+          }}>
+            {event.project_key}
+          </span>
+        </td>
+
+        {/* Summary */}
+        <td style={{ padding: '8px 12px' }}>
           <div className="flex items-center gap-2">
             <ChevronRight
-              size={14}
+              size={13}
               color="#94A3B8"
               style={{
                 transform: expanded ? 'rotate(90deg)' : 'rotate(0)',
@@ -59,79 +98,70 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
             />
             <div style={{ minWidth: 0 }}>
               <div style={{
-                fontSize: 14, fontWeight: 650, color: '#0F172A',
-                fontFamily: "'Inter', sans-serif",
+                fontSize: 13, fontWeight: 600, color: '#0F172A',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                maxWidth: 400,
               }}>
-                {event.event_title}
+                {event.summary}
               </div>
-              {subtitle && (
+              {event.parent_summary && (
                 <div style={{
-                  fontSize: 12.5, fontWeight: 400, color: '#475569',
-                  fontFamily: "'Inter', sans-serif", marginTop: 1,
+                  fontSize: 11.5, color: '#64748B', marginTop: 1,
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  maxWidth: 400,
                 }}>
-                  {subtitle}
+                  {event.parent_key}: {event.parent_summary}
                 </div>
               )}
             </div>
           </div>
         </td>
 
-        {/* Type */}
-        <td style={{ width: 120, padding: '10px 12px', verticalAlign: 'middle' }}>
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full"
-            style={{
-              padding: '3px 10px', fontSize: 11, fontWeight: 600,
-              background: colors.pillBg, color: colors.pillText,
-            }}
-          >
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: colors.border, flexShrink: 0 }} />
-            {event.event_type.charAt(0).toUpperCase() + event.event_type.slice(1)}
-          </span>
-        </td>
-
-        {/* Release */}
-        <td style={{ width: 110, padding: '10px 12px', verticalAlign: 'middle' }}>
-          {event.linked_release_versions.length > 0 ? (
-            <span style={{
-              fontSize: 11.5, fontWeight: 600, color: '#475569',
-              fontFamily: "'JetBrains Mono', monospace",
-              background: '#F1F5F9', padding: '2px 8px', borderRadius: 4,
-            }}>
-              {event.linked_release_versions[0]}
-            </span>
-          ) : (
-            <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>
-          )}
+        {/* Assignee */}
+        <td style={{
+          width: 150, padding: '8px 12px',
+          fontSize: 12, fontWeight: 400, color: '#475569',
+        }}>
+          {event.assignee_display_name || '—'}
         </td>
 
         {/* Deployed */}
         <td style={{
-          width: 160, padding: '10px 12px', verticalAlign: 'middle',
-          fontSize: 12.5, fontWeight: 400, color: '#475569',
-          fontFamily: "'Inter', sans-serif",
+          width: 140, padding: '8px 12px',
+          fontSize: 12, fontWeight: 400, color: '#475569',
         }}>
-          {formatDeploymentDate(event.deployment_date)}
-        </td>
-
-        {/* Stories */}
-        <td style={{
-          width: 90, padding: '10px 12px', verticalAlign: 'middle',
-          fontSize: 12.5, fontWeight: 500, color: '#64748B',
-          fontFamily: "'Inter', sans-serif",
-        }}>
-          {event.linked_ticket_count} {event.linked_ticket_count === 1 ? 'story' : 'stories'}
+          {formatDeploymentDate(event.jira_updated_at)}
         </td>
       </tr>
 
       {/* Expanded Detail */}
       {expanded && (
         <tr>
-          <td colSpan={6} style={{ padding: 0 }}>
-            <ProductionEventDetail event={event} />
+          <td colSpan={7} style={{ padding: 0 }}>
+            <div style={{
+              background: '#FAFBFD', padding: '20px 32px 20px 68px',
+              borderTop: '1px solid #F1F5F9',
+            }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, fontSize: 13 }}>
+                <div>
+                  <span style={{ color: '#64748B', fontWeight: 600, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Priority</span>
+                  <div style={{ fontWeight: 500, color: '#0F172A', marginTop: 2 }}>{event.priority || '—'}</div>
+                </div>
+                <div>
+                  <span style={{ color: '#64748B', fontWeight: 600, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Release</span>
+                  <div style={{ fontWeight: 500, color: '#0F172A', marginTop: 2 }}>{releaseLabel || '—'}</div>
+                </div>
+                {event.parent_summary && (
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <span style={{ color: '#64748B', fontWeight: 600, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Parent Epic</span>
+                    <div style={{ fontWeight: 500, color: '#0F172A', marginTop: 2 }}>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#2563EB', marginRight: 6 }}>{event.parent_key}</span>
+                      {event.parent_summary}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </td>
         </tr>
       )}

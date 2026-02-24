@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import type { PcPeriodType, PcEventType } from '../types/production-events.types';
+import type { PcPeriodType } from '../types/production-events.types';
 
 const PERIOD_TABS: { key: PcPeriodType; label: string }[] = [
   { key: 'weekly', label: 'Weekly' },
@@ -7,12 +7,12 @@ const PERIOD_TABS: { key: PcPeriodType; label: string }[] = [
   { key: 'quarterly', label: 'Quarterly' },
 ];
 
-const FILTER_CHIPS: { key: PcEventType | 'all'; label: string }[] = [
+const FILTER_CHIPS: { key: string; label: string }[] = [
   { key: 'all', label: 'All' },
-  { key: 'feature', label: 'Features' },
-  { key: 'incident', label: 'Incidents' },
-  { key: 'improvement', label: 'Improvements' },
-  { key: 'security', label: 'Security' },
+  { key: 'story', label: 'Stories' },
+  { key: 'change request', label: 'Change Requests' },
+  { key: 'bug', label: 'Bugs' },
+  { key: 'task', label: 'Tasks' },
 ];
 
 interface PeriodControlsProps {
@@ -20,8 +20,8 @@ interface PeriodControlsProps {
   onPeriodTypeChange: (t: PcPeriodType) => void;
   periodLabel: string;
   onNavigate: (dir: 'prev' | 'next') => void;
-  filterType: PcEventType | 'all';
-  onFilterChange: (f: PcEventType | 'all') => void;
+  filterType: string;
+  onFilterChange: (f: string) => void;
 }
 
 export function PeriodControls({

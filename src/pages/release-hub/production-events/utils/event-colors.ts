@@ -17,3 +17,15 @@ export function getEventColors(type: PcEventType, isPinned: boolean) {
     border: isPinned ? PINNED_BORDER : colors.border,
   };
 }
+
+/** Map Jira issue_type to a left-border color */
+export function getIssueTypeColor(issueType: string): string {
+  const t = issueType.toLowerCase();
+  if (t === 'story') return '#2563EB';
+  if (t === 'bug') return '#DC2626';
+  if (t === 'change request') return '#D97706';
+  if (t === 'task') return '#0D9488';
+  if (t === 'epic') return '#7C3AED';
+  if (t === 'sub-task' || t === 'subtask') return '#94A3B8';
+  return '#64748B';
+}
