@@ -1,47 +1,46 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type { PcEvent, PcPeriodSummary, PcPeriodType, PcEventTicket } from '../types/production-events.types';
+import type { PcPeriodType } from '../types/production-events.types';
 
+export interface ProductionIssue {
+  issue_key: string;
+  project_key: string;
+  project_name: string | null;
+  issue_type: string;
+  summary: string;
+  status: string;
+  priority: string | null;
+  assignee_display_name: string | null;
+  parent_key: string | null;
+  parent_summary: string | null;
+  fix_versions: any[];
+  jira_updated_at: string;
+  type_icon_url: string | null;
+}
+
+/**
+ * Fetch ph_issues with status = 'In Production'
+ * filtered by jira_updated_at within the given period range.
+ */
 export function useProductionEvents(periodType: PcPeriodType, periodStart: string, periodEnd: string) {
   return useQuery({
-    queryKey: ['pc-events', periodType, periodStart, periodEnd],
-    queryFn: async (): Promise<PcEvent[]> => {
+    queryKey: ['production-issues', periodType, periodStart, periodEnd],
+    queryFn: async (): Promise<ProductionIssue[]> => {
       const { data, error } = await supabase
-        .from('pc_events_list_view')
-        .select('*')
-        .eq('period_type', periodType)
-        .eq('period_start', periodStart)
-        .eq('period_end', periodEnd)
-        .is('deleted_at', null)
-        .order('is_pinned', { ascending: false })
-        .order('deployment_date', { ascending: false });
+        .from('ph_issues')
+        .select('issue_key, project_key, project_name, issue_type, summary, status, priority, assignee_display_name, parent_key, parent_summary, fix_versions, jira_updated_at, type_icon_url')
+        .eq('status', 'In Production')
+        .gte('jira_updated_at', `${periodStart}T00:00:00`)
+        .lte('jira_updated_at', `${periodEnd}T23:59:59`)
+        .order('jira_updated_at', { ascending: false });
 
       if (error) throw error;
-
-      return (data ?? []).map((row: any) => ({
-        ...row,
-        ticket_details: (row.ticket_details ?? []) as PcEventTicket[],
-        linked_ticket_count: row.linked_ticket_count ?? 0,
-        linked_release_versions: row.linked_release_versions ?? [],
-        linked_change_numbers: row.linked_change_numbers ?? [],
-      }));
+      return (data ?? []) as ProductionIssue[];
     },
   });
 }
 
 export function usePeriodSummary(periodType: PcPeriodType, periodStart: string) {
-  return useQuery({
-    queryKey: ['pc-period-summary', periodType, periodStart],
-    queryFn: async (): Promise<PcPeriodSummary | null> => {
-      const { data, error } = await supabase
-        .from('pc_period_summaries')
-        .select('*')
-        .eq('period_type', periodType)
-        .eq('period_start', periodStart)
-        .maybeSingle();
-
-      if (error) throw error;
-      return data as PcPeriodSummary | null;
-    },
-  });
+  // No longer using pc_period_summaries — return null
+  return { data: null, isLoading: false };
 }

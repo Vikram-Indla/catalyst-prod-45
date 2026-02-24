@@ -1,14 +1,14 @@
-import type { PcEvent } from '../types/production-events.types';
+import type { ProductionIssue } from '../hooks/useProductionEvents';
 import { ProductionEventRow } from './ProductionEventRow';
 
 interface Props {
-  events: PcEvent[];
+  events: ProductionIssue[];
   loading: boolean;
   expandedId: string | null;
   onToggleExpand: (id: string) => void;
 }
 
-const COLUMNS = ['#', 'Event', 'Type', 'Release', 'Deployed', 'Stories'];
+const COLUMNS = ['#', 'Ticket', 'Type', 'Project', 'Summary', 'Assignee', 'Deployed'];
 
 export function ProductionEventsTable({ events, loading, expandedId, onToggleExpand }: Props) {
   return (
@@ -34,6 +34,7 @@ export function ProductionEventsTable({ events, loading, expandedId, onToggleExp
                   fontFamily: "'Inter', sans-serif",
                   position: 'sticky', top: 0, zIndex: 1,
                   background: '#F8FAFC',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 {col}
@@ -46,9 +47,9 @@ export function ProductionEventsTable({ events, loading, expandedId, onToggleExp
             Array.from({ length: 4 }).map((_, i) => (
               <tr key={`skel-${i}`}>
                 {COLUMNS.map((_, ci) => (
-                  <td key={ci} style={{ padding: '14px 12px' }}>
+                  <td key={ci} style={{ padding: '10px 12px' }}>
                     <div style={{
-                      height: 12, width: ci === 1 ? '80%' : ci === 0 ? 20 : '60%',
+                      height: 12, width: ci === 4 ? '80%' : '60%',
                       background: '#F1F5F9', borderRadius: 4,
                       animation: 'pulse 1.5s ease-in-out infinite',
                     }} />
@@ -61,24 +62,24 @@ export function ProductionEventsTable({ events, loading, expandedId, onToggleExp
           {!loading && events.length === 0 && (
             <tr>
               <td
-                colSpan={6}
+                colSpan={COLUMNS.length}
                 style={{
                   padding: '48px 24px', textAlign: 'center',
                   fontSize: 14, color: '#64748B', fontFamily: "'Inter', sans-serif",
                 }}
               >
-                No production events found for this period.
+                No production items found for this period.
               </td>
             </tr>
           )}
 
           {!loading && events.map((event, i) => (
             <ProductionEventRow
-              key={event.id}
+              key={event.issue_key}
               event={event}
               index={i}
-              expanded={expandedId === event.id}
-              onToggle={() => onToggleExpand(event.id)}
+              expanded={expandedId === event.issue_key}
+              onToggle={() => onToggleExpand(event.issue_key)}
             />
           ))}
         </tbody>
