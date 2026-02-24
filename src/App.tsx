@@ -1155,6 +1155,9 @@ const App = () => (
               <Route path="/project-hub/:key/dashboard" element={<Suspense fallback={<div />}><ProjectDashboardPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/settings" element={<Suspense fallback={<div />}><PHProjectSettingsPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/backlog" element={<Suspense fallback={<div />}><PHPlaceholder title="Backlog" phase="Phase 2" /></Suspense>} />
+              <Route path="/project-hub/:key/epic-backlog" element={<Suspense fallback={<div />}><PHPlaceholder title="Epic Backlog" phase="Phase 2" /></Suspense>} />
+              <Route path="/project-hub/:key/feature-backlog" element={<Suspense fallback={<div />}><PHPlaceholder title="Feature Backlog" phase="Phase 2" /></Suspense>} />
+              <Route path="/project-hub/:key/story-backlog" element={<Suspense fallback={<div />}><PHPlaceholder title="Story Backlog" phase="Phase 2" /></Suspense>} />
               <Route path="/project-hub/:key/board" element={<Suspense fallback={<div />}><ProjectBoardPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/list" element={<Suspense fallback={<div />}><WorkItemsListPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/timeline" element={<Suspense fallback={<div />}><PHPlaceholder title="Timeline" phase="Phase 3" /></Suspense>} />
