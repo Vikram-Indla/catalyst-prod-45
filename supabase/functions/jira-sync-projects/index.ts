@@ -81,9 +81,9 @@ serve(async (req) => {
           else if (issue.status_category === 'In Progress' || issue.status_category === 'indeterminate') c.in_progress++;
           else if (issue.status_category === 'Done' || issue.status_category === 'done') c.done++;
           
-          if (issue.hierarchy_level === 1) c.epics++;
-          else if (issue.hierarchy_level === 0) c.stories++;
-          else c.tasks++;
+          if (issue.hierarchy_level >= 3) c.epics++;       // Epic = hierarchy 3+
+          else if (issue.hierarchy_level === 2) c.stories++;  // Story/Task = hierarchy 2
+          else if (issue.hierarchy_level === 1) c.tasks++;    // Sub-task = hierarchy 1
         }
       }
     }
