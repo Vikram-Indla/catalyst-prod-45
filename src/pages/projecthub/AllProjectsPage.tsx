@@ -123,23 +123,10 @@ export default function AllProjectsPage() {
           onViewChange={v => { setView(v); setPage(0); }}
           filters={filters}
           onFilterChange={f => { setFilters(f); setPage(0); }}
-          onToggleAdvanced={() => setShowAdvFilters(v => !v)}
-          showAdvanced={showAdvFilters}
           stats={stats}
         />
       </div>
 
-      {/* Advanced Filters */}
-      {showAdvFilters && (
-        <div style={{ flexShrink: 0 }}>
-          <ProjectAdvancedFilters
-            filters={filters}
-            onChange={f => { setFilters(f); setPage(0); }}
-            departments={departments}
-            onClose={() => setShowAdvFilters(false)}
-          />
-        </div>
-      )}
 
       {/* Content */}
       {isLoading ? (
