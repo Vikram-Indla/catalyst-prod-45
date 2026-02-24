@@ -9,9 +9,8 @@
 import {
   LayoutGrid,
   LayoutDashboard,
-  List,
-  Columns3,
   AlignJustify,
+  Columns3,
   GanttChart,
   BarChart3,
   Rocket,
@@ -60,7 +59,6 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
           items: [
             { id: 'backlog',  title: 'Backlog',  path: `${base}/backlog`,  icon: Kanban,     exact: false },
             { id: 'board',    title: 'Board',     path: `${base}/board`,    icon: Columns3,   exact: false },
-            { id: 'list',     title: 'List',      path: `${base}/list`,     icon: List,        exact: false },
             { id: 'timeline', title: 'Timeline',  path: `${base}/timeline`, icon: GanttChart,  exact: false },
           ],
         },
