@@ -13,6 +13,12 @@ import {
   ChevronDown,
   Settings,
   ArrowLeft,
+  Layers,
+  LayoutList,
+  BookOpen,
+  Rocket,
+  AlertTriangle,
+  Tag,
 } from 'lucide-react';
 import { NavItem } from './NavItem';
 import { ProjectSwitcher, ProjectEntry } from './ProjectSwitcher';
@@ -26,13 +32,18 @@ interface SidebarProjectNavProps {
   projects: ProjectEntry[];
 }
 
-const PROJECT_NAV = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: 'dashboard' },
+const PLANNING_NAV = [
   { icon: List, label: 'Backlog', path: 'backlog' },
+  { icon: Layers, label: 'Epic Backlog', path: 'epic-backlog' },
+  { icon: LayoutList, label: 'Feature Backlog', path: 'feature-backlog' },
+  { icon: BookOpen, label: 'Story Backlog', path: 'story-backlog' },
   { icon: Columns3, label: 'Board', path: 'board' },
-  { icon: AlignJustify, label: 'List', path: 'list' },
   { icon: GanttChart, label: 'Timeline', path: 'timeline' },
+];
+
+const TRACKING_NAV = [
   { icon: BarChart3, label: 'Reports', path: 'reports' },
+  { icon: Tag, label: 'Releases', path: 'releases' },
 ];
 
 export function SidebarProjectNav({
@@ -166,7 +177,7 @@ export function SidebarProjectNav({
 
       {/* Project nav */}
       <div className="flex-1 py-1 px-1.5 space-y-0.5 overflow-y-auto">
-        {/* PROJECT section */}
+        {/* PLANNING section */}
         {!collapsed && (
           <div
             style={{
@@ -178,10 +189,10 @@ export function SidebarProjectNav({
               padding: '8px 10px 4px',
             }}
           >
-            Project
+            Planning
           </div>
         )}
-        {PROJECT_NAV.map(item => (
+        {PLANNING_NAV.map(item => (
           <NavItem
             key={item.path}
             icon={item.icon}
@@ -192,7 +203,7 @@ export function SidebarProjectNav({
           />
         ))}
 
-        {/* INTELLIGENCE section */}
+        {/* TRACKING section */}
         {!collapsed && (
           <div
             style={{
@@ -204,47 +215,51 @@ export function SidebarProjectNav({
               padding: '12px 10px 4px',
             }}
           >
-            Intelligence
+            Tracking
           </div>
         )}
-        {/* AI Assist with badge */}
-        <button
-          onClick={() => navigate(`${basePath}/ai-assist`)}
-          title={collapsed ? 'AI Assist' : undefined}
-          className={`flex items-center w-full rounded-md transition-colors duration-150 text-[13px] font-medium ${
-            collapsed ? 'justify-center px-0 h-[34px] w-[34px] mx-auto' : 'gap-[10px] px-[10px] h-[34px]'
-          } ${isPathActive('ai-assist') ? 'font-semibold' : 'hover:bg-[#F1F5F9]'}`}
-          style={{
-            color: isPathActive('ai-assist') ? '#2563EB' : '#334155',
-            background: isPathActive('ai-assist') ? '#EFF6FF' : undefined,
-            borderLeft: isPathActive('ai-assist') && !collapsed ? '3px solid #2563EB' : '3px solid transparent',
-            fontFamily: "'Inter', sans-serif",
-            border: 'none',
-            cursor: 'pointer',
-          }}
-        >
-          <Sparkles size={20} strokeWidth={1.75} />
-          {!collapsed && (
-            <>
-              <span className="truncate">AI Assist</span>
-              <span
-                className="ml-auto flex-shrink-0"
-                style={{
-                  fontSize: 9,
-                  fontWeight: 700,
-                  color: '#FFFFFF',
-                  background: '#2563EB',
-                  borderRadius: 4,
-                  padding: '1px 5px',
-                  lineHeight: '14px',
-                  letterSpacing: '0.03em',
-                }}
-              >
-                AI
-              </span>
-            </>
-          )}
-        </button>
+        {TRACKING_NAV.map(item => (
+          <NavItem
+            key={item.path}
+            icon={item.icon}
+            label={item.label}
+            isActive={isPathActive(item.path)}
+            onClick={() => navigate(`${basePath}/${item.path}`)}
+            collapsed={collapsed}
+          />
+        ))}
+
+        {/* AI INTELLIGENCE section */}
+        {!collapsed && (
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              color: '#64748B',
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase' as const,
+              padding: '12px 10px 4px',
+            }}
+          >
+            AI Intelligence
+          </div>
+        )}
+        <NavItem
+          icon={Rocket}
+          label="Sprint Predictor"
+          isActive={isPathActive('sprint-predictor')}
+          onClick={() => navigate(`${basePath}/sprint-predictor`)}
+          collapsed={collapsed}
+          badge="AI"
+        />
+        <NavItem
+          icon={AlertTriangle}
+          label="Risk Scanner"
+          isActive={isPathActive('risk-scanner')}
+          onClick={() => navigate(`${basePath}/risk-scanner`)}
+          collapsed={collapsed}
+          badge="AI"
+        />
       </div>
 
       {/* Settings pinned to bottom */}

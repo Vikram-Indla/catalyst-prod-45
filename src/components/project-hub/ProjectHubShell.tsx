@@ -18,7 +18,7 @@ export function ProjectHubShell() {
   const [createWorkItemOpen, setCreateWorkItemOpen] = useState(false);
 
   // Determine if we're inside a project context (has :key param and a project route)
-  const isInProjectContext = !!params.key && /\/(list|board|backlog|timeline)/.test(location.pathname);
+  const isInProjectContext = !!params.key && /\/(list|board|backlog|epic-backlog|feature-backlog|story-backlog|timeline|releases|reports|sprint-predictor|risk-scanner|dashboard)/.test(location.pathname);
 
   // Auto-collapse only on mobile (< 768px); always expanded on desktop
   useEffect(() => {

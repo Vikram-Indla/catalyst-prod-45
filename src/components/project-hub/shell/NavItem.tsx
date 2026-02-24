@@ -1,14 +1,16 @@
 import { LucideIcon } from 'lucide-react';
 
-interface NavItemProps {
+export interface NavItemProps {
   icon: LucideIcon;
   label: string;
   isActive?: boolean;
   onClick?: () => void;
   collapsed?: boolean;
+  badge?: string;
+  count?: number;
 }
 
-export function NavItem({ icon: Icon, label, isActive, onClick, collapsed }: NavItemProps) {
+export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge, count }: NavItemProps) {
   return (
     <button
       onClick={onClick}
@@ -38,7 +40,44 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed }: Nav
       }}
     >
       <Icon size={18} strokeWidth={1.75} />
-      {!collapsed && <span className="truncate">{label}</span>}
+      {!collapsed && (
+        <>
+          <span className="truncate">{label}</span>
+          {badge && (
+            <span
+              className="ml-auto flex-shrink-0"
+              style={{
+                fontSize: 9,
+                fontWeight: 700,
+                color: '#FFFFFF',
+                background: '#2563EB',
+                borderRadius: 4,
+                padding: '1px 5px',
+                lineHeight: '14px',
+                letterSpacing: '0.03em',
+              }}
+            >
+              {badge}
+            </span>
+          )}
+          {count !== undefined && (
+            <span
+              className="ml-auto flex-shrink-0"
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                color: '#94A3B8',
+                fontFamily: "'JetBrains Mono', monospace",
+                borderRadius: 10,
+                background: '#F1F5F9',
+                padding: '1px 6px',
+              }}
+            >
+              {count}
+            </span>
+          )}
+        </>
+      )}
     </button>
   );
 }
