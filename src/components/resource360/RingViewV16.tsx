@@ -287,6 +287,9 @@ const CARD_POSITIONS = [
   { x: 62, y: 58 },   // slot 7: bottom-right
 ];
 
+const CARD_W = 195; // px
+const CARD_H = 140; // approximate px height of a card
+
 const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) => {
   const ringCanvasRef = useRef<HTMLDivElement>(null);
   const [statusFilter, setStatusFilter] = useState<ActiveFilter>('all');
@@ -294,6 +297,24 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
   const [ringPage, setRingPage] = useState(0);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [panelMode, setPanelMode] = useState<PanelMode>('hidden');
+  const [canvasSize, setCanvasSize] = useState({ w: 1200, h: 720 });
+
+  // Measure canvas so we can compute card centers in % accurately
+  useEffect(() => {
+    const el = ringCanvasRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(entries => {
+      for (const e of entries) {
+        setCanvasSize({ w: e.contentRect.width, h: e.contentRect.height });
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // Card center offset in % (half card width/height as % of canvas)
+  const cardOffsetX = (CARD_W / 2 / canvasSize.w) * 100;
+  const cardOffsetY = (CARD_H / 2 / canvasSize.h) * 100;
 
   const allItems = useMemo(() => rawItems.map(mapItem), [rawItems]);
   const activeItems = useMemo(() => allItems.filter(i => i.status !== 'done'), [allItems]);
@@ -480,11 +501,8 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                 const isSelected = selectedId === item.key;
                 const hasSel = selectedId !== null;
                 const statusColor = STATUS_CG05[item.status].dot;
-                // Card is 195px wide in a container. Approximate card center:
-                // card width ≈ 195px / container ≈ ~27% of width, card height ≈ 130px / 720px ≈ ~18% of height
-                // Card center = pos + half card size in %
-                const cardCenterX = pos.x + 13.5; // ~195px / 1440px * 100 / 2 ≈ 13.5% (assumes ~720px half-width container)
-                const cardCenterY = pos.y + 9;     // ~130px / 720px * 100 / 2 ≈ 9%
+                const cardCenterX = pos.x + cardOffsetX;
+                const cardCenterY = pos.y + cardOffsetY;
                 return (
                   <line key={item.key}
                     x1="50%" y1="48%"
@@ -505,8 +523,8 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
               if (!pos) return null;
               const isSelected = selectedId === item.key;
               const hasSel = selectedId !== null;
-              const cardCenterX = pos.x + 13.5;
-              const cardCenterY = pos.y + 9;
+              const cardCenterX = pos.x + cardOffsetX;
+              const cardCenterY = pos.y + cardOffsetY;
               const midLeft = (50 + cardCenterX) / 2;
               const midTop = (48 + cardCenterY) / 2;
               return (
