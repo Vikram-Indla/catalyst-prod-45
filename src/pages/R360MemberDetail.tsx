@@ -568,7 +568,12 @@ function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R
 function DetailPanel({ item, onClose, onSelectItem }: {
   item: R360WorkItem; onClose: () => void; onSelectItem: (i: R360WorkItem) => void;
 }) {
-  const { data: siblings = [] } = useR360Siblings(item.parent_key);
+  // Siblings are only valid when the parent is a Story.
+  // In Jira hierarchy this maps to current item being a Sub-task.
+  const normalizedItemType = (item.item_type || '').toLowerCase().replace(/[-_\s]/g, '');
+  const canHaveStoryParent = normalizedItemType === 'subtask';
+
+  const { data: siblings = [] } = useR360Siblings(canHaveStoryParent ? item.parent_key : null);
   const doneCount = siblings.filter((s: any) => s.status_category === 'done').length;
 
   return (
@@ -653,12 +658,13 @@ function DetailPanel({ item, onClose, onSelectItem }: {
           )}
 
           {/* Siblings */}
-          {item.parent_key && siblings.length > 0 && (
+          {canHaveStoryParent && item.parent_key && siblings.length > 0 && (
             <div className="r3-siblings">
               <div className="r3-siblings-header">
                 <span className="r3-siblings-title">Siblings</span>
                 <span className="r3-siblings-count">{doneCount}/{siblings.length} done</span>
               </div>
+
               {siblings.map((s: any) => (
                 <div
                   key={s.id}
