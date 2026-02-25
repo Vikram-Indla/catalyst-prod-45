@@ -1,10 +1,10 @@
 /**
  * Product Roadmap — Gantt chart (right panel)
+ * Polish: sticky month headers, today gradient, smooth transitions
  */
 import React, { useMemo } from 'react';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { RoadmapTimelineBar } from './RoadmapTimelineBar';
-import type { RoadmapInitiative, RoadmapGroup, ZoomLevel, TimelinePeriod } from './types/roadmap.types';
+import type { RoadmapGroup, ZoomLevel, TimelinePeriod } from './types/roadmap.types';
 import { SURFACE, INK, ROW_HEIGHT, GROUP_HEADER_HEIGHT } from './constants/roadmap.constants';
 import {
   startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfWeek, endOfWeek,
@@ -35,8 +35,7 @@ function generatePeriods(start: Date, end: Date, zoom: ZoomLevel): TimelinePerio
       periods.push({
         key: format(cur, 'yyyy-QQQ'),
         label: `Q${qNum} ${format(cur, 'yyyy')}`,
-        startDate: cur,
-        endDate: qEnd,
+        startDate: cur, endDate: qEnd,
         isCurrent: isWithinInterval(now, { start: cur, end: qEnd }),
         isQuarterStart: true,
       });
@@ -50,15 +49,13 @@ function generatePeriods(start: Date, end: Date, zoom: ZoomLevel): TimelinePerio
         key: format(cur, 'yyyy-ww'),
         label: format(cur, 'MMM d'),
         sublabel: format(cur, 'yyyy'),
-        startDate: cur,
-        endDate: wEnd,
+        startDate: cur, endDate: wEnd,
         isCurrent: isWithinInterval(now, { start: cur, end: wEnd }),
         isQuarterStart: false,
       });
       cur = addWeeks(cur, 1);
     }
   } else {
-    // Month (default)
     let cur = startOfMonth(start);
     while (cur < end) {
       const mEnd = endOfMonth(cur);
@@ -67,8 +64,7 @@ function generatePeriods(start: Date, end: Date, zoom: ZoomLevel): TimelinePerio
         key: format(cur, 'yyyy-MM'),
         label: format(cur, 'MMM'),
         sublabel: isQStart ? `Q${Math.ceil((cur.getMonth() + 1) / 3)}` : undefined,
-        startDate: cur,
-        endDate: mEnd,
+        startDate: cur, endDate: mEnd,
         isCurrent: isWithinInterval(now, { start: cur, end: mEnd }),
         isQuarterStart: isQStart,
       });
@@ -100,11 +96,14 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
   const totalMinWidth = periods.length * periodMinWidth;
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: SURFACE.card }}>
-      <ScrollArea className="flex-1 w-full">
+    <div className="flex-1 flex flex-col min-w-0 overflow-hidden roadmap-scroll" style={{ background: SURFACE.card }}>
+      <div className="flex-1 overflow-auto roadmap-scroll">
         <div style={{ minWidth: totalMinWidth }}>
-          {/* Header */}
-          <div className="flex" style={{ height: ROW_HEIGHT, borderBottom: `1px solid ${SURFACE.border}`, background: '#FAFBFC' }}>
+          {/* Sticky header */}
+          <div
+            className="flex sticky top-0"
+            style={{ height: ROW_HEIGHT, borderBottom: `1px solid ${SURFACE.border}`, background: '#FAFBFC', zIndex: 15 }}
+          >
             {periods.map(p => (
               <div
                 key={p.key}
@@ -122,10 +121,6 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
                 <span style={{ fontSize: 11, fontWeight: 600, color: INK[2] }}>{p.label}</span>
               </div>
             ))}
-            {/* Year label */}
-            <div className="absolute right-3" style={{ top: 4, fontSize: 11, fontWeight: 700, color: INK[4] }}>
-              {timelineStart.getFullYear()}
-            </div>
           </div>
 
           {/* Body */}
@@ -146,13 +141,20 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
               ))}
             </div>
 
-            {/* Today marker */}
+            {/* Today marker — gradient fade: solid red → 25% opacity */}
             {todayPct !== null && (
               <div className="absolute pointer-events-none" style={{ left: `${todayPct}%`, top: 0, bottom: 0, zIndex: 20 }}>
-                <div style={{ position: 'absolute', top: -2, left: '50%', transform: 'translateX(-50%)', fontSize: 9, fontWeight: 700, color: '#EF4444', background: '#FEF2F2', padding: '1px 5px', borderRadius: 3, whiteSpace: 'nowrap' }}>
+                <div style={{
+                  position: 'absolute', top: -2, left: '50%', transform: 'translateX(-50%)',
+                  fontSize: 9, fontWeight: 700, color: '#FFFFFF', background: '#EF4444',
+                  padding: '1px 6px', borderRadius: 3, whiteSpace: 'nowrap',
+                }}>
                   Today
                 </div>
-                <div style={{ width: 1.5, height: '100%', background: 'linear-gradient(180deg, #EF4444 0%, transparent 100%)', margin: '0 auto', marginTop: 14 }} />
+                <div style={{
+                  width: 2, height: '100%', margin: '0 auto', marginTop: 14,
+                  background: 'linear-gradient(180deg, #EF4444 0%, rgba(239,68,68,0.25) 100%)',
+                }} />
               </div>
             )}
 
@@ -171,13 +173,14 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
                   return (
                     <div
                       key={item.id}
-                      className="relative flex items-center cursor-pointer transition-colors"
+                      className="relative flex items-center cursor-pointer"
                       onMouseEnter={() => onHover(item.id)}
                       onMouseLeave={() => onHover(null)}
                       style={{
                         height: ROW_HEIGHT,
                         backgroundColor: selectedId === item.id ? 'rgba(37,99,235,0.06)' : hoveredId === item.id ? '#FAFBFC' : 'transparent',
                         borderBottom: `1px solid ${SURFACE.borderLight}`,
+                        transition: 'background-color 0.15s ease',
                       }}
                       onClick={() => onSelect(item.id)}
                     >
@@ -196,8 +199,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
             ))}
           </div>
         </div>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+      </div>
     </div>
   );
 }

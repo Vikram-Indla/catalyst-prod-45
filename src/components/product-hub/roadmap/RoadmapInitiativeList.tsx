@@ -1,11 +1,11 @@
 /**
  * Product Roadmap — Left panel initiative list (340px)
+ * Polish: instant hover sync, focus-visible, aria roles, 4px grid
  */
 import React from 'react';
-import { ArrowUpDown, ChevronDown, ChevronRight, Plus, GripVertical } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ArrowUpDown, ChevronDown, Plus, GripVertical } from 'lucide-react';
 import type { RoadmapInitiative, RoadmapGroup } from './types/roadmap.types';
-import { TYPE_COLORS, INK, SURFACE, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT, LIST_PANEL_WIDTH, PRIORITY_COLORS } from './constants/roadmap.constants';
+import { TYPE_COLORS, INK, SURFACE, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT, LIST_PANEL_WIDTH } from './constants/roadmap.constants';
 
 interface RoadmapInitiativeListProps {
   groups: RoadmapGroup[];
@@ -20,7 +20,7 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
   const totalCount = groups.reduce((sum, g) => sum + g.items.length, 0);
 
   return (
-    <div className="flex-shrink-0 flex flex-col" style={{ width: LIST_PANEL_WIDTH, borderRight: `1px solid ${SURFACE.border}`, background: SURFACE.card }}>
+    <div className="flex-shrink-0 flex flex-col roadmap-scroll" style={{ width: LIST_PANEL_WIDTH, borderRight: `1px solid ${SURFACE.border}`, background: SURFACE.card }}>
       {/* Header */}
       <div
         className="flex items-center justify-between px-4"
@@ -30,21 +30,20 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
           <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK[3] }}>
             Initiatives
           </span>
-          <span style={{ fontSize: 10, fontWeight: 600, color: INK[3], background: SURFACE.borderLight, borderRadius: 10, padding: '2px 7px', fontFamily: FONT.mono }}>
+          <span style={{ fontSize: 10, fontWeight: 600, color: INK[3], background: SURFACE.borderLight, borderRadius: 10, padding: '2px 8px', fontFamily: FONT.mono }}>
             {totalCount}
           </span>
         </div>
         <ArrowUpDown className="w-3.5 h-3.5" style={{ color: INK[4] }} />
       </div>
 
-      <ScrollArea className="flex-1">
+      <div className="flex-1 overflow-y-auto roadmap-scroll">
         {groups.map(group => (
           <div key={group.key} style={{ borderBottom: `1px solid ${SURFACE.borderLight}` }}>
-            {/* Group header */}
             {groups.length > 1 && (
               <div
-                className="flex items-center gap-2 px-4 cursor-pointer hover:bg-gray-50"
-                style={{ height: GROUP_HEADER_HEIGHT, background: '#FAFBFC' }}
+                className="flex items-center gap-2 px-4 cursor-pointer"
+                style={{ height: GROUP_HEADER_HEIGHT, background: '#FAFBFC', transition: 'background-color 0.15s ease' }}
               >
                 <ChevronDown className="w-3.5 h-3.5" style={{ color: INK[4] }} />
                 <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: group.color }} />
@@ -53,7 +52,6 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
               </div>
             )}
 
-            {/* Rows */}
             {group.items.map(item => (
               <InitiativeRow
                 key={item.id}
@@ -67,16 +65,17 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
           </div>
         ))}
 
-        {/* Add row */}
         <button
           onClick={onAddClick}
-          className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors hover:bg-blue-50"
-          style={{ color: '#2563EB', borderTop: `1px solid ${SURFACE.borderLight}` }}
+          className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+          style={{ color: '#2563EB', borderTop: `1px solid ${SURFACE.borderLight}`, transition: 'background-color 0.15s ease' }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#EFF6FF')}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
         >
           <Plus className="w-4 h-4" />
           Add Initiative to Roadmap
         </button>
-      </ScrollArea>
+      </div>
     </div>
   );
 }
@@ -97,15 +96,17 @@ function InitiativeRow({
     <div
       role="row"
       tabIndex={0}
+      aria-label={`${item.initiativeKey}: ${item.titleEn}, ${TYPE_COLORS[item.type]?.label}, ${item.status}`}
       onClick={onSelect}
       onKeyDown={e => e.key === 'Enter' && onSelect()}
       onMouseEnter={() => onHover(item.id)}
       onMouseLeave={() => onHover(null)}
-      className="group flex items-center gap-2 px-2 cursor-pointer transition-colors relative"
+      className="group flex items-center gap-2 px-2 cursor-pointer relative focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-blue-500"
       style={{
         height: ROW_HEIGHT,
         backgroundColor: isSelected ? '#EFF6FF' : isHovered ? '#F8FAFC' : 'transparent',
         borderBottom: `1px solid ${SURFACE.borderLight}`,
+        transition: 'background-color 0.15s ease',
       }}
     >
       {/* 4px accent bar */}
@@ -115,7 +116,7 @@ function InitiativeRow({
       />
 
       {/* Drag handle */}
-      <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+      <div className="flex-shrink-0 opacity-0 group-hover:opacity-100" style={{ marginLeft: 8, transition: 'opacity 0.15s ease' }}>
         <GripVertical className="w-3.5 h-3.5" style={{ color: '#CBD5E1' }} />
       </div>
 

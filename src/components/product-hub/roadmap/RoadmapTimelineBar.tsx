@@ -1,17 +1,18 @@
 /**
  * Product Roadmap — Individual initiative timeline bar
+ * Polish: type-shadow hover, planned=dashed+55%, progress=white fill+border, milestone=8px diamond
  */
 import React, { useState, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Calendar } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import type { RoadmapInitiative } from './types/roadmap.types';
-import { TYPE_COLORS, FONT } from './constants/roadmap.constants';
+import { TYPE_COLORS, FONT, INK, SURFACE } from './constants/roadmap.constants';
 
 interface RoadmapTimelineBarProps {
   item: RoadmapInitiative;
-  left: number;  // percentage
-  width: number; // percentage
+  left: number;
+  width: number;
   isSelected: boolean;
   isHovered: boolean;
   onClick: () => void;
@@ -27,7 +28,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
   const finalColor = isOverdue ? '#EF4444' : barColor;
   const isPlanned = item.status === 'Planned';
 
-  const formatDate = (d: string) => {
+  const fmtDate = (d: string) => {
     try { return format(parseISO(d), 'MMM d, yyyy'); } catch { return d; }
   };
 
@@ -48,16 +49,20 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
     if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
   }, []);
 
+  // Box shadow: type-colored glow on hover
+  const hoverShadow = `0 4px 16px ${finalColor}40`;
+
   return (
     <>
       <div
         role="button"
         tabIndex={0}
+        aria-label={`${item.initiativeKey}: ${item.titleEn}, ${TYPE_COLORS[item.type]?.label || item.type}, ${item.status}`}
         onClick={onClick}
         onKeyDown={e => e.key === 'Enter' && onClick()}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="absolute top-1/2 -translate-y-1/2 rounded cursor-pointer transition-all duration-150 ease-out focus:outline-none focus:ring-2 focus:ring-offset-1"
+        className="absolute top-1/2 rounded cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
         style={{
           left: `${left}%`,
           width: `${Math.max(width, 3)}%`,
@@ -65,21 +70,30 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           display: 'flex',
           alignItems: 'center',
           overflow: 'hidden',
-          background: finalColor,
-          opacity: isPlanned ? 0.55 : 1,
+          background: isPlanned ? 'transparent' : finalColor,
           border: isPlanned ? `2px dashed ${finalColor}` : 'none',
-          transform: isHovered ? 'translateY(calc(-50% - 2px)) scaleY(1.08)' : undefined,
-          boxShadow: isHovered || isSelected ? `0 4px 12px ${finalColor}40` : undefined,
+          opacity: isPlanned ? 0.55 : 1,
+          transform: isHovered ? 'translateY(calc(-50% - 2px)) scaleY(1.08)' : 'translateY(-50%)',
+          boxShadow: isHovered || isSelected ? hoverShadow : 'none',
           zIndex: isSelected ? 10 : isHovered ? 5 : 1,
-          // @ts-ignore
-          '--tw-ring-color': finalColor,
+          transition: 'transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease',
         }}
       >
-        {/* Progress fill */}
+        {/* Planned fill — dashed border handles the visual, add subtle bg */}
+        {isPlanned && (
+          <div className="absolute inset-0 rounded" style={{ background: `${finalColor}18` }} />
+        )}
+
+        {/* Progress fill — white overlay with right border */}
         {item.progress > 0 && (
           <div
             className="absolute left-0 top-0 bottom-0 rounded-l"
-            style={{ width: `${Math.min(100, item.progress)}%`, background: 'rgba(255,255,255,0.3)', zIndex: 0 }}
+            style={{
+              width: `${Math.min(100, item.progress)}%`,
+              background: 'rgba(255,255,255,0.2)',
+              borderRight: item.progress < 100 ? '2px solid rgba(255,255,255,0.5)' : 'none',
+              zIndex: 0,
+            }}
           />
         )}
 
@@ -87,7 +101,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
         {width > 6 && (
           <span
             className="relative truncate"
-            style={{ zIndex: 1, fontSize: 12, fontWeight: 600, color: '#FFFFFF', paddingLeft: 8, paddingRight: 8, lineHeight: '28px' }}
+            style={{ zIndex: 1, fontSize: 12, fontWeight: 600, color: '#FFFFFF', paddingLeft: 8, paddingRight: 8, lineHeight: '28px', textShadow: isPlanned ? 'none' : '0 1px 2px rgba(0,0,0,0.2)' }}
           >
             {width > 12 ? item.titleEn : item.initiativeKey}
           </span>
@@ -103,7 +117,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           </span>
         )}
 
-        {/* Milestone diamonds */}
+        {/* Milestone diamonds — 8px, rotated 45deg, 2px white border, type-colored fill */}
         {item.milestones.map(m => {
           const mDate = new Date(m.targetDate);
           const barStart = new Date(item.startDate);
@@ -115,13 +129,20 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           return (
             <div
               key={m.id}
-              className="absolute top-1/2 -translate-y-1/2"
+              className="absolute"
+              title={m.title}
               style={{
                 left: `${mPos}%`,
+                top: '50%',
                 width: 8, height: 8,
-                background: m.completed ? '#FFFFFF' : 'rgba(255,255,255,0.6)',
-                transform: 'translateY(-50%) rotate(45deg)',
+                marginTop: -4,
+                marginLeft: -4,
+                background: m.completed ? '#FFFFFF' : finalColor,
+                border: '2px solid #FFFFFF',
+                borderRadius: 1,
+                transform: 'rotate(45deg)',
                 zIndex: 3,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
               }}
             />
           );
@@ -130,30 +151,34 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
 
       {/* Tooltip */}
       {showTooltip && createPortal(
-        <div style={{
-          position: 'fixed', left: tooltipPos.x, top: tooltipPos.y, zIndex: 9999,
-          background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 10,
-          boxShadow: '0 20px 60px rgba(0,0,0,0.12)', pointerEvents: 'none',
-          maxWidth: 320, minWidth: 260, padding: 12,
-        }}>
-          <div style={{ fontWeight: 600, fontSize: 13, color: '#0F172A', marginBottom: 6 }}>
+        <div
+          className="animate-scale-in"
+          style={{
+            position: 'fixed', left: tooltipPos.x, top: tooltipPos.y, zIndex: 9999,
+            background: '#FFFFFF', border: `1px solid ${SURFACE.border}`, borderRadius: 10,
+            boxShadow: '0 20px 60px rgba(0,0,0,0.12)', pointerEvents: 'none',
+            maxWidth: 320, minWidth: 260, padding: 12,
+            fontFamily: FONT.body,
+          }}
+        >
+          <div style={{ fontWeight: 600, fontSize: 13, color: INK[1], marginBottom: 6 }}>
             {item.initiativeKey}: {item.titleEn}
           </div>
-          <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: '#64748B', marginBottom: 4 }}>
+          <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: INK[3], marginBottom: 4 }}>
             <Calendar className="w-3 h-3" />
-            {formatDate(item.startDate)} → {formatDate(item.endDate)}
+            {fmtDate(item.startDate)} → {fmtDate(item.endDate)}
           </div>
           <div className="flex items-center gap-2">
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: finalColor }} />
-            <span style={{ fontSize: 11, fontWeight: 500, color: '#334155' }}>
+            <span style={{ fontSize: 11, fontWeight: 500, color: INK[2] }}>
               {TYPE_COLORS[item.type]?.label || item.type}
             </span>
             {item.progress > 0 && (
               <div className="flex items-center gap-1 ml-auto">
-                <div style={{ width: 60, height: 4, background: '#F1F5F9', borderRadius: 999, overflow: 'hidden' }}>
+                <div style={{ width: 60, height: 4, background: SURFACE.borderLight, borderRadius: 999, overflow: 'hidden' }}>
                   <div style={{ width: `${item.progress}%`, height: '100%', background: finalColor, borderRadius: 999 }} />
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 600, color: '#0F172A' }}>{item.progress}%</span>
+                <span style={{ fontSize: 11, fontWeight: 600, color: INK[1] }}>{item.progress}%</span>
               </div>
             )}
           </div>
