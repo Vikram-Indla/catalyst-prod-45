@@ -399,6 +399,7 @@ export default function InitiativeListingPage() {
         <InitiativeTypeBadge typeKey="enhancement" />
         <InitiativeTypeBadge typeKey="improvement" />
         <InitiativeTypeBadge typeKey="sustainable" />
+        <InitiativeTypeBadge typeKey="entity_integration" />
       </div>
 
       {/* Bulk Action Bar */}

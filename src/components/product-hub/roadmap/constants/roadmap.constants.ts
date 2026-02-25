@@ -6,10 +6,11 @@
 
 // ── Type Colors ──
 export const TYPE_COLORS: Record<string, { solid: string; light: string; label: string }> = {
-  project:     { solid: '#2563EB', light: '#EFF6FF', label: 'Project' },
-  enhancement: { solid: '#0D9488', light: '#F0FDFA', label: 'Enhancement' },
-  improvement: { solid: '#D97706', light: '#FFFBEB', label: 'Improvement' },
-  sustainable: { solid: '#16A34A', light: '#F0FDF4', label: 'Sustainable' },
+  project:            { solid: '#2563EB', light: '#EFF6FF', label: 'Project' },
+  enhancement:        { solid: '#0D9488', light: '#F0FDFA', label: 'Enhancement' },
+  improvement:        { solid: '#D97706', light: '#FFFBEB', label: 'Improvement' },
+  sustainable:        { solid: '#16A34A', light: '#F0FDF4', label: 'Sustainable' },
+  entity_integration: { solid: '#8B5CF6', light: '#F5F3FF', label: 'Entity Integration' },
 };
 
 // ── Priority Colors ──
