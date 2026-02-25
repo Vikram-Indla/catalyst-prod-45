@@ -399,41 +399,24 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
       {/* SVG SPOKES — pixel coordinates */}
       <svg width={W} height={CANVAS_H} style={{ position:'absolute', top:0, left:0, zIndex:1, pointerEvents:'none' }}>
         {spokes.map((s, i) => {
-          const isContrib = visible[i]?.role_on_item === 'Contributor';
           return (
             <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
-              stroke={isContrib ? '#A78BFA' : '#94A3B8'} strokeWidth={2} strokeDasharray={isContrib ? '4 6' : '8 5'} strokeLinecap="round" />
+              stroke="#94A3B8" strokeWidth={2} strokeDasharray="8 5" strokeLinecap="round" />
           );
         })}
       </svg>
 
       {/* SPOKE LABELS — pixel midpoints */}
-      {labels.map((l, i) => {
-        const isContributor = visible[i]?.role_on_item === 'Contributor';
-        return (
+      {labels.map((l, i) => (
           <div key={`label-${i}`} style={{
             position:'absolute', left:`${l.x}px`, top:`${l.y}px`,
             transform:'translate(-50%,-50%)', zIndex:4, pointerEvents:'none',
-            fontSize:'11px', fontWeight:600,
-            color: isContributor ? '#334155' : '#334155',
-            background: isContributor ? '#F5F3FF' : '#F8FAFC',
-            padding: isContributor ? '2px 4px 2px 4px' : '2px 8px',
-            borderRadius:'10px',
-            border: isContributor ? '1px solid #DDD6FE' : '1px solid #E2E8F0',
+            fontSize:'11px', fontWeight:600, color:'#334155',
+            background:'#F8FAFC', padding:'2px 8px', borderRadius:'10px',
+            border:'1px solid #E2E8F0',
             whiteSpace:'nowrap', fontVariantNumeric:'tabular-nums',
-            display:'flex', alignItems:'center', gap:'4px',
-          }}>
-            {isContributor ? (
-              <>
-                <span style={{ pointerEvents: 'auto' }}>
-                  <MiniAvatar name={visible[i]?.assignee_name || ''} size={16} />
-                </span>
-                <span style={{ fontSize: '10px', color: '#64748B' }}>{visible[i]?.assignee_name?.split(' ')[0]}</span>
-              </>
-            ) : `${l.age}d ago`}
-          </div>
-        );
-      })}
+          }}>{`${l.age}d ago`}</div>
+      ))}
 
       {/* CENTER AVATAR */}
       <div style={{
@@ -469,25 +452,18 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
           <div key={item.id} onClick={() => onSelect(item)} style={{
             position:'absolute', left:`${pos.left}px`, top:`${pos.top}px`,
             width:`${CARD_W}px`, background:'#FFF',
-            border: isSelected ? '1px solid #2563EB' : isContributor ? '1px solid #DDD6FE' : '1px solid #E2E8F0',
+            border: isSelected ? '1px solid #2563EB' : '1px solid #E2E8F0',
             borderRadius:'8px', padding:'10px 12px 10px 15px',
             cursor:'pointer', zIndex:3,
             boxShadow: isSelected ? '0 0 0 2px rgba(37,99,235,.15)' : '0 1px 3px rgba(15,23,42,.05)',
           }}>
-            <div style={{ position:'absolute', left:0, top:'8px', bottom:'8px', width:'3px', borderRadius:'0 2px 2px 0', background: isContributor ? '#7C3AED' : s.accent }} />
+            <div style={{ position:'absolute', left:0, top:'8px', bottom:'8px', width:'3px', borderRadius:'0 2px 2px 0', background: s.accent }} />
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'4px' }}>
               <div style={{ display:'flex', alignItems:'center', gap:'4px' }}>
                 {getJiraIcon(item.item_type)}
                 <span style={{ fontSize:'10.5px', fontWeight:700, textTransform:'uppercase', color:'#334155' }}>{item.item_type}</span>
               </div>
-              {isContributor ? (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                  <MiniAvatar name={item.assignee_name} size={18} />
-                  <span style={{ fontSize: '10px', fontWeight: 500, color: '#64748B' }}>{item.assignee_name?.split(' ')[0]}</span>
-                </span>
-              ) : (
-                <span style={{ fontSize:'10.5px', fontWeight:500, color:'#64748B' }}>{item.priority}</span>
-              )}
+              <span style={{ fontSize:'10.5px', fontWeight:500, color:'#64748B' }}>{item.priority}</span>
             </div>
             <div style={{ display:'flex', alignItems:'center', gap:'5px', marginBottom:'5px' }}>
               <span style={{ fontSize:'11px', fontWeight:600, color:'#2563EB', fontFamily:"'JetBrains Mono',monospace" }}>{item.item_key}</span>
@@ -498,7 +474,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
             <div style={{ display:'flex', alignItems:'center', gap:'6px' }}>
               <RingPill status={item.status_label || ''} />
               {isContributor && (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize:'10px', fontWeight:500, color:'#64748B' }}>→ <MiniAvatar name={item.assignee_name} size={16} /></span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize:'10px', fontWeight:500, color:'#64748B' }}>→ <MiniAvatar name={item.assignee_name} size={16} /> {item.assignee_name}</span>
               )}
             </div>
           </div>
