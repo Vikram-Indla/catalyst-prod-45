@@ -24,7 +24,9 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
   const filtered = useMemo(() => {
     if (!search.trim()) return backlogItems;
     const s = search.toLowerCase();
-    return backlogItems.filter((i: any) => i.title.toLowerCase().includes(s) || i.key.toLowerCase().includes(s));
+    return backlogItems.filter((i: any) =>
+      i.title.toLowerCase().includes(s) || i.key.toLowerCase().includes(s) || (i.titleAr && i.titleAr.includes(s))
+    );
   }, [backlogItems, search]);
 
   const handleAdd = async (id: string, title: string) => {
@@ -154,10 +156,20 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
                 <div className="w-1 rounded" style={{ height: 32, background: typeColor }} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span style={{ fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: typeColor }}>{item.key}</span>
+                    <span style={{ fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
                     <span className="truncate" style={{ fontSize: 13, fontWeight: 500, color: INK[1] }}>{item.title}</span>
                   </div>
-                  <div dir="rtl" style={{ fontSize: 11, fontWeight: 500, color: INK[4], marginTop: 1 }}>{item.titleAr}</div>
+                  <div className="flex items-center gap-2" style={{ marginTop: 2 }}>
+                    {item.status && (
+                      <span style={{ fontSize: 10, fontWeight: 500, color: INK[3], background: SURFACE.borderLight, borderRadius: 4, padding: '1px 6px' }}>{item.status}</span>
+                    )}
+                    {item.owner && (
+                      <span style={{ fontSize: 10, fontWeight: 500, color: INK[4] }}>{item.owner}</span>
+                    )}
+                    {item.titleAr && item.titleAr !== item.title && (
+                      <span dir="rtl" style={{ fontSize: 10, color: INK[4] }}>{item.titleAr}</span>
+                    )}
+                  </div>
                 </div>
                 <button
                   onClick={() => handleAdd(item.id, item.title)}
