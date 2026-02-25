@@ -20,6 +20,7 @@ import { PeopleSelect } from '@/components/producthub/shared/PeopleSelect';
 import { DepartmentSelect } from '@/components/producthub/shared/DepartmentSelect';
 import { InitiativeTypeBadge } from '@/components/producthub/shared/InitiativeTypeBadge';
 import { usePromoteToRoadmap, useRemoveFromRoadmap } from '@/hooks/useRoadmapPromotion';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -62,8 +63,16 @@ function isNativeInitiative(id: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 }
 
-function InlineAvatar({ name, size = 20 }: { name: string; size?: number }) {
+function InlineAvatar({ name, size = 20, avatarUrl }: { name: string; size?: number; avatarUrl?: string }) {
   const fontSize = size <= 20 ? 9 : size <= 24 ? 10 : 11;
+  if (avatarUrl) {
+    return (
+      <img src={avatarUrl} alt={name}
+        className="rounded-full flex-shrink-0 object-cover"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
   return (
     <div className="rounded-full flex items-center justify-center text-white flex-shrink-0"
       style={{ width: size, height: size, backgroundColor: getV5AvatarColor(name), fontSize, fontWeight: 600, lineHeight: 1 }}>
@@ -173,8 +182,10 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
   const [budgetAllocated, setBudgetAllocated] = useState(0);
   const panelRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
+  const avatarsByName = useProfileAvatarsByName();
 
   const hasChanges = Object.keys(editForm).length > 0;
+  const getAvatar = (name: string | null) => name ? avatarsByName.get(name.toLowerCase()) : undefined;
 
   useEffect(() => {
     if (initiative) {
@@ -826,7 +837,7 @@ function DetailsContent({
             <div className="text-[13px] text-zinc-900 flex items-center gap-2">
               {initiative.assignee_name ? (
                 <>
-                  <InlineAvatar name={initiative.assignee_name} size={20} />
+                  <InlineAvatar name={initiative.assignee_name} size={20} avatarUrl={getAvatar(initiative.assignee_name)} />
                   {initiative.assignee_name}
                 </>
               ) : <span className="text-zinc-400">—</span>}
@@ -848,7 +859,7 @@ function DetailsContent({
             <div className="text-[13px] text-zinc-900 flex items-center gap-2">
               {initiative.business_owner_name ? (
                 <>
-                  <InlineAvatar name={initiative.business_owner_name} size={20} />
+                  <InlineAvatar name={initiative.business_owner_name} size={20} avatarUrl={getAvatar(initiative.business_owner_name)} />
                   {initiative.business_owner_name}
                 </>
               ) : <span className="text-zinc-400">—</span>}
@@ -873,7 +884,7 @@ function DetailsContent({
                   {(() => {
                     const rp = profileOptions?.find(p => p.value === initiative.reporter_id);
                     const name = rp?.label || initiative.reporter_id || '';
-                    return <><InlineAvatar name={name} size={20} />{name}</>;
+                    return <><InlineAvatar name={name} size={20} avatarUrl={getAvatar(name)} />{name}</>;
                   })()}
                 </>
               ) : <span className="text-zinc-400">—</span>}
