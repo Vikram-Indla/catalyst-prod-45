@@ -23,7 +23,17 @@ export function RoadmapTimeline({
   groups, zoom, timelineStart, timelineEnd, selectedId, hoveredId, onSelect, onHover, onAddClick,
 }: RoadmapTimelineProps) {
   const [listWidth, setListWidth] = useState(380);
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   const isDragging = useRef(false);
+
+  const toggleGroup = useCallback((key: string) => {
+    setCollapsedGroups(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }, []);
 
   // ── Scroll sync refs ──
   const listScrollRef = useRef<HTMLDivElement>(null);
@@ -86,6 +96,8 @@ export function RoadmapTimeline({
         width={listWidth}
         scrollRef={listScrollRef}
         onScroll={handleListScroll}
+        collapsedGroups={collapsedGroups}
+        onToggleGroup={toggleGroup}
       />
 
       {/* Resize handle */}
@@ -112,6 +124,8 @@ export function RoadmapTimeline({
         onHover={onHover}
         scrollRef={ganttScrollRef}
         onScroll={handleGanttScroll}
+        collapsedGroups={collapsedGroups}
+        onToggleGroup={toggleGroup}
       />
     </div>
   );
