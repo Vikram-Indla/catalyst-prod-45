@@ -37,31 +37,60 @@ export function useMDTBacklog() {
   return useQuery({
     queryKey: ['mdt-backlog'],
     queryFn: async (): Promise<{ data: MDTInitiative[]; count: number }> => {
-      // Fetch Business Requests
-      const { data: brData, error: brError } = await (supabase as any)
-        .from('ph_issues')
-        .select('issue_key, summary, status, priority, assignee_display_name, reporter_display_name, description_text, due_date, labels, story_points, jira_created_at, jira_updated_at, type_icon_url')
-        .eq('project_key', 'MDT')
-        .eq('issue_type', 'Business Request')
-        .in('status', ['Ready for Development', 'Technical validation', 'Under Implementation'])
-        .order('jira_created_at', { ascending: false });
+      const [
+        { data: brData, error: brError },
+        { data: brdData, error: brdError },
+        { data: overrideData, error: overrideError },
+      ] = await Promise.all([
+        // Fetch Business Requests
+        (supabase as any)
+          .from('ph_issues')
+          .select('issue_key, summary, status, priority, assignee_display_name, reporter_display_name, description_text, due_date, labels, story_points, jira_created_at, jira_updated_at, type_icon_url')
+          .eq('project_key', 'MDT')
+          .eq('issue_type', 'Business Request')
+          .in('status', ['Ready for Development', 'Technical validation', 'Under Implementation'])
+          .order('jira_created_at', { ascending: false }),
+
+        // Fetch ALL BRD Tasks for MDT to match against BRs
+        (supabase as any)
+          .from('ph_issues')
+          .select('issue_key, summary, status, priority, assignee_display_name, jira_created_at, jira_updated_at')
+          .eq('project_key', 'MDT')
+          .eq('issue_type', 'BRD Task'),
+
+        // Fetch persisted manual initiative type overrides (survives Jira syncs)
+        (supabase as any)
+          .from('ph_issue_initiative_type_overrides')
+          .select('issue_key, initiative_type_id, initiative_types(key, label, color_hex, color_token, icon)'),
+      ]);
 
       if (brError) throw brError;
-
-      // Fetch ALL BRD Tasks for MDT to match against BRs
-      const { data: brdData, error: brdError } = await (supabase as any)
-        .from('ph_issues')
-        .select('issue_key, summary, status, priority, assignee_display_name, jira_created_at, jira_updated_at')
-        .eq('project_key', 'MDT')
-        .eq('issue_type', 'BRD Task');
-
       if (brdError) throw brdError;
+      if (overrideError) throw overrideError;
+
+      const overrideByIssueKey = new Map<string, {
+        initiative_type_id: string;
+        initiative_type_key: string | null;
+        initiative_type_label: string | null;
+        initiative_type_color_hex: string | null;
+      }>();
+
+      for (const row of (overrideData || []) as any[]) {
+        const typeRow = Array.isArray(row.initiative_types) ? row.initiative_types[0] : row.initiative_types;
+        overrideByIssueKey.set(row.issue_key, {
+          initiative_type_id: row.initiative_type_id,
+          initiative_type_key: typeRow?.key ?? null,
+          initiative_type_label: typeRow?.label ?? null,
+          initiative_type_color_hex: typeRow?.color_hex ?? null,
+        });
+      }
 
       // Build a lookup: normalize BR summaries for matching
       const normalize = (s: string) => s.replace(/\s+/g, ' ').trim().toLowerCase();
 
       const initiatives: MDTInitiative[] = (brData || []).map((br, idx) => {
         const brSummaryNorm = normalize(br.summary);
+        const typeOverride = overrideByIssueKey.get(br.issue_key);
 
         // Match BRD Tasks: "BRD of [summary]" or exact summary match
         const matchedTasks: BRDTask[] = (brdData || []).filter(task => {
@@ -107,6 +136,9 @@ export function useMDTBacklog() {
           score_time_urgency: null,
           score_resource_feasibility: null,
           computed_score: null,
+          initiative_type_key: typeOverride?.initiative_type_key ?? null,
+          initiative_type_label: typeOverride?.initiative_type_label ?? null,
+          initiative_type_color_hex: typeOverride?.initiative_type_color_hex ?? null,
           created_at: br.jira_created_at,
           updated_at: br.jira_updated_at,
           brd_tasks: matchedTasks,

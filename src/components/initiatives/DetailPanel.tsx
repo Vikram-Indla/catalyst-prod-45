@@ -273,7 +273,15 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 
   const handleQuickEdit = useCallback(async (field: string, value: any) => {
     if (!initiative) return;
-    if (!isNativeInitiative(initiative.id)) return;
+
+    // Jira-sourced items are mostly read-only, but type key can still be refreshed via persisted override.
+    if (!isNativeInitiative(initiative.id)) {
+      if (field === 'initiative_type_key') {
+        queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+      }
+      return;
+    }
+
     try {
       const { error } = await (supabase as any)
         .from('ph_initiatives')
@@ -285,6 +293,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
       queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
       queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
       queryClient.invalidateQueries({ queryKey: ['roadmap-summary'] });
+      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
       catalystToast.success(`${field.replace(/_/g, ' ')} updated`);
     } catch (err: any) {
       catalystToast.error('Failed to update: ' + err.message);
@@ -683,6 +692,11 @@ function DetailsContent({
   const comments = MOCK_COMMENTS[initiative.initiative_key] || [];
   const getVal = (field: string, original: any) => field in editForm ? editForm[field] : original;
   const getAvatar = (name: string | null) => name ? avatarsByName.get(name.toLowerCase()) : undefined;
+  const [selectedTypeKey, setSelectedTypeKey] = useState<string | null>(initiative.initiative_type_key ?? null);
+
+  useEffect(() => {
+    setSelectedTypeKey(initiative.initiative_type_key ?? null);
+  }, [initiative.id, initiative.initiative_type_key]);
 
   return (
     <>
@@ -711,23 +725,50 @@ function DetailsContent({
             { key: 'enhancement', label: 'Enhancement', Icon: Zap, color: '#0D9488' },
             { key: 'improvement', label: 'Improvement', Icon: Wrench, color: '#D97706' },
           ].map(opt => {
-            const isActive = initiative.initiative_type_key === opt.key;
+            const isActive = selectedTypeKey === opt.key;
             return (
               <button
                 key={opt.key}
                 onClick={async () => {
-                  if (opt.key === initiative.initiative_type_key) return;
-                  if (!isNativeInitiative(initiative.id)) return;
+                  if (opt.key === selectedTypeKey) return;
                   try {
-                    const { data: typeRow } = await (supabase as any)
-                      .from('initiative_types').select('id').eq('key', opt.key).single();
-                    if (typeRow) {
-                      await (supabase as any).from('ph_initiatives')
-                        .update({ initiative_type_id: typeRow.id, updated_at: new Date().toISOString() })
+                    const { data: typeRow, error: typeError } = await (supabase as any)
+                      .from('initiative_types')
+                      .select('id')
+                      .eq('key', opt.key)
+                      .single();
+
+                    if (typeError) throw typeError;
+                    if (!typeRow?.id) throw new Error('Type lookup failed');
+
+                    const now = new Date().toISOString();
+
+                    if (isNativeInitiative(initiative.id)) {
+                      const { error: updateError } = await (supabase as any)
+                        .from('ph_initiatives')
+                        .update({ initiative_type_id: typeRow.id, updated_at: now })
                         .eq('id', initiative.id);
-                      onQuickEdit('initiative_type_id', typeRow.id);
+                      if (updateError) throw updateError;
+                    } else {
+                      const { error: overrideError } = await (supabase as any)
+                        .from('ph_issue_initiative_type_overrides')
+                        .upsert(
+                          {
+                            issue_key: initiative.initiative_key,
+                            initiative_type_id: typeRow.id,
+                            updated_at: now,
+                          },
+                          { onConflict: 'issue_key' }
+                        );
+                      if (overrideError) throw overrideError;
                     }
-                  } catch { /* silent */ }
+
+                    setSelectedTypeKey(opt.key);
+                    onQuickEdit('initiative_type_key', opt.key);
+                    catalystToast.success('Initiative type updated');
+                  } catch (err: any) {
+                    catalystToast.error('Failed to update initiative type: ' + (err?.message || 'Unknown error'));
+                  }
                 }}
                 className="flex flex-col items-center p-2 rounded-md cursor-pointer transition-all border-2"
                 style={{
