@@ -68,6 +68,17 @@ function getDefaultDates(index: number): { startDate: string; endDate: string } 
   };
 }
 
+// ── Fetch current user's favorites ──
+async function fetchFavoriteIds(): Promise<Set<string>> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return new Set();
+  const { data } = await (supabase as any)
+    .from('ph_user_favorites')
+    .select('initiative_id')
+    .eq('user_id', user.id);
+  return new Set((data || []).map((r: any) => r.initiative_id));
+}
+
 // ── Fetch profiles for owner resolution ──
 async function fetchProfiles(): Promise<Map<string, { name: string; avatar: string | null }>> {
   const { data } = await (supabase as any).from('profiles').select('id, full_name, avatar_url');
@@ -127,7 +138,7 @@ export function useRoadmapInitiatives() {
   return useQuery({
     queryKey: ['roadmap-initiatives'],
     queryFn: async (): Promise<RoadmapInitiative[]> => {
-      const [{ data, error }, profiles, milestones, issueOwners] = await Promise.all([
+      const [{ data, error }, profiles, milestones, issueOwners, favoriteIds] = await Promise.all([
         (supabase as any)
           .from('ph_roadmap_initiatives_view')
           .select('*')
@@ -137,6 +148,7 @@ export function useRoadmapInitiatives() {
         fetchProfiles(),
         fetchMilestones(),
         fetchIssueOwners(),
+        fetchFavoriteIds(),
       ]);
 
       if (error) throw error;
@@ -207,7 +219,7 @@ export function useRoadmapInitiatives() {
           ownerName,
           ownerInitials: getInitials(ownerName),
           ownerColor: ownerColorFromName(ownerName),
-          starred: false,
+          starred: favoriteIds.has(row.id),
           milestones: milestones.get(row.id) || [],
           hasRealEndDate,
           rawDbId: row.id,
@@ -387,6 +399,47 @@ export function useUpdateInitiative() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
       queryClient.invalidateQueries({ queryKey: ['roadmap-stats'] });
+    },
+  });
+}
+
+// ══════════════════════════════════════════
+// useToggleRoadmapStar — toggle favorite
+// ══════════════════════════════════════════
+export function useToggleRoadmapStar() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ initiativeId, isCurrentlyStarred }: { initiativeId: string; isCurrentlyStarred: boolean }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      if (isCurrentlyStarred) {
+        const { error } = await (supabase as any)
+          .from('ph_user_favorites')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('initiative_id', initiativeId);
+        if (error) throw error;
+      } else {
+        const { error } = await (supabase as any)
+          .from('ph_user_favorites')
+          .insert({ user_id: user.id, initiative_id: initiativeId });
+        if (error) throw error;
+      }
+    },
+    onMutate: async ({ initiativeId, isCurrentlyStarred }) => {
+      await queryClient.cancelQueries({ queryKey: ['roadmap-initiatives'] });
+      const prev = queryClient.getQueryData<RoadmapInitiative[]>(['roadmap-initiatives']);
+      queryClient.setQueryData<RoadmapInitiative[]>(['roadmap-initiatives'], old =>
+        (old || []).map(i => i.id === initiativeId ? { ...i, starred: !isCurrentlyStarred } : i)
+      );
+      return { prev };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.prev) queryClient.setQueryData(['roadmap-initiatives'], context.prev);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
     },
   });
 }

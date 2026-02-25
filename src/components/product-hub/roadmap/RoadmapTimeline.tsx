@@ -17,10 +17,11 @@ interface RoadmapTimelineProps {
   onSelect: (id: string) => void;
   onHover: (id: string | null) => void;
   onAddClick: () => void;
+  onToggleStar: (id: string, isCurrentlyStarred: boolean) => void;
 }
 
 export function RoadmapTimeline({
-  groups, zoom, timelineStart, timelineEnd, selectedId, hoveredId, onSelect, onHover, onAddClick,
+  groups, zoom, timelineStart, timelineEnd, selectedId, hoveredId, onSelect, onHover, onAddClick, onToggleStar,
 }: RoadmapTimelineProps) {
   const [listWidth, setListWidth] = useState(380);
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
@@ -93,6 +94,7 @@ export function RoadmapTimeline({
         onSelect={onSelect}
         onHover={onHover}
         onAddClick={onAddClick}
+        onToggleStar={onToggleStar}
         width={listWidth}
         scrollRef={listScrollRef}
         onScroll={handleListScroll}
