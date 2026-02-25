@@ -10847,15 +10847,66 @@ export type Database = {
           },
         ]
       }
+      initiative_types: {
+        Row: {
+          color_hex: string
+          color_token: string
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          key: string
+          label: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          color_hex: string
+          color_token: string
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          key: string
+          label: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          color_hex?: string
+          color_token?: string
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          key?: string
+          label?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       initiatives: {
         Row: {
           benefit_score: number | null
+          business_value: string | null
           created_at: string | null
           description: string | null
+          estimated_budget: number | null
+          health_status: string | null
           id: string
+          initiative_type_id: string | null
           name: string
+          on_roadmap: boolean
           owner_id: string | null
+          roadmap_added_at: string | null
+          roadmap_added_by: string | null
+          roadmap_priority: number | null
           source_ra_doc_id: string | null
+          tags: string[] | null
           target_pi_ids: Json | null
           theme_id: string
           updated_at: string | null
@@ -10863,12 +10914,21 @@ export type Database = {
         }
         Insert: {
           benefit_score?: number | null
+          business_value?: string | null
           created_at?: string | null
           description?: string | null
+          estimated_budget?: number | null
+          health_status?: string | null
           id?: string
+          initiative_type_id?: string | null
           name: string
+          on_roadmap?: boolean
           owner_id?: string | null
+          roadmap_added_at?: string | null
+          roadmap_added_by?: string | null
+          roadmap_priority?: number | null
           source_ra_doc_id?: string | null
+          tags?: string[] | null
           target_pi_ids?: Json | null
           theme_id: string
           updated_at?: string | null
@@ -10876,18 +10936,34 @@ export type Database = {
         }
         Update: {
           benefit_score?: number | null
+          business_value?: string | null
           created_at?: string | null
           description?: string | null
+          estimated_budget?: number | null
+          health_status?: string | null
           id?: string
+          initiative_type_id?: string | null
           name?: string
+          on_roadmap?: boolean
           owner_id?: string | null
+          roadmap_added_at?: string | null
+          roadmap_added_by?: string | null
+          roadmap_priority?: number | null
           source_ra_doc_id?: string | null
+          tags?: string[] | null
           target_pi_ids?: Json | null
           theme_id?: string
           updated_at?: string | null
           wsjf_score?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "initiatives_initiative_type_id_fkey"
+            columns: ["initiative_type_id"]
+            isOneToOne: false
+            referencedRelation: "initiative_types"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "initiatives_source_ra_doc_id_fkey"
             columns: ["source_ra_doc_id"]
@@ -16799,6 +16875,20 @@ export type Database = {
             columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "initiatives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objective_initiative_links_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_backlog_initiatives_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objective_initiative_links_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
@@ -55424,6 +55514,58 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_backlog_initiatives_view: {
+        Row: {
+          benefit_score: number | null
+          business_value: string | null
+          created_at: string | null
+          description: string | null
+          estimated_budget: number | null
+          health_status: string | null
+          id: string | null
+          initiative_type_color_hex: string | null
+          initiative_type_color_token: string | null
+          initiative_type_icon: string | null
+          initiative_type_id: string | null
+          initiative_type_key: string | null
+          initiative_type_label: string | null
+          name: string | null
+          on_roadmap: boolean | null
+          owner_id: string | null
+          roadmap_added_at: string | null
+          roadmap_added_by: string | null
+          roadmap_priority: number | null
+          source_ra_doc_id: string | null
+          tags: string[] | null
+          target_pi_ids: Json | null
+          theme_id: string | null
+          updated_at: string | null
+          wsjf_score: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "initiatives_initiative_type_id_fkey"
+            columns: ["initiative_type_id"]
+            isOneToOne: false
+            referencedRelation: "initiative_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "initiatives_source_ra_doc_id_fkey"
+            columns: ["source_ra_doc_id"]
+            isOneToOne: false
+            referencedRelation: "ra_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "initiatives_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "strategic_themes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ph_board_column_counts_view: {
         Row: {
           color_group: string | null
@@ -56052,6 +56194,72 @@ export type Database = {
           todo_count: number | null
           total_issues: number | null
           version_name: string | null
+        }
+        Relationships: []
+      }
+      ph_roadmap_initiatives_view: {
+        Row: {
+          benefit_score: number | null
+          business_value: string | null
+          created_at: string | null
+          description: string | null
+          estimated_budget: number | null
+          health_status: string | null
+          id: string | null
+          initiative_type_color_hex: string | null
+          initiative_type_color_token: string | null
+          initiative_type_icon: string | null
+          initiative_type_id: string | null
+          initiative_type_key: string | null
+          initiative_type_label: string | null
+          name: string | null
+          on_roadmap: boolean | null
+          owner_id: string | null
+          roadmap_added_at: string | null
+          roadmap_added_by: string | null
+          roadmap_priority: number | null
+          source_ra_doc_id: string | null
+          tags: string[] | null
+          target_pi_ids: Json | null
+          theme_id: string | null
+          updated_at: string | null
+          wsjf_score: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "initiatives_initiative_type_id_fkey"
+            columns: ["initiative_type_id"]
+            isOneToOne: false
+            referencedRelation: "initiative_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "initiatives_source_ra_doc_id_fkey"
+            columns: ["source_ra_doc_id"]
+            isOneToOne: false
+            referencedRelation: "ra_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "initiatives_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "strategic_themes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ph_roadmap_summary_view: {
+        Row: {
+          roadmap_at_risk: number | null
+          roadmap_enhancements: number | null
+          roadmap_improvements: number | null
+          roadmap_off_track: number | null
+          roadmap_on_track: number | null
+          roadmap_projects: number | null
+          total_initiatives: number | null
+          total_not_on_roadmap: number | null
+          total_on_roadmap: number | null
         }
         Relationships: []
       }
@@ -60962,6 +61170,15 @@ export type Database = {
         Args: { p_item_ids: string[]; p_week_id: string }
         Returns: undefined
       }
+      promote_to_roadmap: {
+        Args: {
+          p_initiative_id: string
+          p_initiative_type_key?: string
+          p_roadmap_priority?: number
+          p_user_id?: string
+        }
+        Returns: Json
+      }
       publish_ai_brief: { Args: { brief_id: string }; Returns: undefined }
       quick_create_defect_v2: {
         Args: {
@@ -60996,6 +61213,7 @@ export type Database = {
         Args: { p_item_ids: string[]; p_run_id: string }
         Returns: Json
       }
+      remove_from_roadmap: { Args: { p_initiative_id: string }; Returns: Json }
       remove_project_member: {
         Args: { p_project_id: string; p_user_id: string }
         Returns: boolean
