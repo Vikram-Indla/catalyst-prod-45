@@ -206,24 +206,28 @@ export function ProductRoadmapPage() {
         </div>
       ) : (
         <>
-          <RoadmapToolbar
-            zoom={zoom}
-            onZoomChange={setZoom}
-            groupBy={groupBy}
-            onGroupByChange={setGroupBy}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            onToday={handleToday}
-          />
+          {!isFullscreen && (
+            <>
+              <RoadmapToolbar
+                zoom={zoom}
+                onZoomChange={setZoom}
+                groupBy={groupBy}
+                onGroupByChange={setGroupBy}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                onToday={handleToday}
+              />
 
-          <RoadmapFilters
-            search={search}
-            onSearchChange={setSearch}
-            quickFilter={quickFilter}
-            onQuickFilterChange={setQuickFilter}
-            typeFilter={typeFilter}
-            onTypeFilterChange={setTypeFilter}
-          />
+              <RoadmapFilters
+                search={search}
+                onSearchChange={setSearch}
+                quickFilter={quickFilter}
+                onQuickFilterChange={setQuickFilter}
+                typeFilter={typeFilter}
+                onTypeFilterChange={setTypeFilter}
+              />
+            </>
+          )}
 
           <RoadmapTimeline
             groups={groups}
