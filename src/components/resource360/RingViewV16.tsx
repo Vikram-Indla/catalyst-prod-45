@@ -351,7 +351,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
               <button key={f.key} onClick={() => setStatusFilter(f.key)} style={{
                 height: 26, padding: '0 10px', borderRadius: 9999, fontSize: 11, fontWeight: 600,
                 background: active ? '#2563EB' : 'transparent',
-                color: active ? '#FFFFFF' : '#64748B',
+                color: active ? '#FFFFFF' : '#334155',
                 border: active ? 'none' : `1px solid ${T.border}`, cursor: 'pointer',
                 fontFamily: T.inter,
               }}>{f.label}</button>
@@ -412,7 +412,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
           <ChevronRight size={14} color={T.ink2} />
         </button>
         <div style={{ flex: 1 }} />
-        <span style={{ fontSize: 11, color: '#94A3B8', fontWeight: 600, fontFamily: T.mono }}>
+        <span style={{ fontSize: 11, color: '#64748B', fontWeight: 600, fontFamily: T.mono }}>
           {weekItems.length} items{totalPages > 1 ? ` · Page ${ringPage + 1}/${totalPages}` : ''}
         </span>
         {totalPages > 1 && (
@@ -472,8 +472,8 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                         opacity={hasSel && !isSelected ? 0.3 : 1}
                       />
                       <text x={0} y={1} textAnchor="middle" dominantBaseline="middle" style={{
-                        fontSize: 8.5, fontWeight: 600, fontFamily: T.mono,
-                        fill: isSelected ? '#FFFFFF' : T.ink3,
+                        fontSize: 9.5, fontWeight: 600, fontFamily: T.mono,
+                        fill: isSelected ? '#FFFFFF' : '#334155',
                         opacity: hasSel && !isSelected ? 0.3 : 1,
                         letterSpacing: '0.01em',
                       }}>
@@ -505,7 +505,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                 )}
               </div>
               <div style={{ fontFamily: T.sora, fontSize: 12, fontWeight: 700, color: '#0F172A', marginTop: 6 }}>{resourceName}</div>
-              <div style={{ fontSize: 10, color: '#94A3B8' }}>{resourceRole}</div>
+              <div style={{ fontSize: 10, color: '#64748B', fontWeight: 500 }}>{resourceRole}</div>
             </div>
 
             {/* Cards on ring */}
