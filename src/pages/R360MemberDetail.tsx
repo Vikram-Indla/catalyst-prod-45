@@ -90,8 +90,10 @@ export default function R360MemberDetail() {
   const weekItems = useMemo(() => {
     if (view === 'chronology') return workItems;
     return workItems.filter(item => {
-      const d = new Date(item.updated_at);
-      return d >= week.start && d <= week.end;
+      const effectiveDate = item.status_category === 'done'
+        ? new Date(item.resolved_at || item.updated_at)
+        : new Date(item.updated_at);
+      return effectiveDate >= week.start && effectiveDate <= week.end;
     });
   }, [workItems, week.start, week.end, view]);
 
@@ -211,7 +213,7 @@ export default function R360MemberDetail() {
           <div className="r3-empty">No work items found for this period.</div>
         ) : (
           <>
-            {view === 'ring' && <RingView items={weekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} weekStart={week.start} weekEnd={week.end} />}
+            {view === 'ring' && <RingView items={weekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} />}
             {view === 'chronology' && <ChronologyView items={weekItems} onSelect={setSelectedItem} />}
             {view === 'board' && <BoardView items={weekItems} onSelect={setSelectedItem} />}
           </>
@@ -297,10 +299,9 @@ function RingPill({ status }: { status: string }) {
   );
 }
 
-function RingView({ items, name, role, avatarUrl, onSelect, selected, weekStart, weekEnd }: {
+function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
   items: R360WorkItem[]; name: string; role: string; avatarUrl?: string | null;
   onSelect: (i: R360WorkItem) => void; selected: R360WorkItem | null;
-  weekStart: Date; weekEnd: Date;
 }) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const doneRef = useRef<HTMLDivElement>(null);
@@ -336,13 +337,8 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected, weekStart,
   }, [showDone]);
 
   const nonDone = items.filter(i => i.status_category !== 'done');
-  // Only show items that were actually resolved/closed during the selected week
-  const doneItems = items.filter(i => {
-    if (i.status_category !== 'done') return false;
-    const resolvedDate = i.resolved_at ? new Date(i.resolved_at) : null;
-    if (!resolvedDate) return false;
-    return resolvedDate >= weekStart && resolvedDate <= weekEnd;
-  });
+  // `items` is already week-scoped by the parent filter
+  const doneItems = items.filter(i => i.status_category === 'done');
   const doneCount = doneItems.length;
   const visible = nonDone.slice(0, 8);
   const ages = visible.map(i => i.age_days);
