@@ -478,34 +478,39 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
 
               {/* Scrollable list */}
               <div style={{ maxHeight:'340px', overflowY:'auto', scrollbarWidth:'thin', padding:'4px 0' }}>
-                {doneItems.map(item => (
-                  <div
-                    key={item.id}
-                    onClick={(e) => { e.stopPropagation(); onSelect(item); setShowDone(false); }}
-                    style={{
-                      display:'flex', alignItems:'flex-start', gap:'10px',
-                      padding:'10px 16px', cursor:'pointer',
-                      borderBottom:'1px solid #F8FAFC', transition:'background .1s',
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.background = '#F0FDF4')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                  >
-                    {/* Green check */}
-                    <div style={{
-                      width:'22px', height:'22px', borderRadius:'50%',
-                      background:'#DCFCE7', color:'#16A34A', fontSize:'12px', fontWeight:700,
-                      display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:'1px',
-                    }}>✓</div>
-                    <div style={{ flex:1, minWidth:0 }}>
-                      <div style={{ display:'flex', alignItems:'center', gap:'6px', marginBottom:'3px' }}>
-                        <span style={{ fontSize:'11px', fontWeight:600, color:'#2563EB', fontFamily:"'JetBrains Mono',monospace" }}>{item.item_key}</span>
-                        <span style={{ fontSize:'10px', fontWeight:700, padding:'1px 5px', borderRadius:'3px', color:'#FFF', background: PC_MAP[item.project_key] || '#64748B' }}>{item.project_key}</span>
-                        <span style={{ marginLeft:'auto', fontSize:'10px', color:'#64748B' }}>{item.age_days}d</span>
+                {doneItems.map(item => {
+                  const closedDate = item.resolved_at || item.updated_at;
+                  const closedLabel = closedDate
+                    ? new Date(closedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                    : '—';
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={(e) => { e.stopPropagation(); onSelect(item); setShowDone(false); }}
+                      style={{
+                        display:'flex', alignItems:'flex-start', gap:'10px',
+                        padding:'10px 16px', cursor:'pointer',
+                        borderBottom:'1px solid #F1F5F9', transition:'background .1s',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.background = '#F0FDF4')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      <div style={{
+                        width:'20px', height:'20px', borderRadius:'50%',
+                        background:'#DCFCE7', color:'#16A34A', fontSize:'11px', fontWeight:700,
+                        display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:'2px',
+                      }}>✓</div>
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:'6px', marginBottom:'2px' }}>
+                          <span style={{ fontSize:'11px', fontWeight:600, color:'#2563EB', fontFamily:"'JetBrains Mono',monospace" }}>{item.item_key}</span>
+                          <span style={{ fontSize:'10px', color:'#64748B' }}>{item.project_name || item.project_key}</span>
+                          <span style={{ marginLeft:'auto', fontSize:'10px', color:'#16A34A', fontWeight:500, whiteSpace:'nowrap' }}>{closedLabel}</span>
+                        </div>
+                        <div style={{ fontSize:'12px', fontWeight:400, color:'#334155', lineHeight:'1.35', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' } as React.CSSProperties}>{item.title}</div>
                       </div>
-                      <div style={{ fontSize:'12px', fontWeight:500, color:'#334155', lineHeight:'1.35', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' } as React.CSSProperties}>{item.title}</div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
