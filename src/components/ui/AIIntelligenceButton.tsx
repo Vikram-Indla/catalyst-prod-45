@@ -1,6 +1,6 @@
 /**
- * AIIntelligenceButton — Solid purple AI button
- * Per platform standard: #7C3AED bg, white text, 8px border-radius
+ * AIIntelligenceButton — Solid blue AI button
+ * Per platform standard: #2563EB bg, white text, 8px border-radius
  */
 import React from 'react';
 
@@ -22,9 +22,9 @@ export function AIIntelligenceButton({
       onClick={onClick}
       className={className}
       style={{
-        background: isActive ? '#F5F3FF' : '#FFFFFF',
-        color: '#7C3AED',
-        border: '1px solid #DDD6FE',
+        background: isActive ? '#1D4ED8' : '#2563EB',
+        color: '#FFFFFF',
+        border: 'none',
         borderRadius: '8px',
         padding: '7px 14px',
         fontSize: '12px',
@@ -33,10 +33,11 @@ export function AIIntelligenceButton({
         display: 'inline-flex',
         alignItems: 'center',
         gap: '5px',
-        transition: 'background 150ms, border-color 150ms',
+        transition: 'background 150ms',
+        boxShadow: '0 1px 2px rgba(37,99,235,0.2)',
       }}
-      onMouseEnter={e => { e.currentTarget.style.background = '#F5F3FF'; e.currentTarget.style.borderColor = '#C4B5FD'; }}
-      onMouseLeave={e => { e.currentTarget.style.background = isActive ? '#F5F3FF' : '#FFFFFF'; e.currentTarget.style.borderColor = '#DDD6FE'; }}
+      onMouseEnter={e => { e.currentTarget.style.background = '#1D4ED8'; }}
+      onMouseLeave={e => { e.currentTarget.style.background = isActive ? '#1D4ED8' : '#2563EB'; }}
     >
       <span style={{ fontSize: '11px', fontWeight: 800 }}>✦</span>
       {label}
