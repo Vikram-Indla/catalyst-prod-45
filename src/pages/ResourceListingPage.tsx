@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 /* ── Types ── */
 interface Resource {
+  id: string;
   rid: string;
   full_name: string;
   job_role: string | null;
@@ -98,7 +99,7 @@ export default function ResourceListingPage() {
       // Fetch resource_inventory with lookups
       const { data, error } = await supabase
         .from('resource_inventory')
-        .select('rid, name, role_name, profile_id, department_id, assignment_id, vendor_id, vendor_name, department_name, location_id')
+        .select('id, rid, name, role_name, profile_id, department_id, assignment_id, vendor_id, vendor_name, department_name, location_id')
         .eq('is_active', true)
         .order('name', { ascending: true });
       if (error) throw error;
@@ -120,6 +121,7 @@ export default function ResourceListingPage() {
       const avatarMap = new Map((profiles || []).map((p: any) => [p.id, p.avatar_url]));
 
       return ((data || []) as any[]).map((r: any): Resource => ({
+        id: r.id,
         rid: r.rid,
         full_name: r.name,
         job_role: r.role_name,
@@ -180,8 +182,8 @@ export default function ResourceListingPage() {
     }
   };
 
-  const navTo = (rid: string, view: string) => {
-    navigate(`/project-hub/resource-360/${rid}?view=${view}`);
+  const navTo = (id: string, view: string) => {
+    navigate(`/project-hub/resources-v2/${id}?view=${view}`);
   };
 
   return (
@@ -365,13 +367,13 @@ export default function ResourceListingPage() {
                 <td style={{ padding: '8px 16px', height: '52px', textAlign: 'center' }}>
                   <TooltipProvider delayDuration={200}>
                     <div style={{ display: 'inline-flex', gap: '6px' }}>
-                      <ActionButton tooltip="360° View" onClick={() => navTo(r.rid, 'tentacle')}>
+                      <ActionButton tooltip="360° View" onClick={() => navTo(r.id, 'ring')}>
                         <RadarIcon />
                       </ActionButton>
-                      <ActionButton tooltip="Chronology" onClick={() => navTo(r.rid, 'chronology')}>
+                      <ActionButton tooltip="Chronology" onClick={() => navTo(r.id, 'chronology')}>
                         <ClockIcon />
                       </ActionButton>
-                      <ActionButton tooltip="Board View" onClick={() => navTo(r.rid, 'board')}>
+                      <ActionButton tooltip="Board View" onClick={() => navTo(r.id, 'board')}>
                         <BoardIcon />
                       </ActionButton>
                     </div>
