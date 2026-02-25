@@ -1,49 +1,289 @@
 /**
- * Product Roadmap — Mock data hook (Stage B: no DB queries yet)
+ * Product Roadmap — Database-wired data hooks
+ * All data from ph_roadmap_initiatives_view, ph_roadmap_summary_view, ph_initiative_milestones
  */
-import { useMemo } from 'react';
-import type { RoadmapInitiative, RoadmapStats } from '../types/roadmap.types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import type { RoadmapInitiative, RoadmapStats, RoadmapMilestone } from '../types/roadmap.types';
 
-const MOCK_INITIATIVES: RoadmapInitiative[] = [
-  // ── Projects (5) ──
-  { id: '1',  initiativeKey: 'MIM-001', title: 'نظام إدارة الوثائق الإلكترونية - Electronic Document Management System', titleAr: 'نظام إدارة الوثائق الإلكترونية', titleEn: 'Electronic Document Management System', type: 'project', priority: 'P0', status: 'Active', progress: 65, startDate: '2026-01-15', endDate: '2026-06-30', ownerName: 'Dr. Ahmed Al-Rashid', ownerInitials: 'AA', ownerColor: '#2563EB', starred: true, milestones: [{ id: 'm1', title: 'Phase 1 Complete', targetDate: '2026-03-15', completed: true }] },
-  { id: '2',  initiativeKey: 'MIM-002', title: 'بوابة الخدمات المواطنين - Citizen Services Portal', titleAr: 'بوابة الخدمات المواطنين', titleEn: 'Citizen Services Portal', type: 'project', priority: 'P1', status: 'Active', progress: 40, startDate: '2026-02-01', endDate: '2026-08-15', ownerName: 'Eng. Fatima Al-Harbi', ownerInitials: 'FH', ownerColor: '#0D9488', starred: false, milestones: [] },
-  { id: '3',  initiativeKey: 'MIM-003', title: 'منصة التكامل المؤسسي - Enterprise Integration Platform', titleAr: 'منصة التكامل المؤسسي', titleEn: 'Enterprise Integration Platform', type: 'project', priority: 'P1', status: 'Planned', progress: 0, startDate: '2026-04-01', endDate: '2026-10-31', ownerName: 'Mr. Khalid Al-Saeed', ownerInitials: 'KS', ownerColor: '#D97706', starred: false, milestones: [] },
-  { id: '4',  initiativeKey: 'MIM-004', title: 'نظام تحليلات البيانات - Data Analytics Platform', titleAr: 'نظام تحليلات البيانات', titleEn: 'Data Analytics Platform', type: 'project', priority: 'P0', status: 'Active', progress: 80, startDate: '2025-11-01', endDate: '2026-04-30', ownerName: 'Ms. Nora Al-Otaibi', ownerInitials: 'NO', ownerColor: '#7C3AED', starred: true, milestones: [{ id: 'm2', title: 'Beta Launch', targetDate: '2026-03-01', completed: false }] },
-  { id: '5',  initiativeKey: 'MIM-005', title: 'إطار الحوكمة السحابية - Cloud Governance Framework', titleAr: 'إطار الحوكمة السحابية', titleEn: 'Cloud Governance Framework', type: 'project', priority: 'P2', status: 'Planned', progress: 0, startDate: '2026-05-01', endDate: '2026-12-31', ownerName: 'Dr. Ahmed Al-Rashid', ownerInitials: 'AA', ownerColor: '#2563EB', starred: false, milestones: [] },
-  // ── Enhancements (5) ──
-  { id: '6',  initiativeKey: 'MIM-006', title: 'تحسين أداء البوابة - Portal Performance Enhancement', titleAr: 'تحسين أداء البوابة', titleEn: 'Portal Performance Enhancement', type: 'enhancement', priority: 'P1', status: 'Active', progress: 55, startDate: '2026-01-10', endDate: '2026-04-15', ownerName: 'Eng. Fatima Al-Harbi', ownerInitials: 'FH', ownerColor: '#0D9488', starred: false, milestones: [] },
-  { id: '7',  initiativeKey: 'MIM-007', title: 'ترقية نظام المصادقة - Authentication System Upgrade', titleAr: 'ترقية نظام المصادقة', titleEn: 'Authentication System Upgrade', type: 'enhancement', priority: 'P0', status: 'Active', progress: 30, startDate: '2026-02-15', endDate: '2026-05-30', ownerName: 'Mr. Khalid Al-Saeed', ownerInitials: 'KS', ownerColor: '#D97706', starred: true, milestones: [] },
-  { id: '8',  initiativeKey: 'MIM-008', title: 'تكامل الدفع الإلكتروني - E-Payment Integration', titleAr: 'تكامل الدفع الإلكتروني', titleEn: 'E-Payment Integration', type: 'enhancement', priority: 'P1', status: 'Planned', progress: 0, startDate: '2026-03-01', endDate: '2026-06-30', ownerName: 'Ms. Nora Al-Otaibi', ownerInitials: 'NO', ownerColor: '#7C3AED', starred: false, milestones: [] },
-  { id: '9',  initiativeKey: 'MIM-009', title: 'تحسين واجهة المستخدم - UI/UX Modernization', titleAr: 'تحسين واجهة المستخدم', titleEn: 'UI/UX Modernization', type: 'enhancement', priority: 'P2', status: 'Active', progress: 70, startDate: '2025-12-01', endDate: '2026-03-31', ownerName: 'Dr. Ahmed Al-Rashid', ownerInitials: 'AA', ownerColor: '#2563EB', starred: false, milestones: [] },
-  { id: '10', initiativeKey: 'MIM-010', title: 'تقارير متقدمة - Advanced Reporting Module', titleAr: 'تقارير متقدمة', titleEn: 'Advanced Reporting Module', type: 'enhancement', priority: 'P1', status: 'Planned', progress: 0, startDate: '2026-06-01', endDate: '2026-09-30', ownerName: 'Eng. Fatima Al-Harbi', ownerInitials: 'FH', ownerColor: '#0D9488', starred: false, milestones: [] },
-  // ── Improvements (5) ──
-  { id: '11', initiativeKey: 'MIM-011', title: 'تحسين أمن البيانات - Data Security Hardening', titleAr: 'تحسين أمن البيانات', titleEn: 'Data Security Hardening', type: 'improvement', priority: 'P0', status: 'Active', progress: 45, startDate: '2026-01-05', endDate: '2026-03-31', ownerName: 'Mr. Khalid Al-Saeed', ownerInitials: 'KS', ownerColor: '#D97706', starred: true, milestones: [] },
-  { id: '12', initiativeKey: 'MIM-012', title: 'تسريع قاعدة البيانات - Database Performance Tuning', titleAr: 'تسريع قاعدة البيانات', titleEn: 'Database Performance Tuning', type: 'improvement', priority: 'P1', status: 'Active', progress: 60, startDate: '2026-02-01', endDate: '2026-04-30', ownerName: 'Ms. Nora Al-Otaibi', ownerInitials: 'NO', ownerColor: '#7C3AED', starred: false, milestones: [] },
-  { id: '13', initiativeKey: 'MIM-013', title: 'أتمتة العمليات - Process Automation', titleAr: 'أتمتة العمليات', titleEn: 'Process Automation', type: 'improvement', priority: 'P2', status: 'Planned', progress: 0, startDate: '2026-04-15', endDate: '2026-07-31', ownerName: 'Dr. Ahmed Al-Rashid', ownerInitials: 'AA', ownerColor: '#2563EB', starred: false, milestones: [] },
-  { id: '14', initiativeKey: 'MIM-014', title: 'تحسين إمكانية الوصول - Accessibility Compliance', titleAr: 'تحسين إمكانية الوصول', titleEn: 'Accessibility Compliance', type: 'improvement', priority: 'P1', status: 'Active', progress: 25, startDate: '2026-03-01', endDate: '2026-06-15', ownerName: 'Eng. Fatima Al-Harbi', ownerInitials: 'FH', ownerColor: '#0D9488', starred: false, milestones: [] },
-  { id: '15', initiativeKey: 'MIM-015', title: 'ترحيل البنية التحتية - Infrastructure Migration', titleAr: 'ترحيل البنية التحتية', titleEn: 'Infrastructure Migration', type: 'improvement', priority: 'P0', status: 'Planned', progress: 0, startDate: '2026-07-01', endDate: '2026-11-30', ownerName: 'Mr. Khalid Al-Saeed', ownerInitials: 'KS', ownerColor: '#D97706', starred: false, milestones: [] },
-];
+// ── Status mapping: DB enum → UI label ──
+const STATUS_MAP: Record<string, RoadmapInitiative['status']> = {
+  in_progress: 'Active',
+  approved: 'Active',
+  under_review: 'Planned',
+  new_demand: 'Planned',
+  delivered: 'Completed',
+  closed: 'Completed',
+  cancelled: 'Cancelled',
+};
 
+// ── Type mapping: DB key → UI type ──
+const TYPE_MAP: Record<string, RoadmapInitiative['type']> = {
+  project: 'project',
+  enhancement: 'enhancement',
+  improvement: 'improvement',
+};
+
+// ── Color fallback for owners ──
+const OWNER_PALETTE = ['#2563EB', '#0D9488', '#D97706', '#7C3AED', '#E11D48', '#059669'];
+
+function getInitials(name: string): string {
+  if (!name) return '??';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function splitTitle(title: string): { titleAr: string; titleEn: string } {
+  const sep = title.indexOf(' - ');
+  if (sep > 0) {
+    return { titleAr: title.slice(0, sep).trim(), titleEn: title.slice(sep + 3).trim() };
+  }
+  return { titleAr: title, titleEn: title };
+}
+
+function ownerColor(id: string | null): string {
+  if (!id) return '#94A3B8';
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) | 0;
+  return OWNER_PALETTE[Math.abs(hash) % OWNER_PALETTE.length];
+}
+
+// ── Fetch profiles for owner resolution ──
+async function fetchProfiles(): Promise<Map<string, { name: string; avatar: string | null }>> {
+  const { data } = await (supabase as any).from('profiles').select('id, full_name, avatar_url');
+  const map = new Map<string, { name: string; avatar: string | null }>();
+  if (data) {
+    for (const p of data) {
+      map.set(p.id, { name: p.full_name || 'Unassigned', avatar: p.avatar_url });
+    }
+  }
+  return map;
+}
+
+// ── Fetch milestones for all roadmap initiatives ──
+async function fetchMilestones(): Promise<Map<string, RoadmapMilestone[]>> {
+  const { data } = await (supabase as any)
+    .from('ph_initiative_milestones')
+    .select('id, initiative_id, title, planned_date, status, sort_order')
+    .order('sort_order', { ascending: true });
+
+  const map = new Map<string, RoadmapMilestone[]>();
+  if (data) {
+    for (const m of data) {
+      const arr = map.get(m.initiative_id) || [];
+      arr.push({
+        id: m.id,
+        title: m.title,
+        targetDate: m.planned_date,
+        completed: m.status === 'completed',
+      });
+      map.set(m.initiative_id, arr);
+    }
+  }
+  return map;
+}
+
+// ══════════════════════════════════════════
+// useRoadmapInitiatives — main data hook
+// ══════════════════════════════════════════
+export function useRoadmapInitiatives() {
+  return useQuery({
+    queryKey: ['roadmap-initiatives'],
+    queryFn: async (): Promise<RoadmapInitiative[]> => {
+      const [{ data, error }, profiles, milestones] = await Promise.all([
+        (supabase as any)
+          .from('ph_roadmap_initiatives_view')
+          .select('*')
+          .eq('on_roadmap', true)
+          .eq('is_deleted', false)
+          .order('roadmap_sort_order', { ascending: true }),
+        fetchProfiles(),
+        fetchMilestones(),
+      ]);
+
+      if (error) throw error;
+      if (!data) return [];
+
+      return data.map((row: any): RoadmapInitiative => {
+        const { titleAr, titleEn } = splitTitle(row.title || '');
+        const ownerId = row.assignee_id || row.business_owner_id;
+        const ownerProfile = ownerId ? profiles.get(ownerId) : null;
+        const ownerName = ownerProfile?.name || 'Unassigned';
+
+        return {
+          id: row.id,
+          initiativeKey: row.initiative_key || '',
+          title: row.title || '',
+          titleAr,
+          titleEn,
+          type: TYPE_MAP[row.initiative_type_key] || 'project',
+          priority: row.roadmap_priority === 1 ? 'P0' : row.roadmap_priority === 2 ? 'P1' : 'P2',
+          status: STATUS_MAP[row.status] || 'Planned',
+          progress: row.progress ?? 0,
+          startDate: row.roadmap_start_date || row.kickoff_date || row.created_at?.slice(0, 10) || '',
+          endDate: row.roadmap_end_date || row.target_complete || '',
+          ownerName,
+          ownerInitials: getInitials(ownerName),
+          ownerColor: ownerColor(ownerId),
+          starred: false,
+          milestones: milestones.get(row.id) || [],
+        };
+      });
+    },
+  });
+}
+
+// ══════════════════════════════════════════
+// useRoadmapStats — summary KPI hook
+// ══════════════════════════════════════════
+export function useRoadmapStats() {
+  return useQuery({
+    queryKey: ['roadmap-stats'],
+    queryFn: async (): Promise<RoadmapStats> => {
+      const { data, error } = await (supabase as any)
+        .from('ph_roadmap_summary_view')
+        .select('*')
+        .single();
+
+      if (error) throw error;
+
+      const now = new Date();
+      const q = Math.ceil((now.getMonth() + 1) / 3);
+
+      return {
+        totalOnRoadmap: Number(data.total_on_roadmap) || 0,
+        totalInitiatives: Number(data.total_initiatives) || 0,
+        activeCount: Number(data.active_count) || 0,
+        validationCount: Number(data.validation_count) || 0,
+        projectCount: Number(data.roadmap_projects) || 0,
+        enhancementCount: Number(data.roadmap_enhancements) || 0,
+        improvementCount: Number(data.roadmap_improvements) || 0,
+        currentQuarter: `Q${q} ${now.getFullYear()}`,
+      };
+    },
+  });
+}
+
+// ══════════════════════════════════════════
+// useBacklogItemsNotOnRoadmap — for AddInitiativeModal
+// ══════════════════════════════════════════
+export function useBacklogItemsNotOnRoadmap() {
+  return useQuery({
+    queryKey: ['backlog-not-on-roadmap'],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('ph_initiatives')
+        .select('id, initiative_key, title, initiative_type_id')
+        .eq('on_roadmap', false)
+        .eq('is_deleted', false)
+        .eq('is_archived', false)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const { data: types } = await (supabase as any)
+        .from('initiative_types')
+        .select('id, key');
+
+      const typeMap = new Map<string, string>();
+      if (types) {
+        for (const t of types) typeMap.set(t.id, t.key);
+      }
+
+      return (data || []).map((row: any) => {
+        const { titleAr, titleEn } = splitTitle(row.title || '');
+        return {
+          id: row.id,
+          key: row.initiative_key || '',
+          title: titleEn,
+          titleAr,
+          type: (typeMap.get(row.initiative_type_id) || 'project') as RoadmapInitiative['type'],
+        };
+      });
+    },
+  });
+}
+
+// ══════════════════════════════════════════
+// useAddToRoadmap — flags existing item
+// ══════════════════════════════════════════
+export function useAddToRoadmap() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (initiativeId: string) => {
+      const { error } = await (supabase as any)
+        .from('ph_initiatives')
+        .update({ on_roadmap: true, roadmap_added_at: new Date().toISOString() })
+        .eq('id', initiativeId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['roadmap-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['backlog-not-on-roadmap'] });
+    },
+  });
+}
+
+// ══════════════════════════════════════════
+// useRemoveFromRoadmap — unflags existing item
+// ══════════════════════════════════════════
+export function useRemoveFromRoadmap() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (initiativeId: string) => {
+      const { error } = await (supabase as any)
+        .from('ph_initiatives')
+        .update({ on_roadmap: false })
+        .eq('id', initiativeId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['roadmap-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['backlog-not-on-roadmap'] });
+    },
+  });
+}
+
+// ══════════════════════════════════════════
+// useUpdateInitiative — update progress/status/dates
+// ══════════════════════════════════════════
+export function useUpdateInitiative() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Record<string, any> }) => {
+      const { error } = await (supabase as any)
+        .from('ph_initiatives')
+        .update(updates)
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['roadmap-stats'] });
+    },
+  });
+}
+
+// ══════════════════════════════════════════
+// Convenience wrapper used by ProductRoadmapPage
+// ══════════════════════════════════════════
 export function useRoadmapData() {
-  const initiatives = MOCK_INITIATIVES;
-  const isLoading = false;
-  const error = null;
+  const { data: initiatives = [], isLoading: initLoading, error: initError } = useRoadmapInitiatives();
+  const { data: stats, isLoading: statsLoading, error: statsError } = useRoadmapStats();
 
-  const stats = useMemo<RoadmapStats>(() => {
-    const now = new Date();
-    const q = Math.ceil((now.getMonth() + 1) / 3);
-    return {
-      totalOnRoadmap: initiatives.length,
-      totalInitiatives: initiatives.length + 8, // pretend 8 more not on roadmap
-      activeCount: initiatives.filter(i => i.status === 'Active').length,
-      validationCount: initiatives.filter(i => i.status === 'Planned').length,
-      projectCount: initiatives.filter(i => i.type === 'project').length,
-      enhancementCount: initiatives.filter(i => i.type === 'enhancement').length,
-      improvementCount: initiatives.filter(i => i.type === 'improvement').length,
-      currentQuarter: `Q${q} ${now.getFullYear()}`,
-    };
-  }, [initiatives]);
+  const defaultStats: RoadmapStats = {
+    totalOnRoadmap: 0, totalInitiatives: 0, activeCount: 0, validationCount: 0,
+    projectCount: 0, enhancementCount: 0, improvementCount: 0,
+    currentQuarter: `Q${Math.ceil((new Date().getMonth() + 1) / 3)} ${new Date().getFullYear()}`,
+  };
 
-  return { initiatives, stats, isLoading, error };
+  return {
+    initiatives,
+    stats: stats || defaultStats,
+    isLoading: initLoading || statsLoading,
+    error: initError || statsError,
+  };
 }
