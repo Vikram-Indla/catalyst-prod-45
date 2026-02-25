@@ -22,6 +22,7 @@ interface RoadmapInitiativeListProps {
   onSelect: (id: string) => void;
   onHover: (id: string | null) => void;
   onAddClick: () => void;
+  onToggleStar: (id: string, isCurrentlyStarred: boolean) => void;
   width?: number;
   scrollRef?: React.RefObject<HTMLDivElement>;
   onScroll?: () => void;
@@ -59,7 +60,7 @@ function OwnerAvatar({ initials, name }: { initials?: string; name?: string }) {
   );
 }
 
-export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect, onHover, onAddClick, width, scrollRef, onScroll, collapsedGroups, onToggleGroup }: RoadmapInitiativeListProps) {
+export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect, onHover, onAddClick, onToggleStar, width, scrollRef, onScroll, collapsedGroups, onToggleGroup }: RoadmapInitiativeListProps) {
   const totalCount = groups.reduce((sum, g) => sum + g.items.length, 0);
 
   return (
@@ -140,6 +141,7 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
                   isHovered={hoveredId === item.id}
                   onSelect={() => onSelect(item.id)}
                   onHover={onHover}
+                  onToggleStar={() => onToggleStar(item.id, item.starred)}
                 />
               ))}
             </div>
@@ -162,13 +164,14 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
 }
 
 function InitiativeRow({
-  item, isSelected, isHovered, onSelect, onHover,
+  item, isSelected, isHovered, onSelect, onHover, onToggleStar,
 }: {
   item: RoadmapInitiative;
   isSelected: boolean;
   isHovered: boolean;
   onSelect: () => void;
   onHover: (id: string | null) => void;
+  onToggleStar: () => void;
 }) {
   const typeColor = TYPE_COLORS[item.type]?.solid || '#94A3B8';
 
@@ -197,14 +200,16 @@ function InitiativeRow({
     >
       {/* AUDIT #19: Star button */}
       <button
-        className="flex-shrink-0 opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
+        className="flex-shrink-0 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
         style={{
           width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
           border: 'none', background: 'none', padding: 0, cursor: 'pointer',
           color: item.starred ? '#F59E0B' : INK[4],
+          opacity: item.starred ? 1 : undefined,
           transition: 'color 0.15s ease, opacity 0.15s ease',
         }}
-        onClick={e => { e.stopPropagation(); /* TODO: wire star toggle */ }}
+        
+        onClick={e => { e.stopPropagation(); onToggleStar(); }}
         onMouseEnter={e => { e.currentTarget.style.color = '#F59E0B'; }}
         onMouseLeave={e => { if (!item.starred) e.currentTarget.style.color = INK[4]; }}
       >

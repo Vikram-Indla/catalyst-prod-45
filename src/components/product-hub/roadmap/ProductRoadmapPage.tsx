@@ -16,7 +16,7 @@ import type { TimelineInitiative } from '@/types/producthub/initiative';
 
 import { AddInitiativeModal } from './AddInitiativeModal';
 
-import { useRoadmapData } from './hooks/useRoadmapData';
+import { useRoadmapData, useToggleRoadmapStar } from './hooks/useRoadmapData';
 import { useRoadmapFilters } from './hooks/useRoadmapFilters';
 
 import { INK, SURFACE, FONT, SCROLLBAR_CSS } from './constants/roadmap.constants';
@@ -24,6 +24,7 @@ import '@/styles/roadmap-ringfenced.css';
 
 export function ProductRoadmapPage() {
   const { initiatives, stats, isLoading, error } = useRoadmapData();
+  const toggleStar = useToggleRoadmapStar();
   const {
     search, setSearch,
     typeFilter, setTypeFilter,
@@ -103,6 +104,10 @@ export function ProductRoadmapPage() {
     setSelectedId(id);
     setIsDetailOpen(true);
   }, []);
+
+  const handleToggleStar = useCallback((id: string, isCurrentlyStarred: boolean) => {
+    toggleStar.mutate({ initiativeId: id, isCurrentlyStarred });
+  }, [toggleStar]);
 
   const handleToday = useCallback(() => {
     const now = new Date();
@@ -294,6 +299,7 @@ export function ProductRoadmapPage() {
             onSelect={handleSelect}
             onHover={setHoveredId}
             onAddClick={() => setIsAddModalOpen(true)}
+            onToggleStar={handleToggleStar}
           />
         </>
       )}
