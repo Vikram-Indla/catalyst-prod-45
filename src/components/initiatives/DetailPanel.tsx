@@ -874,41 +874,6 @@ function DetailsContent({
           <span className="text-[13px] text-zinc-400">—</span>
         </div>
 
-        {/* Health Status */}
-        <div>
-          <FieldLabel>Health Status</FieldLabel>
-          {(() => {
-            const hs = initiative.health_status;
-            const cfg: Record<string, { label: string; color: string; bg: string }> = {
-              on_track: { label: 'On Track', color: '#16A34A', bg: '#F0FDF4' },
-              at_risk: { label: 'At Risk', color: '#D97706', bg: '#FFFBEB' },
-              off_track: { label: 'Off Track', color: '#EF4444', bg: '#FEF2F2' },
-            };
-            const c = hs ? cfg[hs] : null;
-            return c ? (
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold"
-                style={{ background: c.bg, color: c.color }}>{c.label}</span>
-            ) : <span className="text-[13px] text-zinc-400">—</span>;
-          })()}
-        </div>
-
-        {/* Business Value */}
-        <div>
-          <FieldLabel>Business Value</FieldLabel>
-          {(() => {
-            const bv = initiative.business_value;
-            const cfg: Record<string, { label: string; color: string; bg: string }> = {
-              high: { label: 'High', color: '#16A34A', bg: '#F0FDF4' },
-              medium: { label: 'Medium', color: '#D97706', bg: '#FFFBEB' },
-              low: { label: 'Low', color: '#64748B', bg: '#F1F5F9' },
-            };
-            const c = bv ? cfg[bv] : null;
-            return c ? (
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold"
-                style={{ background: c.bg, color: c.color }}>{c.label}</span>
-            ) : <span className="text-[13px] text-zinc-400">—</span>;
-          })()}
-        </div>
 
         {/* Priority */}
         <div>
