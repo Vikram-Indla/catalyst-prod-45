@@ -7,7 +7,7 @@ import React from 'react';
 export const JiraBugIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16">
     <circle cx="8" cy="8" r="7" fill="#E5493A"/>
-    <circle cx="8" cy="8" r="3" fill="white"/>
+    <path d="M10 5.5a2 2 0 1 0-4 0v1h4v-1zM5 8h6v2.5a3 3 0 0 1-6 0V8z" fill="#fff"/>
   </svg>
 );
 
