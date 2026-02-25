@@ -31,6 +31,7 @@ export function useInitiatives() {
         business_owner_id: row.business_owner_id,
         business_owner_name: null,
         reporter_id: row.reporter_id,
+        reporter_name: row.reporter_name || null,
         department_id: row.department_id,
         department_name: row.department_name,
         target_quarter: row.target_quarter,

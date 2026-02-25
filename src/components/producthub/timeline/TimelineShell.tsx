@@ -49,6 +49,7 @@ export const TimelineShell: React.FC<{ onAddNew?: () => void }> = ({ onAddNew })
       assignee_name: item.assignee_name || getProfileName(item.assignee_id),
       business_owner_id: item.business_owner_id || null,
       reporter_id: item.reporter_id || null,
+      reporter_name: item.reporter_name || null,
       department_id: item.department_id || null,
       department_name: item.department_name || getDepartmentName(item.department_id),
       department_code: null,

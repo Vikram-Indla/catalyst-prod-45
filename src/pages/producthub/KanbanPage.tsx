@@ -23,6 +23,7 @@ function toTimelineInitiative(i: Initiative): TimelineInitiative {
     assignee_name: i.assignee_name,
     business_owner_id: i.business_owner_id,
     reporter_id: i.reporter_id,
+    reporter_name: i.reporter_name,
     department_id: i.department_id,
     department_name: i.department_name,
     department_code: null,

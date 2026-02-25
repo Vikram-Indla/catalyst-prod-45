@@ -56,7 +56,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         </Field>
 
         <Field label="Reporter">
-          <span className="text-muted-foreground">—</span>
+          {initiative.reporter_name ?? <span className="text-muted-foreground">—</span>}
         </Field>
         <Field label="Assignee">
           {initiative.assignee_name ?? <span className="text-muted-foreground">Unassigned</span>}

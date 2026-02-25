@@ -90,6 +90,7 @@ export function useMDTBacklog() {
           business_owner_id: null,
           business_owner_name: br.reporter_display_name || null,
           reporter_id: null,
+          reporter_name: br.reporter_display_name || null,
           department_id: null,
           department_name: 'Digital Transformation',
           target_quarter: null,

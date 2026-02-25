@@ -31,6 +31,7 @@ export interface Initiative {
   business_owner_id: string | null;
   business_owner_name: string | null;
   reporter_id: string | null;
+  reporter_name: string | null;
   department_id: string | null;
   department_name: string | null;
   target_quarter: string | null;
