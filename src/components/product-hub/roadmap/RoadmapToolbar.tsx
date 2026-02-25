@@ -100,26 +100,7 @@ export function RoadmapToolbar({ zoom, onZoomChange, groupBy, onGroupByChange, v
         </button>
       </div>
 
-      {/* View switcher */}
-      <div className="flex items-center gap-1">
-        {VIEW_OPTIONS.map(v => (
-          <button
-            key={v.key}
-            onClick={() => onViewModeChange(v.key)}
-            className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
-            style={{
-              borderRadius: 6,
-              background: viewMode === v.key ? '#EFF6FF' : 'transparent',
-              color: viewMode === v.key ? '#2563EB' : INK[3],
-              border: viewMode === v.key ? '1px solid #BFDBFE' : '1px solid transparent',
-              transition: 'all 0.15s ease',
-            }}
-          >
-            <v.icon className="w-3.5 h-3.5" />
-            {v.label}
-          </button>
-        ))}
-      </div>
+      {/* View switcher removed — roadmap is timeline-only */}
     </div>
   );
 }
