@@ -2,7 +2,7 @@
  * Product Roadmap — Type definitions
  */
 
-export type InitiativeType = 'project' | 'enhancement' | 'improvement' | 'sustainable' | 'entity_integration';
+export type InitiativeType = 'project' | 'enhancement' | 'improvement' | 'entity_integration';
 
 export type InitiativeStatus = 'Active' | 'Planned' | 'Completed' | 'Cancelled';
 

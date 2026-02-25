@@ -22,7 +22,7 @@ const TYPE_MAP: Record<string, RoadmapInitiative['type']> = {
   project: 'project',
   enhancement: 'enhancement',
   improvement: 'improvement',
-  sustainable: 'sustainable',
+  
   entity_integration: 'entity_integration',
 };
 

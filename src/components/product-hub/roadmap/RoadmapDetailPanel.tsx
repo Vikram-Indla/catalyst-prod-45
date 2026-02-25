@@ -96,7 +96,7 @@ const TYPE_FALLBACK_OPTIONS = [
   { value: '00242328-979a-4ecb-8f02-5d3b982966d1', label: 'Enhancement' },
   { value: '90806dac-3ed5-4f99-a11e-290dc0efd376', label: 'Improvement' },
   { value: '8ee93370-21e5-4464-92d1-3e51839067cd', label: 'Entity Integration' },
-  { value: 'fb137d36-16d9-4e69-ba77-f76e6d961fe4', label: 'Sustainable' },
+  
 ];
 
 const STATUS_PILL: Record<string, { color: string; bg: string }> = {
