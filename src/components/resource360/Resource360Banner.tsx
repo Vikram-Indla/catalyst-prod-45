@@ -4,10 +4,12 @@ import type { Resource360Summary } from '@/types/resource360';
 interface Props {
   summary: Resource360Summary | null;
   isLoading: boolean;
+  /** Pass items array to derive Open + Stale counts */
+  items?: any[];
 }
 
-/** Resource banner: 66px, gradient avatar initials (NO photo), name, subtitle, 5 stat boxes */
-export function Resource360Banner({ summary, isLoading }: Props) {
+/** Resource banner: 66px, gradient avatar initials (NO photo), name, subtitle, 2 stat boxes (Open + Stale only) */
+export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
   if (isLoading || !summary) {
     return (
       <div style={{
@@ -30,19 +32,22 @@ export function Resource360Banner({ summary, isLoading }: Props) {
     .slice(0, 2)
     .toUpperCase();
 
-  const totalItems = summary.total_items ?? 0;
-  const doneItems = summary.done_count ?? 0;
-  const closureRate = totalItems > 0 ? Math.round((doneItems / totalItems) * 100) : 0;
-  const pending = (summary.todo_count ?? 0) + (summary.progress_count ?? 0);
-  const avgAge = 0; // derived from items if needed
-  const staleCount = 0; // derived from items if needed
+  // DEF-01: ONLY Open + Stale — user mandate
+  const openCount = items.filter(i => {
+    const cat = (i.status_category || i.statusCategory || '').toLowerCase();
+    return !cat.includes('done') && !cat.includes('closed') && !cat.includes('resolved') && !cat.includes('complete');
+  }).length;
+
+  const staleCount = items.filter(i => {
+    const cat = (i.status_category || i.statusCategory || '').toLowerCase();
+    const isDone = cat.includes('done') || cat.includes('closed') || cat.includes('resolved') || cat.includes('complete');
+    const age = i.age_days ?? i.ageDays ?? 0;
+    return !isDone && age > 14;
+  }).length;
 
   const stats = [
-    { label: 'Total', value: String(totalItems), danger: false },
-    { label: 'Closure%', value: `${closureRate}%`, danger: false },
-    { label: 'Pending', value: String(pending), danger: false },
-    { label: 'Avg Age', value: `${avgAge}d`, danger: false },
-    { label: 'Stale', value: String(staleCount), danger: staleCount > 0 },
+    { label: 'Open', value: String(openCount), isWarn: true },
+    { label: 'Stale', value: String(staleCount), isWarn: false },
   ];
 
   return (
@@ -79,20 +84,21 @@ export function Resource360Banner({ summary, isLoading }: Props) {
         </span>
       </div>
 
-      {/* Stat boxes — pushed right */}
+      {/* Stat boxes — ONLY Open + Stale (DEF-01 fix) */}
       <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
         {stats.map(s => (
           <div key={s.label} style={{
-            minWidth: 64, padding: '5px 12px', textAlign: 'center',
+            minWidth: 80, padding: '5px 14px', textAlign: 'center',
             borderRadius: 8,
-            background: s.danger ? '#FEF2F2' : '#F8FAFC',
-            border: `1px solid ${s.danger ? '#FECACA' : '#E2E8F0'}`,
+            background: s.isWarn ? '#FFFBEB' : '#F8FAFC',
+            border: `1px solid ${s.isWarn ? '#FDE68A' : '#E2E8F0'}`,
           }}>
             <div style={{
-              fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 800,
-              color: s.danger ? '#EF4444' : '#0F172A', lineHeight: 1.2,
+              fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700,
+              color: '#020617', lineHeight: 1.2,
+              fontVariantNumeric: 'tabular-nums',
             }}>{s.value}</div>
-            <div style={{ fontSize: 10, color: '#94A3B8', fontWeight: 500, marginTop: 1 }}>{s.label}</div>
+            <div style={{ fontSize: 10.5, color: '#64748B', fontWeight: 600, marginTop: 1, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{s.label}</div>
           </div>
         ))}
       </div>

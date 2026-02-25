@@ -3,10 +3,13 @@
  * Static polar ring with weekly chronological paging, inline detail panel,
  * completed toggle sidebar, type ribbons, date chips on spokes.
  * ALL DATA from Jira via props — ZERO hardcoded mock items.
+ *
+ * Gate 9 fixes: DEF-02 through DEF-16
  */
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { HUB_COLORS, HUB_SHORT, PRIORITY_COLORS } from '@/constants/resource360';
-import { X, ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import { JiraBugIcon, JiraTaskIcon, JiraStoryIcon, JiraEpicIcon, JiraSubtaskIcon } from './R360JiraIcons';
 import type { Resource360Item } from '@/types/resource360';
 
 // ─── TOKENS ───
@@ -24,11 +27,39 @@ const T = {
 
 type StatusCat = 'todo' | 'progress' | 'done';
 
-const STATUS_SOLID: Record<StatusCat, { bg: string; text: string }> = {
-  todo: { bg: T.todo, text: '#FFFFFF' },
-  progress: { bg: T.progress, text: '#FFFFFF' },
-  done: { bg: T.done, text: '#FFFFFF' },
+// ─── CG-05 STATUS COLORS (DEF-02 fix) ───
+const STATUS_CG05: Record<StatusCat, { dot: string; bg: string; text: string }> = {
+  todo:     { dot: '#D97706', bg: '#FFFBEB', text: '#78350F' },   // AMBER, not dark/navy
+  progress: { dot: '#2563EB', bg: '#EFF6FF', text: '#1E3A5F' },   // BLUE
+  done:     { dot: '#16A34A', bg: '#F0FDF4', text: '#14532D' },   // GREEN
 };
+
+// Keep solid for ribbon/top bar
+const STATUS_SOLID: Record<StatusCat, { bg: string; text: string }> = {
+  todo:     { bg: '#D97706', text: '#FFFFFF' },
+  progress: { bg: '#2563EB', text: '#FFFFFF' },
+  done:     { bg: '#16A34A', text: '#FFFFFF' },
+};
+
+// ─── JIRA ICON HELPER (DEF-05 fix) ───
+function getJiraIconForType(typeStr: string) {
+  const lower = (typeStr || '').toLowerCase();
+  if (lower.includes('bug') || lower.includes('defect')) return <JiraBugIcon />;
+  if (lower.includes('epic')) return <JiraEpicIcon />;
+  if (lower.includes('story')) return <JiraStoryIcon />;
+  if (lower.includes('sub')) return <JiraSubtaskIcon />;
+  return <JiraTaskIcon />;
+}
+
+// ─── JIRA TYPE BADGE STYLES (DEF-05) ───
+function getTypeBadgeStyle(typeStr: string): { bg: string; color: string } {
+  const lower = (typeStr || '').toLowerCase();
+  if (lower.includes('bug')) return { bg: '#FEF2F2', color: '#7F1D1D' };
+  if (lower.includes('epic')) return { bg: '#F5F3FF', color: '#4C1D95' };
+  if (lower.includes('story')) return { bg: '#F0FDF4', color: '#14532D' };
+  if (lower.includes('sub')) return { bg: '#F0FDFA', color: '#134E4A' };
+  return { bg: '#EFF6FF', color: '#1E3A5F' };
+}
 
 // ─── INTERNAL WORK ITEM ───
 interface WorkItem {
@@ -41,6 +72,7 @@ interface WorkItem {
   assignerName: string | null;
   projectName: string | null;
   projectKey: string | null;
+  projectColor: string | null;
   ageDays: number;
 }
 
@@ -87,8 +119,25 @@ function mapItem(r: Resource360Item): WorkItem {
     assignerName: r.assigner_name || null,
     projectName: r.project_name || null,
     projectKey: r.project_key || null,
+    projectColor: (r as any).project_color || null,
     ageDays: r.age_days ?? 0,
   };
+}
+
+// ─── PROJECT COLOR MAP (DEF-06 fallback) ───
+const PROJECT_COLOR_FALLBACK: Record<string, string> = {
+  BAU: '#2563EB',
+  SEN: '#D97706',
+  FAC: '#16A34A',
+  OPS: '#0D9488',
+  SUP: '#64748B',
+  LND: '#7C3AED',
+};
+
+function getProjectColor(item: WorkItem): string {
+  if (item.projectColor) return item.projectColor;
+  if (item.projectKey && PROJECT_COLOR_FALLBACK[item.projectKey]) return PROJECT_COLOR_FALLBACK[item.projectKey];
+  return '#64748B';
 }
 
 // ─── HELPERS ───
@@ -160,7 +209,7 @@ function groupByWeek(items: WorkItem[]): WeekGroup[] {
 }
 
 function weekLabel(_weekStart: string, idx: number): string {
-  if (idx === 0) return '📍 This Week';
+  if (idx === 0) return 'This Week';
   return 'Week';
 }
 
@@ -171,17 +220,21 @@ function weekRange(weekStart: string): string {
   return `${fmt(s)} – ${fmt(e)}, ${s.getFullYear()}`;
 }
 
-// ─── STATUS PILL ───
+// ─── STATUS PILL — CG-05 Desaturated (DEF-02 fix) ───
 const StatusPill: React.FC<{ status: StatusCat; small?: boolean }> = ({ status, small }) => {
-  const c = STATUS_SOLID[status];
+  const c = STATUS_CG05[status];
   const label = status === 'todo' ? 'To Do' : status === 'progress' ? 'In Progress' : 'Done';
   return (
     <span style={{
-      display: 'inline-block', padding: small ? '1px 6px' : '2px 8px',
-      borderRadius: 9999, fontSize: small ? 9 : 10, fontWeight: 700,
+      display: 'inline-flex', alignItems: 'center', gap: 4,
+      padding: small ? '1px 6px' : '2px 8px',
+      borderRadius: 6, fontSize: small ? 9 : 10, fontWeight: 600,
       background: c.bg, color: c.text, whiteSpace: 'nowrap',
-      lineHeight: 1.5, letterSpacing: '0.02em',
-    }}>{label}</span>
+      lineHeight: 1.5,
+    }}>
+      <span style={{ width: small ? 5 : 6, height: small ? 5 : 6, borderRadius: '50%', background: c.dot, flexShrink: 0 }} />
+      {label}
+    </span>
   );
 };
 
@@ -226,14 +279,10 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
   const ringCanvasRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ w: 800, h: 500 });
   const [statusFilter, setStatusFilter] = useState<ActiveFilter>('all');
-  const [searchQuery, setSearchQuery] = useState('');
   const [weekIdx, setWeekIdx] = useState(0);
   const [ringPage, setRingPage] = useState(0);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [panelMode, setPanelMode] = useState<PanelMode>('hidden');
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
-  const searchRef = useRef<HTMLInputElement>(null);
 
   const allItems = useMemo(() => rawItems.map(mapItem), [rawItems]);
   const activeItems = useMemo(() => allItems.filter(i => i.status !== 'done'), [allItems]);
@@ -268,19 +317,15 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
     let items = activeItems;
     if (statusFilter === 'todo') items = items.filter(i => i.status === 'todo');
     if (statusFilter === 'progress') items = items.filter(i => i.status === 'progress');
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      items = items.filter(i => i.key.toLowerCase().includes(q) || i.title.toLowerCase().includes(q));
-    }
     return items;
-  }, [activeItems, statusFilter, searchQuery]);
+  }, [activeItems, statusFilter]);
 
   const weeks = useMemo(() => groupByWeek(filteredActive), [filteredActive]);
   const currentWeek = weeks[weekIdx] || null;
   const weekItems = currentWeek?.items || [];
 
-  const totalPages = Math.ceil(weekItems.length / MAX_PER_PAGE);
-  const pageItems = weekItems.slice(ringPage * MAX_PER_PAGE, (ringPage + 1) * MAX_PER_PAGE);
+  // DEF-15: No pagination in Ring view — show all (up to 8)
+  const pageItems = weekItems.slice(0, MAX_PER_PAGE);
 
   useEffect(() => { setRingPage(0); }, [weekIdx]);
 
@@ -291,7 +336,6 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') { setSelectedId(null); setPanelMode('hidden'); }
-      if (e.key === '/' && document.activeElement?.tagName !== 'INPUT') { e.preventDefault(); searchRef.current?.focus(); }
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         if (pageItems.length === 0) return;
         const curIdx = selectedId ? pageItems.findIndex(i => i.key === selectedId) : -1;
@@ -320,11 +364,11 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
   const cx = ringW / 2;
   const cy = ringH / 2;
   const N = pageItems.length;
-  const cardW = N <= 4 ? 170 : N <= 6 ? 156 : 142;
-  const cardH = 105;
+  const cardW = N <= 4 ? 195 : N <= 6 ? 170 : 156;
+  const cardH = 120;
   const maxR = Math.min(ringW, ringH) * 0.30;
   const R = Math.max(80, maxR);
-  const panelWidth = panelMode === 'detail' ? 420 : panelMode === 'completed' ? 280 : 0;
+  const panelWidth = panelMode === 'detail' ? 460 : panelMode === 'completed' ? 280 : 0;
 
   const initials = resource?.initials || resource?.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) || '??';
   const resourceName = resource?.name || resource?.full_name || 'Resource';
@@ -334,12 +378,11 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', fontFamily: T.inter }}>
-      {/* §5 FILTER BAR — 38px */}
+      {/* §5 FILTER BAR — 38px (DEF-11: no search, DEF-12: no "ACTIVE" label) */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px',
         background: '#FFFFFF', borderBottom: `1px solid ${T.border}`, height: 38, flexShrink: 0,
       }}>
-        <span style={{ fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>ACTIVE</span>
         <div style={{ display: 'flex', gap: 4 }}>
           {([
             { key: 'all' as const, label: `All (${activeItems.length})` },
@@ -359,25 +402,12 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
           })}
         </div>
         <div style={{ flex: 1 }} />
-        <div style={{ position: 'relative' }}>
-          <Search style={{ position: 'absolute', left: 8, top: 7, width: 14, height: 14, color: '#94A3B8' }} />
-          <input
-            ref={searchRef}
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search... (/)"
-            style={{
-              width: 180, height: 28, padding: '0 10px 0 28px', fontSize: 12,
-              background: '#F8FAFC', border: `1px solid ${T.border}`, borderRadius: 6,
-              outline: 'none', color: '#0F172A', fontFamily: T.inter,
-            }}
-            onFocus={e => e.target.style.borderColor = '#2563EB'}
-            onBlur={e => e.target.style.borderColor = T.border}
-          />
-        </div>
+        <span style={{ fontSize: 11, color: '#64748B', fontWeight: 600, fontFamily: T.mono }}>
+          {pageItems.length} items
+        </span>
       </div>
 
-      {/* §6 WEEK RIBBON — 36px */}
+      {/* §6 WEEK RIBBON — 36px (DEF-10: Calendar icon, not pin) */}
       <div style={{
         height: 36, display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px',
         borderBottom: `1px solid ${T.border}`, flexShrink: 0,
@@ -386,14 +416,15 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
         <button onClick={() => setWeekIdx(Math.min(weekIdx + 1, weeks.length - 1))}
           disabled={weekIdx >= weeks.length - 1}
           style={{
-            width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            border: `1px solid ${T.border}`, borderRadius: 6, background: 'transparent',
+            width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: `1px solid ${T.border}`, borderRadius: 6, background: '#FFFFFF',
             cursor: weekIdx >= weeks.length - 1 ? 'not-allowed' : 'pointer',
             opacity: weekIdx >= weeks.length - 1 ? 0.35 : 1,
           }}>
           <ChevronLeft size={14} color={T.ink2} />
         </button>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Calendar size={16} color="#2563EB" />
           <span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', fontFamily: T.sora }}>
             {currentWeek ? weekLabel(currentWeek.weekStart, weekIdx) : 'No items'}
           </span>
@@ -404,29 +435,13 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
         <button onClick={() => setWeekIdx(Math.max(weekIdx - 1, 0))}
           disabled={weekIdx <= 0}
           style={{
-            width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            border: `1px solid ${T.border}`, borderRadius: 6, background: 'transparent',
+            width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: `1px solid ${T.border}`, borderRadius: 6, background: '#FFFFFF',
             cursor: weekIdx <= 0 ? 'not-allowed' : 'pointer',
             opacity: weekIdx <= 0 ? 0.35 : 1,
           }}>
           <ChevronRight size={14} color={T.ink2} />
         </button>
-        <div style={{ flex: 1 }} />
-        <span style={{ fontSize: 11, color: '#64748B', fontWeight: 600, fontFamily: T.mono }}>
-          {weekItems.length} items{totalPages > 1 ? ` · Page ${ringPage + 1}/${totalPages}` : ''}
-        </span>
-        {totalPages > 1 && (
-          <div style={{ display: 'flex', gap: 3 }}>
-            <button onClick={() => setRingPage(Math.max(0, ringPage - 1))} disabled={ringPage === 0}
-              style={{ width: 26, height: 26, borderRadius: 6, border: `1px solid ${T.border}`, background: 'transparent', cursor: 'pointer', opacity: ringPage === 0 ? 0.35 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <ChevronLeft size={12} />
-            </button>
-            <button onClick={() => setRingPage(Math.min(totalPages - 1, ringPage + 1))} disabled={ringPage >= totalPages - 1}
-              style={{ width: 26, height: 26, borderRadius: 6, border: `1px solid ${T.border}`, background: 'transparent', cursor: 'pointer', opacity: ringPage >= totalPages - 1 ? 0.35 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <ChevronRight size={12} />
-            </button>
-          </div>
-        )}
       </div>
 
       {/* §7 RING + PANEL LAYOUT */}
@@ -452,7 +467,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                 const ey = cy + R * Math.sin(ang);
                 const isSelected = selectedId === item.key;
                 const hasSel = selectedId !== null;
-                const statusColor = STATUS_SOLID[item.status].bg;
+                const statusColor = STATUS_CG05[item.status].dot;
                 const mx = (cx + ex) / 2;
                 const my = (cy + ey) / 2;
 
@@ -502,7 +517,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
               <div style={{ fontSize: 10, color: '#64748B', fontWeight: 500 }}>{resourceRole}</div>
             </div>
 
-            {/* Cards on ring */}
+            {/* Cards on ring (DEF-04: accent bars, DEF-05: Jira icons, DEF-06: project colors) */}
             {pageItems.map((item, i) => {
               const ang = (i / N) * Math.PI * 2 - Math.PI / 2;
               const ex = cx + R * Math.cos(ang);
@@ -512,49 +527,71 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
               const isSelected = selectedId === item.key;
               const age = item.ageDays;
               const stale = staleLevel(age, item.status);
+              const statusColors = STATUS_CG05[item.status];
+              const projColor = getProjectColor(item);
+              const typeBadge = getTypeBadgeStyle(item.type);
 
               return (
                 <div
                   key={item.key}
                   onClick={() => selectCard(item.key)}
-                  onMouseEnter={(e) => { setHoveredId(item.key); setTooltipPos({ x: e.clientX + 12, y: e.clientY - 20 }); }}
-                  onMouseMove={(e) => setTooltipPos({ x: e.clientX + 12, y: e.clientY - 20 })}
-                  onMouseLeave={() => setHoveredId(null)}
                   style={{
                     position: 'absolute', left, top, width: cardW,
                     cursor: 'pointer', transition: 'box-shadow 200ms, transform 200ms',
-                    borderRadius: 10,
-                    border: 'none',
+                    borderRadius: 8,
+                    border: `1px solid ${T.border}`,
                     boxShadow: isSelected
                       ? '0 0 0 3px rgba(37,99,235,.25), 0 12px 40px rgba(37,99,235,.2)'
                       : '0 4px 16px rgba(0,0,0,0.08)',
                     background: '#FFFFFF',
                     zIndex: isSelected ? 10 : 1,
+                    overflow: 'hidden',
                   }}
-                  onMouseOver={e => { if (!isSelected) (e.currentTarget as any).style.boxShadow = '0 8px 28px rgba(0,0,0,.12)'; }}
-                  onMouseOut={e => { if (!isSelected) (e.currentTarget as any).style.boxShadow = '0 4px 16px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)'; }}
+                  onMouseOver={e => { if (!isSelected) (e.currentTarget as any).style.boxShadow = '0 8px 28px rgba(0,0,0,.12)'; (e.currentTarget as any).style.borderColor = '#94A3B8'; }}
+                  onMouseOut={e => { if (!isSelected) (e.currentTarget as any).style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)'; (e.currentTarget as any).style.borderColor = T.border; }}
                 >
+                  {/* DEF-04: 3px left accent bar matching status color */}
                   <div style={{
-                    height: 22, borderRadius: '8px 8px 0 0', background: '#334155',
-                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '0 8px', fontSize: 10, fontWeight: 700, color: '#FFFFFF',
-                  }}>
-                    <span>{item.type.toUpperCase()}</span>
-                    <span style={{ fontSize: 9, opacity: 0.8 }}>{item.priority}</span>
-                  </div>
-                  <div style={{ padding: '8px 10px 10px' }}>
+                    position: 'absolute', left: 0, top: 8, bottom: 8,
+                    width: 3, borderRadius: '0 2px 2px 0',
+                    background: statusColors.dot,
+                  }} />
+
+                  <div style={{ padding: '8px 10px 10px 13px' }}>
+                    {/* Row 1: Jira icon + type text + priority */}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '1px 6px', borderRadius: 4, background: typeBadge.bg }}>
+                        {getJiraIconForType(item.type)}
+                        <span style={{ fontSize: 9, fontWeight: 700, color: typeBadge.color, textTransform: 'uppercase' }}>{item.type}</span>
+                      </div>
+                      <span style={{ fontSize: 9, fontWeight: 600, color: '#64748B', textTransform: 'capitalize' }}>{item.priority}</span>
+                    </div>
+
+                    {/* Row 2: key + project tag + age */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
-                      <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: '#2563EB' }}>{item.key}</span>
-                      <HubBadge hub={item.hub} />
+                      <span style={{ fontFamily: T.mono, fontSize: 11, fontWeight: 700, color: '#2563EB' }}>{item.key}</span>
+                      {item.projectKey && (
+                        <span style={{
+                          fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3,
+                          background: projColor, color: '#FFFFFF',
+                          letterSpacing: '0.02em',
+                        }}>
+                          {item.projectKey}
+                        </span>
+                      )}
                       <span style={{ fontFamily: T.mono, fontSize: 9, color: ageHeatColor(age), fontWeight: 700, marginLeft: 'auto' }}>
                         {age}d
                       </span>
                     </div>
+
+                    {/* Title: 12.5px 500wt, 2-line clamp */}
                     <div style={{
-                      fontSize: 11, fontWeight: 600, color: '#0F172A', lineHeight: 1.3,
+                      fontSize: 12.5, fontWeight: 500, color: '#020617', lineHeight: 1.35,
                       display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
                       overflow: 'hidden', marginBottom: 6, minHeight: 28,
                     }}>{item.title}</div>
+
+                    {/* Status pill (CG-05 desaturated) */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                       <StatusPill status={item.status} small />
                       {stale && (
@@ -568,27 +605,26 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
               );
             })}
 
-            {/* Completed toggle tab */}
+            {/* Completed toggle tab (DEF-07: fixed badge) */}
             {panelMode === 'hidden' && !selectedId && (
               <div
                 onClick={toggleCompleted}
                 style={{
-                  position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)',
-                  width: 36, background: '#FFFFFF', cursor: 'pointer',
-                  border: `1px solid ${T.border}`, borderRight: 'none',
-                  borderRadius: '8px 0 0 8px', padding: '12px 6px', textAlign: 'center',
-                  boxShadow: '-2px 0 8px rgba(0,0,0,.06)',
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                  position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+                  cursor: 'pointer',
                 }}>
+                <div style={{
+                  width: 48, height: 48, borderRadius: '50%',
+                  background: '#16A34A', color: '#FFFFFF',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontFamily: T.mono, fontSize: 18, fontWeight: 800,
+                  boxShadow: '0 2px 8px rgba(22,163,74,.3)',
+                }}>{doneCount}</div>
                 <span style={{
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  width: 18, height: 18, borderRadius: 9, background: T.done,
-                  color: '#FFFFFF', fontSize: 9, fontWeight: 800,
-                }}>{doneCount}</span>
-                <span style={{
-                  writingMode: 'vertical-lr', fontSize: 10, fontWeight: 600, color: '#334155',
-                  letterSpacing: '0.02em',
-                }}>Completed</span>
+                  writingMode: 'vertical-lr', fontSize: 10, fontWeight: 700, color: '#16A34A',
+                  letterSpacing: '0.06em', textTransform: 'uppercase',
+                }}>COMPLETED</span>
               </div>
             )}
           </div>
@@ -645,7 +681,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
           )}
 
           {panelMode === 'detail' && selectedItem && (
-            <div style={{ width: 420, height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ width: 460, height: '100%', display: 'flex', flexDirection: 'column' }}>
               {/* STICKY HEADER */}
               <div style={{
                 padding: '16px 20px', borderBottom: `1px solid ${T.border}`, background: '#FAFBFC',
@@ -654,29 +690,46 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                 {/* Close button */}
                 <button onClick={closePanel} style={{
                   position: 'absolute', top: 12, right: 12,
-                  width: 32, height: 32, borderRadius: 8, border: 'none',
-                  background: '#F1F5F9', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 16, color: T.ink3, transition: 'background 120ms',
+                  width: 28, height: 28, borderRadius: 6, border: `1px solid ${T.border}`,
+                  background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: T.ink3, transition: 'background 120ms',
                 }}
-                  onMouseOver={e => (e.currentTarget.style.background = '#E2E8F0')}
-                  onMouseOut={e => (e.currentTarget.style.background = '#F1F5F9')}
-                >✕</button>
+                  onMouseOver={e => (e.currentTarget.style.background = '#F1F5F9')}
+                  onMouseOut={e => (e.currentTarget.style.background = '#FFFFFF')}
+                >
+                  <X size={14} />
+                </button>
 
-                {/* Key — BIG anchor */}
-                <div style={{ fontFamily: T.mono, fontSize: 20, fontWeight: 800, color: '#2563EB', marginBottom: 8 }}>
+                {/* Key — mono blue */}
+                <div style={{ fontFamily: T.mono, fontSize: 14, fontWeight: 700, color: '#2563EB', marginBottom: 8 }}>
                   {selectedItem.key}
                 </div>
 
-                {/* Badges row */}
+                {/* Badges row — CG-05 status pill + Jira type badge */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
                   <StatusPill status={selectedItem.status} />
                   <PriorityPill priority={selectedItem.priority} />
-                  <HubBadge hub={selectedItem.hub} />
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 4,
+                    background: getTypeBadgeStyle(selectedItem.type).bg, fontSize: 10, fontWeight: 600,
+                    color: getTypeBadgeStyle(selectedItem.type).color,
+                  }}>
+                    {getJiraIconForType(selectedItem.type)}
+                    <span style={{ textTransform: 'capitalize' }}>{selectedItem.type}</span>
+                  </span>
+                  {selectedItem.projectKey && (
+                    <span style={{
+                      fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4,
+                      background: getProjectColor(selectedItem), color: '#FFFFFF',
+                    }}>
+                      {selectedItem.projectKey}
+                    </span>
+                  )}
                 </div>
 
                 {/* Title */}
                 <div style={{
-                  fontFamily: T.sora, fontSize: 15, fontWeight: 700, color: '#0F172A',
+                  fontFamily: T.inter, fontSize: 16, fontWeight: 600, color: '#020617',
                   lineHeight: 1.4,
                 }}>{selectedItem.title}</div>
 
@@ -691,7 +744,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                       background: '#FEF2F2', border: '1px solid #FECACA',
                       fontSize: 12, fontWeight: 600, color: '#EF4444',
                     }}>
-                      {s === 'critical' ? '🔴 Critical' : '⚠️ Stale'} — {age} days without resolution
+                      {s === 'critical' ? 'Critical' : 'Stale'} — {age} days without resolution
                     </div>
                   );
                 })()}
@@ -715,20 +768,20 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                   {[
                     [
                       { label: 'PROJECT', value: selectedItem.projectName || selectedItem.projectKey || '—' },
-                      { label: 'ASSIGNER', value: selectedItem.assignerName || '—' },
+                      { label: 'ASSIGNER', value: selectedItem.assignerName || 'Unassigned' },
                     ],
                     [
                       { label: 'ASSIGNED', value: `${relativeDate(selectedItem.assignedDate)} · ${new Date(selectedItem.assignedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}` },
                       { label: 'DAYS SITTING', value: String(selectedItem.ageDays), isAge: true },
                     ],
                     [
-                      { label: 'RELEASE', value: selectedItem.releaseName || '—' },
+                      { label: 'RELEASE', value: selectedItem.releaseName || (selectedItem.parentKey ? `Inherited from ${selectedItem.parentKey}` : '—'), isInherited: !selectedItem.releaseName && !!selectedItem.parentKey },
                       { label: 'DUE', value: (() => {
                         const due = smartDue(selectedItem);
-                        if (!due) return '—';
+                        if (!due) return selectedItem.parentKey ? `Inherited from ${selectedItem.parentKey}` : '—';
                         return new Date(due.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
                           (due.source === 'release' && selectedItem.releaseName ? ` (${selectedItem.releaseName})` : '');
-                      })() },
+                      })(), isInherited: !smartDue(selectedItem) && !!selectedItem.parentKey },
                     ],
                   ].map((row, ri) => (
                     <div key={ri} style={{
@@ -750,8 +803,9 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                             <div style={{
                               fontSize: cell.isAge ? 18 : 13,
                               fontWeight: cell.isAge ? 800 : 500,
-                              color: cell.isAge ? ageHeatColor(age) : '#0F172A',
+                              color: cell.isAge ? ageHeatColor(age) : cell.isInherited ? '#2563EB' : '#0F172A',
                               fontFamily: cell.isAge ? T.mono : T.inter,
+                              cursor: cell.isInherited ? 'pointer' : 'default',
                             }}>
                               {cell.value}
                               {cell.isAge && (
@@ -761,8 +815,9 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                                 }}>
                                   <div style={{
                                     height: '100%', borderRadius: 2,
-                                    width: `${Math.min(100, (age / 30) * 100)}%`,
+                                    width: `${Math.min(100, (age / 21) * 100)}%`,
                                     background: ageHeatColor(age),
+                                    minWidth: age > 0 ? 2 : 0,
                                   }} />
                                 </div>
                               )}
@@ -777,36 +832,32 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                 {/* Hierarchy */}
                 {selectedItem.parentKey && (
                   <div style={{ marginTop: 20 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#94A3B8', marginBottom: 8, letterSpacing: '0.06em' }}>HIERARCHY</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#64748B', marginBottom: 8, letterSpacing: '0.05em' }}>HIERARCHY</div>
                     {/* Parent node */}
                     <div style={{
                       padding: '10px 12px', borderRadius: 8, border: `1px solid ${T.border}`, marginBottom: 0,
+                      display: 'flex', alignItems: 'center', gap: 8,
                     }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span style={{ fontSize: 8, fontWeight: 700, textTransform: 'uppercase', color: '#94A3B8' }}>
-                          {selectedItem.type === 'Sub-task' ? 'STORY' : 'EPIC'}
-                        </span>
-                        <span style={{ fontFamily: T.mono, fontSize: 11, fontWeight: 700, color: '#334155' }}>{selectedItem.parentKey}</span>
-                      </div>
-                      <div style={{ fontSize: 12, color: '#334155', marginTop: 2, lineHeight: 1.35 }}>
+                      {getJiraIconForType(selectedItem.type === 'Sub-task' ? 'Story' : 'Epic')}
+                      <span style={{ fontFamily: T.mono, fontSize: 11, fontWeight: 700, color: '#334155' }}>{selectedItem.parentKey}</span>
+                      <span style={{ fontSize: 12, color: '#334155', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {selectedItem.parentTitle || ''}
-                      </div>
+                      </span>
                     </div>
                     {/* Connector */}
-                    <div style={{ width: 2, height: 12, background: '#E2E8F0', marginLeft: 20 }} />
-                    {/* Current node */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, paddingLeft: 20, color: '#94A3B8', fontSize: 12 }}>
+                      <div style={{ width: 2, height: 12, background: '#E2E8F0' }} />
+                    </div>
+                    {/* Current node — blue border highlight */}
                     <div style={{
                       padding: '10px 12px', borderRadius: 8,
                       border: `1px solid ${T.accent}`, background: 'rgba(37,99,235,0.03)',
+                      display: 'flex', alignItems: 'center', gap: 8,
                     }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span style={{ fontSize: 8, fontWeight: 700, textTransform: 'uppercase', color: '#94A3B8' }}>
-                          {selectedItem.type.toUpperCase()}
-                        </span>
-                        <span style={{ fontFamily: T.mono, fontSize: 11, fontWeight: 700, color: '#2563EB' }}>{selectedItem.key}</span>
-                        <div style={{ marginLeft: 'auto' }}><StatusPill status={selectedItem.status} small /></div>
-                      </div>
-                      <div style={{ fontSize: 12, color: '#0F172A', marginTop: 2, fontWeight: 600, lineHeight: 1.35 }}>{selectedItem.title}</div>
+                      {getJiraIconForType(selectedItem.type)}
+                      <span style={{ fontFamily: T.mono, fontSize: 11, fontWeight: 700, color: '#2563EB' }}>{selectedItem.key}</span>
+                      <span style={{ fontSize: 12, color: '#020617', fontWeight: 500 }}>Current</span>
+                      <div style={{ marginLeft: 'auto' }}><StatusPill status={selectedItem.status} small /></div>
                     </div>
                   </div>
                 )}
@@ -815,46 +866,37 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                 {(() => {
                   if (!selectedItem.parentKey) return null;
                   const sibs = (siblingMap.get(selectedItem.parentKey) || []).filter(s => s.key !== selectedItem.key);
-                  if (sibs.length === 0) return null;
+                  if (sibs.length === 0) return (
+                    <div style={{ marginTop: 20 }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#64748B', letterSpacing: '0.05em', marginBottom: 8 }}>SIBLINGS</div>
+                      <div style={{ fontSize: 12, color: '#94A3B8' }}>No sibling items</div>
+                    </div>
+                  );
                   const sibDoneCount = sibs.filter(s => s.status === 'done').length;
                   return (
                     <div style={{ marginTop: 20 }}>
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
-                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#94A3B8', letterSpacing: '0.06em' }}>SIBLINGS</span>
-                        <span style={{ fontFamily: T.mono, fontSize: 10, color: '#94A3B8', marginLeft: 'auto' }}>{sibDoneCount}/{sibs.length}</span>
+                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#64748B', letterSpacing: '0.05em' }}>SIBLINGS</span>
+                        <span style={{ fontFamily: T.mono, fontSize: 10, color: '#64748B', marginLeft: 'auto' }}>{sibDoneCount}/{sibs.length} done</span>
                       </div>
                       <div style={{ height: 4, borderRadius: 2, background: '#E2E8F0', overflow: 'hidden', marginBottom: 8 }}>
-                        <div style={{ height: '100%', borderRadius: 2, width: `${(sibDoneCount / sibs.length) * 100}%`, background: T.done }} />
+                        <div style={{ height: '100%', borderRadius: 2, width: `${(sibDoneCount / sibs.length) * 100}%`, background: '#16A34A' }} />
                       </div>
                       {sibs.slice(0, 6).map(s => {
-                        const sibInitials = (s.assignerName || s.key).split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
                         return (
                           <div key={s.key} style={{
                             display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px',
                             borderRadius: 8, border: `1px solid ${T.borderLt}`, marginBottom: 4,
                             cursor: 'pointer', transition: 'background 80ms',
                           }}
+                            onClick={() => selectCard(s.key)}
                             onMouseOver={e => (e.currentTarget.style.background = '#F8FAFC')}
                             onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                           >
-                            <div style={{
-                              width: 26, height: 26, borderRadius: 13, flexShrink: 0,
-                              background: STATUS_SOLID[s.status].bg,
-                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            }}>
-                              <span style={{ fontSize: 9, fontWeight: 700, color: '#FFFFFF' }}>{sibInitials}</span>
-                            </div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                                <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: '#334155' }}>{s.key}</span>
-                                <StatusPill status={s.status} small />
-                                <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: '#94A3B8', marginLeft: 'auto' }}>{s.ageDays}d</span>
-                              </div>
-                              <div style={{ fontSize: 11, color: '#64748B', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.title}</div>
-                              {s.assignerName && (
-                                <div style={{ fontSize: 10, color: '#334155', marginTop: 1 }}>{s.assignerName}</div>
-                              )}
-                            </div>
+                            <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: '#2563EB', width: 72, flexShrink: 0 }}>{s.key}</span>
+                            <StatusPill status={s.status} small />
+                            <span style={{ flex: 1, fontSize: 11, color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.title}</span>
+                            <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: ageHeatColor(s.ageDays) }}>{s.ageDays}d</span>
                           </div>
                         );
                       })}
@@ -866,33 +908,6 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
           )}
         </div>
       </div>
-
-      {/* TOOLTIP */}
-      {hoveredId && hoveredId !== selectedId && (() => {
-        const item = allItems.find(i => i.key === hoveredId);
-        if (!item) return null;
-        const age = item.ageDays;
-        const due = smartDue(item);
-        return (
-          <div style={{
-            position: 'fixed', left: Math.min(tooltipPos.x, window.innerWidth - 240), top: Math.min(tooltipPos.y, window.innerHeight - 160),
-            width: 220, background: '#0F172A', color: '#FFFFFF', borderRadius: 8, padding: '10px 12px',
-            fontSize: 11, zIndex: 1000, pointerEvents: 'none',
-            boxShadow: '0 4px 20px rgba(0,0,0,.3)', lineHeight: 1.4,
-          }}>
-            <div style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 700, color: '#60A5FA', marginBottom: 4 }}>
-              {item.key} · {item.type}
-            </div>
-            <div style={{ color: '#F1F5F9', marginBottom: 6 }}>{item.title}</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 10, color: '#94A3B8' }}>
-              <span>Priority: <span style={{ color: PRIORITY_COLORS[item.priority] || '#94A3B8', fontWeight: 600 }}>{item.priority}</span></span>
-              <span>Assigned: {relativeDate(item.assignedDate)}</span>
-              <span>Age: <span style={{ color: ageHeatColor(age), fontWeight: 700 }}>{age}d</span></span>
-              {due && <span>Due: {new Date(due.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>}
-            </div>
-          </div>
-        );
-      })()}
     </div>
   );
 };
