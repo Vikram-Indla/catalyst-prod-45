@@ -95,7 +95,7 @@ export const InitiativeCard: React.FC<InitiativeCardProps> = ({ initiative, grid
             gridSize === 'small' ? 'line-clamp-2' : gridSize === 'medium' ? 'line-clamp-3' : ''
           )}
         >
-          {initiative.is_favorited && <span className="text-amber-500 mr-1">★</span>}
+          {initiative.is_favorited && <Star size={12} className="text-amber-500 fill-amber-500 inline mr-1" />}
           {initiative.title}
         </h3>
       </div>

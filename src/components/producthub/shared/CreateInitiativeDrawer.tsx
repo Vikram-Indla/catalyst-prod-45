@@ -4,7 +4,7 @@
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2 } from 'lucide-react';
+import { X, Loader2, FileText, Tag, Users, Calendar, Map, Bot, FolderKanban, Zap, Wrench, RefreshCw, GitMerge, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -104,10 +104,10 @@ function useCreateInitiative() {
   });
 }
 
-const TYPE_OPTIONS = [
-  { key: 'project', label: 'Project', icon: '📁', color: '#2563EB' },
-  { key: 'enhancement', label: 'Enhancement', icon: '⚡', color: '#0D9488' },
-  { key: 'improvement', label: 'Improvement', icon: '🔧', color: '#D97706' },
+const TYPE_OPTIONS: { key: string; label: string; Icon: LucideIcon; color: string }[] = [
+  { key: 'project', label: 'Project', Icon: FolderKanban, color: '#2563EB' },
+  { key: 'enhancement', label: 'Enhancement', Icon: Zap, color: '#0D9488' },
+  { key: 'improvement', label: 'Improvement', Icon: Wrench, color: '#D97706' },
 ];
 
 const LABEL = "block text-[11px] font-semibold text-[#334155] uppercase tracking-[0.05em] mb-1.5";
@@ -271,7 +271,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
               {/* Conversion Banners */}
               {conversionSource?.type === 'single' && (
                 <div className="mx-5 mt-4 p-3 rounded-lg" style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
-                  <div className="text-[13px] font-bold" style={{ color: '#0F172A' }}>🔄 Converting idea to initiative</div>
+                  <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: '#0F172A' }}><RefreshCw className="w-3.5 h-3.5" /> Converting idea to initiative</div>
                   <div className="text-[12px] mt-1" style={{ color: '#334155' }}>
                     <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#2563EB' }}>{conversionSource.primaryIdea.key}</span>
                     {' · '}{conversionSource.primaryIdea.title}
@@ -280,7 +280,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
               )}
               {conversionSource?.type === 'merge' && conversionSource.mergeIdea && (
                 <div className="mx-5 mt-4 p-3 rounded-lg" style={{ background: '#F5F3FF', border: '1px solid #DDD6FE' }}>
-                  <div className="text-[13px] font-bold" style={{ color: '#0F172A' }}>🔗 Merging 2 ideas into 1 initiative</div>
+                  <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: '#0F172A' }}><GitMerge className="w-3.5 h-3.5" /> Merging 2 ideas into 1 initiative</div>
                   <div className="text-[12px] mt-1" style={{ color: '#334155' }}>
                     Primary: <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#2563EB' }}>{conversionSource.primaryIdea.key}</span>
                     {' · '}{conversionSource.primaryIdea.title}
@@ -295,7 +295,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
               {/* Section 1: Details */}
               <div className="px-5 py-4 border-b border-[#F1F5F9]">
                 <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.06em] mb-3" style={{ color: '#0F172A' }}>
-                  <span className="text-[12px]">📝</span> Details
+                  <FileText className="w-3.5 h-3.5" /> Details
                 </div>
                 <div className="space-y-3">
                   <div>
@@ -326,7 +326,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
               {/* Section 2: Classification */}
               <div className="px-5 py-4 border-b border-[#F1F5F9]">
                 <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.06em] mb-3" style={{ color: '#0F172A' }}>
-                  <span className="text-[12px]">🏷️</span> Classification
+                  <Tag className="w-3.5 h-3.5" /> Classification
                 </div>
                 <div className="space-y-3">
                   {/* Type Selector */}
@@ -346,7 +346,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
                           )}
                           style={{ borderColor: selectedType === opt.key ? opt.color : 'transparent' }}
                         >
-                          <span className="text-[18px]">{opt.icon}</span>
+                          <opt.Icon className="w-[18px] h-[18px]" style={{ color: selectedType === opt.key ? opt.color : '#64748B' }} />
                           <span className="text-[11px] font-semibold mt-0.5" style={{ color: '#334155' }}>{opt.label}</span>
                         </button>
                       ))}
@@ -393,7 +393,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
               {/* Section 3: People */}
               <div className="px-5 py-4 border-b border-[#F1F5F9]">
                 <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.06em] mb-3" style={{ color: '#0F172A' }}>
-                  <span className="text-[12px]">👥</span> People
+                  <Users className="w-3.5 h-3.5" /> People
                 </div>
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
@@ -418,7 +418,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
               {/* Section 4: Planning */}
               <div className="px-5 py-4 border-b border-[#F1F5F9]">
                 <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.06em] mb-3" style={{ color: '#0F172A' }}>
-                  <span className="text-[12px]">📅</span> Planning
+                  <Calendar className="w-3.5 h-3.5" /> Planning
                 </div>
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-3">
@@ -458,7 +458,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
               {/* Section 5: Roadmap */}
               <div className="px-5 py-4">
                 <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.06em] mb-3" style={{ color: '#0F172A' }}>
-                  <span className="text-[12px]">🗺️</span> Roadmap
+                  <Map className="w-3.5 h-3.5" /> Roadmap
                 </div>
 
                 <div className={cn(
@@ -467,7 +467,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
                 )}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-white" style={{ background: '#2563EB' }}>🗺️</div>
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white" style={{ background: '#2563EB' }}><Map className="w-4 h-4" /></div>
                       <div>
                         <div className="text-[13px] font-semibold" style={{ color: '#0F172A' }}>Add to Roadmap</div>
                         <div className="text-[11px]" style={{ color: '#64748B' }}>Make visible on the Product Roadmap timeline</div>
@@ -512,7 +512,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
 
                 {/* AI Tip Banner */}
                 <div className="flex items-start gap-2 p-2.5 rounded-lg mt-3" style={{ background: '#F5F3FF', border: '1px solid #DDD6FE' }}>
-                  <span className="text-sm flex-shrink-0 mt-0.5">🤖</span>
+                  <Bot className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#7C3AED' }} />
                   <p className="text-[11.5px] leading-relaxed" style={{ color: '#334155' }}>
                     <strong style={{ color: '#7C3AED' }} className="font-semibold">Req Assist™:</strong> Score will be calculated after the initiative is created. Use the Score tab to set scoring criteria.
                   </p>

@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { ArrowUpDown } from 'lucide-react';
+import { ArrowUpDown, Plus } from 'lucide-react';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 import { TimelineLeftRow } from './TimelineLeftRow';
 import { TimelineGroupHeader } from './TimelineGroupHeader';
@@ -111,7 +111,7 @@ export const TimelineLeftPanel: React.FC<TimelineLeftPanelProps> = ({
               className="w-full flex items-center gap-2 px-4 h-10 text-[12px] font-medium transition-colors hover:bg-blue-50/60 group"
               style={{ color: '#64748B' }}
             >
-              <span className="text-[14px] group-hover:text-blue-600 transition-colors">+</span>
+              <Plus className="w-3.5 h-3.5 group-hover:text-blue-600 transition-colors" />
               <span className="group-hover:text-blue-600 transition-colors">Add Initiative to Roadmap</span>
             </button>
           )}

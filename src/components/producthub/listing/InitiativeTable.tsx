@@ -204,7 +204,7 @@ export function InitiativeTable({
     }),
     col.display({
       id: 'roadmap', size: 36, minSize: 36, maxSize: 36, enableResizing: false,
-      header: () => <span className="text-[11px]">🗺️</span>,
+      header: () => <Map className="w-3.5 h-3.5 text-muted-foreground" />,
       cell: ({ row }) => <RoadmapBadge onRoadmap={row.original.on_roadmap ?? false} />,
     }),
     col.accessor('initiative_key', {
@@ -215,7 +215,7 @@ export function InitiativeTable({
       id: 'title', size: 240, minSize: 200, header: 'Title',
       cell: ({ getValue, row }) => (
         <span className="text-[13px] font-medium truncate max-w-full block" style={{ color: '#18181b' }}>
-          {row.original.is_favorited && <span className="text-amber-400 mr-1">★</span>}
+          {row.original.is_favorited && <Star size={12} className="text-amber-400 fill-amber-400 inline mr-1" />}
           {getValue()}
         </span>
       ),
