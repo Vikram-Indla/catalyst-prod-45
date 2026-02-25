@@ -1,6 +1,6 @@
 import React from 'react';
 import { getJiraIcon } from './R360JiraIcons';
-import { getStatusStyle, getAgeColor, getAgeLabel, slugify, initials } from './r360-helpers';
+import { resolveStatusStyle, getAgeColor, getAgeLabel, slugify, initials } from './r360-helpers';
 
 interface Props {
   member: any;
@@ -9,7 +9,6 @@ interface Props {
   onItemClick: (item: any) => void;
 }
 
-// 8 orbital positions as % of canvas
 const SPOTS = [
   { left: '5%', top: '8%' },
   { left: '38%', top: '2%' },
@@ -27,21 +26,26 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
   const memberRole = member?.role || '';
   const slug = slugify(memberName);
 
+  if (activeItems.length === 0 && doneCount === 0) {
+    return (
+      <div style={{ textAlign: 'center', padding: '60px 20px', color: '#64748B' }}>
+        <div style={{ fontSize: 32, marginBottom: 12 }}>🎯</div>
+        <div style={{ fontSize: 15, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No active work items this week</div>
+        <div style={{ fontSize: 13 }}>Try adjusting filters or navigating to a different week.</div>
+      </div>
+    );
+  }
+
   return (
     <div className="r3-ring-canvas" style={{ height: 640 }}>
-      {/* SVG spokes */}
       <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1 }}>
         {activeItems.map((_, i) => {
           const spot = SPOTS[i];
           if (!spot) return null;
-          const cx = 50; // center %
-          const cy = 50;
-          const sx = parseFloat(spot.left) + 97.5 / 2 / (640 / 100); // approximate card center
-          const sy = parseFloat(spot.top) + 5;
           return (
             <line
               key={i}
-              x1={`${cx}%`} y1={`${cy}%`}
+              x1="50%" y1="50%"
               x2={`${parseFloat(spot.left) + 10}%`} y2={`${parseFloat(spot.top) + 8}%`}
               stroke="#94A3B8" strokeWidth="2" strokeDasharray="8 5"
             />
@@ -49,7 +53,6 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
         })}
       </svg>
 
-      {/* Spoke midpoint labels */}
       {activeItems.map((item, i) => {
         const spot = SPOTS[i];
         if (!spot) return null;
@@ -66,7 +69,6 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
         );
       })}
 
-      {/* Center avatar */}
       <div className="r3-ring-center">
         <img
           className="r3-ring-avatar"
@@ -84,11 +86,10 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
         <div style={{ fontSize: 11, color: '#64748B' }}>{memberRole}</div>
       </div>
 
-      {/* Orbital cards */}
       {activeItems.map((item, i) => {
         const spot = SPOTS[i];
         if (!spot) return null;
-        const ss = getStatusStyle(item.status_name);
+        const ss = resolveStatusStyle(item);
         const ageColor = getAgeColor(item.age_days);
 
         return (
@@ -99,14 +100,12 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             onClick={() => onItemClick(item)}
           >
             <div className="r3-accent-bar" style={{ background: ss.dot }} />
-            {/* Row 1: type + priority */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 {getJiraIcon(item.item_type)}
                 <span style={{ fontSize: 10, fontWeight: 600, color: '#64748B', textTransform: 'capitalize' }}>{item.priority}</span>
               </div>
             </div>
-            {/* Row 2: key + project + age */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
               <span className="r3-item-key" style={{ fontSize: 11 }}>{item.item_key}</span>
               <span className="r3-project-tag" style={{ background: item.project_color || '#64748B', fontSize: 9 }}>
@@ -114,11 +113,9 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
               </span>
               <span className="r3-age-badge" style={{ color: ageColor, fontSize: 9 }}>{item.age_days}d</span>
             </div>
-            {/* Title */}
             <div className="r3-title-clamp" style={{ fontSize: 12.5, fontWeight: 500, color: '#020617', marginBottom: 6 }}>
               {item.title}
             </div>
-            {/* Status pill */}
             <span className="r3-status-pill" style={{ background: ss.bg, color: ss.text, fontSize: 10 }}>
               <span className="r3-status-dot" style={{ background: ss.dot }} />
               {item.status_name}
@@ -127,7 +124,6 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
         );
       })}
 
-      {/* Completed badge */}
       {doneCount > 0 && (
         <div className="r3-completed-badge">
           <div className="r3-completed-circle">{doneCount}</div>

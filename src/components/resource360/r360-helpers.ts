@@ -1,5 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 // Resource 360° — Shared helpers (ring-fenced)
+// Status colors: DB-first, fallback to CG-05 constants
 // ═══════════════════════════════════════════════════════════
 
 /** "Adnan Ali" → "adnan-ali" */
@@ -16,7 +17,7 @@ export function initials(name: string | null): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-/** Status config: CG-05 Mental Model */
+/** Status style resolved from DB fields, with CG-05 fallback */
 export interface StatusStyle {
   dot: string;
   bg: string;
@@ -24,7 +25,33 @@ export interface StatusStyle {
   category: string;
 }
 
-export function getStatusStyle(statusName: string): StatusStyle {
+/**
+ * Resolve status colors.
+ * PRIORITY: Use DB values (status_dot_color, status_bg_color, status_color) if present.
+ * FALLBACK: CG-05 Mental Model constants if DB values are null.
+ */
+export function resolveStatusStyle(item: {
+  status_name?: string;
+  status_color?: string;
+  status_bg_color?: string;
+  status_dot_color?: string;
+  status_category?: string;
+}): StatusStyle {
+  // If DB colors exist, use them directly
+  if (item.status_dot_color && item.status_bg_color && item.status_color) {
+    return {
+      dot: item.status_dot_color,
+      bg: item.status_bg_color,
+      text: item.status_color,
+      category: item.status_category || 'unstarted',
+    };
+  }
+  // Fallback to name-based lookup
+  return getStatusStyleFallback(item.status_name || '');
+}
+
+/** CG-05 fallback — only used when DB colors are null */
+function getStatusStyleFallback(statusName: string): StatusStyle {
   switch (statusName?.toLowerCase()) {
     case 'todo':
     case 'to do':
@@ -43,6 +70,9 @@ export function getStatusStyle(statusName: string): StatusStyle {
   }
 }
 
+/** @deprecated Use resolveStatusStyle instead */
+export const getStatusStyle = getStatusStyleFallback;
+
 /** Priority config */
 export function getPriorityColor(priority: string): string {
   switch (priority?.toLowerCase()) {
@@ -55,7 +85,7 @@ export function getPriorityColor(priority: string): string {
   }
 }
 
-/** Age class */
+/** Age color */
 export function getAgeColor(ageDays: number): string {
   if (ageDays <= 7) return '#16A34A';
   if (ageDays <= 14) return '#D97706';
@@ -66,20 +96,6 @@ export function getAgeLabel(ageDays: number): string {
   if (ageDays === 0) return 'Today';
   if (ageDays === 1) return '1d ago';
   return `${ageDays}d ago`;
-}
-
-/** Project tag color map */
-const PROJECT_COLORS: Record<string, string> = {
-  BAU: '#2563EB',
-  SEN: '#D97706',
-  FAC: '#16A34A',
-  OPS: '#0D9488',
-  SUP: '#64748B',
-  LND: '#7C3AED',
-};
-
-export function getProjectColor(key: string): string {
-  return PROJECT_COLORS[key] || '#64748B';
 }
 
 /** Group items by date_label */

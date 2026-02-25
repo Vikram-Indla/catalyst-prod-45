@@ -6,15 +6,14 @@ interface Props {
   pendingItems?: number;
   activeFilter: string;
   onFilterChange: (filter: string) => void;
+  weekOffset: number;
+  onWeekChange: (offset: number) => void;
 }
 
-export const R360WeekNav: React.FC<Props> = ({ totalItems, pendingItems, activeFilter, onFilterChange }) => {
-  const [weekOffset, setWeekOffset] = useState(0);
-
-  // Calculate week range based on offset
+export const R360WeekNav: React.FC<Props> = ({ totalItems, pendingItems, activeFilter, onFilterChange, weekOffset, onWeekChange }) => {
   const now = new Date();
   const startOfWeek = new Date(now);
-  startOfWeek.setDate(now.getDate() - now.getDay() + 1 + weekOffset * 7); // Monday
+  startOfWeek.setDate(now.getDate() - now.getDay() + 1 + weekOffset * 7);
   const endOfWeek = new Date(startOfWeek);
   endOfWeek.setDate(startOfWeek.getDate() + 6);
 
@@ -36,10 +35,10 @@ export const R360WeekNav: React.FC<Props> = ({ totalItems, pendingItems, activeF
         <span style={{ fontSize: 12, color: '#64748B' }}>
           {fmt(startOfWeek)} – {fmt(endOfWeek)}
         </span>
-        <button className="r3-week-arrow" onClick={() => setWeekOffset(w => w - 1)}>
+        <button className="r3-week-arrow" onClick={() => onWeekChange(weekOffset - 1)}>
           <ChevronLeft size={14} />
         </button>
-        <button className="r3-week-arrow" onClick={() => setWeekOffset(w => w + 1)}>
+        <button className="r3-week-arrow" onClick={() => onWeekChange(weekOffset + 1)}>
           <ChevronRight size={14} />
         </button>
       </div>
