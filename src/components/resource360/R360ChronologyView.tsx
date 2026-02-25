@@ -6,9 +6,10 @@ import { resolveStatusStyle, getAgeColor, initials, groupByDate } from './r360-h
 interface Props {
   items: any[];
   onItemClick: (item: any) => void;
+  memberName?: string;
 }
 
-export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick }) => {
+export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, memberName }) => {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const groups = groupByDate(items);
 
@@ -23,9 +24,8 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick }) => {
   if (items.length === 0) {
     return (
       <div style={{ textAlign: 'center', padding: '60px 20px', color: '#64748B' }}>
-        <div style={{ fontSize: 32, marginBottom: 12 }}>📋</div>
-        <div style={{ fontSize: 15, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No active work items this week</div>
-        <div style={{ fontSize: 13 }}>Try adjusting filters or navigating to a different week.</div>
+        <div style={{ fontSize: 15, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No work items found</div>
+        <div style={{ fontSize: 13 }}>Items assigned to {memberName || 'this member'} will appear here.</div>
       </div>
     );
   }
@@ -43,12 +43,17 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick }) => {
         const todoCount = groupItems.filter((i: any) => i.status_category === 'unstarted').length;
         const blockedCount = groupItems.filter((i: any) => i.status_category === 'blocked').length;
         const total = groupItems.length;
+        const itemLabel = total === 1 ? '1 item' : `${total} items`;
 
         return (
-          <div key={dateLabel} style={{ marginBottom: 20 }}>
+          <div key={dateLabel} style={{ marginBottom: 20 }} role="group" aria-expanded={!isCollapsed} aria-label={`${dateLabel} — ${itemLabel}`}>
             <div
               style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', marginLeft: -32, paddingLeft: 10, marginBottom: 10 }}
               onClick={() => toggleGroup(dateLabel)}
+              role="button"
+              tabIndex={0}
+              aria-label={`Toggle ${dateLabel} group`}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleGroup(dateLabel); } }}
             >
               <div className={`r3-date-dot ${isToday ? 'today' : isYesterday ? 'yesterday' : ''}`} />
               <span style={{ fontSize: 14, fontWeight: 600, color: '#020617' }}>{dateLabel}</span>
@@ -61,25 +66,37 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick }) => {
                 {todoCount > 0 && <div style={{ width: `${(todoCount/total)*100}%`, background: '#D97706' }} />}
                 {blockedCount > 0 && <div style={{ width: `${(blockedCount/total)*100}%`, background: '#EF4444' }} />}
               </div>
-              {isCollapsed ? <ChevronRight size={14} color="#94A3B8" /> : <ChevronDown size={14} color="#94A3B8" />}
+              <span style={{ transition: 'transform 200ms', transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)', display: 'inline-flex' }}>
+                <ChevronDown size={14} color="#94A3B8" />
+              </span>
             </div>
 
             {!isCollapsed && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {groupItems.map((item: any) => {
                   const ss = resolveStatusStyle(item);
-                  const ageColor = getAgeColor(item.age_days);
+                  const ageColor = getAgeColor(item.age_days ?? 0);
                   return (
-                    <div key={item.id} className="r3-chrono-card" onClick={() => onItemClick(item)}>
+                    <div
+                      key={item.id}
+                      className="r3-chrono-card"
+                      onClick={() => onItemClick(item)}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`${item.item_key} ${item.title} — ${item.status_name}`}
+                      onKeyDown={(e) => { if (e.key === 'Enter') onItemClick(item); }}
+                    >
                       <div className="r3-accent-bar" style={{ background: ss.dot }} />
                       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                         <div style={{ flexShrink: 0, marginTop: 2 }}>{getJiraIcon(item.item_type)}</div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                             <span className="r3-item-key">{item.item_key}</span>
-                            <span className="r3-project-tag" style={{ background: item.project_color || '#64748B' }}>
-                              {item.project_key}
-                            </span>
+                            {item.project_key && (
+                              <span className="r3-project-tag" style={{ background: item.project_color || '#64748B' }}>
+                                {item.project_key}
+                              </span>
+                            )}
                           </div>
                           <div className="r3-title-clamp" style={{ fontSize: 13.5, fontWeight: 500, color: '#020617', marginTop: 4 }}>
                             {item.title}
@@ -94,20 +111,20 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick }) => {
                           )}
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
-                          {item.assigner_name && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                              <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#334155' }}>
-                                {initials(item.assigner_name)}
-                              </div>
-                              <span style={{ fontSize: 11, color: '#64748B' }}>{item.assigner_name?.split(' ')[0]}</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                            <div style={{ width: 18, height: 18, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#334155' }}>
+                              {initials(item.assigner_name)}
                             </div>
-                          )}
+                            <span style={{ fontSize: 11, color: '#64748B' }}>
+                              {item.assigner_name ? item.assigner_name.split(' ')[0] : 'Unassigned'}
+                            </span>
+                          </div>
                           <span className="r3-status-pill" style={{ background: ss.bg, color: ss.text }}>
                             <span className="r3-status-dot" style={{ background: ss.dot }} />
                             {item.status_name}
                           </span>
                           <span className="r3-age-badge" style={{ color: ageColor }}>
-                            {item.age_days}d
+                            {item.age_days ?? 0}d
                           </span>
                         </div>
                       </div>
