@@ -73,6 +73,7 @@ export function RoadmapTimelinePanel({
             ? tokens.surface.active 
             : 'transparent',
           borderBottom: `1px solid ${tokens.border.subtle}`,
+          overflow: 'visible',
         }}
         onClick={() => onItemClick(item.id)}
         onMouseEnter={(e) => {
@@ -138,7 +139,7 @@ export function RoadmapTimelinePanel({
           <div style={{ minWidth: `${totalMinWidth}px` }}>
             <RoadmapTimelineHeader periods={periods} zoom={config.zoom} />
             
-            <div className="relative">
+            <div className="relative" style={{ overflow: 'visible' }}>
               {/* Gridlines */}
               {renderGridlines()}
               
@@ -191,7 +192,7 @@ export function RoadmapTimelinePanel({
         <div style={{ minWidth: `${totalMinWidth}px` }}>
           <RoadmapTimelineHeader periods={periods} zoom={config.zoom} />
           
-          <div className="relative">
+          <div className="relative" style={{ overflow: 'visible' }}>
             {/* Gridlines */}
             {renderGridlines()}
             
