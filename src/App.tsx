@@ -3,6 +3,8 @@ import { Resource360Redirect } from './components/workhub/resource360/Resource36
 const Resource360PageNew = lazy(() => import("./components/resource360/Resource360PageNew"));
 const Resource360MemberDetail = lazy(() => import("./pages/Resource360MemberDetail"));
 const ResourceListingPageLazy = lazy(() => import("./pages/ResourceListingPage"));
+const R360ResourcesListingLazy = lazy(() => import("./pages/R360ResourcesListing"));
+const R360MemberDetailLazy = lazy(() => import("./pages/R360MemberDetail"));
 
 // ProjectHub V5 lazy imports
 const ProjectHubShellLazy = lazy(() => import("./components/project-hub/ProjectHubShell").then(m => ({ default: m.ProjectHubShell })));
@@ -1152,6 +1154,8 @@ const App = () => (
               <Route path="/project/all-projects" element={<Suspense fallback={<div />}><AllProjectsPageLazy /></Suspense>} />
               <Route path="/project-hub/projects-legacy" element={<Suspense fallback={<div />}><ProjectListPageLazy /></Suspense>} />
               <Route path="/project-hub/resources" element={<Suspense fallback={<div className="p-8">Loading...</div>}><ResourceListingPageLazy /></Suspense>} />
+              <Route path="/project-hub/resources-v2" element={<Suspense fallback={<div className="p-8">Loading...</div>}><R360ResourcesListingLazy /></Suspense>} />
+              <Route path="/project-hub/resources-v2/:resourceId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><R360MemberDetailLazy /></Suspense>} />
               <Route path="/project-hub/resource360" element={<Navigate to="/project-hub/resource-360/009" replace />} />
               <Route path="/project-hub/resource360/:id" element={<Navigate to="/project-hub/resource-360/009" replace />} />
               <Route path="/project-hub/resource-360/:resourceId" element={<Suspense fallback={<div className="p-8">Loading...</div>}><Resource360PageNew /></Suspense>} />
