@@ -1,0 +1,158 @@
+/**
+ * PromoteToRoadmapDialog — Compact dialog for promoting an initiative to roadmap
+ */
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { usePromoteToRoadmap } from '@/hooks/useRoadmapPromotion';
+import { getTypeIcon } from '@/utils/initiative-type-utils';
+import { INITIATIVE_TYPE_COLORS, type InitiativeTypeKey } from '@/types/initiative-enhancements';
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  initiative: { id: string; title: string; initiative_type_key?: string | null } | null;
+}
+
+const TYPE_OPTIONS: { key: InitiativeTypeKey; label: string }[] = [
+  { key: 'project', label: 'Project' },
+  { key: 'enhancement', label: 'Enhancement' },
+  { key: 'improvement', label: 'Improvement' },
+];
+
+const PRIORITY_OPTIONS = [
+  { value: '', label: 'Auto (by score)' },
+  { value: '1', label: '1 — Critical' },
+  { value: '2', label: '2 — High' },
+  { value: '3', label: '3 — Medium' },
+  { value: '4', label: '4 — Low' },
+];
+
+export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
+  const promoteMutation = usePromoteToRoadmap();
+  const [selectedType, setSelectedType] = useState<InitiativeTypeKey>('project');
+  const [priority, setPriority] = useState('');
+
+  useEffect(() => {
+    if (open && initiative) {
+      setSelectedType((initiative.initiative_type_key as InitiativeTypeKey) || 'project');
+      setPriority('');
+    }
+  }, [open, initiative]);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [open, onClose]);
+
+  const handleConfirm = async () => {
+    if (!initiative) return;
+    await promoteMutation.mutateAsync({
+      initiative_id: initiative.id,
+      initiative_type_key: selectedType,
+      roadmap_priority: priority ? parseInt(priority) : undefined,
+    });
+    onClose();
+  };
+
+  return (
+    <AnimatePresence>
+      {open && initiative && (
+        <div className="fixed inset-0 z-[250] flex items-center justify-center">
+          {/* Overlay */}
+          <motion.div
+            className="absolute inset-0"
+            style={{ background: 'rgba(0,0,0,0.40)', backdropFilter: 'blur(2px)' }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={onClose}
+          />
+          {/* Dialog */}
+          <motion.div
+            className="relative w-[420px] bg-white rounded-2xl shadow-xl overflow-hidden"
+            initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+          >
+            {/* Header */}
+            <div className="p-4 px-5" style={{ background: '#0D9488' }}>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[20px]">🗺️</span>
+                <span className="text-[15px] font-bold text-white">Add to Roadmap</span>
+              </div>
+              <p className="text-[11.5px] text-white/85 truncate">{initiative.title}</p>
+            </div>
+
+            {/* Body */}
+            <div className="p-4 px-5">
+              {/* Type Selector */}
+              <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1.5" style={{ color: '#334155' }}>
+                Confirm Initiative Type
+              </div>
+              <div className="grid grid-cols-3 gap-1.5 p-1 rounded-lg border" style={{ background: '#F8FAFC', borderColor: '#E2E8F0' }}>
+                {TYPE_OPTIONS.map(opt => {
+                  const colors = INITIATIVE_TYPE_COLORS[opt.key];
+                  const isActive = selectedType === opt.key;
+                  return (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      onClick={() => setSelectedType(opt.key)}
+                      className={cn(
+                        'text-center p-2 rounded-md cursor-pointer transition-all border-2',
+                        isActive ? 'bg-white shadow-sm' : 'border-transparent hover:bg-white/60'
+                      )}
+                      style={{ borderColor: isActive ? colors.border : 'transparent' }}
+                    >
+                      <span className="text-[18px] block">{getTypeIcon(opt.key)}</span>
+                      <span className="text-[11px] font-semibold block" style={{ color: isActive ? colors.text : '#64748B' }}>
+                        {opt.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Priority */}
+              <div className="mt-3">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1.5" style={{ color: '#334155' }}>
+                  Roadmap Priority
+                </div>
+                <select
+                  value={priority}
+                  onChange={e => setPriority(e.target.value)}
+                  className="w-full h-9 px-3 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none appearance-none"
+                  style={{ borderColor: '#E2E8F0' }}
+                >
+                  {PRIORITY_OPTIONS.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-3 px-5 border-t flex justify-end gap-2" style={{ borderColor: '#E2E8F0' }}>
+              <button
+                onClick={onClose}
+                className="px-4 py-1.5 text-[12.5px] font-medium rounded-md text-[#64748B] hover:bg-[#F1F5F9] transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirm}
+                disabled={promoteMutation.isPending}
+                className="px-4 py-1.5 text-[12.5px] font-semibold text-white rounded-md transition-colors flex items-center gap-1.5"
+                style={{ background: '#0D9488' }}
+              >
+                {promoteMutation.isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                ✓ Add to Roadmap
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}

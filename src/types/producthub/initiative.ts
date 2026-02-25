@@ -42,6 +42,12 @@ export interface TimelineInitiative {
   computed_score: number | null;
   created_at: string;
   updated_at: string;
+  // Roadmap & type fields
+  initiative_type_key?: string | null;
+  initiative_type_label?: string | null;
+  initiative_type_color_hex?: string | null;
+  health_status?: string | null;
+  on_roadmap?: boolean;
 }
 
 export interface TimelineState {

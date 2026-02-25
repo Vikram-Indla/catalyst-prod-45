@@ -1,5 +1,5 @@
 // =====================================================
-// TIMELINE BAR — Individual Gantt bar with progress
+// TIMELINE BAR — Individual Gantt bar with type-colored gradients
 // =====================================================
 
 import React, { useState, useCallback, useRef } from 'react';
@@ -9,6 +9,7 @@ import { useTimelineState } from '@/hooks/producthub/useTimelineState';
 import { getBarPosition, isOverdue } from './timelineUtils';
 import { TimelineBarTooltip } from './TimelineBarTooltip';
 import { TimelineContextMenu } from './TimelineContextMenu';
+import { getTypeColor } from '@/utils/initiative-type-utils';
 
 interface TimelineBarProps {
   initiative: TimelineInitiative;
@@ -27,32 +28,25 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
   const { left, width } = getBarPosition(initiative, granularity);
   const overdue = isOverdue(initiative);
   const statusCfg = STATUS_CONFIG[initiative.status];
+  const typeColor = getTypeColor(initiative.initiative_type_key);
 
   const topOffset = (rowHeight - barHeight) / 2;
 
-  const bgColor = overdue ? 'rgba(239,68,68,0.08)' : statusCfg.bg;
-  const fillColor = overdue ? 'rgba(239,68,68,0.25)' : statusCfg.fill;
-  const borderColor = overdue ? '#EF4444' : statusCfg.color;
+  // Use type color for bar, override with red for overdue
+  const bgGradient = overdue ? 'linear-gradient(90deg, rgba(239,68,68,0.15), rgba(239,68,68,0.08))' : typeColor.gradient;
+  const fillColor = overdue ? 'rgba(239,68,68,0.25)' : `${typeColor.hex}33`;
+  const borderColor = overdue ? '#EF4444' : typeColor.border;
 
   const handleMouseEnter = useCallback((e: React.MouseEvent) => {
     setIsHovered(true);
-    // Calculate tooltip position from viewport coordinates
     const rect = e.currentTarget.getBoundingClientRect();
     const tooltipWidth = 310;
     const tooltipHeight = 180;
-
     let x = rect.left + rect.width / 2 - tooltipWidth / 2;
     let y = rect.top - tooltipHeight - 8;
-
-    // Flip below if too close to top
     if (y < 60) y = rect.bottom + 8;
-
-    // Clamp horizontal
     if (x < 10) x = 10;
-    if (x + tooltipWidth > window.innerWidth - 10) {
-      x = window.innerWidth - tooltipWidth - 10;
-    }
-
+    if (x + tooltipWidth > window.innerWidth - 10) x = window.innerWidth - tooltipWidth - 10;
     setTooltipPos({ x, y });
     tooltipTimer.current = setTimeout(() => setShowTooltip(true), 200);
   }, []);
@@ -82,7 +76,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
     height: barHeight,
     borderRadius: 6,
     borderLeft: `${isHovered ? 4 : 3}px solid ${borderColor}`,
-    background: bgColor,
+    background: bgGradient,
     cursor: 'pointer',
     overflow: 'hidden',
     display: 'flex',
@@ -106,14 +100,12 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
         onKeyDown={e => { if (e.key === 'Enter') handleClick(); }}
         aria-label={`${initiative.initiative_key}: ${initiative.title}`}
       >
-        {/* Progress fill — absolute background layer, z-index 0 */}
+        {/* Progress fill */}
         {initiative.progress > 0 && (
           <div
             style={{
               position: 'absolute',
-              left: 0,
-              top: 0,
-              bottom: 0,
+              left: 0, top: 0, bottom: 0,
               width: `${Math.min(100, initiative.progress)}%`,
               background: fillColor,
               borderRadius: '6px 0 0 6px',
@@ -122,14 +114,14 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
           />
         )}
 
-        {/* Label — normal flex child, z-index 1 (above fill) */}
+        {/* Label */}
         {width >= 120 && (
           <span
             style={{
               zIndex: 1,
               fontSize: '12px',
-              fontWeight: 500,
-              color: '#3f3f46',
+              fontWeight: 600,
+              color: '#fff',
               paddingLeft: '8px',
               paddingRight: '8px',
               whiteSpace: 'nowrap',
@@ -137,6 +129,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
               textOverflow: 'ellipsis',
               lineHeight: `${barHeight}px`,
               pointerEvents: 'none',
+              textShadow: '0 1px 2px rgba(0,0,0,0.3)',
             }}
           >
             {initiative.title}
@@ -144,23 +137,12 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
         )}
       </div>
 
-      {/* Tooltip — portal to body */}
       {showTooltip && (
-        <TimelineBarTooltip
-          initiative={initiative}
-          position={tooltipPos}
-          isVisible={showTooltip}
-        />
+        <TimelineBarTooltip initiative={initiative} position={tooltipPos} isVisible={showTooltip} />
       )}
 
-      {/* Context menu */}
       {contextMenu && (
-        <TimelineContextMenu
-          initiative={initiative}
-          x={contextMenu.x}
-          y={contextMenu.y}
-          onClose={() => setContextMenu(null)}
-        />
+        <TimelineContextMenu initiative={initiative} x={contextMenu.x} y={contextMenu.y} onClose={() => setContextMenu(null)} />
       )}
     </>
   );

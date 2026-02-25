@@ -18,7 +18,7 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
-import { Check, ChevronUp, ChevronDown, ChevronsUpDown, Pencil, Star, MoreVertical } from 'lucide-react';
+import { Check, ChevronUp, ChevronDown, ChevronsUpDown, Pencil, Star, MoreVertical, Map } from 'lucide-react';
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';
@@ -28,6 +28,8 @@ import {
 } from './CellRenderers';
 import { InlineCellEditor, EDITABLE_COLUMNS, COLUMN_TO_FIELD } from './InlineCellEditor';
 import type { ColumnConfig } from './ColumnManager';
+import { RoadmapBadge } from '@/components/producthub/shared/RoadmapBadge';
+import { InitiativeTypeBadge } from '@/components/producthub/shared/InitiativeTypeBadge';
 
 interface Props {
   data: Initiative[];
@@ -44,6 +46,7 @@ interface Props {
   onContextMenu?: (e: React.MouseEvent, initiative: Initiative) => void;
   onReorder?: (sourceIndex: number, destinationIndex: number) => void;
   onInlineEdit?: (id: string, field: string, value: string | number | null) => void;
+  onPromote?: (initiative: Initiative) => void;
   focusedRowIndex?: number;
   onFocusedRowChange?: (index: number) => void;
 }
@@ -96,7 +99,7 @@ function Checkbox({ checked, indeterminate, onToggle }: { checked: boolean; inde
 export function InitiativeTable({
   data, loading = false, density, columnConfigs, groupBy = 'none', brdTasksMap = {}, onRowClick, onStatusChange,
   onFavoriteToggle, onSelectionChange, onSortChange, onContextMenu, onReorder,
-  onInlineEdit, focusedRowIndex = -1, onFocusedRowChange,
+  onInlineEdit, onPromote, focusedRowIndex = -1, onFocusedRowChange,
 }: Props) {
   const [sorting, setSorting] = useState<SortingState>([{ id: 'initiative_key', desc: false }]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -199,6 +202,11 @@ export function InitiativeTable({
         <Checkbox checked={row.getIsSelected()} onToggle={() => row.toggleSelected()} />
       ),
     }),
+    col.display({
+      id: 'roadmap', size: 36, minSize: 36, maxSize: 36, enableResizing: false,
+      header: () => <span className="text-[11px]">🗺️</span>,
+      cell: ({ row }) => <RoadmapBadge onRoadmap={row.original.on_roadmap ?? false} />,
+    }),
     col.accessor('initiative_key', {
       id: 'initiative_key', size: 90, minSize: 72, header: 'ID',
       cell: ({ getValue }) => <IDCell value={getValue()} />,
@@ -215,6 +223,10 @@ export function InitiativeTable({
     col.accessor('status', {
       id: 'status', size: 190, minSize: 170, header: 'Status',
       cell: ({ getValue }) => <StatusCell status={getValue()} />,
+    }),
+    col.display({
+      id: 'type', size: 120, minSize: 100, header: 'Type',
+      cell: ({ row }) => <InitiativeTypeBadge typeKey={row.original.initiative_type_key} />,
     }),
     col.accessor('computed_score', {
       id: 'priority', size: 110, minSize: 90, header: 'Priority',
@@ -372,7 +384,7 @@ export function InitiativeTable({
               {(provided) => {
                 const rows = table.getRowModel().rows;
                 // Compute group boundaries
-                const groupHeaders = new Map<number, { label: string; count: number }>();
+                const groupHeaders: globalThis.Map<number, { label: string; count: number }> = new globalThis.Map();
                 if (groupBy && groupBy !== 'none') {
                   let lastKey = '';
                   rows.forEach((row, idx) => {
@@ -475,6 +487,17 @@ export function InitiativeTable({
                               {/* Hover Actions */}
                               <td className="relative" style={{ width: 0, padding: 0, border: 'none' }}>
                                 <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover/row:opacity-100 transition-opacity duration-100 flex items-center gap-0.5 bg-white shadow-sm border border-zinc-200 rounded-md px-1 py-0.5 z-20">
+                                  {!row.original.on_roadmap && onPromote && (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onPromote(row.original); }}
+                                      className="w-6 h-6 rounded flex items-center justify-center hover:bg-teal-50 transition-colors"
+                                      style={{ color: '#0D9488' }}
+                                      title="Add to Roadmap"
+                                    >
+                                      <Map size={14} />
+                                    </button>
+                                  )}
                                   <button
                                     type="button"
                                     onClick={(e) => { e.stopPropagation(); if (clickTimerRef.current) { clearTimeout(clickTimerRef.current); clickTimerRef.current = null; } onRowClick(row.original); }}

@@ -6,7 +6,6 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useBacklogInitiatives } from '@/hooks/useBacklogInitiatives';
 import { useProfileOptions, useDepartmentOptions } from '@/hooks/useInitiativeLookups';
-import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { ListingToolbar } from '@/components/producthub/listing/ListingToolbar';
 import { InitiativeTable } from '@/components/producthub/listing/InitiativeTable';
 import { BulkActionBar } from '@/components/producthub/listing/BulkActionBar';
@@ -14,6 +13,8 @@ import { Pagination } from '@/components/producthub/listing/Pagination';
 import { DetailPanel } from '@/components/initiatives/DetailPanel';
 import { ContextMenu } from '@/components/initiatives/ContextMenu';
 import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateInitiativeDrawer';
+import { PromoteToRoadmapDialog } from '@/components/producthub/shared/PromoteToRoadmapDialog';
+import { InitiativeTypeBadge } from '@/components/producthub/shared/InitiativeTypeBadge';
 
 import { ColumnManager, DEFAULT_COLUMNS, type ColumnConfig } from '@/components/producthub/listing/ColumnManager';
 import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';
@@ -31,7 +32,17 @@ const DENSITY_STORAGE_KEY = 'ph-backlog-density';
 function loadColumns(): ColumnConfig[] {
   try {
     const raw = localStorage.getItem(COLUMN_STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw) as ColumnConfig[];
+      // Ensure new columns exist
+      const ids = parsed.map(c => c.id);
+      if (!ids.includes('roadmap')) parsed.splice(0, 0, { id: 'roadmap', label: '🗺️', visible: true });
+      if (!ids.includes('type')) {
+        const statusIdx = parsed.findIndex(c => c.id === 'status');
+        parsed.splice(statusIdx >= 0 ? statusIdx + 1 : 3, 0, { id: 'type', label: 'Type', visible: true });
+      }
+      return parsed;
+    }
   } catch { /* ignore */ }
   return DEFAULT_COLUMNS.map(c => ({ ...c }));
 }
@@ -54,6 +65,8 @@ function applyQuickFilter(data: Initiative[], filter: string): Initiative[] {
       i.target_complete && new Date(i.target_complete) < new Date() && !TERMINAL_STATUSES.includes(i.status)
     );
     case 'starred': return data.filter(i => i.is_favorited);
+    case 'on_roadmap': return data.filter(i => i.on_roadmap === true);
+    case 'not_on_roadmap': return data.filter(i => !i.on_roadmap);
     default: return data;
   }
 }
@@ -129,6 +142,12 @@ export default function InitiativeListingPage() {
       computed_score: null,
       created_at: item.created_at || new Date().toISOString(),
       updated_at: item.updated_at || new Date().toISOString(),
+      on_roadmap: item.on_roadmap ?? false,
+      initiative_type_key: item.initiative_type_key || null,
+      initiative_type_label: item.initiative_type_label || null,
+      initiative_type_color_hex: item.initiative_type_color_hex || null,
+      health_status: item.health_status || null,
+      business_value: item.business_value || null,
     }));
   }, [backlogData, getProfileName, getDepartmentName]);
 
@@ -147,6 +166,7 @@ export default function InitiativeListingPage() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [contextMenu, setContextMenu] = useState<{ pos: { x: number; y: number }; initiative: Initiative } | null>(null);
   const [showCreateDrawer, setShowCreateDrawer] = useState(false);
+  const [promoteTarget, setPromoteTarget] = useState<Initiative | null>(null);
 
   // Column management
   const [columnConfigs, setColumnConfigs] = useState<ColumnConfig[]>(loadColumns);
@@ -375,9 +395,9 @@ export default function InitiativeListingPage() {
       {/* Title */}
       <div className="px-6 py-4 border-b bg-card" style={{ minHeight: 72 }}>
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-zinc-900">Product Backlog</h1>
+          <h1 className="text-2xl font-bold" style={{ color: '#0F172A' }}>Product Backlog</h1>
         </div>
-        <p className="text-sm text-zinc-500 mt-1">
+        <p className="text-sm mt-1" style={{ color: '#64748B' }}>
           Strategic initiative portfolio &amp; prioritization
         </p>
       </div>
@@ -399,6 +419,14 @@ export default function InitiativeListingPage() {
         onGroupByChange={setGroupBy}
         onNewInitiative={() => setShowCreateDrawer(true)}
       />
+
+      {/* Type Legend */}
+      <div className="px-6 py-1.5 flex items-center gap-3 border-b" style={{ background: '#FAFBFC', borderColor: '#F1F5F9' }}>
+        <span className="text-[10.5px] font-semibold uppercase tracking-wider" style={{ color: '#94A3B8' }}>Types:</span>
+        <InitiativeTypeBadge typeKey="project" />
+        <InitiativeTypeBadge typeKey="enhancement" />
+        <InitiativeTypeBadge typeKey="improvement" />
+      </div>
 
       {/* Bulk Action Bar */}
       <BulkActionBar
@@ -423,6 +451,7 @@ export default function InitiativeListingPage() {
           onContextMenu={handleContextMenu}
           onReorder={handleReorder}
           onInlineEdit={handleInlineEdit}
+          onPromote={setPromoteTarget}
           focusedRowIndex={focusedRow}
           onFocusedRowChange={setFocusedRow}
         />
@@ -468,6 +497,16 @@ export default function InitiativeListingPage() {
       />
 
       <CreateInitiativeDrawer open={showCreateDrawer} onClose={() => setShowCreateDrawer(false)} />
+
+      <PromoteToRoadmapDialog
+        open={!!promoteTarget}
+        onClose={() => setPromoteTarget(null)}
+        initiative={promoteTarget ? {
+          id: promoteTarget.id,
+          title: promoteTarget.title,
+          initiative_type_key: promoteTarget.initiative_type_key,
+        } : null}
+      />
     </div>
   );
 }
