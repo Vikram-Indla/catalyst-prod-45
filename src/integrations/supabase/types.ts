@@ -21231,7 +21231,10 @@ export type Database = {
           risk_count: number | null
           roadmap_added_at: string | null
           roadmap_added_by: string | null
+          roadmap_end_date: string | null
           roadmap_priority: number | null
+          roadmap_sort_order: number | null
+          roadmap_start_date: string | null
           sort_order: number | null
           status: Database["public"]["Enums"]["initiative_status"]
           tags: string[] | null
@@ -21263,7 +21266,10 @@ export type Database = {
           risk_count?: number | null
           roadmap_added_at?: string | null
           roadmap_added_by?: string | null
+          roadmap_end_date?: string | null
           roadmap_priority?: number | null
+          roadmap_sort_order?: number | null
+          roadmap_start_date?: string | null
           sort_order?: number | null
           status?: Database["public"]["Enums"]["initiative_status"]
           tags?: string[] | null
@@ -21295,7 +21301,10 @@ export type Database = {
           risk_count?: number | null
           roadmap_added_at?: string | null
           roadmap_added_by?: string | null
+          roadmap_end_date?: string | null
           roadmap_priority?: number | null
+          roadmap_sort_order?: number | null
+          roadmap_start_date?: string | null
           sort_order?: number | null
           status?: Database["public"]["Enums"]["initiative_status"]
           tags?: string[] | null
@@ -56679,7 +56688,10 @@ export type Database = {
           risk_count: number | null
           roadmap_added_at: string | null
           roadmap_added_by: string | null
+          roadmap_end_date: string | null
           roadmap_priority: number | null
+          roadmap_sort_order: number | null
+          roadmap_start_date: string | null
           sort_order: number | null
           status: Database["public"]["Enums"]["initiative_status"] | null
           tags: string[] | null
@@ -56707,6 +56719,7 @@ export type Database = {
       }
       ph_roadmap_summary_view: {
         Row: {
+          active_count: number | null
           roadmap_at_risk: number | null
           roadmap_enhancements: number | null
           roadmap_improvements: number | null
@@ -56716,6 +56729,7 @@ export type Database = {
           total_initiatives: number | null
           total_not_on_roadmap: number | null
           total_on_roadmap: number | null
+          validation_count: number | null
         }
         Relationships: []
       }
