@@ -45,7 +45,7 @@ export const QuickAddCard: React.FC<QuickAddCardProps> = ({ status }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
-      queryClient.invalidateQueries({ queryKey: ['ph-initiatives-mock'] });
+      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
       toast.success('Initiative created');
       setTitle('');
       setIsOpen(false);

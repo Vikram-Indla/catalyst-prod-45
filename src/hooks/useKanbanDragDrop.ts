@@ -19,10 +19,10 @@ export function useKanbanDragDrop(initiatives: Initiative[]) {
     },
     onMutate: async ({ id, status }) => {
       await queryClient.cancelQueries({ queryKey: ['ph-initiatives'] });
-      await queryClient.cancelQueries({ queryKey: ['ph-initiatives-mock'] });
+      await queryClient.cancelQueries({ queryKey: ['mdt-backlog'] });
 
       const prevReal = queryClient.getQueryData(['ph-initiatives']);
-      const prevMock = queryClient.getQueryData(['ph-initiatives-mock']);
+      const prevMdt = queryClient.getQueryData(['mdt-backlog']);
 
       const updater = (old: any) => {
         if (!old?.data) return old;
@@ -35,18 +35,18 @@ export function useKanbanDragDrop(initiatives: Initiative[]) {
       };
 
       queryClient.setQueryData(['ph-initiatives'], updater);
-      queryClient.setQueryData(['ph-initiatives-mock'], updater);
+      queryClient.setQueryData(['mdt-backlog'], updater);
 
-      return { prevReal, prevMock };
+      return { prevReal, prevMdt };
     },
     onError: (_err, _vars, context) => {
       if (context?.prevReal) queryClient.setQueryData(['ph-initiatives'], context.prevReal);
-      if (context?.prevMock) queryClient.setQueryData(['ph-initiatives-mock'], context.prevMock);
+      if (context?.prevMdt) queryClient.setQueryData(['mdt-backlog'], context.prevMdt);
       toast.error('Failed to update status');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
-      queryClient.invalidateQueries({ queryKey: ['ph-initiatives-mock'] });
+      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
     },
   });
 

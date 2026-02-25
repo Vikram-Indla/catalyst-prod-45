@@ -85,7 +85,7 @@ function useCreateInitiative() {
     },
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
-      queryClient.invalidateQueries({ queryKey: ['ph-initiatives-mock'] });
+      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
       queryClient.invalidateQueries({ queryKey: ['next-initiative-key'] });
       catalystToast.success(`${data.initiative_key} created`);
     },
