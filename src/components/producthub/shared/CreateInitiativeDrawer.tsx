@@ -249,10 +249,10 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
             initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
           >
-            {/* Dark Header */}
-            <div className="flex-shrink-0 px-5 py-3.5 flex items-center justify-between" style={{ background: '#0F172A' }}>
+            {/* Header — Light */}
+            <div className="flex-shrink-0 px-5 py-3.5 flex items-center justify-between border-b border-[#E2E8F0] bg-white">
               <div>
-                <h2 className="text-[15px] font-bold text-white">New Initiative</h2>
+                <h2 className="text-[15px] font-bold" style={{ color: '#0F172A' }}>New Initiative</h2>
                 {nextKey && (
                   <span className="text-[11px] font-mono font-semibold px-1.5 py-0.5 rounded mt-1 inline-block" style={{ background: '#0D9488', color: '#fff' }}>
                     {nextKey}
@@ -261,7 +261,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
               </div>
               <button
                 onClick={onClose}
-                className="w-7 h-7 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 rounded-md transition-colors"
+                className="w-7 h-7 flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] rounded-md transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -399,15 +399,6 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
                     <div>
                       <label className={LABEL}>Target Quarter</label>
                       <QuarterSelect value={form.target_quarter} onChange={v => updateField('target_quarter', v)} />
-                    </div>
-                    <div>
-                      <label className={LABEL}>Estimated Budget</label>
-                      <input
-                        value={estimatedBudget}
-                        onChange={e => setEstimatedBudget(e.target.value)}
-                        placeholder="e.g. 500000"
-                        className={INPUT}
-                      />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
