@@ -65,7 +65,7 @@ function getTypeBadgeStyle(typeStr: string): { bg: string; color: string } {
 interface WorkItem {
   key: string; type: string; priority: string; status: StatusCat;
   hub: string; assignedDate: string; dateLabel: 'Assigned' | 'Created'; parentKey: string | null;
-  parentTitle: string | null;
+  parentTitle: string | null; parentType: string | null;
   dueDate: string | null; releaseEnd: string | null;
   releaseName: string | null;
   title: string;
@@ -112,6 +112,7 @@ function mapItem(r: Resource360Item): WorkItem {
     dateLabel: hasAssigned ? 'Assigned' : 'Created',
     parentKey: r.parent_key || null,
     parentTitle: r.parent_title || null,
+    parentType: r.parent_type || null,
     dueDate: r.release_end_date || null,
     releaseEnd: r.release_end_date || null,
     releaseName: r.release_name || null,
@@ -862,9 +863,11 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                   </div>
                 )}
 
-                {/* Siblings */}
+                {/* Siblings — only show when parent is a Story */}
                 {(() => {
                   if (!selectedItem.parentKey) return null;
+                  const pt = (selectedItem.parentType || '').toLowerCase();
+                  if (!pt.includes('story')) return null;
                   const sibs = (siblingMap.get(selectedItem.parentKey) || []).filter(s => s.key !== selectedItem.key);
                   if (sibs.length === 0) return (
                     <div style={{ marginTop: 20 }}>

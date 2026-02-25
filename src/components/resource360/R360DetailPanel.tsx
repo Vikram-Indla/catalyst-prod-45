@@ -156,8 +156,8 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
             </div>
           )}
 
-          {/* Siblings */}
-          {siblings.length > 0 ? (
+          {/* Siblings — only show when parent is a Story */}
+          {siblings.length > 0 && (item.parent_type || '').toLowerCase().includes('story') ? (
             <div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                 <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>SIBLINGS</span>
@@ -193,12 +193,12 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 })}
               </div>
             </div>
-          ) : (
+          ) : (item.parent_type || '').toLowerCase().includes('story') ? (
             <div>
               <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 8 }}>SIBLINGS</div>
               <div style={{ fontSize: 12, color: '#94A3B8' }}>No sibling items</div>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </>
