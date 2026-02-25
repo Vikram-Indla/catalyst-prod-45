@@ -1,15 +1,45 @@
 /**
  * Individual row component for the list panel
- * Enterprise-grade styling with Catalyst design tokens
+ * Spec: 44px height, 4px type color accent, monospace ID, Arabic subtitle, owner avatar
  */
 
 import React from 'react';
 import { GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Progress } from '@/components/ui/progress';
 import type { RoadmapDemand } from '../types/roadmap';
-import { useRoadmapTheme } from '../lib/useRoadmapTheme';
-import { catalystTokens } from '../lib/design-tokens';
+
+// ── Initiative type color map ──
+const TYPE_COLORS: Record<string, string> = {
+  project: '#2563EB',
+  enhancement: '#0D9488',
+  improvement: '#D97706',
+};
+
+// ── Owner data (static for demo) ──
+const OWNER_MAP: Record<number, { name: string; initials: string; bg: string }> = {
+  1: { name: 'Dr. Ahmed', initials: 'AA', bg: '#2563EB' },
+  2: { name: 'Eng. Fatima', initials: 'FH', bg: '#0D9488' },
+  3: { name: 'Mr. Khalid', initials: 'KS', bg: '#D97706' },
+  4: { name: 'Ms. Nora', initials: 'NO', bg: '#7C3AED' },
+};
+
+function getOwner(rank: number | null) {
+  if (!rank) return OWNER_MAP[1];
+  return OWNER_MAP[((rank - 1) % 4) + 1] || OWNER_MAP[1];
+}
+
+// Extract Arabic part from title "Arabic - English"
+function getArabicTitle(title: string): string | null {
+  const dashIdx = title.indexOf(' - ');
+  if (dashIdx > 0) return title.substring(0, dashIdx);
+  return null;
+}
+
+function getEnglishTitle(title: string): string {
+  const dashIdx = title.indexOf(' - ');
+  if (dashIdx > 0) return title.substring(dashIdx + 3);
+  return title;
+}
 
 interface RoadmapListRowProps {
   item: RoadmapDemand;
@@ -20,207 +50,77 @@ interface RoadmapListRowProps {
   isDragging?: boolean;
 }
 
-// Status badge styling - visible and branded
-const getStatusStyle = (status: string | null, isDark: boolean): { bg: string; text: string; border: string } => {
-  const textSecondary = isDark ? catalystTokens.dark.text.secondary : catalystTokens.light.text.secondary;
-  const textMuted = isDark ? catalystTokens.dark.text.muted : catalystTokens.light.text.muted;
-  
-  const styles: Record<string, { bg: string; text: string; border: string }> = {
-    new_request: {
-      bg: 'rgba(37, 99, 235, 0.15)',
-      text: '#2563eb',
-      border: 'rgba(37, 99, 235, 0.3)',
-    },
-    new_demand: {
-      bg: 'rgba(13, 148, 136, 0.15)',
-      text: '#0d9488',
-      border: 'rgba(13, 148, 136, 0.3)',
-    },
-    draft: {
-      bg: catalystTokens.secondary.grey.bg,
-      text: textSecondary,
-      border: 'rgba(200, 204, 208, 0.3)',
-    },
-    submitted: {
-      bg: catalystTokens.status.info.bg,
-      text: catalystTokens.status.info.text,
-      border: 'rgba(59, 130, 246, 0.2)',
-    },
-    in_review: {
-      bg: catalystTokens.status.warning.bg,
-      text: catalystTokens.status.warning.text,
-      border: 'rgba(245, 158, 11, 0.2)',
-    },
-    approved: {
-      bg: catalystTokens.status.success.bg,
-      text: catalystTokens.status.success.text,
-      border: 'rgba(13, 148, 136, 0.2)',
-    },
-    rejected: {
-      bg: catalystTokens.status.danger.bg,
-      text: catalystTokens.status.danger.text,
-      border: 'rgba(239, 68, 68, 0.2)',
-    },
-    in_progress: {
-      bg: catalystTokens.status.info.bg,
-      text: catalystTokens.status.info.text,
-      border: 'rgba(59, 130, 246, 0.2)',
-    },
-    completed: {
-      bg: catalystTokens.status.success.bg,
-      text: catalystTokens.status.success.text,
-      border: 'rgba(13, 148, 136, 0.2)',
-    },
-    cancelled: {
-      bg: catalystTokens.secondary.grey.bg,
-      text: textMuted,
-      border: 'rgba(200, 204, 208, 0.3)',
-    },
-  };
-  return styles[status || 'draft'] || styles.draft;
-};
+export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, isDragging }: RoadmapListRowProps) {
+  const typeKey = (item as any).initiative_type_key || 'project';
+  const typeColor = TYPE_COLORS[typeKey] || '#94A3B8';
+  const arabicTitle = getArabicTitle(item.title);
+  const englishTitle = getEnglishTitle(item.title);
+  const owner = getOwner(item.rank);
+  const isCritical = item.priority_tier === 'P0' || item.priority_tier === 'critical';
 
-// Health indicator styling
-const getHealthStyle = (health: string | null, isDark: boolean): { color: string; label: string } => {
-  const textMuted = isDark ? catalystTokens.dark.text.muted : catalystTokens.light.text.muted;
-  
-  const styles: Record<string, { color: string; label: string }> = {
-    on_track: { color: catalystTokens.status.success.text, label: 'On Track' },
-    at_risk: { color: catalystTokens.status.warning.text, label: 'At Risk' },
-    off_track: { color: catalystTokens.status.danger.text, label: 'Off Track' },
-  };
-  return styles[health || ''] || { color: textMuted, label: '' };
-};
-
-export function RoadmapListRow({
-  item,
-  index,
-  isFocused,
-  isSelected,
-  onClick,
-  isDragging,
-}: RoadmapListRowProps) {
-  const { tokens, brand, isDark } = useRoadmapTheme();
-  const productColor = item.product?.color || catalystTokens.secondary.grey.base;
-  const statusStyle = getStatusStyle(item.process_step, isDark);
-  const healthStyle = getHealthStyle(item.health, isDark);
-  
   return (
     <div
       role="row"
       tabIndex={0}
-      data-row-index={index}
       onClick={onClick}
-      onKeyDown={(e) => e.key === 'Enter' && onClick()}
+      onKeyDown={e => e.key === 'Enter' && onClick()}
       className={cn(
-        'group flex items-center gap-2 px-3 py-2.5 h-[52px] cursor-pointer transition-colors',
-        'border-b',
+        'group flex items-center gap-2 px-2 cursor-pointer transition-colors relative',
         isDragging && 'opacity-50'
       )}
       style={{
-        backgroundColor: isSelected 
-          ? tokens.surface.active 
-          : isDragging 
-            ? tokens.surface.hover
-            : 'transparent',
-        borderColor: tokens.border.subtle,
-        outline: isFocused ? `2px solid ${brand.primary}` : 'none',
-        outlineOffset: '-2px',
+        height: 44,
+        backgroundColor: isSelected ? '#EFF6FF' : 'transparent',
+        borderBottom: '1px solid #F1F5F9',
+        outline: isFocused ? '2px solid #2563EB' : 'none',
+        outlineOffset: -2,
       }}
-      onMouseEnter={(e) => {
-        if (!isSelected && !isDragging) {
-          (e.currentTarget as HTMLElement).style.backgroundColor = tokens.surface.active;
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!isSelected && !isDragging) {
-          (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-        }
-      }}
+      onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = '#F8FAFC'; }}
+      onMouseLeave={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
     >
-      {/* Drag handle */}
-      <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 cursor-grab active:cursor-grabbing transition-opacity">
-        <GripVertical className="w-4 h-4" style={{ color: tokens.text.muted }} />
-      </div>
-
-      {/* Product color indicator */}
-      <div 
-        className="w-1 h-10 rounded-full flex-shrink-0"
-        style={{ backgroundColor: productColor }}
+      {/* 4px accent bar */}
+      <div
+        className="absolute left-0 top-2 bottom-2 rounded-r"
+        style={{ width: 4, background: `linear-gradient(180deg, ${typeColor}, ${typeColor}dd)` }}
       />
 
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        {/* Key and title row */}
-        <div className="flex items-center gap-2 mb-1">
-          <span 
-            className="text-xs font-mono flex-shrink-0"
-            style={{ color: tokens.text.muted }}
-          >
-            {item.request_key}
-          </span>
-          <span 
-            className="text-sm font-semibold truncate leading-tight"
-            style={{ color: tokens.text.primary }}
-          >
-            {item.title}
-          </span>
-        </div>
-
-        {/* Meta row */}
-        <div className="flex items-center gap-3">
-          {/* Product name with color dot */}
-          {item.product && (
-            <div className="flex items-center gap-1.5">
-              <div 
-                className="w-2 h-2 rounded-full flex-shrink-0"
-                style={{ backgroundColor: productColor }}
-              />
-              <span 
-                className="text-xs truncate max-w-[100px]"
-                style={{ color: tokens.text.secondary }}
-              >
-                {item.product.name}
-              </span>
-            </div>
-          )}
-          
-          {/* Progress indicator */}
-          {item.progress > 0 && (
-            <div className="flex items-center gap-1.5 flex-shrink-0">
-              <Progress value={item.progress} className="w-12 h-1.5" />
-              <span 
-                className="text-[10px] font-medium"
-                style={{ color: tokens.text.muted }}
-              >
-                {item.progress}%
-              </span>
-            </div>
-          )}
-
-          {/* Health indicator */}
-          {healthStyle.label && (
-            <span 
-              className="text-[10px] font-semibold uppercase tracking-wide"
-              style={{ color: healthStyle.color }}
-            >
-              {healthStyle.label}
-            </span>
-          )}
-        </div>
+      {/* Drag handle */}
+      <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+        <GripVertical className="w-3.5 h-3.5" style={{ color: '#CBD5E1' }} />
       </div>
 
-      {/* Status badge - visible and branded */}
-      <span 
-        className="flex-shrink-0 px-2 py-0.5 rounded text-[11px] font-semibold uppercase tracking-wide"
-        style={{
-          backgroundColor: statusStyle.bg,
-          color: statusStyle.text,
-          border: `1px solid ${statusStyle.border}`,
-        }}
+      {/* Content */}
+      <div className="flex-1 min-w-0 pl-1">
+        <div className="flex items-center gap-1.5">
+          {/* ID */}
+          <span style={{ fontFamily: 'SF Mono, monospace', fontSize: 10, fontWeight: 600, color: typeColor }} className="flex-shrink-0">
+            {item.request_key}
+          </span>
+          {/* P0 badge */}
+          {isCritical && (
+            <span style={{ fontSize: 9, fontWeight: 700, color: '#FFFFFF', background: '#EF4444', borderRadius: 3, padding: '1px 4px' }}>P0</span>
+          )}
+          {/* English title */}
+          <span className="truncate" style={{ fontSize: 12.5, fontWeight: 600, color: '#0F172A', lineHeight: 1.3 }}>
+            {englishTitle}
+          </span>
+        </div>
+        {/* Arabic subtitle */}
+        {arabicTitle && (
+          <div className="truncate" dir="rtl" style={{ fontSize: 11, color: '#94A3B8', lineHeight: 1.2, marginTop: 1 }}>
+            {arabicTitle}
+          </div>
+        )}
+      </div>
+
+      {/* Owner avatar */}
+      <div
+        className="flex-shrink-0 flex items-center justify-center rounded-full"
+        style={{ width: 26, height: 26, background: owner.bg, color: '#FFFFFF', fontSize: 10, fontWeight: 600 }}
+        title={owner.name}
       >
-        {(item.process_step || 'draft').replace(/_/g, ' ')}
-      </span>
+        {owner.initials}
+      </div>
     </div>
   );
 }
