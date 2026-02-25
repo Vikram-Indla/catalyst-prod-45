@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Pencil, Copy, Target, Trash2, Save, Loader2, ChevronLeft, AlertTriangle, Plus, Activity, ArrowRight, TrendingUp } from 'lucide-react';
+import { X, Pencil, Copy, Target, Trash2, Save, Loader2, ChevronLeft, AlertTriangle, Plus, Activity, ArrowRight, TrendingUp, FolderKanban, Zap, Wrench, Map } from 'lucide-react';
 import { InitiativeRisksTab } from './tabs/InitiativeRisksTab';
 import { InitiativeBudgetTab } from './tabs/InitiativeBudgetTab';
 import { InitiativeAuditTab } from './tabs/InitiativeAuditTab';
@@ -18,6 +18,8 @@ import { StatusSelect } from '@/components/producthub/shared/StatusSelect';
 import { QuarterSelect } from '@/components/producthub/shared/QuarterSelect';
 import { PeopleSelect } from '@/components/producthub/shared/PeopleSelect';
 import { DepartmentSelect } from '@/components/producthub/shared/DepartmentSelect';
+import { InitiativeTypeBadge } from '@/components/producthub/shared/InitiativeTypeBadge';
+import { usePromoteToRoadmap, useRemoveFromRoadmap } from '@/hooks/useRoadmapPromotion';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -566,6 +568,50 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 }
 
 /* ════════════════════════════════════════════════════
+   ROADMAP TOGGLE — Inline component using hooks at top level
+   ════════════════════════════════════════════════════ */
+function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
+  const promoteMutation = usePromoteToRoadmap();
+  const removeMutation = useRemoveFromRoadmap();
+  const isOnRoadmap = initiative.on_roadmap === true;
+  const isPending = promoteMutation.isPending || removeMutation.isPending;
+
+  const handleToggle = async () => {
+    if (isOnRoadmap) {
+      await removeMutation.mutateAsync(initiative.id);
+    } else {
+      await promoteMutation.mutateAsync({
+        initiative_id: initiative.id,
+        initiative_type_key: initiative.initiative_type_key || 'project',
+      });
+    }
+  };
+
+  return (
+    <div className="mb-5 border border-zinc-200 rounded-lg p-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-md flex items-center justify-center"
+            style={{ background: isOnRoadmap ? '#DBEAFE' : '#F1F5F9' }}>
+            <Map className="w-4 h-4" style={{ color: isOnRoadmap ? '#2563EB' : '#94A3B8' }} />
+          </div>
+          <div>
+            <div className="text-[13px] font-semibold text-zinc-900">{isOnRoadmap ? 'On Roadmap' : 'Not on Roadmap'}</div>
+            <div className="text-[11px] text-zinc-400">{isOnRoadmap ? 'Visible on Product Roadmap timeline' : 'Click toggle to add to roadmap'}</div>
+          </div>
+        </div>
+        <button onClick={handleToggle} disabled={isPending}
+          className="relative w-10 h-5 rounded-full transition-colors"
+          style={{ background: isOnRoadmap ? '#2563EB' : '#CBD5E1' }}>
+          <span className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"
+            style={{ left: isOnRoadmap ? 22 : 2 }} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════
    DETAILS TAB — No score/priority field, custom dropdowns
    ════════════════════════════════════════════════════ */
 function DetailsContent({
@@ -606,6 +652,50 @@ function DetailsContent({
         )}
       </div>
 
+      {/* Initiative Type */}
+      <div className="mb-5">
+        <FieldLabel>Initiative Type</FieldLabel>
+        <div className="flex items-center gap-2">
+          {[
+            { key: 'project', label: 'Project', Icon: FolderKanban, color: '#2563EB' },
+            { key: 'enhancement', label: 'Enhancement', Icon: Zap, color: '#0D9488' },
+            { key: 'improvement', label: 'Improvement', Icon: Wrench, color: '#D97706' },
+          ].map(opt => {
+            const isActive = initiative.initiative_type_key === opt.key;
+            return (
+              <button
+                key={opt.key}
+                onClick={async () => {
+                  if (opt.key === initiative.initiative_type_key) return;
+                  try {
+                    const { data: typeRow } = await (supabase as any)
+                      .from('initiative_types').select('id').eq('key', opt.key).single();
+                    if (typeRow) {
+                      await (supabase as any).from('ph_initiatives')
+                        .update({ initiative_type_id: typeRow.id, updated_at: new Date().toISOString() })
+                        .eq('id', initiative.id);
+                      onQuickEdit('initiative_type_id', typeRow.id);
+                    }
+                  } catch { /* silent */ }
+                }}
+                className="flex flex-col items-center p-2 rounded-md cursor-pointer transition-all border-2"
+                style={{
+                  borderColor: isActive ? opt.color : 'transparent',
+                  background: isActive ? '#FFFFFF' : 'transparent',
+                  boxShadow: isActive ? '0 1px 3px rgba(0,0,0,.08)' : 'none',
+                }}
+              >
+                <opt.Icon className="w-4 h-4 mb-0.5" style={{ color: opt.color }} />
+                <span className="text-[10px] font-semibold" style={{ color: isActive ? opt.color : '#64748B' }}>{opt.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Roadmap Toggle */}
+      <RoadmapToggleInline initiative={initiative} />
+
       {/* Field Grid — NO score/priority field */}
       <div className="grid grid-cols-2 gap-4 gap-x-8">
         {/* Status */}
@@ -619,6 +709,56 @@ function DetailsContent({
           ) : (
             <StatusBadge status={initiative.status} />
           )}
+        </div>
+
+        {/* Health Status */}
+        <div>
+          <FieldLabel>Health Status</FieldLabel>
+          {(() => {
+            const hs = initiative.health_status;
+            const cfg: Record<string, { label: string; color: string; bg: string }> = {
+              on_track: { label: 'On Track', color: '#16A34A', bg: '#F0FDF4' },
+              at_risk: { label: 'At Risk', color: '#D97706', bg: '#FFFBEB' },
+              off_track: { label: 'Off Track', color: '#EF4444', bg: '#FEF2F2' },
+            };
+            const c = hs ? cfg[hs] : null;
+            return c ? (
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold"
+                style={{ background: c.bg, color: c.color }}>{c.label}</span>
+            ) : <span className="text-[13px] text-zinc-400">—</span>;
+          })()}
+        </div>
+
+        {/* Department */}
+        <div>
+          <FieldLabel>Department</FieldLabel>
+          {isEditing ? (
+            <DepartmentSelect
+              value={getVal('department_id', initiative.department_id) ?? ''}
+              onChange={v => onFieldChange('department_id', v)}
+              departments={departmentOptions || []}
+            />
+          ) : (
+            <div className="text-[13px] text-zinc-900">{initiative.department_name || <span className="text-zinc-400">—</span>}</div>
+          )}
+        </div>
+
+        {/* Business Value */}
+        <div>
+          <FieldLabel>Business Value</FieldLabel>
+          {(() => {
+            const bv = initiative.business_value;
+            const cfg: Record<string, { label: string; color: string; bg: string }> = {
+              high: { label: 'High', color: '#16A34A', bg: '#F0FDF4' },
+              medium: { label: 'Medium', color: '#D97706', bg: '#FFFBEB' },
+              low: { label: 'Low', color: '#64748B', bg: '#F1F5F9' },
+            };
+            const c = bv ? cfg[bv] : null;
+            return c ? (
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold"
+                style={{ background: c.bg, color: c.color }}>{c.label}</span>
+            ) : <span className="text-[13px] text-zinc-400">—</span>;
+          })()}
         </div>
 
         {/* Department */}
