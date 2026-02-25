@@ -1,7 +1,54 @@
 import React, { useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
-import { getJiraIcon } from './R360JiraIcons';
-import { resolveStatusStyle, getAgeColor, getAgeLabel, initials } from './r360-helpers';
+import { getJiraIcon } from '../r360/R360JiraIcons';
+import { initials } from './r360-helpers';
+
+// ═══════════════════════════════════════════════════
+// STATUS COLORS — 100% INLINE. No CSS classes for colors.
+// GREEN = Done ONLY. AMBER = To Do. BLUE = In Progress.
+// ═══════════════════════════════════════════════════
+const SC: Record<string, { dot: string; bg: string; tx: string; label: string }> = {
+  'To Do':                { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
+  'Open':                 { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'To Do' },
+  'Backlog':              { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Backlog' },
+  'Re-Open':              { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open' },
+  'In Requirements':      { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements' },
+  'Awaiting Info':        { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting' },
+  'In Progress':          { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
+  'In Development':       { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
+  'Under Implementation': { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress' },
+  'In Review':            { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
+  'In QA':                { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA' },
+  'Ready for QA':         { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Ready QA' },
+  'Retest':               { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Retest' },
+  'Code Review':          { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review' },
+  'In UAT':               { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT' },
+  'UAT Ready':            { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready' },
+  'Done':                 { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Closed':               { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Resolved':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Ready for Production': { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Beta Ready':           { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done' },
+  'Blocked':              { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Blocked' },
+  'Rejected':             { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Rejected' },
+};
+const SCD = { dot: '#64748B', bg: '#F1F5F9', tx: '#334155', label: 'Unknown' };
+
+function resolveStatus(item: any) {
+  const name = item.status_name || item.status || '';
+  if (SC[name]) return SC[name];
+  if (item.status_dot_color && item.status_bg_color && item.status_color) {
+    return { dot: item.status_dot_color, bg: item.status_bg_color, tx: item.status_color, label: name || 'Unknown' };
+  }
+  const cat = (item.status_category || '').toLowerCase();
+  if (cat === 'completed' || cat === 'done') return SC['Done'];
+  if (cat === 'started' || cat === 'in progress' || cat === 'indeterminate') return SC['In Progress'];
+  return SCD;
+}
+
+const PC: Record<string, string> = { BAU: '#2563EB', SEN: '#D97706', FAC: '#16A34A', OPS: '#0D9488', SUP: '#64748B', LND: '#7C3AED' };
+const pColor = (k: string, fallback?: string) => fallback || PC[k] || '#64748B';
+const ageCol = (d: number) => d <= 7 ? '#16A34A' : d <= 14 ? '#D97706' : '#EF4444';
+const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;
 
 interface Props {
   item: any;
@@ -14,190 +61,191 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, [onClose]);
 
-  // Reset scroll on item change
   useEffect(() => {
     if (panelRef.current) panelRef.current.scrollTop = 0;
   }, [item?.id]);
 
   if (!item) return null;
 
-  const ss = resolveStatusStyle(item);
+  const s = resolveStatus(item);
   const ageDays = item.age_days ?? 0;
-  const daysBarColor = ageDays <= 7 ? '#16A34A' : ageDays <= 14 ? '#D97706' : '#EF4444';
-  const daysBarPct = Math.min(ageDays / 21 * 100, 100);
-  const doneSiblings = siblings.filter(s => {
-    const sc = (s.status_category || s.status || '').toLowerCase();
+  const statusLabel = item.status_name || item.status || 'Unknown';
+  const projColor = pColor(item.project_key, item.project_color);
+
+  const doneSiblings = siblings.filter(sib => {
+    const sc = (sib.status_category || sib.status || '').toLowerCase();
     return sc.includes('done') || sc.includes('closed') || sc.includes('complete') || sc.includes('resolved');
   }).length;
-  const statusLabel = item.status_name || item.status || 'Unknown';
 
   return (
     <>
-      <div className="r3-panel-overlay" onClick={onClose} aria-hidden="true" />
-      <div
-        ref={panelRef}
-        className="r3-detail-panel"
-        style={{ animation: 'r3SlideIn 250ms cubic-bezier(.32,.72,0,1) forwards' }}
-        role="dialog"
-        aria-modal="true"
-        aria-label={`Detail panel for ${item.item_key}`}
-      >
+      {/* Overlay */}
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,.15)', zIndex: 200 }} />
+
+      {/* Panel */}
+      <div ref={panelRef} style={{
+        position: 'fixed', top: 0, right: 0, bottom: 0, width: '460px',
+        background: '#FFF', borderLeft: '1px solid #E2E8F0', zIndex: 201,
+        display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        boxShadow: '-4px 0 20px rgba(15,23,42,.08)',
+        fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+        animation: 'r3SlideIn 250ms cubic-bezier(.32,.72,0,1) forwards',
+      }}>
         {/* Header */}
-        <div className="r3-panel-header">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-            <span className="r3-item-key" style={{ fontSize: 14, fontWeight: 700 }}>{item.item_key}</span>
-            <button
-              onClick={onClose}
-              aria-label="Close detail panel"
-              className="r3-panel-close-btn"
-            >
-              <X size={14} />
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0', background: '#FFFFFF', position: 'sticky', top: 0, zIndex: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <span style={{ fontSize: '14px', fontWeight: 700, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
+            <button onClick={onClose} style={{
+              width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '6px',
+              background: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
             </button>
           </div>
-
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-            <span className="r3-status-pill" style={{ background: ss.bg, color: ss.text, border: 'none' }}>
-              <span className="r3-status-dot" style={{ background: ss.dot, width: 6, height: 6, borderRadius: '50%' }} />
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
+            {/* Status pill — INLINE */}
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: '4px',
+              padding: '3px 10px', borderRadius: '4px', fontSize: '11.5px', fontWeight: 600, lineHeight: '1',
+              background: s.bg, color: s.tx,
+            }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
               {statusLabel}
             </span>
-            <span style={{ fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 4, background: '#F8FAFC', color: '#334155', textTransform: 'capitalize' }}>
+            <span style={{ fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: '#F1F5F9', color: '#334155', textTransform: 'capitalize' }}>
               {item.priority || '—'}
             </span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 4, background: '#F8FAFC', color: '#334155' }}>
-              {getJiraIcon(item.item_type)}
-              <span style={{ textTransform: 'uppercase' }}>{item.item_type || '—'}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize: '10.5px', fontWeight: 600, padding: '2px 8px', borderRadius: '4px', background: '#FEF2F2', color: '#7F1D1D' }}>
+              {getJiraIcon(item.item_type)} <span style={{ textTransform: 'uppercase' }}>{item.item_type}</span>
             </span>
             {item.project_key && (
-              <span className="r3-project-tag" style={{ background: item.project_color || '#64748B' }}>
-                {item.project_key}
-              </span>
+              <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', color: '#FFF', background: projColor }}>{item.project_key}</span>
             )}
           </div>
-
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: '#020617', margin: 0 }}>{item.title}</h3>
+          <div style={{ fontSize: '16px', fontWeight: 600, color: '#020617', lineHeight: '1.4' }}>{item.title}</div>
         </div>
 
-        <div style={{ padding: 20 }}>
+        {/* Scrollable body */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: 0 }}>
           {/* Meta Grid 2×3 */}
-          <div className="r3-meta-grid" style={{ marginBottom: 20 }}>
-            <div className="r3-meta-cell">
-              <div className="r3-meta-cell-label">Project</div>
-              <div className="r3-meta-cell-value">{item.project_name || '—'}</div>
-            </div>
-            <div className="r3-meta-cell">
-              <div className="r3-meta-cell-label">Assigner</div>
-              <div className="r3-meta-cell-value" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                {item.assigner_name ? (
-                  <>
-                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#334155' }}>
-                      {initials(item.assigner_name)}
-                    </div>
-                    {item.assigner_name}
-                  </>
-                ) : <span style={{ color: '#94A3B8' }}>Unassigned</span>}
-              </div>
-            </div>
-            <div className="r3-meta-cell">
-              <div className="r3-meta-cell-label">Assigned</div>
-              <div className="r3-meta-cell-value">{getAgeLabel(ageDays)}</div>
-            </div>
-            <div className="r3-meta-cell">
-              <div className="r3-meta-cell-label">Days Sitting</div>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 18, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", color: daysBarColor }}>{ageDays}</span>
-                  <div style={{ width: 60, height: 4, borderRadius: 2, background: '#F1F5F9', overflow: 'hidden', display: 'inline-block', verticalAlign: 'middle' }}>
-                    <div style={{ width: `${daysBarPct}%`, height: '100%', borderRadius: 2, background: daysBarColor, minWidth: daysBarPct > 0 ? 2 : 0 }} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid #E2E8F0' }}>
+            {[
+              { label: 'PROJECT', value: item.project_name || item.project_key || '—' },
+              { label: 'ASSIGNER', value: item.assigner_name || item.reporter_name || '—', hasAvatar: true },
+              { label: 'ASSIGNED', value: ageLabel(ageDays), sub: item.assigned_date || undefined },
+              { label: 'DAYS SITTING', value: ageDays, isBar: true },
+              { label: 'RELEASE', value: item.release || item.release_name || '—' },
+              { label: 'DUE', value: item.due_date || '—' },
+            ].map((cell, i) => (
+              <div key={i} style={{
+                padding: '12px 20px',
+                borderBottom: '1px solid #F1F5F9',
+                borderRight: i % 2 === 0 ? '1px solid #F1F5F9' : 'none',
+              }}>
+                <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '.04em', marginBottom: '4px' }}>{cell.label}</div>
+                {cell.hasAvatar ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{
+                      width: '18px', height: '18px', borderRadius: '50%',
+                      background: 'linear-gradient(135deg,#2563EB,#0D9488)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '7px', fontWeight: 700, color: 'white', flexShrink: 0,
+                    }}>{initials(cell.value as string)}</div>
+                    <span style={{ fontSize: '13px', fontWeight: 500, color: '#020617' }}>{cell.value}</span>
                   </div>
-                </div>
+                ) : cell.isBar ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '14px', fontWeight: 700, color: ageCol(cell.value as number), fontVariantNumeric: 'tabular-nums' }}>{cell.value}</span>
+                    <div style={{ width: '60px', height: '4px', borderRadius: '2px', background: '#F1F5F9', overflow: 'hidden' }}>
+                      <div style={{
+                        height: '100%', borderRadius: '2px',
+                        width: `${Math.min((cell.value as number) / 21 * 100, 100)}%`,
+                        background: ageCol(cell.value as number),
+                        minWidth: (cell.value as number) > 0 ? '2px' : '0',
+                      }} />
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: 500, color: '#020617', wordBreak: 'break-word' }}>{cell.value}</div>
+                    {cell.sub && <div style={{ fontSize: '11px', color: '#334155', marginTop: '2px' }}>{cell.sub}</div>}
+                  </div>
+                )}
               </div>
-            </div>
-            <div className="r3-meta-cell">
-              <div className="r3-meta-cell-label">Release</div>
-              <div className="r3-meta-cell-value" style={{ wordBreak: 'break-word', lineHeight: 1.35 }}>
-                {item.release || item.release_name || (item.parent_key ? (
-                  <span style={{ fontSize: 12, color: '#2563EB', cursor: 'pointer' }}>Inherited from {item.parent_key}</span>
-                ) : <span style={{ color: '#94A3B8' }}>—</span>)}
-              </div>
-            </div>
-            <div className="r3-meta-cell">
-              <div className="r3-meta-cell-label">Due</div>
-              <div className="r3-meta-cell-value">
-                {item.due_date || (item.parent_key ? (
-                  <span style={{ fontSize: 12, color: '#2563EB', cursor: 'pointer' }}>Inherited from {item.parent_key}</span>
-                ) : <span style={{ color: '#94A3B8' }}>—</span>)}
-              </div>
-            </div>
+            ))}
           </div>
 
           {/* Hierarchy */}
-          {item.parent_key ? (
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 8 }}>HIERARCHY</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <div className="r3-hierarchy-item">
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid #F1F5F9' }}>
+            <div style={{ fontSize: '11px', fontWeight: 700, color: '#334155', textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: '10px' }}>Hierarchy</div>
+            {item.parent_key ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {/* Parent */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 8px', borderRadius: '6px', border: '1px solid #E2E8F0', background: '#FFFFFF' }}>
                   {getJiraIcon(item.parent_type || 'epic')}
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 600, whiteSpace: 'nowrap', flexShrink: 0, minWidth: 72 }}>{item.parent_key}</span>
-                  <span style={{ fontSize: 12, color: '#334155', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parent_title}</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#64748B', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.parent_key}</span>
+                  <span style={{ fontSize: '12px', color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parent_title}</span>
                 </div>
-                <div style={{ paddingLeft: 16, display: 'flex', alignItems: 'center', gap: 4, color: '#94A3B8', fontSize: 12 }}>↳</div>
-                <div className="r3-hierarchy-item current" style={{ marginLeft: 16 }}>
+                <div style={{ paddingLeft: '20px', color: '#64748B', fontSize: '11px', margin: '2px 0' }}>↳</div>
+                {/* Current */}
+                <div style={{
+                  display: 'flex', alignItems: 'flex-start', gap: '6px', padding: '6px 8px',
+                  borderRadius: '6px', border: '1.5px solid #2563EB', background: '#EFF6FF',
+                }}>
                   {getJiraIcon(item.item_type)}
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 600, whiteSpace: 'nowrap', flexShrink: 0, minWidth: 72 }}>{item.item_key}</span>
-                  <span style={{ fontSize: 13, color: '#020617', fontWeight: 500, flex: 1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any, overflow: 'hidden' }}>
-                    {item.title}
-                  </span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: '#2563EB', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.item_key}</span>
+                  <span style={{
+                    fontSize: '13px', fontWeight: 500, color: '#020617',
+                    overflow: 'hidden', display: '-webkit-box',
+                    WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                  } as React.CSSProperties}>{item.title}</span>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 8 }}>HIERARCHY</div>
-              <div style={{ fontSize: 12, color: '#94A3B8' }}>—</div>
-            </div>
-          )}
+            ) : (
+              <div style={{ fontSize: '12px', color: '#94A3B8' }}>—</div>
+            )}
+          </div>
 
-          {/* Siblings — only populated when parent is a Story (filtered at service layer) */}
+          {/* Siblings */}
           {siblings.length > 0 && (
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>SIBLINGS</span>
-                <span style={{ fontSize: 11, color: '#64748B' }}>{doneSiblings}/{siblings.length} done</span>
+            <div style={{ padding: '16px 20px', flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#334155', textTransform: 'uppercase', letterSpacing: '.05em' }}>Siblings</span>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: '#334155', background: '#F1F5F9', padding: '2px 8px', borderRadius: '10px' }}>{doneSiblings}/{siblings.length} done</span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2, maxHeight: 320, overflowY: 'auto' }} className="r3-siblings-list">
+              <div style={{ flex: 1, overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#CBD5E1 transparent', maxHeight: '320px' }}>
                 {siblings.map(sib => {
-                  const sibSs = resolveStatusStyle(sib);
+                  const sibS = resolveStatus(sib);
                   const sibLabel = sib.status_name || sib.status || 'Unknown';
                   const isCurrent = sib.item_key === item.item_key;
                   return (
-                    <div
-                      key={sib.id || sib.item_key}
-                      className={`r3-sibling-row ${isCurrent ? 'current' : ''}`}
-                      onClick={() => !isCurrent && onSiblingClick(sib)}
-                      role="button"
-                      tabIndex={0}
-                      aria-label={`Sibling ${sib.item_key} ${sib.title}${isCurrent ? ' (current)' : ''}`}
-                      onKeyDown={(e) => { if (e.key === 'Enter' && !isCurrent) onSiblingClick(sib); }}
+                    <div key={sib.id || sib.item_key} onClick={() => !isCurrent && onSiblingClick(sib)} style={{
+                      display: 'flex', alignItems: 'center', gap: '8px', padding: '7px 10px', borderRadius: '6px',
+                      cursor: isCurrent ? 'default' : 'pointer', marginBottom: '2px',
+                      border: isCurrent ? '1px solid #2563EB' : '1px solid transparent',
+                      background: isCurrent ? '#EFF6FF' : 'transparent',
+                    }}
+                      onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = '#F1F5F9'; }}
+                      onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = 'transparent'; }}
                     >
                       <span style={{ flexShrink: 0 }}>{getJiraIcon(sib.item_type || 'Task')}</span>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 600, width: 72, flexShrink: 0 }}>
-                        {sib.item_key}
-                      </span>
-                      <span className="r3-status-pill" style={{ background: sibSs.bg, color: sibSs.text, fontSize: 10, border: 'none' }}>
-                        <span className="r3-status-dot" style={{ background: sibSs.dot, width: 6, height: 6, borderRadius: '50%' }} />
+                      <span style={{ fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", color: '#2563EB', fontWeight: 600, width: '72px', flexShrink: 0 }}>{sib.item_key}</span>
+                      {/* Status pill — INLINE, small */}
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '3px',
+                        padding: '2px 6px', borderRadius: '3px', fontSize: '10.5px', fontWeight: 600, lineHeight: '1',
+                        background: sibS.bg, color: sibS.tx, flexShrink: 0,
+                      }}>
+                        <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: sibS.dot, flexShrink: 0 }} />
                         {sibLabel}
                       </span>
-                      <span style={{ flex: 1, fontSize: 12, color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {sib.title}
-                      </span>
-                      <span className="r3-age-badge" style={{ color: getAgeColor(sib.age_days ?? 0) }}>{sib.age_days ?? 0}d</span>
+                      <span style={{ fontSize: '12px', fontWeight: 500, color: '#020617', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sib.title}</span>
+                      <span style={{ fontSize: '11px', fontWeight: 600, color: ageCol(sib.age_days ?? 0), fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{sib.age_days ?? 0}d</span>
                     </div>
                   );
                 })}
