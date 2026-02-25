@@ -131,7 +131,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
             <div style={{ padding: '16px 20px', borderBottom: '1px solid #f4f4f5' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                     <span style={{
                       padding: '2px 8px',
                       borderRadius: '4px',
@@ -144,17 +144,17 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                     }}>
                       {item.request_key}
                     </span>
-                    <span style={{
-                      fontSize: '16px',
-                      fontWeight: 600,
-                      color: '#18181b',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}>
-                      {item.title}
-                    </span>
                   </div>
+                  <h2 style={{
+                    fontSize: '17px',
+                    fontWeight: 600,
+                    color: '#18181b',
+                    lineHeight: 1.3,
+                    margin: 0,
+                    wordBreak: 'break-word',
+                  }}>
+                    {item.title}
+                  </h2>
                   {statusCfg && (
                     <span style={{
                       display: 'inline-flex',
