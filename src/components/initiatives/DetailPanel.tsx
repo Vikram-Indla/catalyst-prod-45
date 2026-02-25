@@ -626,18 +626,24 @@ function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
   const promoteMutation = usePromoteToRoadmap();
   const removeMutation = useRemoveFromRoadmap();
   const queryClient = useQueryClient();
-  const isOnRoadmap = initiative.on_roadmap === true;
+  const [localOnRoadmap, setLocalOnRoadmap] = useState<boolean>(initiative.on_roadmap === true);
   const [isToggling, setIsToggling] = useState(false);
   const isPending = promoteMutation.isPending || removeMutation.isPending || isToggling;
   const isJira = !isNativeInitiative(initiative.id);
 
+  // Sync local state when initiative prop changes (e.g. after refetch)
+  useEffect(() => {
+    setLocalOnRoadmap(initiative.on_roadmap === true);
+  }, [initiative.id, initiative.on_roadmap]);
+
   const handleToggle = async () => {
+    const newValue = !localOnRoadmap;
+    setLocalOnRoadmap(newValue); // Optimistic update
     try {
       setIsToggling(true);
       if (isJira) {
-        // For Jira-sourced items, create a ph_initiatives record first if needed, then promote
-        if (isOnRoadmap) {
-          // Find the ph_initiatives record by initiative_key to remove
+        if (!newValue) {
+          // Removing from roadmap
           const { data: existing } = await (supabase as any)
             .from('ph_initiatives')
             .select('id')
@@ -647,7 +653,7 @@ function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
             await removeMutation.mutateAsync(existing.id);
           }
         } else {
-          // Check if a ph_initiatives record already exists for this issue_key
+          // Adding to roadmap — ensure ph_initiatives record exists
           const { data: existing } = await (supabase as any)
             .from('ph_initiatives')
             .select('id')
@@ -658,7 +664,6 @@ function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
           if (existing) {
             initiativeId = existing.id;
           } else {
-            // Create a new ph_initiatives record from the Jira data
             const { data: inserted, error: insertError } = await (supabase as any)
               .from('ph_initiatives')
               .insert({
@@ -685,7 +690,7 @@ function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
         }
         queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
       } else {
-        if (isOnRoadmap) {
+        if (!newValue) {
           await removeMutation.mutateAsync(initiative.id);
         } else {
           await promoteMutation.mutateAsync({
@@ -696,6 +701,7 @@ function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
       }
     } catch (err) {
       console.error('Roadmap toggle failed:', err);
+      setLocalOnRoadmap(!newValue); // Revert on error
       catalystToast.error('Failed to update roadmap status');
     } finally {
       setIsToggling(false);
@@ -707,19 +713,19 @@ function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-md flex items-center justify-center"
-            style={{ background: isOnRoadmap ? '#DBEAFE' : '#F1F5F9' }}>
-            <Map className="w-4 h-4" style={{ color: isOnRoadmap ? '#2563EB' : '#94A3B8' }} />
+            style={{ background: localOnRoadmap ? '#DBEAFE' : '#F1F5F9' }}>
+            <Map className="w-4 h-4" style={{ color: localOnRoadmap ? '#2563EB' : '#94A3B8' }} />
           </div>
           <div>
-            <div className="text-[13px] font-semibold text-zinc-900">{isOnRoadmap ? 'On Roadmap' : 'Not on Roadmap'}</div>
-            <div className="text-[11px] text-zinc-400">{isOnRoadmap ? 'Visible on Product Roadmap timeline' : 'Click toggle to add to roadmap'}</div>
+            <div className="text-[13px] font-semibold text-zinc-900">{localOnRoadmap ? 'On Roadmap' : 'Not on Roadmap'}</div>
+            <div className="text-[11px] text-zinc-400">{localOnRoadmap ? 'Visible on Product Roadmap timeline' : 'Click toggle to add to roadmap'}</div>
           </div>
         </div>
         <button onClick={handleToggle} disabled={isPending}
           className="relative w-10 h-5 rounded-full transition-colors"
-          style={{ background: isOnRoadmap ? '#2563EB' : '#CBD5E1' }}>
+          style={{ background: localOnRoadmap ? '#2563EB' : '#CBD5E1' }}>
           <span className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"
-            style={{ left: isOnRoadmap ? 22 : 2 }} />
+            style={{ left: localOnRoadmap ? 22 : 2 }} />
         </button>
       </div>
     </div>

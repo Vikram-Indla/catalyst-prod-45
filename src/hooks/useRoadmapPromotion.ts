@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 
 export function usePromoteToRoadmap() {
   const queryClient = useQueryClient();
@@ -25,10 +25,10 @@ export function usePromoteToRoadmap() {
       queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
       queryClient.invalidateQueries({ queryKey: ['roadmap-summary'] });
       queryClient.invalidateQueries({ queryKey: ['initiatives'] });
-      toast.success('Initiative added to roadmap');
+      catalystToast.success('Initiative added to roadmap');
     },
     onError: () => {
-      toast.error('Failed to add to roadmap');
+      catalystToast.error('Failed to add to roadmap');
     },
   });
 }
@@ -49,10 +49,10 @@ export function useRemoveFromRoadmap() {
       queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
       queryClient.invalidateQueries({ queryKey: ['roadmap-summary'] });
       queryClient.invalidateQueries({ queryKey: ['initiatives'] });
-      toast.success('Initiative removed from roadmap');
+      catalystToast.success('Initiative removed from roadmap');
     },
     onError: () => {
-      toast.error('Failed to remove from roadmap');
+      catalystToast.error('Failed to remove from roadmap');
     },
   });
 }
