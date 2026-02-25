@@ -1,28 +1,39 @@
+import { useMemo } from 'react';
 import type { ProductionEvent } from '../hooks/useProductionEvents';
+import type { PcPeriodType } from '../types/production-events.types';
 import { ProductionEventRow } from './ProductionEventRow';
+import { groupEventsByMonth, formatMonthYear, getTypeSummary } from '../utils/narrative-helpers';
 
 interface Props {
   events: (ProductionEvent & { eventType: string })[];
   loading: boolean;
   expandedId: string | null;
   onToggleExpand: (id: string) => void;
+  periodType?: PcPeriodType;
 }
 
 const COLUMNS = ['#', 'Event', 'Type', 'Release', 'Deployed', 'Stories'];
 
-export function ProductionEventsTable({ events, loading, expandedId, onToggleExpand }: Props) {
+export function ProductionEventsTable({ events, loading, expandedId, onToggleExpand, periodType }: Props) {
+  // Fix 26: Group by month for quarterly view
+  const eventsByMonth = useMemo(() => {
+    if (periodType !== 'quarterly' || events.length === 0) return null;
+    return groupEventsByMonth(events);
+  }, [events, periodType]);
+
+  // Global index counter for quarterly month groups
+  let globalIndex = 0;
+
   return (
     <div
       style={{
         background: '#FFFFFF', borderRadius: 10,
         border: '1px solid #E2E8F0',
-        // Fix 13: box shadow
         boxShadow: '0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)',
         overflow: 'hidden',
       }}
     >
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        {/* Fix 14: 2px bottom border on thead */}
         <thead>
           <tr style={{ background: '#F8FAFC', borderBottom: '2px solid #E2E8F0' }}>
             {COLUMNS.map(col => (
@@ -36,8 +47,7 @@ export function ProductionEventsTable({ events, loading, expandedId, onToggleExp
                   textAlign: col === '#' || col === 'Stories' ? 'center' : 'left',
                   fontFamily: "'Inter', sans-serif",
                   position: 'sticky', top: 0, zIndex: 1,
-                  background: '#F8FAFC',
-                  whiteSpace: 'nowrap',
+                  background: '#F8FAFC', whiteSpace: 'nowrap',
                 }}
               >
                 {col}
@@ -76,7 +86,27 @@ export function ProductionEventsTable({ events, loading, expandedId, onToggleExp
             </tr>
           )}
 
-          {!loading && events.map((event, i) => (
+          {/* Fix 26: Quarterly view with month dividers */}
+          {!loading && eventsByMonth && Object.entries(eventsByMonth)
+            .sort(([a], [b]) => b.localeCompare(a)) // newest month first
+            .map(([monthKey, monthEvents]) => {
+              const startIdx = globalIndex;
+              globalIndex += monthEvents.length;
+              return (
+                <MonthGroup
+                  key={monthKey}
+                  monthKey={monthKey}
+                  monthEvents={monthEvents}
+                  startIndex={startIdx}
+                  expandedId={expandedId}
+                  onToggleExpand={onToggleExpand}
+                />
+              );
+            })
+          }
+
+          {/* Non-quarterly: flat list */}
+          {!loading && !eventsByMonth && events.map((event, i) => (
             <ProductionEventRow
               key={event.id}
               event={event}
@@ -88,5 +118,59 @@ export function ProductionEventsTable({ events, loading, expandedId, onToggleExp
         </tbody>
       </table>
     </div>
+  );
+}
+
+// Month divider + events sub-component
+function MonthGroup({
+  monthKey,
+  monthEvents,
+  startIndex,
+  expandedId,
+  onToggleExpand,
+}: {
+  monthKey: string;
+  monthEvents: (ProductionEvent & { eventType: string })[];
+  startIndex: number;
+  expandedId: string | null;
+  onToggleExpand: (id: string) => void;
+}) {
+  return (
+    <>
+      {/* Month divider row */}
+      <tr>
+        <td
+          colSpan={6}
+          style={{
+            padding: '12px 20px',
+            background: '#F8FAFC',
+            borderBottom: '1px solid #E2E8F0',
+            borderTop: '1px solid #E2E8F0',
+          }}
+        >
+          <span style={{
+            fontSize: 12, fontWeight: 700, color: '#0F172A',
+            fontFamily: "'Inter', sans-serif",
+          }}>
+            {formatMonthYear(monthKey)}
+          </span>
+          <span style={{
+            fontSize: 12, fontWeight: 500, color: '#64748B',
+            marginLeft: 8, fontFamily: "'Inter', sans-serif",
+          }}>
+            — {monthEvents.length} event{monthEvents.length !== 1 ? 's' : ''} · {getTypeSummary(monthEvents)}
+          </span>
+        </td>
+      </tr>
+      {monthEvents.map((event, i) => (
+        <ProductionEventRow
+          key={event.id}
+          event={event}
+          index={startIndex + i}
+          expanded={expandedId === event.id}
+          onToggle={() => onToggleExpand(event.id)}
+        />
+      ))}
+    </>
   );
 }
