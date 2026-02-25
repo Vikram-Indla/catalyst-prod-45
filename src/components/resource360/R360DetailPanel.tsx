@@ -32,7 +32,11 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
   const ageDays = item.age_days ?? 0;
   const daysBarColor = ageDays <= 7 ? '#16A34A' : ageDays <= 14 ? '#D97706' : '#EF4444';
   const daysBarPct = Math.min(ageDays / 21 * 100, 100);
-  const doneSiblings = siblings.filter(s => s.status_category === 'completed').length;
+  const doneSiblings = siblings.filter(s => {
+    const sc = (s.status_category || s.status || '').toLowerCase();
+    return sc.includes('done') || sc.includes('closed') || sc.includes('complete') || sc.includes('resolved');
+  }).length;
+  const statusLabel = item.status_name || item.status || 'Unknown';
 
   return (
     <>
@@ -59,16 +63,16 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
           </div>
 
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-            <span className="r3-status-pill" style={{ background: ss.bg, color: ss.text }}>
-              <span className="r3-status-dot" style={{ background: ss.dot }} />
-              {item.status_name}
+            <span className="r3-status-pill" style={{ background: ss.bg, color: ss.text, border: 'none' }}>
+              <span className="r3-status-dot" style={{ background: ss.dot, width: 6, height: 6, borderRadius: '50%' }} />
+              {statusLabel}
             </span>
             <span style={{ fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 4, background: '#F8FAFC', color: '#334155', textTransform: 'capitalize' }}>
               {item.priority || '—'}
             </span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 10, fontWeight: 600, padding: '3px 8px', borderRadius: 4, background: '#F8FAFC', color: '#334155' }}>
               {getJiraIcon(item.item_type)}
-              <span style={{ textTransform: 'capitalize' }}>{item.item_type || '—'}</span>
+              <span style={{ textTransform: 'uppercase' }}>{item.item_type || '—'}</span>
             </span>
             {item.project_key && (
               <span className="r3-project-tag" style={{ background: item.project_color || '#64748B' }}>
@@ -107,16 +111,18 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
             <div className="r3-meta-cell">
               <div className="r3-meta-cell-label">Days Sitting</div>
               <div>
-                <div style={{ fontSize: 18, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", color: '#020617' }}>{ageDays}d</div>
-                <div className="r3-days-bar" style={{ background: '#F1F5F9' }}>
-                  <div style={{ width: `${daysBarPct}%`, height: '100%', borderRadius: 2, background: daysBarColor, minWidth: daysBarPct > 0 ? 2 : 0 }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: 18, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", color: daysBarColor }}>{ageDays}</span>
+                  <div style={{ width: 60, height: 4, borderRadius: 2, background: '#F1F5F9', overflow: 'hidden', display: 'inline-block', verticalAlign: 'middle' }}>
+                    <div style={{ width: `${daysBarPct}%`, height: '100%', borderRadius: 2, background: daysBarColor, minWidth: daysBarPct > 0 ? 2 : 0 }} />
+                  </div>
                 </div>
               </div>
             </div>
             <div className="r3-meta-cell">
               <div className="r3-meta-cell-label">Release</div>
-              <div className="r3-meta-cell-value">
-                {item.release || (item.parent_key ? (
+              <div className="r3-meta-cell-value" style={{ wordBreak: 'break-word', lineHeight: 1.35 }}>
+                {item.release || item.release_name || (item.parent_key ? (
                   <span style={{ fontSize: 12, color: '#2563EB', cursor: 'pointer' }}>Inherited from {item.parent_key}</span>
                 ) : <span style={{ color: '#94A3B8' }}>—</span>)}
               </div>
@@ -137,15 +143,17 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
               <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 8 }}>HIERARCHY</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 <div className="r3-hierarchy-item">
-                  {getJiraIcon('epic')}
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 600 }}>{item.parent_key}</span>
+                  {getJiraIcon(item.parent_type || 'epic')}
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 600, whiteSpace: 'nowrap', flexShrink: 0, minWidth: 72 }}>{item.parent_key}</span>
                   <span style={{ fontSize: 12, color: '#334155', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parent_title}</span>
                 </div>
                 <div style={{ paddingLeft: 16, display: 'flex', alignItems: 'center', gap: 4, color: '#94A3B8', fontSize: 12 }}>↳</div>
                 <div className="r3-hierarchy-item current" style={{ marginLeft: 16 }}>
                   {getJiraIcon(item.item_type)}
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 600 }}>{item.item_key}</span>
-                  <span style={{ fontSize: 12, color: '#020617', fontWeight: 500 }}>Current</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 600, whiteSpace: 'nowrap', flexShrink: 0, minWidth: 72 }}>{item.item_key}</span>
+                  <span style={{ fontSize: 13, color: '#020617', fontWeight: 500, flex: 1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any, overflow: 'hidden' }}>
+                    {item.title}
+                  </span>
                 </div>
               </div>
             </div>
@@ -163,9 +171,10 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>SIBLINGS</span>
                 <span style={{ fontSize: 11, color: '#64748B' }}>{doneSiblings}/{siblings.length} done</span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2, maxHeight: 320, overflowY: 'auto' }} className="r3-siblings-list">
                 {siblings.map(sib => {
                   const sibSs = resolveStatusStyle(sib);
+                  const sibLabel = sib.status_name || sib.status || 'Unknown';
                   const isCurrent = sib.item_key === item.item_key;
                   return (
                     <div
@@ -180,9 +189,9 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                       <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 600, width: 72, flexShrink: 0 }}>
                         {sib.item_key}
                       </span>
-                      <span className="r3-status-pill" style={{ background: sibSs.bg, color: sibSs.text, fontSize: 10 }}>
-                        <span className="r3-status-dot" style={{ background: sibSs.dot }} />
-                        {sib.status_name}
+                      <span className="r3-status-pill" style={{ background: sibSs.bg, color: sibSs.text, fontSize: 10, border: 'none' }}>
+                        <span className="r3-status-dot" style={{ background: sibSs.dot, width: 6, height: 6, borderRadius: '50%' }} />
+                        {sibLabel}
                       </span>
                       <span style={{ flex: 1, fontSize: 12, color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {sib.title}
