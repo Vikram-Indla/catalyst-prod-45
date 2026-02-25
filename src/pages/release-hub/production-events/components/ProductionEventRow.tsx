@@ -56,7 +56,7 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
         </td>
 
         {/* Event */}
-        <td style={{ padding: '14px 16px', maxWidth: 380, verticalAlign: 'top' }}>
+        <td style={{ padding: '14px 16px', maxWidth: 480, verticalAlign: 'top' }}>
           <div className="flex items-start gap-2">
             <ChevronRight
               size={14}
@@ -65,6 +65,7 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
                 transform: expanded ? 'rotate(90deg)' : 'rotate(0)',
                 transition: 'transform 150ms ease',
                 flexShrink: 0, marginTop: 3,
+                opacity: expanded ? 1 : 0,
               }}
             />
             <div style={{ minWidth: 0 }} dir="auto">
@@ -90,7 +91,7 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
         </td>
 
         {/* Type pill */}
-        <td style={{ width: 130, padding: '14px 16px', verticalAlign: 'top' }}>
+        <td style={{ width: 140, padding: '14px 16px', verticalAlign: 'top' }}>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 5,
             padding: '4px 12px', fontSize: 11.5, fontWeight: 700,
@@ -105,7 +106,7 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
         </td>
 
         {/* Release — Fix 28: clean version display */}
-        <td style={{ width: 130, padding: '14px 16px', verticalAlign: 'top' }}>
+        <td style={{ width: 140, padding: '14px 16px', verticalAlign: 'top' }}>
           {displayRelease ? (
             <span style={{
               display: 'inline-block',
@@ -123,7 +124,7 @@ export function ProductionEventRow({ event, index, expanded, onToggle }: Props) 
 
         {/* Deployed */}
         <td style={{
-          width: 160, padding: '14px 16px', verticalAlign: 'top',
+          width: 170, padding: '14px 16px', verticalAlign: 'top',
           fontSize: 13, fontWeight: 400, color: '#475569',
         }}>
           {formatDeploymentDate(event.deployedAt)}
