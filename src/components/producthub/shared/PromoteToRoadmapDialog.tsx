@@ -3,7 +3,7 @@
  */
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Map, FolderKanban, Zap, Wrench, type LucideIcon } from 'lucide-react';
+import { Loader2, Map, FolderKanban, Zap, Wrench, Leaf, Link, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePromoteToRoadmap } from '@/hooks/useRoadmapPromotion';
 import { INITIATIVE_TYPE_COLORS, type InitiativeTypeKey } from '@/types/initiative-enhancements';
@@ -14,6 +14,8 @@ const TYPE_OPTIONS: { key: InitiativeTypeKey; label: string; Icon: LucideIcon }[
   { key: 'project', label: 'Project', Icon: FolderKanban },
   { key: 'enhancement', label: 'Enhancement', Icon: Zap },
   { key: 'improvement', label: 'Improvement', Icon: Wrench },
+  { key: 'sustainable', label: 'Sustainable', Icon: Leaf },
+  { key: 'entity_integration', label: 'Entity Integration', Icon: Link },
 ];
 
 interface Props {
