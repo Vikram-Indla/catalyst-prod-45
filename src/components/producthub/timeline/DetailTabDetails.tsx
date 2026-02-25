@@ -6,7 +6,7 @@ import React, { useState, useCallback } from 'react';
 import type { TimelineInitiative, InitiativeStatus } from '@/types/producthub/initiative';
 import { STATUS_CONFIG, getPriorityFromScore } from '@/types/producthub/initiative';
 import { format } from 'date-fns';
-import { FolderKanban, Zap, Wrench, Map, Network, Leaf } from 'lucide-react';
+import { FolderKanban, Zap, Wrench, Map, Network } from 'lucide-react';
 import { InitiativeTypeBadge } from '@/components/producthub/shared/InitiativeTypeBadge';
 import { usePromoteToRoadmap, useRemoveFromRoadmap } from '@/hooks/useRoadmapPromotion';
 import { useQueryClient } from '@tanstack/react-query';
@@ -36,7 +36,6 @@ const TYPE_OPTIONS = [
   { key: 'enhancement', label: 'Enhancement', Icon: Zap, color: '#0D9488' },
   { key: 'improvement', label: 'Improvement', Icon: Wrench, color: '#D97706' },
   { key: 'entity_integration', label: 'Entity Integration', Icon: Network, color: '#8B5CF6' },
-  { key: 'sustainable', label: 'Sustainable', Icon: Leaf, color: '#16A34A' },
 ] as const;
 
 const HEALTH_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
