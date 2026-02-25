@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { slugify, initials as getInitials } from './r360-helpers';
 
 // ═══════════════════════════════════════════════════
 // STATUS COLORS — Jira status → display colors
-// GREEN = ONLY for Done. AMBER = To Do. BLUE = In Progress.
 // ═══════════════════════════════════════════════════
 const SC: Record<string, { dot: string; bg: string; tx: string; label: string; accent: string }> = {
   'To Do':                { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'To Do',       accent: '#D97706' },
@@ -31,25 +30,19 @@ const SC: Record<string, { dot: string; bg: string; tx: string; label: string; a
   'Rejected':             { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Rejected',    accent: '#EF4444' },
 };
 const SCD = { dot: '#64748B', bg: '#F1F5F9', tx: '#334155', label: 'Unknown', accent: '#64748B' };
-const sc = (s: string) => SC[s] || SCD;
 
-// Also resolve by category fallback
 function resolveStatus(item: any) {
   if (item.status_name && SC[item.status_name]) return SC[item.status_name];
-  // Use DB colors if available
   if (item.status_dot_color && item.status_bg_color && item.status_color) {
     return { dot: item.status_dot_color, bg: item.status_bg_color, tx: item.status_color, label: item.status_name || 'Unknown', accent: item.status_dot_color };
   }
-  // Category fallback
   const cat = (item.status_category || '').toLowerCase();
   if (cat === 'completed' || cat === 'done') return SC['Done'];
   if (cat === 'started' || cat === 'in progress' || cat === 'indeterminate') return SC['In Progress'];
   return SCD;
 }
 
-// ═══════════════════════════════════════════════════
-// JIRA ICONS — Fuzzy match
-// ═══════════════════════════════════════════════════
+// ═══ JIRA ICONS ═══
 const BugIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="#E5493A"/><circle cx="8" cy="8" r="3" fill="white"/></svg>
 );
@@ -70,9 +63,7 @@ function JiraIcon({ type }: { type: string }) {
   return <TaskIcon />;
 }
 
-// ═══════════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════════
+// ═══ HELPERS ═══
 const ageCol = (d: number) => d <= 7 ? '#16A34A' : d <= 14 ? '#D97706' : '#EF4444';
 const trunc = (s: string, l: number) => s && s.length > l ? s.slice(0, l) + '…' : s || '';
 const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;
@@ -91,6 +82,13 @@ const SPOTS = [
   { x: 67, y: 66 },
 ];
 
+function formatResolvedDate(dateStr?: string | null): string {
+  if (!dateStr) return 'This week';
+  const d = new Date(dateStr);
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${months[d.getMonth()]} ${d.getDate()}`;
+}
+
 interface Props {
   member: any;
   items: any[];
@@ -99,10 +97,36 @@ interface Props {
 }
 
 export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItemClick }) => {
+  const [showDone, setShowDone] = useState(false);
+  const doneRef = useRef<HTMLDivElement>(null);
+
   const activeItems = items.filter(i => i.status_category !== 'completed').slice(0, 8);
+  const doneItems = items.filter(i => i.status_category === 'completed');
   const memberName = member?.full_name || 'Unknown';
   const memberRole = member?.role || '';
   const avatarSlug = slugify(memberName);
+
+  // Close on outside click
+  useEffect(() => {
+    if (!showDone) return;
+    const handler = (e: MouseEvent) => {
+      if (doneRef.current && !doneRef.current.contains(e.target as Node)) setShowDone(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showDone]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!showDone) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setShowDone(false); };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [showDone]);
+
+  // Adaptive center Y based on card count
+  const cardCount = activeItems.length;
+  const centerTopPct = cardCount <= 4 ? 38 : cardCount <= 6 ? 40 : 49;
 
   if (activeItems.length === 0 && doneCount === 0) {
     return (
@@ -133,7 +157,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
           const cx = SPOTS[i].x + 10;
           const cy = SPOTS[i].y + 9;
           return (
-            <line key={`spoke-${i}`} x1="50%" y1="49%" x2={`${cx}%`} y2={`${cy}%`}
+            <line key={`spoke-${i}`} x1="50%" y1={`${centerTopPct}%`} x2={`${cx}%`} y2={`${cy}%`}
               stroke="#94A3B8" strokeWidth="2" strokeDasharray="8 5" strokeLinecap="round" />
           );
         })}
@@ -144,7 +168,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
         const cx = SPOTS[i].x + 10;
         const cy = SPOTS[i].y + 9;
         const mx = (50 + cx) / 2;
-        const my = (49 + cy) / 2;
+        const my = (centerTopPct + cy) / 2;
         return (
           <div key={`label-${i}`} style={{
             position: 'absolute', left: `${mx}%`, top: `${my}%`,
@@ -160,7 +184,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
       })}
 
       {/* CENTER AVATAR */}
-      <div style={{ position: 'absolute', left: '50%', top: '49%', transform: 'translate(-50%, -50%)', textAlign: 'center', zIndex: 5 }}>
+      <div style={{ position: 'absolute', left: '50%', top: `${centerTopPct}%`, transform: 'translate(-50%, -50%)', textAlign: 'center', zIndex: 5 }}>
         <div style={{
           width: '96px', height: '96px', borderRadius: '50%', border: '3px solid #2563EB',
           overflow: 'hidden', margin: '0 auto 6px', boxShadow: '0 0 0 6px rgba(37,99,235,.12)', background: '#FFFFFF',
@@ -196,10 +220,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             onMouseEnter={e => { e.currentTarget.style.borderColor = '#94A3B8'; e.currentTarget.style.boxShadow = '0 3px 10px rgba(15,23,42,.08)'; }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(15,23,42,.05)'; }}
           >
-            {/* 3px LEFT ACCENT BAR */}
             <div style={{ position: 'absolute', left: 0, top: '8px', bottom: '8px', width: '3px', borderRadius: '0 2px 2px 0', background: s.accent }} />
-
-            {/* Row 1: Type + Priority */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <JiraIcon type={item.item_type} />
@@ -207,8 +228,6 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
               </div>
               <span style={{ fontSize: '10.5px', fontWeight: 500, color: '#64748B', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
             </div>
-
-            {/* Row 2: Key + Project + Age */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
               <span style={{ fontSize: '11px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', 'SF Mono', monospace" }}>{item.item_key}</span>
               {item.project_key && (
@@ -216,16 +235,12 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
               )}
               <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: 600, color: ageCol(item.age_days ?? 0), fontVariantNumeric: 'tabular-nums' }}>{item.age_days ?? 0}d</span>
             </div>
-
-            {/* Title */}
             <div style={{
               fontSize: '12.5px', fontWeight: 500, color: '#020617', lineHeight: '1.35', marginBottom: '5px',
               display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
             } as React.CSSProperties}>
               {trunc(item.title, 48)}
             </div>
-
-            {/* Status Pill — INLINE */}
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: '4px',
               padding: '3px 10px', borderRadius: '4px', fontSize: '11.5px', fontWeight: 600, lineHeight: '1',
@@ -238,21 +253,136 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
         );
       })}
 
-      {/* COMPLETED BADGE */}
+      {/* ═══ COMPLETED BADGE — CLICKABLE WITH DROPDOWN ═══ */}
       {doneCount > 0 && (
-        <div style={{
-          position: 'absolute', right: '20px', top: '49%', transform: 'translateY(-50%)', zIndex: 6,
-          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
+        <div ref={doneRef} style={{
+          position: 'absolute', right: '16px', top: `${centerTopPct}%`, transform: 'translateY(-50%)', zIndex: 10,
         }}>
-          <div style={{
-            width: '48px', height: '48px', borderRadius: '50%', background: '#16A34A', color: '#FFFFFF',
-            fontSize: '18px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 2px 8px rgba(22,163,74,.3)', fontVariantNumeric: 'tabular-nums',
-          }}>{doneCount}</div>
-          <span style={{
-            fontSize: '9.5px', fontWeight: 700, color: '#14532D', textTransform: 'uppercase',
-            letterSpacing: '.06em', writingMode: 'vertical-rl',
-          } as React.CSSProperties}>COMPLETED</span>
+          {/* Badge */}
+          <div
+            onClick={() => setShowDone(prev => !prev)}
+            title="Click to view completed items"
+            style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
+              cursor: 'pointer', transition: 'transform .15s',
+              transform: showDone ? 'scale(1.08)' : 'scale(1)',
+            }}
+          >
+            <div style={{
+              width: '48px', height: '48px', borderRadius: '50%', background: '#16A34A', color: '#FFFFFF',
+              fontSize: '18px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: showDone
+                ? '0 0 0 3px rgba(22,163,74,.25), 0 2px 8px rgba(22,163,74,.3)'
+                : '0 2px 8px rgba(22,163,74,.3)',
+              transition: 'box-shadow .15s',
+              fontVariantNumeric: 'tabular-nums',
+            }}>
+              {doneCount}
+            </div>
+            <span style={{
+              fontSize: '9.5px', fontWeight: 700, color: '#14532D', textTransform: 'uppercase',
+              letterSpacing: '.06em', writingMode: 'vertical-rl',
+            } as React.CSSProperties}>
+              COMPLETED
+            </span>
+          </div>
+
+          {/* ═══ POPOVER DROPDOWN ═══ */}
+          {showDone && (
+            <div style={{
+              position: 'absolute', right: '64px', top: '50%', transform: 'translateY(-50%)',
+              width: '340px', maxHeight: '420px', background: '#FFFFFF',
+              border: '1px solid #E2E8F0', borderRadius: '12px',
+              boxShadow: '0 8px 30px rgba(15,23,42,.12), 0 2px 8px rgba(15,23,42,.06)',
+              overflow: 'hidden', zIndex: 11,
+            }}>
+              {/* Header */}
+              <div style={{
+                padding: '14px 16px', borderBottom: '1px solid #F1F5F9',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{
+                    width: '22px', height: '22px', borderRadius: '50%', background: '#16A34A',
+                    color: '#FFF', fontSize: '12px', fontWeight: 700,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>✓</div>
+                  <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#020617' }}>
+                    Completed This Week
+                  </span>
+                </div>
+                <span style={{
+                  fontSize: '11px', fontWeight: 700, color: '#14532D',
+                  background: '#F0FDF4', padding: '2px 10px', borderRadius: '10px',
+                }}>
+                  {doneCount}
+                </span>
+              </div>
+
+              {/* Scrollable list */}
+              <div style={{
+                maxHeight: '340px', overflowY: 'auto', scrollbarWidth: 'thin', padding: '4px 0',
+              }}>
+                {doneItems.map(item => (
+                  <div
+                    key={item.id || item.item_key}
+                    onClick={(e) => { e.stopPropagation(); onItemClick(item); setShowDone(false); }}
+                    style={{
+                      display: 'flex', alignItems: 'flex-start', gap: '10px',
+                      padding: '10px 16px', cursor: 'pointer',
+                      borderBottom: '1px solid #F8FAFC', transition: 'background .1s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = '#F0FDF4')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    {/* Green check circle */}
+                    <div style={{
+                      width: '22px', height: '22px', borderRadius: '50%',
+                      background: '#F0FDF4', border: '1.5px solid #16A34A',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      flexShrink: 0, marginTop: '1px',
+                    }}>
+                      <svg width="12" height="12" viewBox="0 0 12 12">
+                        <path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="#16A34A" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+
+                    {/* Content */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                        <span style={{
+                          fontSize: '11.5px', fontWeight: 600, color: '#16A34A',
+                          fontFamily: "'JetBrains Mono', monospace",
+                        }}>
+                          {item.item_key}
+                        </span>
+                        <span style={{
+                          fontSize: '10px', fontWeight: 700, padding: '1px 5px',
+                          borderRadius: '3px', color: '#FFF', background: '#16A34A',
+                        }}>
+                          DONE
+                        </span>
+                      </div>
+                      <div style={{
+                        fontSize: '12.5px', fontWeight: 500, color: '#020617', lineHeight: '1.3',
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      }}>
+                        {item.title}
+                      </div>
+                      <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+                        Resolved · {formatResolvedDate(item.resolved_at || item.updated_at)}
+                      </div>
+                    </div>
+
+                    {/* Age */}
+                    <span style={{ fontSize: '11px', fontWeight: 600, color: '#16A34A', flexShrink: 0 }}>
+                      {item.age_days ?? 0}d
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
