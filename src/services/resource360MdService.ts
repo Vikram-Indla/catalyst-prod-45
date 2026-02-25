@@ -67,13 +67,26 @@ export const resource360MdService = {
   },
 
   async getSiblings(parentItemKey: string) {
+    // First check if parent is a Story — only show siblings for Story parents
+    const { data: parentData } = await supabase
+      .from('ph_issues' as any)
+      .select('issue_type')
+      .eq('issue_key', parentItemKey)
+      .limit(1)
+      .single();
+    
+    const parentType = (parentData as any)?.issue_type || '';
+    if (!parentType.toLowerCase().includes('story')) {
+      return { siblings: [], parentType };
+    }
+
     const { data, error } = await supabase
       .from('r360md_chronology_view' as any)
       .select('*')
       .eq('parent_key', parentItemKey)
       .order('item_key', { ascending: true });
     if (error) throw error;
-    return data || [];
+    return { siblings: data || [], parentType };
   },
 
   async getAllMembers() {

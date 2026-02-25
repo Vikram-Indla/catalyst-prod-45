@@ -164,8 +164,8 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
             </div>
           )}
 
-          {/* Siblings — only show when parent is a Story */}
-          {siblings.length > 0 && (item.parent_type || '').toLowerCase().includes('story') ? (
+          {/* Siblings — only populated when parent is a Story (filtered at service layer) */}
+          {siblings.length > 0 && (
             <div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                 <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>SIBLINGS</span>
@@ -178,7 +178,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                   const isCurrent = sib.item_key === item.item_key;
                   return (
                     <div
-                      key={sib.id}
+                      key={sib.id || sib.item_key}
                       className={`r3-sibling-row ${isCurrent ? 'current' : ''}`}
                       onClick={() => !isCurrent && onSiblingClick(sib)}
                       role="button"
@@ -186,6 +186,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                       aria-label={`Sibling ${sib.item_key} ${sib.title}${isCurrent ? ' (current)' : ''}`}
                       onKeyDown={(e) => { if (e.key === 'Enter' && !isCurrent) onSiblingClick(sib); }}
                     >
+                      <span style={{ flexShrink: 0 }}>{getJiraIcon(sib.item_type || 'Task')}</span>
                       <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: '#2563EB', fontWeight: 600, width: 72, flexShrink: 0 }}>
                         {sib.item_key}
                       </span>
@@ -202,12 +203,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 })}
               </div>
             </div>
-          ) : (item.parent_type || '').toLowerCase().includes('story') ? (
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', marginBottom: 8 }}>SIBLINGS</div>
-              <div style={{ fontSize: 12, color: '#94A3B8' }}>No sibling items</div>
-            </div>
-          ) : null}
+          )}
         </div>
       </div>
     </>
