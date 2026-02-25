@@ -1,15 +1,16 @@
 /**
  * CreateInitiativeDrawer — Slide-in form for creating a new initiative.
- * Uses custom dropdown components (no native selects).
+ * Stage C redesign: dark header, grouped sections, type selector, roadmap toggle.
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, Lightbulb } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { catalystToast } from '@/lib/catalystToast';
 import { useDepartmentOptions, useProfileOptions } from '@/hooks/useInitiativeLookups';
+import { useInitiativeTypes } from '@/hooks/useInitiativeTypes';
 import { StatusSelect } from './StatusSelect';
 import { QuarterSelect } from './QuarterSelect';
 import { PeopleSelect } from './PeopleSelect';
@@ -32,11 +33,9 @@ function useNextInitiativeKey() {
   return useQuery({
     queryKey: ['next-initiative-key'],
     queryFn: async () => {
-      // Fetch ALL keys to find the true maximum number, avoiding duplicate key errors
       const { data } = await (supabase as any)
         .from('ph_initiatives')
         .select('initiative_key');
-
       if (data && data.length > 0) {
         let maxNum = 0;
         for (const row of data) {
@@ -79,7 +78,7 @@ function useCreateInitiative() {
           initiative_type_id: newInit.initiative_type_id || null,
           on_roadmap: newInit.on_roadmap || false,
           roadmap_added_at: newInit.on_roadmap ? new Date().toISOString() : null,
-          health_status: 'on_track',
+          health_status: newInit.health_status || 'on_track',
           business_value: newInit.business_value || null,
           estimated_budget: newInit.estimated_budget || null,
           roadmap_priority: newInit.roadmap_priority || null,
@@ -87,7 +86,6 @@ function useCreateInitiative() {
         })
         .select()
         .single();
-
       if (error) throw new Error(error.message);
       return data;
     },
@@ -106,97 +104,88 @@ function useCreateInitiative() {
   });
 }
 
+const TYPE_OPTIONS = [
+  { key: 'project', label: 'Project', icon: '📁', color: '#2563EB' },
+  { key: 'enhancement', label: 'Enhancement', icon: '⚡', color: '#0D9488' },
+  { key: 'improvement', label: 'Improvement', icon: '🔧', color: '#D97706' },
+];
+
+const LABEL = "block text-[11px] font-semibold text-[#334155] uppercase tracking-[0.05em] mb-1.5";
+const INPUT = "w-full h-9 px-3 text-[13px] bg-white border border-[#E2E8F0] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow placeholder:text-[#94A3B8]";
+
 export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCreated }: CreateInitiativeDrawerProps) {
   const { data: nextKey } = useNextInitiativeKey();
   const createMutation = useCreateInitiative();
   const { data: departmentOptions } = useDepartmentOptions();
   const { data: profileOptions } = useProfileOptions();
+  const { data: initiativeTypes } = useInitiativeTypes();
 
   const [form, setForm] = useState({
-    title: '',
-    description: '',
-    status: 'new_demand',
-    department_id: '',
-    assignee_id: '',
-    business_owner_id: '',
-    reporter_id: '',
-    target_quarter: '',
-    kickoff_date: '',
-    target_complete: '',
-    business_ask_date: '',
+    title: '', description: '', status: 'new_demand',
+    department_id: '', assignee_id: '', business_owner_id: '',
+    reporter_id: '', target_quarter: '', kickoff_date: '',
+    target_complete: '', business_ask_date: '',
   });
   const [titleError, setTitleError] = useState(false);
+  const [selectedType, setSelectedType] = useState('project');
+  const [onRoadmap, setOnRoadmap] = useState(false);
+  const [roadmapPriority, setRoadmapPriority] = useState('');
+  const [healthStatus, setHealthStatus] = useState('on_track');
+  const [businessValue, setBusinessValue] = useState('');
+  const [estimatedBudget, setEstimatedBudget] = useState('');
+
+  const resetNewFields = () => {
+    setSelectedType('project');
+    setOnRoadmap(false);
+    setRoadmapPriority('');
+    setHealthStatus('on_track');
+    setBusinessValue('');
+    setEstimatedBudget('');
+  };
 
   useEffect(() => {
     if (open) {
       if (conversionSource) {
         const src = conversionSource;
-        // Resolve department name to UUID
         const resolveDeptId = (deptName?: string): string => {
           if (!deptName || !departmentOptions) return '';
-          const q = deptName.toLowerCase().replace(/[.\s]+/g, '');
-          // Exact match first, then partial/fuzzy
-          const exact = departmentOptions.find(
-            (d: any) => d.label.toLowerCase() === deptName.toLowerCase()
-          );
+          const exact = departmentOptions.find((d: any) => d.label.toLowerCase() === deptName.toLowerCase());
           if (exact) return exact.value;
-          const partial = departmentOptions.find(
-            (d: any) => {
-              const dl = d.label.toLowerCase().replace(/[.\s]+/g, '');
-              return dl.includes(q) || q.includes(dl);
-            }
-          );
+          const q = deptName.toLowerCase().replace(/[.\s]+/g, '');
+          const partial = departmentOptions.find((d: any) => {
+            const dl = d.label.toLowerCase().replace(/[.\s]+/g, '');
+            return dl.includes(q) || q.includes(dl);
+          });
           return partial?.value || '';
         };
-        // Resolve assignee name to UUID
         const resolveAssigneeId = (name?: string): string => {
           if (!name || !profileOptions) return '';
           const q = name.toLowerCase().replace(/[.\s]+/g, '');
-          const match = profileOptions.find(
-            (p: any) => {
-              const pl = (p.label || '').toLowerCase().replace(/[.\s]+/g, '');
-              return pl.includes(q) || q.includes(pl) ||
-                p.label.toLowerCase().includes(name.toLowerCase()) ||
-                name.toLowerCase().includes(p.label.toLowerCase());
-            }
-          );
+          const match = profileOptions.find((p: any) => {
+            const pl = (p.label || '').toLowerCase().replace(/[.\s]+/g, '');
+            return pl.includes(q) || q.includes(pl);
+          });
           return match?.value || '';
         };
 
         if (src.type === 'single') {
           const p = src.primaryIdea;
-          const desc = `Converted from Ideation · ${p.key}\n\n${p.description || p.title}\n\n---\nIMPACT Score: ${p.impact.toFixed(2)}/5.00\nVotes: ${p.votes} · Priority: ${p.priority}`;
           setForm({
             title: p.title,
-            description: desc,
-            status: 'new_demand',
-            department_id: resolveDeptId(p.dept),
-            assignee_id: resolveAssigneeId(p.assignee),
-            business_owner_id: '',
-            reporter_id: '',
-            target_quarter: '',
-            kickoff_date: '',
-            target_complete: '',
-            business_ask_date: '',
+            description: `Converted from Ideation · ${p.key}\n\n${p.description || p.title}\n\n---\nIMPACT Score: ${p.impact.toFixed(2)}/5.00\nVotes: ${p.votes} · Priority: ${p.priority}`,
+            status: 'new_demand', department_id: resolveDeptId(p.dept),
+            assignee_id: resolveAssigneeId(p.assignee), business_owner_id: '',
+            reporter_id: '', target_quarter: '', kickoff_date: '', target_complete: '', business_ask_date: '',
           });
         } else if (src.type === 'merge' && src.mergeIdea) {
           const p = src.primaryIdea;
           const m = src.mergeIdea;
-          const combinedImpact = p.impact;
-          const totalVotes = p.votes + m.votes;
-          const desc = `Consolidated from 2 ideation submissions:\n\n• ${p.key}: ${p.title} (IMPACT ${p.impact.toFixed(2)}, ${p.votes} votes)\n• ${m.key}: ${m.title} (IMPACT ${m.impact.toFixed(2)}, ${m.votes} votes)\n\n---\nCombined IMPACT: ${combinedImpact.toFixed(2)} (weighted by vote count)\nTotal votes: ${totalVotes}`;
           setForm({
             title: `${p.title} & ${m.title.split(' ').slice(0, 3).join(' ')} Platform`,
-            description: desc,
-            status: 'new_demand',
-            department_id: resolveDeptId(p.dept),
-            assignee_id: resolveAssigneeId(p.assignee),
-            business_owner_id: '',
-            reporter_id: '',
-            target_quarter: '',
-            kickoff_date: '',
-            target_complete: '',
-            business_ask_date: '',
+            description: `Consolidated from 2 ideation submissions:\n\n• ${p.key}: ${p.title} (IMPACT ${p.impact.toFixed(2)}, ${p.votes} votes)\n• ${m.key}: ${m.title} (IMPACT ${m.impact.toFixed(2)}, ${m.votes} votes)\n\n---\nCombined IMPACT: ${p.impact.toFixed(2)} (weighted by vote count)\nTotal votes: ${p.votes + m.votes}`,
+            status: 'new_demand', department_id: resolveDeptId(p.dept),
+            assignee_id: resolveAssigneeId(p.assignee), business_owner_id: '',
+            reporter_id: '', target_quarter: '', kickoff_date: '', target_complete: '', business_ask_date: '',
           });
         }
       } else {
@@ -208,6 +197,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
         });
       }
       setTitleError(false);
+      resetNewFields();
     }
   }, [open, conversionSource, departmentOptions, profileOptions]);
 
@@ -224,14 +214,18 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
   }, []);
 
   const handleCreate = async () => {
-    if (!form.title.trim()) {
-      setTitleError(true);
-      return;
-    }
+    if (!form.title.trim()) { setTitleError(true); return; }
     const key = nextKey || 'MIM-001';
+    const typeId = initiativeTypes?.find((t: any) => t.key === selectedType)?.id || null;
     await createMutation.mutateAsync({
       ...form,
       initiative_key: key,
+      initiative_type_id: typeId,
+      on_roadmap: onRoadmap,
+      health_status: healthStatus || 'on_track',
+      business_value: businessValue || null,
+      estimated_budget: estimatedBudget ? parseFloat(estimatedBudget) : null,
+      roadmap_priority: roadmapPriority ? parseInt(roadmapPriority) : null,
     });
     onCreated?.(key);
     onClose();
@@ -254,208 +248,306 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
             initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
           >
-            {/* Sticky Header */}
-            <div className="flex-shrink-0 bg-white border-b border-zinc-200 px-6 py-4 flex items-center justify-between">
+            {/* Dark Header */}
+            <div className="flex-shrink-0 px-5 py-3.5 flex items-center justify-between" style={{ background: '#0F172A' }}>
               <div>
-                <h2 className="text-lg font-semibold text-zinc-900">New Initiative</h2>
+                <h2 className="text-[15px] font-bold text-white">New Initiative</h2>
                 {nextKey && (
-                  <span className="text-xs font-mono text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded mt-1 inline-block">
+                  <span className="text-[11px] font-mono font-semibold px-1.5 py-0.5 rounded mt-1 inline-block" style={{ background: '#0D9488', color: '#fff' }}>
                     {nextKey}
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={onClose}
-                  className="px-4 h-9 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleCreate}
-                  disabled={createMutation.isPending}
-                  className={cn(
-                    'px-5 h-9 text-sm font-bold rounded-lg transition-colors flex items-center gap-2',
-                    form.title.trim()
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm'
-                      : 'bg-zinc-300 text-zinc-500 cursor-not-allowed'
-                  )}
-                >
-                  {createMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                  + Create
-                </button>
-                <button
-                  onClick={onClose}
-                  className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-md ml-1"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
+              <button
+                onClick={onClose}
+                className="w-7 h-7 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 rounded-md transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
             {/* Scrollable Body */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              {/* Conversion Banner */}
+            <div className="flex-1 overflow-y-auto">
+              {/* Conversion Banners */}
               {conversionSource?.type === 'single' && (
-                <div style={{ background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '8px', padding: '12px 16px', marginBottom: '4px' }}>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A', marginBottom: '4px' }}>🔄 Converting idea to initiative</div>
-                  <div style={{ fontSize: '12px', color: '#334155' }}>
+                <div className="mx-5 mt-4 p-3 rounded-lg" style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
+                  <div className="text-[13px] font-bold" style={{ color: '#0F172A' }}>🔄 Converting idea to initiative</div>
+                  <div className="text-[12px] mt-1" style={{ color: '#334155' }}>
                     <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#2563EB' }}>{conversionSource.primaryIdea.key}</span>
                     {' · '}{conversionSource.primaryIdea.title}
-                  </div>
-                  <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
-                    IMPACT {conversionSource.primaryIdea.impact.toFixed(2)} · {conversionSource.primaryIdea.votes} votes · Approved
                   </div>
                 </div>
               )}
               {conversionSource?.type === 'merge' && conversionSource.mergeIdea && (
-                <div style={{ background: '#F5F3FF', border: '1px solid #DDD6FE', borderRadius: '8px', padding: '12px 16px', marginBottom: '4px' }}>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A', marginBottom: '4px' }}>🔗 Merging 2 ideas into 1 initiative</div>
-                  <div style={{ fontSize: '12px', color: '#334155' }}>
+                <div className="mx-5 mt-4 p-3 rounded-lg" style={{ background: '#F5F3FF', border: '1px solid #DDD6FE' }}>
+                  <div className="text-[13px] font-bold" style={{ color: '#0F172A' }}>🔗 Merging 2 ideas into 1 initiative</div>
+                  <div className="text-[12px] mt-1" style={{ color: '#334155' }}>
                     Primary: <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#2563EB' }}>{conversionSource.primaryIdea.key}</span>
                     {' · '}{conversionSource.primaryIdea.title}
                   </div>
-                  <div style={{ fontSize: '12px', color: '#334155', marginTop: '2px' }}>
+                  <div className="text-[12px] mt-0.5" style={{ color: '#334155' }}>
                     Merging: <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#2563EB' }}>{conversionSource.mergeIdea.key}</span>
                     {' · '}{conversionSource.mergeIdea.title}
                   </div>
-                  <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
-                    Combined IMPACT: {conversionSource.primaryIdea.impact.toFixed(2)} · {conversionSource.primaryIdea.votes + conversionSource.mergeIdea.votes} total votes
-                  </div>
                 </div>
               )}
-              {/* Title */}
-              <div>
-                <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">
-                  Title <span className="text-red-500">*</span>
+
+              {/* Section 1: Details */}
+              <div className="px-5 py-4 border-b border-[#F1F5F9]">
+                <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.06em] mb-3" style={{ color: '#0F172A' }}>
+                  <span className="text-[12px]">📝</span> Details
                 </div>
-                <input
-                  type="text"
-                  value={form.title}
-                  onChange={e => updateField('title', e.target.value)}
-                  placeholder="Initiative title"
-                  className={cn(
-                    'w-full border rounded-lg px-3 py-2.5 text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white outline-none transition-shadow',
-                    titleError ? 'border-red-500 ring-2 ring-red-500/20' : 'border-zinc-300'
+                <div className="space-y-3">
+                  <div>
+                    <label className={LABEL}>Title <span className="text-red-500">*</span></label>
+                    <input
+                      type="text"
+                      value={form.title}
+                      onChange={e => updateField('title', e.target.value)}
+                      placeholder="e.g. Digital Platform Modernization"
+                      className={cn(INPUT, titleError && 'border-red-500 ring-2 ring-red-500/20')}
+                      autoFocus
+                    />
+                    {titleError && <p className="text-xs text-red-500 mt-1">Title is required</p>}
+                  </div>
+                  <div>
+                    <label className={LABEL}>Description</label>
+                    <textarea
+                      value={form.description}
+                      onChange={e => updateField('description', e.target.value)}
+                      placeholder="Brief description of the initiative scope and objectives..."
+                      rows={3}
+                      className="w-full px-3 py-2 text-[13px] bg-white border border-[#E2E8F0] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-shadow placeholder:text-[#94A3B8]"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 2: Classification */}
+              <div className="px-5 py-4 border-b border-[#F1F5F9]">
+                <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.06em] mb-3" style={{ color: '#0F172A' }}>
+                  <span className="text-[12px]">🏷️</span> Classification
+                </div>
+                <div className="space-y-3">
+                  {/* Type Selector */}
+                  <div>
+                    <label className={LABEL}>Initiative Type</label>
+                    <div className="grid grid-cols-3 gap-1.5 bg-[#F8FAFC] p-1 rounded-lg border border-[#E2E8F0]">
+                      {TYPE_OPTIONS.map(opt => (
+                        <button
+                          key={opt.key}
+                          type="button"
+                          onClick={() => setSelectedType(opt.key)}
+                          className={cn(
+                            'flex flex-col items-center p-2 rounded-md cursor-pointer transition-all border-2',
+                            selectedType === opt.key
+                              ? 'bg-white shadow-sm'
+                              : 'border-transparent hover:bg-white/60'
+                          )}
+                          style={{ borderColor: selectedType === opt.key ? opt.color : 'transparent' }}
+                        >
+                          <span className="text-[18px]">{opt.icon}</span>
+                          <span className="text-[11px] font-semibold mt-0.5" style={{ color: '#334155' }}>{opt.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Status + Department */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className={LABEL}>Status</label>
+                      <StatusSelect value={form.status} onChange={v => updateField('status', v)} />
+                    </div>
+                    <div>
+                      <label className={LABEL}>Department</label>
+                      <DepartmentSelect
+                        value={form.department_id}
+                        onChange={v => updateField('department_id', v)}
+                        departments={departmentOptions || []}
+                      />
+                    </div>
+                  </div>
+                  {/* Business Value + Health */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className={LABEL}>Business Value</label>
+                      <select value={businessValue} onChange={e => setBusinessValue(e.target.value)} className={cn(INPUT, 'appearance-none')}>
+                        <option value="">Not set</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className={LABEL}>Health Status</label>
+                      <select value={healthStatus} onChange={e => setHealthStatus(e.target.value)} className={cn(INPUT, 'appearance-none')}>
+                        <option value="on_track">On Track</option>
+                        <option value="at_risk">At Risk</option>
+                        <option value="off_track">Off Track</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 3: People */}
+              <div className="px-5 py-4 border-b border-[#F1F5F9]">
+                <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.06em] mb-3" style={{ color: '#0F172A' }}>
+                  <span className="text-[12px]">👥</span> People
+                </div>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className={LABEL}>Assignee</label>
+                      <PeopleSelect value={form.assignee_id} onChange={v => updateField('assignee_id', v)} profiles={profileOptions || []} placeholder="Select assignee" />
+                    </div>
+                    <div>
+                      <label className={LABEL}>Business Owner</label>
+                      <PeopleSelect value={form.business_owner_id} onChange={v => updateField('business_owner_id', v)} profiles={profileOptions || []} placeholder="Select business owner" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className={LABEL}>Reporter</label>
+                      <PeopleSelect value={form.reporter_id} onChange={v => updateField('reporter_id', v)} profiles={profileOptions || []} placeholder="Select reporter" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 4: Planning */}
+              <div className="px-5 py-4 border-b border-[#F1F5F9]">
+                <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.06em] mb-3" style={{ color: '#0F172A' }}>
+                  <span className="text-[12px]">📅</span> Planning
+                </div>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className={LABEL}>Target Quarter</label>
+                      <QuarterSelect value={form.target_quarter} onChange={v => updateField('target_quarter', v)} />
+                    </div>
+                    <div>
+                      <label className={LABEL}>Estimated Budget</label>
+                      <input
+                        value={estimatedBudget}
+                        onChange={e => setEstimatedBudget(e.target.value)}
+                        placeholder="e.g. 500000"
+                        className={INPUT}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className={LABEL}>Kickoff Date</label>
+                      <input type="date" value={form.kickoff_date} onChange={e => updateField('kickoff_date', e.target.value)} className={cn(INPUT, 'appearance-none')} />
+                    </div>
+                    <div>
+                      <label className={LABEL}>Target Complete</label>
+                      <input type="date" value={form.target_complete} onChange={e => updateField('target_complete', e.target.value)} className={cn(INPUT, 'appearance-none')} />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className={LABEL}>Business Ask Date</label>
+                      <input type="date" value={form.business_ask_date} onChange={e => updateField('business_ask_date', e.target.value)} className={cn(INPUT, 'appearance-none')} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 5: Roadmap */}
+              <div className="px-5 py-4">
+                <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.06em] mb-3" style={{ color: '#0F172A' }}>
+                  <span className="text-[12px]">🗺️</span> Roadmap
+                </div>
+
+                <div className={cn(
+                  'rounded-lg p-3 border transition-colors',
+                  onRoadmap ? 'bg-[#EFF6FF] border-[#BFDBFE]' : 'bg-[#F8FAFC] border-[#E2E8F0]'
+                )}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm text-white" style={{ background: '#2563EB' }}>🗺️</div>
+                      <div>
+                        <div className="text-[13px] font-semibold" style={{ color: '#0F172A' }}>Add to Roadmap</div>
+                        <div className="text-[11px]" style={{ color: '#64748B' }}>Make visible on the Product Roadmap timeline</div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setOnRoadmap(!onRoadmap)}
+                      className={cn(
+                        'relative w-10 h-[22px] rounded-full transition-colors',
+                        onRoadmap ? 'bg-[#2563EB]' : 'bg-[#E2E8F0]'
+                      )}
+                    >
+                      <span className={cn(
+                        'absolute top-[2px] w-[18px] h-[18px] rounded-full bg-white shadow-sm transition-transform',
+                        onRoadmap ? 'left-[20px]' : 'left-[2px]'
+                      )} />
+                    </button>
+                  </div>
+
+                  {onRoadmap && (
+                    <div className="mt-2.5 pt-2.5 border-t border-[#BFDBFE] grid grid-cols-2 gap-3">
+                      <div>
+                        <label className={LABEL}>Roadmap Priority</label>
+                        <select value={roadmapPriority} onChange={e => setRoadmapPriority(e.target.value)} className={cn(INPUT, 'appearance-none border-[#BFDBFE]')}>
+                          <option value="">Auto (by score)</option>
+                          <option value="1">1 — Critical</option>
+                          <option value="2">2 — High</option>
+                          <option value="3">3 — Medium</option>
+                          <option value="4">4 — Low</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className={LABEL}>Delivery Window</label>
+                        <select disabled className={cn(INPUT, 'appearance-none border-[#BFDBFE] bg-[#F8FAFC]')} style={{ color: '#64748B' }}>
+                          <option>{form.target_quarter || 'Set in Planning ↑'}</option>
+                        </select>
+                      </div>
+                    </div>
                   )}
-                  autoFocus
-                />
-                {titleError && <p className="text-xs text-red-500 mt-1">Title is required</p>}
-              </div>
-
-              {/* Description */}
-              <div>
-                <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">
-                  Description
-                </div>
-                <textarea
-                  value={form.description}
-                  onChange={e => updateField('description', e.target.value)}
-                  placeholder="Describe the initiative…"
-                  rows={4}
-                  className="w-full border border-zinc-300 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-y"
-                />
-              </div>
-
-              {/* 2-col grid with custom dropdowns */}
-              <div className="grid grid-cols-2 gap-4 gap-x-8">
-                {/* Status */}
-                <div>
-                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Status</div>
-                  <StatusSelect value={form.status} onChange={v => updateField('status', v)} />
                 </div>
 
-                {/* Department */}
-                <div>
-                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Department</div>
-                  <DepartmentSelect
-                    value={form.department_id}
-                    onChange={v => updateField('department_id', v)}
-                    departments={departmentOptions || []}
-                  />
-                </div>
-
-                {/* Assignee */}
-                <div>
-                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Assignee</div>
-                  <PeopleSelect
-                    value={form.assignee_id}
-                    onChange={v => updateField('assignee_id', v)}
-                    profiles={profileOptions || []}
-                    placeholder="Select assignee"
-                  />
-                </div>
-
-                {/* Business Owner */}
-                <div>
-                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Business Owner</div>
-                  <PeopleSelect
-                    value={form.business_owner_id}
-                    onChange={v => updateField('business_owner_id', v)}
-                    profiles={profileOptions || []}
-                    placeholder="Select business owner"
-                  />
-                </div>
-
-                {/* Reporter */}
-                <div>
-                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Reporter</div>
-                  <PeopleSelect
-                    value={form.reporter_id}
-                    onChange={v => updateField('reporter_id', v)}
-                    profiles={profileOptions || []}
-                    placeholder="Select reporter"
-                  />
-                </div>
-
-                {/* Quarter */}
-                <div>
-                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Target Quarter</div>
-                  <QuarterSelect value={form.target_quarter} onChange={v => updateField('target_quarter', v)} />
-                </div>
-
-                {/* Kickoff Date */}
-                <div>
-                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Kickoff Date</div>
-                  <input
-                    type="date"
-                    value={form.kickoff_date}
-                    onChange={e => updateField('kickoff_date', e.target.value)}
-                    className="w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                  />
-                </div>
-
-                {/* Target Complete */}
-                <div>
-                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Target Complete</div>
-                  <input
-                    type="date"
-                    value={form.target_complete}
-                    onChange={e => updateField('target_complete', e.target.value)}
-                    className="w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                  />
-                </div>
-
-                {/* Business Ask Date */}
-                <div>
-                  <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">Business Ask Date</div>
-                  <input
-                    type="date"
-                    value={form.business_ask_date}
-                    onChange={e => updateField('business_ask_date', e.target.value)}
-                    className="w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                  />
+                {/* AI Tip Banner */}
+                <div className="flex items-start gap-2 p-2.5 rounded-lg mt-3" style={{ background: '#F5F3FF', border: '1px solid #DDD6FE' }}>
+                  <span className="text-sm flex-shrink-0 mt-0.5">🤖</span>
+                  <p className="text-[11.5px] leading-relaxed" style={{ color: '#334155' }}>
+                    <strong style={{ color: '#7C3AED' }} className="font-semibold">Req Assist™:</strong> Score will be calculated after the initiative is created. Use the Score tab to set scoring criteria.
+                  </p>
                 </div>
               </div>
+            </div>
 
-              {/* Tip */}
-              <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                <Lightbulb className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-amber-700 leading-relaxed">
-                  <strong>Tip:</strong> Score will be calculated after the initiative is created.
-                  Use the Score tab to set scoring criteria.
-                </p>
-              </div>
+            {/* Sticky Footer */}
+            <div className="px-5 py-3 border-t border-[#E2E8F0] bg-white flex items-center gap-2 flex-shrink-0">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 border border-[#E2E8F0] bg-white rounded-md text-[13px] font-medium hover:bg-[#F8FAFC] transition-colors"
+                style={{ color: '#334155' }}
+              >
+                Cancel
+              </button>
+              <div className="flex-1" />
+              <button
+                type="button"
+                className="px-4 py-2 border rounded-md text-[13px] font-medium hover:bg-[#EFF6FF] transition-colors"
+                style={{ borderColor: '#2563EB', color: '#2563EB' }}
+              >
+                + Create & Add Another
+              </button>
+              <button
+                type="button"
+                onClick={handleCreate}
+                disabled={createMutation.isPending || !form.title.trim()}
+                className="px-5 py-2 text-white rounded-md text-[13px] font-semibold transition-colors disabled:opacity-50 flex items-center gap-2"
+                style={{ background: '#2563EB' }}
+              >
+                {createMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                + Create
+              </button>
             </div>
           </motion.div>
         </>

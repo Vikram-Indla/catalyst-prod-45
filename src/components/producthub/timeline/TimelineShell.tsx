@@ -3,7 +3,7 @@
 // Now wired to ph_roadmap_initiatives_view (on_roadmap=true only)
 // =====================================================
 
-import React, { useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useRef, useEffect, useCallback, useMemo, useState } from 'react';
 import { TimelineToolbar } from './TimelineToolbar';
 import { TimelineFilterBar } from './TimelineFilterBar';
 import { TimelineLeftPanel } from './TimelineLeftPanel';
@@ -16,8 +16,9 @@ import { useRoadmapInitiatives } from '@/hooks/useRoadmapInitiatives';
 import { useProfileOptions, useDepartmentOptions } from '@/hooks/useInitiativeLookups';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 
-export const TimelineShell: React.FC = () => {
+export const TimelineShell: React.FC<{ onAddNew?: () => void }> = ({ onAddNew }) => {
   const { activeFilter, searchTerm, groupBy, selectedInitiativeId, isDetailOpen, closeDetail } = useTimelineState();
+  const [typeFilter, setTypeFilter] = useState('all');
   const { data: roadmapData, isLoading, error } = useRoadmapInitiatives();
   const { data: profiles } = useProfileOptions();
   const { data: departments } = useDepartmentOptions();
@@ -68,7 +69,12 @@ export const TimelineShell: React.FC = () => {
     }));
   }, [roadmapData, getProfileName, getDepartmentName]);
 
-  const { flat, groups } = useFilteredInitiatives(initiatives, activeFilter, searchTerm, groupBy);
+  const filteredByType = useMemo(() => {
+    if (typeFilter === 'all') return initiatives;
+    return initiatives.filter(i => i.initiative_type_key === typeFilter);
+  }, [initiatives, typeFilter]);
+
+  const { flat, groups } = useFilteredInitiatives(filteredByType, activeFilter, searchTerm, groupBy);
   const leftScrollRef = useRef<HTMLDivElement>(null);
 
   // Realtime subscription
@@ -126,7 +132,7 @@ export const TimelineShell: React.FC = () => {
   return (
     <div className="flex-1 flex flex-col min-h-0">
       <TimelineToolbar />
-      <TimelineFilterBar />
+      <TimelineFilterBar typeFilter={typeFilter} onTypeFilterChange={setTypeFilter} />
 
       {/* Main body: left panel + timeline grid */}
       <div className="flex-1 flex min-h-0">
@@ -138,6 +144,7 @@ export const TimelineShell: React.FC = () => {
             totalCount={flat.length}
             isLoading={isLoading}
             scrollRef={leftScrollRef}
+            onAddNew={onAddNew}
           />
         </div>
 
