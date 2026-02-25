@@ -1,6 +1,95 @@
 import React from 'react';
-import { getJiraIcon } from './R360JiraIcons';
-import { resolveStatusStyle, getAgeColor, getAgeLabel, slugify, initials } from './r360-helpers';
+import { slugify, initials as getInitials } from './r360-helpers';
+
+// ═══════════════════════════════════════════════════
+// STATUS COLORS — Jira status → display colors
+// GREEN = ONLY for Done. AMBER = To Do. BLUE = In Progress.
+// ═══════════════════════════════════════════════════
+const SC: Record<string, { dot: string; bg: string; tx: string; label: string; accent: string }> = {
+  'To Do':                { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'To Do',       accent: '#D97706' },
+  'Open':                 { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'To Do',       accent: '#D97706' },
+  'Backlog':              { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Backlog',     accent: '#D97706' },
+  'Re-Open':              { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Re-Open',     accent: '#D97706' },
+  'In Requirements':      { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Requirements',accent: '#D97706' },
+  'Awaiting Info':        { dot: '#D97706', bg: '#FFFBEB', tx: '#78350F', label: 'Awaiting',    accent: '#D97706' },
+  'In Progress':          { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress', accent: '#2563EB' },
+  'In Development':       { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress', accent: '#2563EB' },
+  'Under Implementation': { dot: '#2563EB', bg: '#EFF6FF', tx: '#1E3A5F', label: 'In Progress', accent: '#2563EB' },
+  'In Review':            { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review',   accent: '#0D9488' },
+  'In QA':                { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In QA',       accent: '#0D9488' },
+  'Ready for QA':         { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Ready QA',    accent: '#0D9488' },
+  'Retest':               { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'Retest',      accent: '#0D9488' },
+  'Code Review':          { dot: '#0D9488', bg: '#F0FDFA', tx: '#134E4A', label: 'In Review',   accent: '#0D9488' },
+  'In UAT':               { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'In UAT',     accent: '#7C3AED' },
+  'UAT Ready':            { dot: '#7C3AED', bg: '#F5F3FF', tx: '#4C1D95', label: 'UAT Ready',  accent: '#7C3AED' },
+  'Done':                 { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: '#16A34A' },
+  'Closed':               { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: '#16A34A' },
+  'Resolved':             { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: '#16A34A' },
+  'Ready for Production': { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: '#16A34A' },
+  'Beta Ready':           { dot: '#16A34A', bg: '#F0FDF4', tx: '#14532D', label: 'Done',        accent: '#16A34A' },
+  'Blocked':              { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Blocked',     accent: '#EF4444' },
+  'Rejected':             { dot: '#EF4444', bg: '#FEF2F2', tx: '#7F1D1D', label: 'Rejected',    accent: '#EF4444' },
+};
+const SCD = { dot: '#64748B', bg: '#F1F5F9', tx: '#334155', label: 'Unknown', accent: '#64748B' };
+const sc = (s: string) => SC[s] || SCD;
+
+// Also resolve by category fallback
+function resolveStatus(item: any) {
+  if (item.status_name && SC[item.status_name]) return SC[item.status_name];
+  // Use DB colors if available
+  if (item.status_dot_color && item.status_bg_color && item.status_color) {
+    return { dot: item.status_dot_color, bg: item.status_bg_color, tx: item.status_color, label: item.status_name || 'Unknown', accent: item.status_dot_color };
+  }
+  // Category fallback
+  const cat = (item.status_category || '').toLowerCase();
+  if (cat === 'completed' || cat === 'done') return SC['Done'];
+  if (cat === 'started' || cat === 'in progress' || cat === 'indeterminate') return SC['In Progress'];
+  return SCD;
+}
+
+// ═══════════════════════════════════════════════════
+// JIRA ICONS — Fuzzy match
+// ═══════════════════════════════════════════════════
+const BugIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="#E5493A"/><circle cx="8" cy="8" r="3" fill="white"/></svg>
+);
+const TaskIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="#4BADE8"/><path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+);
+const StoryIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="#63BA3C"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>
+);
+const EpicIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="14" height="14" rx="2" fill="#904EE2"/><path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/></svg>
+);
+function JiraIcon({ type }: { type: string }) {
+  const t = (type || '').toLowerCase();
+  if (t.includes('bug')) return <BugIcon />;
+  if (t.includes('story')) return <StoryIcon />;
+  if (t.includes('epic')) return <EpicIcon />;
+  return <TaskIcon />;
+}
+
+// ═══════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════
+const ageCol = (d: number) => d <= 7 ? '#16A34A' : d <= 14 ? '#D97706' : '#EF4444';
+const trunc = (s: string, l: number) => s && s.length > l ? s.slice(0, l) + '…' : s || '';
+const ageLabel = (d: number) => d === 0 ? 'Today' : d === 1 ? '1d ago' : `${d}d ago`;
+
+const PC: Record<string, string> = { BAU: '#2563EB', SEN: '#D97706', FAC: '#16A34A', OPS: '#0D9488', SUP: '#64748B', LND: '#7C3AED' };
+const pColor = (k: string, fallback?: string) => fallback || PC[k] || '#64748B';
+
+const SPOTS = [
+  { x: 3,  y: 3  },
+  { x: 36, y: 0  },
+  { x: 67, y: 5  },
+  { x: 0,  y: 38 },
+  { x: 70, y: 34 },
+  { x: 5,  y: 68 },
+  { x: 36, y: 72 },
+  { x: 67, y: 66 },
+];
 
 interface Props {
   member: any;
@@ -9,37 +98,22 @@ interface Props {
   onItemClick: (item: any) => void;
 }
 
-const SPOTS = [
-  { left: '5%', top: '8%' },
-  { left: '38%', top: '2%' },
-  { left: '72%', top: '8%' },
-  { left: '78%', top: '40%' },
-  { left: '72%', top: '72%' },
-  { left: '38%', top: '82%' },
-  { left: '5%', top: '72%' },
-  { left: '0%', top: '40%' },
-];
-
 export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItemClick }) => {
   const activeItems = items.filter(i => i.status_category !== 'completed').slice(0, 8);
   const memberName = member?.full_name || 'Unknown';
   const memberRole = member?.role || '';
-  const slug = slugify(memberName);
+  const avatarSlug = slugify(memberName);
 
   if (activeItems.length === 0 && doneCount === 0) {
     return (
-      <div className="r3-ring-canvas" style={{ height: 640, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{
+        position: 'relative', width: '100%', height: '720px', overflow: 'hidden',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'radial-gradient(circle at center, #fff 0%, #F8FAFC 55%, #F1F5F9 100%)',
+        borderRadius: 12, border: '1px solid #E2E8F0',
+      }}>
         <div style={{ textAlign: 'center', color: '#64748B' }}>
-          <div className="r3-ring-center" style={{ position: 'relative', transform: 'none', left: 'auto', top: 'auto', margin: '0 auto 16px' }}>
-            {member?.avatar_url ? (
-              <img className="r3-ring-avatar" src={member.avatar_url} alt={memberName}
-                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.setAttribute('style', 'display:flex'); }} />
-            ) : null}
-            <div className="r3-ring-avatar-fb" style={{ display: member?.avatar_url ? 'none' : 'flex' }}>
-              {initials(memberName)}
-            </div>
-          </div>
-          <div style={{ fontSize: 15, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No active items this week</div>
+          <div style={{ fontSize: 15, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No active items</div>
           <div style={{ fontSize: 13 }}>Assigned work items will orbit here.</div>
         </div>
       </div>
@@ -47,98 +121,138 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
   }
 
   return (
-    <div className="r3-ring-canvas" style={{ height: 640 }} role="img" aria-label={`Ring view showing ${activeItems.length} active items for ${memberName}`}>
-      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1 }} aria-hidden="true">
+    <div style={{
+      position: 'relative', width: '100%', height: '720px', overflow: 'hidden', boxSizing: 'border-box',
+      background: 'radial-gradient(circle at center, #fff 0%, #F8FAFC 55%, #F1F5F9 100%)',
+      backgroundImage: 'radial-gradient(circle at center, #fff 0%, #F8FAFC 55%, #F1F5F9 100%), radial-gradient(circle, #CBD5E1 1px, transparent 1px)',
+      backgroundSize: 'cover, 24px 24px',
+    }}>
+      {/* SVG SPOKES */}
+      <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1, pointerEvents: 'none', overflow: 'hidden' }}>
         {activeItems.map((_, i) => {
-          const spot = SPOTS[i];
-          if (!spot) return null;
+          const cx = SPOTS[i].x + 10;
+          const cy = SPOTS[i].y + 9;
           return (
-            <line
-              key={i}
-              x1="50%" y1="50%"
-              x2={`${parseFloat(spot.left) + 10}%`} y2={`${parseFloat(spot.top) + 8}%`}
-              stroke="#94A3B8" strokeWidth="2" strokeDasharray="8 5"
-            />
+            <line key={`spoke-${i}`} x1="50%" y1="49%" x2={`${cx}%`} y2={`${cy}%`}
+              stroke="#94A3B8" strokeWidth="2" strokeDasharray="8 5" strokeLinecap="round" />
           );
         })}
       </svg>
 
+      {/* SPOKE MIDPOINT LABELS */}
       {activeItems.map((item, i) => {
-        const spot = SPOTS[i];
-        if (!spot) return null;
-        const midLeft = (50 + parseFloat(spot.left) + 10) / 2;
-        const midTop = (50 + parseFloat(spot.top) + 8) / 2;
+        const cx = SPOTS[i].x + 10;
+        const cy = SPOTS[i].y + 9;
+        const mx = (50 + cx) / 2;
+        const my = (49 + cy) / 2;
         return (
-          <div
-            key={`label-${i}`}
-            className="r3-spoke-label"
-            style={{ position: 'absolute', left: `${midLeft}%`, top: `${midTop}%`, transform: 'translate(-50%,-50%)' }}
-          >
-            {getAgeLabel(item.age_days ?? 0)}
+          <div key={`label-${i}`} style={{
+            position: 'absolute', left: `${mx}%`, top: `${my}%`,
+            transform: 'translate(-50%, -50%)', zIndex: 4, pointerEvents: 'none',
+            fontSize: '11px', fontWeight: 600, color: '#334155', background: '#F8FAFC',
+            padding: '2px 8px', borderRadius: '10px', border: '1px solid #E2E8F0',
+            whiteSpace: 'nowrap', fontFamily: "'Inter', system-ui, sans-serif",
+            fontVariantNumeric: 'tabular-nums',
+          }}>
+            {ageLabel(item.age_days ?? 0)}
           </div>
         );
       })}
 
-      <div className="r3-ring-center">
-        {member?.avatar_url ? (
-          <img className="r3-ring-avatar" src={member.avatar_url} alt={memberName}
-            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.setAttribute('style', 'display:flex'); }} />
-        ) : null}
-        <div className="r3-ring-avatar-fb" style={{ display: member?.avatar_url ? 'none' : 'flex' }}>
-          {initials(memberName)}
+      {/* CENTER AVATAR */}
+      <div style={{ position: 'absolute', left: '50%', top: '49%', transform: 'translate(-50%, -50%)', textAlign: 'center', zIndex: 5 }}>
+        <div style={{
+          width: '96px', height: '96px', borderRadius: '50%', border: '3px solid #2563EB',
+          overflow: 'hidden', margin: '0 auto 6px', boxShadow: '0 0 0 6px rgba(37,99,235,.12)', background: '#FFFFFF',
+        }}>
+          <img src={member?.avatar_url || `/admin/users/${avatarSlug}/avatar`} alt={memberName}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            onError={(e) => { e.currentTarget.style.display = 'none'; const fb = e.currentTarget.nextElementSibling as HTMLElement; if (fb) fb.style.display = 'flex'; }}
+          />
+          <div style={{
+            width: '100%', height: '100%', display: 'none', alignItems: 'center', justifyContent: 'center',
+            background: 'linear-gradient(135deg, #2563EB, #0D9488)', fontSize: '32px', fontWeight: 700, color: 'white',
+          }}>
+            {getInitials(memberName)}
+          </div>
         </div>
-        <div style={{ marginTop: 8, fontSize: 13, fontWeight: 600, color: '#020617' }}>{memberName}</div>
-        <div style={{ fontSize: 11, color: '#64748B' }}>{memberRole}</div>
+        <div style={{ fontSize: '13px', fontWeight: 600, color: '#020617' }}>{memberName}</div>
+        <div style={{ fontSize: '11px', fontWeight: 500, color: '#334155' }}>{memberRole}</div>
       </div>
 
+      {/* ORBITAL CARDS */}
       {activeItems.map((item, i) => {
-        const spot = SPOTS[i];
-        if (!spot) return null;
-        const ss = resolveStatusStyle(item);
-        const ageColor = getAgeColor(item.age_days ?? 0);
-
+        const pos = SPOTS[i];
+        const s = resolveStatus(item);
+        const projColor = pColor(item.project_key, item.project_color);
         return (
-          <div
-            key={item.id}
-            className="r3-ring-card"
-            style={{ left: spot.left, top: spot.top }}
-            onClick={() => onItemClick(item)}
-            role="button"
-            tabIndex={0}
-            aria-label={`${item.item_key} ${item.title}`}
-            onKeyDown={(e) => { if (e.key === 'Enter') onItemClick(item); }}
+          <div key={item.id || item.item_key} onClick={() => onItemClick(item)} style={{
+            position: 'absolute', left: `${pos.x}%`, top: `${pos.y}%`, width: '195px',
+            background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '8px',
+            padding: '10px 12px 10px 15px', cursor: 'pointer', zIndex: 3,
+            boxShadow: '0 1px 3px rgba(15,23,42,.05)', fontFamily: "'Inter', system-ui, sans-serif",
+            transition: 'border-color .15s, box-shadow .15s',
+          }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = '#94A3B8'; e.currentTarget.style.boxShadow = '0 3px 10px rgba(15,23,42,.08)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(15,23,42,.05)'; }}
           >
-            <div className="r3-accent-bar" style={{ background: ss.dot }} />
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                {getJiraIcon(item.item_type)}
-                <span style={{ fontSize: 10, fontWeight: 600, color: '#64748B', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
+            {/* 3px LEFT ACCENT BAR */}
+            <div style={{ position: 'absolute', left: 0, top: '8px', bottom: '8px', width: '3px', borderRadius: '0 2px 2px 0', background: s.accent }} />
+
+            {/* Row 1: Type + Priority */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <JiraIcon type={item.item_type} />
+                <span style={{ fontSize: '10.5px', fontWeight: 700, textTransform: 'uppercase', color: '#334155' }}>{item.item_type}</span>
               </div>
+              <span style={{ fontSize: '10.5px', fontWeight: 500, color: '#64748B', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-              <span className="r3-item-key" style={{ fontSize: 11 }}>{item.item_key}</span>
+
+            {/* Row 2: Key + Project + Age */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
+              <span style={{ fontSize: '11px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', 'SF Mono', monospace" }}>{item.item_key}</span>
               {item.project_key && (
-                <span className="r3-project-tag" style={{ background: item.project_color || '#64748B', fontSize: 9 }}>
-                  {item.project_key}
-                </span>
+                <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '3px', color: '#FFFFFF', background: projColor }}>{item.project_key}</span>
               )}
-              <span className="r3-age-badge" style={{ color: ageColor, fontSize: 9 }}>{item.age_days ?? 0}d</span>
+              <span style={{ marginLeft: 'auto', fontSize: '11px', fontWeight: 600, color: ageCol(item.age_days ?? 0), fontVariantNumeric: 'tabular-nums' }}>{item.age_days ?? 0}d</span>
             </div>
-            <div className="r3-title-clamp" style={{ fontSize: 12.5, fontWeight: 500, color: '#020617', marginBottom: 6 }}>
-              {item.title}
+
+            {/* Title */}
+            <div style={{
+              fontSize: '12.5px', fontWeight: 500, color: '#020617', lineHeight: '1.35', marginBottom: '5px',
+              display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+            } as React.CSSProperties}>
+              {trunc(item.title, 48)}
             </div>
-            <span className="r3-status-pill" style={{ background: ss.bg, color: ss.text, fontSize: 10 }}>
-              <span className="r3-status-dot" style={{ background: ss.dot }} />
-              {item.status_name}
+
+            {/* Status Pill — INLINE */}
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: '4px',
+              padding: '3px 10px', borderRadius: '4px', fontSize: '11.5px', fontWeight: 600, lineHeight: '1',
+              background: s.bg, color: s.tx,
+            }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
+              {s.label}
             </span>
           </div>
         );
       })}
 
+      {/* COMPLETED BADGE */}
       {doneCount > 0 && (
-        <div className="r3-completed-badge" aria-label={`${doneCount} completed items`}>
-          <div className="r3-completed-circle">{doneCount}</div>
-          <div className="r3-completed-text">COMPLETED</div>
+        <div style={{
+          position: 'absolute', right: '20px', top: '49%', transform: 'translateY(-50%)', zIndex: 6,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
+        }}>
+          <div style={{
+            width: '48px', height: '48px', borderRadius: '50%', background: '#16A34A', color: '#FFFFFF',
+            fontSize: '18px', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(22,163,74,.3)', fontVariantNumeric: 'tabular-nums',
+          }}>{doneCount}</div>
+          <span style={{
+            fontSize: '9.5px', fontWeight: 700, color: '#14532D', textTransform: 'uppercase',
+            letterSpacing: '.06em', writingMode: 'vertical-rl',
+          } as React.CSSProperties}>COMPLETED</span>
         </div>
       )}
     </div>
