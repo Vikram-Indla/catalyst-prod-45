@@ -26,12 +26,16 @@ interface RoadmapToolbarProps {
   viewMode: ViewMode;
   onViewModeChange: (v: ViewMode) => void;
   onToday: () => void;
+  zoomScale: number;
+  onZoomScaleChange: (s: number) => void;
 }
 
 const ZOOM_OPTIONS: ZoomLevel[] = ['Week', 'Month', 'Quarter'];
-const ZOOM_ORDER: ZoomLevel[] = ['Quarter', 'Month', 'Week'];
+const MIN_SCALE = 0.5;
+const MAX_SCALE = 3;
+const SCALE_STEP = 0.25;
 
-export function RoadmapToolbar({ zoom, onZoomChange, groupBy, onGroupByChange, viewMode, onViewModeChange, onToday }: RoadmapToolbarProps) {
+export function RoadmapToolbar({ zoom, onZoomChange, groupBy, onGroupByChange, viewMode, onViewModeChange, onToday, zoomScale, onZoomScaleChange }: RoadmapToolbarProps) {
   return (
     <div
       className="flex items-center justify-between px-4 py-2"
@@ -76,13 +80,10 @@ export function RoadmapToolbar({ zoom, onZoomChange, groupBy, onGroupByChange, v
           </SelectContent>
         </Select>
 
-        {/* AUDIT #15: Zoom buttons 30x30 with borders */}
+        {/* Zoom buttons — scale column width */}
         <button
-          onClick={() => {
-            const idx = ZOOM_ORDER.indexOf(zoom);
-            if (idx < ZOOM_ORDER.length - 1) onZoomChange(ZOOM_ORDER[idx + 1]);
-          }}
-          disabled={ZOOM_ORDER.indexOf(zoom) >= ZOOM_ORDER.length - 1}
+          onClick={() => onZoomScaleChange(Math.max(MIN_SCALE, zoomScale - SCALE_STEP))}
+          disabled={zoomScale <= MIN_SCALE}
           className="h-[30px] w-[30px] inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500 disabled:opacity-30 disabled:cursor-not-allowed"
           style={{ border: `1.5px solid ${SURFACE.border}`, borderRadius: 6, transition: 'all 0.15s ease' }}
           onMouseEnter={e => { e.currentTarget.style.background = SURFACE.page; e.currentTarget.style.borderColor = '#CBD5E1'; }}
@@ -91,11 +92,8 @@ export function RoadmapToolbar({ zoom, onZoomChange, groupBy, onGroupByChange, v
           <ZoomOut className="w-3.5 h-3.5" style={{ color: INK[2] }} />
         </button>
         <button
-          onClick={() => {
-            const idx = ZOOM_ORDER.indexOf(zoom);
-            if (idx > 0) onZoomChange(ZOOM_ORDER[idx - 1]);
-          }}
-          disabled={ZOOM_ORDER.indexOf(zoom) <= 0}
+          onClick={() => onZoomScaleChange(Math.min(MAX_SCALE, zoomScale + SCALE_STEP))}
+          disabled={zoomScale >= MAX_SCALE}
           className="h-[30px] w-[30px] inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500 disabled:opacity-30 disabled:cursor-not-allowed"
           style={{ border: `1.5px solid ${SURFACE.border}`, borderRadius: 6, transition: 'all 0.15s ease' }}
           onMouseEnter={e => { e.currentTarget.style.background = SURFACE.page; e.currentTarget.style.borderColor = '#CBD5E1'; }}
