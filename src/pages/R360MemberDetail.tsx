@@ -59,6 +59,28 @@ function priorityDotColor(p: string) {
   return '#94A3B8';
 }
 
+// ── Mini Avatar for assignee on contributed items ──
+const AVATAR_COLORS = ['#2563EB', '#0D9488', '#D97706'];
+function hashColor(name: string) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+
+function MiniAvatar({ name, size = 20 }: { name: string; size?: number }) {
+  if (!name) return null;
+  const ini = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  const bg = hashColor(name);
+  return (
+    <span title={name} style={{
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      width: size, height: size, borderRadius: '50%', background: bg,
+      color: '#FFF', fontSize: size * 0.48, fontWeight: 700, flexShrink: 0,
+      cursor: 'default', lineHeight: 1,
+    }}>{ini}</span>
+  );
+}
+
 // ═══════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════
@@ -393,12 +415,23 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
             position:'absolute', left:`${l.x}px`, top:`${l.y}px`,
             transform:'translate(-50%,-50%)', zIndex:4, pointerEvents:'none',
             fontSize:'11px', fontWeight:600,
-            color: isContributor ? '#7C3AED' : '#334155',
+            color: isContributor ? '#334155' : '#334155',
             background: isContributor ? '#F5F3FF' : '#F8FAFC',
-            padding:'2px 8px', borderRadius:'10px',
+            padding: isContributor ? '2px 4px 2px 4px' : '2px 8px',
+            borderRadius:'10px',
             border: isContributor ? '1px solid #DDD6FE' : '1px solid #E2E8F0',
             whiteSpace:'nowrap', fontVariantNumeric:'tabular-nums',
-          }}>{isContributor ? 'Contributed' : `${l.age}d ago`}</div>
+            display:'flex', alignItems:'center', gap:'4px',
+          }}>
+            {isContributor ? (
+              <>
+                <span style={{ pointerEvents: 'auto' }}>
+                  <MiniAvatar name={visible[i]?.assignee_name || ''} size={16} />
+                </span>
+                <span style={{ fontSize: '10px', color: '#64748B' }}>{visible[i]?.assignee_name?.split(' ')[0]}</span>
+              </>
+            ) : `${l.age}d ago`}
+          </div>
         );
       })}
 
@@ -448,7 +481,10 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
                 <span style={{ fontSize:'10.5px', fontWeight:700, textTransform:'uppercase', color:'#334155' }}>{item.item_type}</span>
               </div>
               {isContributor ? (
-                <span style={{ fontSize:'9.5px', fontWeight:700, padding:'2px 6px', borderRadius:'3px', background:'#F5F3FF', color:'#7C3AED', border:'1px solid #DDD6FE', textTransform:'uppercase', letterSpacing:'.03em' }}>Contributed</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <MiniAvatar name={item.assignee_name} size={18} />
+                  <span style={{ fontSize: '10px', fontWeight: 500, color: '#64748B' }}>{item.assignee_name?.split(' ')[0]}</span>
+                </span>
               ) : (
                 <span style={{ fontSize:'10.5px', fontWeight:500, color:'#64748B' }}>{item.priority}</span>
               )}
@@ -462,7 +498,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
             <div style={{ display:'flex', alignItems:'center', gap:'6px' }}>
               <RingPill status={item.status_label || ''} />
               {isContributor && (
-                <span style={{ fontSize:'10px', fontWeight:500, color:'#64748B' }}>→ {item.assignee_name}</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', fontSize:'10px', fontWeight:500, color:'#64748B' }}>→ <MiniAvatar name={item.assignee_name} size={16} /></span>
               )}
             </div>
           </div>
@@ -530,6 +566,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
                   const closedLabel = closedDate
                     ? new Date(closedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
                     : '—';
+                  const isContrib = item.role_on_item === 'Contributor';
                   return (
                     <div
                       key={item.id}
@@ -554,6 +591,13 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
                           <span style={{ marginLeft:'auto', fontSize:'10px', color:'#16A34A', fontWeight:500, whiteSpace:'nowrap' }}>{closedLabel}</span>
                         </div>
                         <div style={{ fontSize:'12px', fontWeight:400, color:'#334155', lineHeight:'1.35', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' } as React.CSSProperties}>{item.title}</div>
+                        {isContrib && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '4px' }}>
+                            <span style={{ fontSize: '10px', color: '#64748B' }}>Closed by</span>
+                            <MiniAvatar name={item.assignee_name} size={16} />
+                            <span style={{ fontSize: '10px', fontWeight: 500, color: '#334155' }}>{item.assignee_name}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -650,7 +694,7 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
                         <span className="r3-card-key">{item.item_key}</span>
                         <ProjTag projectKey={item.project_key} />
                         {item.role_on_item === 'Contributor' && (
-                          <span style={{ fontSize:'9px', fontWeight:700, padding:'1px 5px', borderRadius:'3px', background:'#F5F3FF', color:'#7C3AED', border:'1px solid #DDD6FE', textTransform:'uppercase', letterSpacing:'.03em' }}>Contributed</span>
+                          <MiniAvatar name={item.assignee_name} size={18} />
                         )}
                       </div>
                       <div className="r3-card-title r3-card-title--lg">{item.title}</div>
@@ -662,7 +706,7 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span style={{ fontSize: 12.5, color: '#334155' }}>{item.role_on_item === 'Contributor' ? `→ ${item.assignee_name}` : item.assignee_name}</span>
+                        <span style={{ fontSize: 12.5, color: '#334155', display: 'inline-flex', alignItems: 'center', gap: 4 }}>{item.role_on_item === 'Contributor' ? <><span style={{ color: '#64748B' }}>→</span> <MiniAvatar name={item.assignee_name} size={18} /> {item.assignee_name}</> : item.assignee_name}</span>
                         <StatusPill label={item.status_label} color={item.status_color} bg={item.status_bg} dot={item.status_dot} />
                       </div>
                       <AgeBadge days={item.age_days} ageClass={item.age_class} />
@@ -707,7 +751,7 @@ function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R
                   <span className="r3-card-key">{item.item_key}</span>
                   <ProjTag projectKey={item.project_key} />
                   {item.role_on_item === 'Contributor' && (
-                    <span style={{ fontSize:'9px', fontWeight:700, padding:'1px 5px', borderRadius:'3px', background:'#F5F3FF', color:'#7C3AED', border:'1px solid #DDD6FE', textTransform:'uppercase', letterSpacing:'.03em' }}>Contributed</span>
+                    <MiniAvatar name={item.assignee_name} size={18} />
                   )}
                   <span style={{ marginLeft: 'auto' }}><AgeBadge days={item.age_days} ageClass={item.age_class} /></span>
                 </div>
@@ -717,7 +761,7 @@ function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R
                     <span className="r3-priority-dot" style={{ background: priorityDotColor(item.priority) }} />
                     <span style={{ fontSize: 12, fontWeight: 500, color: '#334155' }}>{item.priority}</span>
                   </div>
-                  <span style={{ fontSize: 12.5, color: '#334155' }}>{item.role_on_item === 'Contributor' ? `→ ${item.assignee_name}` : item.assignee_name}</span>
+                  <span style={{ fontSize: 12.5, color: '#334155', display: 'inline-flex', alignItems: 'center', gap: 4 }}>{item.role_on_item === 'Contributor' ? <><span style={{ color: '#64748B' }}>→</span> <MiniAvatar name={item.assignee_name} size={18} /> {item.assignee_name}</> : item.assignee_name}</span>
                 </div>
               </div>
             ))}
@@ -758,7 +802,9 @@ function DetailPanel({ item, onClose, onSelectItem }: {
             <span className="r3-type-badge">{getJiraIcon(item.item_type)} {item.item_type}</span>
             <ProjTag projectKey={item.project_key} />
             {item.role_on_item === 'Contributor' && (
-              <span style={{ fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:4, background:'#F5F3FF', color:'#7C3AED', border:'1px solid #DDD6FE' }}>CONTRIBUTED TO</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '10px', fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: '#F5F3FF', color: '#7C3AED', border: '1px solid #DDD6FE' }}>
+                CONTRIBUTED TO <MiniAvatar name={item.assignee_name} size={16} />
+              </span>
             )}
           </div>
           <div className="r3-panel-title">{item.title}</div>
@@ -774,7 +820,10 @@ function DetailPanel({ item, onClose, onSelectItem }: {
             </div>
             <div className="r3-meta-cell">
               <div className="r3-meta-label">{item.role_on_item === 'Contributor' ? 'Assigned To' : 'Assigner'}</div>
-              <div className="r3-meta-value">{item.role_on_item === 'Contributor' ? (item.assignee_name || '—') : (item.reporter_name || '—')}</div>
+              <div className="r3-meta-value" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                {item.role_on_item === 'Contributor' && <MiniAvatar name={item.assignee_name} size={18} />}
+                {item.role_on_item === 'Contributor' ? (item.assignee_name || '—') : (item.reporter_name || '—')}
+              </div>
             </div>
             <div className="r3-meta-cell">
               <div className="r3-meta-label">Assigned</div>
