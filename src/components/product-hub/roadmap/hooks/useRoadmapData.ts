@@ -103,10 +103,12 @@ async function fetchMilestones(): Promise<Map<string, RoadmapMilestone[]>> {
 
 // ── Try to resolve owner name from the Jira title or issue data ──
 async function fetchIssueOwners(): Promise<Map<string, string>> {
+  // Fetch all issue owners — must override default 1000-row limit
   const { data } = await (supabase as any)
     .from('ph_issues')
     .select('issue_key, assignee_display_name')
-    .not('assignee_display_name', 'is', null);
+    .not('assignee_display_name', 'is', null)
+    .limit(5000);
   const map = new Map<string, string>();
   if (data) {
     for (const d of data) {
