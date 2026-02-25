@@ -75,7 +75,7 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
             transition={{ duration: 0.2 }}
           >
             {/* Header */}
-            <div className="p-4 px-5" style={{ background: '#0D9488' }}>
+            <div className="p-4 px-5" style={{ background: '#2563EB' }}>
               <div className="flex items-center gap-2 mb-1">
                 <Map className="w-5 h-5 text-white" />
                 <span className="text-[15px] font-bold text-white">Add to Roadmap</span>
@@ -143,7 +143,7 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
                 onClick={handleConfirm}
                 disabled={promoteMutation.isPending}
                 className="px-4 py-1.5 text-[12.5px] font-semibold text-white rounded-md transition-colors flex items-center gap-1.5"
-                style={{ background: '#0D9488' }}
+                style={{ background: '#2563EB' }}
               >
                 {promoteMutation.isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 ✓ Add to Roadmap
