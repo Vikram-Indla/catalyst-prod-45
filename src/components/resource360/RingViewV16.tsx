@@ -472,7 +472,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
             boxSizing: 'border-box',
             padding: 20,
           }}>
-            {/* SVG spokes — clipped */}
+            {/* SVG spokes — clipped, aligned to card centers */}
             <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1, overflow: 'hidden', pointerEvents: 'none' }}>
               {pageItems.map((item, i) => {
                 const pos = CARD_POSITIONS[i];
@@ -480,10 +480,15 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                 const isSelected = selectedId === item.key;
                 const hasSel = selectedId !== null;
                 const statusColor = STATUS_CG05[item.status].dot;
+                // Card is 195px wide in a container. Approximate card center:
+                // card width ≈ 195px / container ≈ ~27% of width, card height ≈ 130px / 720px ≈ ~18% of height
+                // Card center = pos + half card size in %
+                const cardCenterX = pos.x + 13.5; // ~195px / 1440px * 100 / 2 ≈ 13.5% (assumes ~720px half-width container)
+                const cardCenterY = pos.y + 9;     // ~130px / 720px * 100 / 2 ≈ 9%
                 return (
                   <line key={item.key}
                     x1="50%" y1="48%"
-                    x2={`${pos.x + 10}%`} y2={`${pos.y + 8}%`}
+                    x2={`${cardCenterX}%`} y2={`${cardCenterY}%`}
                     stroke={isSelected ? T.accent : statusColor}
                     strokeWidth={isSelected ? 2.5 : 1.2}
                     strokeDasharray={isSelected ? 'none' : '5 4'}
@@ -500,8 +505,10 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
               if (!pos) return null;
               const isSelected = selectedId === item.key;
               const hasSel = selectedId !== null;
-              const midLeft = (50 + pos.x + 10) / 2;
-              const midTop = (48 + pos.y + 8) / 2;
+              const cardCenterX = pos.x + 13.5;
+              const cardCenterY = pos.y + 9;
+              const midLeft = (50 + cardCenterX) / 2;
+              const midTop = (48 + cardCenterY) / 2;
               return (
                 <div key={`chip-${item.key}`} style={{
                   position: 'absolute',
