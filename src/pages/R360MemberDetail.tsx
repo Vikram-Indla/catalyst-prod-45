@@ -4,7 +4,7 @@
  * Contains: Profile Header, Week Nav, Ring/Chronology/Board views, Detail Panel
  */
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useR360Overview, useR360WorkItems, useR360Siblings } from '@/hooks/useR360';
 import { R360_DEPT_COLORS, R360_PROJECT_COLORS } from '@/constants/r360';
 import { initials, slugify, ageBarPercent, ageBarColor, formatRelativeDate, formatDate } from '@/utils/r360Utils';
@@ -65,7 +65,9 @@ function priorityDotColor(p: string) {
 export default function R360MemberDetail() {
   const { resourceId } = useParams<{ resourceId: string }>();
   const navigate = useNavigate();
-  const [view, setView] = useState<R360ViewType>('ring');
+  const [searchParams] = useSearchParams();
+  const initialView = (searchParams.get('view') as R360ViewType) || 'ring';
+  const [view, setView] = useState<R360ViewType>(initialView);
   const [weekOffset, setWeekOffset] = useState(0);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
