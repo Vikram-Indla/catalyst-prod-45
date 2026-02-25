@@ -311,11 +311,14 @@ export function InitiativeTable({
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="flex-1 overflow-hidden border border-zinc-200 rounded-lg bg-white">
         <div className="overflow-x-auto overflow-y-auto h-full" style={{ scrollbarWidth: 'thin', scrollbarColor: '#d4d4d8 transparent' }}>
-          <table className="w-full" style={{ tableLayout: 'fixed', minWidth: Math.max(1400, totalSize) }}>
+          <table className="w-full" style={{ tableLayout: 'auto', minWidth: totalSize }}>
             <colgroup>
-              {table.getVisibleFlatColumns().map(column => (
-                <col key={column.id} style={{ width: column.getSize() }} />
-              ))}
+              {table.getVisibleFlatColumns().map(column => {
+                const isTitle = column.id === 'title';
+                return (
+                  <col key={column.id} style={{ width: isTitle ? undefined : column.getSize(), minWidth: column.columnDef.minSize }} />
+                );
+              })}
             </colgroup>
 
             {/* Header */}
