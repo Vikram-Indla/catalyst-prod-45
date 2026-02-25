@@ -183,7 +183,7 @@ export default function ResourceListingPage() {
   };
 
   const navTo = (id: string, view: string) => {
-    navigate(`/project-hub/resources-v2/${id}?view=${view}`);
+    navigate(`/project-hub/resources/${id}?view=${view}`);
   };
 
   return (
