@@ -577,3 +577,116 @@ export const WH_HUB_SHORT: Record<string, string> = {
   IncidentHub:  'INC',
   TaskHub:      'TASK',
 };
+
+// ═══════════════════════════════════════════════════════════
+// RESOURCE 360° — Member Detail Interfaces (Stage A)
+// Ring-fenced types for the /resource360/members/:memberId page
+// Prefixed with R360MD_ to avoid collisions with existing R360 types
+// ═══════════════════════════════════════════════════════════
+
+export interface R360MDMember {
+  id: string;
+  full_name: string;
+  role: string;
+  department: string;
+  team: string;
+  email: string;
+  avatar_url: string;
+  capacity_hours: number;
+  is_active: boolean;
+}
+
+export interface R360MDStatusConfig {
+  id: string;
+  name: string;
+  category: 'unstarted' | 'started' | 'completed' | 'blocked';
+  color: string;
+  bg_color: string;
+  dot_color: string;
+  sort_order: number;
+  is_terminal: boolean;
+}
+
+export interface R360MDWorkItem {
+  id: string;
+  item_key: string;
+  title: string;
+  item_type: 'bug' | 'task' | 'story' | 'epic' | 'subtask';
+  priority: 'highest' | 'critical' | 'high' | 'medium' | 'low';
+  project_id: string;
+  assigned_to: string;
+  parent_item_id: string | null;
+  status_id: string;
+  age_days: number;
+  comments_count: number;
+  resolved_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface R360MDChronologyItem {
+  id: string;
+  item_key: string;
+  title: string;
+  item_type: 'bug' | 'task' | 'story' | 'epic' | 'subtask';
+  priority: 'highest' | 'critical' | 'high' | 'medium' | 'low';
+  status_name: string;
+  status_category: string;
+  status_color: string;
+  status_bg_color: string;
+  status_dot_color: string;
+  project_key: string;
+  project_name: string;
+  project_color: string;
+  assignee_name: string;
+  assignee_avatar: string;
+  assigner_name: string;
+  assigner_avatar: string;
+  parent_key: string | null;
+  parent_title: string | null;
+  group_date: string;
+  date_label: string;
+  age_days: number;
+  age_class: 'green' | 'amber' | 'red';
+  release: string | null;
+  due_date: string | null;
+}
+
+export interface R360MDDateGroupStats {
+  group_date: string;
+  date_label: string;
+  total_count: number;
+  done_count: number;
+  in_progress_count: number;
+  todo_count: number;
+  blocked_count: number;
+  progress_pct: number;
+}
+
+export interface R360MDMemberKpis {
+  member_id: string;
+  total_items: number;
+  open_items: number;
+  stale_items: number;
+  closure_pct: number;
+  avg_age_days: number;
+}
+
+export interface R360MDChronologyFilters {
+  status_ids?: string[];
+  project_ids?: string[];
+  item_types?: Array<'bug' | 'task' | 'story' | 'epic' | 'subtask'>;
+  date_from?: string;
+  date_to?: string;
+  search?: string;
+  pending_only?: boolean;
+  sort_by?: 'updated_at' | 'created_at' | 'priority';
+  sort_dir?: 'asc' | 'desc';
+}
+
+export type R360ViewType = 'ring' | 'chronology' | 'board';
+
+export interface R360MDPanelState {
+  isOpen: boolean;
+  item: R360MDChronologyItem | null;
+}
