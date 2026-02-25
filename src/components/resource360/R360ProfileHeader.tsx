@@ -24,16 +24,18 @@ export const R360ProfileHeader: React.FC<Props> = ({ member, kpis, activeTab, on
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 0 }}>
           {/* Avatar with fallback */}
           <div style={{ position: 'relative', flexShrink: 0 }}>
-            <img
-              className="r3-avatar"
-              src={member?.avatar_url || `/admin/users/${slug}/avatar`}
-              alt={name}
-              onError={(e) => {
-                (e.currentTarget as HTMLImageElement).style.display = 'none';
-                (e.currentTarget.nextElementSibling as HTMLElement)?.setAttribute('style', 'display:flex');
-              }}
-            />
-            <div className="r3-avatar-fallback" style={{ display: 'none' }}>
+            {member?.avatar_url ? (
+              <img
+                className="r3-avatar"
+                src={member.avatar_url}
+                alt={name}
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).style.display = 'none';
+                  (e.currentTarget.nextElementSibling as HTMLElement)?.setAttribute('style', 'display:flex');
+                }}
+              />
+            ) : null}
+            <div className="r3-avatar-fallback" style={{ display: member?.avatar_url ? 'none' : 'flex' }}>
               {initials(name)}
             </div>
           </div>

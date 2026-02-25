@@ -31,16 +31,11 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
       <div className="r3-ring-canvas" style={{ height: 640, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center', color: '#64748B' }}>
           <div className="r3-ring-center" style={{ position: 'relative', transform: 'none', left: 'auto', top: 'auto', margin: '0 auto 16px' }}>
-            <img
-              className="r3-ring-avatar"
-              src={member?.avatar_url || `/admin/users/${slug}/avatar`}
-              alt={memberName}
-              onError={(e) => {
-                (e.currentTarget as HTMLImageElement).style.display = 'none';
-                (e.currentTarget.nextElementSibling as HTMLElement)?.setAttribute('style', 'display:flex');
-              }}
-            />
-            <div className="r3-ring-avatar-fb" style={{ display: 'none' }}>
+            {member?.avatar_url ? (
+              <img className="r3-ring-avatar" src={member.avatar_url} alt={memberName}
+                onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.setAttribute('style', 'display:flex'); }} />
+            ) : null}
+            <div className="r3-ring-avatar-fb" style={{ display: member?.avatar_url ? 'none' : 'flex' }}>
               {initials(memberName)}
             </div>
           </div>
@@ -85,16 +80,11 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
       })}
 
       <div className="r3-ring-center">
-        <img
-          className="r3-ring-avatar"
-          src={member?.avatar_url || `/admin/users/${slug}/avatar`}
-          alt={memberName}
-          onError={(e) => {
-            (e.currentTarget as HTMLImageElement).style.display = 'none';
-            (e.currentTarget.nextElementSibling as HTMLElement)?.setAttribute('style', 'display:flex');
-          }}
-        />
-        <div className="r3-ring-avatar-fb" style={{ display: 'none' }}>
+        {member?.avatar_url ? (
+          <img className="r3-ring-avatar" src={member.avatar_url} alt={memberName}
+            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement)?.setAttribute('style', 'display:flex'); }} />
+        ) : null}
+        <div className="r3-ring-avatar-fb" style={{ display: member?.avatar_url ? 'none' : 'flex' }}>
           {initials(memberName)}
         </div>
         <div style={{ marginTop: 8, fontSize: 13, fontWeight: 600, color: '#020617' }}>{memberName}</div>
