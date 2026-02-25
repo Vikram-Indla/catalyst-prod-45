@@ -21428,6 +21428,38 @@ export type Database = {
           },
         ]
       }
+      ph_issue_initiative_type_overrides: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          initiative_type_id: string
+          issue_key: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          initiative_type_id: string
+          issue_key: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          initiative_type_id?: string
+          issue_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_issue_initiative_type_overrides_initiative_type_id_fkey"
+            columns: ["initiative_type_id"]
+            isOneToOne: false
+            referencedRelation: "initiative_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ph_issue_links: {
         Row: {
           created_at: string | null
