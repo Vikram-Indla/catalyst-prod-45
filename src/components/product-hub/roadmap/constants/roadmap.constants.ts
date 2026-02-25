@@ -1,6 +1,7 @@
 /**
  * Product Roadmap — Design tokens & constants
  * All colors from the mandatory token system — no deviations.
+ * Font: Plus Jakarta Sans (body), JetBrains Mono (data)
  */
 
 // ── Type Colors ──
@@ -40,17 +41,25 @@ export const SURFACE = {
   borderLight: '#F1F5F9',
 };
 
-// ── Typography ──
+// ── Typography — Catalyst spec: Plus Jakarta Sans + JetBrains Mono ──
 export const FONT = {
-  body: 'Inter, sans-serif',
-  mono: 'JetBrains Mono, SF Mono, monospace',
+  body: "'Plus Jakarta Sans', Inter, sans-serif",
+  mono: "'JetBrains Mono', 'SF Mono', monospace",
 };
 
-// ── Layout ──
+// ── Layout (4px grid) ──
 export const ROW_HEIGHT = 44;
 export const GROUP_HEADER_HEIGHT = 36;
 export const LIST_PANEL_WIDTH = 340;
 export const DETAIL_PANEL_WIDTH = 420;
 
 // ── Owner palette (for avatar backgrounds) ──
-export const OWNER_COLORS = ['#2563EB', '#0D9488', '#D97706', '#7C3AED'];
+export const OWNER_COLORS = ['#2563EB', '#0D9488', '#D97706', '#7C3AED', '#E11D48', '#059669'];
+
+// ── Scrollbar CSS (applied globally via roadmap container) ──
+export const SCROLLBAR_CSS = `
+  .roadmap-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+  .roadmap-scroll::-webkit-scrollbar-track { background: transparent; }
+  .roadmap-scroll::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 3px; }
+  .roadmap-scroll::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
+`;

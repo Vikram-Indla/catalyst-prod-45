@@ -1,5 +1,6 @@
 /**
  * Product Roadmap — Toolbar (Zoom, Group, Today, View Switcher)
+ * Polish: focus-visible, transitions
  */
 import React from 'react';
 import {
@@ -40,11 +41,12 @@ export function RoadmapToolbar({ zoom, onZoomChange, groupBy, onGroupByChange, v
             <button
               key={z}
               onClick={() => onZoomChange(z)}
-              className="h-8 px-3 text-xs font-medium transition-colors"
+              className="h-8 px-3 text-xs font-medium focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-blue-500"
               style={{
                 background: zoom === z ? '#2563EB' : SURFACE.card,
                 color: zoom === z ? '#FFFFFF' : INK[2],
                 borderRight: `1px solid ${SURFACE.border}`,
+                transition: 'background-color 0.15s ease, color 0.15s ease',
               }}
             >
               {z}
@@ -57,7 +59,7 @@ export function RoadmapToolbar({ zoom, onZoomChange, groupBy, onGroupByChange, v
           <select
             value={groupBy}
             onChange={e => onGroupByChange(e.target.value as GroupBy)}
-            className="h-8 pl-3 pr-7 text-xs font-medium appearance-none cursor-pointer"
+            className="h-8 pl-3 pr-7 text-xs font-medium appearance-none cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
             style={{ border: `1px solid ${SURFACE.border}`, borderRadius: 6, color: INK[2], background: SURFACE.card }}
           >
             <option value="type">Group: Type</option>
@@ -69,18 +71,30 @@ export function RoadmapToolbar({ zoom, onZoomChange, groupBy, onGroupByChange, v
         </div>
 
         {/* Zoom +/- */}
-        <button className="h-8 w-8 inline-flex items-center justify-center" style={{ border: `1px solid ${SURFACE.border}`, borderRadius: 6 }}>
+        <button
+          className="h-8 w-8 inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
+          style={{ border: `1px solid ${SURFACE.border}`, borderRadius: 6, transition: 'background-color 0.15s ease' }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = SURFACE.page)}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+        >
           <ZoomIn className="w-3.5 h-3.5" style={{ color: INK[3] }} />
         </button>
-        <button className="h-8 w-8 inline-flex items-center justify-center" style={{ border: `1px solid ${SURFACE.border}`, borderRadius: 6 }}>
+        <button
+          className="h-8 w-8 inline-flex items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
+          style={{ border: `1px solid ${SURFACE.border}`, borderRadius: 6, transition: 'background-color 0.15s ease' }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = SURFACE.page)}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+        >
           <ZoomOut className="w-3.5 h-3.5" style={{ color: INK[3] }} />
         </button>
 
         {/* Today */}
         <button
           onClick={onToday}
-          className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium"
-          style={{ border: `1px solid ${SURFACE.border}`, borderRadius: 6, color: INK[2] }}
+          className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
+          style={{ border: `1px solid ${SURFACE.border}`, borderRadius: 6, color: INK[2], transition: 'background-color 0.15s ease' }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = SURFACE.page)}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
         >
           <Calendar className="w-3.5 h-3.5" /> Today
         </button>
@@ -92,12 +106,13 @@ export function RoadmapToolbar({ zoom, onZoomChange, groupBy, onGroupByChange, v
           <button
             key={v.key}
             onClick={() => onViewModeChange(v.key)}
-            className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium transition-colors"
+            className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
             style={{
               borderRadius: 6,
               background: viewMode === v.key ? '#EFF6FF' : 'transparent',
               color: viewMode === v.key ? '#2563EB' : INK[3],
               border: viewMode === v.key ? '1px solid #BFDBFE' : '1px solid transparent',
+              transition: 'all 0.15s ease',
             }}
           >
             <v.icon className="w-3.5 h-3.5" />
