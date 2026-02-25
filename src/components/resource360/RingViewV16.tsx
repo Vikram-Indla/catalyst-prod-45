@@ -276,9 +276,19 @@ type PanelMode = 'hidden' | 'completed' | 'detail';
 
 const MAX_PER_PAGE = 8;
 
+const CARD_POSITIONS = [
+  { x: 2,  y: 2  },   // slot 0: top-left
+  { x: 33, y: 0  },   // slot 1: top-center
+  { x: 62, y: 2  },   // slot 2: top-right
+  { x: 0,  y: 33 },   // slot 3: mid-left
+  { x: 65, y: 31 },   // slot 4: mid-right
+  { x: 2,  y: 60 },   // slot 5: bottom-left
+  { x: 33, y: 63 },   // slot 6: bottom-center
+  { x: 62, y: 58 },   // slot 7: bottom-right
+];
+
 const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) => {
   const ringCanvasRef = useRef<HTMLDivElement>(null);
-  const [dims, setDims] = useState({ w: 800, h: 500 });
   const [statusFilter, setStatusFilter] = useState<ActiveFilter>('all');
   const [weekIdx, setWeekIdx] = useState(0);
   const [ringPage, setRingPage] = useState(0);
@@ -300,19 +310,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
     return map;
   }, [allItems]);
 
-  useEffect(() => {
-    const measure = () => {
-      if (ringCanvasRef.current) {
-        const rect = ringCanvasRef.current.getBoundingClientRect();
-        setDims({ w: rect.width, h: rect.height });
-      }
-    };
-    measure();
-    const ro = new ResizeObserver(measure);
-    if (ringCanvasRef.current) ro.observe(ringCanvasRef.current);
-    window.addEventListener('resize', measure);
-    return () => { ro.disconnect(); window.removeEventListener('resize', measure); };
-  }, [panelMode]);
+  // No ResizeObserver needed — fixed 720px canvas with percentage positions
 
   const filteredActive = useMemo(() => {
     let items = activeItems;
@@ -360,15 +358,6 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
     if (panelMode === 'completed') { setPanelMode('hidden'); } else { setSelectedId(null); setPanelMode('completed'); }
   }, [panelMode]);
 
-  const ringW = dims.w;
-  const ringH = dims.h;
-  const cx = ringW / 2;
-  const cy = ringH / 2;
-  const N = pageItems.length;
-  const cardW = N <= 4 ? 195 : N <= 6 ? 170 : 156;
-  const cardH = 120;
-  const maxR = Math.min(ringW, ringH) * 0.30;
-  const R = Math.max(80, maxR);
   const panelWidth = panelMode === 'detail' ? 460 : panelMode === 'completed' ? 280 : 0;
 
   const initials = resource?.initials || resource?.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) || '??';
@@ -449,62 +438,69 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
       <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
         {/* Ring column */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }}>
-          {/* §7 VIEWPORT — radial gradient + dot grid */}
+          {/* §7 VIEWPORT — fixed 720px, hard clip */}
           <div ref={ringCanvasRef} style={{
-            flex: 1, position: 'relative', overflow: 'hidden',
+            position: 'relative', height: 720, overflow: 'hidden',
             background: 'radial-gradient(circle at center, #fff 0%, #F8FAFC 55%, #F1F5F9 100%)',
             backgroundImage: 'radial-gradient(circle at center, #fff 0%, #F8FAFC 55%, #F1F5F9 100%), radial-gradient(circle, #CBD5E1 1px, transparent 1px)',
             backgroundSize: 'cover, 24px 24px',
+            boxSizing: 'border-box',
+            padding: 20,
           }}>
-            <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0 }}>
-              {/* §9 Orbital dashed circle */}
-              <circle cx={cx} cy={cy} r={R} fill="none" stroke="#E2E8F0" strokeWidth={1.5}
-                strokeDasharray="6 4" opacity={0.5} />
-
-              {/* Spokes + date chips */}
+            {/* SVG spokes — clipped */}
+            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1, overflow: 'hidden', pointerEvents: 'none' }}>
               {pageItems.map((item, i) => {
-                const ang = (i / N) * Math.PI * 2 - Math.PI / 2;
-                const ex = cx + R * Math.cos(ang);
-                const ey = cy + R * Math.sin(ang);
+                const pos = CARD_POSITIONS[i];
+                if (!pos) return null;
                 const isSelected = selectedId === item.key;
                 const hasSel = selectedId !== null;
                 const statusColor = STATUS_CG05[item.status].dot;
-                const mx = (cx + ex) / 2;
-                const my = (cy + ey) / 2;
-
                 return (
-                  <g key={item.key}>
-                    <line x1={cx} y1={cy} x2={ex} y2={ey}
-                      stroke={isSelected ? T.accent : statusColor}
-                      strokeWidth={isSelected ? 2.5 : 1.2}
-                      strokeDasharray={isSelected ? 'none' : '5 4'}
-                      opacity={hasSel ? (isSelected ? 1 : 0.15) : 0.5}
-                    />
-                    <g transform={`translate(${mx}, ${my})`}>
-                      <rect x={-36} y={-10} width={72} height={20} rx={10}
-                        fill={isSelected ? T.accent : '#FFFFFF'}
-                        stroke={isSelected ? '#1D4ED8' : '#CBD5E1'}
-                        strokeWidth={1}
-                        opacity={hasSel && !isSelected ? 0.3 : 1}
-                      />
-                      <text x={0} y={1} textAnchor="middle" dominantBaseline="middle" style={{
-                        fontSize: 9.5, fontWeight: 600, fontFamily: T.mono,
-                        fill: isSelected ? '#FFFFFF' : '#334155',
-                        opacity: hasSel && !isSelected ? 0.3 : 1,
-                        letterSpacing: '0.01em',
-                      }}>
-                        {relativeDate(item.assignedDate)}
-                      </text>
-                    </g>
-                  </g>
+                  <line key={item.key}
+                    x1="50%" y1="48%"
+                    x2={`${pos.x + 10}%`} y2={`${pos.y + 8}%`}
+                    stroke={isSelected ? T.accent : statusColor}
+                    strokeWidth={isSelected ? 2.5 : 1.2}
+                    strokeDasharray={isSelected ? 'none' : '5 4'}
+                    strokeLinecap="round"
+                    opacity={hasSel ? (isSelected ? 1 : 0.15) : 0.5}
+                  />
                 );
               })}
             </svg>
 
-            {/* §8 CENTER IDENTITY — gradient circle, initials ONLY, NO photo */}
+            {/* Date chips on spokes */}
+            {pageItems.map((item, i) => {
+              const pos = CARD_POSITIONS[i];
+              if (!pos) return null;
+              const isSelected = selectedId === item.key;
+              const hasSel = selectedId !== null;
+              const midLeft = (50 + pos.x + 10) / 2;
+              const midTop = (48 + pos.y + 8) / 2;
+              return (
+                <div key={`chip-${item.key}`} style={{
+                  position: 'absolute',
+                  left: `${midLeft}%`, top: `${midTop}%`,
+                  transform: 'translate(-50%, -50%)',
+                  zIndex: 2, pointerEvents: 'none',
+                  background: isSelected ? T.accent : '#FFFFFF',
+                  border: `1px solid ${isSelected ? '#1D4ED8' : '#CBD5E1'}`,
+                  borderRadius: 10, padding: '2px 8px',
+                  fontSize: 9.5, fontWeight: 600, fontFamily: T.mono,
+                  color: isSelected ? '#FFFFFF' : '#334155',
+                  opacity: hasSel && !isSelected ? 0.3 : 1,
+                  whiteSpace: 'nowrap',
+                }}>
+                  {relativeDate(item.assignedDate)}
+                </div>
+              );
+            })}
+
+            {/* CENTER IDENTITY */}
             <div style={{
-              position: 'absolute', left: cx - 38, top: cy - 50, width: 76, textAlign: 'center',
-              pointerEvents: 'none',
+              position: 'absolute', left: '50%', top: '48%',
+              transform: 'translate(-50%, -50%)',
+              textAlign: 'center', pointerEvents: 'none', zIndex: 3,
             }}>
               <div style={{
                 width: 76, height: 76, borderRadius: '50%', margin: '0 auto',
@@ -518,13 +514,10 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
               <div style={{ fontSize: 10, color: '#64748B', fontWeight: 500 }}>{resourceRole}</div>
             </div>
 
-            {/* Cards on ring (DEF-04: accent bars, DEF-05: Jira icons, DEF-06: project colors) */}
+            {/* Orbital cards — percentage positioned */}
             {pageItems.map((item, i) => {
-              const ang = (i / N) * Math.PI * 2 - Math.PI / 2;
-              const ex = cx + R * Math.cos(ang);
-              const ey = cy + R * Math.sin(ang);
-              const left = ex - cardW / 2;
-              const top = ey - cardH / 2;
+              const pos = CARD_POSITIONS[i];
+              if (!pos) return null;
               const isSelected = selectedId === item.key;
               const age = item.ageDays;
               const stale = staleLevel(age, item.status);
@@ -537,7 +530,9 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                   key={item.key}
                   onClick={() => selectCard(item.key)}
                   style={{
-                    position: 'absolute', left, top, width: cardW,
+                    position: 'absolute',
+                    left: `${pos.x}%`, top: `${pos.y}%`,
+                    width: 195,
                     cursor: 'pointer', transition: 'box-shadow 200ms, transform 200ms',
                     borderRadius: 8,
                     border: `1px solid ${T.border}`,
@@ -545,13 +540,13 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                       ? '0 0 0 3px rgba(37,99,235,.25), 0 12px 40px rgba(37,99,235,.2)'
                       : '0 4px 16px rgba(0,0,0,0.08)',
                     background: '#FFFFFF',
-                    zIndex: isSelected ? 10 : 1,
+                    zIndex: isSelected ? 10 : 4,
                     overflow: 'hidden',
                   }}
                   onMouseOver={e => { if (!isSelected) (e.currentTarget as any).style.boxShadow = '0 8px 28px rgba(0,0,0,.12)'; (e.currentTarget as any).style.borderColor = '#94A3B8'; }}
                   onMouseOut={e => { if (!isSelected) (e.currentTarget as any).style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)'; (e.currentTarget as any).style.borderColor = T.border; }}
                 >
-                  {/* DEF-04: 3px left accent bar matching status color */}
+                  {/* 3px left accent bar */}
                   <div style={{
                     position: 'absolute', left: 0, top: 8, bottom: 8,
                     width: 3, borderRadius: '0 2px 2px 0',
@@ -559,7 +554,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                   }} />
 
                   <div style={{ padding: '8px 10px 10px 13px' }}>
-                    {/* Row 1: Jira icon + type text + priority */}
+                    {/* Row 1: Jira icon + type + priority */}
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
                       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '1px 6px', borderRadius: 4, background: typeBadge.bg }}>
                         {getJiraIconForType(item.type)}
@@ -574,25 +569,20 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                       {item.projectKey && (
                         <span style={{
                           fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3,
-                          background: projColor, color: '#FFFFFF',
-                          letterSpacing: '0.02em',
-                        }}>
-                          {item.projectKey}
-                        </span>
+                          background: projColor, color: '#FFFFFF', letterSpacing: '0.02em',
+                        }}>{item.projectKey}</span>
                       )}
-                      <span style={{ fontFamily: T.mono, fontSize: 9, color: ageHeatColor(age), fontWeight: 700, marginLeft: 'auto' }}>
-                        {age}d
-                      </span>
+                      <span style={{ fontFamily: T.mono, fontSize: 9, color: ageHeatColor(age), fontWeight: 700, marginLeft: 'auto' }}>{age}d</span>
                     </div>
 
-                    {/* Title: 12.5px 500wt, 2-line clamp */}
+                    {/* Title: 2-line clamp */}
                     <div style={{
                       fontSize: 12.5, fontWeight: 500, color: '#020617', lineHeight: 1.35,
                       display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
                       overflow: 'hidden', marginBottom: 6, minHeight: 28,
                     }}>{item.title}</div>
 
-                    {/* Status pill (CG-05 desaturated) */}
+                    {/* Status pill — inline colors */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                       <StatusPill status={item.status} small />
                       {stale && (
@@ -606,25 +596,27 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
               );
             })}
 
-            {/* Completed toggle tab (DEF-07: fixed badge) */}
-            {panelMode === 'hidden' && !selectedId && (
+            {/* Completed badge — always visible */}
+            {doneCount > 0 && (
               <div
                 onClick={toggleCompleted}
                 style={{
-                  position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)',
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+                  position: 'absolute', right: 20, top: '48%', transform: 'translateY(-50%)',
+                  zIndex: 6, textAlign: 'center',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
                   cursor: 'pointer',
                 }}>
                 <div style={{
                   width: 48, height: 48, borderRadius: '50%',
                   background: '#16A34A', color: '#FFFFFF',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: T.mono, fontSize: 18, fontWeight: 800,
+                  fontFamily: T.mono, fontSize: 18, fontWeight: 700,
                   boxShadow: '0 2px 8px rgba(22,163,74,.3)',
                 }}>{doneCount}</div>
                 <span style={{
-                  writingMode: 'vertical-lr', fontSize: 10, fontWeight: 700, color: '#16A34A',
-                  letterSpacing: '0.06em', textTransform: 'uppercase',
+                  fontSize: 9.5, fontWeight: 700, color: '#14532D',
+                  textTransform: 'uppercase', letterSpacing: '.05em',
+                  writingMode: 'vertical-rl',
                 }}>COMPLETED</span>
               </div>
             )}
