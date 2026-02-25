@@ -99,38 +99,53 @@ export default function ResourceListingPage() {
       // Fetch resource_inventory with lookups
       const { data, error } = await supabase
         .from('resource_inventory')
-        .select('id, rid, name, role_name, profile_id, department_id, assignment_id, vendor_id, vendor_name, department_name, location_id')
+        .select('id, rid, name, role_name, profile_id, department_id, assignment_id, vendor_id, vendor_name, department_name, location_id, jira_account_id')
         .eq('is_active', true)
         .order('name', { ascending: true });
       if (error) throw error;
 
-      // Fetch lookups + profiles for avatars in parallel
+      // Fetch lookups + profiles + ticket presence in parallel
       const profileIds = (data || []).map((r: any) => r.profile_id).filter(Boolean);
-      const [{ data: depts }, { data: assignments }, { data: locations }, { data: profiles }] = await Promise.all([
+      const [{ data: depts }, { data: assignments }, { data: locations }, { data: profiles }, { data: assignedRids }, { data: contributedAccounts }] = await Promise.all([
         supabase.from('capacity_departments').select('id, name'),
         supabase.from('resource_assignments').select('id, name'),
         supabase.from('resource_locations').select('id, name'),
         profileIds.length > 0
           ? supabase.from('profiles').select('id, avatar_url').in('id', profileIds)
           : Promise.resolve({ data: [] }),
+        // Distinct resource_ids that have assigned tickets
+        (supabase as any).from('vw_wh_resource_360').select('resource_id'),
+        // Distinct reporter_account_ids that have contributed tickets
+        (supabase as any).from('ph_issues').select('reporter_account_id'),
       ]);
+
+      // Build sets of rids/jira_ids that have tickets
+      const ridsWithAssigned = new Set((assignedRids || []).map((r: any) => r.resource_id));
+      const jiraIdsWithContrib = new Set((contributedAccounts || []).map((r: any) => r.reporter_account_id).filter(Boolean));
 
       const deptMap = new Map((depts || []).map((d: any) => [d.id, d.name]));
       const assignMap = new Map((assignments || []).map((a: any) => [a.id, a.name]));
       const locMap = new Map((locations || []).map((l: any) => [l.id, l.name]));
       const avatarMap = new Map((profiles || []).map((p: any) => [p.id, p.avatar_url]));
 
-      return ((data || []) as any[]).map((r: any): Resource => ({
-        id: r.id,
-        rid: r.rid,
-        full_name: r.name,
-        job_role: r.role_name,
-        location_type: locMap.get(r.location_id) || null,
-        dept_name: deptMap.get(r.department_id) || r.department_name || null,
-        assignment_name: assignMap.get(r.assignment_id) || null,
-        vendor_name: r.vendor_name || null,
-        avatar_url: r.profile_id ? (avatarMap.get(r.profile_id) || null) : null,
-      }));
+      return ((data || []) as any[])
+        .filter((r: any) => {
+          // Only show resources that have assigned or contributed tickets
+          const hasAssigned = ridsWithAssigned.has(r.rid);
+          const hasContributed = r.jira_account_id && jiraIdsWithContrib.has(r.jira_account_id);
+          return hasAssigned || hasContributed;
+        })
+        .map((r: any): Resource => ({
+          id: r.id,
+          rid: r.rid,
+          full_name: r.name,
+          job_role: r.role_name,
+          location_type: locMap.get(r.location_id) || null,
+          dept_name: deptMap.get(r.department_id) || r.department_name || null,
+          assignment_name: assignMap.get(r.assignment_id) || null,
+          vendor_name: r.vendor_name || null,
+          avatar_url: r.profile_id ? (avatarMap.get(r.profile_id) || null) : null,
+        }));
     },
   });
 
