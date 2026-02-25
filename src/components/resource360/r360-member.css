@@ -550,7 +550,41 @@
   cursor: default !important;
 }
 
-/* ─── COMPLETED BADGE (Ring) ─── */
+/* Siblings scrollable list */
+#r360-root .r3-siblings-list {
+  max-height: 320px !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: #CBD5E1 transparent !important;
+}
+#r360-root .r3-siblings-list::-webkit-scrollbar {
+  width: 4px !important;
+}
+#r360-root .r3-siblings-list::-webkit-scrollbar-thumb {
+  background: #CBD5E1 !important;
+  border-radius: 2px !important;
+}
+
+/* Days sitting bar */
+#r360-root .r3-days-bar {
+  width: 60px !important;
+  height: 4px !important;
+  border-radius: 2px !important;
+  overflow: hidden !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+}
+
+/* Meta cell consistency */
+#r360-root .r3-meta-cell-value {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #020617 !important;
+  word-break: break-word !important;
+  line-height: 1.35 !important;
+}
+
+
 #r360-root .r3-completed-badge {
   position: absolute !important;
   right: 24px !important;

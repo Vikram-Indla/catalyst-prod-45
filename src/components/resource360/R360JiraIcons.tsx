@@ -40,12 +40,10 @@ export const JiraSubtaskIcon = () => (
 );
 
 export function getJiraIcon(itemType: string) {
-  switch (itemType?.toLowerCase()) {
-    case 'bug': return <JiraBugIcon />;
-    case 'task': return <JiraTaskIcon />;
-    case 'story': return <JiraStoryIcon />;
-    case 'epic': return <JiraEpicIcon />;
-    case 'subtask': return <JiraSubtaskIcon />;
-    default: return <JiraTaskIcon />;
-  }
+  const t = (itemType || '').toLowerCase();
+  if (t.includes('bug') || t.includes('defect')) return <JiraBugIcon />;
+  if (t.includes('story')) return <JiraStoryIcon />;
+  if (t.includes('epic')) return <JiraEpicIcon />;
+  if (t.includes('sub-task') || t.includes('subtask')) return <JiraSubtaskIcon />;
+  return <JiraTaskIcon />;
 }
