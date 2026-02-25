@@ -625,22 +625,80 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
   const promoteMutation = usePromoteToRoadmap();
   const removeMutation = useRemoveFromRoadmap();
+  const queryClient = useQueryClient();
   const isOnRoadmap = initiative.on_roadmap === true;
-  const isPending = promoteMutation.isPending || removeMutation.isPending;
+  const [isToggling, setIsToggling] = useState(false);
+  const isPending = promoteMutation.isPending || removeMutation.isPending || isToggling;
   const isJira = !isNativeInitiative(initiative.id);
 
   const handleToggle = async () => {
-    if (isJira) {
-      catalystToast.error('Jira-sourced items cannot be added to roadmap');
-      return;
-    }
-    if (isOnRoadmap) {
-      await removeMutation.mutateAsync(initiative.id);
-    } else {
-      await promoteMutation.mutateAsync({
-        initiative_id: initiative.id,
-        initiative_type_key: initiative.initiative_type_key || 'project',
-      });
+    try {
+      setIsToggling(true);
+      if (isJira) {
+        // For Jira-sourced items, create a ph_initiatives record first if needed, then promote
+        if (isOnRoadmap) {
+          // Find the ph_initiatives record by initiative_key to remove
+          const { data: existing } = await (supabase as any)
+            .from('ph_initiatives')
+            .select('id')
+            .eq('initiative_key', initiative.initiative_key)
+            .maybeSingle();
+          if (existing) {
+            await removeMutation.mutateAsync(existing.id);
+          }
+        } else {
+          // Check if a ph_initiatives record already exists for this issue_key
+          const { data: existing } = await (supabase as any)
+            .from('ph_initiatives')
+            .select('id')
+            .eq('initiative_key', initiative.initiative_key)
+            .maybeSingle();
+
+          let initiativeId: string;
+          if (existing) {
+            initiativeId = existing.id;
+          } else {
+            // Create a new ph_initiatives record from the Jira data
+            const { data: inserted, error: insertError } = await (supabase as any)
+              .from('ph_initiatives')
+              .insert({
+                initiative_key: initiative.initiative_key,
+                title: initiative.title,
+                description: initiative.description || null,
+                status: initiative.status || 'new_demand',
+                assignee_id: initiative.assignee_id || null,
+                department_id: initiative.department_id || null,
+                business_owner_id: initiative.business_owner_id || null,
+                target_quarter: initiative.target_quarter || null,
+                progress: initiative.progress || 0,
+              })
+              .select('id')
+              .single();
+            if (insertError) throw insertError;
+            initiativeId = inserted.id;
+          }
+
+          await promoteMutation.mutateAsync({
+            initiative_id: initiativeId,
+            initiative_type_key: initiative.initiative_type_key || 'project',
+          });
+        }
+        queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+      } else {
+        if (isOnRoadmap) {
+          await removeMutation.mutateAsync(initiative.id);
+        } else {
+          await promoteMutation.mutateAsync({
+            initiative_id: initiative.id,
+            initiative_type_key: initiative.initiative_type_key || 'project',
+          });
+        }
+      }
+    } catch (err) {
+      console.error('Roadmap toggle failed:', err);
+      catalystToast.error('Failed to update roadmap status');
+    } finally {
+      setIsToggling(false);
     }
   };
 
