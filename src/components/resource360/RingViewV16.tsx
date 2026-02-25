@@ -406,58 +406,71 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
         </div>
       </div>
 
+      {/* ── WEEK RIBBON (above ring, full width) ── */}
+      <div style={{
+        height: 44, display: 'flex', alignItems: 'center', gap: 12, padding: '0 20px',
+        background: T.surface, borderBottom: `1px solid ${T.border}`, flexShrink: 0,
+        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+      }}>
+        <button onClick={() => setWeekIdx(Math.min(weekIdx + 1, weeks.length - 1))}
+          disabled={weekIdx >= weeks.length - 1}
+          style={{
+            width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: `1px solid ${T.border}`, borderRadius: 8, background: T.surfaceAlt,
+            cursor: weekIdx >= weeks.length - 1 ? 'not-allowed' : 'pointer', opacity: weekIdx >= weeks.length - 1 ? 0.35 : 1,
+            transition: 'all 120ms',
+          }}>
+          <ChevronLeft size={15} color={T.ink2} />
+        </button>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: T.ink1, fontFamily: T.sora, letterSpacing: '-0.01em' }}>
+            {currentWeek ? weekLabel(currentWeek.weekStart, weekIdx) : 'No items'}
+          </span>
+          <span style={{ fontSize: 12, color: T.ink3, fontFamily: T.inter, fontWeight: 500 }}>
+            {currentWeek ? weekRange(currentWeek.weekStart) : ''}
+          </span>
+        </div>
+        <button onClick={() => setWeekIdx(Math.max(weekIdx - 1, 0))}
+          disabled={weekIdx <= 0}
+          style={{
+            width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            border: `1px solid ${T.border}`, borderRadius: 8, background: T.surfaceAlt,
+            cursor: weekIdx <= 0 ? 'not-allowed' : 'pointer', opacity: weekIdx <= 0 ? 0.35 : 1,
+            transition: 'all 120ms',
+          }}>
+          <ChevronRight size={15} color={T.ink2} />
+        </button>
+        <div style={{ width: 1, height: 20, background: T.border, margin: '0 4px' }} />
+        <span style={{
+          fontSize: 11, color: T.surface, fontWeight: 700, fontFamily: T.mono, letterSpacing: '0.02em',
+          background: T.ink2, borderRadius: 5, padding: '2px 8px',
+        }}>
+          {weekItems.length} items
+        </span>
+        {totalPages > 1 && (
+          <span style={{ fontSize: 10.5, color: T.ink4, fontWeight: 600, fontFamily: T.mono }}>
+            Page {ringPage + 1}/{totalPages}
+          </span>
+        )}
+        <div style={{ flex: 1 }} />
+        {totalPages > 1 && (
+          <div style={{ display: 'flex', gap: 3 }}>
+            <button onClick={() => setRingPage(Math.max(0, ringPage - 1))} disabled={ringPage === 0}
+              style={{ width: 28, height: 28, borderRadius: 6, border: `1px solid ${T.border}`, background: T.surfaceAlt, cursor: 'pointer', opacity: ringPage === 0 ? 0.35 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 120ms' }}>
+              <ChevronLeft size={13} />
+            </button>
+            <button onClick={() => setRingPage(Math.min(totalPages - 1, ringPage + 1))} disabled={ringPage >= totalPages - 1}
+              style={{ width: 28, height: 28, borderRadius: 6, border: `1px solid ${T.border}`, background: T.surfaceAlt, cursor: 'pointer', opacity: ringPage >= totalPages - 1 ? 0.35 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 120ms' }}>
+              <ChevronRight size={13} />
+            </button>
+          </div>
+        )}
+      </div>
+
       {/* ── RING + PANEL LAYOUT ── */}
       <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
-        {/* Ring column (week ribbon + canvas stacked vertically) */}
+        {/* Ring column */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }}>
-          {/* Week Ribbon */}
-          <div style={{
-            height: 36, display: 'flex', alignItems: 'center', gap: 10, padding: '0 16px',
-            background: 'linear-gradient(90deg, rgba(37,99,235,.06), transparent 60%)',
-            borderBottom: `1px solid ${T.borderLt}`, flexShrink: 0,
-          }}>
-            <button onClick={() => setWeekIdx(Math.min(weekIdx + 1, weeks.length - 1))}
-              disabled={weekIdx >= weeks.length - 1}
-              style={{
-                width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                border: `1px solid ${T.border}`, borderRadius: 6, background: T.surface,
-                cursor: weekIdx >= weeks.length - 1 ? 'not-allowed' : 'pointer', opacity: weekIdx >= weeks.length - 1 ? 0.4 : 1,
-              }}>
-              <ChevronLeft size={14} color={T.ink2} />
-            </button>
-            <span style={{ fontSize: 12, fontWeight: 700, color: T.ink1, fontFamily: T.sora }}>
-              {currentWeek ? weekLabel(currentWeek.weekStart, weekIdx) : 'No items'}
-            </span>
-            <span style={{ fontSize: 11, color: T.ink3 }}>
-              {currentWeek ? weekRange(currentWeek.weekStart) : ''}
-            </span>
-            <button onClick={() => setWeekIdx(Math.max(weekIdx - 1, 0))}
-              disabled={weekIdx <= 0}
-              style={{
-                width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                border: `1px solid ${T.border}`, borderRadius: 6, background: T.surface,
-                cursor: weekIdx <= 0 ? 'not-allowed' : 'pointer', opacity: weekIdx <= 0 ? 0.4 : 1,
-              }}>
-              <ChevronRight size={14} color={T.ink2} />
-            </button>
-            <div style={{ flex: 1 }} />
-            <span style={{ fontSize: 10.5, color: T.ink4, fontWeight: 600 }}>
-              {weekItems.length} items{totalPages > 1 ? ` · Page ${ringPage + 1}/${totalPages}` : ''}
-            </span>
-            {totalPages > 1 && (
-              <div style={{ display: 'flex', gap: 2 }}>
-                <button onClick={() => setRingPage(Math.max(0, ringPage - 1))} disabled={ringPage === 0}
-                  style={{ width: 22, height: 22, borderRadius: 4, border: `1px solid ${T.border}`, background: T.surface, cursor: 'pointer', opacity: ringPage === 0 ? 0.4 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <ChevronLeft size={12} />
-                </button>
-                <button onClick={() => setRingPage(Math.min(totalPages - 1, ringPage + 1))} disabled={ringPage >= totalPages - 1}
-                  style={{ width: 22, height: 22, borderRadius: 4, border: `1px solid ${T.border}`, background: T.surface, cursor: 'pointer', opacity: ringPage >= totalPages - 1 ? 0.4 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <ChevronRight size={12} />
-                </button>
-              </div>
-            )}
-          </div>
-
           {/* SVG Ring Canvas — flex:1 fills remaining vertical space */}
           <div ref={ringCanvasRef} style={{
             flex: 1, position: 'relative', overflow: 'hidden',
