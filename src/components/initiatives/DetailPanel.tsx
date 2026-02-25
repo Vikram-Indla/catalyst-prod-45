@@ -75,7 +75,7 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 
 function DetailProgressBar({ value, status }: { value: number; status?: InitiativeStatus }) {
   const clamped = Math.min(Math.max(value, 0), 100);
-  const fillColor = status === 'delivered' ? '#10b981' : '#2563eb';
+  const fillColor = status === 'done' ? '#10b981' : '#2563eb';
   return (
     <div className="inline-flex items-center gap-2">
       <div className="w-20 h-1.5 bg-zinc-200 rounded-full overflow-hidden">

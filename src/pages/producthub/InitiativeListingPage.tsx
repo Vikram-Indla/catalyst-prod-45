@@ -25,7 +25,7 @@ import { catalystToast } from '@/lib/catalystToast';
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { getPriorityLevel } from '@/types/initiative';
 
-const TERMINAL_STATUSES: InitiativeStatus[] = ['delivered', 'closed', 'cancelled'];
+const TERMINAL_STATUSES: InitiativeStatus[] = ['done', 'cancelled'];
 
 const COLUMN_STORAGE_KEY = 'ph-backlog-columns';
 const DENSITY_STORAGE_KEY = 'ph-backlog-density';

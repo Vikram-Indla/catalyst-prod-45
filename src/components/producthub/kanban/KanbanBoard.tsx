@@ -18,13 +18,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export const COLUMNS: ColumnConfig[] = [
-  { key: 'new_demand',   label: 'New Demand',   color: '#3B82F6', wip: 5  },
-  { key: 'under_review', label: 'Under Review',  color: '#8B5CF6', wip: 4  },
-  { key: 'approved',     label: 'Approved',      color: '#06B6D4', wip: 6  },
-  { key: 'in_progress',  label: 'In Progress',   color: '#F59E0B', wip: 8  },
-  { key: 'on_hold',      label: 'On Hold',       color: '#6B7280', wip: 3  },
-  { key: 'delivered',    label: 'Delivered',      color: '#10B981', wip: null },
-  { key: 'cancelled',    label: 'Cancelled',     color: '#EF4444', wip: null },
+  { key: 'new',                    label: 'New',                    color: '#3B82F6', wip: 5  },
+  { key: 'portfolio_review',       label: 'Portfolio Review',       color: '#8B5CF6', wip: 4  },
+  { key: 'technical_validation',   label: 'Technical Validation',   color: '#A855F7', wip: 6  },
+  { key: 'estimate',               label: 'Estimate',               color: '#6366F1', wip: 5  },
+  { key: 'demand_approved',        label: 'Demand Approved',        color: '#06B6D4', wip: 6  },
+  { key: 'analysis',               label: 'Analysis',               color: '#0EA5E9', wip: 5  },
+  { key: 'ready_for_development',  label: 'Ready for Dev',          color: '#14B8A6', wip: 6  },
+  { key: 'under_implementation',   label: 'Under Implementation',   color: '#F59E0B', wip: 8  },
+  { key: 'on_hold',                label: 'On Hold',                color: '#6B7280', wip: 3  },
+  { key: 'implementation_review',  label: 'Impl. Review',           color: '#F97316', wip: 4  },
+  { key: 'in_support',             label: 'In Support',             color: '#10B981', wip: null },
+  { key: 'done',                   label: 'Done',                   color: '#22C55E', wip: null },
+  { key: 'cancelled',              label: 'Cancelled',              color: '#EF4444', wip: null },
 ];
 
 interface KanbanBoardProps {
@@ -116,7 +122,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const [focusedCard, setFocusedCard] = useState(0);
 
   const visibleColumns = COLUMNS.filter(c => !collapsedCols.has(c.key));
-  const currentColItems = columnItems(visibleColumns[focusedCol]?.key ?? 'new_demand');
+  const currentColItems = columnItems(visibleColumns[focusedCol]?.key as InitiativeStatus ?? 'new');
   const focusedCardId = currentColItems[focusedCard]?.id ?? null;
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -135,7 +141,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         break;
       case 'ArrowDown': {
         e.preventDefault();
-        const items = columnItems(cols[focusedCol]?.key ?? 'new_demand');
+        const items = columnItems(cols[focusedCol]?.key as InitiativeStatus ?? 'new');
         setFocusedCard(prev => Math.min(prev + 1, items.length - 1));
         break;
       }
@@ -145,7 +151,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         break;
       case 'Enter': {
         e.preventDefault();
-        const items = columnItems(cols[focusedCol]?.key ?? 'new_demand');
+        const items = columnItems(cols[focusedCol]?.key as InitiativeStatus ?? 'new');
         if (items[focusedCard]) onCardClick(items[focusedCard]);
         break;
       }
