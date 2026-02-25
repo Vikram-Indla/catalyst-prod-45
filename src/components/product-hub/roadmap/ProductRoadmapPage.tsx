@@ -39,8 +39,8 @@ export function ProductRoadmapPage() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { sidebarExpanded, setSidebarExpanded } = useCatalystContext();
   const [prevSidebar, setPrevSidebar] = useState(true);
-  const [timelineStart, setTimelineStart] = useState(() => new Date(2025, 10, 1));
-  const [timelineEnd, setTimelineEnd] = useState(() => new Date(2027, 0, 31));
+  const [timelineStart, setTimelineStart] = useState(() => new Date(2026, 0, 1));
+  const [timelineEnd, setTimelineEnd] = useState(() => new Date(2026, 11, 31));
 
   const selectedItem = useMemo(() => filtered.find(i => i.id === selectedId) || null, [filtered, selectedId]);
 

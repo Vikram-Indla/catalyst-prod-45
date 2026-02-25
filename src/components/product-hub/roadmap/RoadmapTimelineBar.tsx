@@ -1,6 +1,6 @@
 /**
  * Product Roadmap — Individual initiative timeline bar
- * Polish: type-shadow hover, planned=dashed+55%, progress=white fill+border, milestone=8px diamond
+ * Fixes: 32px tall, type-colored, progress overlay, planned=dashed+55%
  */
 import React, { useState, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
@@ -28,6 +28,13 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
   const finalColor = isOverdue ? '#EF4444' : barColor;
   const isPlanned = item.status === 'Planned';
 
+  // Hover gradient
+  const hoverGradient = item.type === 'project'
+    ? 'linear-gradient(135deg, #2563EB, #3B82F6)'
+    : item.type === 'enhancement'
+    ? 'linear-gradient(135deg, #0D9488, #14B8A6)'
+    : 'linear-gradient(135deg, #D97706, #F59E0B)';
+
   const fmtDate = (d: string) => {
     try { return format(parseISO(d), 'MMM d, yyyy'); } catch { return d; }
   };
@@ -49,7 +56,6 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
     if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
   }, []);
 
-  // Box shadow: type-colored glow on hover
   const hoverShadow = `0 4px 16px ${finalColor}40`;
 
   return (
@@ -57,58 +63,64 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
       <div
         role="button"
         tabIndex={0}
-        aria-label={`${item.initiativeKey}: ${item.titleEn}, ${TYPE_COLORS[item.type]?.label || item.type}, ${item.status}`}
+        aria-label={`${item.initiativeKey}: ${item.titleEn}`}
         onClick={onClick}
         onKeyDown={e => e.key === 'Enter' && onClick()}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="absolute top-1/2 rounded cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+        className="absolute top-1/2 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
         style={{
           left: `${left}%`,
-          width: `${Math.max(width, 3)}%`,
-          height: 28,
+          width: `${Math.max(width, 2)}%`,
+          height: 32,
           display: 'flex',
           alignItems: 'center',
           overflow: 'hidden',
-          background: isPlanned ? 'transparent' : finalColor,
+          borderRadius: 6,
+          background: isPlanned ? 'transparent' : (isHovered ? hoverGradient : finalColor),
           border: isPlanned ? `2px dashed ${finalColor}` : 'none',
           opacity: isPlanned ? 0.55 : 1,
           transform: isHovered ? 'translateY(calc(-50% - 2px)) scaleY(1.08)' : 'translateY(-50%)',
           boxShadow: isHovered || isSelected ? hoverShadow : 'none',
           zIndex: isSelected ? 10 : isHovered ? 5 : 1,
-          transition: 'transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease',
+          transition: 'transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, background 0.15s ease',
         }}
       >
-        {/* Planned fill — dashed border handles the visual, add subtle bg */}
+        {/* Planned fill */}
         {isPlanned && (
-          <div className="absolute inset-0 rounded" style={{ background: `${finalColor}18` }} />
+          <div className="absolute inset-0" style={{ background: `${finalColor}18`, borderRadius: 6 }} />
         )}
 
-        {/* Progress fill — white overlay with right border */}
+        {/* Progress fill — white overlay */}
         {item.progress > 0 && (
           <div
-            className="absolute left-0 top-0 bottom-0 rounded-l"
+            className="absolute left-0 top-0 bottom-0"
             style={{
               width: `${Math.min(100, item.progress)}%`,
               background: 'rgba(255,255,255,0.2)',
               borderRight: item.progress < 100 ? '2px solid rgba(255,255,255,0.5)' : 'none',
+              borderRadius: '6px 0 0 6px',
               zIndex: 0,
             }}
           />
         )}
 
-        {/* Label */}
-        {width > 6 && (
+        {/* Label — title + progress */}
+        {width > 5 && (
           <span
             className="relative truncate"
-            style={{ zIndex: 1, fontSize: 12, fontWeight: 600, color: '#FFFFFF', paddingLeft: 8, paddingRight: 8, lineHeight: '28px', textShadow: isPlanned ? 'none' : '0 1px 2px rgba(0,0,0,0.2)' }}
+            style={{
+              zIndex: 1, fontSize: 12, fontWeight: 600, color: '#FFFFFF',
+              paddingLeft: 8, paddingRight: 8, lineHeight: '32px',
+              textShadow: isPlanned ? 'none' : '0 1px 2px rgba(0,0,0,0.2)',
+            }}
           >
             {width > 12 ? item.titleEn : item.initiativeKey}
           </span>
         )}
 
         {/* Progress pill */}
-        {item.progress > 0 && width > 15 && (
+        {item.progress > 0 && width > 12 && (
           <span
             className="absolute right-2 top-1/2 -translate-y-1/2"
             style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF', background: 'rgba(0,0,0,0.2)', borderRadius: 10, padding: '1px 6px', zIndex: 2 }}
@@ -117,7 +129,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           </span>
         )}
 
-        {/* Milestone diamonds — 8px, rotated 45deg, 2px white border, type-colored fill */}
+        {/* Milestone diamonds */}
         {item.milestones.map(m => {
           const mDate = new Date(m.targetDate);
           const barStart = new Date(item.startDate);
@@ -135,8 +147,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
                 left: `${mPos}%`,
                 top: '50%',
                 width: 8, height: 8,
-                marginTop: -4,
-                marginLeft: -4,
+                marginTop: -4, marginLeft: -4,
                 background: m.completed ? '#FFFFFF' : finalColor,
                 border: '2px solid #FFFFFF',
                 borderRadius: 1,
