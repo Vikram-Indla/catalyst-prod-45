@@ -9,7 +9,7 @@ import { format, parseISO, differenceInMonths, differenceInDays } from 'date-fns
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { RoadmapInitiative } from './types/roadmap.types';
@@ -50,12 +50,12 @@ const PRIORITY_OPTIONS = [
   { value: 3, label: 'P2 — Medium', uiLabel: 'P2' },
 ];
 
-const TYPE_OPTIONS = [
-  { key: 'project', label: 'Project', typeId: 'fdb2fd4a-23dc-48bb-b4a0-e8741a572aee' },
-  { key: 'enhancement', label: 'Enhancement', typeId: '00242328-979a-4ecb-8f02-5d3b982966d1' },
-  { key: 'improvement', label: 'Improvement', typeId: '90806dac-3ed5-4f99-a11e-290dc0efd376' },
-  
-  { key: 'entity_integration', label: 'Entity Integration', typeId: '8ee93370-21e5-4464-92d1-3e51839067cd' },
+const TYPE_FALLBACK_OPTIONS = [
+  { value: 'fdb2fd4a-23dc-48bb-b4a0-e8741a572aee', label: 'Project' },
+  { value: '00242328-979a-4ecb-8f02-5d3b982966d1', label: 'Enhancement' },
+  { value: '90806dac-3ed5-4f99-a11e-290dc0efd376', label: 'Improvement' },
+  { value: '8ee93370-21e5-4464-92d1-3e51839067cd', label: 'Entity Integration' },
+  { value: 'fb137d36-16d9-4e69-ba77-f76e6d961fe4', label: 'Sustainable' },
 ];
 
 // Avatar color — deterministic from name (enterprise-approved palette)
@@ -81,6 +81,18 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
   const [saving, setSaving] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const { data: approvedProfiles } = useApprovedProfiles();
+  const { data: initiativeTypeOptions = [] } = useQuery({
+    queryKey: ['initiative-type-options'],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('initiative_types')
+        .select('id, key, label')
+        .order('label', { ascending: true });
+      if (error) throw error;
+      return (data || []).map((row: any) => ({ value: row.id as string, label: row.label as string }));
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   const teamMembers = useMemo(() => {
     return (approvedProfiles || []).map(p => ({
@@ -339,7 +351,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                       <ChevronDown size={12} style={{ color: INK[4], marginLeft: 4 }} />
                       {showTypeDropdown && (
                         <Dropdown
-                          options={TYPE_OPTIONS.map(o => ({ value: o.typeId, label: o.label }))}
+                          options={initiativeTypeOptions.length > 0 ? initiativeTypeOptions : TYPE_FALLBACK_OPTIONS}
                           onSelect={val => {
                             setShowTypeDropdown(false);
                             saveField({ initiative_type_id: val }, 'Type');
