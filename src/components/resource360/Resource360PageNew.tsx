@@ -61,8 +61,8 @@ export default function Resource360PageNew() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, height: '100%', overflow: 'hidden', fontFamily: "'Inter', sans-serif" }}>
-      {/* §3 Banner */}
-      <Resource360Banner summary={summary ?? null} isLoading={summaryLoading} />
+      {/* §3 Banner — DEF-01: only Open + Stale KPIs */}
+      <Resource360Banner summary={summary ?? null} isLoading={summaryLoading} items={items} />
 
       {/* §4 Tab Bar — 40px */}
       <div style={{
