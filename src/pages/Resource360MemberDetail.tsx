@@ -112,12 +112,17 @@ const Resource360MemberDetail: React.FC = () => {
   // Derived data — ALL from DB-sourced chronology
   const items = useMemo(() => (chronology as any[]) || [], [chronology]);
 
+  const isDone = (cat: string | null | undefined) => {
+    const c = (cat || '').toLowerCase();
+    return c === 'completed' || c === 'done' || c === 'complete';
+  };
+
   const doneCount = useMemo(() =>
-    items.filter(i => i.status_category === 'completed').length,
+    items.filter(i => isDone(i.status_category)).length,
   [items]);
 
   const pendingCount = useMemo(() =>
-    items.filter(i => i.status_category !== 'completed').length,
+    items.filter(i => !isDone(i.status_category)).length,
   [items]);
 
   const memberName = (member as any)?.full_name || '';

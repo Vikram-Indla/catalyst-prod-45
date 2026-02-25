@@ -302,7 +302,9 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
   onSelect: (i: R360WorkItem) => void; selected: R360WorkItem | null;
 }) {
   const canvasRef = useRef<HTMLDivElement>(null);
+  const doneRef = useRef<HTMLDivElement>(null);
   const [W, setW] = useState(1000);
+  const [showDone, setShowDone] = useState(false);
 
   const measure = useCallback(() => {
     if (canvasRef.current) setW(canvasRef.current.offsetWidth);
@@ -314,14 +316,33 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
     return () => window.removeEventListener('resize', measure);
   }, [measure]);
 
+  // Close on outside click
+  useEffect(() => {
+    if (!showDone) return;
+    const handler = (e: MouseEvent) => {
+      if (doneRef.current && !doneRef.current.contains(e.target as Node)) setShowDone(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showDone]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!showDone) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setShowDone(false); };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [showDone]);
+
   const nonDone = items.filter(i => i.status_category !== 'done');
-  const doneCount = items.filter(i => i.status_category === 'done').length;
+  const doneItems = items.filter(i => i.status_category === 'done');
+  const doneCount = doneItems.length;
   const visible = nonDone.slice(0, 8);
   const ages = visible.map(i => i.age_days);
   const { slots, spokes, labels, center } = computeGeometry(W, visible.length, ages);
 
   return (
-    <div ref={canvasRef} style={{ position:'relative', width:'100%', height:`${CANVAS_H}px`, overflow:'hidden', boxSizing:'border-box' as const, marginTop:'8px' }}>
+    <div ref={canvasRef} style={{ position:'relative', width:'100%', height:`${CANVAS_H}px`, overflow:'visible', boxSizing:'border-box' as const, marginTop:'8px' }}>
       {/* SVG SPOKES — pixel coordinates */}
       <svg width={W} height={CANVAS_H} style={{ position:'absolute', top:0, left:0, zIndex:1, pointerEvents:'none' }}>
         {spokes.map((s, i) => (
@@ -398,11 +419,93 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
         );
       })}
 
-      {/* COMPLETED BADGE */}
+      {/* COMPLETED BADGE — CLICKABLE WITH DROPDOWN */}
       {doneCount > 0 && (
-        <div style={{ position:'absolute', right:'16px', top:`${center.y}px`, transform:'translateY(-50%)', zIndex:6, display:'flex', flexDirection:'column', alignItems:'center', gap:'6px' }}>
-          <div style={{ width:'48px', height:'48px', borderRadius:'50%', background:'#16A34A', color:'#FFF', fontSize:'18px', fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 2px 8px rgba(22,163,74,.3)', fontVariantNumeric:'tabular-nums' }}>{doneCount}</div>
-          <span style={{ fontSize:'9.5px', fontWeight:700, color:'#14532D', textTransform:'uppercase', letterSpacing:'.06em', writingMode:'vertical-rl' } as React.CSSProperties}>COMPLETED</span>
+        <div ref={doneRef} style={{ position:'absolute', right:'16px', top:`${center.y}px`, transform:'translateY(-50%)', zIndex:10 }}>
+          {/* Badge */}
+          <div
+            onClick={() => setShowDone(prev => !prev)}
+            title="Click to view completed items"
+            style={{
+              display:'flex', flexDirection:'column', alignItems:'center', gap:'6px',
+              cursor:'pointer', transition:'transform .15s',
+              transform: showDone ? 'scale(1.08)' : 'scale(1)',
+            }}
+          >
+            <div style={{
+              width:'48px', height:'48px', borderRadius:'50%', background:'#16A34A', color:'#FFF',
+              fontSize:'18px', fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center',
+              boxShadow: showDone
+                ? '0 0 0 3px rgba(22,163,74,.25), 0 2px 8px rgba(22,163,74,.3)'
+                : '0 2px 8px rgba(22,163,74,.3)',
+              transition:'box-shadow .15s', fontVariantNumeric:'tabular-nums',
+            }}>{doneCount}</div>
+            <span style={{ fontSize:'9.5px', fontWeight:700, color:'#14532D', textTransform:'uppercase', letterSpacing:'.06em', writingMode:'vertical-rl' } as React.CSSProperties}>COMPLETED</span>
+          </div>
+
+          {/* POPOVER DROPDOWN */}
+          {showDone && (
+            <div style={{
+              position:'absolute', right:'64px', top:'50%', transform:'translateY(-50%)',
+              width:'340px', maxHeight:'420px', background:'#FFFFFF',
+              border:'1px solid #E2E8F0', borderRadius:'12px',
+              boxShadow:'0 8px 30px rgba(15,23,42,.12), 0 2px 8px rgba(15,23,42,.06)',
+              overflow:'hidden', zIndex:11,
+            }}>
+              {/* Header */}
+              <div style={{
+                padding:'14px 16px', borderBottom:'1px solid #F1F5F9',
+                display:'flex', alignItems:'center', justifyContent:'space-between',
+              }}>
+                <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
+                  <div style={{
+                    width:'22px', height:'22px', borderRadius:'50%', background:'#16A34A',
+                    color:'#FFF', fontSize:'12px', fontWeight:700,
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                  }}>✓</div>
+                  <span style={{ fontSize:'13.5px', fontWeight:600, color:'#020617' }}>
+                    Completed Items
+                  </span>
+                </div>
+                <span style={{
+                  fontSize:'11px', fontWeight:700, color:'#14532D',
+                  background:'#F0FDF4', padding:'2px 10px', borderRadius:'10px',
+                }}>{doneCount}</span>
+              </div>
+
+              {/* Scrollable list */}
+              <div style={{ maxHeight:'340px', overflowY:'auto', scrollbarWidth:'thin', padding:'4px 0' }}>
+                {doneItems.map(item => (
+                  <div
+                    key={item.id}
+                    onClick={(e) => { e.stopPropagation(); onSelect(item); setShowDone(false); }}
+                    style={{
+                      display:'flex', alignItems:'flex-start', gap:'10px',
+                      padding:'10px 16px', cursor:'pointer',
+                      borderBottom:'1px solid #F8FAFC', transition:'background .1s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = '#F0FDF4')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    {/* Green check */}
+                    <div style={{
+                      width:'22px', height:'22px', borderRadius:'50%',
+                      background:'#DCFCE7', color:'#16A34A', fontSize:'12px', fontWeight:700,
+                      display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:'1px',
+                    }}>✓</div>
+                    <div style={{ flex:1, minWidth:0 }}>
+                      <div style={{ display:'flex', alignItems:'center', gap:'6px', marginBottom:'3px' }}>
+                        <span style={{ fontSize:'11px', fontWeight:600, color:'#2563EB', fontFamily:"'JetBrains Mono',monospace" }}>{item.item_key}</span>
+                        <span style={{ fontSize:'10px', fontWeight:700, padding:'1px 5px', borderRadius:'3px', color:'#FFF', background: PC_MAP[item.project_key] || '#64748B' }}>{item.project_key}</span>
+                        <span style={{ marginLeft:'auto', fontSize:'10px', color:'#64748B' }}>{item.age_days}d</span>
+                      </div>
+                      <div style={{ fontSize:'12px', fontWeight:500, color:'#334155', lineHeight:'1.35', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' } as React.CSSProperties}>{item.title}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
