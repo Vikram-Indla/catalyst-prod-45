@@ -40,6 +40,13 @@ export interface RoadmapInitiative {
   ownerColor: string;
   starred: boolean;
   milestones: RoadmapMilestone[];
+  hasRealEndDate: boolean;
+  rawDbId: string;
+  rawStatus: string;
+  rawTypeKey: string;
+  rawAssigneeId: string | null;
+  rawBusinessOwnerId: string | null;
+  rawInitiativeTypeId: string | null;
 }
 
 export interface RoadmapStats {

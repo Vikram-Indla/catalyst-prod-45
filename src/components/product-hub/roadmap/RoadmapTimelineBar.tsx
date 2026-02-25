@@ -24,9 +24,10 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
   const tooltipTimer = useRef<ReturnType<typeof setTimeout>>();
 
   const barColor = TYPE_COLORS[item.type]?.solid || '#94A3B8';
-  const isOverdue = item.status !== 'Completed' && item.progress < 100 && new Date(item.endDate) < new Date();
+  const isOverdue = item.status !== 'Completed' && item.progress < 100 && item.hasRealEndDate && new Date(item.endDate) < new Date();
   const finalColor = isOverdue ? '#EF4444' : barColor;
   const isPlanned = item.status === 'Planned';
+  const isFallbackEnd = !item.hasRealEndDate;
 
   // Hover gradient
   const hoverGradient = item.type === 'project'
@@ -77,17 +78,17 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           alignItems: 'center',
           overflow: 'hidden',
           borderRadius: 6,
-          background: isPlanned ? 'transparent' : (isHovered ? hoverGradient : finalColor),
-          border: isPlanned ? `2px dashed ${finalColor}` : 'none',
-          opacity: isPlanned ? 0.55 : 1,
+          background: (isPlanned || isFallbackEnd) ? 'transparent' : (isHovered ? hoverGradient : finalColor),
+          border: isFallbackEnd ? `2px dashed ${finalColor}80` : isPlanned ? `2px dashed ${finalColor}` : 'none',
+          opacity: isFallbackEnd ? 0.4 : isPlanned ? 0.55 : 1,
           transform: isHovered ? 'translateY(calc(-50% - 2px)) scaleY(1.08)' : 'translateY(-50%)',
           boxShadow: isHovered || isSelected ? hoverShadow : 'none',
           zIndex: isSelected ? 10 : isHovered ? 5 : 1,
           transition: 'transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, background 0.15s ease',
         }}
       >
-        {/* Planned fill */}
-        {isPlanned && (
+        {/* Planned/fallback fill */}
+        {(isPlanned || isFallbackEnd) && (
           <div className="absolute inset-0" style={{ background: `${finalColor}18`, borderRadius: 6 }} />
         )}
 
