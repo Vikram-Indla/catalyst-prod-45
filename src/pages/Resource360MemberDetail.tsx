@@ -104,8 +104,10 @@ const Resource360MemberDetail: React.FC = () => {
   const { data: kpis } = useR360MdMemberKpis(memberId || '');
   const { data: allMembers } = useR360MdAllMembers();
 
-  // Siblings — driven by selected item's parent_key
-  const { data: siblings = [] } = useR360MdSiblings(selectedItem?.parent_key || null);
+  // Siblings — driven by selected item's parent_key (only for Story parents)
+  const { data: siblingsData } = useR360MdSiblings(selectedItem?.parent_key || null);
+  const siblings = (siblingsData as any)?.siblings || [];
+  const parentType = (siblingsData as any)?.parentType || '';
 
   // Derived data — ALL from DB-sourced chronology
   const items = useMemo(() => (chronology as any[]) || [], [chronology]);

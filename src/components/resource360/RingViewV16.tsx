@@ -896,6 +896,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                             onMouseOver={e => (e.currentTarget.style.background = '#F8FAFC')}
                             onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                           >
+                            <span style={{ flexShrink: 0 }}>{getJiraIconForType(s.type)}</span>
                             <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: '#2563EB', width: 72, flexShrink: 0 }}>{s.key}</span>
                             <StatusPill status={s.status} small />
                             <span style={{ flex: 1, fontSize: 11, color: '#334155', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.title}</span>

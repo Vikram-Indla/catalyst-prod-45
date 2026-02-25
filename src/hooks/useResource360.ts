@@ -137,6 +137,7 @@ export function useR360MdSiblings(parentItemKey: string | null) {
     queryKey: ['r360md', 'siblings', parentItemKey],
     queryFn: () => resource360MdService.getSiblings(parentItemKey!),
     enabled: !!parentItemKey,
+    select: (data: any) => data,
   });
 }
 
