@@ -7,6 +7,8 @@ import { Loader2, Map, FolderKanban, Zap, Wrench, type LucideIcon } from 'lucide
 import { cn } from '@/lib/utils';
 import { usePromoteToRoadmap } from '@/hooks/useRoadmapPromotion';
 import { INITIATIVE_TYPE_COLORS, type InitiativeTypeKey } from '@/types/initiative-enhancements';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 
 const TYPE_OPTIONS: { key: InitiativeTypeKey; label: string; Icon: LucideIcon }[] = [
   { key: 'project', label: 'Project', Icon: FolderKanban },
@@ -17,7 +19,7 @@ const TYPE_OPTIONS: { key: InitiativeTypeKey; label: string; Icon: LucideIcon }[
 interface Props {
   open: boolean;
   onClose: () => void;
-  initiative: { id: string; title: string; initiative_type_key?: string | null } | null;
+  initiative: { id: string; title: string; initiative_key?: string; initiative_type_key?: string | null; description?: string | null; assignee_id?: string | null; department_id?: string | null; business_owner_id?: string | null; target_quarter?: string | null; progress?: number } | null;
 }
 
 const PRIORITY_OPTIONS = [
@@ -30,6 +32,7 @@ const PRIORITY_OPTIONS = [
 
 export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
   const promoteMutation = usePromoteToRoadmap();
+  const queryClient = useQueryClient();
   const [selectedType, setSelectedType] = useState<InitiativeTypeKey>('project');
   const [priority, setPriority] = useState('');
 
@@ -47,13 +50,51 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
     return () => document.removeEventListener('keydown', handler);
   }, [open, onClose]);
 
+  const isUuid = (v: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
+
   const handleConfirm = async () => {
     if (!initiative) return;
+
+    let initiativeId = initiative.id;
+
+    // For Jira-sourced items (non-UUID id), ensure a ph_initiatives record exists
+    if (!isUuid(initiative.id)) {
+      const issueKey = initiative.initiative_key || initiative.id;
+      const { data: existing } = await (supabase as any)
+        .from('ph_initiatives')
+        .select('id')
+        .eq('initiative_key', issueKey)
+        .maybeSingle();
+
+      if (existing) {
+        initiativeId = existing.id;
+      } else {
+        const { data: inserted, error: insertError } = await (supabase as any)
+          .from('ph_initiatives')
+          .insert({
+            initiative_key: issueKey,
+            title: initiative.title,
+            description: initiative.description || null,
+            status: 'new_demand',
+            assignee_id: initiative.assignee_id || null,
+            department_id: initiative.department_id || null,
+            business_owner_id: initiative.business_owner_id || null,
+            target_quarter: initiative.target_quarter || null,
+            progress: initiative.progress || 0,
+          })
+          .select('id')
+          .single();
+        if (insertError) throw insertError;
+        initiativeId = inserted.id;
+      }
+    }
+
     await promoteMutation.mutateAsync({
-      initiative_id: initiative.id,
+      initiative_id: initiativeId,
       initiative_type_key: selectedType,
       roadmap_priority: priority ? parseInt(priority) : undefined,
     });
+    queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
     onClose();
   };
 
