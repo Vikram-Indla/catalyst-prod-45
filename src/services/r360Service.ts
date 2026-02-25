@@ -159,6 +159,17 @@ export const r360Service = {
   },
 
   async getSiblings(parentKey: string) {
+    // Only show siblings when the parent is a Story (not Epics or other types)
+    const { data: parentData } = await (supabase as any).from('ph_issues')
+      .select('issue_type')
+      .eq('issue_key', parentKey)
+      .limit(1)
+      .single();
+    const parentType = (parentData as any)?.issue_type || '';
+    if (!parentType.toLowerCase().includes('story')) {
+      return [];
+    }
+
     const { data, error } = await (supabase as any).from('ph_issues')
       .select('issue_key, summary, status, assignee_display_name, jira_created_at')
       .eq('parent_key', parentKey)
