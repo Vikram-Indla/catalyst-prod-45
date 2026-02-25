@@ -232,7 +232,7 @@ export default function R360MemberDetail() {
 // ═══ PIXEL-BASED RING VIEW ═══
 // All coordinates in pixels. Cards, spokes, labels — same coordinate space.
 const CANVAS_H = 720;
-const CARD_W = 210;
+const CARD_W = 230;
 const CARD_H = 155;
 
 // ═══ TIGHT ORBIT SLOTS ═══
