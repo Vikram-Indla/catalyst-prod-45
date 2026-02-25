@@ -14,6 +14,9 @@ interface RoadmapInitiativeListProps {
   onSelect: (id: string) => void;
   onHover: (id: string | null) => void;
   onAddClick: () => void;
+  width?: number;
+  scrollRef?: React.RefObject<HTMLDivElement>;
+  onScroll?: () => void;
 }
 
 /* Owner avatar — person silhouette for unassigned */
@@ -46,11 +49,11 @@ function OwnerAvatar({ initials, color, name }: { initials?: string; color?: str
   );
 }
 
-export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect, onHover, onAddClick }: RoadmapInitiativeListProps) {
+export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect, onHover, onAddClick, width, scrollRef, onScroll }: RoadmapInitiativeListProps) {
   const totalCount = groups.reduce((sum, g) => sum + g.items.length, 0);
 
   return (
-    <div className="flex-shrink-0 flex flex-col roadmap-scroll" style={{ width: LIST_PANEL_WIDTH, borderRight: `1px solid ${SURFACE.border}`, background: SURFACE.card }}>
+    <div className="flex-shrink-0 flex flex-col roadmap-scroll" style={{ width: width || LIST_PANEL_WIDTH, borderRight: `1px solid ${SURFACE.border}`, background: SURFACE.card }}>
       {/* Column Header */}
       <div
         className="flex items-center justify-between px-4"
@@ -67,7 +70,7 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
         <ArrowUpDown className="w-3.5 h-3.5" style={{ color: INK[4] }} />
       </div>
 
-      <div className="flex-1 overflow-y-auto roadmap-scroll">
+      <div ref={scrollRef as any} onScroll={onScroll} className="flex-1 overflow-y-auto roadmap-scroll">
         {groups.map((group, gi) => {
           const typeColor = TYPE_COLORS[group.key]?.solid || group.color || '#64748B';
           return (

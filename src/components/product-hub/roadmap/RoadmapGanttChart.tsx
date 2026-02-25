@@ -21,6 +21,8 @@ interface RoadmapGanttChartProps {
   hoveredId: string | null;
   onSelect: (id: string) => void;
   onHover: (id: string | null) => void;
+  scrollRef?: React.RefObject<HTMLDivElement>;
+  onScroll?: () => void;
 }
 
 function generatePeriods(start: Date, end: Date, zoom: ZoomLevel): TimelinePeriod[] {
@@ -89,7 +91,7 @@ function calcBarPosition(startDate: string, endDate: string, tlStart: Date, tlEn
   return { left, width };
 }
 
-export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, selectedId, hoveredId, onSelect, onHover }: RoadmapGanttChartProps) {
+export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, selectedId, hoveredId, onSelect, onHover, scrollRef, onScroll }: RoadmapGanttChartProps) {
   const periods = useMemo(() => generatePeriods(timelineStart, timelineEnd, zoom), [timelineStart, timelineEnd, zoom]);
 
   const todayPct = useMemo(() => {
@@ -103,7 +105,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
 
   return (
     <div className="flex-1 flex flex-col min-w-0 overflow-hidden roadmap-scroll" style={{ background: SURFACE.card }}>
-      <div className="flex-1 overflow-auto roadmap-scroll">
+      <div ref={scrollRef as any} onScroll={onScroll} className="flex-1 overflow-auto roadmap-scroll">
         <div style={{ minWidth: totalMinWidth }}>
           {/* Sticky header */}
           <div
