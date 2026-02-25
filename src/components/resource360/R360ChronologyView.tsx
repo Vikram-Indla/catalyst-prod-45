@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { getJiraIcon } from './R360JiraIcons';
-import { getStatusStyle, getAgeColor, slugify, initials, groupByDate } from './r360-helpers';
+import { resolveStatusStyle, getAgeColor, initials, groupByDate } from './r360-helpers';
 
 interface Props {
   items: any[];
@@ -20,9 +20,18 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick }) => {
     });
   };
 
+  if (items.length === 0) {
+    return (
+      <div style={{ textAlign: 'center', padding: '60px 20px', color: '#64748B' }}>
+        <div style={{ fontSize: 32, marginBottom: 12 }}>📋</div>
+        <div style={{ fontSize: 15, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No active work items this week</div>
+        <div style={{ fontSize: 13 }}>Try adjusting filters or navigating to a different week.</div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ position: 'relative', paddingLeft: 32 }}>
-      {/* Timeline vertical line */}
       <div className="r3-timeline-line" />
 
       {Array.from(groups.entries()).map(([dateLabel, groupItems]) => {
@@ -37,7 +46,6 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick }) => {
 
         return (
           <div key={dateLabel} style={{ marginBottom: 20 }}>
-            {/* Date group header */}
             <div
               style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', marginLeft: -32, paddingLeft: 10, marginBottom: 10 }}
               onClick={() => toggleGroup(dateLabel)}
@@ -47,7 +55,6 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick }) => {
               <span style={{ fontSize: 11, fontWeight: 500, color: '#64748B', background: '#F1F5F9', padding: '2px 8px', borderRadius: 6 }}>
                 {total}
               </span>
-              {/* Mini status bar */}
               <div className="r3-mini-bar" style={{ width: 60 }}>
                 {doneCount > 0 && <div style={{ width: `${(doneCount/total)*100}%`, background: '#16A34A' }} />}
                 {progressCount > 0 && <div style={{ width: `${(progressCount/total)*100}%`, background: '#2563EB' }} />}
@@ -57,20 +64,16 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick }) => {
               {isCollapsed ? <ChevronRight size={14} color="#94A3B8" /> : <ChevronDown size={14} color="#94A3B8" />}
             </div>
 
-            {/* Items */}
             {!isCollapsed && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {groupItems.map((item: any) => {
-                  const ss = getStatusStyle(item.status_name);
+                  const ss = resolveStatusStyle(item);
                   const ageColor = getAgeColor(item.age_days);
                   return (
                     <div key={item.id} className="r3-chrono-card" onClick={() => onItemClick(item)}>
                       <div className="r3-accent-bar" style={{ background: ss.dot }} />
                       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                        {/* Jira icon */}
                         <div style={{ flexShrink: 0, marginTop: 2 }}>{getJiraIcon(item.item_type)}</div>
-
-                        {/* Body */}
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                             <span className="r3-item-key">{item.item_key}</span>
@@ -90,8 +93,6 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick }) => {
                             </div>
                           )}
                         </div>
-
-                        {/* Right: assigner, status, age */}
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
                           {item.assigner_name && (
                             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>

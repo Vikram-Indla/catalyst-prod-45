@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 import { getJiraIcon } from './R360JiraIcons';
-import { getStatusStyle, getAgeColor, getAgeLabel, slugify, initials } from './r360-helpers';
+import { resolveStatusStyle, getAgeColor, getAgeLabel, initials } from './r360-helpers';
 
 interface Props {
   item: any;
@@ -11,7 +11,6 @@ interface Props {
 }
 
 export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSiblingClick }) => {
-  // ESC key handler
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -22,20 +21,15 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
 
   if (!item) return null;
 
-  const ss = getStatusStyle(item.status_name);
-  const ageColor = getAgeColor(item.age_days);
+  const ss = resolveStatusStyle(item);
   const ageDays = item.age_days || 0;
   const daysBarColor = ageDays <= 7 ? '#16A34A' : ageDays <= 14 ? '#D97706' : '#EF4444';
   const daysBarPct = Math.min(ageDays / 21 * 100, 100);
-
   const doneSiblings = siblings.filter(s => s.status_category === 'completed').length;
 
   return (
     <>
-      {/* Overlay */}
       <div className="r3-panel-overlay" onClick={onClose} />
-
-      {/* Panel */}
       <div
         className="r3-detail-panel"
         style={{ animation: 'slideInRight 250ms cubic-bezier(0.32,0.72,0,1) forwards' }}
@@ -52,7 +46,6 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
             </button>
           </div>
 
-          {/* Pills row */}
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
             <span className="r3-status-pill" style={{ background: ss.bg, color: ss.text }}>
               <span className="r3-status-dot" style={{ background: ss.dot }} />
@@ -70,11 +63,9 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
             </span>
           </div>
 
-          {/* Title */}
           <h3 style={{ fontSize: 16, fontWeight: 600, color: '#020617', margin: 0 }}>{item.title}</h3>
         </div>
 
-        {/* Content */}
         <div style={{ padding: 20 }}>
           {/* Meta Grid 2×3 */}
           <div className="r3-meta-grid" style={{ marginBottom: 20 }}>
@@ -85,15 +76,14 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
             <div className="r3-meta-cell">
               <div className="r3-meta-cell-label">Assigner</div>
               <div className="r3-meta-cell-value" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                {item.assigner_name && (
+                {item.assigner_name ? (
                   <>
                     <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#334155' }}>
                       {initials(item.assigner_name)}
                     </div>
                     {item.assigner_name}
                   </>
-                )}
-                {!item.assigner_name && <span style={{ color: '#94A3B8' }}>—</span>}
+                ) : <span style={{ color: '#94A3B8' }}>—</span>}
               </div>
             </div>
             <div className="r3-meta-cell">
@@ -156,7 +146,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {siblings.map(sib => {
-                  const sibSs = getStatusStyle(sib.status_name);
+                  const sibSs = resolveStatusStyle(sib);
                   const isCurrent = sib.item_key === item.item_key;
                   return (
                     <div
