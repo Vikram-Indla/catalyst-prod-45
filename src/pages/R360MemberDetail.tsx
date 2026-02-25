@@ -167,6 +167,8 @@ export default function R360MemberDetail() {
   return (
     <div id="r360-root">
       <div className="r3-page">
+        {/* ── Sticky Header: Profile + Week Nav ── */}
+        <div style={{ position: 'sticky', top: 0, zIndex: 50, background: '#FFFFFF' }}>
         {/* ── Profile Header ── */}
         <div className="r3-profile">
           <div className="r3-profile-top">
@@ -228,6 +230,7 @@ export default function R360MemberDetail() {
           ))}
           <span style={{ marginLeft: 'auto', fontSize: '12.5px', color: '#64748B' }}>{weekItems.length} items</span>
         </div>
+        </div>{/* end sticky wrapper */}
 
         {/* ── Views ── */}
         {itemsLoading ? (
@@ -239,7 +242,7 @@ export default function R360MemberDetail() {
         ) : (
           <>
             {view === 'ring' && <RingView items={weekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} />}
-            {view === 'chronology' && <ChronologyView items={weekItems} onSelect={setSelectedItem} />}
+            {view === 'chronology' && <ChronologyView items={weekItems} onSelect={setSelectedItem} weekStart={week.start} weekEnd={week.end} />}
             {view === 'board' && <BoardView items={weekItems} onSelect={setSelectedItem} />}
           </>
         )}
@@ -555,8 +558,9 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
 // ═══════════════════════════════════════════
 // CHRONOLOGY VIEW
 // ═══════════════════════════════════════════
-function ChronologyView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void }) {
+function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360WorkItem[]; onSelect: (i: R360WorkItem) => void; weekStart: Date; weekEnd: Date }) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const groupRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const groups = useMemo(() => {
     const map = new Map<string, { label: string; items: R360WorkItem[] }>();
@@ -566,6 +570,19 @@ function ChronologyView({ items, onSelect }: { items: R360WorkItem[]; onSelect: 
     });
     return Array.from(map.entries()).sort(([a], [b]) => b.localeCompare(a));
   }, [items]);
+
+  // Auto-scroll to the first date group that falls within the selected week
+  useEffect(() => {
+    if (!groups.length) return;
+    const targetGroup = groups.find(([dateKey]) => {
+      const d = new Date(dateKey + 'T00:00:00');
+      return d >= weekStart && d <= weekEnd;
+    });
+    const key = targetGroup?.[0] || groups[0]?.[0];
+    if (key && groupRefs.current[key]) {
+      groupRefs.current[key]!.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [weekStart, weekEnd, groups]);
 
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
@@ -590,7 +607,7 @@ function ChronologyView({ items, onSelect }: { items: R360WorkItem[]; onSelect: 
         const total = group.items.length;
 
         return (
-          <div key={dateKey} className="r3-date-group">
+          <div key={dateKey} ref={el => { groupRefs.current[dateKey] = el; }} className="r3-date-group">
             <div className="r3-date-header" onClick={() => setCollapsed(prev => { const n = new Set(prev); n.has(dateKey) ? n.delete(dateKey) : n.add(dateKey); return n; })}>
               <span className={`r3-date-dot ${dotClass}`} />
               <span className="r3-date-label">{group.label}</span>
