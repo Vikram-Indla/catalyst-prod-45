@@ -322,7 +322,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
   const N = pageItems.length;
   const cardW = N <= 4 ? 170 : N <= 6 ? 156 : 142;
   const cardH = 105;
-  const maxR = Math.min(ringW / 2 - cardW / 2 - 16, ringH / 2 - cardH / 2 - 16);
+  const maxR = Math.min(ringW, ringH) * 0.30;
   const R = Math.max(80, maxR);
   const panelWidth = panelMode === 'detail' ? 360 : panelMode === 'completed' ? 280 : 0;
 
@@ -442,8 +442,8 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
           }}>
             <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0 }}>
               {/* §9 Orbital dashed circle */}
-              <circle cx={cx} cy={cy} r={R} fill="none" stroke="#E2E8F0" strokeWidth={1}
-                strokeDasharray="6 4" opacity={0.4} />
+              <circle cx={cx} cy={cy} r={R} fill="none" stroke="#E2E8F0" strokeWidth={1.5}
+                strokeDasharray="6 4" opacity={0.5} />
 
               {/* Spokes + date chips */}
               {pageItems.map((item, i) => {
@@ -465,7 +465,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                       opacity={hasSel ? (isSelected ? 1 : 0.15) : 0.5}
                     />
                     <g transform={`translate(${mx}, ${my})`}>
-                      <rect x={-48} y={-11} width={96} height={22} rx={11}
+                      <rect x={-36} y={-10} width={72} height={20} rx={10}
                         fill={isSelected ? T.accent : '#FFFFFF'}
                         stroke={isSelected ? '#1D4ED8' : '#CBD5E1'}
                         strokeWidth={1}
@@ -477,7 +477,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                         opacity: hasSel && !isSelected ? 0.3 : 1,
                         letterSpacing: '0.01em',
                       }}>
-                        {item.dateLabel} {relativeDate(item.assignedDate)}
+                        {relativeDate(item.assignedDate)}
                       </text>
                     </g>
                   </g>
@@ -534,12 +534,12 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                     borderTop: 'none',
                     boxShadow: isSelected
                       ? '0 0 0 3px rgba(37,99,235,.25), 0 12px 40px rgba(37,99,235,.2)'
-                      : '0 2px 12px rgba(0,0,0,.06)',
+                      : '0 4px 16px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)',
                     background: '#FFFFFF',
                     zIndex: isSelected ? 10 : 1,
                   }}
                   onMouseOver={e => { if (!isSelected) (e.currentTarget as any).style.boxShadow = '0 8px 28px rgba(0,0,0,.12)'; }}
-                  onMouseOut={e => { if (!isSelected) (e.currentTarget as any).style.boxShadow = '0 2px 12px rgba(0,0,0,.06)'; }}
+                  onMouseOut={e => { if (!isSelected) (e.currentTarget as any).style.boxShadow = '0 4px 16px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)'; }}
                 >
                   <div style={{
                     height: 22, borderRadius: '8px 8px 0 0', background: '#334155',
