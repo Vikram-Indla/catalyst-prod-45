@@ -41,6 +41,7 @@ export function useMDTBacklog() {
         { data: brData, error: brError },
         { data: brdData, error: brdError },
         { data: overrideData, error: overrideError },
+        { data: roadmapData, error: roadmapError },
       ] = await Promise.all([
         // Fetch Business Requests
         (supabase as any)
@@ -62,11 +63,24 @@ export function useMDTBacklog() {
         (supabase as any)
           .from('ph_issue_initiative_type_overrides')
           .select('issue_key, initiative_type_id, initiative_types(key, label, color_hex, color_token, icon)'),
+
+        // Fetch roadmap status from ph_initiatives for Jira-sourced items
+        (supabase as any)
+          .from('ph_initiatives')
+          .select('initiative_key, on_roadmap')
+          .like('initiative_key', 'MDT-%'),
       ]);
 
       if (brError) throw brError;
       if (brdError) throw brdError;
       if (overrideError) throw overrideError;
+      if (roadmapError) throw roadmapError;
+
+      // Build roadmap status lookup
+      const roadmapByKey = new Map<string, boolean>();
+      for (const row of (roadmapData || []) as any[]) {
+        roadmapByKey.set(row.initiative_key, row.on_roadmap === true);
+      }
 
       const overrideByIssueKey = new Map<string, {
         initiative_type_id: string;
@@ -139,6 +153,7 @@ export function useMDTBacklog() {
           initiative_type_key: typeOverride?.initiative_type_key ?? null,
           initiative_type_label: typeOverride?.initiative_type_label ?? null,
           initiative_type_color_hex: typeOverride?.initiative_type_color_hex ?? null,
+          on_roadmap: roadmapByKey.get(br.issue_key) ?? false,
           created_at: br.jira_created_at,
           updated_at: br.jira_updated_at,
           brd_tasks: matchedTasks,
