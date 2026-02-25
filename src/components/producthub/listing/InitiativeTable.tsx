@@ -213,7 +213,7 @@ export function InitiativeTable({
       ),
     }),
     col.accessor('status', {
-      id: 'status', size: 140, minSize: 120, header: 'Status',
+      id: 'status', size: 190, minSize: 170, header: 'Status',
       cell: ({ getValue }) => <StatusCell status={getValue()} />,
     }),
     col.accessor('computed_score', {
