@@ -32,8 +32,8 @@ function getWeekRange(offset: number) {
 // ── Status pill component ──
 function StatusPill({ label, color, bg, dot }: { label: string; color: string; bg: string; dot: string }) {
   return (
-    <span className="r3-status-pill" style={{ background: bg, color }}>
-      <span className="r3-status-dot" style={{ background: dot }} />
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 10px', borderRadius: '4px', fontSize: '11.5px', fontWeight: 600, background: bg, color }}>
+      <span style={{ width: '6px', height: '6px', borderRadius: '50%', flexShrink: 0, background: dot }} />
       {label}
     </span>
   );
@@ -102,6 +102,13 @@ export default function R360MemberDetail() {
     return c;
   }, [weekItems]);
 
+  // Avg age of open items
+  const avgAge = useMemo(() => {
+    const openItems = workItems.filter(i => i.status_category !== 'done');
+    if (openItems.length === 0) return 0;
+    return Math.round(openItems.reduce((s, i) => s + (i.age_days || 0), 0) / openItems.length);
+  }, [workItems]);
+
   // Close panel on ESC
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setSelectedItem(null); };
@@ -147,11 +154,23 @@ export default function R360MemberDetail() {
               <div className="r3-profile-role">{overview.role_name} · {overview.department}</div>
             </div>
             <div className="r3-kpis">
-              <div className="r3-kpi r3-kpi--open">
-                <div className="r3-kpi-val">{overview.open_items}</div>
-                <div className="r3-kpi-label">Open</div>
+              <div className="r3-kpi">
+                <div className="r3-kpi-val">{overview.total_items}</div>
+                <div className="r3-kpi-label">Total</div>
               </div>
-              <div className="r3-kpi r3-kpi--stale">
+              <div className="r3-kpi" style={{ background: '#F0FDF4', borderColor: '#BBF7D0' }}>
+                <div className="r3-kpi-val" style={{ color: '#16A34A' }}>{overview.total_items > 0 ? Math.round((overview.done_items / overview.total_items) * 100) : 0}%</div>
+                <div className="r3-kpi-label">Closure</div>
+              </div>
+              <div className="r3-kpi" style={{ background: '#FEF2F2', borderColor: '#FECACA' }}>
+                <div className="r3-kpi-val" style={{ color: '#EF4444' }}>{overview.open_items}</div>
+                <div className="r3-kpi-label">Pending</div>
+              </div>
+              <div className="r3-kpi">
+                <div className="r3-kpi-val">{avgAge}d</div>
+                <div className="r3-kpi-label">Avg Age</div>
+              </div>
+              <div className="r3-kpi">
                 <div className="r3-kpi-val">{overview.stale_items}</div>
                 <div className="r3-kpi-label">Stale</div>
               </div>
@@ -180,18 +199,22 @@ export default function R360MemberDetail() {
 
         {/* ── Week Navigation ── */}
         <div className="r3-weeknav">
-          <Calendar size={14} style={{ color: '#2563EB' }} />
-          <span className="r3-weeknav-label">{week.label}</span>
-          <span className="r3-weeknav-range">{week.range}</span>
-          <button className="r3-weeknav-arrow" onClick={() => setWeekOffset(w => w - 1)}><ChevronLeft size={14} /></button>
-          <button className="r3-weeknav-arrow" onClick={() => setWeekOffset(w => w + 1)}><ChevronRight size={14} /></button>
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>ACTIVE</span>
           <button className={`r3-chip ${!statusFilter ? 'r3-chip--active' : ''}`} onClick={() => setStatusFilter(null)}>All ({counts.all})</button>
           <button className={`r3-chip ${statusFilter === 'to_do' ? 'r3-chip--active' : ''}`} onClick={() => setStatusFilter(statusFilter === 'to_do' ? null : 'to_do')}>To Do ({counts.to_do})</button>
-          <button className={`r3-chip ${statusFilter === 'in_progress' ? 'r3-chip--active' : ''}`} onClick={() => setStatusFilter(statusFilter === 'in_progress' ? null : 'in_progress')}>In Prog ({counts.in_progress})</button>
-          {view === 'chronology' && (
-            <input className="r3-search" style={{ height: 36, width: 240, flex: 'none' }} placeholder="Search items..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
-          )}
-          <span className="r3-weeknav-count">{weekItems.length} items</span>
+          <button className={`r3-chip ${statusFilter === 'in_progress' ? 'r3-chip--active' : ''}`} onClick={() => setStatusFilter(statusFilter === 'in_progress' ? null : 'in_progress')}>In Progress ({counts.in_progress})</button>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 8 }}>
+            <Calendar size={14} style={{ color: '#EF4444' }} />
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>{week.label}</span>
+            <span style={{ fontSize: 12, color: '#64748B', fontWeight: 500 }}>{week.range}</span>
+            <button className="r3-weeknav-arrow" onClick={() => setWeekOffset(w => w - 1)}><ChevronLeft size={14} /></button>
+            <button className="r3-weeknav-arrow" onClick={() => setWeekOffset(w => w + 1)}><ChevronRight size={14} /></button>
+          </span>
+          <div style={{ flex: 1 }} />
+          <span style={{ fontSize: 11, color: '#94A3B8', display: 'flex', alignItems: 'center', gap: 4 }}>Q Search… (/)</span>
+          <span className="r3-weeknav-count">{weekItems.length} items · Page 1/{Math.max(1, Math.ceil(weekItems.length / 8))}</span>
+          <button className="r3-weeknav-arrow"><ChevronLeft size={14} /></button>
+          <button className="r3-weeknav-arrow"><ChevronRight size={14} /></button>
         </div>
 
         {/* ── Views ── */}

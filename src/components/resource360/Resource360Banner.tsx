@@ -4,22 +4,20 @@ import type { Resource360Summary } from '@/types/resource360';
 interface Props {
   summary: Resource360Summary | null;
   isLoading: boolean;
-  /** Pass items array to derive Open + Stale counts */
   items?: any[];
 }
 
-/** Resource banner: 66px, gradient avatar initials (NO photo), name, subtitle, 2 stat boxes (Open + Stale only) */
 export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
   if (isLoading || !summary) {
     return (
       <div style={{
-        height: 66, display: 'flex', alignItems: 'center', gap: 14,
-        padding: '0 20px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
+        display: 'flex', alignItems: 'center', gap: 14,
+        padding: '20px 24px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
       }}>
-        <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#E2E8F0' }} />
+        <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#E2E8F0' }} />
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <div style={{ width: 120, height: 14, borderRadius: 4, background: '#E2E8F0' }} />
-          <div style={{ width: 180, height: 10, borderRadius: 4, background: '#F1F5F9' }} />
+          <div style={{ width: 140, height: 16, borderRadius: 4, background: '#E2E8F0' }} />
+          <div style={{ width: 200, height: 12, borderRadius: 4, background: '#F1F5F9' }} />
         </div>
       </div>
     );
@@ -32,33 +30,38 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
     .slice(0, 2)
     .toUpperCase();
 
-  // DEF-01: ONLY Open + Stale — user mandate
-  const openCount = items.filter(i => {
-    const cat = (i.status_category || i.statusCategory || '').toLowerCase();
+  // Compute KPIs
+  const totalCount = items.length;
+  const doneCount = items.filter(i => {
+    const cat = (i.status_category || '').toLowerCase();
+    return cat.includes('done') || cat.includes('closed') || cat.includes('resolved') || cat.includes('complete');
+  }).length;
+  const closurePct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+  const pendingCount = totalCount - doneCount;
+  const ages = items.filter(i => {
+    const cat = (i.status_category || '').toLowerCase();
     return !cat.includes('done') && !cat.includes('closed') && !cat.includes('resolved') && !cat.includes('complete');
-  }).length;
+  }).map(i => i.age_days ?? 0);
+  const avgAge = ages.length > 0 ? Math.round(ages.reduce((a, b) => a + b, 0) / ages.length) : 0;
+  const staleCount = ages.filter(a => a > 14).length;
 
-  const staleCount = items.filter(i => {
-    const cat = (i.status_category || i.statusCategory || '').toLowerCase();
-    const isDone = cat.includes('done') || cat.includes('closed') || cat.includes('resolved') || cat.includes('complete');
-    const age = i.age_days ?? i.ageDays ?? 0;
-    return !isDone && age > 14;
-  }).length;
-
-  const stats = [
-    { label: 'Open', value: String(openCount), isWarn: true },
-    { label: 'Stale', value: String(staleCount), isWarn: false },
+  const kpis = [
+    { label: 'TOTAL', value: String(totalCount), color: '#0F172A', bg: '#FFFFFF' },
+    { label: 'CLOSURE', value: `${closurePct}%`, color: '#16A34A', bg: '#F0FDF4' },
+    { label: 'PENDING', value: String(pendingCount), color: '#EF4444', bg: '#FEF2F2' },
+    { label: 'AVG AGE', value: `${avgAge}d`, color: '#0F172A', bg: '#FFFFFF' },
+    { label: 'STALE', value: String(staleCount), color: '#0F172A', bg: '#FFFFFF' },
   ];
 
   return (
     <div style={{
-      height: 66, display: 'flex', alignItems: 'center', gap: 14,
-      padding: '0 20px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
+      display: 'flex', alignItems: 'center', gap: 16,
+      padding: '20px 24px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
       flexShrink: 0, fontFamily: "'Inter', sans-serif",
     }}>
-      {/* Avatar — gradient, initials only, NO photo */}
+      {/* Avatar */}
       <div style={{
-        width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
+        width: 56, height: 56, borderRadius: '50%', flexShrink: 0,
         background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         overflow: 'hidden',
@@ -68,7 +71,7 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
             onError={e => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).nextElementSibling?.removeAttribute('style'); }} />
         ) : null}
         <span style={{
-          fontFamily: "'Sora', sans-serif", fontSize: 17, fontWeight: 800, color: '#FFFFFF',
+          fontFamily: "'Sora', sans-serif", fontSize: 20, fontWeight: 800, color: '#FFFFFF',
           ...(summary.avatar_url ? { display: 'none' } : {}),
         }}>{initials}</span>
       </div>
@@ -76,29 +79,30 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
       {/* Name + subtitle */}
       <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <span style={{
-          fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 800,
+          fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 800,
           color: '#0F172A', lineHeight: 1.2,
         }}>{summary.name}</span>
-        <span style={{ fontSize: 12, color: '#64748B', lineHeight: 1.3, fontWeight: 500 }}>
+        <span style={{ fontSize: 13, color: '#64748B', lineHeight: 1.3, fontWeight: 500 }}>
           {summary.role}{summary.department ? ` · ${summary.department}` : ''}
         </span>
       </div>
 
-      {/* Stat boxes — ONLY Open + Stale (DEF-01 fix) */}
-      <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
-        {stats.map(s => (
-          <div key={s.label} style={{
-            minWidth: 80, padding: '5px 14px', textAlign: 'center',
-            borderRadius: 8,
-            background: s.isWarn ? '#FFFBEB' : '#F8FAFC',
-            border: `1px solid ${s.isWarn ? '#FDE68A' : '#E2E8F0'}`,
+      {/* KPI cards */}
+      <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, flexShrink: 0 }}>
+        {kpis.map(k => (
+          <div key={k.label} style={{
+            minWidth: 80, padding: '8px 16px', textAlign: 'center',
+            borderRadius: 8, background: k.bg,
+            border: '1px solid #E2E8F0',
           }}>
             <div style={{
-              fontFamily: "'JetBrains Mono', monospace", fontSize: 20, fontWeight: 700,
-              color: '#020617', lineHeight: 1.2,
-              fontVariantNumeric: 'tabular-nums',
-            }}>{s.value}</div>
-            <div style={{ fontSize: 10.5, color: '#64748B', fontWeight: 600, marginTop: 1, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{s.label}</div>
+              fontFamily: "'JetBrains Mono', monospace", fontSize: 22, fontWeight: 700,
+              color: k.color, lineHeight: 1.2, fontVariantNumeric: 'tabular-nums',
+            }}>{k.value}</div>
+            <div style={{
+              fontSize: 10, color: '#64748B', fontWeight: 700, marginTop: 2,
+              textTransform: 'uppercase', letterSpacing: '0.05em',
+            }}>{k.label}</div>
           </div>
         ))}
       </div>
