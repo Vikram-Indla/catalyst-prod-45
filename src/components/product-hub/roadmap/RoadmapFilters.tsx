@@ -1,6 +1,9 @@
 /**
  * Product Roadmap — Search, Filter Pills, Type Tabs, Legend
- * Fixes: filter pill styling, type tab dots, legend with gradient bars
+ * AUDIT #18: Entity Integration tab added
+ * AUDIT #20: Search input styled
+ * AUDIT #21: Legend matches bar gradients
+ * AUDIT #17: Fixed washed-out tokens
  */
 import React, { useRef, useEffect } from 'react';
 import { Search } from 'lucide-react';
@@ -26,17 +29,21 @@ const QUICK_FILTERS: { key: QuickFilter; label: string }[] = [
   { key: 'starred', label: '★ Starred' },
 ];
 
-const TYPE_TABS: { key: InitiativeType | 'all'; label: string; dot: string | null; hoverColor: string | null }[] = [
-  { key: 'all', label: 'All Types', dot: null, hoverColor: null },
-  { key: 'project', label: 'Projects', dot: '#2563EB', hoverColor: '#3B82F6' },
-  { key: 'enhancement', label: 'Enhancements', dot: '#0D9488', hoverColor: '#14B8A6' },
-  { key: 'improvement', label: 'Improvements', dot: '#D97706', hoverColor: '#F59E0B' },
+// AUDIT #18: Entity Integration tab with amber dot
+const TYPE_TABS: { key: InitiativeType | 'all'; label: string; dot: string | null }[] = [
+  { key: 'all', label: 'All Types', dot: null },
+  { key: 'project', label: 'Projects', dot: TYPE_COLORS.project.solid },
+  { key: 'enhancement', label: 'Enhancements', dot: TYPE_COLORS.enhancement.solid },
+  { key: 'entity_integration', label: 'Entity Integration', dot: TYPE_COLORS.entity_integration.solid },
+  { key: 'improvement', label: 'Improvements', dot: TYPE_COLORS.improvement.solid },
 ];
 
+// AUDIT #21: Legend uses exact bar gradients
 const LEGEND = [
-  { label: 'Project', color: '#2563EB', gradient: 'linear-gradient(135deg, #2563EB, #3B82F6)' },
-  { label: 'Enhancement', color: '#0D9488', gradient: 'linear-gradient(135deg, #0D9488, #14B8A6)' },
-  { label: 'Improvement', color: '#D97706', gradient: 'linear-gradient(135deg, #D97706, #F59E0B)' },
+  { label: 'Project', gradient: TYPE_COLORS.project.gradient },
+  { label: 'Enhancement', gradient: TYPE_COLORS.enhancement.gradient },
+  { label: 'Entity Integration', gradient: TYPE_COLORS.entity_integration.gradient },
+  { label: 'Improvement', gradient: TYPE_COLORS.improvement.gradient },
 ];
 
 export function RoadmapFilters({
@@ -53,18 +60,36 @@ export function RoadmapFilters({
     <>
       {/* Search + Quick Filter Pills */}
       <div className="flex items-center gap-3 px-4 py-2" style={{ borderBottom: `1px solid ${SURFACE.border}`, background: SURFACE.card }}>
+        {/* AUDIT #20: Proper search input */}
         <div className="relative" style={{ width: 224 }}>
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: INK[4] }} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: INK[3] }} />
           <input
             ref={searchRef}
             type="text"
             placeholder="Search initiatives..."
             value={search}
             onChange={e => onSearchChange(e.target.value)}
-            className="w-full h-8 pl-9 pr-3 text-xs focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
-            style={{ border: `1px solid ${SURFACE.border}`, borderRadius: 6, background: '#FFFFFF', color: INK[1] }}
+            className="w-full h-8 pl-9 pr-3 text-xs"
+            style={{
+              border: `1.5px solid ${SURFACE.border}`,
+              borderRadius: 6,
+              background: SURFACE.page,
+              color: INK[1],
+              outline: 'none',
+              transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+            }}
+            onFocus={e => {
+              e.currentTarget.style.borderColor = '#2563EB';
+              e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.1)';
+            }}
+            onBlur={e => {
+              e.currentTarget.style.borderColor = SURFACE.border;
+              e.currentTarget.style.boxShadow = 'none';
+            }}
           />
         </div>
+
+        {/* AUDIT #17: Fixed washed-out filter pills */}
         <div className="flex items-center gap-1.5">
           {QUICK_FILTERS.map(f => {
             const isActive = quickFilter === f.key;
@@ -77,12 +102,14 @@ export function RoadmapFilters({
                   borderRadius: 20,
                   fontSize: 12,
                   fontWeight: isActive ? 600 : 500,
-                  background: isActive ? '#EFF6FF' : 'transparent',
-                  color: isActive ? '#2563EB' : '#64748B',
-                  border: isActive ? '1px solid rgba(37,99,235,0.2)' : '1px solid transparent',
+                  background: isActive ? '#2563EB' : 'transparent',
+                  color: isActive ? '#FFFFFF' : INK[2],
+                  border: isActive ? '1px solid #2563EB' : '1px solid transparent',
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
                 }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = SURFACE.page; }}
+                onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
               >
                 {f.label}
               </button>
@@ -104,10 +131,12 @@ export function RoadmapFilters({
                 style={{
                   borderRadius: 6,
                   background: isActive ? '#F8FAFC' : 'transparent',
-                  color: isActive ? INK[1] : INK[3],
+                  color: isActive ? INK[1] : INK[2],
                   borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
                   transition: 'all 0.15s ease',
                 }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = SURFACE.page; }}
+                onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
               >
                 {t.dot && (
                   <span style={{
@@ -120,13 +149,14 @@ export function RoadmapFilters({
             );
           })}
         </div>
+
+        {/* AUDIT #21: Legend with matching gradients */}
         <div className="flex items-center gap-3">
-          <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: '#94A3B8' }}>Legend</span>
+          <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: INK[4] }}>Legend</span>
           {LEGEND.map(l => (
             <div key={l.label} className="flex items-center gap-1.5">
-              {/* 16×6 gradient bar */}
               <div style={{ width: 16, height: 6, borderRadius: 2, background: l.gradient }} />
-              <span style={{ fontSize: 11, fontWeight: 500, color: '#64748B' }}>{l.label}</span>
+              <span style={{ fontSize: 11, fontWeight: 500, color: INK[2] }}>{l.label}</span>
             </div>
           ))}
         </div>

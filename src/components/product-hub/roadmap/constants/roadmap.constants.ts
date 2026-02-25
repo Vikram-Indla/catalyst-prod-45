@@ -1,16 +1,38 @@
 /**
  * Product Roadmap — Design tokens & constants
- * All colors from the mandatory token system — no deviations.
- * Font: Plus Jakarta Sans (body), JetBrains Mono (data)
+ * AUDIT FIX: Updated per 25-issue audit
+ * Color system: Project=Slate, Enhancement=Teal, Entity Integration=Amber, Improvement=Green
+ * Avatar=Blue ALWAYS. No purple (AI reserved).
  */
 
-// ── Type Colors ──
-export const TYPE_COLORS: Record<string, { solid: string; light: string; label: string }> = {
-  project:            { solid: '#2563EB', light: '#EFF6FF', label: 'Project' },
-  enhancement:        { solid: '#0D9488', light: '#F0FDFA', label: 'Enhancement' },
-  improvement:        { solid: '#D97706', light: '#FFFBEB', label: 'Improvement' },
-  
-  entity_integration: { solid: '#8B5CF6', light: '#F5F3FF', label: 'Entity Integration' },
+// ── Type Colors (AUDIT #4: distinct per type) ──
+export const TYPE_COLORS: Record<string, { 
+  solid: string; 
+  light: string; 
+  label: string; 
+  gradient: string;
+  hover: string;
+}> = {
+  project: { 
+    solid: '#475569', light: '#F8FAFC', label: 'Project',
+    gradient: 'linear-gradient(135deg, #475569, #334155)',
+    hover: '#334155',
+  },
+  enhancement: { 
+    solid: '#0D9488', light: '#F0FDFA', label: 'Enhancement',
+    gradient: 'linear-gradient(135deg, #0D9488, #0F766E)',
+    hover: '#0F766E',
+  },
+  improvement: { 
+    solid: '#16A34A', light: '#F0FDF4', label: 'Improvement',
+    gradient: 'linear-gradient(135deg, #16A34A, #15803D)',
+    hover: '#15803D',
+  },
+  entity_integration: { 
+    solid: '#D97706', light: '#FFFBEB', label: 'Entity Integration',
+    gradient: 'linear-gradient(135deg, #D97706, #B45309)',
+    hover: '#B45309',
+  },
 };
 
 // ── Priority Colors ──
@@ -30,10 +52,10 @@ export const STATUS_COLORS: Record<string, { color: string; bg: string; label: s
 
 // ── Ink / Surface ──
 export const INK = {
-  1: '#0F172A',
-  2: '#334155',
-  3: '#64748B',
-  4: '#94A3B8',
+  1: '#0F172A',  // primary text
+  2: '#334155',  // secondary text (AUDIT #17: not muted)
+  3: '#64748B',  // tertiary
+  4: '#94A3B8',  // muted
 };
 
 export const SURFACE = {
@@ -43,22 +65,26 @@ export const SURFACE = {
   borderLight: '#F1F5F9',
 };
 
-// ── Typography — Catalyst spec: Plus Jakarta Sans + JetBrains Mono ──
+// ── Typography — Catalyst spec: Sora (headings) + Inter (body) + JetBrains Mono (data) ──
 export const FONT = {
-  body: "'Plus Jakarta Sans', Inter, sans-serif",
+  heading: "'Sora', 'Plus Jakarta Sans', sans-serif",
+  body: "Inter, 'Plus Jakarta Sans', sans-serif",
   mono: "'JetBrains Mono', 'SF Mono', monospace",
 };
 
-// ── Layout (4px grid) ──
-export const ROW_HEIGHT = 44;
-export const GROUP_HEADER_HEIGHT = 36;
-export const LIST_PANEL_WIDTH = 340;
+// ── Layout (AUDIT #23: 36px rows) ──
+export const ROW_HEIGHT = 36;
+export const GROUP_HEADER_HEIGHT = 38;
+export const LIST_PANEL_WIDTH = 420;
 export const DETAIL_PANEL_WIDTH = 420;
 
-// ── Owner palette (for avatar backgrounds) ──
-export const OWNER_COLORS = ['#2563EB', '#0D9488', '#D97706', '#7C3AED', '#E11D48', '#059669'];
+// ── Avatar (AUDIT #3: always blue) ──
+export const AVATAR_BG = '#2563EB';
 
-// ── Scrollbar CSS (applied globally via roadmap container) ──
+// ── Owner palette (for avatar backgrounds) — AUDIT #3: all blue ──
+export const OWNER_COLORS = ['#2563EB'];
+
+// ── Scrollbar CSS ──
 export const SCROLLBAR_CSS = `
   .roadmap-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
   .roadmap-scroll::-webkit-scrollbar-track { background: transparent; }

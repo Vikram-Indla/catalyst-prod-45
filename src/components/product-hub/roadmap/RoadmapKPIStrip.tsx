@@ -1,10 +1,11 @@
 /**
  * Product Roadmap — 4 KPI cards
- * Defect 7 fix: visible borders (#E2E8F0), shadow, bold values
+ * AUDIT #24: Sora heading font, 28px values
+ * AUDIT #4: Entity Integration count added with amber dot
  */
 import React from 'react';
 import type { RoadmapStats } from './types/roadmap.types';
-import { INK, SURFACE } from './constants/roadmap.constants';
+import { INK, SURFACE, FONT, TYPE_COLORS } from './constants/roadmap.constants';
 
 interface RoadmapKPIStripProps {
   stats: RoadmapStats;
@@ -19,22 +20,38 @@ const cardStyle: React.CSSProperties = {
 };
 
 const labelStyle: React.CSSProperties = {
-  fontSize: 10,
-  fontWeight: 700,
+  fontSize: 11,
+  fontWeight: 600,
   textTransform: 'uppercase',
   letterSpacing: '0.06em',
   color: '#94A3B8',
+  marginBottom: 6,
 };
 
 const valueStyle: React.CSSProperties = {
-  fontSize: 26,
-  fontWeight: 800,
+  fontFamily: FONT.heading,
+  fontSize: 28,
+  fontWeight: 700,
   color: '#0F172A',
-  letterSpacing: '-0.02em',
-  marginTop: 4,
+  letterSpacing: '-0.03em',
+  lineHeight: 1.1,
 };
 
+const TYPE_DOTS = [
+  { key: 'project', label: 'Proj', color: TYPE_COLORS.project.solid },
+  { key: 'enhancement', label: 'Enh', color: TYPE_COLORS.enhancement.solid },
+  { key: 'entity', label: 'Ent', color: TYPE_COLORS.entity_integration.solid },
+  { key: 'improvement', label: 'Imp', color: TYPE_COLORS.improvement.solid },
+];
+
 export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
+  const typeCounts: Record<string, number> = {
+    project: stats.projectCount,
+    enhancement: stats.enhancementCount,
+    entity: stats.entityIntegrationCount || 0,
+    improvement: stats.improvementCount,
+  };
+
   return (
     <div
       className="grid grid-cols-4 gap-3 px-6 py-3"
@@ -51,9 +68,9 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
       <div style={cardStyle}>
         <div style={labelStyle}>By Status</div>
         <div className="flex items-baseline gap-2" style={{ marginTop: 4 }}>
-          <span style={{ fontSize: 26, fontWeight: 800, color: '#16A34A', letterSpacing: '-0.02em' }}>{stats.activeCount}</span>
+          <span style={{ fontFamily: FONT.heading, fontSize: 26, fontWeight: 700, color: '#16A34A', letterSpacing: '-0.03em' }}>{stats.activeCount}</span>
           <span style={{ fontSize: 11, fontWeight: 500, color: INK[3] }}>Active</span>
-          <span style={{ fontSize: 26, fontWeight: 800, color: INK[4], marginLeft: 8, letterSpacing: '-0.02em' }}>{stats.validationCount}</span>
+          <span style={{ fontFamily: FONT.heading, fontSize: 26, fontWeight: 700, color: INK[4], marginLeft: 8, letterSpacing: '-0.03em' }}>{stats.validationCount}</span>
           <span style={{ fontSize: 11, fontWeight: 500, color: INK[3] }}>Validation</span>
         </div>
       </div>
@@ -65,16 +82,17 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
         <div style={{ fontSize: 11, fontWeight: 500, color: INK[4], marginTop: 2 }}>Active initiatives</div>
       </div>
 
-      {/* By Type */}
+      {/* By Type — with colored dots */}
       <div style={cardStyle}>
         <div style={labelStyle}>By Type</div>
-        <div className="flex items-baseline gap-2" style={{ marginTop: 4 }}>
-          <span style={{ fontSize: 18, fontWeight: 800, color: '#2563EB' }}>{stats.projectCount}</span>
-          <span style={{ fontSize: 10, fontWeight: 500, color: INK[3] }}>Proj</span>
-          <span style={{ fontSize: 18, fontWeight: 800, color: '#0D9488', marginLeft: 4 }}>{stats.enhancementCount}</span>
-          <span style={{ fontSize: 10, fontWeight: 500, color: INK[3] }}>Enh</span>
-          <span style={{ fontSize: 18, fontWeight: 800, color: '#D97706', marginLeft: 4 }}>{stats.improvementCount}</span>
-          <span style={{ fontSize: 10, fontWeight: 500, color: INK[3] }}>Imp</span>
+        <div className="flex items-center gap-3 flex-wrap" style={{ marginTop: 6 }}>
+          {TYPE_DOTS.map(t => (
+            <div key={t.key} className="flex items-center gap-1.5">
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: t.color, display: 'inline-block', flexShrink: 0 }} />
+              <span style={{ fontFamily: FONT.heading, fontSize: 16, fontWeight: 700, color: t.color }}>{typeCounts[t.key]}</span>
+              <span style={{ fontSize: 10, fontWeight: 500, color: INK[3] }}>{t.label}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

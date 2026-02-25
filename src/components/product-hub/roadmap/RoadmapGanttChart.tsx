@@ -1,11 +1,18 @@
 /**
  * Product Roadmap — Gantt chart (right panel)
- * Fixes: swim lane headers always shown, matching list panel
+ * AUDIT #7: Quarter/month label contrast fixed
+ * AUDIT #8: Today marker with red pill label
+ * AUDIT #9: Subtle grid lines
+ * AUDIT #10: Group headers matching list panel
+ * AUDIT #12: Collapsible groups
+ * AUDIT #22: focus-visible
+ * AUDIT #23: 36px rows
  */
 import React, { useMemo } from 'react';
 import { RoadmapTimelineBar } from './RoadmapTimelineBar';
+import { ChevronDown } from 'lucide-react';
 import type { RoadmapGroup, ZoomLevel, TimelinePeriod } from './types/roadmap.types';
-import { TYPE_COLORS, SURFACE, INK, ROW_HEIGHT, GROUP_HEADER_HEIGHT } from './constants/roadmap.constants';
+import { TYPE_COLORS, SURFACE, INK, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT } from './constants/roadmap.constants';
 import {
   startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfWeek, endOfWeek,
   addMonths, addQuarters, addWeeks, format, isWithinInterval,
@@ -60,7 +67,6 @@ function generatePeriods(start: Date, end: Date, zoom: ZoomLevel): TimelinePerio
       cur = addWeeks(cur, 1);
     }
   } else {
-    // Month zoom
     let cur = startOfMonth(start);
     while (cur < end) {
       const mEnd = endOfMonth(cur);
@@ -109,7 +115,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
     <div className="flex-1 flex flex-col min-w-0 overflow-hidden roadmap-scroll" style={{ background: SURFACE.card }}>
       <div ref={scrollRef as any} onScroll={onScroll} className="flex-1 overflow-auto roadmap-scroll">
         <div style={{ minWidth: totalMinWidth }}>
-          {/* Sticky header */}
+          {/* Sticky header — AUDIT #7: proper contrast */}
           <div
             className="flex sticky top-0"
             style={{ height: ROW_HEIGHT, borderBottom: `1px solid ${SURFACE.border}`, background: '#FAFBFC', zIndex: 15 }}
@@ -127,18 +133,21 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
                     background: p.isCurrent ? 'rgba(37,99,235,0.04)' : 'transparent',
                   }}
                 >
+                  {/* AUDIT #7: Quarter label — secondary text, weight 700 */}
                   {p.sublabel && (
                     <span style={{
                       fontSize: 9, fontWeight: 700,
-                      color: isCurrentQ ? '#2563EB' : '#94A3B8',
+                      color: isCurrentQ ? '#2563EB' : INK[2],
                       textTransform: 'uppercase', letterSpacing: '0.05em',
                     }}>
                       {p.sublabel}
                     </span>
                   )}
+                  {/* AUDIT #7: Month label — primary text, current=blue */}
                   <span style={{
-                    fontSize: 12, fontWeight: p.isCurrent ? 700 : 500,
-                    color: p.isCurrent ? '#2563EB' : '#64748B', letterSpacing: '0.02em',
+                    fontSize: 12, fontWeight: p.isCurrent ? 700 : 600,
+                    color: p.isCurrent ? '#2563EB' : INK[1],
+                    letterSpacing: '0.02em',
                   }}>
                     {p.label}
                   </span>
@@ -149,7 +158,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
 
           {/* Body */}
           <div className="relative">
-            {/* Grid lines */}
+            {/* AUDIT #9: Subtle grid lines */}
             <div className="absolute inset-0 pointer-events-none flex">
               {periods.map(p => (
                 <div
@@ -165,13 +174,14 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
               ))}
             </div>
 
-            {/* Today marker */}
+            {/* AUDIT #8: Today marker — red dashed line + pill label */}
             {todayPct !== null && (
               <div className="absolute pointer-events-none" style={{ left: `${todayPct}%`, top: 0, bottom: 0, zIndex: 20 }}>
                 <div style={{
                   position: 'absolute', top: -2, left: '50%', transform: 'translateX(-50%)',
-                  fontSize: 10, fontWeight: 700, color: '#FFFFFF', background: '#EF4444',
-                  padding: '2px 8px', borderRadius: 4, whiteSpace: 'nowrap', textTransform: 'uppercase',
+                  fontSize: 9, fontWeight: 700, color: '#FFFFFF', background: '#EF4444',
+                  padding: '2px 8px', borderRadius: 4, whiteSpace: 'nowrap',
+                  textTransform: 'uppercase', letterSpacing: '0.08em',
                 }}>
                   Today
                 </div>
@@ -185,36 +195,42 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
             {/* Groups + Rows */}
             {groups.map((group, gi) => {
               const typeColor = TYPE_COLORS[group.key]?.solid || group.color || '#64748B';
+              const isCollapsed = collapsedGroups.has(group.key);
               return (
                 <div key={group.key}>
-                  {/* Swim lane group header — clickable to collapse, matching list panel */}
+                  {/* Group header matching list panel */}
                   <div
                     className="flex items-center gap-2 px-3 relative cursor-pointer select-none"
                     style={{
                       height: GROUP_HEADER_HEIGHT,
-                      background: '#F8FAFC',
-                      borderBottom: `1px solid ${SURFACE.borderLight}`,
+                      background: SURFACE.page,
+                      borderBottom: `1px solid ${SURFACE.border}`,
                       borderTop: gi > 0 ? `1px solid ${SURFACE.border}` : 'none',
                       zIndex: 10,
                     }}
                     onClick={() => onToggleGroup(group.key)}
                   >
-                    <div style={{
-                      width: 10, height: 10, borderRadius: 2.5, flexShrink: 0,
-                      background: `linear-gradient(135deg, ${typeColor}, ${typeColor}dd)`,
-                    }} />
+                    <div style={{ transition: 'transform 0.15s ease', transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }}>
+                      <ChevronDown className="w-3.5 h-3.5" style={{ color: INK[3] }} />
+                    </div>
+                    <div style={{ width: 10, height: 10, borderRadius: 3, flexShrink: 0, background: typeColor }} />
                     <span style={{
-                      fontSize: 10, fontWeight: 700, color: '#64748B',
+                      fontSize: 12, fontWeight: 600, color: INK[2],
                       textTransform: 'uppercase', letterSpacing: '0.04em',
                     }}>
                       {group.label}
                     </span>
-                    <span style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', marginLeft: 'auto' }}>
+                    <span style={{
+                      fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: INK[4],
+                      background: SURFACE.card, border: `1px solid ${SURFACE.border}`,
+                      borderRadius: 9999, padding: '0 6px', height: 20,
+                      display: 'inline-flex', alignItems: 'center', marginLeft: 'auto',
+                    }}>
                       {group.items.length}
                     </span>
                   </div>
 
-                  {!collapsedGroups.has(group.key) && group.items.map(item => {
+                  {!isCollapsed && group.items.map(item => {
                     const pos = calcBarPosition(item.startDate, item.endDate, timelineStart, timelineEnd);
                     return (
                       <div
