@@ -5,6 +5,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, FileText, Tag, Users, Calendar, Map, Bot, FolderKanban, Zap, Wrench, RefreshCw, GitMerge, type LucideIcon } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -329,28 +330,21 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
                   <Tag className="w-3.5 h-3.5" /> Classification
                 </div>
                 <div className="space-y-3">
-                  {/* Type Selector */}
+                  {/* Type Selector — shadcn Select */}
                   <div>
                     <label className={LABEL}>Initiative Type</label>
-                    <div className="grid grid-cols-3 gap-1.5 bg-[#F8FAFC] p-1 rounded-lg border border-[#E2E8F0]">
-                      {TYPE_OPTIONS.map(opt => (
-                        <button
-                          key={opt.key}
-                          type="button"
-                          onClick={() => setSelectedType(opt.key)}
-                          className={cn(
-                            'flex flex-col items-center p-2 rounded-md cursor-pointer transition-all border-2',
-                            selectedType === opt.key
-                              ? 'bg-white shadow-sm'
-                              : 'border-transparent hover:bg-white/60'
-                          )}
-                          style={{ borderColor: selectedType === opt.key ? opt.color : 'transparent' }}
-                        >
-                          <opt.Icon className="w-[18px] h-[18px]" style={{ color: selectedType === opt.key ? opt.color : '#64748B' }} />
-                          <span className="text-[11px] font-semibold mt-0.5" style={{ color: '#334155' }}>{opt.label}</span>
-                        </button>
-                      ))}
-                    </div>
+                    <Select value={selectedType} onValueChange={setSelectedType}>
+                      <SelectTrigger className="w-full h-9 text-[13px] border-[#E2E8F0]">
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {TYPE_OPTIONS.map(opt => (
+                          <SelectItem key={opt.key} value={opt.key}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   {/* Status + Department */}
                   <div className="grid grid-cols-2 gap-3">
@@ -365,26 +359,6 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
                         onChange={v => updateField('department_id', v)}
                         departments={departmentOptions || []}
                       />
-                    </div>
-                  </div>
-                  {/* Business Value + Health */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className={LABEL}>Business Value</label>
-                      <select value={businessValue} onChange={e => setBusinessValue(e.target.value)} className={cn(INPUT, 'appearance-none')}>
-                        <option value="">Not set</option>
-                        <option value="high">High</option>
-                        <option value="medium">Medium</option>
-                        <option value="low">Low</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className={LABEL}>Health Status</label>
-                      <select value={healthStatus} onChange={e => setHealthStatus(e.target.value)} className={cn(INPUT, 'appearance-none')}>
-                        <option value="on_track">On Track</option>
-                        <option value="at_risk">At Risk</option>
-                        <option value="off_track">Off Track</option>
-                      </select>
                     </div>
                   </div>
                 </div>
