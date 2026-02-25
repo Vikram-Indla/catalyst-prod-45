@@ -1,14 +1,13 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import type { Resource360Item, StatusCategory, ViewMode } from '@/types/resource360';
-import { getStatusCategory, getStaleIndicator } from '@/types/resource360';
+import { getStaleIndicator } from '@/types/resource360';
 import { useResource360Items } from './hooks/useResource360Items';
 import { useResource360Summary } from './hooks/useResource360Summary';
 import { Resource360Banner } from './Resource360Banner';
 import RingViewV16 from './RingViewV16';
 import { Resource360Chronology } from './Resource360Chronology';
 import { Resource360Board } from './Resource360Board';
-import { Resource360AIPanel } from './Resource360AIPanel';
 import AiIntelligencePanelV16 from './AiIntelligencePanelV16';
 import './r360-tokens.css';
 
@@ -22,23 +21,13 @@ export default function Resource360PageNew() {
   const { resourceId } = useParams<{ resourceId: string }>();
 
   const [activeView, setActiveView] = useState<ViewMode>('ring');
-  const [statusFilter, setStatusFilter] = useState<StatusCategory>('all');
   const [selectedItem, setSelectedItem] = useState<Resource360Item | null>(null);
   const [aiOpen, setAIOpen] = useState(false);
 
   const { data: items = [], isLoading: itemsLoading } = useResource360Items(resourceId);
   const { data: summary, isLoading: summaryLoading } = useResource360Summary(resourceId);
 
-  const staleCount = useMemo(() =>
-    items.filter(i => getStaleIndicator(i.age_days, i.status, i.status_category) !== null).length,
-    [items]
-  );
-
   const handleItemClick = useCallback((item: Resource360Item) => setSelectedItem(item), []);
-  const handleModalClose = useCallback(() => setSelectedItem(null), []);
-
-  const resourceName = summary?.name ?? 'Resource';
-  const jobRole = summary?.role ?? '';
 
   if (!resourceId) {
     return (
@@ -56,29 +45,28 @@ export default function Resource360PageNew() {
   if (isInitialLoad) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: "'Inter', sans-serif" }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '16px 20px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>
-          <div className="r360-skeleton" style={{ width: 64, height: 64, borderRadius: '50%' }} />
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div className="r360-skeleton" style={{ height: 20, borderRadius: 6, width: '40%' }} />
-            <div className="r360-skeleton" style={{ height: 14, borderRadius: 6, width: '25%' }} />
+        <div style={{ height: 66, display: 'flex', alignItems: 'center', gap: 14, padding: '0 20px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>
+          <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#E2E8F0' }} />
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ width: 120, height: 14, borderRadius: 4, background: '#E2E8F0' }} />
+            <div style={{ width: 180, height: 10, borderRadius: 4, background: '#F1F5F9' }} />
           </div>
         </div>
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F8FAFC' }}>
           <div style={{ textAlign: 'center', color: '#64748B', fontSize: 13 }}>Loading Resource 360°...</div>
         </div>
-        <style>{skeletonCSS}</style>
       </div>
     );
   }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, height: '100%', overflow: 'hidden', fontFamily: "'Inter', sans-serif" }}>
-      {/* Banner */}
+      {/* §3 Banner */}
       <Resource360Banner summary={summary ?? null} isLoading={summaryLoading} />
 
-      {/* Toolbar: View tabs + AI button */}
+      {/* §4 Tab Bar — 40px */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 12,
+        display: 'flex', alignItems: 'center', gap: 0,
         padding: '0 20px', height: 40, flexShrink: 0,
         background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
       }}>
@@ -89,21 +77,39 @@ export default function Resource360PageNew() {
               key={tab.key}
               onClick={() => setActiveView(tab.key)}
               style={{
-                padding: '0 12px', height: 40, fontSize: 12, fontWeight: active ? 700 : 500,
-                color: active ? '#2563EB' : '#64748B', background: 'transparent',
-                border: 'none', borderBottom: active ? '2px solid #2563EB' : '2px solid transparent',
+                padding: '0 12px', height: 40, fontSize: 13,
+                fontWeight: active ? 700 : 500,
+                color: active ? '#2563EB' : '#64748B',
+                background: 'transparent', border: 'none',
+                borderBottom: active ? '2px solid #2563EB' : '2px solid transparent',
                 cursor: 'pointer', fontFamily: "'Inter', sans-serif",
               }}
             >{tab.label}</button>
           );
         })}
         <div style={{ flex: 1 }} />
+
+        {/* Quarter select */}
+        <select style={{
+          height: 28, fontSize: 12, border: '1px solid #E2E8F0',
+          borderRadius: 6, padding: '0 8px', marginRight: 8,
+          background: '#FFFFFF', color: '#0F172A',
+          fontFamily: "'Inter', sans-serif", cursor: 'pointer',
+        }}>
+          <option>Q1-2026</option>
+          <option>Q4-2025</option>
+          <option>Q3-2025</option>
+        </select>
+
+        {/* Intelligence button */}
         <button
           onClick={() => setAIOpen(true)}
           style={{
-            background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: 8,
-            padding: '7px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer',
-            display: 'inline-flex', alignItems: 'center', gap: 6, height: 28,
+            background: '#2563EB', color: '#FFFFFF', border: 'none',
+            borderRadius: 6, padding: '0 14px', height: 28,
+            fontSize: 12, fontWeight: 600, cursor: 'pointer',
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            fontFamily: "'Inter', sans-serif",
           }}
         >
           <span style={{ fontSize: 11, fontWeight: 800 }}>✦</span>
@@ -128,24 +134,10 @@ export default function Resource360PageNew() {
       {/* AI Intelligence Panel */}
       {aiOpen && (
         <AiIntelligencePanelV16
-          resourceName={resourceName}
+          resourceName={summary?.name ?? 'Resource'}
           onClose={() => setAIOpen(false)}
         />
       )}
-
-      <style>{skeletonCSS}</style>
     </div>
   );
 }
-
-const skeletonCSS = `
-  .r360-skeleton {
-    background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
-    background-size: 200% 100%;
-    animation: r360shimmer 1.5s infinite;
-  }
-  @keyframes r360shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-`;

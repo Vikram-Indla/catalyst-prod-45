@@ -3,15 +3,22 @@ import { TopNav } from './TopNav';
 import { Sidebar } from './Sidebar';
 
 /**
- * ProdHub AppShell — Fixed layout wrapper with top nav, left sidebar, content area.
- * Uses CSS Grid: 56px top nav, 240px sidebar, remaining space for content.
+ * AppShell — 48px dark top nav, 220px sidebar, content fills remaining space.
+ * Height: 100vh, overflow hidden. Content: calc(100vh - 48px).
  */
 export function AppShell() {
   return (
-    <div className="min-h-screen bg-background">
+    <div style={{ height: '100vh', overflow: 'hidden' }}>
       <TopNav />
       <Sidebar />
-      <main className="ml-60 mt-14 h-[calc(100vh-56px)] flex flex-col overflow-hidden">
+      <main style={{
+        marginLeft: 220,
+        marginTop: 48,
+        height: 'calc(100vh - 48px)',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}>
         <Outlet />
       </main>
     </div>
