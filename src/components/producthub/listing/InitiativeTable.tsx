@@ -18,7 +18,7 @@ import {
   type VisibilityState,
 } from '@tanstack/react-table';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
-import { Check, ChevronUp, ChevronDown, ChevronsUpDown, Pencil, Star, MoreVertical, Map } from 'lucide-react';
+import { Check, ChevronUp, ChevronDown, ChevronsUpDown, Pencil, Star, MoreVertical, Map, LayoutGrid } from 'lucide-react';
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';
@@ -306,10 +306,7 @@ export function InitiativeTable({
   if (data.length === 0) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-2 py-16">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d4d4d8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="2" />
-          <path d="M3 9h18M9 3v18" />
-        </svg>
+        <LayoutGrid className="w-12 h-12 text-zinc-300" />
         <h3 className="text-sm font-semibold" style={{ color: '#18181b' }}>No initiatives match your filters</h3>
         <p className="text-[13px]" style={{ color: '#71717a' }}>Try adjusting your search or filter criteria</p>
       </div>

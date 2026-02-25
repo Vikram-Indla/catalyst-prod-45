@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { cn } from '@/lib/utils';
-import { X, Pencil, Paperclip, Copy, Link2, Star, Trash2 } from 'lucide-react';
+import { X, Pencil, Paperclip, Copy, Link2, Star, Trash2, DollarSign, AlertTriangle, Flag, Link as LinkIcon, ClipboardList } from 'lucide-react';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 import { STATUS_CONFIG } from '@/types/producthub/initiative';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
@@ -193,11 +193,11 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
         <div className="flex-1 overflow-y-auto min-h-0">
           {activeTab === 'details' && <DetailTabDetails initiative={initiative} />}
           {activeTab === 'score' && <DetailTabScore initiative={initiative} />}
-          {activeTab === 'budget' && <DetailTabPlaceholder emoji="💰" label="Budget" />}
-          {activeTab === 'risks' && <DetailTabPlaceholder emoji="⚠️" label="Risks" />}
-          {activeTab === 'milestones' && <DetailTabPlaceholder emoji="🏁" label="Milestones" />}
-          {activeTab === 'links' && <DetailTabPlaceholder emoji="🔗" label="Links" />}
-          {activeTab === 'audit' && <DetailTabPlaceholder emoji="📋" label="Audit" />}
+          {activeTab === 'budget' && <DetailTabPlaceholder icon={DollarSign} label="Budget" />}
+          {activeTab === 'risks' && <DetailTabPlaceholder icon={AlertTriangle} label="Risks" />}
+          {activeTab === 'milestones' && <DetailTabPlaceholder icon={Flag} label="Milestones" />}
+          {activeTab === 'links' && <DetailTabPlaceholder icon={LinkIcon} label="Links" />}
+          {activeTab === 'audit' && <DetailTabPlaceholder icon={ClipboardList} label="Audit" />}
         </div>
       </div>
     </>
