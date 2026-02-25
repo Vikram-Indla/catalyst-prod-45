@@ -323,8 +323,9 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
   const currentWeek = weeks[weekIdx] || null;
   const weekItems = currentWeek?.items || [];
 
-  // DEF-15: No pagination in Ring view — show all (up to 8)
-  const pageItems = weekItems.slice(0, MAX_PER_PAGE);
+  // Paginate filtered items across the ring
+  const totalPages = Math.max(1, Math.ceil(filteredActive.length / MAX_PER_PAGE));
+  const pageItems = filteredActive.slice(ringPage * MAX_PER_PAGE, (ringPage + 1) * MAX_PER_PAGE);
 
   useEffect(() => { setRingPage(0); }, [weekIdx]);
 
@@ -368,11 +369,12 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', fontFamily: T.inter }}>
-      {/* §5 FILTER BAR — 38px (DEF-11: no search, DEF-12: no "ACTIVE" label) */}
+      {/* §5 FILTER BAR — 38px */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px',
         background: '#FFFFFF', borderBottom: `1px solid ${T.border}`, height: 38, flexShrink: 0,
       }}>
+        <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', letterSpacing: '0.04em', textTransform: 'uppercase' }}>ACTIVE</span>
         <div style={{ display: 'flex', gap: 4 }}>
           {([
             { key: 'all' as const, label: `All (${activeItems.length})` },
@@ -383,18 +385,41 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
             return (
               <button key={f.key} onClick={() => setStatusFilter(f.key)} style={{
                 height: 26, padding: '0 10px', borderRadius: 9999, fontSize: 11, fontWeight: 600,
-                background: active ? '#2563EB' : 'transparent',
-                color: active ? '#FFFFFF' : '#334155',
-                border: active ? 'none' : `1px solid ${T.border}`, cursor: 'pointer',
+                background: active ? 'transparent' : 'transparent',
+                color: active ? '#2563EB' : '#334155',
+                border: `1px solid ${active ? '#2563EB' : T.border}`, cursor: 'pointer',
                 fontFamily: T.inter,
               }}>{f.label}</button>
             );
           })}
         </div>
         <div style={{ flex: 1 }} />
-        <span style={{ fontSize: 11, color: '#64748B', fontWeight: 600, fontFamily: T.mono }}>
-          {pageItems.length} items
+        {/* Search */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 4, padding: '0 8px', height: 26,
+          border: `1px solid ${T.border}`, borderRadius: 6, background: '#FFFFFF', fontSize: 11, color: '#94A3B8',
+        }}>
+          <span>Q</span>
+          <span>Search… (/)</span>
+        </div>
+        {/* Pagination */}
+        <span style={{ fontSize: 11, color: '#64748B', fontWeight: 600, fontFamily: T.inter }}>
+          {filteredActive.length} items · Page {ringPage + 1}/{Math.max(1, Math.ceil(filteredActive.length / MAX_PER_PAGE))}
         </span>
+        <div style={{ display: 'flex', gap: 2 }}>
+          <button onClick={() => setRingPage(Math.max(0, ringPage - 1))} disabled={ringPage <= 0} style={{
+            width: 24, height: 24, border: `1px solid ${T.border}`, borderRadius: 4,
+            background: '#FFFFFF', cursor: ringPage <= 0 ? 'not-allowed' : 'pointer',
+            opacity: ringPage <= 0 ? 0.35 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}><ChevronLeft size={12} color={T.ink2} /></button>
+          <button onClick={() => setRingPage(Math.min(Math.ceil(filteredActive.length / MAX_PER_PAGE) - 1, ringPage + 1))}
+            disabled={ringPage >= Math.ceil(filteredActive.length / MAX_PER_PAGE) - 1}
+            style={{
+              width: 24, height: 24, border: `1px solid ${T.border}`, borderRadius: 4,
+              background: '#FFFFFF', cursor: ringPage >= Math.ceil(filteredActive.length / MAX_PER_PAGE) - 1 ? 'not-allowed' : 'pointer',
+              opacity: ringPage >= Math.ceil(filteredActive.length / MAX_PER_PAGE) - 1 ? 0.35 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}><ChevronRight size={12} color={T.ink2} /></button>
+        </div>
       </div>
 
       {/* §6 WEEK RIBBON — 36px (DEF-10: Calendar icon, not pin) */}
