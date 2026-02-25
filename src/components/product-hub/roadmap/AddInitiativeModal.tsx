@@ -1,33 +1,32 @@
 /**
  * Product Roadmap — Add Initiative Modal (640px centered, backdrop blur)
+ * Queries real backlog items NOT yet on roadmap
  */
 import React, { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Search, Plus } from 'lucide-react';
+import { X, Search, Plus, Loader2, AlertCircle } from 'lucide-react';
 import { INK, SURFACE, FONT, TYPE_COLORS } from './constants/roadmap.constants';
+import { useBacklogItemsNotOnRoadmap, useAddToRoadmap } from './hooks/useRoadmapData';
 
 interface AddInitiativeModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// Mock backlog items not yet on roadmap
-const BACKLOG_ITEMS = [
-  { id: 'b1', key: 'MIM-020', title: 'Mobile App Development', titleAr: 'تطوير تطبيق الجوال', type: 'project' as const },
-  { id: 'b2', key: 'MIM-021', title: 'API Gateway Upgrade', titleAr: 'ترقية بوابة API', type: 'enhancement' as const },
-  { id: 'b3', key: 'MIM-022', title: 'Log Aggregation System', titleAr: 'نظام تجميع السجلات', type: 'improvement' as const },
-  { id: 'b4', key: 'MIM-023', title: 'SSO Integration', titleAr: 'تكامل تسجيل الدخول الموحد', type: 'enhancement' as const },
-  { id: 'b5', key: 'MIM-024', title: 'Disaster Recovery Plan', titleAr: 'خطة التعافي من الكوارث', type: 'project' as const },
-];
-
 export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps) {
   const [search, setSearch] = useState('');
+  const { data: backlogItems = [], isLoading, error } = useBacklogItemsNotOnRoadmap();
+  const addMutation = useAddToRoadmap();
 
   const filtered = useMemo(() => {
-    if (!search.trim()) return BACKLOG_ITEMS;
+    if (!search.trim()) return backlogItems;
     const s = search.toLowerCase();
-    return BACKLOG_ITEMS.filter(i => i.title.toLowerCase().includes(s) || i.key.toLowerCase().includes(s));
-  }, [search]);
+    return backlogItems.filter((i: any) => i.title.toLowerCase().includes(s) || i.key.toLowerCase().includes(s));
+  }, [backlogItems, search]);
+
+  const handleAdd = async (id: string) => {
+    await addMutation.mutateAsync(id);
+  };
 
   if (!isOpen) return null;
 
@@ -79,7 +78,20 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
 
         {/* List */}
         <div className="flex-1 overflow-y-auto">
-          {filtered.map(item => {
+          {isLoading && (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-6 h-6 animate-spin" style={{ color: INK[4] }} />
+            </div>
+          )}
+
+          {error && (
+            <div className="flex flex-col items-center justify-center py-12 px-6">
+              <AlertCircle size={32} style={{ color: '#EF4444', marginBottom: 8 }} />
+              <span style={{ fontSize: 13, color: '#EF4444' }}>Failed to load backlog items</span>
+            </div>
+          )}
+
+          {!isLoading && !error && filtered.map((item: any) => {
             const typeColor = TYPE_COLORS[item.type]?.solid || '#94A3B8';
             return (
               <div
@@ -96,18 +108,23 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
                   <div dir="rtl" style={{ fontSize: 11, color: INK[4], marginTop: 1 }}>{item.titleAr}</div>
                 </div>
                 <button
-                  className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md transition-colors hover:bg-blue-50"
+                  onClick={() => handleAdd(item.id)}
+                  disabled={addMutation.isPending}
+                  className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md transition-colors hover:bg-blue-50 disabled:opacity-50"
                   style={{ color: '#2563EB', border: '1px solid #BFDBFE', background: '#EFF6FF' }}
                 >
-                  <Plus size={12} /> Add
+                  {addMutation.isPending ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />} Add
                 </button>
               </div>
             );
           })}
-          {filtered.length === 0 && (
+
+          {!isLoading && !error && filtered.length === 0 && (
             <div className="flex flex-col items-center justify-center py-12">
               <Search size={32} style={{ color: INK[4], marginBottom: 8 }} />
-              <span style={{ fontSize: 13, color: INK[3] }}>No matching initiatives found</span>
+              <span style={{ fontSize: 13, color: INK[3] }}>
+                {backlogItems.length === 0 ? 'All initiatives are already on the roadmap' : 'No matching initiatives found'}
+              </span>
             </div>
           )}
         </div>
