@@ -3,7 +3,7 @@
  * Route: /project-hub/resources/:resourceId
  * Contains: Profile Header, Week Nav, Ring/Chronology/Board views, Detail Panel
  */
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useR360Overview, useR360WorkItems, useR360Siblings } from '@/hooks/useR360';
 import { R360_DEPT_COLORS, R360_PROJECT_COLORS } from '@/constants/r360';
@@ -244,91 +244,184 @@ export default function R360MemberDetail() {
 // ═══════════════════════════════════════════
 // RING VIEW
 // ═══════════════════════════════════════════
+// ═══ PIXEL-BASED RING VIEW ═══
+// All coordinates in pixels. Cards, spokes, labels — same coordinate space.
+const CANVAS_H = 720;
+const CARD_W = 195;
+const CARD_H = 155;
+
+function computeSlots(W: number) {
+  const H = CANVAS_H;
+  return [
+    { left: W * 0.03,              top: H * 0.02 },
+    { left: W * 0.50 - CARD_W / 2, top: H * 0.00 },
+    { left: W - W * 0.03 - CARD_W, top: H * 0.02 },
+    { left: W * 0.01,              top: H * 0.36 },
+    { left: W - W * 0.01 - CARD_W, top: H * 0.33 },
+    { left: W * 0.03,              top: H * 0.65 },
+    { left: W * 0.50 - CARD_W / 2, top: H * 0.69 },
+    { left: W - W * 0.03 - CARD_W, top: H * 0.63 },
+  ];
+}
+
+function computeGeometry(W: number, count: number, ages: number[]) {
+  const CX = W / 2;
+  const CY = CANVAS_H * 0.46;
+  const slots = computeSlots(W);
+  const spokes: { x1: number; y1: number; x2: number; y2: number }[] = [];
+  const labels: { x: number; y: number; age: number }[] = [];
+  for (let i = 0; i < Math.min(count, 8); i++) {
+    const ccx = slots[i].left + CARD_W / 2;
+    const ccy = slots[i].top + CARD_H / 2;
+    spokes.push({ x1: CX, y1: CY, x2: ccx, y2: ccy });
+    labels.push({ x: (CX + ccx) / 2, y: (CY + ccy) / 2, age: ages[i] || 0 });
+  }
+  return { slots, spokes, labels, center: { x: CX, y: CY } };
+}
+
+const SC_MAP: Record<string, { dot: string; bg: string; tx: string; label: string; accent: string }> = {
+  'To Do':          { dot:'#D97706', bg:'#FFFBEB', tx:'#78350F', label:'To Do',       accent:'#D97706' },
+  'Open':           { dot:'#D97706', bg:'#FFFBEB', tx:'#78350F', label:'To Do',       accent:'#D97706' },
+  'Backlog':        { dot:'#D97706', bg:'#FFFBEB', tx:'#78350F', label:'Backlog',     accent:'#D97706' },
+  'In Progress':    { dot:'#2563EB', bg:'#EFF6FF', tx:'#1E3A5F', label:'In Progress', accent:'#2563EB' },
+  'In Development': { dot:'#2563EB', bg:'#EFF6FF', tx:'#1E3A5F', label:'In Progress', accent:'#2563EB' },
+  'In Review':      { dot:'#0D9488', bg:'#F0FDFA', tx:'#134E4A', label:'In Review',   accent:'#0D9488' },
+  'Code Review':    { dot:'#0D9488', bg:'#F0FDFA', tx:'#134E4A', label:'In Review',   accent:'#0D9488' },
+  'Ready for QA':   { dot:'#0D9488', bg:'#F0FDFA', tx:'#134E4A', label:'In QA',       accent:'#0D9488' },
+  'In UAT':         { dot:'#0D9488', bg:'#F0FDFA', tx:'#134E4A', label:'In UAT',      accent:'#0D9488' },
+  'Done':           { dot:'#16A34A', bg:'#F0FDF4', tx:'#14532D', label:'Done',        accent:'#16A34A' },
+  'Closed':         { dot:'#16A34A', bg:'#F0FDF4', tx:'#14532D', label:'Done',        accent:'#16A34A' },
+  'Resolved':       { dot:'#16A34A', bg:'#F0FDF4', tx:'#14532D', label:'Done',        accent:'#16A34A' },
+  'Blocked':        { dot:'#EF4444', bg:'#FEF2F2', tx:'#7F1D1D', label:'Blocked',     accent:'#EF4444' },
+};
+const SC_DEFAULT = { dot:'#64748B', bg:'#F1F5F9', tx:'#334155', label:'Unknown', accent:'#64748B' };
+const scLookup = (s: string) => SC_MAP[s] || SC_DEFAULT;
+const PC_MAP: Record<string, string> = { BAU:'#2563EB', SEN:'#D97706', FAC:'#16A34A', OPS:'#0D9488', SUP:'#64748B', LND:'#7C3AED' };
+const ageColor = (d: number) => d <= 7 ? '#16A34A' : d <= 14 ? '#D97706' : '#EF4444';
+
+function RingPill({ status }: { status: string }) {
+  const s = scLookup(status);
+  return (
+    <span style={{ display:'inline-flex', alignItems:'center', gap:'4px', padding:'3px 10px', borderRadius:'4px', fontSize:'11.5px', fontWeight:600, lineHeight:'1', background:s.bg, color:s.tx }}>
+      <span style={{ width:'6px', height:'6px', borderRadius:'50%', background:s.dot, flexShrink:0 }} />
+      {s.label}
+    </span>
+  );
+}
+
 function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
   items: R360WorkItem[]; name: string; role: string; avatarUrl?: string | null;
   onSelect: (i: R360WorkItem) => void; selected: R360WorkItem | null;
 }) {
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const [W, setW] = useState(1000);
+
+  const measure = useCallback(() => {
+    if (canvasRef.current) setW(canvasRef.current.offsetWidth);
+  }, []);
+
+  useEffect(() => {
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [measure]);
+
   const nonDone = items.filter(i => i.status_category !== 'done');
   const doneCount = items.filter(i => i.status_category === 'done').length;
-  const positions = [
-    { x: 3, y: 3 }, { x: 36, y: 0 }, { x: 67, y: 5 }, { x: 0, y: 40 },
-    { x: 70, y: 36 }, { x: 5, y: 72 }, { x: 36, y: 78 }, { x: 67, y: 70 },
-  ];
   const visible = nonDone.slice(0, 8);
-
-  const accentColor = (cat: string) => cat === 'in_progress' ? '#2563EB' : cat === 'blocked' ? '#EF4444' : '#D97706';
+  const ages = visible.map(i => i.age_days);
+  const { slots, spokes, labels, center } = computeGeometry(W, visible.length, ages);
 
   return (
-    <div className="r3-ring-canvas">
-      {/* SVG Spokes */}
-      <svg className="r3-ring-spokes" viewBox="0 0 100 100" preserveAspectRatio="none">
-        {visible.map((_, i) => {
-          const p = positions[i];
-          return (
-            <line key={i} x1="50" y1="49" x2={p.x + 10} y2={p.y + 9}
-              stroke="#94A3B8" strokeWidth="0.3" strokeDasharray="1.2 0.8" strokeLinecap="round" />
-          );
-        })}
+    <div ref={canvasRef} style={{ position:'relative', width:'100%', height:`${CANVAS_H}px`, overflow:'hidden' }}>
+      {/* SVG SPOKES — pixel coordinates */}
+      <svg width={W} height={CANVAS_H} style={{ position:'absolute', top:0, left:0, zIndex:1, pointerEvents:'none' }}>
+        {spokes.map((s, i) => (
+          <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
+            stroke="#94A3B8" strokeWidth={2} strokeDasharray="8 5" strokeLinecap="round" />
+        ))}
       </svg>
 
-      {/* Spoke labels */}
-      {visible.map((item, i) => {
-        const p = positions[i];
-        const mx = (50 + p.x + 10) / 2;
-        const my = (49 + p.y + 9) / 2;
-        return (
-          <div key={`label-${i}`} className="r3-spoke-label" style={{ left: `${mx}%`, top: `${my}%` }}>
-            {item.age_days}d ago
-          </div>
-        );
-      })}
+      {/* SPOKE LABELS — pixel midpoints */}
+      {labels.map((l, i) => (
+        <div key={`label-${i}`} style={{
+          position:'absolute', left:`${l.x}px`, top:`${l.y}px`,
+          transform:'translate(-50%,-50%)', zIndex:4, pointerEvents:'none',
+          fontSize:'11px', fontWeight:600, color:'#334155', background:'#F8FAFC',
+          padding:'2px 8px', borderRadius:'10px', border:'1px solid #E2E8F0',
+          whiteSpace:'nowrap', fontVariantNumeric:'tabular-nums',
+        }}>{l.age}d ago</div>
+      ))}
 
-      {/* Center */}
-      <div className="r3-ring-center">
-        <div className="r3-ring-avatar">
+      {/* CENTER AVATAR */}
+      <div style={{
+        position:'absolute', left:`${center.x}px`, top:`${center.y}px`,
+        transform:'translate(-50%,-50%)', textAlign:'center', zIndex:5,
+      }}>
+        <div style={{
+          width:'96px', height:'96px', borderRadius:'50%', border:'3px solid #2563EB',
+          overflow:'hidden', margin:'0 auto 6px',
+          boxShadow:'0 0 0 6px rgba(37,99,235,.12)',
+          background: avatarUrl ? '#FFFFFF' : 'linear-gradient(135deg,#2563EB,#0D9488)',
+          display:'flex', alignItems:'center', justifyContent:'center',
+        }}>
           {avatarUrl ? (
-            <img src={avatarUrl} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-          ) : null}
-          <span style={{ position: 'absolute', pointerEvents: 'none', ...(avatarUrl ? { display: 'none' } : {}) }}>{initials(name)}</span>
+            <img src={avatarUrl} alt={name} style={{ width:'100%', height:'100%', objectFit:'cover' }}
+              onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+          ) : (
+            <span style={{ fontSize:'32px', fontWeight:700, color:'white' }}>{initials(name)}</span>
+          )}
         </div>
-        <div className="r3-ring-name">{name}</div>
-        <div className="r3-ring-role">{role}</div>
+        <div style={{ fontSize:'13px', fontWeight:600, color:'#020617' }}>{name}</div>
+        <div style={{ fontSize:'11px', fontWeight:500, color:'#334155' }}>{role}</div>
       </div>
 
-      {/* Orbital Cards */}
+      {/* ORBITAL CARDS — pixel positions */}
       {visible.map((item, i) => {
-        const p = positions[i];
+        const pos = slots[i];
+        if (!pos) return null;
+        const s = scLookup(item.status_label || '');
         const isSelected = selected?.id === item.id;
         return (
-          <div
-            key={item.id}
-            className={`r3-orbital-card ${isSelected ? 'r3-orbital-card--selected' : ''}`}
-            style={{ left: `${p.x}%`, top: `${p.y}%` }}
-            onClick={() => onSelect(item)}
-          >
-            <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: accentColor(item.status_category) }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-              <span className="r3-type-badge">{getJiraIcon(item.item_type)} {item.item_type}</span>
-              <span style={{ fontSize: 10.5, color: '#334155' }}>{item.priority}</span>
+          <div key={item.id} onClick={() => onSelect(item)} style={{
+            position:'absolute', left:`${pos.left}px`, top:`${pos.top}px`,
+            width:`${CARD_W}px`, background:'#FFF',
+            border: isSelected ? '1px solid #2563EB' : '1px solid #E2E8F0',
+            borderRadius:'8px', padding:'10px 12px 10px 15px',
+            cursor:'pointer', zIndex:3,
+            boxShadow: isSelected ? '0 0 0 2px rgba(37,99,235,.15)' : '0 1px 3px rgba(15,23,42,.05)',
+          }}>
+            <div style={{ position:'absolute', left:0, top:'8px', bottom:'8px', width:'3px', borderRadius:'0 2px 2px 0', background:s.accent }} />
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'4px' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:'4px' }}>
+                {getJiraIcon(item.item_type)}
+                <span style={{ fontSize:'10.5px', fontWeight:700, textTransform:'uppercase', color:'#334155' }}>{item.item_type}</span>
+              </div>
+              <span style={{ fontSize:'10.5px', fontWeight:500, color:'#64748B' }}>{item.priority}</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-              <span className="r3-card-key r3-card-key--sm">{item.item_key}</span>
-              <ProjTag projectKey={item.project_key} />
-              <span style={{ marginLeft: 'auto' }}><AgeBadge days={item.age_days} ageClass={item.age_class} /></span>
+            <div style={{ display:'flex', alignItems:'center', gap:'5px', marginBottom:'5px' }}>
+              <span style={{ fontSize:'11px', fontWeight:600, color:'#2563EB', fontFamily:"'JetBrains Mono',monospace" }}>{item.item_key}</span>
+              <span style={{ fontSize:'10px', fontWeight:700, padding:'2px 6px', borderRadius:'3px', color:'#FFF', background: PC_MAP[item.project_key] || '#64748B' }}>{item.project_key}</span>
+              <span style={{ marginLeft:'auto', fontSize:'11px', fontWeight:600, color: ageColor(item.age_days), fontVariantNumeric:'tabular-nums' }}>{item.age_days}d</span>
             </div>
-            <div className="r3-card-title">{item.title}</div>
-            <div style={{ marginTop: 6 }}>
-              <StatusPill label={item.status_label} color={item.status_color} bg={item.status_bg} dot={item.status_dot} />
-            </div>
+            <div style={{ fontSize:'12.5px', fontWeight:500, color:'#020617', lineHeight:'1.35', marginBottom:'5px', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' } as React.CSSProperties}>{item.title}</div>
+            <RingPill status={item.status_label || ''} />
           </div>
         );
       })}
 
-      {/* Completed Badge */}
+      {/* COMPLETED BADGE */}
       {doneCount > 0 && (
-        <div className="r3-completed-badge">
-          <div className="r3-completed-circle">{doneCount}</div>
-          <div className="r3-completed-text">Completed</div>
+        <div style={{ position:'absolute', right:'20px', top:`${center.y}px`, transform:'translateY(-50%)', zIndex:6, display:'flex', flexDirection:'column', alignItems:'center', gap:'6px' }}>
+          <div style={{ width:'48px', height:'48px', borderRadius:'50%', background:'#16A34A', color:'#FFF', fontSize:'18px', fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 2px 8px rgba(22,163,74,.3)', fontVariantNumeric:'tabular-nums' }}>{doneCount}</div>
+          <span style={{ fontSize:'9.5px', fontWeight:700, color:'#14532D', textTransform:'uppercase', letterSpacing:'.06em', writingMode:'vertical-rl' } as React.CSSProperties}>COMPLETED</span>
+        </div>
+      )}
+
+      {/* EMPTY STATE */}
+      {items.length === 0 && (
+        <div style={{ position:'absolute', left:'50%', top:'50%', transform:'translate(-50%,-50%)', textAlign:'center', color:'#64748B', fontSize:'14px' }}>
+          No work items found for this week
         </div>
       )}
     </div>
