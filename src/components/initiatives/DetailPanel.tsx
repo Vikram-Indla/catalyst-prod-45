@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Pencil, Paperclip, Copy, Link2, Star, Target, Trash2, Save, Loader2, ChevronLeft, AlertTriangle, Plus, Activity, ArrowRight, TrendingUp, FolderKanban, Zap, Wrench, Map, Network, DollarSign, Flag, Link as LinkIcon, ClipboardList } from 'lucide-react';
+import { X, Pencil, Copy, Star, Target, Trash2, Save, Loader2, ChevronLeft, AlertTriangle, Plus, Activity, ArrowRight, TrendingUp, FolderKanban, Zap, Wrench, Map, Network, DollarSign, Flag, Link as LinkIcon, ClipboardList } from 'lucide-react';
 import { InitiativeRisksTab } from './tabs/InitiativeRisksTab';
 import { InitiativeBudgetTab } from './tabs/InitiativeBudgetTab';
 import { InitiativeAuditTab } from './tabs/InitiativeAuditTab';
@@ -12,7 +12,7 @@ import { PriorityBadge } from './PriorityBadge';
 import { formatShortName } from '@/lib/format-name';
 import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useDepartmentOptions, useProfileOptions } from '@/hooks/useInitiativeLookups';
 import { StatusSelect } from '@/components/producthub/shared/StatusSelect';
 import { QuarterSelect } from '@/components/producthub/shared/QuarterSelect';
@@ -164,15 +164,13 @@ function formatAbsoluteDate(dateStr: string | null): string {
   return format(d, 'MMM d, yyyy');
 }
 
-const MOCK_COMMENTS: Record<string, { author: string; content: string; timeAgo: string }[]> = {
-  'MIM-001': [
-    { author: 'Ahmed M.', content: 'Reviewed the architecture proposal. Aligning with the cloud migration timeline is critical.', timeAgo: '2 days ago' },
-    { author: 'Sarah K.', content: "Agreed. I've updated the dependency map to reflect the Q1 milestones.", timeAgo: '1 day ago' },
-  ],
-  'MIM-002': [
-    { author: 'Ahmed M.', content: 'Migration plan finalized. Ready for stakeholder review.', timeAgo: '3 hours ago' },
-  ],
-};
+/** Invalidate all initiative-related query keys */
+function invalidateAllInitiatives(queryClient: ReturnType<typeof useQueryClient>) {
+  queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+  queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
+  queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
+  queryClient.invalidateQueries({ queryKey: ['roadmap-summary'] });
+}
 
 /* ════════════════════════════════════════════════════
    MAIN DETAIL PANEL
@@ -256,11 +254,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
         .update({ ...editForm, updated_at: new Date().toISOString() })
         .eq('id', initiative.id);
       if (error) throw new Error(error.message);
-      queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
-      queryClient.invalidateQueries({ queryKey: ['ph-initiatives-mock'] });
-      queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
-      queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
-      queryClient.invalidateQueries({ queryKey: ['roadmap-summary'] });
+      invalidateAllInitiatives(queryClient);
       catalystToast.success('Initiative updated');
       setIsEditing(false);
       setEditForm({});
@@ -274,7 +268,6 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
   const handleQuickEdit = useCallback(async (field: string, value: any) => {
     if (!initiative) return;
 
-    // Jira-sourced items are mostly read-only, but type key can still be refreshed via persisted override.
     if (!isNativeInitiative(initiative.id)) {
       if (field === 'initiative_type_key') {
         queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
@@ -288,23 +281,63 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
         .update({ [field]: value, updated_at: new Date().toISOString() })
         .eq('id', initiative.id);
       if (error) throw new Error(error.message);
-      queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
-      queryClient.invalidateQueries({ queryKey: ['ph-initiatives-mock'] });
-      queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
-      queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
-      queryClient.invalidateQueries({ queryKey: ['roadmap-summary'] });
-      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+      invalidateAllInitiatives(queryClient);
       catalystToast.success(`${field.replace(/_/g, ' ')} updated`);
     } catch (err: any) {
       catalystToast.error('Failed to update: ' + err.message);
     }
   }, [initiative, queryClient]);
 
+  /** Save scores to ph_initiative_scores */
+  const handleScoreSave = useCallback(async () => {
+    if (!initiative) return;
+    if (!isNativeInitiative(initiative.id)) {
+      catalystToast.error('Jira-sourced items cannot be scored here');
+      return;
+    }
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const scorePayload = {
+        initiative_id: initiative.id,
+        strategic_alignment: scores.sa,
+        business_impact: scores.bi,
+        time_urgency: scores.tu,
+        resource_feasibility: scores.rf,
+        computed_score: computedScore,
+        scored_by: user?.id || null,
+        scored_at: new Date().toISOString(),
+      };
+
+      // Upsert into ph_initiative_scores
+      const { error: scoreErr } = await (supabase as any)
+        .from('ph_initiative_scores')
+        .upsert(scorePayload, { onConflict: 'initiative_id' });
+      if (scoreErr) throw new Error(scoreErr.message);
+
+      // Also update the initiative's score fields
+      await (supabase as any)
+        .from('ph_initiatives')
+        .update({
+          score_strategic_alignment: scores.sa,
+          score_business_impact: scores.bi,
+          score_time_urgency: scores.tu,
+          score_resource_feasibility: scores.rf,
+          computed_score: computedScore,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', initiative.id);
+
+      invalidateAllInitiatives(queryClient);
+      catalystToast.success('Score saved');
+    } catch (err: any) {
+      catalystToast.error('Failed to save score: ' + err.message);
+    }
+  }, [initiative, scores, computedScore, queryClient]);
+
   if (!initiative) return null;
 
   const handleClone = async () => {
     try {
-      // Generate next key
       const { data: existing } = await (supabase as any)
         .from('ph_initiatives')
         .select('initiative_key')
@@ -317,7 +350,6 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
       const prefix = initiative.initiative_key?.replace(/-\d+$/, '') || 'MIM';
       const nextKey = `${prefix}-${String(maxNum + 1).padStart(3, '0')}`;
 
-      // Clone initiative
       const { data: newInit, error: cloneErr } = await (supabase as any)
         .from('ph_initiatives')
         .insert({
@@ -337,7 +369,6 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 
       if (cloneErr) throw new Error(cloneErr.message);
 
-      // Clone budget items
       const { data: budgetItems } = await (supabase as any)
         .from('ph_initiative_budget_items')
         .select('*')
@@ -350,7 +381,6 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
         );
       }
 
-      // Clone risks
       const { data: risks } = await (supabase as any)
         .from('ph_initiative_risks')
         .select('*')
@@ -363,10 +393,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
         );
       }
 
-      queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
-      queryClient.invalidateQueries({ queryKey: ['ph-initiatives-mock'] });
-      queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
-      queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
+      invalidateAllInitiatives(queryClient);
       catalystToast.success(`Cloned as ${nextKey} with all data`);
     } catch (err: any) {
       catalystToast.error('Failed to clone: ' + err.message);
@@ -394,11 +421,10 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
     }
   };
 
+  // Only functional action buttons — removed Attach and Link (dead CTAs)
   const ACTION_BUTTONS = [
     { label: 'Edit', icon: Pencil },
-    { label: 'Attach', icon: Paperclip },
     { label: 'Clone', icon: Copy },
-    { label: 'Link', icon: Link2 },
     { label: 'Score', icon: Star },
   ];
 
@@ -410,7 +436,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
       .from('ph_initiatives')
       .update({ budget_allocated: amount, updated_at: new Date().toISOString() })
       .eq('id', initiative.id);
-    queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
+    invalidateAllInitiatives(queryClient);
   };
 
   return (
@@ -511,7 +537,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                   </div>
                 )}
 
-                {/* Tab Bar — 5 tabs only */}
+                {/* Tab Bar */}
                 <div className="flex gap-0 border-b border-zinc-200 px-6">
                   {TABS.map(tab => (
                     <button key={tab} type="button" onClick={() => setActiveTab(tab)}
@@ -541,7 +567,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                 {activeTab === 'Score' && (
                   <ScoreContent initiative={initiative} scores={scores} computedScore={computedScore} priority={priority}
                     onScoreChange={setScores}
-                    onSave={() => onScoreSave(initiative.id, { strategic_alignment: scores.sa, business_impact: scores.bi, time_urgency: scores.tu, resource_feasibility: scores.rf })} />
+                    onSave={handleScoreSave} />
                 )}
                 {activeTab === 'Budget' && (
                   <InitiativeBudgetTab
@@ -601,10 +627,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                     .update({ is_deleted: true })
                     .eq('id', initiative.id);
                   if (error) throw new Error(error.message);
-                  queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
-                  queryClient.invalidateQueries({ queryKey: ['ph-initiatives-mock'] });
-                  queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
-                  queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
+                  invalidateAllInitiatives(queryClient);
                   catalystToast.success(`${initiative.initiative_key} deleted`);
                   onClose();
                 } catch (err: any) {
@@ -647,19 +670,17 @@ function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
   const isPending = promoteMutation.isPending || removeMutation.isPending || isToggling;
   const isJira = !isNativeInitiative(initiative.id);
 
-  // Sync local state when initiative prop changes (e.g. after refetch)
   useEffect(() => {
     setLocalOnRoadmap(initiative.on_roadmap === true);
   }, [initiative.id, initiative.on_roadmap]);
 
   const handleToggle = async () => {
     const newValue = !localOnRoadmap;
-    setLocalOnRoadmap(newValue); // Optimistic update
+    setLocalOnRoadmap(newValue);
     try {
       setIsToggling(true);
       if (isJira) {
         if (!newValue) {
-          // Removing from roadmap
           const { data: existing } = await (supabase as any)
             .from('ph_initiatives')
             .select('id')
@@ -669,7 +690,6 @@ function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
             await removeMutation.mutateAsync(existing.id);
           }
         } else {
-          // Adding to roadmap — ensure ph_initiatives record exists
           const { data: existing } = await (supabase as any)
             .from('ph_initiatives')
             .select('id')
@@ -717,7 +737,7 @@ function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
       }
     } catch (err) {
       console.error('Roadmap toggle failed:', err);
-      setLocalOnRoadmap(!newValue); // Revert on error
+      setLocalOnRoadmap(!newValue);
       catalystToast.error('Failed to update roadmap status');
     } finally {
       setIsToggling(false);
@@ -749,6 +769,151 @@ function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
 }
 
 /* ════════════════════════════════════════════════════
+   COMMENTS SECTION — Real data from ph_comments
+   ════════════════════════════════════════════════════ */
+function CommentsSection({ initiativeId }: { initiativeId: string }) {
+  const queryClient = useQueryClient();
+  const avatarsByName = useProfileAvatarsByName();
+  const [newComment, setNewComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const { data: comments = [], isLoading } = useQuery({
+    queryKey: ['ph-comments', initiativeId],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from('ph_comments')
+        .select('id, body, author_id, created_at, updated_at')
+        .eq('work_item_id', initiativeId)
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      // Fetch author names
+      const authorIds: string[] = (data || []).map((c: any) => c.author_id).filter(Boolean);
+      const uniqueAuthorIds = Array.from(new Set(authorIds));
+      const profileMap: Record<string, { name: string; avatar: string | null }> = {};
+      if (uniqueAuthorIds.length > 0) {
+        const { data: profiles } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', uniqueAuthorIds);
+        (profiles || []).forEach((p: any) => {
+          profileMap[p.id] = { name: p.full_name || 'Unknown', avatar: p.avatar_url || null };
+        });
+      }
+      return (data || []).map((c: any) => {
+        const profile = profileMap[c.author_id];
+        return {
+          id: c.id,
+          body: c.body,
+          author_name: profile?.name || 'Unknown',
+          author_avatar: profile?.avatar || null,
+          created_at: c.created_at,
+        };
+      });
+    },
+    staleTime: 30_000,
+  });
+
+  const handleSubmit = async () => {
+    if (!newComment.trim()) return;
+    setSubmitting(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        catalystToast.error('You must be logged in to comment');
+        return;
+      }
+      const { error } = await (supabase as any)
+        .from('ph_comments')
+        .insert({ work_item_id: initiativeId, author_id: user.id, body: newComment.trim() });
+      if (error) throw error;
+      setNewComment('');
+      queryClient.invalidateQueries({ queryKey: ['ph-comments', initiativeId] });
+    } catch (err: any) {
+      catalystToast.error('Failed to add comment: ' + err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (commentId: string) => {
+    try {
+      const { error } = await (supabase as any)
+        .from('ph_comments')
+        .delete()
+        .eq('id', commentId);
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ['ph-comments', initiativeId] });
+      catalystToast.success('Comment deleted');
+    } catch (err: any) {
+      catalystToast.error('Failed to delete comment: ' + err.message);
+    }
+  };
+
+  function timeAgo(dateStr: string): string {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+  }
+
+  return (
+    <div className="mt-6 pt-5 border-t border-zinc-100">
+      <div className="text-[13px] font-semibold text-zinc-900 mb-4">
+        Comments ({comments.length})
+      </div>
+      {isLoading ? (
+        <div className="py-4 text-center text-xs text-zinc-400">Loading comments…</div>
+      ) : (
+        <div className="flex flex-col">
+          {comments.map((c: any, i: number) => (
+            <div key={c.id} className="flex gap-3 py-3 group" style={{ borderBottom: i < comments.length - 1 ? '1px solid #fafafa' : 'none' }}>
+              <InlineAvatar name={c.author_name} size={28} avatarUrl={c.author_avatar} />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[13px] font-medium text-zinc-900">{formatShortName(c.author_name)}</span>
+                  <span className="text-xs text-zinc-400">{timeAgo(c.created_at)}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(c.id)}
+                    className="text-xs text-zinc-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity ml-auto"
+                  >
+                    ×
+                  </button>
+                </div>
+                <p className="text-[13px] text-zinc-600 leading-relaxed">{c.body}</p>
+              </div>
+            </div>
+          ))}
+          {comments.length === 0 && (
+            <p className="text-xs text-zinc-400 py-3">No comments yet. Be the first to comment.</p>
+          )}
+        </div>
+      )}
+      <div className="flex gap-3 items-center pt-4 mt-4 border-t border-zinc-100">
+        <input
+          type="text"
+          value={newComment}
+          onChange={e => setNewComment(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
+          placeholder="Write a comment…"
+          className="flex-1 h-10 border border-zinc-200 rounded-md px-3 text-[13px] text-zinc-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 bg-zinc-50"
+          disabled={submitting}
+        />
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={submitting || !newComment.trim()}
+          className="h-10 px-4 text-[13px] font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
+        >
+          {submitting ? 'Sending…' : 'Send'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════
    DETAILS TAB — No score/priority field, custom dropdowns
    ════════════════════════════════════════════════════ */
 function DetailsContent({
@@ -769,7 +934,6 @@ function DetailsContent({
   const { data: departmentOptions } = useDepartmentOptions();
   const { data: profileOptions } = useProfileOptions();
   const avatarsByName = useProfileAvatarsByName();
-  const comments = MOCK_COMMENTS[initiative.initiative_key] || [];
   const getVal = (field: string, original: any) => field in editForm ? editForm[field] : original;
   const getAvatar = (name: string | null) => name ? avatarsByName.get(name.toLowerCase()) : undefined;
   const [selectedTypeKey, setSelectedTypeKey] = useState<string | null>(initiative.initiative_type_key ?? null);
@@ -853,7 +1017,7 @@ function DetailsContent({
       {/* Roadmap Toggle */}
       <RoadmapToggleInline initiative={initiative} />
 
-      {/* Field Grid — matches Image 1 layout */}
+      {/* Field Grid */}
       <div className="grid grid-cols-2 gap-4 gap-x-8">
         {/* Status */}
         <div>
@@ -873,7 +1037,6 @@ function DetailsContent({
           <FieldLabel>EA Review</FieldLabel>
           <span className="text-[13px] text-zinc-400">—</span>
         </div>
-
 
         {/* Priority */}
         <div>
@@ -1040,7 +1203,7 @@ function DetailsContent({
         </div>
       </div>
 
-      {/* Description — moved to bottom */}
+      {/* Description */}
       <div className="mt-6 pt-5 border-t border-zinc-100">
         <div className="text-[13px] font-semibold text-zinc-900 mb-2">Description</div>
         {isEditing ? (
@@ -1056,32 +1219,8 @@ function DetailsContent({
         )}
       </div>
 
-      {/* Comments */}
-      <div className="mt-6 pt-5 border-t border-zinc-100">
-        <div className="text-[13px] font-semibold text-zinc-900 mb-4">
-          Comments ({comments.length})
-        </div>
-        <div className="flex flex-col">
-          {comments.map((c, i) => (
-            <div key={i} className="flex gap-3 py-3" style={{ borderBottom: i < comments.length - 1 ? '1px solid #fafafa' : 'none' }}>
-              <InlineAvatar name={c.author} size={28} />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[13px] font-medium text-zinc-900">{formatShortName(c.author)}</span>
-                  <span className="text-xs text-zinc-400">{c.timeAgo}</span>
-                </div>
-                <p className="text-[13px] text-zinc-600 leading-relaxed">{c.content}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="flex gap-3 items-center pt-4 mt-4 border-t border-zinc-100">
-          <InlineAvatar name="AK" size={28} />
-          <input type="text" placeholder="Write a comment..."
-            className="flex-1 h-10 border border-zinc-200 rounded-md px-3 text-[13px] text-zinc-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 bg-zinc-50"
-          />
-        </div>
-      </div>
+      {/* Comments — real data */}
+      <CommentsSection initiativeId={initiative.id} />
     </>
   );
 }

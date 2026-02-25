@@ -1,12 +1,13 @@
 /**
  * InlineCellEditor — In-place cell editing for the Initiative Table
- * Catalyst V5 Design System
+ * Catalyst V5 Design System — Uses real profile data
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import type { InitiativeStatus } from '@/types/initiative';
 import { STATUS_DISPLAY } from '@/types/initiative';
+import { useProfileOptions } from '@/hooks/useInitiativeLookups';
 
 type EditorType = 'text' | 'status' | 'assignee' | 'quarter' | 'date' | 'number';
 
@@ -21,22 +22,16 @@ interface InlineCellEditorProps {
 
 const ALL_STATUSES = Object.keys(STATUS_DISPLAY) as InitiativeStatus[];
 
-const TEAM_MEMBERS = [
-  'Sarah K.', 'Ahmed M.', 'Fatima R.', 'Omar H.', 'Layla S.',
-  'Khalid B.', 'Nora A.', 'Mohammed T.',
-];
-
 function generateQuarters(): string[] {
   const quarters: string[] = [];
-  for (let y = 2026; y <= 2027; y++) {
+  const currentYear = new Date().getFullYear();
+  for (let y = currentYear; y <= currentYear + 2; y++) {
     for (let q = 1; q <= 4; q++) {
       quarters.push(`Q${q} ${y}`);
     }
   }
   return quarters;
 }
-
-const QUARTERS = generateQuarters();
 
 const editorStyles: React.CSSProperties = {
   border: '1.5px solid #2563eb',
@@ -52,6 +47,7 @@ const editorStyles: React.CSSProperties = {
 export function InlineCellEditor({ type, value, cellRect, onSave, onCancel, onTab }: InlineCellEditorProps) {
   const [localValue, setLocalValue] = useState<string>(value?.toString() ?? '');
   const inputRef = useRef<HTMLInputElement | HTMLSelectElement>(null);
+  const { data: profileOptions } = useProfileOptions();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -112,10 +108,11 @@ export function InlineCellEditor({ type, value, cellRect, onSave, onCancel, onTa
   };
 
   if (type === 'status' || type === 'assignee' || type === 'quarter') {
+    const QUARTERS = generateQuarters();
     const options = type === 'status'
       ? ALL_STATUSES.map(s => ({ value: s, label: STATUS_DISPLAY[s].label }))
       : type === 'assignee'
-        ? TEAM_MEMBERS.map(n => ({ value: n, label: n }))
+        ? (profileOptions || []).map(p => ({ value: p.value, label: p.label }))
         : QUARTERS.map(q => ({ value: q, label: q }));
 
     return createPortal(
@@ -204,7 +201,7 @@ export const EDITABLE_COLUMNS: Record<string, EditorType> = {
 export const COLUMN_TO_FIELD: Record<string, string> = {
   title: 'title',
   status: 'status',
-  assignee: 'assignee_name',
+  assignee: 'assignee_id',
   quarter: 'target_quarter',
   kickoff: 'kickoff_date',
   target: 'target_complete',

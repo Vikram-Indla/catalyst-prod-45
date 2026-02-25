@@ -7,6 +7,8 @@ import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useMDTBacklog } from '@/hooks/useMDTBacklog';
 import type { BRDTask } from '@/hooks/useMDTBacklog';
 import { useProfileOptions, useDepartmentOptions } from '@/hooks/useInitiativeLookups';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 import { ListingToolbar } from '@/components/producthub/listing/ListingToolbar';
 import { InitiativeTable } from '@/components/producthub/listing/InitiativeTable';
 import { BulkActionBar } from '@/components/producthub/listing/BulkActionBar';
@@ -59,7 +61,11 @@ function loadDensity(): Density {
 function applyQuickFilter(data: Initiative[], filter: string): Initiative[] {
   switch (filter) {
     case 'my': return data.filter(i => !!i.assignee_name);
-    case 'quarter': return data.filter(i => i.target_quarter === 'Q1 2026');
+    case 'quarter': {
+      const now = new Date();
+      const currentQ = `Q${Math.ceil((now.getMonth() + 1) / 3)} ${now.getFullYear()}`;
+      return data.filter(i => i.target_quarter === currentQ);
+    }
     case 'high': return data.filter(i => i.computed_score !== null && i.computed_score >= 4.0);
     case 'unscored': return data.filter(i => i.computed_score === null);
     case 'overdue': return data.filter(i =>
@@ -98,6 +104,15 @@ export default function InitiativeListingPage() {
   const { data: mdtData, isLoading } = useMDTBacklog();
   const { data: profiles } = useProfileOptions();
   const { data: departments } = useDepartmentOptions();
+  const queryClient = useQueryClient();
+
+  const invalidateAll = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+    queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
+    queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
+  }, [queryClient]);
+
+  const isNative = useCallback((id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(id), []);
 
   const getProfileName = useCallback((id: string | null) => {
     if (!id || !profiles) return null;
@@ -264,21 +279,21 @@ export default function InitiativeListingPage() {
     setDetailOpen(true);
   }, []);
 
-  const handleStatusChange = useCallback((id: string, newStatus: InitiativeStatus) => {
-    setOrderedData(prev => {
-      const items = prev ?? allInitiatives;
-      return items.map(item => item.id === id ? { ...item, status: newStatus } : item);
-    });
+  const handleStatusChange = useCallback(async (id: string, newStatus: InitiativeStatus) => {
+    if (isNative(id)) {
+      await (supabase as any).from('ph_initiatives').update({ status: newStatus, updated_at: new Date().toISOString() }).eq('id', id);
+      invalidateAll();
+    }
     catalystToast.success(`Status updated to ${newStatus.replace(/_/g, ' ')}`);
-  }, [allInitiatives]);
+  }, [isNative, invalidateAll]);
 
-  const handleFavoriteToggle = useCallback((id: string, isFavorited: boolean) => {
-    setOrderedData(prev => {
-      const items = prev ?? allInitiatives;
-      return items.map(item => item.id === id ? { ...item, is_favorited: !isFavorited } : item);
-    });
+  const handleFavoriteToggle = useCallback(async (id: string, isFavorited: boolean) => {
+    if (isNative(id)) {
+      await (supabase as any).from('ph_initiatives').update({ is_favorited: !isFavorited, updated_at: new Date().toISOString() }).eq('id', id);
+      invalidateAll();
+    }
     catalystToast.success(isFavorited ? 'Removed from favorites' : 'Added to favorites');
-  }, [allInitiatives]);
+  }, [isNative, invalidateAll]);
 
   const handleSortChange = useCallback((s: { id: string; desc: boolean }[]) => {
     setSorting(s);
@@ -288,7 +303,7 @@ export default function InitiativeListingPage() {
     setContextMenu({ pos: { x: e.clientX, y: e.clientY }, initiative });
   }, []);
 
-  const handleContextAction = useCallback((action: string, value?: unknown) => {
+  const handleContextAction = useCallback(async (action: string, value?: unknown) => {
     if (!contextMenu) return;
     const init = contextMenu.initiative;
     switch (action) {
@@ -300,55 +315,71 @@ export default function InitiativeListingPage() {
       case 'change_status':
         handleStatusChange(init.id, value as InitiativeStatus);
         break;
+      case 'assign':
+        if (isNative(init.id)) {
+          await (supabase as any).from('ph_initiatives').update({ assignee_id: value as string, updated_at: new Date().toISOString() }).eq('id', init.id);
+          invalidateAll();
+          catalystToast.success('Assignee updated');
+        }
+        break;
       case 'copy_id':
         navigator.clipboard.writeText(init.initiative_key);
         catalystToast.success(`Copied ${init.initiative_key}`);
         break;
       case 'clone':
-        setOrderedData(prev => {
-          const items = prev ?? allInitiatives;
-          const clone: Initiative = {
-            ...init,
-            id: `clone-${Date.now()}`,
-            initiative_key: `${init.initiative_key}-C`,
-            title: `${init.title} (Copy)`,
-            is_favorited: false,
-            progress: 0,
-          };
-          return [...items, clone];
-        });
-        catalystToast.success('Initiative cloned');
+        if (isNative(init.id)) {
+          const { data: existing } = await (supabase as any).from('ph_initiatives').select('initiative_key').order('created_at', { ascending: false }).limit(100);
+          const maxNum = (existing || []).reduce((max: number, r: any) => { const num = parseInt(r.initiative_key?.replace(/[A-Z]+-/, '') || '0'); return num > max ? num : max; }, 0);
+          const prefix = init.initiative_key?.replace(/-\d+$/, '') || 'MIM';
+          const nextKey = `${prefix}-${String(maxNum + 1).padStart(3, '0')}`;
+          await (supabase as any).from('ph_initiatives').insert({ title: `${init.title} (Copy)`, initiative_key: nextKey, description: init.description, status: 'new_demand', progress: 0, department_id: init.department_id, assignee_id: init.assignee_id });
+          invalidateAll();
+          catalystToast.success(`Cloned as ${nextKey}`);
+        }
         break;
       case 'archive':
-        setOrderedData(prev => (prev ?? allInitiatives).filter(i => i.id !== init.id));
-        catalystToast.success('Archived');
+        if (isNative(init.id)) {
+          await (supabase as any).from('ph_initiatives').update({ is_archived: true }).eq('id', init.id);
+          invalidateAll();
+          catalystToast.success('Archived');
+        }
         break;
       case 'delete':
         if (confirm(`Delete ${init.initiative_key}? This cannot be undone.`)) {
-          setOrderedData(prev => (prev ?? allInitiatives).filter(i => i.id !== init.id));
+          if (isNative(init.id)) {
+            await (supabase as any).from('ph_initiatives').update({ is_deleted: true }).eq('id', init.id);
+            invalidateAll();
+          }
           catalystToast.success('Deleted');
         }
         break;
     }
-  }, [contextMenu, handleStatusChange, allInitiatives]);
+  }, [contextMenu, handleStatusChange, isNative, invalidateAll]);
 
-  const handleInlineEdit = useCallback((id: string, field: string, value: string | number | null) => {
-    setOrderedData(prev => {
-      const items = prev ?? allInitiatives;
-      return items.map(item => item.id === id ? { ...item, [field]: value } : item);
-    });
+  const handleInlineEdit = useCallback(async (id: string, field: string, value: string | number | null) => {
+    if (isNative(id)) {
+      await (supabase as any).from('ph_initiatives').update({ [field]: value, updated_at: new Date().toISOString() }).eq('id', id);
+      invalidateAll();
+    }
     catalystToast.success('Updated');
-  }, [allInitiatives]);
+  }, [isNative, invalidateAll]);
 
-  const handleBulkAction = useCallback((action: string) => {
+  const handleBulkAction = useCallback(async (action: string) => {
+    const nativeIds = selectedIds.filter(id => isNative(id));
     switch (action) {
       case 'archive':
-        setOrderedData(prev => (prev ?? allInitiatives).filter(i => !selectedIds.includes(i.id)));
+        if (nativeIds.length) {
+          await (supabase as any).from('ph_initiatives').update({ is_archived: true }).in('id', nativeIds);
+          invalidateAll();
+        }
         catalystToast.success(`${selectedIds.length} items archived`);
         setSelectedIds([]);
         break;
       case 'delete':
-        setOrderedData(prev => (prev ?? allInitiatives).filter(i => !selectedIds.includes(i.id)));
+        if (nativeIds.length) {
+          await (supabase as any).from('ph_initiatives').update({ is_deleted: true }).in('id', nativeIds);
+          invalidateAll();
+        }
         catalystToast.success(`${selectedIds.length} items deleted`);
         setSelectedIds([]);
         break;
@@ -356,11 +387,12 @@ export default function InitiativeListingPage() {
         catalystToast.success(`${selectedIds.length} items — ${action}`);
         break;
     }
-  }, [selectedIds, allInitiatives]);
+  }, [selectedIds, isNative, invalidateAll]);
 
-  const handleScoreSave = useCallback((id: string, scores: { strategic_alignment: number; business_impact: number; time_urgency: number; resource_feasibility: number }) => {
-    catalystToast.success('Score saved');
-  }, []);
+  const handleScoreSave = useCallback(async (id: string, scores: { strategic_alignment: number; business_impact: number; time_urgency: number; resource_feasibility: number }) => {
+    // Score save is now handled inside DetailPanel directly
+    invalidateAll();
+  }, [invalidateAll]);
 
   return (
     <div className="flex flex-col h-full">

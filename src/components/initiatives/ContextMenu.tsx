@@ -4,6 +4,7 @@ import { ExternalLink, Pencil, Copy, Link2, ChevronRight, Archive, Trash2, CopyP
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 import { STATUS_DISPLAY } from '@/types/initiative';
 import { toast } from 'sonner';
+import { useProfileOptions } from '@/hooks/useInitiativeLookups';
 
 interface ContextMenuProps {
   position: { x: number; y: number } | null;
@@ -14,18 +15,13 @@ interface ContextMenuProps {
 
 const ALL_STATUSES = Object.keys(STATUS_DISPLAY) as InitiativeStatus[];
 
-const MOCK_USERS = [
-  'Sarah Chen', 'Mohammed Al-Sayed', 'Fatima Al-Zahra', 'Omar Farooq',
-  'Yusuf Ali', 'Rania Othman', 'Aisha Bakr', 'Zaid Al-Harbi',
-];
-
 export function ContextMenu({ position, initiative, onAction, onClose }: ContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const [submenu, setSubmenu] = useState<'status' | 'assign' | null>(null);
   const [adjustedPos, setAdjustedPos] = useState(position);
   const submenuTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const { data: profileOptions } = useProfileOptions();
 
-  // Adjust position to keep on screen
   useEffect(() => {
     if (!position || !menuRef.current) {
       setAdjustedPos(position);
@@ -39,7 +35,6 @@ export function ContextMenu({ position, initiative, onAction, onClose }: Context
     setAdjustedPos({ x: Math.max(8, x), y: Math.max(8, y) });
   }, [position]);
 
-  // Close on escape or click outside
   useEffect(() => {
     if (!position) return;
     const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -47,7 +42,6 @@ export function ContextMenu({ position, initiative, onAction, onClose }: Context
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) onClose();
     };
     document.addEventListener('keydown', handleKey);
-    // Delay attaching mousedown so the current click event that opened the menu doesn't immediately close it
     const raf = requestAnimationFrame(() => {
       document.addEventListener('mousedown', handleClick);
     });
@@ -74,6 +68,8 @@ export function ContextMenu({ position, initiative, onAction, onClose }: Context
     onAction(action, value);
     onClose();
   };
+
+  const assigneeList = (profileOptions || []).map(p => ({ id: p.value, name: p.label }));
 
   return createPortal(
     <div
@@ -128,7 +124,7 @@ export function ContextMenu({ position, initiative, onAction, onClose }: Context
         )}
       </div>
 
-      {/* Assign submenu */}
+      {/* Assign submenu — real profiles */}
       <div
         className="relative"
         onMouseEnter={() => handleSubmenuEnter('assign')}
@@ -137,16 +133,21 @@ export function ContextMenu({ position, initiative, onAction, onClose }: Context
         <MenuItem icon={<ChevronRight size={14} className="ml-auto" />} hasSubmenu>Assign to</MenuItem>
         {submenu === 'assign' && (
           <Submenu parentRef={menuRef}>
-            {MOCK_USERS.map(name => (
-              <MenuItem key={name} onClick={() => act('assign', name)}>
-                <span className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-zinc-300 text-[9px] font-semibold text-white flex items-center justify-center flex-shrink-0">
-                    {name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+            <div className="max-h-[240px] overflow-y-auto">
+              {assigneeList.map(({ id, name }) => (
+                <MenuItem key={id} onClick={() => act('assign', id)}>
+                  <span className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-zinc-300 text-[9px] font-semibold text-white flex items-center justify-center flex-shrink-0">
+                      {name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                    </span>
+                    {name}
                   </span>
-                  {name}
-                </span>
-              </MenuItem>
-            ))}
+                </MenuItem>
+              ))}
+              {assigneeList.length === 0 && (
+                <span className="block px-3 py-2 text-xs text-zinc-400">No profiles found</span>
+              )}
+            </div>
           </Submenu>
         )}
       </div>
