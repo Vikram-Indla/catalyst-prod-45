@@ -30653,6 +30653,236 @@ export type Database = {
           },
         ]
       }
+      r360md_members: {
+        Row: {
+          avatar_url: string | null
+          capacity_hours: number | null
+          created_at: string | null
+          department: string
+          email: string | null
+          full_name: string
+          id: string
+          is_active: boolean | null
+          role: string
+          team: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          capacity_hours?: number | null
+          created_at?: string | null
+          department?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          is_active?: boolean | null
+          role?: string
+          team?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          capacity_hours?: number | null
+          created_at?: string | null
+          department?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          is_active?: boolean | null
+          role?: string
+          team?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      r360md_projects: {
+        Row: {
+          color: string
+          created_at: string | null
+          id: string
+          key_prefix: string
+          module: string | null
+          name: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string | null
+          id?: string
+          key_prefix: string
+          module?: string | null
+          name: string
+        }
+        Update: {
+          color?: string
+          created_at?: string | null
+          id?: string
+          key_prefix?: string
+          module?: string | null
+          name?: string
+        }
+        Relationships: []
+      }
+      r360md_status_config: {
+        Row: {
+          bg_color: string
+          category: string
+          color: string
+          dot_color: string
+          id: string
+          is_terminal: boolean | null
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          bg_color: string
+          category: string
+          color: string
+          dot_color: string
+          id?: string
+          is_terminal?: boolean | null
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          bg_color?: string
+          category?: string
+          color?: string
+          dot_color?: string
+          id?: string
+          is_terminal?: boolean | null
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      r360md_work_items: {
+        Row: {
+          assigned_to: string | null
+          assigner_id: string | null
+          comments_count: number | null
+          created_at: string | null
+          due_date: string | null
+          id: string
+          item_key: string
+          item_type: string
+          parent_item_id: string | null
+          priority: string
+          project_id: string | null
+          release_name: string | null
+          resolved_at: string | null
+          status_id: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          assigner_id?: string | null
+          comments_count?: number | null
+          created_at?: string | null
+          due_date?: string | null
+          id?: string
+          item_key: string
+          item_type: string
+          parent_item_id?: string | null
+          priority?: string
+          project_id?: string | null
+          release_name?: string | null
+          resolved_at?: string | null
+          status_id?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          assigner_id?: string | null
+          comments_count?: number | null
+          created_at?: string | null
+          due_date?: string | null
+          id?: string
+          item_key?: string
+          item_type?: string
+          parent_item_id?: string | null
+          priority?: string
+          project_id?: string | null
+          release_name?: string | null
+          resolved_at?: string | null
+          status_id?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "r360md_work_items_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "r360md_chronology_view"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "r360md_work_items_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "r360md_member_kpis_view"
+            referencedColumns: ["member_id"]
+          },
+          {
+            foreignKeyName: "r360md_work_items_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "r360md_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360md_work_items_assigner_id_fkey"
+            columns: ["assigner_id"]
+            isOneToOne: false
+            referencedRelation: "r360md_chronology_view"
+            referencedColumns: ["assignee_id"]
+          },
+          {
+            foreignKeyName: "r360md_work_items_assigner_id_fkey"
+            columns: ["assigner_id"]
+            isOneToOne: false
+            referencedRelation: "r360md_member_kpis_view"
+            referencedColumns: ["member_id"]
+          },
+          {
+            foreignKeyName: "r360md_work_items_assigner_id_fkey"
+            columns: ["assigner_id"]
+            isOneToOne: false
+            referencedRelation: "r360md_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360md_work_items_parent_item_id_fkey"
+            columns: ["parent_item_id"]
+            isOneToOne: false
+            referencedRelation: "r360md_chronology_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360md_work_items_parent_item_id_fkey"
+            columns: ["parent_item_id"]
+            isOneToOne: false
+            referencedRelation: "r360md_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360md_work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "r360md_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "r360md_work_items_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "r360md_status_config"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ra_agent_runs: {
         Row: {
           agent_name: string
@@ -58264,6 +58494,61 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      r360md_chronology_view: {
+        Row: {
+          age_class: string | null
+          age_days: number | null
+          assignee_avatar: string | null
+          assignee_id: string | null
+          assignee_name: string | null
+          assigner_avatar: string | null
+          assigner_name: string | null
+          date_label: string | null
+          due_date: string | null
+          group_date: string | null
+          id: string | null
+          item_key: string | null
+          item_type: string | null
+          parent_key: string | null
+          parent_title: string | null
+          priority: string | null
+          project_color: string | null
+          project_key: string | null
+          project_name: string | null
+          release: string | null
+          status_bg_color: string | null
+          status_category: string | null
+          status_color: string | null
+          status_dot_color: string | null
+          status_name: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Relationships: []
+      }
+      r360md_date_group_stats_view: {
+        Row: {
+          blocked_count: number | null
+          done_count: number | null
+          group_date: string | null
+          in_progress_count: number | null
+          progress_pct: number | null
+          todo_count: number | null
+          total_count: number | null
+        }
+        Relationships: []
+      }
+      r360md_member_kpis_view: {
+        Row: {
+          avg_age_days: number | null
+          closure_pct: number | null
+          member_id: string | null
+          open_items: number | null
+          stale_items: number | null
+          total_items: number | null
+        }
+        Relationships: []
       }
       resource_current_cost: {
         Row: {

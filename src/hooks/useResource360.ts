@@ -95,3 +95,54 @@ export const useReleaseStanding = (resourceId: string, releaseId: string) =>
     enabled: !!resourceId && !!releaseId,
     staleTime: STALE_5MIN,
   });
+
+// ═══════════════════════════════════════════════════════════
+// R360 Member Detail hooks (r360md_ tables)
+// ═══════════════════════════════════════════════════════════
+import { resource360MdService } from '@/services/resource360MdService';
+
+export function useR360MdMember(memberId: string) {
+  return useQuery({
+    queryKey: ['r360md', 'member', memberId],
+    queryFn: () => resource360MdService.getMember(memberId),
+    enabled: !!memberId,
+  });
+}
+
+export function useR360MdChronology(memberId: string, filters?: Parameters<typeof resource360MdService.getChronology>[1]) {
+  return useQuery({
+    queryKey: ['r360md', 'chronology', memberId, filters],
+    queryFn: () => resource360MdService.getChronology(memberId, filters),
+    enabled: !!memberId,
+  });
+}
+
+export function useR360MdMemberKpis(memberId: string) {
+  return useQuery({
+    queryKey: ['r360md', 'kpis', memberId],
+    queryFn: () => resource360MdService.getMemberKpis(memberId),
+    enabled: !!memberId,
+  });
+}
+
+export function useR360MdDateGroupStats() {
+  return useQuery({
+    queryKey: ['r360md', 'dateGroupStats'],
+    queryFn: () => resource360MdService.getDateGroupStats(),
+  });
+}
+
+export function useR360MdSiblings(parentItemKey: string | null) {
+  return useQuery({
+    queryKey: ['r360md', 'siblings', parentItemKey],
+    queryFn: () => resource360MdService.getSiblings(parentItemKey!),
+    enabled: !!parentItemKey,
+  });
+}
+
+export function useR360MdAllMembers() {
+  return useQuery({
+    queryKey: ['r360md', 'allMembers'],
+    queryFn: () => resource360MdService.getAllMembers(),
+  });
+}
