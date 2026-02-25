@@ -24,7 +24,7 @@ export const TimelineLeftRow: React.FC<TimelineLeftRowProps> = ({ initiative }) 
     ? getInitialsFromName(initiative.assignee_name)
     : initiative.initiative_key.slice(0, 2);
 
-  const avatarColor = hashColor(initiative.initiative_key);
+  const avatarColor = hashColor(initiative.assignee_name || initiative.initiative_key);
 
   return (
     <button
