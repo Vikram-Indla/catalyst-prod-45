@@ -529,12 +529,11 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                   style={{
                     position: 'absolute', left, top, width: cardW,
                     cursor: 'pointer', transition: 'box-shadow 200ms, transform 200ms',
-                    borderRadius: '0 0 8px 8px',
-                    border: isSelected ? `2px solid ${T.accent}` : '2px solid transparent',
-                    borderTop: 'none',
+                    borderRadius: 10,
+                    border: 'none',
                     boxShadow: isSelected
                       ? '0 0 0 3px rgba(37,99,235,.25), 0 12px 40px rgba(37,99,235,.2)'
-                      : '0 4px 16px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)',
+                      : '0 4px 16px rgba(0,0,0,0.08)',
                     background: '#FFFFFF',
                     zIndex: isSelected ? 10 : 1,
                   }}
