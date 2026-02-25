@@ -1,9 +1,10 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useResource, useResourceSummary, useWorkItems, useProjectReleases } from '@/hooks/useResource360';
+import AiIntelligencePanelV16 from '@/components/resource360/AiIntelligencePanelV16';
 import ResourceBanner from '@/components/resource360/ResourceBanner';
 import Toolbar, { R360View, RoleFilter } from '@/components/resource360/Toolbar';
-import TentacleView from '@/components/resource360/TentacleView';
+import RingViewV16 from '@/components/resource360/RingViewV16';
 import ChronologyView from '@/components/resource360/ChronologyView';
 import ListView from '@/components/resource360/ListView';
 
@@ -43,11 +44,11 @@ const Resource360Page = () => {
   const { data: projectReleases } = useProjectReleases(jiraAccountId);
 
   const viewParam = searchParams.get('view') as R360View | null;
-  const [activeView, setActiveView] = useState<R360View>(viewParam || 'tentacle');
+  const [activeView, setActiveView] = useState<R360View>(viewParam || 'ring');
 
   // Sync view from URL query param
   useEffect(() => {
-    if (viewParam && ['tentacle', 'chronology', 'list'].includes(viewParam)) {
+    if (viewParam && ['ring', 'chronology', 'list'].includes(viewParam)) {
       setActiveView(viewParam);
     }
   }, [viewParam]);
@@ -174,10 +175,10 @@ const Resource360Page = () => {
         onProjectChange={setSelectedProject}
       />
 
-      <div style={{ flex: 1, overflow: 'auto' }}>
-        {activeView === 'tentacle' && (
+      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        {activeView === 'ring' && (
           itemsLoading ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: 'calc(100vh - 280px)', gap: 16 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, gap: 16 }}>
               <div className="r360-skeleton" style={{ width: 72, height: 72, borderRadius: '50%' }} />
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center' }}>
                 {[1,2,3,4,5,6].map(i => (
@@ -186,7 +187,7 @@ const Resource360Page = () => {
               </div>
             </div>
           ) : (
-            <TentacleView resource={resource} items={filteredItems} roleFilter={roleFilter} onItemClick={handleItemClick} />
+            <RingViewV16 resource={resource} items={filteredItems} onItemClick={handleItemClick} onAiClick={() => setShowAi(true)} />
           )
         )}
         {activeView === 'chronology' && (
@@ -209,14 +210,19 @@ const Resource360Page = () => {
         <ContextModal item={selectedItem} onClose={() => setSelectedItem(null)} />
       )}
 
-      {showAi && resource && (
+      {showAi && resource && activeView === 'ring' ? (
+        <AiIntelligencePanelV16
+          resourceName={resource.full_name || 'Resource'}
+          onClose={() => setShowAi(false)}
+        />
+      ) : showAi && resource ? (
         <AiIntelligenceOverlay
           resourceId={resource.id}
           resource={resource}
           rid={rid!}
           onClose={() => setShowAi(false)}
         />
-      )}
+      ) : null}
 
       <style>{skeletonCSS}</style>
     </div>

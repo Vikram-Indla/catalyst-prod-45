@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-export type R360View = 'tentacle' | 'chronology' | 'list';
+export type R360View = 'ring' | 'chronology' | 'list';
 export type RoleFilter = 'all' | 'assigned' | 'reported';
 
 interface ToolbarProps {
@@ -21,9 +21,9 @@ interface ToolbarProps {
 }
 
 const views: { key: R360View; label: string }[] = [
-  { key: 'tentacle', label: '360° View' },
+  { key: 'ring', label: 'Ring' },
   { key: 'chronology', label: 'Chronology' },
-  { key: 'list', label: 'List' },
+  { key: 'list', label: 'Board' },
 ];
 
 const roles: { key: RoleFilter; label: string }[] = [
@@ -214,11 +214,11 @@ const Toolbar: React.FC<ToolbarProps> = ({
         onClick={onAiClick}
         aria-label="Open AI Intelligence overlay"
         style={{
-          background: 'linear-gradient(135deg, #1A1A2E, #2D2D4A)', color: '#FFFFFF',
+          background: '#2563EB', color: '#FFFFFF',
           border: 'none', borderRadius: 8,
-          padding: '7px 16px', fontSize: 12, fontWeight: 700,
+          padding: '7px 16px', fontSize: 12, fontWeight: 600,
           cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6,
-          boxShadow: '0 2px 6px rgba(26,26,46,.3)',
+          height: 28,
         }}
       >
         <span style={{ fontSize: 11, fontWeight: 800 }}>✦</span>
