@@ -4,7 +4,7 @@
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, FileText, Tag, Users, Calendar, Map, Bot, FolderKanban, Zap, Wrench, RefreshCw, GitMerge, type LucideIcon } from 'lucide-react';
+import { X, Loader2, FileText, Tag, Users, Calendar, Map, Bot, FolderKanban, Zap, Wrench, Leaf, Link, RefreshCw, GitMerge, type LucideIcon } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -109,6 +109,8 @@ const TYPE_OPTIONS: { key: string; label: string; Icon: LucideIcon; color: strin
   { key: 'project', label: 'Project', Icon: FolderKanban, color: '#2563EB' },
   { key: 'enhancement', label: 'Enhancement', Icon: Zap, color: '#0D9488' },
   { key: 'improvement', label: 'Improvement', Icon: Wrench, color: '#D97706' },
+  { key: 'sustainable', label: 'Sustainable', Icon: Leaf, color: '#16A34A' },
+  { key: 'entity_integration', label: 'Entity Integration', Icon: Link, color: '#8B5CF6' },
 ];
 
 const LABEL = "block text-[11px] font-semibold text-[#334155] uppercase tracking-[0.05em] mb-1.5";
