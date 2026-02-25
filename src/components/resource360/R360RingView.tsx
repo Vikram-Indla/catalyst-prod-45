@@ -37,7 +37,7 @@ function resolveStatus(item: any) {
     return { dot: item.status_dot_color, bg: item.status_bg_color, tx: item.status_color, label: item.status_name || 'Unknown', accent: item.status_dot_color };
   }
   const cat = (item.status_category || '').toLowerCase();
-  if (cat === 'completed' || cat === 'done') return SC['Done'];
+  if (cat === 'completed' || cat === 'done' || cat === 'complete') return SC['Done'];
   if (cat === 'started' || cat === 'in progress' || cat === 'indeterminate') return SC['In Progress'];
   return SCD;
 }
@@ -100,8 +100,12 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
   const [showDone, setShowDone] = useState(false);
   const doneRef = useRef<HTMLDivElement>(null);
 
-  const activeItems = items.filter(i => i.status_category !== 'completed').slice(0, 8);
-  const doneItems = items.filter(i => i.status_category === 'completed');
+  const isDone = (cat: string | null | undefined) => {
+    const c = (cat || '').toLowerCase();
+    return c === 'completed' || c === 'done' || c === 'complete';
+  };
+  const activeItems = items.filter(i => !isDone(i.status_category)).slice(0, 8);
+  const doneItems = items.filter(i => isDone(i.status_category));
   const memberName = member?.full_name || 'Unknown';
   const memberRole = member?.role || '';
   const avatarSlug = slugify(memberName);
@@ -146,7 +150,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
 
   return (
     <div style={{
-      position: 'relative', width: '100%', height: '720px', overflow: 'hidden', boxSizing: 'border-box',
+      position: 'relative', width: '100%', height: '720px', overflow: 'visible', boxSizing: 'border-box',
       background: 'radial-gradient(circle at center, #fff 0%, #F8FAFC 55%, #F1F5F9 100%)',
       backgroundImage: 'radial-gradient(circle at center, #fff 0%, #F8FAFC 55%, #F1F5F9 100%), radial-gradient(circle, #CBD5E1 1px, transparent 1px)',
       backgroundSize: 'cover, 24px 24px',
