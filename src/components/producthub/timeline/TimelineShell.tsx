@@ -12,14 +12,14 @@ import { InitiativeDetailPanel } from './InitiativeDetailPanel';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
 import { useFilteredInitiatives } from '@/hooks/producthub/useTimelineInitiatives';
 import { useTimelineRealtime } from '@/hooks/producthub/useTimelineRealtime';
-import { useRoadmapInitiatives } from '@/hooks/useRoadmapInitiatives';
+import { useMDTBacklog } from '@/hooks/useMDTBacklog';
 import { useProfileOptions, useDepartmentOptions } from '@/hooks/useInitiativeLookups';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 
 export const TimelineShell: React.FC<{ onAddNew?: () => void }> = ({ onAddNew }) => {
   const { activeFilter, searchTerm, groupBy, selectedInitiativeId, isDetailOpen, closeDetail } = useTimelineState();
   const [typeFilter, setTypeFilter] = useState('all');
-  const { data: roadmapData, isLoading, error } = useRoadmapInitiatives();
+  const { data: mdtData, isLoading, error } = useMDTBacklog();
   const { data: profiles } = useProfileOptions();
   const { data: departments } = useDepartmentOptions();
 
@@ -38,18 +38,19 @@ export const TimelineShell: React.FC<{ onAddNew?: () => void }> = ({ onAddNew })
 
   // Map roadmap view data → TimelineInitiative
   const initiatives: TimelineInitiative[] = useMemo(() => {
-    return (roadmapData || []).map((item: any) => ({
+    const items = mdtData?.data ?? [];
+    return items.map((item: any) => ({
       id: item.id,
       initiative_key: item.initiative_key || '',
       title: item.title || '',
       description: item.description || null,
       status: item.status || 'new',
       assignee_id: item.assignee_id || null,
-      assignee_name: getProfileName(item.assignee_id),
+      assignee_name: item.assignee_name || getProfileName(item.assignee_id),
       business_owner_id: item.business_owner_id || null,
       reporter_id: item.reporter_id || null,
       department_id: item.department_id || null,
-      department_name: getDepartmentName(item.department_id),
+      department_name: item.department_name || getDepartmentName(item.department_id),
       department_code: null,
       target_quarter: item.target_quarter || null,
       business_ask_date: item.business_ask_date || null,
@@ -67,7 +68,7 @@ export const TimelineShell: React.FC<{ onAddNew?: () => void }> = ({ onAddNew })
       created_at: item.created_at || new Date().toISOString(),
       updated_at: item.updated_at || new Date().toISOString(),
     }));
-  }, [roadmapData, getProfileName, getDepartmentName]);
+  }, [mdtData, getProfileName, getDepartmentName]);
 
   const filteredByType = useMemo(() => {
     if (typeFilter === 'all') return initiatives;
