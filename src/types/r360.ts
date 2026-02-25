@@ -40,6 +40,8 @@ export interface R360WorkItem {
   age_class: 'green' | 'amber' | 'red';
   group_date: string;
   date_label: string;
+  /** 'Assignee' for directly assigned items, 'Contributor' for reported-by items */
+  role_on_item: 'Assignee' | 'Contributor';
 }
 
 export interface R360Filters {

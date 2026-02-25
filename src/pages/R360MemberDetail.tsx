@@ -376,22 +376,31 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
     <div ref={canvasRef} style={{ position:'relative', width:'100%', height:`${CANVAS_H}px`, overflow:'visible', boxSizing:'border-box' as const, marginTop:'8px' }}>
       {/* SVG SPOKES — pixel coordinates */}
       <svg width={W} height={CANVAS_H} style={{ position:'absolute', top:0, left:0, zIndex:1, pointerEvents:'none' }}>
-        {spokes.map((s, i) => (
-          <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
-            stroke="#94A3B8" strokeWidth={2} strokeDasharray="8 5" strokeLinecap="round" />
-        ))}
+        {spokes.map((s, i) => {
+          const isContrib = visible[i]?.role_on_item === 'Contributor';
+          return (
+            <line key={i} x1={s.x1} y1={s.y1} x2={s.x2} y2={s.y2}
+              stroke={isContrib ? '#A78BFA' : '#94A3B8'} strokeWidth={2} strokeDasharray={isContrib ? '4 6' : '8 5'} strokeLinecap="round" />
+          );
+        })}
       </svg>
 
       {/* SPOKE LABELS — pixel midpoints */}
-      {labels.map((l, i) => (
-        <div key={`label-${i}`} style={{
-          position:'absolute', left:`${l.x}px`, top:`${l.y}px`,
-          transform:'translate(-50%,-50%)', zIndex:4, pointerEvents:'none',
-          fontSize:'11px', fontWeight:600, color:'#334155', background:'#F8FAFC',
-          padding:'2px 8px', borderRadius:'10px', border:'1px solid #E2E8F0',
-          whiteSpace:'nowrap', fontVariantNumeric:'tabular-nums',
-        }}>{l.age}d ago</div>
-      ))}
+      {labels.map((l, i) => {
+        const isContributor = visible[i]?.role_on_item === 'Contributor';
+        return (
+          <div key={`label-${i}`} style={{
+            position:'absolute', left:`${l.x}px`, top:`${l.y}px`,
+            transform:'translate(-50%,-50%)', zIndex:4, pointerEvents:'none',
+            fontSize:'11px', fontWeight:600,
+            color: isContributor ? '#7C3AED' : '#334155',
+            background: isContributor ? '#F5F3FF' : '#F8FAFC',
+            padding:'2px 8px', borderRadius:'10px',
+            border: isContributor ? '1px solid #DDD6FE' : '1px solid #E2E8F0',
+            whiteSpace:'nowrap', fontVariantNumeric:'tabular-nums',
+          }}>{isContributor ? 'Contributed' : `${l.age}d ago`}</div>
+        );
+      })}
 
       {/* CENTER AVATAR */}
       <div style={{
@@ -422,22 +431,27 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
         if (!pos) return null;
         const s = scLookup(item.status_label || '');
         const isSelected = selected?.id === item.id;
+        const isContributor = item.role_on_item === 'Contributor';
         return (
           <div key={item.id} onClick={() => onSelect(item)} style={{
             position:'absolute', left:`${pos.left}px`, top:`${pos.top}px`,
             width:`${CARD_W}px`, background:'#FFF',
-            border: isSelected ? '1px solid #2563EB' : '1px solid #E2E8F0',
+            border: isSelected ? '1px solid #2563EB' : isContributor ? '1px solid #DDD6FE' : '1px solid #E2E8F0',
             borderRadius:'8px', padding:'10px 12px 10px 15px',
             cursor:'pointer', zIndex:3,
             boxShadow: isSelected ? '0 0 0 2px rgba(37,99,235,.15)' : '0 1px 3px rgba(15,23,42,.05)',
           }}>
-            <div style={{ position:'absolute', left:0, top:'8px', bottom:'8px', width:'3px', borderRadius:'0 2px 2px 0', background:s.accent }} />
+            <div style={{ position:'absolute', left:0, top:'8px', bottom:'8px', width:'3px', borderRadius:'0 2px 2px 0', background: isContributor ? '#7C3AED' : s.accent }} />
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'4px' }}>
               <div style={{ display:'flex', alignItems:'center', gap:'4px' }}>
                 {getJiraIcon(item.item_type)}
                 <span style={{ fontSize:'10.5px', fontWeight:700, textTransform:'uppercase', color:'#334155' }}>{item.item_type}</span>
               </div>
-              <span style={{ fontSize:'10.5px', fontWeight:500, color:'#64748B' }}>{item.priority}</span>
+              {isContributor ? (
+                <span style={{ fontSize:'9.5px', fontWeight:700, padding:'2px 6px', borderRadius:'3px', background:'#F5F3FF', color:'#7C3AED', border:'1px solid #DDD6FE', textTransform:'uppercase', letterSpacing:'.03em' }}>Contributed</span>
+              ) : (
+                <span style={{ fontSize:'10.5px', fontWeight:500, color:'#64748B' }}>{item.priority}</span>
+              )}
             </div>
             <div style={{ display:'flex', alignItems:'center', gap:'5px', marginBottom:'5px' }}>
               <span style={{ fontSize:'11px', fontWeight:600, color:'#2563EB', fontFamily:"'JetBrains Mono',monospace" }}>{item.item_key}</span>
@@ -445,7 +459,12 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
               <span style={{ marginLeft:'auto', fontSize:'11px', fontWeight:600, color: ageColor(item.age_days), fontVariantNumeric:'tabular-nums' }}>{item.age_days}d</span>
             </div>
             <div style={{ fontSize:'12.5px', fontWeight:500, color:'#020617', lineHeight:'1.35', marginBottom:'5px', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' } as React.CSSProperties}>{item.title}</div>
-            <RingPill status={item.status_label || ''} />
+            <div style={{ display:'flex', alignItems:'center', gap:'6px' }}>
+              <RingPill status={item.status_label || ''} />
+              {isContributor && (
+                <span style={{ fontSize:'10px', fontWeight:500, color:'#64748B' }}>→ {item.assignee_name}</span>
+              )}
+            </div>
           </div>
         );
       })}
@@ -624,12 +643,15 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
               <div className="r3-chrono-items">
                 {group.items.map(item => (
                   <div key={item.id} className="r3-chrono-card" onClick={() => onSelect(item)}>
-                    <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: accentColor(item.status_category) }} />
+                    <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: item.role_on_item === 'Contributor' ? '#7C3AED' : accentColor(item.status_category) }} />
                     <div style={{ width: 24, display: 'flex', alignItems: 'center', flexShrink: 0 }}>{getJiraIcon(item.item_type)}</div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                         <span className="r3-card-key">{item.item_key}</span>
                         <ProjTag projectKey={item.project_key} />
+                        {item.role_on_item === 'Contributor' && (
+                          <span style={{ fontSize:'9px', fontWeight:700, padding:'1px 5px', borderRadius:'3px', background:'#F5F3FF', color:'#7C3AED', border:'1px solid #DDD6FE', textTransform:'uppercase', letterSpacing:'.03em' }}>Contributed</span>
+                        )}
                       </div>
                       <div className="r3-card-title r3-card-title--lg">{item.title}</div>
                       {item.parent_key && (
@@ -640,7 +662,7 @@ function ChronologyView({ items, onSelect, weekStart, weekEnd }: { items: R360Wo
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span style={{ fontSize: 12.5, color: '#334155' }}>{item.assignee_name}</span>
+                        <span style={{ fontSize: 12.5, color: '#334155' }}>{item.role_on_item === 'Contributor' ? `→ ${item.assignee_name}` : item.assignee_name}</span>
                         <StatusPill label={item.status_label} color={item.status_color} bg={item.status_bg} dot={item.status_dot} />
                       </div>
                       <AgeBadge days={item.age_days} ageClass={item.age_class} />
@@ -680,10 +702,13 @@ function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R
           <div className="r3-board-cards">
             {col.items.map(item => (
               <div key={item.id} className="r3-board-card" onClick={() => onSelect(item)}>
-                <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: accentColor(item.status_category) }} />
+                <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: '0 2px 2px 0', background: item.role_on_item === 'Contributor' ? '#7C3AED' : accentColor(item.status_category) }} />
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                   <span className="r3-card-key">{item.item_key}</span>
                   <ProjTag projectKey={item.project_key} />
+                  {item.role_on_item === 'Contributor' && (
+                    <span style={{ fontSize:'9px', fontWeight:700, padding:'1px 5px', borderRadius:'3px', background:'#F5F3FF', color:'#7C3AED', border:'1px solid #DDD6FE', textTransform:'uppercase', letterSpacing:'.03em' }}>Contributed</span>
+                  )}
                   <span style={{ marginLeft: 'auto' }}><AgeBadge days={item.age_days} ageClass={item.age_class} /></span>
                 </div>
                 <div className="r3-card-title" style={{ fontSize: 13.5, marginBottom: 8 }}>{item.title}</div>
@@ -692,7 +717,7 @@ function BoardView({ items, onSelect }: { items: R360WorkItem[]; onSelect: (i: R
                     <span className="r3-priority-dot" style={{ background: priorityDotColor(item.priority) }} />
                     <span style={{ fontSize: 12, fontWeight: 500, color: '#334155' }}>{item.priority}</span>
                   </div>
-                  <span style={{ fontSize: 12.5, color: '#334155' }}>{item.assignee_name}</span>
+                  <span style={{ fontSize: 12.5, color: '#334155' }}>{item.role_on_item === 'Contributor' ? `→ ${item.assignee_name}` : item.assignee_name}</span>
                 </div>
               </div>
             ))}
@@ -732,6 +757,9 @@ function DetailPanel({ item, onClose, onSelectItem }: {
             <span style={{ fontSize: 10.5, fontWeight: 600, padding: '2px 8px', borderRadius: 4, background: '#F1F5F9', color: '#334155' }}>{item.priority}</span>
             <span className="r3-type-badge">{getJiraIcon(item.item_type)} {item.item_type}</span>
             <ProjTag projectKey={item.project_key} />
+            {item.role_on_item === 'Contributor' && (
+              <span style={{ fontSize:'10px', fontWeight:700, padding:'2px 8px', borderRadius:4, background:'#F5F3FF', color:'#7C3AED', border:'1px solid #DDD6FE' }}>CONTRIBUTED TO</span>
+            )}
           </div>
           <div className="r3-panel-title">{item.title}</div>
         </div>
@@ -745,8 +773,8 @@ function DetailPanel({ item, onClose, onSelectItem }: {
               <div className="r3-meta-value">{item.project_name}</div>
             </div>
             <div className="r3-meta-cell">
-              <div className="r3-meta-label">Reporter</div>
-              <div className="r3-meta-value">{item.reporter_name || '—'}</div>
+              <div className="r3-meta-label">{item.role_on_item === 'Contributor' ? 'Assigned To' : 'Assigner'}</div>
+              <div className="r3-meta-value">{item.role_on_item === 'Contributor' ? (item.assignee_name || '—') : (item.reporter_name || '—')}</div>
             </div>
             <div className="r3-meta-cell">
               <div className="r3-meta-label">Assigned</div>

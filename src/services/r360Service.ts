@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { R360_STATUS_MAP, R360_STATUS_DEFAULT } from '@/constants/r360';
+import { isContributorRole } from '@/constants/r360RoleClassification';
 import type { R360WorkItem } from '@/types/r360';
 
 function mapStatus(jiraStatus: string) {
@@ -45,14 +46,12 @@ export const r360Service = {
   },
 
   async getMemberOverview(resourceId: string) {
-    // Use vw_wh_resource_360 to get aggregated stats
     const { data: resource } = await (supabase as any).from('resource_inventory')
-      .select('id, rid, name, role_name, department_name, vendor_name, resource_type, profile_id')
+      .select('id, rid, name, role_name, department_name, vendor_name, resource_type, profile_id, jira_account_id')
       .eq('id', resourceId)
       .single();
     if (!resource) return null;
 
-    // Fetch avatar from profiles if profile_id exists
     let avatar_url: string | null = null;
     if (resource.profile_id) {
       const { data: profile } = await (supabase as any).from('profiles')
@@ -62,12 +61,22 @@ export const r360Service = {
       avatar_url = profile?.avatar_url ?? null;
     }
 
-    // Count work items
-    const { data: items } = await (supabase as any).from('ph_issues')
+    // Count assigned work items
+    const { data: assignedItems } = await (supabase as any).from('ph_issues')
       .select('status, jira_created_at')
       .eq('assignee_display_name', resource.name);
 
-    const all = items || [];
+    // Count contributed items for non-developer roles
+    let contributedItems: any[] = [];
+    if (isContributorRole(resource.role_name || '') && resource.jira_account_id) {
+      const { data: cItems } = await (supabase as any).from('ph_issues')
+        .select('status, jira_created_at, assignee_account_id')
+        .eq('reporter_account_id', resource.jira_account_id)
+        .neq('assignee_account_id', resource.jira_account_id);
+      contributedItems = cItems || [];
+    }
+
+    const all = [...(assignedItems || []), ...contributedItems];
     const open = all.filter((i: any) => {
       const st = mapStatus(i.status);
       return st.category !== 'done';
@@ -94,24 +103,43 @@ export const r360Service = {
 
   async getMemberWorkItems(resourceId: string, filters?: any): Promise<R360WorkItem[]> {
     const { data: resource } = await (supabase as any).from('resource_inventory')
-      .select('name')
+      .select('name, role_name, jira_account_id')
       .eq('id', resourceId)
       .single();
     if (!resource) return [];
 
-    let query = (supabase as any).from('ph_issues')
-      .select('issue_key, project_key, project_name, summary, issue_type, status, priority, assignee_display_name, reporter_display_name, parent_key, parent_summary, sprint_name, story_points, fix_versions, due_date, jira_created_at, jira_updated_at, resolution, labels')
+    const ISSUE_FIELDS = 'issue_key, project_key, project_name, summary, issue_type, status, priority, assignee_display_name, reporter_display_name, parent_key, parent_summary, sprint_name, story_points, fix_versions, due_date, jira_created_at, jira_updated_at, resolution, labels, assignee_account_id, reporter_account_id';
+
+    // Fetch assigned items
+    let assigneeQuery = (supabase as any).from('ph_issues')
+      .select(ISSUE_FIELDS)
       .eq('assignee_display_name', resource.name);
+    if (filters?.search) assigneeQuery = assigneeQuery.ilike('summary', `%${filters.search}%`);
+    if (filters?.project_keys?.length) assigneeQuery = assigneeQuery.in('project_key', filters.project_keys);
+    if (filters?.item_types?.length) assigneeQuery = assigneeQuery.in('issue_type', filters.item_types);
+    assigneeQuery = assigneeQuery.order('jira_updated_at', { ascending: false });
 
-    if (filters?.search) query = query.ilike('summary', `%${filters.search}%`);
-    if (filters?.project_keys?.length) query = query.in('project_key', filters.project_keys);
-    if (filters?.item_types?.length) query = query.in('issue_type', filters.item_types);
-    query = query.order('jira_updated_at', { ascending: false });
+    const { data: assignedData, error: assignedError } = await assigneeQuery;
+    if (assignedError) throw assignedError;
 
-    const { data, error } = await query;
-    if (error) throw error;
+    // Fetch contributor items (reported-by) for non-developer roles
+    let contributedData: any[] = [];
+    if (isContributorRole(resource.role_name || '') && resource.jira_account_id) {
+      let contribQuery = (supabase as any).from('ph_issues')
+        .select(ISSUE_FIELDS)
+        .eq('reporter_account_id', resource.jira_account_id)
+        .neq('assignee_account_id', resource.jira_account_id); // exclude items where they're also assignee
+      if (filters?.search) contribQuery = contribQuery.ilike('summary', `%${filters.search}%`);
+      if (filters?.project_keys?.length) contribQuery = contribQuery.in('project_key', filters.project_keys);
+      if (filters?.item_types?.length) contribQuery = contribQuery.in('issue_type', filters.item_types);
+      contribQuery = contribQuery.order('jira_updated_at', { ascending: false });
 
-    return (data || []).map((item: any) => {
+      const { data: cData, error: cError } = await contribQuery;
+      if (cError) throw cError;
+      contributedData = cData || [];
+    }
+
+    const mapItem = (item: any, roleOnItem: 'Assignee' | 'Contributor'): R360WorkItem => {
       const st = mapStatus(item.status);
       const age = computeAge(item.jira_created_at);
       const gd = groupDate(item.jira_updated_at || item.jira_created_at);
@@ -148,10 +176,20 @@ export const r360Service = {
         updated_at: item.jira_updated_at || item.jira_created_at,
         resolved_at: item.resolution ? item.jira_updated_at : null,
         labels: item.labels || [],
+        role_on_item: roleOnItem,
         ...age,
         ...gd,
       } as R360WorkItem;
-    }).filter((item: R360WorkItem) => {
+    };
+
+    const assignedItems = (assignedData || []).map((item: any) => mapItem(item, 'Assignee'));
+    const contributedItems = contributedData.map((item: any) => mapItem(item, 'Contributor'));
+
+    // Deduplicate by issue_key (assigned takes priority)
+    const seen = new Set(assignedItems.map((i: R360WorkItem) => i.item_key));
+    const uniqueContributed = contributedItems.filter((i: R360WorkItem) => !seen.has(i.item_key));
+
+    return [...assignedItems, ...uniqueContributed].filter((item: R360WorkItem) => {
       if (filters?.pending_only && item.status_category === 'done') return false;
       if (filters?.status_categories?.length) return filters.status_categories.includes(item.status_category);
       return true;
