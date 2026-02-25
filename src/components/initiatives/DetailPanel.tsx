@@ -665,7 +665,7 @@ function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
                 initiative_key: initiative.initiative_key,
                 title: initiative.title,
                 description: initiative.description || null,
-                status: initiative.status || 'new_demand',
+                status: 'new_demand',
                 assignee_id: initiative.assignee_id || null,
                 department_id: initiative.department_id || null,
                 business_owner_id: initiative.business_owner_id || null,
