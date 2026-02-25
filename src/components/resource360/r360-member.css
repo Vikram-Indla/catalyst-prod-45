@@ -1,0 +1,577 @@
+/* ═══════════════════════════════════════════════════════════
+   RESOURCE 360° MEMBER DETAIL — RING-FENCED CSS
+   Scoped under #r360-root to prevent Catalyst V11 bleed.
+   ═══════════════════════════════════════════════════════════ */
+
+#r360-root {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  background: #F8FAFC !important;
+  min-height: 100vh !important;
+}
+
+/* ─── PROFILE HEADER ─── */
+#r360-root .r3-profile-card {
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 12px !important;
+  padding: 20px 24px !important;
+}
+
+#r360-root .r3-avatar {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  border: 2px solid #E2E8F0 !important;
+}
+
+#r360-root .r3-avatar-fallback {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #2563EB, #1D4ED8) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #FFFFFF !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+}
+
+#r360-root .r3-name {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #020617 !important;
+  margin: 0 !important;
+  line-height: 1.3 !important;
+}
+
+#r360-root .r3-role {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #334155 !important;
+  margin: 0 !important;
+}
+
+/* KPI cards */
+#r360-root .r3-kpi-card {
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
+  border: 1px solid #E2E8F0 !important;
+  min-width: 100px !important;
+}
+#r360-root .r3-kpi-card.warn {
+  border-color: #F59E0B !important;
+  background: #FFFBEB !important;
+}
+#r360-root .r3-kpi-card.neutral {
+  border-color: #E2E8F0 !important;
+  background: #F8FAFC !important;
+}
+#r360-root .r3-kpi-value {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: #020617 !important;
+  font-variant-numeric: tabular-nums !important;
+  line-height: 1.2 !important;
+}
+#r360-root .r3-kpi-label {
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  color: #64748B !important;
+  letter-spacing: 0.04em !important;
+}
+
+/* Tabs */
+#r360-root .r3-tab {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  padding: 6px 14px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  border: none !important;
+  background: transparent !important;
+  color: #64748B !important;
+  transition: all 0.15s ease !important;
+}
+#r360-root .r3-tab:hover {
+  background: #F1F5F9 !important;
+  color: #334155 !important;
+}
+#r360-root .r3-tab.active {
+  background: #EFF6FF !important;
+  color: #2563EB !important;
+  font-weight: 600 !important;
+}
+
+/* Intelligence button */
+#r360-root .r3-btn-intel {
+  background: #2563EB !important;
+  color: #FFFFFF !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  padding: 6px 14px !important;
+  border-radius: 6px !important;
+  border: none !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transition: background 0.15s !important;
+}
+#r360-root .r3-btn-intel:hover {
+  background: #1D4ED8 !important;
+}
+
+/* Quarter outline button */
+#r360-root .r3-btn-outline {
+  background: #FFFFFF !important;
+  color: #334155 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  padding: 6px 14px !important;
+  border-radius: 6px !important;
+  border: 1px solid #E2E8F0 !important;
+  cursor: pointer !important;
+  transition: all 0.15s !important;
+}
+#r360-root .r3-btn-outline:hover {
+  background: #F8FAFC !important;
+  border-color: #CBD5E1 !important;
+}
+
+/* ─── WEEK NAV ─── */
+#r360-root .r3-week-nav {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 10px 20px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 10px !important;
+}
+
+#r360-root .r3-week-arrow {
+  width: 28px !important;
+  height: 28px !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 6px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #FFFFFF !important;
+  cursor: pointer !important;
+  color: #334155 !important;
+  transition: all 0.15s !important;
+}
+#r360-root .r3-week-arrow:hover {
+  background: #F1F5F9 !important;
+  border-color: #CBD5E1 !important;
+}
+
+#r360-root .r3-filter-pill {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  padding: 4px 12px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  border: 1px solid #E2E8F0 !important;
+  background: #FFFFFF !important;
+  color: #64748B !important;
+  transition: all 0.15s !important;
+}
+#r360-root .r3-filter-pill.active {
+  background: #2563EB !important;
+  color: #FFFFFF !important;
+  border-color: #2563EB !important;
+}
+
+/* ─── STATUS PILL (CG-05 desaturated) ─── */
+#r360-root .r3-status-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 3px 10px !important;
+  border-radius: 6px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+}
+#r360-root .r3-status-dot {
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  flex-shrink: 0 !important;
+}
+
+/* ─── CHRONOLOGY ─── */
+#r360-root .r3-timeline-line {
+  position: absolute !important;
+  left: 15px !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 2px !important;
+  background: #E2E8F0 !important;
+}
+
+#r360-root .r3-date-dot {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  border: 2px solid #94A3B8 !important;
+  background: #FFFFFF !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+#r360-root .r3-date-dot.today {
+  background: #2563EB !important;
+  border-color: #2563EB !important;
+}
+#r360-root .r3-date-dot.yesterday {
+  background: #334155 !important;
+  border-color: #334155 !important;
+}
+
+#r360-root .r3-chrono-card {
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 8px !important;
+  padding: 10px 14px !important;
+  cursor: pointer !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: box-shadow 0.15s, transform 0.1s !important;
+}
+#r360-root .r3-chrono-card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+  transform: translateX(2px) !important;
+}
+
+/* 3px left accent bar */
+#r360-root .r3-accent-bar {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 3px !important;
+  border-radius: 3px 0 0 3px !important;
+}
+
+/* Item key mono */
+#r360-root .r3-item-key {
+  font-family: 'JetBrains Mono', 'SF Mono', monospace !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  color: #2563EB !important;
+}
+
+/* Project tag */
+#r360-root .r3-project-tag {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  padding: 1px 6px !important;
+  border-radius: 4px !important;
+  color: #FFFFFF !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* ─── RING VIEW ─── */
+#r360-root .r3-ring-canvas {
+  position: relative !important;
+  min-height: 640px !important;
+  background: radial-gradient(circle at 50% 50%, #FFFFFF, #F1F5F9) !important;
+  border-radius: 12px !important;
+  border: 1px solid #E2E8F0 !important;
+  overflow: hidden !important;
+}
+
+#r360-root .r3-ring-center {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  text-align: center !important;
+  z-index: 10 !important;
+}
+
+#r360-root .r3-ring-avatar {
+  width: 96px !important;
+  height: 96px !important;
+  border-radius: 50% !important;
+  border: 3px solid #2563EB !important;
+  box-shadow: 0 0 0 6px rgba(37,99,235,0.15) !important;
+  object-fit: cover !important;
+}
+#r360-root .r3-ring-avatar-fb {
+  width: 96px !important;
+  height: 96px !important;
+  border-radius: 50% !important;
+  border: 3px solid #2563EB !important;
+  box-shadow: 0 0 0 6px rgba(37,99,235,0.15) !important;
+  background: linear-gradient(135deg, #2563EB, #1D4ED8) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #FFFFFF !important;
+  font-family: 'Sora', sans-serif !important;
+  font-size: 24px !important;
+  font-weight: 800 !important;
+}
+
+#r360-root .r3-ring-card {
+  position: absolute !important;
+  width: 195px !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 8px !important;
+  padding: 10px 12px !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
+  overflow: hidden !important;
+  transition: box-shadow 0.15s !important;
+  z-index: 5 !important;
+}
+#r360-root .r3-ring-card:hover {
+  box-shadow: 0 6px 24px rgba(0,0,0,0.12) !important;
+}
+
+#r360-root .r3-spoke-label {
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  background: #F8FAFC !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 10px !important;
+  padding: 2px 8px !important;
+  color: #334155 !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  white-space: nowrap !important;
+  z-index: 6 !important;
+}
+
+/* ─── BOARD VIEW ─── */
+#r360-root .r3-board-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr !important;
+  gap: 16px !important;
+}
+
+#r360-root .r3-board-col-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding-bottom: 10px !important;
+  margin-bottom: 12px !important;
+}
+#r360-root .r3-board-col-dot {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+}
+#r360-root .r3-board-col-title {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  color: #334155 !important;
+}
+#r360-root .r3-board-col-count {
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #FFFFFF !important;
+}
+
+#r360-root .r3-board-card {
+  background: #FFFFFF !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
+  margin-bottom: 8px !important;
+  cursor: pointer !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: box-shadow 0.15s !important;
+}
+#r360-root .r3-board-card:hover {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+}
+
+/* ─── DETAIL PANEL ─── */
+#r360-root .r3-panel-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(15,23,42,0.15) !important;
+  z-index: 50 !important;
+}
+#r360-root .r3-detail-panel {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 460px !important;
+  background: #FAFBFC !important;
+  z-index: 51 !important;
+  overflow-y: auto !important;
+  box-shadow: -4px 0 24px rgba(0,0,0,0.1) !important;
+}
+
+#r360-root .r3-panel-header {
+  padding: 16px 20px !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+  background: #FFFFFF !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+}
+
+#r360-root .r3-meta-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+#r360-root .r3-meta-cell {
+  padding: 10px 14px !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+  border-right: 1px solid #E2E8F0 !important;
+}
+#r360-root .r3-meta-cell:nth-child(even) {
+  border-right: none !important;
+}
+#r360-root .r3-meta-cell:nth-last-child(-n+2) {
+  border-bottom: none !important;
+}
+#r360-root .r3-meta-cell-label {
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  color: #94A3B8 !important;
+  letter-spacing: 0.04em !important;
+  margin-bottom: 4px !important;
+}
+#r360-root .r3-meta-cell-value {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #020617 !important;
+}
+
+/* Hierarchy */
+#r360-root .r3-hierarchy-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 12px !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 8px !important;
+  background: #FFFFFF !important;
+  font-size: 12px !important;
+}
+#r360-root .r3-hierarchy-item.current {
+  border-color: #2563EB !important;
+  background: #EFF6FF !important;
+}
+
+/* Siblings */
+#r360-root .r3-sibling-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 6px 10px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  font-size: 12px !important;
+  transition: background 0.1s !important;
+}
+#r360-root .r3-sibling-row:hover {
+  background: #F1F5F9 !important;
+}
+#r360-root .r3-sibling-row.current {
+  background: #EFF6FF !important;
+  border: 1px solid #BFDBFE !important;
+}
+
+/* ─── COMPLETED BADGE (Ring) ─── */
+#r360-root .r3-completed-badge {
+  position: absolute !important;
+  right: 24px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 6px !important;
+  z-index: 8 !important;
+}
+#r360-root .r3-completed-circle {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 50% !important;
+  background: #16A34A !important;
+  color: #FFFFFF !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+}
+#r360-root .r3-completed-text {
+  writing-mode: vertical-rl !important;
+  text-orientation: mixed !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  color: #16A34A !important;
+}
+
+/* ─── MINI STATUS BAR ─── */
+#r360-root .r3-mini-bar {
+  display: flex !important;
+  height: 4px !important;
+  border-radius: 2px !important;
+  overflow: hidden !important;
+  background: #F1F5F9 !important;
+}
+
+/* Title clamp */
+#r360-root .r3-title-clamp {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+/* Age badge */
+#r360-root .r3-age-badge {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  padding: 1px 6px !important;
+  border-radius: 4px !important;
+  background: #F8FAFC !important;
+}
+
+/* Days Sitting progress bar */
+#r360-root .r3-days-bar {
+  height: 4px !important;
+  border-radius: 2px !important;
+  margin-top: 6px !important;
+}
+
+/* Parent ref */
+#r360-root .r3-parent-ref {
+  font-size: 11px !important;
+  color: #64748B !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  margin-top: 4px !important;
+}
