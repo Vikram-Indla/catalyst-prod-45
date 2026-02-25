@@ -11,7 +11,9 @@ import { RoadmapKPIStrip } from './RoadmapKPIStrip';
 import { RoadmapToolbar } from './RoadmapToolbar';
 import { RoadmapFilters } from './RoadmapFilters';
 import { RoadmapTimeline } from './RoadmapTimeline';
-import { RoadmapDetailPanel } from './RoadmapDetailPanel';
+import { InitiativeDetailPanel } from '@/components/producthub/timeline/InitiativeDetailPanel';
+import type { TimelineInitiative } from '@/types/producthub/initiative';
+
 import { AddInitiativeModal } from './AddInitiativeModal';
 
 import { useRoadmapData } from './hooks/useRoadmapData';
@@ -43,6 +45,58 @@ export function ProductRoadmapPage() {
   const [timelineEnd, setTimelineEnd] = useState(() => new Date(2026, 11, 31));
 
   const selectedItem = useMemo(() => filtered.find(i => i.id === selectedId) || null, [filtered, selectedId]);
+
+  // Convert RoadmapInitiative → TimelineInitiative for the backlog detail panel
+  const selectedAsTimeline = useMemo((): TimelineInitiative | null => {
+    if (!selectedItem) return null;
+    const statusReverseMap: Record<string, TimelineInitiative['status']> = {
+      Active: 'under_implementation',
+      Planned: 'new',
+      Completed: 'done',
+      Cancelled: 'cancelled',
+    };
+    return {
+      id: selectedItem.rawDbId,
+      initiative_key: selectedItem.initiativeKey,
+      title: selectedItem.titleEn || selectedItem.title,
+      description: null,
+      status: statusReverseMap[selectedItem.status] || 'new',
+      assignee_id: selectedItem.rawAssigneeId,
+      assignee_name: selectedItem.ownerName === 'Unassigned' ? null : selectedItem.ownerName,
+      business_owner_id: selectedItem.rawBusinessOwnerId,
+      reporter_id: null,
+      reporter_name: null,
+      department_id: null,
+      department_name: null,
+      department_code: null,
+      target_quarter: null,
+      business_ask_date: null,
+      kickoff_date: selectedItem.startDate,
+      target_complete: selectedItem.endDate,
+      progress: selectedItem.progress,
+      sort_order: 0,
+      risk_count: 0,
+      is_archived: false,
+      score_strategic_alignment: null,
+      score_business_impact: null,
+      score_time_urgency: null,
+      score_resource_feasibility: null,
+      computed_score: null,
+      created_at: '',
+      updated_at: '',
+      initiative_type_key: selectedItem.rawTypeKey || null,
+      initiative_type_label: null,
+      initiative_type_color_hex: null,
+      health_status: null,
+      business_value: null,
+      on_roadmap: true,
+    };
+  }, [selectedItem]);
+
+  const allAsTimeline = useMemo((): TimelineInitiative[] => {
+    if (!selectedAsTimeline) return [];
+    return [selectedAsTimeline];
+  }, [selectedAsTimeline]);
 
   const handleSelect = useCallback((id: string) => {
     setSelectedId(id);
@@ -243,7 +297,13 @@ export function ProductRoadmapPage() {
         </>
       )}
 
-      <RoadmapDetailPanel item={selectedItem} isOpen={isDetailOpen} onClose={() => setIsDetailOpen(false)} />
+      {isDetailOpen && selectedAsTimeline && (
+        <InitiativeDetailPanel
+          initiative={selectedAsTimeline}
+          initiatives={allAsTimeline}
+          onClose={() => setIsDetailOpen(false)}
+        />
+      )}
       <AddInitiativeModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
     </div>
   );
