@@ -98,9 +98,9 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
         />
         <NavItem
           icon={Users}
-          label="Team Members"
-          isActive={location.pathname.startsWith('/project-hub/resources-v2')}
-          onClick={() => navigate('/project-hub/resources-v2')}
+          label="Resource 360™"
+          isActive={location.pathname.startsWith('/project-hub/resources')}
+          onClick={() => navigate('/project-hub/resources')}
           collapsed={collapsed}
         />
         <NavItem

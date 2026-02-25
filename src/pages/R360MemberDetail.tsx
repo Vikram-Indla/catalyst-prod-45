@@ -1,6 +1,6 @@
 /**
  * R360 Member Detail Page
- * Route: /project-hub/resources-v2/:resourceId
+ * Route: /project-hub/resources/:resourceId
  * Contains: Profile Header, Week Nav, Ring/Chronology/Board views, Detail Panel
  */
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
@@ -166,7 +166,7 @@ export default function R360MemberDetail() {
               </button>
             ))}
             <div className="r3-tab-spacer" />
-            <button className="r3-btn" onClick={() => navigate('/project-hub/resources-v2')}>
+            <button className="r3-btn" onClick={() => navigate('/project-hub/resources')}>
               <ChevronLeft size={14} /> Back
             </button>
             <button className="r3-btn">
