@@ -1,6 +1,6 @@
 /**
  * Product Roadmap — Individual initiative timeline bar
- * Fixes: fallback bars with light fill, type-colored progress pills, proper text colors
+ * ALL bars are SOLID — no dashed/transparent/fallback styling
  */
 import React, { useState, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
@@ -23,14 +23,10 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const tooltipTimer = useRef<ReturnType<typeof setTimeout>>();
 
-  const barColor = TYPE_COLORS[item.type]?.solid || '#94A3B8';
+  const barColor = TYPE_COLORS[item.type]?.solid || '#2563EB';
   const isOverdue = item.status !== 'Completed' && item.progress < 100 && item.hasRealEndDate && new Date(item.endDate) < new Date();
   const finalColor = isOverdue ? '#EF4444' : barColor;
   const isFallbackEnd = !item.hasRealEndDate;
-  const isPlanned = item.status === 'Planned' && !isFallbackEnd;
-
-  // Determine bar visual mode
-  const isSolid = !isFallbackEnd && !isPlanned;
 
   const hoverGradient = item.type === 'project'
     ? 'linear-gradient(135deg, #2563EB, #3B82F6)'
@@ -59,40 +55,6 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
     if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
   }, []);
 
-  // Bar styles based on mode
-  let barBackground: string;
-  let barBorder: string;
-  let barOpacity = 1;
-  let textColor: string;
-  let pillBg: string;
-  let pillColor = '#FFFFFF';
-
-  if (isFallbackEnd) {
-    // Fallback: light fill + dashed border
-    barBackground = `${finalColor}20`; // ~12% opacity fill
-    barBorder = `2px dashed ${finalColor}99`; // 60% opacity dashed
-    textColor = finalColor;
-    pillBg = finalColor;
-    pillColor = '#FFFFFF';
-  } else if (isPlanned) {
-    // Planned: semi-transparent solid
-    barBackground = `${finalColor}30`;
-    barBorder = `2px dashed ${finalColor}`;
-    barOpacity = 0.7;
-    textColor = finalColor;
-    pillBg = finalColor;
-    pillColor = '#FFFFFF';
-  } else {
-    // Normal: solid bar
-    barBackground = isHovered ? hoverGradient : finalColor;
-    barBorder = 'none';
-    textColor = '#FFFFFF';
-    pillBg = 'rgba(255,255,255,0.2)';
-    pillColor = '#FFFFFF';
-  }
-
-  const hoverShadow = `0 4px 16px ${finalColor}40`;
-
   return (
     <>
       <div
@@ -112,59 +74,73 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           alignItems: 'center',
           overflow: 'hidden',
           borderRadius: 6,
-          background: barBackground,
-          border: barBorder,
-          opacity: barOpacity,
-          transform: isHovered ? 'translateY(calc(-50% - 2px)) scaleY(1.08)' : 'translateY(-50%)',
-          boxShadow: isHovered || isSelected ? hoverShadow : 'none',
+          // ALWAYS solid background — never transparent, never dashed
+          background: isHovered ? hoverGradient : finalColor,
+          border: 'none',
+          opacity: 1,
+          transform: isHovered ? 'translateY(calc(-50% - 2px)) scaleY(1.06)' : 'translateY(-50%)',
+          boxShadow: isHovered || isSelected
+            ? `0 4px 16px ${finalColor}40, 0 0 0 2px ${finalColor}30`
+            : `0 1px 3px ${finalColor}25`,
           zIndex: isSelected ? 10 : isHovered ? 5 : 1,
-          transition: 'transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, background 0.15s ease',
+          transition: 'transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease',
         }}
       >
-        {/* Progress fill — only for solid bars */}
-        {isSolid && item.progress > 0 && (
+        {/* Progress fill */}
+        {item.progress > 0 && (
           <div
             className="absolute left-0 top-0 bottom-0"
             style={{
               width: `${Math.min(100, item.progress)}%`,
-              background: 'rgba(255,255,255,0.2)',
-              borderRight: item.progress < 100 ? '2px solid rgba(255,255,255,0.5)' : 'none',
+              background: 'rgba(255,255,255,0.18)',
+              borderRight: item.progress < 100 ? '2px solid rgba(255,255,255,0.35)' : 'none',
               borderRadius: '6px 0 0 6px',
               zIndex: 0,
+              pointerEvents: 'none',
             }}
           />
         )}
 
-        {/* Title text */}
+        {/* Title text — ALWAYS white on solid color */}
         {width > 5 && (
           <span
             className="relative truncate"
             style={{
               zIndex: 1, fontSize: 12, fontWeight: 600,
-              color: textColor,
-              paddingLeft: 8, paddingRight: 8, lineHeight: '32px',
+              color: '#FFFFFF',
+              paddingLeft: 10, paddingRight: 10, lineHeight: '32px',
               flex: 1,
-              textShadow: isSolid ? '0 1px 2px rgba(0,0,0,0.2)' : 'none',
+              letterSpacing: '-0.01em',
+              textShadow: '0 1px 2px rgba(0,0,0,0.15)',
             }}
           >
             {width > 12 ? item.titleEn : item.initiativeKey}
           </span>
         )}
 
-        {/* Progress pill — type-colored */}
+        {/* Progress pill */}
         {item.progress > 0 && width > 12 && (
           <span
             className="absolute right-2 top-1/2 -translate-y-1/2"
             style={{
               fontSize: 10, fontWeight: 700,
-              color: pillColor,
-              background: pillBg,
+              color: '#FFFFFF',
+              background: 'rgba(255,255,255,0.2)',
               borderRadius: 3, padding: '1px 6px',
               zIndex: 2,
             }}
           >
             {item.progress}%
           </span>
+        )}
+
+        {/* Estimated end date indicator — subtle right edge stripe */}
+        {isFallbackEnd && (
+          <div style={{
+            position: 'absolute', right: 0, top: 0, bottom: 0,
+            width: 3, background: 'rgba(255,255,255,0.4)',
+            borderRadius: '0 6px 6px 0',
+          }} />
         )}
 
         {/* Milestone diamonds */}
@@ -212,7 +188,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: INK[3], marginBottom: 4 }}>
             <Calendar className="w-3 h-3" />
             {fmtDate(item.startDate)} → {fmtDate(item.endDate)}
-            {isFallbackEnd && <span style={{ fontSize: 10, color: '#D97706', fontWeight: 600 }}>(estimated)</span>}
+            {isFallbackEnd && <span style={{ fontSize: 10, color: '#94A3B8', fontStyle: 'italic' }}>(est.)</span>}
           </div>
           <div className="flex items-center gap-2">
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: finalColor }} />

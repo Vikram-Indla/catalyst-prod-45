@@ -1,15 +1,50 @@
 /**
  * Right panel — Gantt Timeline
  * Month headers, vertical gridlines, today marker, 44px rows
+ * ALL items get solid bars — no "unscheduled" state
  */
 
 import React, { useMemo } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { RoadmapTimelineHeader } from './RoadmapTimelineHeader';
-import { RoadmapTimelineBar, RoadmapUnscheduledIndicator } from './RoadmapTimelineBar';
+import { RoadmapTimelineBar } from './RoadmapTimelineBar';
 import { RoadmapTodayMarker } from './RoadmapTodayMarker';
 import { generateTimelinePeriods, calculateBarPosition } from '../utils/timeline';
 import type { RoadmapDemand, TimelineConfig, RoadmapGroup } from '../types/roadmap';
+import { addMonths } from 'date-fns';
+
+/**
+ * Resolve bar dates — every item MUST have a visible bar.
+ * If no start date → use today.
+ * If no end date → use start + 3 months.
+ * If end < start (data error) → swap them.
+ */
+function resolveBarDates(item: RoadmapDemand): { start: string; end: string; endEstimated: boolean } {
+  let startRaw = item.start_date;
+  let endRaw = item.end_date;
+  let endEstimated = false;
+
+  // No start date → default to today
+  if (!startRaw) {
+    startRaw = new Date().toISOString().split('T')[0];
+  }
+
+  // No end date → start + 3 months
+  if (!endRaw) {
+    const s = new Date(startRaw);
+    endRaw = addMonths(s, 3).toISOString().split('T')[0];
+    endEstimated = true;
+  }
+
+  // If end < start (data integrity issue), swap them
+  if (new Date(endRaw) < new Date(startRaw)) {
+    const tmp = startRaw;
+    startRaw = endRaw;
+    endRaw = tmp;
+  }
+
+  return { start: startRaw, end: endRaw, endEstimated };
+}
 
 interface RoadmapTimelinePanelProps {
   items: RoadmapDemand[];
@@ -34,15 +69,9 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
   const periodMinWidth = config.zoom === 'month' ? 120 : config.zoom === 'quarter' ? 200 : 280;
   const totalMinWidth = periods.length * periodMinWidth;
 
-  const handleSetDates = (itemId: string) => {
-    const start = new Date().toISOString().split('T')[0];
-    const end = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-    onDateChange(itemId, start, end);
-  };
-
   const renderRow = (item: RoadmapDemand) => {
-    const position = calculateBarPosition(item.start_date, item.end_date, config.startDate, config.endDate);
-    const hasValidDates = item.start_date && item.end_date;
+    const { start, end, endEstimated } = resolveBarDates(item);
+    const position = calculateBarPosition(start, end, config.startDate, config.endDate);
     const isSelected = selectedItemId === item.id;
 
     return (
@@ -58,10 +87,21 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
         onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = '#FAFBFC'; }}
         onMouseLeave={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
       >
-        {hasValidDates && position ? (
-          <RoadmapTimelineBar item={item} left={position.left} width={position.width} isSelected={isSelected} onClick={() => onItemClick(item.id)} />
+        {position ? (
+          <RoadmapTimelineBar
+            item={item}
+            left={position.left}
+            width={position.width}
+            isSelected={isSelected}
+            onClick={() => onItemClick(item.id)}
+            endDateIsEstimated={endEstimated}
+          />
         ) : (
-          <RoadmapUnscheduledIndicator item={item} onSetDates={() => handleSetDates(item.id)} />
+          // Fallback: bar is entirely outside visible timeline range — show indicator
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full" style={{ background: '#2563EB' }} />
+            <span style={{ fontSize: 12, color: '#64748B' }}>Outside timeline range</span>
+          </div>
         )}
       </div>
     );
@@ -69,8 +109,7 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
 
   const renderGridlines = () => (
     <div className="absolute inset-0 pointer-events-none flex">
-      {periods.map((period, idx) => {
-        // Stronger lines at quarter boundaries
+      {periods.map((period) => {
         const isQuarterBoundary = period.label.startsWith('Q') || (config.zoom === 'month' && [0, 3, 6, 9].includes(new Date(period.startDate).getMonth()));
         return (
           <div
@@ -100,7 +139,6 @@ export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, on
               {todayPosition !== null && config.showToday && <RoadmapTodayMarker position={todayPosition} />}
               {groups.map(group => (
                 <div key={group.key}>
-                  {/* Group header row in timeline */}
                   <div style={{ height: 36, background: '#FAFBFC', borderBottom: '1px solid #E2E8F0' }}>
                     <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', paddingLeft: 16, lineHeight: '36px' }}>
                       {group.label}

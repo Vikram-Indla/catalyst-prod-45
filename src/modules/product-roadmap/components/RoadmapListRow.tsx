@@ -1,10 +1,10 @@
 /**
  * Individual row component for the list panel
- * Spec: 44px height, 4px type color accent, monospace ID, Arabic subtitle, owner avatar
+ * Spec: 44px height, 4px type color accent, monospace ID, owner avatar from real data
  */
 
 import React from 'react';
-import { GripVertical } from 'lucide-react';
+import { GripVertical, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { RoadmapDemand } from '../types/roadmap';
 
@@ -15,30 +15,32 @@ const TYPE_COLORS: Record<string, string> = {
   improvement: '#D97706',
 };
 
-// ── Owner data (static for demo) ──
-const OWNER_MAP: Record<number, { name: string; initials: string; bg: string }> = {
-  1: { name: 'Dr. Ahmed', initials: 'AA', bg: '#2563EB' },
-  2: { name: 'Eng. Fatima', initials: 'FH', bg: '#0D9488' },
-  3: { name: 'Mr. Khalid', initials: 'KS', bg: '#D97706' },
-  4: { name: 'Ms. Nora', initials: 'NO', bg: '#7C3AED' },
-};
+// ── Avatar color — deterministic from initials ──
+const AVATAR_COLORS = [
+  '#2563EB', // blue
+  '#6366F1', // indigo
+  '#0D9488', // teal
+  '#D97706', // amber
+  '#16A34A', // green
+  '#0891B2', // cyan
+  '#DC2626', // red
+  '#334155', // slate
+];
 
-function getOwner(rank: number | null) {
-  if (!rank) return OWNER_MAP[1];
-  return OWNER_MAP[((rank - 1) % 4) + 1] || OWNER_MAP[1];
+function getColorFromName(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
-// Extract Arabic part from title "Arabic - English"
-function getArabicTitle(title: string): string | null {
-  const dashIdx = title.indexOf(' - ');
-  if (dashIdx > 0) return title.substring(0, dashIdx);
-  return null;
-}
-
-function getEnglishTitle(title: string): string {
-  const dashIdx = title.indexOf(' - ');
-  if (dashIdx > 0) return title.substring(dashIdx + 3);
-  return title;
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return name.substring(0, 2).toUpperCase();
 }
 
 interface RoadmapListRowProps {
@@ -48,15 +50,17 @@ interface RoadmapListRowProps {
   isSelected: boolean;
   onClick: () => void;
   isDragging?: boolean;
+  ownerName?: string | null;
 }
 
-export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, isDragging }: RoadmapListRowProps) {
+export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, isDragging, ownerName }: RoadmapListRowProps) {
   const typeKey = (item as any).initiative_type_key || 'project';
   const typeColor = TYPE_COLORS[typeKey] || '#94A3B8';
-  const arabicTitle = getArabicTitle(item.title);
-  const englishTitle = getEnglishTitle(item.title);
-  const owner = getOwner(item.rank);
   const isCritical = item.priority_tier === 'P0' || item.priority_tier === 'critical';
+
+  const name = ownerName || null;
+  const initials = name ? getInitials(name) : null;
+  const avatarColor = name ? getColorFromName(name) : '#CBD5E1';
 
   return (
     <div
@@ -81,7 +85,7 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
       {/* 4px accent bar */}
       <div
         className="absolute left-0 top-2 bottom-2 rounded-r"
-        style={{ width: 4, background: `linear-gradient(180deg, ${typeColor}, ${typeColor}dd)` }}
+        style={{ width: 4, background: typeColor }}
       />
 
       {/* Drag handle */}
@@ -93,34 +97,45 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
       <div className="flex-1 min-w-0 pl-1">
         <div className="flex items-center gap-1.5">
           {/* ID */}
-          <span style={{ fontFamily: 'SF Mono, monospace', fontSize: 10, fontWeight: 600, color: typeColor }} className="flex-shrink-0">
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 700, color: typeColor, letterSpacing: '0.02em' }} className="flex-shrink-0">
             {item.request_key}
           </span>
           {/* P0 badge */}
           {isCritical && (
             <span style={{ fontSize: 9, fontWeight: 700, color: '#FFFFFF', background: '#EF4444', borderRadius: 3, padding: '1px 4px' }}>P0</span>
           )}
-          {/* English title */}
-          <span className="truncate" style={{ fontSize: 12.5, fontWeight: 600, color: '#0F172A', lineHeight: 1.3 }}>
-            {englishTitle}
+          {/* Title */}
+          <span className="truncate" style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', letterSpacing: '-0.01em' }}>
+            {item.title}
           </span>
         </div>
-        {/* Arabic subtitle */}
-        {arabicTitle && (
-          <div className="truncate" dir="rtl" style={{ fontSize: 11, color: '#94A3B8', lineHeight: 1.2, marginTop: 1 }}>
-            {arabicTitle}
-          </div>
-        )}
       </div>
 
       {/* Owner avatar */}
-      <div
-        className="flex-shrink-0 flex items-center justify-center rounded-full"
-        style={{ width: 26, height: 26, background: owner.bg, color: '#FFFFFF', fontSize: 10, fontWeight: 600 }}
-        title={owner.name}
-      >
-        {owner.initials}
-      </div>
+      {initials ? (
+        <div
+          className="flex-shrink-0 flex items-center justify-center rounded-full"
+          style={{
+            width: 28, height: 28,
+            background: avatarColor,
+            color: '#FFFFFF',
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: '0.02em',
+            boxShadow: '0 0 0 2px #FFFFFF',
+          }}
+          title={name || undefined}
+        >
+          {initials}
+        </div>
+      ) : (
+        <div
+          className="flex-shrink-0 flex items-center justify-center rounded-full"
+          style={{ width: 28, height: 28, background: '#E2E8F0' }}
+        >
+          <User className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} />
+        </div>
+      )}
     </div>
   );
 }

@@ -94,6 +94,7 @@ export function RoadmapListPanel({
                         isFocused={focusedIndex === gi}
                         isSelected={selectedItemId === item.id}
                         onClick={() => onItemClick(item.id)}
+                        ownerName={(item as any).owner_name}
                       />
                     );
                   })}
@@ -119,13 +120,14 @@ export function RoadmapListPanel({
                 <Draggable key={item.id} draggableId={item.id} index={index}>
                   {(provided, snapshot) => (
                     <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                      <RoadmapListRow
+                       <RoadmapListRow
                         item={item}
                         index={index}
                         isFocused={focusedIndex === index}
                         isSelected={selectedItemId === item.id}
                         onClick={() => onItemClick(item.id)}
                         isDragging={snapshot.isDragging}
+                        ownerName={(item as any).owner_name}
                       />
                     </div>
                   )}

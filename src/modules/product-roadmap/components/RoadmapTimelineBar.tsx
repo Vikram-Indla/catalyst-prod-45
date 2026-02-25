@@ -1,7 +1,7 @@
 /**
  * Timeline bar representing an initiative
  * Color = initiative type (Project=blue, Enhancement=teal, Improvement=amber)
- * Overdue items override to red
+ * ALL bars are SOLID — no dashed/transparent styling
  */
 
 import React, { useState, useCallback, useRef } from 'react';
@@ -17,22 +17,29 @@ const TYPE_COLORS: Record<string, string> = {
   improvement: '#D97706',
 };
 
+const TYPE_HOVER_GRADIENTS: Record<string, string> = {
+  project: 'linear-gradient(135deg, #2563EB 0%, #3B82F6 100%)',
+  enhancement: 'linear-gradient(135deg, #0D9488 0%, #14B8A6 100%)',
+  improvement: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)',
+};
+
 interface RoadmapTimelineBarProps {
   item: RoadmapDemand;
   left: number;
   width: number;
   isSelected: boolean;
   onClick: () => void;
+  endDateIsEstimated?: boolean;
 }
 
-export function RoadmapTimelineBar({ item, left, width, isSelected, onClick }: RoadmapTimelineBarProps) {
+export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, endDateIsEstimated }: RoadmapTimelineBarProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const tooltipTimer = useRef<ReturnType<typeof setTimeout>>();
 
   const typeKey = (item as any).initiative_type_key || 'project';
-  const barColor = TYPE_COLORS[typeKey] || '#94A3B8';
+  const barColor = TYPE_COLORS[typeKey] || '#2563EB';
 
   // Check overdue
   const isOverdue = (() => {
@@ -43,7 +50,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick }: R
   })();
 
   const finalColor = isOverdue ? '#EF4444' : barColor;
-  const isPlanned = item.process_step === 'approved' || item.process_step === 'under_review';
+  const hoverGradient = isOverdue ? 'linear-gradient(135deg, #EF4444 0%, #F87171 100%)' : (TYPE_HOVER_GRADIENTS[typeKey] || TYPE_HOVER_GRADIENTS.project);
 
   const formatDate = (d: string | null) => {
     if (!d) return 'Not set';
@@ -79,42 +86,63 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick }: R
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         className={cn(
-          'absolute top-1/2 -translate-y-1/2 rounded cursor-pointer',
+          'absolute top-1/2 -translate-y-1/2 cursor-pointer',
           'transition-all duration-150 ease-out',
-          'hover:-translate-y-[calc(50%+2px)] hover:shadow-lg',
           'focus:outline-none focus:ring-2 focus:ring-offset-1',
           isSelected && 'ring-2 shadow-lg z-10'
         )}
         style={{
           left: `${left}%`,
           width: `${Math.max(width, 3)}%`,
-          height: 28,
+          height: 32,
           display: 'flex',
           alignItems: 'center',
           overflow: 'hidden',
-          background: finalColor,
-          opacity: isPlanned ? 0.55 : 1,
-          border: isPlanned ? `2px dashed ${finalColor}` : 'none',
+          borderRadius: 6,
+          // ALWAYS solid — never transparent, never dashed
+          background: isHovered ? hoverGradient : finalColor,
+          opacity: 1,
+          border: 'none',
           '--tw-ring-color': finalColor,
-          transform: isHovered ? 'translateY(calc(-50% - 2px)) scaleY(1.08)' : undefined,
-          boxShadow: isHovered ? `0 4px 12px ${finalColor}40` : undefined,
+          transform: isHovered ? 'translateY(calc(-50% - 2px)) scaleY(1.06)' : undefined,
+          boxShadow: isHovered
+            ? `0 4px 16px ${finalColor}40, 0 0 0 2px ${finalColor}30`
+            : `0 1px 3px ${finalColor}25`,
+          cursor: 'pointer',
         } as React.CSSProperties}
       >
         {/* Progress fill */}
         {item.progress > 0 && (
           <div
-            className="absolute left-0 top-0 bottom-0 rounded-l"
-            style={{ width: `${Math.min(100, item.progress)}%`, background: 'rgba(255,255,255,0.3)', zIndex: 0 }}
+            className="absolute left-0 top-0 bottom-0"
+            style={{
+              width: `${Math.min(100, item.progress)}%`,
+              background: 'rgba(255,255,255,0.18)',
+              borderRight: item.progress < 100 ? '2px solid rgba(255,255,255,0.35)' : 'none',
+              zIndex: 0,
+              pointerEvents: 'none',
+            }}
           />
         )}
 
-        {/* Label */}
+        {/* Label — WHITE text on solid color */}
         {width > 6 && (
           <span
             className="relative truncate"
-            style={{ zIndex: 1, fontSize: 12, fontWeight: 600, color: '#FFFFFF', paddingLeft: 8, paddingRight: 8, lineHeight: '28px' }}
+            style={{
+              zIndex: 1,
+              fontSize: 12,
+              fontWeight: 600,
+              color: '#FFFFFF',
+              paddingLeft: 10,
+              paddingRight: 10,
+              lineHeight: '32px',
+              letterSpacing: '-0.01em',
+              textShadow: '0 1px 2px rgba(0,0,0,0.15)',
+              flex: 1,
+            }}
           >
-            {width > 12 ? item.title.substring(item.title.indexOf(' - ') > 0 ? item.title.indexOf(' - ') + 3 : 0) : item.request_key}
+            {width > 12 ? item.title : item.request_key}
           </span>
         )}
 
@@ -122,10 +150,31 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick }: R
         {item.progress > 0 && width > 15 && (
           <span
             className="absolute right-2 top-1/2 -translate-y-1/2"
-            style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF', background: 'rgba(0,0,0,0.2)', borderRadius: 10, padding: '1px 6px', zIndex: 2 }}
+            style={{
+              fontSize: 10,
+              fontWeight: 700,
+              color: '#FFFFFF',
+              background: 'rgba(255,255,255,0.2)',
+              borderRadius: 3,
+              padding: '1px 6px',
+              zIndex: 2,
+            }}
           >
             {item.progress}%
           </span>
+        )}
+
+        {/* Estimated end date indicator — subtle right edge marker */}
+        {endDateIsEstimated && (
+          <div style={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: 3,
+            background: 'rgba(255,255,255,0.4)',
+            borderRadius: '0 6px 6px 0',
+          }} />
         )}
       </div>
 
@@ -138,11 +187,12 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick }: R
           maxWidth: 320, minWidth: 260, padding: 12,
         }}>
           <div style={{ fontWeight: 600, fontSize: 13, color: '#0F172A', marginBottom: 6 }}>
-            {item.request_key}: {item.title.substring(item.title.indexOf(' - ') > 0 ? item.title.indexOf(' - ') + 3 : 0)}
+            {item.request_key}: {item.title}
           </div>
           <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: '#64748B', marginBottom: 4 }}>
             <Calendar className="w-3 h-3" />
             {formatDate(item.start_date)} → {formatDate(item.end_date)}
+            {endDateIsEstimated && <span style={{ fontSize: 10, color: '#94A3B8', fontStyle: 'italic' }}>(est.)</span>}
           </div>
           <div className="flex items-center gap-2">
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: finalColor }} />
@@ -162,28 +212,5 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick }: R
         document.body
       )}
     </>
-  );
-}
-
-/**
- * Unscheduled indicator
- */
-interface RoadmapUnscheduledIndicatorProps {
-  item: RoadmapDemand;
-  onSetDates?: () => void;
-}
-
-export function RoadmapUnscheduledIndicator({ item, onSetDates }: RoadmapUnscheduledIndicatorProps) {
-  const typeKey = (item as any).initiative_type_key || 'project';
-  const color = TYPE_COLORS[typeKey] || '#94A3B8';
-
-  return (
-    <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-      <div className="w-2 h-2 rounded-full" style={{ background: color }} />
-      <span style={{ fontSize: 12, fontStyle: 'italic', color: '#94A3B8' }}>No dates set</span>
-      <button onClick={e => { e.stopPropagation(); onSetDates?.(); }} style={{ fontSize: 12, fontWeight: 500, color: '#2563EB' }} className="hover:underline">
-        + Set dates
-      </button>
-    </div>
   );
 }
