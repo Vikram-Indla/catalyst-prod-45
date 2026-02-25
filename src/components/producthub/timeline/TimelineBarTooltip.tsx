@@ -160,7 +160,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
                     fontWeight: 600,
                     color: '#ffffff',
                     flexShrink: 0,
-                    backgroundColor: hashColor(initiative.initiative_key),
+                    backgroundColor: hashColor(initiative.assignee_name || initiative.initiative_key),
                   }}
                 >
                   {getInitialsFromName(initiative.assignee_name)}
