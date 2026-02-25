@@ -154,22 +154,40 @@ export function useRoadmapInitiatives() {
         const rawEnd = row.roadmap_end_date || row.target_complete || null;
         const hasRealEndDate = !!rawEnd;
         
-        // Fallback: if no start, spread across 2026; if start but no end, add 3 months
         let startDate: string;
         let endDate: string;
         if (rawStart) {
           startDate = rawStart;
           if (rawEnd) {
             endDate = rawEnd;
+            // If end < start (data integrity issue), swap them
+            if (new Date(endDate) < new Date(startDate)) {
+              const tmp = startDate;
+              startDate = endDate;
+              endDate = tmp;
+            }
           } else {
             const fallback = new Date(rawStart);
             fallback.setMonth(fallback.getMonth() + 3);
             endDate = fallback.toISOString().slice(0, 10);
           }
         } else {
-          const defaults = getDefaultDates(index);
-          startDate = defaults.startDate;
-          endDate = rawEnd || defaults.endDate;
+          // No start date — use today and add 3 months
+          const today = new Date();
+          startDate = today.toISOString().slice(0, 10);
+          if (rawEnd) {
+            endDate = rawEnd;
+            if (new Date(endDate) < new Date(startDate)) {
+              startDate = endDate;
+              const fallback = new Date(startDate);
+              fallback.setMonth(fallback.getMonth() + 3);
+              endDate = fallback.toISOString().slice(0, 10);
+            }
+          } else {
+            const fallback = new Date(today);
+            fallback.setMonth(fallback.getMonth() + 3);
+            endDate = fallback.toISOString().slice(0, 10);
+          }
         }
 
         return {

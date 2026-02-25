@@ -31,6 +31,19 @@ export function useRoadmapDemands(filters: RoadmapFilters) {
       const { data, error } = await query;
       if (error) throw error;
 
+      // Resolve owner names from profiles
+      const assigneeIds = [...new Set((data || []).map((i: any) => i.assignee_id).filter(Boolean))] as string[];
+      let ownerMap: Record<string, string> = {};
+      if (assigneeIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', assigneeIds);
+        if (profiles) {
+          ownerMap = Object.fromEntries(profiles.map((p: any) => [p.id, p.full_name || '']));
+        }
+      }
+
       // Map to RoadmapDemand format for compatibility with existing components
       return (data || []).map((item: any) => ({
         id: item.id,
@@ -51,11 +64,12 @@ export function useRoadmapDemands(filters: RoadmapFilters) {
         created_by: null,
         created_at: item.created_at,
         updated_at: item.updated_at,
-        // Extra fields from the view
+        // Extra fields
         initiative_type_key: item.initiative_type_key || null,
         initiative_type_label: item.initiative_type_label || null,
         initiative_type_color_hex: item.initiative_type_color_hex || null,
         business_value: item.business_value || null,
+        owner_name: ownerMap[item.assignee_id] || null,
       })) as RoadmapDemand[];
     },
   });
