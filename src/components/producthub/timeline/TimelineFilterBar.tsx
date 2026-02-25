@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Search } from 'lucide-react';
+import { Search, FolderKanban, Zap, Wrench, type LucideIcon } from 'lucide-react';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
 import { FILTER_CHIPS, type FilterChip } from '@/types/producthub/initiative';
 
@@ -13,11 +13,11 @@ interface TimelineFilterBarProps {
   onTypeFilterChange?: (filter: string) => void;
 }
 
-const TYPE_FILTERS = [
+const TYPE_FILTERS: { id: string; label: string; color?: string; Icon?: LucideIcon }[] = [
   { id: 'all', label: 'All Types' },
-  { id: 'project', label: '📁 Projects', color: '#2563EB' },
-  { id: 'enhancement', label: '⚡ Enhancements', color: '#0D9488' },
-  { id: 'improvement', label: '🔧 Improvements', color: '#D97706' },
+  { id: 'project', label: 'Projects', color: '#2563EB', Icon: FolderKanban },
+  { id: 'enhancement', label: 'Enhancements', color: '#0D9488', Icon: Zap },
+  { id: 'improvement', label: 'Improvements', color: '#D97706', Icon: Wrench },
 ];
 
 export const TimelineFilterBar: React.FC<TimelineFilterBarProps> = ({ typeFilter = 'all', onTypeFilterChange }) => {
@@ -71,6 +71,7 @@ export const TimelineFilterBar: React.FC<TimelineFilterBarProps> = ({ typeFilter
                   : 'bg-transparent text-muted-foreground border-transparent hover:bg-white/60'
               )}
             >
+              {tf.Icon && <tf.Icon className="w-3 h-3 inline mr-0.5" />}
               {tf.label}
             </button>
           ))}
@@ -82,14 +83,17 @@ export const TimelineFilterBar: React.FC<TimelineFilterBarProps> = ({ typeFilter
         <div className="flex items-center gap-3 text-[10px]" style={{ color: '#94A3B8' }}>
           <span className="font-semibold uppercase tracking-wider">Legend:</span>
           <span className="flex items-center gap-1">
+            <FolderKanban className="w-3 h-3" style={{ color: '#2563EB' }} />
             <span className="w-4 h-2.5 rounded-sm" style={{ background: 'linear-gradient(90deg, #2563EB, #3B82F6)' }} />
             Project
           </span>
           <span className="flex items-center gap-1">
+            <Zap className="w-3 h-3" style={{ color: '#0D9488' }} />
             <span className="w-4 h-2.5 rounded-sm" style={{ background: 'linear-gradient(90deg, #0D9488, #14B8A6)' }} />
             Enhancement
           </span>
           <span className="flex items-center gap-1">
+            <Wrench className="w-3 h-3" style={{ color: '#D97706' }} />
             <span className="w-4 h-2.5 rounded-sm" style={{ background: 'linear-gradient(90deg, #D97706, #F59E0B)' }} />
             Improvement
           </span>

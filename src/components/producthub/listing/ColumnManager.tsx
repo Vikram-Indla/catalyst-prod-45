@@ -23,7 +23,7 @@ interface ColumnManagerProps {
 }
 
 export const DEFAULT_COLUMNS: ColumnConfig[] = [
-  { id: 'roadmap', label: '🗺️', visible: true },
+  { id: 'roadmap', label: 'Roadmap', visible: true },
   { id: 'initiative_key', label: 'ID', visible: true, locked: true },
   { id: 'title', label: 'Title', visible: true, locked: true },
   { id: 'status', label: 'Status', visible: true },

@@ -36,7 +36,7 @@ function loadColumns(): ColumnConfig[] {
       const parsed = JSON.parse(raw) as ColumnConfig[];
       // Ensure new columns exist
       const ids = parsed.map(c => c.id);
-      if (!ids.includes('roadmap')) parsed.splice(0, 0, { id: 'roadmap', label: '🗺️', visible: true });
+      if (!ids.includes('roadmap')) parsed.splice(0, 0, { id: 'roadmap', label: 'Roadmap', visible: true });
       if (!ids.includes('type')) {
         const statusIdx = parsed.findIndex(c => c.id === 'status');
         parsed.splice(statusIdx >= 0 ? statusIdx + 1 : 3, 0, { id: 'type', label: 'Type', visible: true });

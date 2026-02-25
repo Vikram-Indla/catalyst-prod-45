@@ -1,7 +1,14 @@
 /**
- * InitiativeTypeBadge — Colored badge showing initiative type
+ * InitiativeTypeBadge — Colored badge showing initiative type with Lucide icons
  */
-import { getTypeColor, getTypeIcon, getTypeLabel } from '@/utils/initiative-type-utils';
+import { FolderKanban, Zap, Wrench, CircleDashed, type LucideIcon } from 'lucide-react';
+import { getTypeColor, getTypeLabel } from '@/utils/initiative-type-utils';
+
+const TYPE_ICONS: Record<string, LucideIcon> = {
+  project: FolderKanban,
+  enhancement: Zap,
+  improvement: Wrench,
+};
 
 interface Props {
   typeKey: string | null | undefined;
@@ -15,18 +22,22 @@ export function InitiativeTypeBadge({ typeKey, className = '' }: Props) {
         className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10.5px] font-semibold whitespace-nowrap ${className}`}
         style={{ background: '#F1F5F9', color: '#64748B' }}
       >
-        — Untyped
+        <CircleDashed className="w-3 h-3" />
+        Untyped
       </span>
     );
   }
 
   const colors = getTypeColor(typeKey);
+  const Icon = TYPE_ICONS[typeKey] || CircleDashed;
+
   return (
     <span
       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10.5px] font-semibold whitespace-nowrap ${className}`}
       style={{ background: colors.bg, color: colors.text }}
     >
-      {getTypeIcon(typeKey)} {getTypeLabel(typeKey)}
+      <Icon className="w-3 h-3" />
+      {getTypeLabel(typeKey)}
     </span>
   );
 }

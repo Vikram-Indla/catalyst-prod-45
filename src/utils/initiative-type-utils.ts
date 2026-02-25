@@ -5,12 +5,12 @@ export function getTypeColor(key: InitiativeTypeKey | string | null | undefined)
   return INITIATIVE_TYPE_COLORS[key as InitiativeTypeKey] || INITIATIVE_TYPE_COLORS.project;
 }
 
-export function getTypeIcon(key: string | null | undefined): string {
-  switch (key) {
-    case 'project': return '📁';
-    case 'enhancement': return '⚡';
-    case 'improvement': return '🔧';
-    default: return '📁';
+export function getTypeIconName(typeKey: string | null | undefined): string {
+  switch (typeKey) {
+    case 'project': return 'folder-kanban';
+    case 'enhancement': return 'zap';
+    case 'improvement': return 'wrench';
+    default: return 'circle-dashed';
   }
 }
 

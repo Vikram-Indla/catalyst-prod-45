@@ -3,23 +3,22 @@
  */
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Map, FolderKanban, Zap, Wrench, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePromoteToRoadmap } from '@/hooks/useRoadmapPromotion';
-import { getTypeIcon } from '@/utils/initiative-type-utils';
 import { INITIATIVE_TYPE_COLORS, type InitiativeTypeKey } from '@/types/initiative-enhancements';
+
+const TYPE_OPTIONS: { key: InitiativeTypeKey; label: string; Icon: LucideIcon }[] = [
+  { key: 'project', label: 'Project', Icon: FolderKanban },
+  { key: 'enhancement', label: 'Enhancement', Icon: Zap },
+  { key: 'improvement', label: 'Improvement', Icon: Wrench },
+];
 
 interface Props {
   open: boolean;
   onClose: () => void;
   initiative: { id: string; title: string; initiative_type_key?: string | null } | null;
 }
-
-const TYPE_OPTIONS: { key: InitiativeTypeKey; label: string }[] = [
-  { key: 'project', label: 'Project' },
-  { key: 'enhancement', label: 'Enhancement' },
-  { key: 'improvement', label: 'Improvement' },
-];
 
 const PRIORITY_OPTIONS = [
   { value: '', label: 'Auto (by score)' },
@@ -78,7 +77,7 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
             {/* Header */}
             <div className="p-4 px-5" style={{ background: '#0D9488' }}>
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-[20px]">🗺️</span>
+                <Map className="w-5 h-5 text-white" />
                 <span className="text-[15px] font-bold text-white">Add to Roadmap</span>
               </div>
               <p className="text-[11.5px] text-white/85 truncate">{initiative.title}</p>
@@ -100,13 +99,13 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
                       type="button"
                       onClick={() => setSelectedType(opt.key)}
                       className={cn(
-                        'text-center p-2 rounded-md cursor-pointer transition-all border-2',
+                        'flex flex-col items-center p-2 rounded-md cursor-pointer transition-all border-2',
                         isActive ? 'bg-white shadow-sm' : 'border-transparent hover:bg-white/60'
                       )}
                       style={{ borderColor: isActive ? colors.border : 'transparent' }}
                     >
-                      <span className="text-[18px] block">{getTypeIcon(opt.key)}</span>
-                      <span className="text-[11px] font-semibold block" style={{ color: isActive ? colors.text : '#64748B' }}>
+                      <opt.Icon className="w-[18px] h-[18px]" style={{ color: isActive ? colors.text : '#64748B' }} />
+                      <span className="text-[11px] font-semibold block mt-0.5" style={{ color: isActive ? colors.text : '#64748B' }}>
                         {opt.label}
                       </span>
                     </button>
