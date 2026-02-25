@@ -48,6 +48,7 @@ export interface TimelineInitiative {
   initiative_type_label?: string | null;
   initiative_type_color_hex?: string | null;
   health_status?: string | null;
+  business_value?: string | null;
   on_roadmap?: boolean;
 }
 
