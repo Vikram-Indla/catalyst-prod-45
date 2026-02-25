@@ -166,62 +166,104 @@ export function useRoadmapStats() {
 }
 
 // ══════════════════════════════════════════
-// useBacklogItemsNotOnRoadmap — for AddInitiativeModal
+// useBacklogItemsNotOnRoadmap — queries ph_issues (Jira backlog)
+// excludes items already promoted to ph_initiatives with on_roadmap=true
 // ══════════════════════════════════════════
 export function useBacklogItemsNotOnRoadmap() {
   return useQuery({
     queryKey: ['backlog-not-on-roadmap'],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      // 1. Get all Business Request items from ph_issues
+      const { data: issues, error: issuesErr } = await (supabase as any)
+        .from('ph_issues')
+        .select('issue_key, summary, status, priority, assignee_display_name')
+        .eq('issue_type', 'Business Request')
+        .order('issue_key', { ascending: true });
+
+      if (issuesErr) throw issuesErr;
+
+      // 2. Get initiative_keys already on the roadmap
+      const { data: onRoadmap, error: rmErr } = await (supabase as any)
         .from('ph_initiatives')
-        .select('id, initiative_key, title, initiative_type_id')
-        .eq('on_roadmap', false)
-        .eq('is_deleted', false)
-        .eq('is_archived', false)
-        .order('created_at', { ascending: false });
+        .select('initiative_key')
+        .eq('on_roadmap', true)
+        .eq('is_deleted', false);
 
-      if (error) throw error;
+      if (rmErr) throw rmErr;
 
-      const { data: types } = await (supabase as any)
-        .from('initiative_types')
-        .select('id, key');
+      const onRoadmapKeys = new Set((onRoadmap || []).map((r: any) => r.initiative_key));
 
-      const typeMap = new Map<string, string>();
-      if (types) {
-        for (const t of types) typeMap.set(t.id, t.key);
-      }
-
-      return (data || []).map((row: any) => {
-        const { titleAr, titleEn } = splitTitle(row.title || '');
-        return {
-          id: row.id,
-          key: row.initiative_key || '',
-          title: titleEn,
-          titleAr,
-          type: (typeMap.get(row.initiative_type_id) || 'project') as RoadmapInitiative['type'],
-        };
-      });
+      // 3. Filter out items already on roadmap
+      return (issues || [])
+        .filter((row: any) => !onRoadmapKeys.has(row.issue_key))
+        .map((row: any) => {
+          const { titleAr, titleEn } = splitTitle(row.summary || '');
+          return {
+            id: row.issue_key,
+            key: row.issue_key,
+            title: titleEn || row.summary,
+            titleAr,
+            status: row.status || '',
+            owner: row.assignee_display_name || '',
+            type: 'project' as RoadmapInitiative['type'],
+          };
+        });
     },
   });
 }
 
 // ══════════════════════════════════════════
-// useAddToRoadmap — flags existing item
+// useAddToRoadmap — creates/flags ph_initiatives record from Jira item
 // ══════════════════════════════════════════
 export function useAddToRoadmap() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (initiativeId: string) => {
-      const { error } = await (supabase as any)
+    mutationFn: async (issueKey: string) => {
+      // Check if a ph_initiatives record already exists for this key
+      const { data: existing } = await (supabase as any)
         .from('ph_initiatives')
-        .update({ on_roadmap: true, roadmap_added_at: new Date().toISOString() })
-        .eq('id', initiativeId);
-      if (error) throw error;
+        .select('id')
+        .eq('initiative_key', issueKey)
+        .eq('is_deleted', false)
+        .maybeSingle();
+
+      if (existing) {
+        const { error } = await (supabase as any)
+          .from('ph_initiatives')
+          .update({ on_roadmap: true, roadmap_added_at: new Date().toISOString() })
+          .eq('id', existing.id);
+        if (error) throw error;
+      } else {
+        // Fetch the Jira item details
+        const { data: issue, error: fetchErr } = await (supabase as any)
+          .from('ph_issues')
+          .select('issue_key, summary, status, assignee_display_name')
+          .eq('issue_key', issueKey)
+          .maybeSingle();
+
+        if (fetchErr) throw fetchErr;
+        if (!issue) throw new Error('Issue not found');
+
+        // Create a new ph_initiatives record
+        const { error: insertErr } = await (supabase as any)
+          .from('ph_initiatives')
+          .insert({
+            initiative_key: issue.issue_key,
+            title: issue.summary,
+            status: 'new_demand',
+            on_roadmap: true,
+            roadmap_added_at: new Date().toISOString(),
+            progress: 0,
+          });
+
+        if (insertErr) throw insertErr;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
       queryClient.invalidateQueries({ queryKey: ['roadmap-stats'] });
       queryClient.invalidateQueries({ queryKey: ['backlog-not-on-roadmap'] });
+      queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
     },
   });
 }
