@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Pencil, Copy, Target, Trash2, Save, Loader2, ChevronLeft, AlertTriangle, Plus, Activity, ArrowRight, TrendingUp, FolderKanban, Zap, Wrench, Map } from 'lucide-react';
+import { X, Pencil, Paperclip, Copy, Link2, Star, Target, Trash2, Save, Loader2, ChevronLeft, AlertTriangle, Plus, Activity, ArrowRight, TrendingUp, FolderKanban, Zap, Wrench, Map, Network, DollarSign, Flag, Link as LinkIcon, ClipboardList } from 'lucide-react';
 import { InitiativeRisksTab } from './tabs/InitiativeRisksTab';
 import { InitiativeBudgetTab } from './tabs/InitiativeBudgetTab';
 import { InitiativeAuditTab } from './tabs/InitiativeAuditTab';
@@ -40,7 +40,7 @@ interface DetailPanelProps {
   onScoreSave: (id: string, scores: { strategic_alignment: number; business_impact: number; time_urgency: number; resource_feasibility: number }) => void;
 }
 
-const TABS = ['Details', 'Score', 'Budget', 'Risks', 'Audit'] as const;
+const TABS = ['Details', 'Score', 'Budget', 'Risks', 'Milestones', 'Links', 'Audit'] as const;
 type Tab = typeof TABS[number];
 
 /** Catalyst V11 approved avatar colors — no purple/magenta/pink */
@@ -396,8 +396,10 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 
   const ACTION_BUTTONS = [
     { label: 'Edit', icon: Pencil },
+    { label: 'Attach', icon: Paperclip },
     { label: 'Clone', icon: Copy },
-    { label: 'Score', icon: Target },
+    { label: 'Link', icon: Link2 },
+    { label: 'Score', icon: Star },
   ];
 
   const handleUpdateBudgetAllocated = async (value: string) => {
@@ -549,6 +551,20 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                   />
                 )}
                 {activeTab === 'Risks' && <InitiativeRisksTab initiativeId={initiative.id} />}
+                {activeTab === 'Milestones' && (
+                  <div className="flex flex-col items-center justify-center py-16 text-zinc-400">
+                    <Flag className="w-8 h-8 mb-3" />
+                    <span className="text-sm font-medium">Milestones</span>
+                    <span className="text-xs mt-1">Coming soon</span>
+                  </div>
+                )}
+                {activeTab === 'Links' && (
+                  <div className="flex flex-col items-center justify-center py-16 text-zinc-400">
+                    <LinkIcon className="w-8 h-8 mb-3" />
+                    <span className="text-sm font-medium">Links</span>
+                    <span className="text-xs mt-1">Coming soon</span>
+                  </div>
+                )}
                 {activeTab === 'Audit' && <InitiativeAuditTab initiativeId={initiative.id} />}
               </div>
             </motion.div>
@@ -764,23 +780,7 @@ function DetailsContent({
 
   return (
     <>
-      {/* Description */}
-      <div className="mb-5">
-        <FieldLabel>Description</FieldLabel>
-        {isEditing ? (
-          <textarea
-            value={getVal('description', initiative.description) ?? ''}
-            onChange={e => onFieldChange('description', e.target.value)}
-            rows={4}
-            placeholder="Describe this initiative..."
-            className="w-full border border-zinc-300 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-y"
-          />
-        ) : (
-          <p className="text-[13px] text-zinc-700 leading-relaxed">{initiative.description || <span className="text-zinc-400 italic">No description provided</span>}</p>
-        )}
-      </div>
-
-      {/* Initiative Type */}
+      {/* Initiative Type — moved to top */}
       <div className="mb-5">
         <FieldLabel>Initiative Type</FieldLabel>
         <div className="flex items-center gap-2">
@@ -788,6 +788,7 @@ function DetailsContent({
             { key: 'project', label: 'Project', Icon: FolderKanban, color: '#2563EB' },
             { key: 'enhancement', label: 'Enhancement', Icon: Zap, color: '#0D9488' },
             { key: 'improvement', label: 'Improvement', Icon: Wrench, color: '#D97706' },
+            { key: 'entity_integration', label: 'Entity Integration', Icon: Network, color: '#8B5CF6' },
           ].map(opt => {
             const isActive = selectedTypeKey === opt.key;
             return (
@@ -852,7 +853,7 @@ function DetailsContent({
       {/* Roadmap Toggle */}
       <RoadmapToggleInline initiative={initiative} />
 
-      {/* Field Grid — NO score/priority field */}
+      {/* Field Grid — matches Image 1 layout */}
       <div className="grid grid-cols-2 gap-4 gap-x-8">
         {/* Status */}
         <div>
@@ -865,6 +866,12 @@ function DetailsContent({
           ) : (
             <StatusBadge status={initiative.status} />
           )}
+        </div>
+
+        {/* EA Review */}
+        <div>
+          <FieldLabel>EA Review</FieldLabel>
+          <span className="text-[13px] text-zinc-400">—</span>
         </div>
 
         {/* Health Status */}
@@ -885,20 +892,6 @@ function DetailsContent({
           })()}
         </div>
 
-        {/* Department */}
-        <div>
-          <FieldLabel>Department</FieldLabel>
-          {isEditing ? (
-            <DepartmentSelect
-              value={getVal('department_id', initiative.department_id) ?? ''}
-              onChange={v => onFieldChange('department_id', v)}
-              departments={departmentOptions || []}
-            />
-          ) : (
-            <div className="text-[13px] text-zinc-900">{initiative.department_name || <span className="text-zinc-400">—</span>}</div>
-          )}
-        </div>
-
         {/* Business Value */}
         <div>
           <FieldLabel>Business Value</FieldLabel>
@@ -917,13 +910,13 @@ function DetailsContent({
           })()}
         </div>
 
-        {/* Created */}
+        {/* Priority */}
         <div>
-          <FieldLabel>Created</FieldLabel>
-          <div className="text-[13px] text-zinc-900">{formatAbsoluteDate(initiative.created_at)}</div>
+          <FieldLabel>Priority</FieldLabel>
+          <span className="text-[13px] text-zinc-900 capitalize">{getPriorityLevel(initiative.computed_score ?? null).level}</span>
         </div>
 
-        {/* Quarter */}
+        {/* Target Quarter */}
         <div>
           <FieldLabel>Target Quarter</FieldLabel>
           {isEditing ? (
@@ -933,50 +926,6 @@ function DetailsContent({
             />
           ) : (
             <div className="text-[13px] text-zinc-900">{initiative.target_quarter || <span className="text-zinc-400">—</span>}</div>
-          )}
-        </div>
-
-        {/* Assignee */}
-        <div>
-          <FieldLabel>Assignee</FieldLabel>
-          {isEditing ? (
-            <PeopleSelect
-              value={getVal('assignee_id', initiative.assignee_id) ?? ''}
-              onChange={v => onFieldChange('assignee_id', v)}
-              profiles={profileOptions || []}
-              placeholder="Select assignee"
-            />
-          ) : (
-            <div className="text-[13px] text-zinc-900 flex items-center gap-2">
-              {initiative.assignee_name ? (
-                <>
-                  <InlineAvatar name={initiative.assignee_name} size={20} avatarUrl={getAvatar(initiative.assignee_name)} />
-                  {initiative.assignee_name}
-                </>
-              ) : <span className="text-zinc-400">—</span>}
-            </div>
-          )}
-        </div>
-
-        {/* Business Owner */}
-        <div>
-          <FieldLabel>Business Owner</FieldLabel>
-          {isEditing ? (
-            <PeopleSelect
-              value={getVal('business_owner_id', initiative.business_owner_id) ?? ''}
-              onChange={v => onFieldChange('business_owner_id', v)}
-              profiles={profileOptions || []}
-              placeholder="Select business owner"
-            />
-          ) : (
-            <div className="text-[13px] text-zinc-900 flex items-center gap-2">
-              {initiative.business_owner_name ? (
-                <>
-                  <InlineAvatar name={initiative.business_owner_name} size={20} avatarUrl={getAvatar(initiative.business_owner_name)} />
-                  {initiative.business_owner_name}
-                </>
-              ) : <span className="text-zinc-400">—</span>}
-            </div>
           )}
         </div>
 
@@ -1005,23 +954,61 @@ function DetailsContent({
           )}
         </div>
 
-        {/* Progress */}
+        {/* Assignee */}
         <div>
-          <FieldLabel>Progress</FieldLabel>
+          <FieldLabel>Assignee</FieldLabel>
           {isEditing ? (
-            <div className="flex items-center gap-3">
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={Number(getVal('progress', initiative.progress)) || 0}
-                onChange={e => onFieldChange('progress', Number(e.target.value))}
-                className="flex-1 accent-blue-600"
-              />
-              <span className="text-sm font-medium text-zinc-700 tabular-nums w-10 text-right">{getVal('progress', initiative.progress) ?? 0}%</span>
-            </div>
+            <PeopleSelect
+              value={getVal('assignee_id', initiative.assignee_id) ?? ''}
+              onChange={v => onFieldChange('assignee_id', v)}
+              profiles={profileOptions || []}
+              placeholder="Select assignee"
+            />
           ) : (
-            <DetailProgressBar value={initiative.progress} status={initiative.status} />
+            <div className="text-[13px] text-zinc-900 flex items-center gap-2">
+              {initiative.assignee_name ? (
+                <>
+                  <InlineAvatar name={initiative.assignee_name} size={20} avatarUrl={getAvatar(initiative.assignee_name)} />
+                  {initiative.assignee_name}
+                </>
+              ) : <span className="text-zinc-400">—</span>}
+            </div>
+          )}
+        </div>
+
+        {/* Department */}
+        <div>
+          <FieldLabel>Department</FieldLabel>
+          {isEditing ? (
+            <DepartmentSelect
+              value={getVal('department_id', initiative.department_id) ?? ''}
+              onChange={v => onFieldChange('department_id', v)}
+              departments={departmentOptions || []}
+            />
+          ) : (
+            <div className="text-[13px] text-zinc-900">{initiative.department_name || <span className="text-zinc-400">—</span>}</div>
+          )}
+        </div>
+
+        {/* Business Owner */}
+        <div>
+          <FieldLabel>Business Owner</FieldLabel>
+          {isEditing ? (
+            <PeopleSelect
+              value={getVal('business_owner_id', initiative.business_owner_id) ?? ''}
+              onChange={v => onFieldChange('business_owner_id', v)}
+              profiles={profileOptions || []}
+              placeholder="Select business owner"
+            />
+          ) : (
+            <div className="text-[13px] text-zinc-900 flex items-center gap-2">
+              {initiative.business_owner_name ? (
+                <>
+                  <InlineAvatar name={initiative.business_owner_name} size={20} avatarUrl={getAvatar(initiative.business_owner_name)} />
+                  {initiative.business_owner_name}
+                </>
+              ) : <span className="text-zinc-400">—</span>}
+            </div>
           )}
         </div>
 
@@ -1066,6 +1053,42 @@ function DetailsContent({
             <div className="text-[13px] text-zinc-900">{formatAbsoluteDate(initiative.target_complete)}</div>
           )}
         </div>
+
+        {/* Progress */}
+        <div>
+          <FieldLabel>Progress</FieldLabel>
+          {isEditing ? (
+            <div className="flex items-center gap-3">
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={Number(getVal('progress', initiative.progress)) || 0}
+                onChange={e => onFieldChange('progress', Number(e.target.value))}
+                className="flex-1 accent-blue-600"
+              />
+              <span className="text-sm font-medium text-zinc-700 tabular-nums w-10 text-right">{getVal('progress', initiative.progress) ?? 0}%</span>
+            </div>
+          ) : (
+            <DetailProgressBar value={initiative.progress} status={initiative.status} />
+          )}
+        </div>
+      </div>
+
+      {/* Description — moved to bottom */}
+      <div className="mt-6 pt-5 border-t border-zinc-100">
+        <div className="text-[13px] font-semibold text-zinc-900 mb-2">Description</div>
+        {isEditing ? (
+          <textarea
+            value={getVal('description', initiative.description) ?? ''}
+            onChange={e => onFieldChange('description', e.target.value)}
+            rows={4}
+            placeholder="Describe this initiative..."
+            className="w-full border border-zinc-300 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-y"
+          />
+        ) : (
+          <p className="text-[13px] text-zinc-700 leading-relaxed">{initiative.description || <span className="text-zinc-400 italic">No description provided for this initiative.</span>}</p>
+        )}
       </div>
 
       {/* Comments */}
