@@ -536,8 +536,13 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                 background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 boxShadow: '0 0 0 4px #fff, 0 0 0 6px #2563EB, 0 0 20px rgba(37,99,235,.2)',
+                overflow: 'hidden',
               }}>
-                <span style={{ fontFamily: T.sora, fontSize: 24, fontWeight: 800, color: '#FFFFFF' }}>{initials}</span>
+                {resource?.avatar_url ? (
+                  <img src={resource.avatar_url} alt={resourceName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                ) : (
+                  <span style={{ fontFamily: T.sora, fontSize: 24, fontWeight: 800, color: '#FFFFFF' }}>{initials}</span>
+                )}
               </div>
               <div style={{ fontFamily: T.sora, fontSize: 12, fontWeight: 700, color: T.ink1, marginTop: 6 }}>{resourceName}</div>
               <div style={{ fontSize: 10, color: T.ink4 }}>{resourceRole}</div>
