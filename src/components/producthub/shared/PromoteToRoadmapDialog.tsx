@@ -3,7 +3,7 @@
  */
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Map, FolderKanban, Zap, Wrench, Leaf, Link, type LucideIcon } from 'lucide-react';
+import { Loader2, Map, FolderKanban, Zap, Wrench, Link, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePromoteToRoadmap } from '@/hooks/useRoadmapPromotion';
 import { INITIATIVE_TYPE_COLORS, type InitiativeTypeKey } from '@/types/initiative-enhancements';
@@ -14,7 +14,6 @@ const TYPE_OPTIONS: { key: InitiativeTypeKey; label: string; Icon: LucideIcon }[
   { key: 'project', label: 'Project', Icon: FolderKanban },
   { key: 'enhancement', label: 'Enhancement', Icon: Zap },
   { key: 'improvement', label: 'Improvement', Icon: Wrench },
-  
   { key: 'entity_integration', label: 'Entity Integration', Icon: Link },
 ];
 
@@ -132,7 +131,7 @@ export function PromoteToRoadmapDialog({ open, onClose, initiative }: Props) {
               <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-1.5" style={{ color: '#334155' }}>
                 Confirm Initiative Type
               </div>
-              <div className="grid grid-cols-3 gap-1.5 p-1 rounded-lg border" style={{ background: '#F8FAFC', borderColor: '#E2E8F0' }}>
+              <div className="grid grid-cols-4 gap-1.5 p-1 rounded-lg border" style={{ background: '#F8FAFC', borderColor: '#E2E8F0' }}>
                 {TYPE_OPTIONS.map(opt => {
                   const colors = INITIATIVE_TYPE_COLORS[opt.key];
                   const isActive = selectedType === opt.key;
