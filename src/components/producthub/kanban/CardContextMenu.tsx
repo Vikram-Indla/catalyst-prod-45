@@ -15,8 +15,9 @@ interface CardContextMenuProps {
 }
 
 const STATUSES: InitiativeStatus[] = [
-  'new_demand', 'under_review', 'approved', 'in_progress',
-  'on_hold', 'delivered', 'cancelled',
+  'new', 'portfolio_review', 'technical_validation', 'estimate',
+  'demand_approved', 'analysis', 'ready_for_development', 'under_implementation',
+  'on_hold', 'implementation_review', 'in_support', 'done', 'cancelled',
 ];
 
 export const CardContextMenu: React.FC<CardContextMenuProps> = ({

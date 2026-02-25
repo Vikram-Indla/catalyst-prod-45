@@ -7,7 +7,7 @@ interface ProgressBarProps {
 }
 
 function getFillColor(value: number, status?: InitiativeStatus): string {
-  if (status === 'delivered' || value >= 100) return '#10b981';
+  if (status === 'done' || value >= 100) return '#10b981';
   if (value >= 40 && value < 70) return '#f59e0b';
   return '#2563eb';
 }

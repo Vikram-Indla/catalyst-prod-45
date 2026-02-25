@@ -1,15 +1,17 @@
 export type InitiativeStatus =
-  | 'new_demand'
-  | 'under_review'
-  | 'approved'
-  | 'in_progress'
-  | 'on_hold'
-  | 'delivered'
-  | 'closed'
-  | 'cancelled'
-  | 'ready_for_development'
+  | 'new'
+  | 'portfolio_review'
   | 'technical_validation'
-  | 'under_implementation';
+  | 'estimate'
+  | 'demand_approved'
+  | 'analysis'
+  | 'ready_for_development'
+  | 'under_implementation'
+  | 'on_hold'
+  | 'implementation_review'
+  | 'in_support'
+  | 'done'
+  | 'cancelled';
 
 export type PriorityLevel = 'High' | 'Medium' | 'Low' | 'Rejected' | 'Unscored';
 
@@ -78,17 +80,19 @@ export interface SavedView {
 }
 
 export const STATUS_DISPLAY: Record<InitiativeStatus, { label: string; dot: string; bg: string; border: string; text: string }> = {
-  new_demand:    { label: 'New Demand',    dot: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE', text: '#1E40AF' },
-  under_review:  { label: 'Under Review',  dot: '#8B5CF6', bg: '#F5F3FF', border: '#DDD6FE', text: '#5B21B6' },
-  approved:      { label: 'Approved',      dot: '#06B6D4', bg: '#ECFEFF', border: '#A5F3FC', text: '#155E75' },
-  in_progress:   { label: 'In Progress',   dot: '#F59E0B', bg: '#FFFBEB', border: '#FDE68A', text: '#92400E' },
-  on_hold:       { label: 'On Hold',       dot: '#6B7280', bg: '#F9FAFB', border: '#E5E7EB', text: '#374151' },
-  delivered:     { label: 'Delivered',     dot: '#10B981', bg: '#ECFDF5', border: '#A7F3D0', text: '#065F46' },
-  closed:        { label: 'Closed',        dot: '#1F2937', bg: '#F3F4F6', border: '#D1D5DB', text: '#111827' },
-  cancelled:     { label: 'Cancelled',     dot: '#EF4444', bg: '#FEF2F2', border: '#FECACA', text: '#991B1B' },
-  ready_for_development: { label: 'Ready for Development', dot: '#06B6D4', bg: '#ECFEFF', border: '#A5F3FC', text: '#155E75' },
-  technical_validation:  { label: 'Technical Validation',  dot: '#8B5CF6', bg: '#F5F3FF', border: '#DDD6FE', text: '#5B21B6' },
-  under_implementation:  { label: 'Under Implementation',  dot: '#F59E0B', bg: '#FFFBEB', border: '#FDE68A', text: '#92400E' },
+  new:                     { label: 'New',                    dot: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE', text: '#1E40AF' },
+  portfolio_review:        { label: 'Portfolio Review',       dot: '#8B5CF6', bg: '#F5F3FF', border: '#DDD6FE', text: '#5B21B6' },
+  technical_validation:    { label: 'Technical Validation',   dot: '#A855F7', bg: '#FAF5FF', border: '#E9D5FF', text: '#7E22CE' },
+  estimate:                { label: 'Estimate',               dot: '#6366F1', bg: '#EEF2FF', border: '#C7D2FE', text: '#4338CA' },
+  demand_approved:         { label: 'Demand Approved',        dot: '#06B6D4', bg: '#ECFEFF', border: '#A5F3FC', text: '#155E75' },
+  analysis:                { label: 'Analysis',               dot: '#0EA5E9', bg: '#F0F9FF', border: '#BAE6FD', text: '#0369A1' },
+  ready_for_development:   { label: 'Ready for Development',  dot: '#14B8A6', bg: '#F0FDFA', border: '#99F6E4', text: '#115E59' },
+  under_implementation:    { label: 'Under Implementation',   dot: '#F59E0B', bg: '#FFFBEB', border: '#FDE68A', text: '#92400E' },
+  on_hold:                 { label: 'On Hold',                dot: '#6B7280', bg: '#F9FAFB', border: '#E5E7EB', text: '#374151' },
+  implementation_review:   { label: 'Implementation Review',  dot: '#F97316', bg: '#FFF7ED', border: '#FED7AA', text: '#9A3412' },
+  in_support:              { label: 'In Support',             dot: '#10B981', bg: '#ECFDF5', border: '#A7F3D0', text: '#065F46' },
+  done:                    { label: 'Done',                   dot: '#22C55E', bg: '#F0FDF4', border: '#BBF7D0', text: '#166534' },
+  cancelled:               { label: 'Cancelled',              dot: '#EF4444', bg: '#FEF2F2', border: '#FECACA', text: '#991B1B' },
 };
 
 export const PRIORITY_THRESHOLDS: { min: number; max: number; level: PriorityLevel; bg: string; border: string; text: string }[] = [

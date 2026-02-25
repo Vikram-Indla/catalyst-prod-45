@@ -94,7 +94,7 @@ export function DateCell({ date, status }: { date: string | null; status?: Initi
   if (isNaN(parsed.getTime())) return <span className="text-[12px]" style={{ color: '#a1a1aa' }}>—</span>;
   const formatted = format(parsed, 'MMM dd, yyyy');
 
-  const terminalStatuses: InitiativeStatus[] = ['delivered', 'closed', 'cancelled'];
+  const terminalStatuses: InitiativeStatus[] = ['done', 'cancelled'];
   const isOverdue = status && !terminalStatuses.includes(status) && parsed < new Date();
   const isSoon = status && !terminalStatuses.includes(status) && !isOverdue && differenceInDays(parsed, new Date()) <= 14;
 
@@ -122,9 +122,9 @@ export function ProgressCell({ value, status }: { value: number; status?: Initia
   const clamped = Math.min(Math.max(value, 0), 100);
   let fillColor = '#2563eb';
   if (clamped >= 100) fillColor = '#22c55e';
-  const terminalStatuses: InitiativeStatus[] = ['delivered', 'closed', 'cancelled'];
+  const terminalStatuses: InitiativeStatus[] = ['done', 'cancelled'];
   // Check overdue only if status provided — we don't have target_complete here
-  if (status === 'delivered') fillColor = '#22c55e';
+  if (status === 'done') fillColor = '#22c55e';
 
   return (
     <div className="inline-flex items-center gap-2">

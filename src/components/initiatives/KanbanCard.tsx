@@ -31,8 +31,8 @@ export function KanbanCard({ initiative, density, isDragOverlay, isGhost, onClic
 
   const priority = getPriorityLevel(initiative.computed_score);
   const isOverdue = initiative.target_complete && new Date(initiative.target_complete) < new Date() &&
-    !['delivered', 'closed', 'cancelled'].includes(initiative.status);
-  const isDelivered = initiative.status === 'delivered';
+    !['done', 'cancelled'].includes(initiative.status);
+  const isDelivered = initiative.status === 'done';
   const isCancelled = initiative.status === 'cancelled';
 
   const progressColor = isDelivered ? '#10b981' : initiative.progress >= 40 && initiative.progress < 70 ? '#f59e0b' : '#2563eb';

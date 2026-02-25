@@ -2,12 +2,18 @@ import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 
 const STATUS_OPTIONS = [
-  { value: 'new_demand', label: 'New Demand', color: '#3b82f6' },
-  { value: 'under_review', label: 'Under Review', color: '#8b5cf6' },
-  { value: 'approved', label: 'Approved', color: '#22c55e' },
-  { value: 'in_progress', label: 'In Progress', color: '#f59e0b' },
+  { value: 'new', label: 'New', color: '#3b82f6' },
+  { value: 'portfolio_review', label: 'Portfolio Review', color: '#8b5cf6' },
+  { value: 'technical_validation', label: 'Technical Validation', color: '#a855f7' },
+  { value: 'estimate', label: 'Estimate', color: '#6366f1' },
+  { value: 'demand_approved', label: 'Demand Approved', color: '#06b6d4' },
+  { value: 'analysis', label: 'Analysis', color: '#0ea5e9' },
+  { value: 'ready_for_development', label: 'Ready for Development', color: '#14b8a6' },
+  { value: 'under_implementation', label: 'Under Implementation', color: '#f59e0b' },
   { value: 'on_hold', label: 'On Hold', color: '#6b7280' },
-  { value: 'delivered', label: 'Delivered', color: '#10b981' },
+  { value: 'implementation_review', label: 'Implementation Review', color: '#f97316' },
+  { value: 'in_support', label: 'In Support', color: '#10b981' },
+  { value: 'done', label: 'Done', color: '#22c55e' },
   { value: 'cancelled', label: 'Cancelled', color: '#ef4444' },
 ];
 

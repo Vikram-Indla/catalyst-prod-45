@@ -101,7 +101,7 @@ export function KanbanDiagnostics() {
             nullIssues.length === 0 ? "Nullable columns return null (not undefined)" : `Undefined: ${nullIssues.join(', ')}`);
 
           // Data Integrity
-          const validStatuses = ['new_demand', 'under_review', 'approved', 'in_progress', 'on_hold', 'delivered', 'cancelled'];
+          const validStatuses = ['new', 'portfolio_review', 'technical_validation', 'estimate', 'demand_approved', 'analysis', 'ready_for_development', 'under_implementation', 'on_hold', 'implementation_review', 'in_support', 'done', 'cancelled'];
           const invalidStatuses = rows.filter(r => !validStatuses.includes(r.status));
           updateCheck("7.1", invalidStatuses.length === 0 ? "pass" : "fail",
             invalidStatuses.length === 0 ? "All statuses valid" : `Invalid: ${invalidStatuses.map(r => `${r.initiative_key}: ${r.status}`).join(', ')}`);
@@ -141,7 +141,7 @@ export function KanbanDiagnostics() {
         const testRow = rows[0];
         const originalStatus = testRow.status;
         const originalUpdatedAt = testRow.updated_at;
-        const newStatus = originalStatus === 'approved' ? 'in_progress' : 'approved';
+        const newStatus = originalStatus === 'demand_approved' ? 'under_implementation' : 'demand_approved';
 
         const { error: updateErr } = await supabase.from(TABLE).update({ status: newStatus }).eq('id', testRow.id);
         if (updateErr) {

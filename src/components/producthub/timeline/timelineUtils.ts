@@ -193,7 +193,7 @@ export function getBarPosition(
 /** Check if initiative is overdue */
 export function isOverdue(initiative: { target_complete: string | null; progress: number; status: string }): boolean {
   if (!initiative.target_complete) return false;
-  if (['delivered', 'cancelled'].includes(initiative.status)) return false;
+  if (['done', 'cancelled'].includes(initiative.status)) return false;
   if (initiative.progress >= 100) return false;
   return new Date(initiative.target_complete) < new Date();
 }

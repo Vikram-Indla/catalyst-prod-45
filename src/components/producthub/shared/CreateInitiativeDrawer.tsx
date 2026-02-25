@@ -62,7 +62,7 @@ function useCreateInitiative() {
         .insert({
           title: newInit.title,
           description: newInit.description || null,
-          status: newInit.status || 'new_demand',
+          status: newInit.status || 'new',
           department_id: newInit.department_id || null,
           assignee_id: newInit.assignee_id || null,
           business_owner_id: newInit.business_owner_id || null,
@@ -121,7 +121,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
   const { data: initiativeTypes } = useInitiativeTypes();
 
   const [form, setForm] = useState({
-    title: '', description: '', status: 'new_demand',
+    title: '', description: '', status: 'new',
     department_id: '', assignee_id: '', business_owner_id: '',
     reporter_id: '', target_quarter: '', kickoff_date: '',
     target_complete: '', business_ask_date: '',
@@ -173,7 +173,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
           setForm({
             title: p.title,
             description: `Converted from Ideation · ${p.key}\n\n${p.description || p.title}\n\n---\nIMPACT Score: ${p.impact.toFixed(2)}/5.00\nVotes: ${p.votes} · Priority: ${p.priority}`,
-            status: 'new_demand', department_id: resolveDeptId(p.dept),
+            status: 'new', department_id: resolveDeptId(p.dept),
             assignee_id: resolveAssigneeId(p.assignee), business_owner_id: '',
             reporter_id: '', target_quarter: '', kickoff_date: '', target_complete: '', business_ask_date: '',
           });
@@ -183,14 +183,14 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
           setForm({
             title: `${p.title} & ${m.title.split(' ').slice(0, 3).join(' ')} Platform`,
             description: `Consolidated from 2 ideation submissions:\n\n• ${p.key}: ${p.title} (IMPACT ${p.impact.toFixed(2)}, ${p.votes} votes)\n• ${m.key}: ${m.title} (IMPACT ${m.impact.toFixed(2)}, ${m.votes} votes)\n\n---\nCombined IMPACT: ${p.impact.toFixed(2)} (weighted by vote count)\nTotal votes: ${p.votes + m.votes}`,
-            status: 'new_demand', department_id: resolveDeptId(p.dept),
+            status: 'new', department_id: resolveDeptId(p.dept),
             assignee_id: resolveAssigneeId(p.assignee), business_owner_id: '',
             reporter_id: '', target_quarter: '', kickoff_date: '', target_complete: '', business_ask_date: '',
           });
         }
       } else {
         setForm({
-          title: '', description: '', status: 'new_demand',
+          title: '', description: '', status: 'new',
           department_id: '', assignee_id: '', business_owner_id: '',
           reporter_id: '', target_quarter: '', kickoff_date: '',
           target_complete: '', business_ask_date: '',

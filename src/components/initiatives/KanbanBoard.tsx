@@ -20,13 +20,18 @@ import { KanbanColumn } from './KanbanColumn';
 import { KanbanCard } from './KanbanCard';
 
 const COLUMN_ORDER: InitiativeStatus[] = [
-  'new_demand',
-  'under_review',
-  'approved',
-  'in_progress',
+  'new',
+  'portfolio_review',
+  'technical_validation',
+  'estimate',
+  'demand_approved',
+  'analysis',
+  'ready_for_development',
+  'under_implementation',
   'on_hold',
-  'delivered',
-  'closed',
+  'implementation_review',
+  'in_support',
+  'done',
   'cancelled',
 ];
 
