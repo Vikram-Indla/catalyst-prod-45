@@ -222,8 +222,8 @@ type PanelMode = 'hidden' | 'completed' | 'detail';
 const MAX_PER_PAGE = 8;
 
 const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [dims, setDims] = useState({ w: 800, h: 600 });
+  const ringCanvasRef = useRef<HTMLDivElement>(null);
+  const [dims, setDims] = useState({ w: 800, h: 500 });
   const [statusFilter, setStatusFilter] = useState<ActiveFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [weekIdx, setWeekIdx] = useState(0);
@@ -251,18 +251,20 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
     return map;
   }, [allItems]);
 
-  // Measure container
+  // Measure the actual ring canvas area (not the week ribbon)
   useEffect(() => {
     const measure = () => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
+      if (ringCanvasRef.current) {
+        const rect = ringCanvasRef.current.getBoundingClientRect();
         setDims({ w: rect.width, h: rect.height });
       }
     };
     measure();
+    const ro = new ResizeObserver(measure);
+    if (ringCanvasRef.current) ro.observe(ringCanvasRef.current);
     window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
-  }, []);
+    return () => { ro.disconnect(); window.removeEventListener('resize', measure); };
+  }, [panelMode]);
 
   // Filter active items
   const filteredActive = useMemo(() => {
@@ -341,16 +343,16 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
     }
   }, [panelMode]);
 
-  // Ring geometry
-  const panelWidth = panelMode === 'detail' ? 360 : panelMode === 'completed' ? 280 : 0;
-  const ringW = dims.w - panelWidth;
-  const ringH = dims.h - 36; // minus week ribbon
+  // Ring geometry — dims now measures the ring canvas directly (no subtraction needed)
+  const ringW = dims.w;
+  const ringH = dims.h;
   const cx = ringW / 2;
   const cy = ringH / 2;
-  const R = Math.min(ringW, ringH) * 0.36;
+  const R = Math.min(ringW, ringH) * 0.32;
   const N = pageItems.length;
   const cardW = N <= 4 ? 176 : N <= 6 ? 164 : 150;
   const cardH = 110;
+  const panelWidth = panelMode === 'detail' ? 360 : panelMode === 'completed' ? 280 : 0;
 
   const initials = resource?.initials || resource?.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) || '??';
   const resourceName = resource?.name || resource?.full_name || 'Resource';
@@ -404,8 +406,8 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
 
       {/* ── RING + PANEL LAYOUT ── */}
       <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
-        {/* Ring viewport */}
-        <div ref={containerRef} style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+        {/* Ring column (week ribbon + canvas stacked vertically) */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }}>
           {/* Week Ribbon */}
           <div style={{
             height: 36, display: 'flex', alignItems: 'center', gap: 10, padding: '0 16px',
@@ -454,9 +456,9 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
             )}
           </div>
 
-          {/* SVG Ring Canvas */}
-          <div style={{
-            position: 'absolute', top: 36, left: 0, right: 0, bottom: 0,
+          {/* SVG Ring Canvas — flex:1 fills remaining vertical space */}
+          <div ref={ringCanvasRef} style={{
+            flex: 1, position: 'relative', overflow: 'hidden',
             background: `radial-gradient(circle at center, #fff 0%, ${T.surfaceAlt} 55%, ${T.hover} 100%)`,
             backgroundImage: `radial-gradient(circle at center, #fff 0%, ${T.surfaceAlt} 55%, ${T.hover} 100%), radial-gradient(circle, ${T.border} 1px, transparent 1px)`,
             backgroundSize: 'cover, 24px 24px',
