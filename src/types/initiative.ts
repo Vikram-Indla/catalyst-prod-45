@@ -111,23 +111,23 @@ export function getPriorityLevel(score: number | null): { level: PriorityLevel; 
   return match || { level: 'Unscored', ...UNSCORED_STYLE };
 }
 
-/** Spec-defined deterministic avatar colors by first name */
+/** Catalyst V11 approved avatar colors — no purple/magenta/pink */
 const AVATAR_COLOR_MAP: Record<string, string> = {
-  'Sarah': '#6366f1',
-  'Ahmed': '#10b981',
-  'Fatima': '#ec4899',
-  'Omar': '#f97316',
-  'Layla': '#06b6d4',
-  'Khalid': '#8b5cf6',
-  'Nora': '#f43f5e',
-  'Mohammed': '#0d9488',
+  'Sarah': '#2563eb',
+  'Ahmed': '#0d9488',
+  'Fatima': '#0369a1',
+  'Omar': '#d97706',
+  'Layla': '#0891b2',
+  'Khalid': '#1e40af',
+  'Nora': '#b45309',
+  'Mohammed': '#0f766e',
 };
 
 export function getAvatarColor(name: string): string {
   const firstName = name.split(' ')[0];
   if (AVATAR_COLOR_MAP[firstName]) return AVATAR_COLOR_MAP[firstName];
-  // Fallback hash
-  const colors = ['#6366f1', '#10b981', '#ec4899', '#f97316', '#06b6d4', '#8b5cf6', '#f43f5e', '#0d9488', '#84cc16', '#e11d48'];
+  // Catalyst-approved hash palette: blues, teals, slates, ambers — no purple/magenta
+  const colors = ['#2563eb', '#0d9488', '#0369a1', '#d97706', '#0891b2', '#1e40af', '#b45309', '#0f766e', '#475569', '#334155'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
   return colors[Math.abs(hash) % colors.length];

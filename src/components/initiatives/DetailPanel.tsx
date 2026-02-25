@@ -43,15 +43,21 @@ interface DetailPanelProps {
 const TABS = ['Details', 'Score', 'Budget', 'Risks', 'Audit'] as const;
 type Tab = typeof TABS[number];
 
+/** Catalyst V11 approved avatar colors — no purple/magenta/pink */
 const AVATAR_COLORS: Record<string, string> = {
-  'Sarah': '#6366f1', 'Ahmed': '#10b981', 'Fatima': '#ec4899', 'Omar': '#f97316',
-  'Layla': '#06b6d4', 'Khalid': '#8b5cf6', 'Nora': '#f43f5e', 'Mohammed': '#0d9488',
-  'Ahmad': '#0d9488', 'Amira': '#6366f1', 'Tariq': '#f97316', 'Salman': '#10b981',
-  'Mansour': '#8b5cf6', 'Waleed': '#06b6d4',
+  'Sarah': '#2563eb', 'Ahmed': '#0d9488', 'Fatima': '#0369a1', 'Omar': '#d97706',
+  'Layla': '#0891b2', 'Khalid': '#1e40af', 'Nora': '#b45309', 'Mohammed': '#0f766e',
+  'Ahmad': '#0f766e', 'Amira': '#2563eb', 'Tariq': '#d97706', 'Salman': '#0d9488',
+  'Mansour': '#1e40af', 'Waleed': '#0891b2',
 };
 
 function getV5AvatarColor(name: string): string {
-  return AVATAR_COLORS[name.split(' ')[0]] || '#6366f1';
+  const firstName = name.split(' ')[0];
+  if (AVATAR_COLORS[firstName]) return AVATAR_COLORS[firstName];
+  const colors = ['#2563eb', '#0d9488', '#0369a1', '#d97706', '#0891b2', '#1e40af', '#b45309', '#0f766e', '#475569', '#334155'];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return colors[Math.abs(hash) % colors.length];
 }
 
 function getInitials(name: string): string {
@@ -673,8 +679,10 @@ function DetailsContent({
 }) {
   const { data: departmentOptions } = useDepartmentOptions();
   const { data: profileOptions } = useProfileOptions();
+  const avatarsByName = useProfileAvatarsByName();
   const comments = MOCK_COMMENTS[initiative.initiative_key] || [];
   const getVal = (field: string, original: any) => field in editForm ? editForm[field] : original;
+  const getAvatar = (name: string | null) => name ? avatarsByName.get(name.toLowerCase()) : undefined;
 
   return (
     <>
