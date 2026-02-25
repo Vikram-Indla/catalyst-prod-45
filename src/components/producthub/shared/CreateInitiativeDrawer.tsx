@@ -76,6 +76,14 @@ function useCreateInitiative() {
           progress: 0,
           sort_order: 0,
           is_archived: false,
+          initiative_type_id: newInit.initiative_type_id || null,
+          on_roadmap: newInit.on_roadmap || false,
+          roadmap_added_at: newInit.on_roadmap ? new Date().toISOString() : null,
+          health_status: 'on_track',
+          business_value: newInit.business_value || null,
+          estimated_budget: newInit.estimated_budget || null,
+          roadmap_priority: newInit.roadmap_priority || null,
+          tags: newInit.tags || [],
         })
         .select()
         .single();
@@ -87,6 +95,9 @@ function useCreateInitiative() {
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
       queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
       queryClient.invalidateQueries({ queryKey: ['next-initiative-key'] });
+      queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['roadmap-summary'] });
       catalystToast.success(`${data.initiative_key} created`);
     },
     onError: (err: Error) => {
