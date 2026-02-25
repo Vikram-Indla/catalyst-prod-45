@@ -11,6 +11,7 @@ export function getTypeIconName(typeKey: string | null | undefined): string {
     case 'enhancement': return 'zap';
     case 'improvement': return 'wrench';
     case 'sustainable': return 'leaf';
+    case 'entity_integration': return 'link';
     default: return 'circle-dashed';
   }
 }
@@ -21,6 +22,7 @@ export function getTypeLabel(key: string | null | undefined): string {
     case 'enhancement': return 'Enhancement';
     case 'improvement': return 'Improvement';
     case 'sustainable': return 'Sustainable';
+    case 'entity_integration': return 'Entity Integration';
     default: return 'Untyped';
   }
 }
