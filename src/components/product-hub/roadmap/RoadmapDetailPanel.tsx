@@ -54,7 +54,7 @@ const TYPE_OPTIONS = [
   { key: 'project', label: 'Project', typeId: 'fdb2fd4a-23dc-48bb-b4a0-e8741a572aee' },
   { key: 'enhancement', label: 'Enhancement', typeId: '00242328-979a-4ecb-8f02-5d3b982966d1' },
   { key: 'improvement', label: 'Improvement', typeId: '90806dac-3ed5-4f99-a11e-290dc0efd376' },
-  { key: 'sustainable', label: 'Sustainable', typeId: 'fb137d36-16d9-4e69-ba77-f76e6d961fe4' },
+  
   { key: 'entity_integration', label: 'Entity Integration', typeId: '8ee93370-21e5-4464-92d1-3e51839067cd' },
 ];
 
