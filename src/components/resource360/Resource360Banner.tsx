@@ -74,7 +74,7 @@ export function Resource360Banner({ summary, isLoading }: Props) {
           fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 800,
           color: '#0F172A', lineHeight: 1.2,
         }}>{summary.name}</span>
-        <span style={{ fontSize: 12, color: '#64748B', lineHeight: 1.3 }}>
+        <span style={{ fontSize: 12, color: '#64748B', lineHeight: 1.3, fontWeight: 500 }}>
           {summary.role}{summary.department ? ` · ${summary.department}` : ''}
         </span>
       </div>
