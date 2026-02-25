@@ -1,6 +1,6 @@
 /**
- * Right panel containing the timeline visualization
- * With horizontal scroll, gridlines, and proper Catalyst styling
+ * Right panel — Gantt Timeline
+ * Month headers, vertical gridlines, today marker, 44px rows
  */
 
 import React, { useMemo } from 'react';
@@ -10,8 +10,6 @@ import { RoadmapTimelineBar, RoadmapUnscheduledIndicator } from './RoadmapTimeli
 import { RoadmapTodayMarker } from './RoadmapTodayMarker';
 import { generateTimelinePeriods, calculateBarPosition } from '../utils/timeline';
 import type { RoadmapDemand, TimelineConfig, RoadmapGroup } from '../types/roadmap';
-import { useRoadmapTheme } from '../lib/useRoadmapTheme';
-import { cn } from '@/lib/utils';
 
 interface RoadmapTimelinePanelProps {
   items: RoadmapDemand[];
@@ -22,156 +20,93 @@ interface RoadmapTimelinePanelProps {
   onDateChange: (id: string, start: string | null, end: string | null) => void;
 }
 
-export function RoadmapTimelinePanel({
-  items,
-  groups,
-  config,
-  selectedItemId,
-  onItemClick,
-  onDateChange,
-}: RoadmapTimelinePanelProps) {
-  const { tokens, isDark } = useRoadmapTheme();
-  
-  // Generate timeline periods based on config
-  const periods = useMemo(() => 
-    generateTimelinePeriods(config),
-    [config]
-  );
+export function RoadmapTimelinePanel({ items, groups, config, selectedItemId, onItemClick, onDateChange }: RoadmapTimelinePanelProps) {
+  const periods = useMemo(() => generateTimelinePeriods(config), [config]);
 
-  // Calculate today marker position
   const todayPosition = useMemo(() => {
     const today = new Date();
     const totalDays = (config.endDate.getTime() - config.startDate.getTime()) / (1000 * 60 * 60 * 24);
     const daysSinceStart = (today.getTime() - config.startDate.getTime()) / (1000 * 60 * 60 * 24);
-    return (daysSinceStart / totalDays) * 100;
+    const pos = (daysSinceStart / totalDays) * 100;
+    return pos >= 0 && pos <= 100 ? pos : null;
   }, [config.startDate, config.endDate]);
 
-  // Calculate min-width for horizontal scroll
   const periodMinWidth = config.zoom === 'month' ? 120 : config.zoom === 'quarter' ? 200 : 280;
   const totalMinWidth = periods.length * periodMinWidth;
 
-  // Handle set dates action
   const handleSetDates = (itemId: string) => {
-    // Default to today + 30 days
     const start = new Date().toISOString().split('T')[0];
     const end = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
     onDateChange(itemId, start, end);
   };
 
-  // Render timeline row with proper styling
-  const renderTimelineRow = (item: RoadmapDemand, rowIndex: number) => {
+  const renderRow = (item: RoadmapDemand) => {
     const position = calculateBarPosition(item.start_date, item.end_date, config.startDate, config.endDate);
     const hasValidDates = item.start_date && item.end_date;
     const isSelected = selectedItemId === item.id;
 
     return (
-      <div 
-        key={item.id} 
-        className="relative h-[52px] flex items-center transition-colors cursor-pointer"
+      <div
+        key={item.id}
+        className="relative flex items-center cursor-pointer transition-colors"
         style={{
-          backgroundColor: isSelected 
-            ? tokens.surface.active 
-            : 'transparent',
-          borderBottom: `1px solid ${tokens.border.subtle}`,
-          overflow: 'visible',
+          height: 44,
+          backgroundColor: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
+          borderBottom: '1px solid #F1F5F9',
         }}
         onClick={() => onItemClick(item.id)}
-        onMouseEnter={(e) => {
-          if (!isSelected) {
-            (e.currentTarget as HTMLElement).style.backgroundColor = tokens.surface.active;
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (!isSelected) {
-            (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-          }
-        }}
+        onMouseEnter={e => { if (!isSelected) e.currentTarget.style.backgroundColor = '#FAFBFC'; }}
+        onMouseLeave={e => { if (!isSelected) e.currentTarget.style.backgroundColor = 'transparent'; }}
       >
-        {/* Bar or unscheduled indicator */}
         {hasValidDates && position ? (
-          <RoadmapTimelineBar
-            item={item}
-            left={position.left}
-            width={position.width}
-            isSelected={isSelected}
-            onClick={() => onItemClick(item.id)}
-          />
+          <RoadmapTimelineBar item={item} left={position.left} width={position.width} isSelected={isSelected} onClick={() => onItemClick(item.id)} />
         ) : (
-          <RoadmapUnscheduledIndicator 
-            item={item} 
-            onSetDates={() => handleSetDates(item.id)}
-          />
+          <RoadmapUnscheduledIndicator item={item} onSetDates={() => handleSetDates(item.id)} />
         )}
       </div>
     );
   };
 
-  // Render vertical gridlines
   const renderGridlines = () => (
     <div className="absolute inset-0 pointer-events-none flex">
-      {periods.map((period, index) => (
-        <div
-          key={period.key}
-          className="flex-shrink-0 border-r"
-          style={{
-            minWidth: `${periodMinWidth}px`,
-            width: `${100 / periods.length}%`,
-            borderColor: tokens.border.default,
-            backgroundColor: period.isCurrent 
-              ? (isDark ? 'rgba(198, 156, 109, 0.12)' : 'rgba(198, 156, 109, 0.06)')
-              : index % 2 === 0 
-                ? tokens.surface.bg 
-                : 'transparent',
-          }}
-        />
-      ))}
+      {periods.map((period, idx) => {
+        // Stronger lines at quarter boundaries
+        const isQuarterBoundary = period.label.startsWith('Q') || (config.zoom === 'month' && [0, 3, 6, 9].includes(new Date(period.startDate).getMonth()));
+        return (
+          <div
+            key={period.key}
+            className="flex-shrink-0"
+            style={{
+              minWidth: periodMinWidth,
+              width: `${100 / periods.length}%`,
+              borderRight: `1px solid ${isQuarterBoundary ? '#E2E8F0' : '#F1F5F9'}`,
+              background: period.isCurrent ? 'rgba(37,99,235,0.03)' : 'transparent',
+            }}
+          />
+        );
+      })}
     </div>
   );
 
-  // If groups are provided, render grouped view
+  // Grouped view
   if (groups && groups.length > 0) {
     return (
-      <div 
-        className="flex-1 flex flex-col min-w-0 overflow-hidden"
-        style={{ backgroundColor: tokens.surface.card }}
-      >
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: '#FFFFFF' }}>
         <ScrollArea className="flex-1 w-full">
-          <div style={{ minWidth: `${totalMinWidth}px` }}>
+          <div style={{ minWidth: totalMinWidth }}>
             <RoadmapTimelineHeader periods={periods} zoom={config.zoom} />
-            
-            <div className="relative" style={{ overflow: 'visible' }}>
-              {/* Gridlines */}
+            <div className="relative">
               {renderGridlines()}
-              
-              {/* Today marker */}
-              {config.showToday && <RoadmapTodayMarker position={todayPosition} />}
-
-              {groups.map((group) => (
+              {todayPosition !== null && config.showToday && <RoadmapTodayMarker position={todayPosition} />}
+              {groups.map(group => (
                 <div key={group.key}>
-                  {/* Group header row */}
-                  <div 
-                    className="h-[36px] relative flex"
-                    style={{
-                      backgroundColor: tokens.surface.hover,
-                      borderBottom: `1px solid ${tokens.border.default}`,
-                    }}
-                  >
-                    {/* Group header gridlines */}
-                    {periods.map((period, idx) => (
-                      <div
-                        key={period.key}
-                        className="flex-shrink-0 border-r"
-                        style={{
-                          minWidth: `${periodMinWidth}px`,
-                          width: `${100 / periods.length}%`,
-                          borderColor: tokens.border.subtle,
-                        }}
-                      />
-                    ))}
+                  {/* Group header row in timeline */}
+                  <div style={{ height: 36, background: '#FAFBFC', borderBottom: '1px solid #E2E8F0' }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B', paddingLeft: 16, lineHeight: '36px' }}>
+                      {group.label}
+                    </span>
                   </div>
-
-                  {/* Group items */}
-                  {group.isExpanded && group.items.map((item, idx) => renderTimelineRow(item, idx))}
+                  {group.isExpanded && group.items.map(renderRow)}
                 </div>
               ))}
             </div>
@@ -184,23 +119,14 @@ export function RoadmapTimelinePanel({
 
   // Flat view
   return (
-    <div 
-      className="flex-1 flex flex-col min-w-0 overflow-hidden"
-      style={{ backgroundColor: tokens.surface.card }}
-    >
+    <div className="flex-1 flex flex-col min-w-0 overflow-hidden" style={{ background: '#FFFFFF' }}>
       <ScrollArea className="flex-1 w-full">
-        <div style={{ minWidth: `${totalMinWidth}px` }}>
+        <div style={{ minWidth: totalMinWidth }}>
           <RoadmapTimelineHeader periods={periods} zoom={config.zoom} />
-          
-          <div className="relative" style={{ overflow: 'visible' }}>
-            {/* Gridlines */}
+          <div className="relative">
             {renderGridlines()}
-            
-            {/* Today marker */}
-            {config.showToday && <RoadmapTodayMarker position={todayPosition} />}
-
-            {/* Timeline rows */}
-            {items.map((item, index) => renderTimelineRow(item, index))}
+            {todayPosition !== null && config.showToday && <RoadmapTodayMarker position={todayPosition} />}
+            {items.map(renderRow)}
           </div>
         </div>
         <ScrollBar orientation="horizontal" />

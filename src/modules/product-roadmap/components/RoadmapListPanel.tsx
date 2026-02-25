@@ -1,6 +1,6 @@
 /**
- * Left panel containing the list of demands with drag & drop support
- * Enterprise-grade styling with Catalyst colors
+ * Left panel — Initiative list (340px)
+ * Spec: grouped by type, 44px rows, bottom "Add" link
  */
 
 import React from 'react';
@@ -8,8 +8,7 @@ import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { RoadmapListRow } from './RoadmapListRow';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { RoadmapDemand, RoadmapGroup } from '../types/roadmap';
-import { ChevronDown, ChevronRight } from 'lucide-react';
-import { useRoadmapTheme } from '../lib/useRoadmapTheme';
+import { ChevronDown, ChevronRight, ArrowUpDown, Plus } from 'lucide-react';
 
 interface RoadmapListPanelProps {
   items: RoadmapDemand[];
@@ -21,177 +20,105 @@ interface RoadmapListPanelProps {
   listWidth?: number;
 }
 
+const TYPE_COLORS: Record<string, string> = {
+  project: '#2563EB',
+  enhancement: '#0D9488',
+  improvement: '#D97706',
+};
+
 export function RoadmapListPanel({
-  items,
-  groups,
-  focusedIndex,
-  selectedItemId,
-  onItemClick,
-  onToggleGroup,
-  listWidth = 380,
+  items, groups, focusedIndex, selectedItemId, onItemClick, onToggleGroup, listWidth = 340,
 }: RoadmapListPanelProps) {
-  const { tokens } = useRoadmapTheme();
-  
-  // If groups are provided, render grouped view (no DnD for now)
-  if (groups && groups.length > 0) {
-    return (
-      <div 
-        className="flex-shrink-0 flex flex-col"
-        style={{ 
-          width: listWidth,
-          backgroundColor: tokens.surface.card,
-          borderRight: `1px solid ${tokens.border.default}`,
-        }}
-      >
-        {/* Header - matches timeline header height (2 lines) */}
-        <div 
-          className="flex items-center justify-between px-4 h-[52px]"
+
+  const renderHeader = () => (
+    <div
+      className="flex items-center justify-between px-4"
+      style={{ height: 44, borderBottom: '1px solid #E2E8F0', background: '#FAFBFC' }}
+    >
+      <div className="flex items-center gap-2">
+        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>
+          Initiatives
+        </span>
+        <span
           style={{
-            borderBottom: `1px solid ${tokens.border.default}`,
-            backgroundColor: tokens.surface.card,
+            fontSize: 10, fontWeight: 600, color: '#64748B', background: '#F1F5F9',
+            borderRadius: 10, padding: '2px 7px', fontFamily: 'JetBrains Mono, monospace',
           }}
         >
-          <div>
-            <span 
-              className="text-xs font-semibold uppercase tracking-wider block"
-              style={{ color: tokens.text.muted }}
-            >
-              Demands
-            </span>
-            <span 
-              className="text-xs"
-              style={{ color: tokens.text.secondary }}
-            >
-              {items.length} items
-            </span>
-          </div>
-        </div>
+          {items.length}
+        </span>
+      </div>
+      <ArrowUpDown className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} />
+    </div>
+  );
 
+  const renderAddRow = () => (
+    <button
+      className="w-full flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors hover:bg-blue-50"
+      style={{ color: '#2563EB', borderTop: '1px solid #F1F5F9' }}
+    >
+      <Plus className="w-4 h-4" />
+      Add Initiative to Roadmap
+    </button>
+  );
+
+  // Grouped view
+  if (groups && groups.length > 0) {
+    return (
+      <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid #E2E8F0', background: '#FFFFFF' }}>
+        {renderHeader()}
         <ScrollArea className="flex-1">
           <div role="table">
-            {groups.map((group) => (
-              <div 
-                key={group.key} 
-                style={{ borderBottom: `1px solid ${tokens.border.subtle}` }}
-              >
-                {/* Group header */}
-                <button
-                  onClick={() => onToggleGroup?.(group.key)}
-                  className="w-full flex items-center gap-2 px-4 py-2.5 transition-colors"
-                  style={{ backgroundColor: tokens.surface.hover }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.backgroundColor = tokens.surface.active;
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.backgroundColor = tokens.surface.hover;
-                  }}
-                >
-                  {group.isExpanded ? (
-                    <ChevronDown className="w-4 h-4" style={{ color: tokens.text.muted }} />
-                  ) : (
-                    <ChevronRight className="w-4 h-4" style={{ color: tokens.text.muted }} />
-                  )}
-                  {group.color && (
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: group.color }}
-                    />
-                  )}
-                  <span 
-                    className="text-sm font-semibold"
-                    style={{ color: tokens.text.primary }}
+            {groups.map(group => {
+              const typeKey = group.key;
+              const color = TYPE_COLORS[typeKey] || group.color || '#94A3B8';
+              return (
+                <div key={group.key} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                  <button
+                    onClick={() => onToggleGroup?.(group.key)}
+                    className="w-full flex items-center gap-2 px-4 py-2 transition-colors hover:bg-gray-50"
+                    style={{ background: '#FAFBFC', height: 36 }}
                   >
-                    {group.label}
-                  </span>
-                  <span 
-                    className="text-xs font-medium ml-auto"
-                    style={{ color: tokens.text.muted }}
-                  >
-                    {group.items.length}
-                  </span>
-                </button>
-
-                {/* Group items */}
-                {group.isExpanded && (
-                  <div>
-                    {group.items.map((item) => {
-                      const globalIndex = items.findIndex(i => i.id === item.id);
-                      return (
-                        <RoadmapListRow
-                          key={item.id}
-                          item={item}
-                          index={globalIndex}
-                          isFocused={focusedIndex === globalIndex}
-                          isSelected={selectedItemId === item.id}
-                          onClick={() => onItemClick(item.id)}
-                        />
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            ))}
+                    {group.isExpanded ? <ChevronDown className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} /> : <ChevronRight className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} />}
+                    <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: color }} />
+                    <span style={{ fontSize: 12, fontWeight: 600, color: '#334155' }}>{group.label}</span>
+                    <span style={{ fontSize: 11, fontWeight: 500, color: '#94A3B8', marginLeft: 'auto' }}>{group.items.length}</span>
+                  </button>
+                  {group.isExpanded && group.items.map(item => {
+                    const gi = items.findIndex(i => i.id === item.id);
+                    return (
+                      <RoadmapListRow
+                        key={item.id}
+                        item={item}
+                        index={gi}
+                        isFocused={focusedIndex === gi}
+                        isSelected={selectedItemId === item.id}
+                        onClick={() => onItemClick(item.id)}
+                      />
+                    );
+                  })}
+                </div>
+              );
+            })}
           </div>
+          {renderAddRow()}
         </ScrollArea>
       </div>
     );
   }
 
-  // Flat list view with drag & drop
+  // Flat list with DnD
   return (
-    <div 
-      className="flex-shrink-0 flex flex-col"
-      style={{ 
-        width: listWidth,
-        backgroundColor: tokens.surface.card,
-        borderRight: `1px solid ${tokens.border.default}`,
-      }}
-    >
-      {/* Header - matches timeline header height (2 lines) */}
-      <div 
-        className="flex items-center justify-between px-4 h-[52px]"
-        style={{
-          borderBottom: `1px solid ${tokens.border.default}`,
-          backgroundColor: tokens.surface.card,
-        }}
-      >
-        <div>
-          <span 
-            className="text-xs font-semibold uppercase tracking-wider block"
-            style={{ color: tokens.text.muted }}
-          >
-            Demands
-          </span>
-          <span 
-            className="text-xs"
-            style={{ color: tokens.text.secondary }}
-          >
-            {items.length} items
-          </span>
-        </div>
-      </div>
-
+    <div className="flex-shrink-0 flex flex-col" style={{ width: listWidth, borderRight: '1px solid #E2E8F0', background: '#FFFFFF' }}>
+      {renderHeader()}
       <ScrollArea className="flex-1">
         <Droppable droppableId="roadmap-list">
           {(provided, snapshot) => (
-            <div
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              role="table"
-              style={{
-                backgroundColor: snapshot.isDraggingOver 
-                  ? tokens.surface.active 
-                  : 'transparent',
-              }}
-            >
+            <div ref={provided.innerRef} {...provided.droppableProps} role="table">
               {items.map((item, index) => (
                 <Draggable key={item.id} draggableId={item.id} index={index}>
                   {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
+                    <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                       <RoadmapListRow
                         item={item}
                         index={index}
@@ -208,6 +135,7 @@ export function RoadmapListPanel({
             </div>
           )}
         </Droppable>
+        {renderAddRow()}
       </ScrollArea>
     </div>
   );

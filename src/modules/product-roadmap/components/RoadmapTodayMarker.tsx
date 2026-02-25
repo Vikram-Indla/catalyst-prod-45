@@ -1,35 +1,22 @@
 /**
- * Today marker line for the timeline - Uses Catalyst blue color
+ * Today marker — red vertical line with "Today" label
  */
 
 import React from 'react';
 
 interface RoadmapTodayMarkerProps {
-  position: number; // percentage from left
+  position: number;
 }
 
 export function RoadmapTodayMarker({ position }: RoadmapTodayMarkerProps) {
   if (position < 0 || position > 100) return null;
 
   return (
-    <div 
-      className="absolute top-0 bottom-0 z-20 pointer-events-none"
-      style={{ left: `${position}%` }}
-    >
-      {/* Diamond indicator at top */}
-      <div className="absolute -top-1 -translate-x-1/2">
-        <div 
-          className="w-3 h-3 rotate-45 shadow-sm bg-primary border-2 border-background"
-        />
-      </div>
-      
-      {/* Vertical line - Catalyst blue */}
-      <div className="w-0.5 h-full bg-primary" />
-      
-      {/* Today label */}
-      <div className="absolute top-6 -translate-x-1/2 px-2 py-0.5 text-[10px] font-semibold rounded whitespace-nowrap bg-primary text-primary-foreground">
+    <div className="absolute top-0 bottom-0 z-20 pointer-events-none" style={{ left: `${position}%` }}>
+      <div className="absolute -top-0.5 -translate-x-1/2 px-1.5 py-0.5 rounded" style={{ background: '#EF4444', fontSize: 9, fontWeight: 700, color: '#FFFFFF', whiteSpace: 'nowrap' }}>
         Today
       </div>
+      <div style={{ width: 2, height: '100%', background: 'linear-gradient(180deg, #EF4444, transparent)' }} />
     </div>
   );
 }
