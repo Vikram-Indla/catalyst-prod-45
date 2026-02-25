@@ -4,11 +4,18 @@
  */
 import React from 'react';
 import {
-  ZoomIn, ZoomOut, Calendar, ChevronDown,
+  ZoomIn, ZoomOut, Calendar,
   LayoutList, Columns3, GanttChart, LayoutGrid,
 } from 'lucide-react';
 import type { ZoomLevel, GroupBy, ViewMode } from './types/roadmap.types';
 import { SURFACE, INK } from './constants/roadmap.constants';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface RoadmapToolbarProps {
   zoom: ZoomLevel;
@@ -55,20 +62,20 @@ export function RoadmapToolbar({ zoom, onZoomChange, groupBy, onGroupByChange, v
         </div>
 
         {/* Group dropdown */}
-        <div className="relative">
-          <select
-            value={groupBy}
-            onChange={e => onGroupByChange(e.target.value as GroupBy)}
-            className="h-8 pl-3 pr-7 text-xs font-medium appearance-none cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
-            style={{ border: `1px solid ${SURFACE.border}`, borderRadius: 6, color: INK[2], background: SURFACE.card }}
+        <Select value={groupBy} onValueChange={(v) => onGroupByChange(v as GroupBy)}>
+          <SelectTrigger
+            className="h-8 w-auto min-w-[130px] text-xs font-medium border-border bg-card text-muted-foreground"
+            style={{ borderRadius: 6 }}
           >
-            <option value="type">Group: Type</option>
-            <option value="priority">Group: Priority</option>
-            <option value="owner">Group: Owner</option>
-            <option value="none">Group: None</option>
-          </select>
-          <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none" style={{ color: INK[4] }} />
-        </div>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="bg-popover border-border z-50">
+            <SelectItem value="type">Group: Type</SelectItem>
+            <SelectItem value="priority">Group: Priority</SelectItem>
+            <SelectItem value="owner">Group: Owner</SelectItem>
+            <SelectItem value="none">Group: None</SelectItem>
+          </SelectContent>
+        </Select>
 
         {/* Zoom +/- */}
         <button
