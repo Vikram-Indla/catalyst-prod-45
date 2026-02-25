@@ -1,6 +1,6 @@
 /**
  * Product Roadmap — Gantt chart (right panel)
- * Fixes: bars render with fallback dates, today gradient, swim lane headers, quarter labels
+ * Fixes: swim lane headers always shown, matching list panel
  */
 import React, { useMemo } from 'react';
 import { RoadmapTimelineBar } from './RoadmapTimelineBar';
@@ -82,7 +82,6 @@ function generatePeriods(start: Date, end: Date, zoom: ZoomLevel): TimelinePerio
 function calcBarPosition(startDate: string, endDate: string, tlStart: Date, tlEnd: Date) {
   const s = new Date(startDate);
   const e = new Date(endDate);
-  // Validate dates
   if (isNaN(s.getTime()) || isNaN(e.getTime())) return { left: 5, width: 8 };
   const totalDays = differenceInDays(tlEnd, tlStart) || 1;
   const left = Math.max(0, (differenceInDays(s, tlStart) / totalDays) * 100);
@@ -124,23 +123,18 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
                     background: p.isCurrent ? 'rgba(37,99,235,0.04)' : 'transparent',
                   }}
                 >
-                  {/* Quarter label above month */}
                   {p.sublabel && (
                     <span style={{
-                      fontSize: 9,
-                      fontWeight: 700,
+                      fontSize: 9, fontWeight: 700,
                       color: isCurrentQ ? '#2563EB' : '#94A3B8',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
+                      textTransform: 'uppercase', letterSpacing: '0.05em',
                     }}>
                       {p.sublabel}
                     </span>
                   )}
                   <span style={{
-                    fontSize: 12,
-                    fontWeight: p.isCurrent ? 700 : 500,
-                    color: p.isCurrent ? '#2563EB' : '#64748B',
-                    letterSpacing: '0.02em',
+                    fontSize: 12, fontWeight: p.isCurrent ? 700 : 500,
+                    color: p.isCurrent ? '#2563EB' : '#64748B', letterSpacing: '0.02em',
                   }}>
                     {p.label}
                   </span>
@@ -167,14 +161,13 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
               ))}
             </div>
 
-            {/* Today marker — gradient fade */}
+            {/* Today marker */}
             {todayPct !== null && (
               <div className="absolute pointer-events-none" style={{ left: `${todayPct}%`, top: 0, bottom: 0, zIndex: 20 }}>
                 <div style={{
                   position: 'absolute', top: -2, left: '50%', transform: 'translateX(-50%)',
                   fontSize: 10, fontWeight: 700, color: '#FFFFFF', background: '#EF4444',
-                  padding: '2px 8px', borderRadius: 4, whiteSpace: 'nowrap',
-                  textTransform: 'uppercase',
+                  padding: '2px 8px', borderRadius: 4, whiteSpace: 'nowrap', textTransform: 'uppercase',
                 }}>
                   Today
                 </div>
@@ -190,36 +183,32 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
               const typeColor = TYPE_COLORS[group.key]?.solid || group.color || '#64748B';
               return (
                 <div key={group.key}>
-                  {/* Swim lane group header */}
-                  {groups.length > 1 && (
-                    <div
-                      className="flex items-center gap-2 px-4"
-                      style={{
-                        height: GROUP_HEADER_HEIGHT,
-                        background: '#F8FAFC',
-                        borderBottom: `1px solid ${SURFACE.borderLight}`,
-                        borderTop: gi > 0 ? `1px solid ${SURFACE.border}` : 'none',
-                      }}
-                    >
-                      {/* Colored square */}
-                      <div style={{
-                        width: 10, height: 10, borderRadius: 2.5,
-                        background: typeColor, flexShrink: 0,
-                      }} />
-                      <span style={{
-                        fontSize: 11, fontWeight: 700, color: '#334155',
-                        letterSpacing: '0.04em',
-                      }}>
-                        {group.label}
-                      </span>
-                      <span style={{
-                        fontSize: 10, fontWeight: 600, color: '#94A3B8',
-                        marginLeft: 'auto',
-                      }}>
-                        {group.items.length}
-                      </span>
-                    </div>
-                  )}
+                  {/* Swim lane group header — ALWAYS shown, matching list panel */}
+                  <div
+                    className="flex items-center gap-2 px-3 relative"
+                    style={{
+                      height: GROUP_HEADER_HEIGHT,
+                      background: '#F8FAFC',
+                      borderBottom: `1px solid ${SURFACE.borderLight}`,
+                      borderTop: gi > 0 ? `1px solid ${SURFACE.border}` : 'none',
+                      zIndex: 10,
+                    }}
+                  >
+                    <div style={{
+                      width: 10, height: 10, borderRadius: 2.5, flexShrink: 0,
+                      background: `linear-gradient(135deg, ${typeColor}, ${typeColor}dd)`,
+                    }} />
+                    <span style={{
+                      fontSize: 10, fontWeight: 700, color: '#64748B',
+                      textTransform: 'uppercase', letterSpacing: '0.04em',
+                    }}>
+                      {group.label}
+                    </span>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', marginLeft: 'auto' }}>
+                      {group.items.length}
+                    </span>
+                  </div>
+
                   {group.items.map(item => {
                     const pos = calcBarPosition(item.startDate, item.endDate, timelineStart, timelineEnd);
                     return (
@@ -230,6 +219,8 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
                         onMouseLeave={() => onHover(null)}
                         style={{
                           height: ROW_HEIGHT,
+                          minHeight: ROW_HEIGHT,
+                          maxHeight: ROW_HEIGHT,
                           backgroundColor: selectedId === item.id ? 'rgba(37,99,235,0.06)' : hoveredId === item.id ? '#FAFBFC' : 'transparent',
                           borderBottom: `1px solid ${SURFACE.borderLight}`,
                           transition: 'background-color 0.15s ease',

@@ -1,6 +1,6 @@
 /**
  * Product Roadmap — Left panel initiative list (340px)
- * Fixes: type color bars, colored IDs (monospace), owner avatars, swim lane headers, 44px rows
+ * Fixes: swim lane headers always shown, gradient type bars, proper owner avatars, 44px rows
  */
 import React from 'react';
 import { ArrowUpDown, ChevronDown, Plus, GripVertical, AlertTriangle } from 'lucide-react';
@@ -14,6 +14,36 @@ interface RoadmapInitiativeListProps {
   onSelect: (id: string) => void;
   onHover: (id: string | null) => void;
   onAddClick: () => void;
+}
+
+/* Owner avatar — person silhouette for unassigned */
+function OwnerAvatar({ initials, color, name }: { initials?: string; color?: string; name?: string }) {
+  const isUnassigned = !initials || initials === '?' || initials === 'UN' || !name || name === 'Unassigned';
+
+  if (isUnassigned) {
+    return (
+      <div
+        className="flex-shrink-0 flex items-center justify-center rounded-full"
+        style={{ width: 26, height: 26, background: '#E2E8F0' }}
+        title="Unassigned"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="flex-shrink-0 flex items-center justify-center rounded-full"
+      style={{ width: 26, height: 26, background: color || '#64748B', color: '#FFFFFF', fontSize: 10, fontWeight: 700 }}
+      title={name}
+    >
+      {initials}
+    </div>
+  );
 }
 
 export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect, onHover, onAddClick }: RoadmapInitiativeListProps) {
@@ -42,28 +72,25 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
           const typeColor = TYPE_COLORS[group.key]?.solid || group.color || '#64748B';
           return (
             <div key={group.key}>
-              {/* Swim lane group header */}
-              {groups.length > 1 && (
-                <div
-                  className="flex items-center gap-2 px-4 cursor-pointer"
-                  style={{
-                    height: GROUP_HEADER_HEIGHT,
-                    background: '#F8FAFC',
-                    borderBottom: `1px solid ${SURFACE.borderLight}`,
-                    borderTop: gi > 0 ? `1px solid ${SURFACE.border}` : 'none',
-                    transition: 'background-color 0.15s ease',
-                  }}
-                >
-                  <ChevronDown className="w-3.5 h-3.5" style={{ color: INK[4] }} />
-                  {/* 10px colored square */}
-                  <div style={{
-                    width: 10, height: 10, borderRadius: 2.5,
-                    background: typeColor, flexShrink: 0,
-                  }} />
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#334155' }}>{group.label}</span>
-                  <span style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', marginLeft: 'auto' }}>{group.items.length}</span>
-                </div>
-              )}
+              {/* Swim lane group header — ALWAYS shown */}
+              <div
+                className="flex items-center gap-2 px-4"
+                style={{
+                  height: GROUP_HEADER_HEIGHT,
+                  background: '#F8FAFC',
+                  borderBottom: `1px solid ${SURFACE.borderLight}`,
+                  borderTop: gi > 0 ? `1px solid ${SURFACE.border}` : 'none',
+                }}
+              >
+                <ChevronDown className="w-3.5 h-3.5" style={{ color: INK[4] }} />
+                {/* 10px colored square with gradient */}
+                <div style={{
+                  width: 10, height: 10, borderRadius: 2.5, flexShrink: 0,
+                  background: `linear-gradient(135deg, ${typeColor}, ${typeColor}dd)`,
+                }} />
+                <span style={{ fontSize: 11, fontWeight: 700, color: '#334155', letterSpacing: '0.02em' }}>{group.label}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', marginLeft: 'auto' }}>{group.items.length}</span>
+              </div>
 
               {group.items.map(item => (
                 <InitiativeRow
@@ -126,15 +153,16 @@ function InitiativeRow({
         borderBottom: `1px solid ${SURFACE.borderLight}`,
         borderLeft: isSelected ? '3px solid #2563EB' : '3px solid transparent',
         transition: 'background-color 0.15s ease',
+        overflow: 'hidden',
       }}
     >
-      {/* 4px type accent bar */}
+      {/* 4px type accent bar — gradient */}
       <div
         className="absolute top-2 bottom-2 rounded-r"
         style={{
           left: isSelected ? 3 : 0,
           width: 4,
-          background: `linear-gradient(180deg, ${typeColor}, ${typeColor}dd)`,
+          background: `linear-gradient(180deg, ${typeColor} 0%, ${typeColor}cc 100%)`,
         }}
       />
 
@@ -175,19 +203,8 @@ function InitiativeRow({
         <div className="flex-shrink-0" style={{ width: 14, height: 14, color: '#D97706' }}><AlertTriangle size={14} /></div>
       )}
 
-      {/* Owner avatar — colored circle with proper initials */}
-      <div
-        className="flex-shrink-0 flex items-center justify-center rounded-full"
-        style={{
-          width: 26, height: 26,
-          background: item.ownerColor,
-          color: '#FFFFFF',
-          fontSize: 10, fontWeight: 600,
-        }}
-        title={item.ownerName}
-      >
-        {item.ownerInitials}
-      </div>
+      {/* Owner avatar */}
+      <OwnerAvatar initials={item.ownerInitials} color={item.ownerColor} name={item.ownerName} />
     </div>
   );
 }

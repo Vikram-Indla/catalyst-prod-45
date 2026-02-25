@@ -1,6 +1,6 @@
 /**
  * Product Roadmap — Individual initiative timeline bar
- * Fixes: 32px tall, type-colored, progress overlay, planned=dashed+55%
+ * Fixes: fallback bars with light fill, type-colored progress pills, proper text colors
  */
 import React, { useState, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
@@ -26,10 +26,12 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
   const barColor = TYPE_COLORS[item.type]?.solid || '#94A3B8';
   const isOverdue = item.status !== 'Completed' && item.progress < 100 && item.hasRealEndDate && new Date(item.endDate) < new Date();
   const finalColor = isOverdue ? '#EF4444' : barColor;
-  const isPlanned = item.status === 'Planned';
   const isFallbackEnd = !item.hasRealEndDate;
+  const isPlanned = item.status === 'Planned' && !isFallbackEnd;
 
-  // Hover gradient
+  // Determine bar visual mode
+  const isSolid = !isFallbackEnd && !isPlanned;
+
   const hoverGradient = item.type === 'project'
     ? 'linear-gradient(135deg, #2563EB, #3B82F6)'
     : item.type === 'enhancement'
@@ -57,6 +59,38 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
     if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
   }, []);
 
+  // Bar styles based on mode
+  let barBackground: string;
+  let barBorder: string;
+  let barOpacity = 1;
+  let textColor: string;
+  let pillBg: string;
+  let pillColor = '#FFFFFF';
+
+  if (isFallbackEnd) {
+    // Fallback: light fill + dashed border
+    barBackground = `${finalColor}20`; // ~12% opacity fill
+    barBorder = `2px dashed ${finalColor}99`; // 60% opacity dashed
+    textColor = finalColor;
+    pillBg = finalColor;
+    pillColor = '#FFFFFF';
+  } else if (isPlanned) {
+    // Planned: semi-transparent solid
+    barBackground = `${finalColor}30`;
+    barBorder = `2px dashed ${finalColor}`;
+    barOpacity = 0.7;
+    textColor = finalColor;
+    pillBg = finalColor;
+    pillColor = '#FFFFFF';
+  } else {
+    // Normal: solid bar
+    barBackground = isHovered ? hoverGradient : finalColor;
+    barBorder = 'none';
+    textColor = '#FFFFFF';
+    pillBg = 'rgba(255,255,255,0.2)';
+    pillColor = '#FFFFFF';
+  }
+
   const hoverShadow = `0 4px 16px ${finalColor}40`;
 
   return (
@@ -78,22 +112,17 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           alignItems: 'center',
           overflow: 'hidden',
           borderRadius: 6,
-          background: (isPlanned || isFallbackEnd) ? 'transparent' : (isHovered ? hoverGradient : finalColor),
-          border: isFallbackEnd ? `2px dashed ${finalColor}80` : isPlanned ? `2px dashed ${finalColor}` : 'none',
-          opacity: isFallbackEnd ? 0.4 : isPlanned ? 0.55 : 1,
+          background: barBackground,
+          border: barBorder,
+          opacity: barOpacity,
           transform: isHovered ? 'translateY(calc(-50% - 2px)) scaleY(1.08)' : 'translateY(-50%)',
           boxShadow: isHovered || isSelected ? hoverShadow : 'none',
           zIndex: isSelected ? 10 : isHovered ? 5 : 1,
           transition: 'transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, background 0.15s ease',
         }}
       >
-        {/* Planned/fallback fill */}
-        {(isPlanned || isFallbackEnd) && (
-          <div className="absolute inset-0" style={{ background: `${finalColor}18`, borderRadius: 6 }} />
-        )}
-
-        {/* Progress fill — white overlay */}
-        {item.progress > 0 && (
+        {/* Progress fill — only for solid bars */}
+        {isSolid && item.progress > 0 && (
           <div
             className="absolute left-0 top-0 bottom-0"
             style={{
@@ -106,25 +135,33 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           />
         )}
 
-        {/* Label — title + progress */}
+        {/* Title text */}
         {width > 5 && (
           <span
             className="relative truncate"
             style={{
-              zIndex: 1, fontSize: 12, fontWeight: 600, color: '#FFFFFF',
+              zIndex: 1, fontSize: 12, fontWeight: 600,
+              color: textColor,
               paddingLeft: 8, paddingRight: 8, lineHeight: '32px',
-              textShadow: isPlanned ? 'none' : '0 1px 2px rgba(0,0,0,0.2)',
+              flex: 1,
+              textShadow: isSolid ? '0 1px 2px rgba(0,0,0,0.2)' : 'none',
             }}
           >
             {width > 12 ? item.titleEn : item.initiativeKey}
           </span>
         )}
 
-        {/* Progress pill */}
+        {/* Progress pill — type-colored */}
         {item.progress > 0 && width > 12 && (
           <span
             className="absolute right-2 top-1/2 -translate-y-1/2"
-            style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF', background: 'rgba(0,0,0,0.2)', borderRadius: 10, padding: '1px 6px', zIndex: 2 }}
+            style={{
+              fontSize: 10, fontWeight: 700,
+              color: pillColor,
+              background: pillBg,
+              borderRadius: 3, padding: '1px 6px',
+              zIndex: 2,
+            }}
           >
             {item.progress}%
           </span>
@@ -145,15 +182,11 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
               className="absolute"
               title={m.title}
               style={{
-                left: `${mPos}%`,
-                top: '50%',
-                width: 8, height: 8,
-                marginTop: -4, marginLeft: -4,
+                left: `${mPos}%`, top: '50%',
+                width: 8, height: 8, marginTop: -4, marginLeft: -4,
                 background: m.completed ? '#FFFFFF' : finalColor,
-                border: '2px solid #FFFFFF',
-                borderRadius: 1,
-                transform: 'rotate(45deg)',
-                zIndex: 3,
+                border: '2px solid #FFFFFF', borderRadius: 1,
+                transform: 'rotate(45deg)', zIndex: 3,
                 boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
               }}
             />
@@ -179,6 +212,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: INK[3], marginBottom: 4 }}>
             <Calendar className="w-3 h-3" />
             {fmtDate(item.startDate)} → {fmtDate(item.endDate)}
+            {isFallbackEnd && <span style={{ fontSize: 10, color: '#D97706', fontWeight: 600 }}>(estimated)</span>}
           </div>
           <div className="flex items-center gap-2">
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: finalColor }} />
