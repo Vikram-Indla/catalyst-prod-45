@@ -153,26 +153,14 @@ export default function R360MemberDetail() {
               <div className="r3-profile-name">{overview.name}</div>
               <div className="r3-profile-role">{overview.role_name} · {overview.department}</div>
             </div>
-            <div className="r3-kpis">
-              <div className="r3-kpi">
-                <div className="r3-kpi-val">{overview.total_items}</div>
-                <div className="r3-kpi-label">Total</div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <div style={{ padding: '8px 22px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, border: '1px solid #FDE68A', background: '#FFFBEB' }}>
+                <div style={{ fontSize: '22px', fontWeight: 700, color: '#78350F' }}>{overview.open_items}</div>
+                <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#78350F', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>OPEN</div>
               </div>
-              <div className="r3-kpi" style={{ background: '#F0FDF4', borderColor: '#BBF7D0' }}>
-                <div className="r3-kpi-val" style={{ color: '#16A34A' }}>{overview.total_items > 0 ? Math.round((overview.done_items / overview.total_items) * 100) : 0}%</div>
-                <div className="r3-kpi-label">Closure</div>
-              </div>
-              <div className="r3-kpi" style={{ background: '#FEF2F2', borderColor: '#FECACA' }}>
-                <div className="r3-kpi-val" style={{ color: '#EF4444' }}>{overview.open_items}</div>
-                <div className="r3-kpi-label">Pending</div>
-              </div>
-              <div className="r3-kpi">
-                <div className="r3-kpi-val">{avgAge}d</div>
-                <div className="r3-kpi-label">Avg Age</div>
-              </div>
-              <div className="r3-kpi">
-                <div className="r3-kpi-val">{overview.stale_items}</div>
-                <div className="r3-kpi-label">Stale</div>
+              <div style={{ padding: '8px 22px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, border: '1px solid #E2E8F0', background: '#FFFFFF' }}>
+                <div style={{ fontSize: '22px', fontWeight: 700, color: '#0F172A' }}>{overview.stale_items}</div>
+                <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#334155', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>STALE</div>
               </div>
             </div>
           </div>
@@ -198,23 +186,20 @@ export default function R360MemberDetail() {
         </div>
 
         {/* ── Week Navigation ── */}
-        <div className="r3-weeknav">
-          <span style={{ fontSize: 11, fontWeight: 700, color: '#64748B', letterSpacing: '0.04em', textTransform: 'uppercase' as const }}>ACTIVE</span>
-          <button className={`r3-chip ${!statusFilter ? 'r3-chip--active' : ''}`} onClick={() => setStatusFilter(null)}>All ({counts.all})</button>
-          <button className={`r3-chip ${statusFilter === 'to_do' ? 'r3-chip--active' : ''}`} onClick={() => setStatusFilter(statusFilter === 'to_do' ? null : 'to_do')}>To Do ({counts.to_do})</button>
-          <button className={`r3-chip ${statusFilter === 'in_progress' ? 'r3-chip--active' : ''}`} onClick={() => setStatusFilter(statusFilter === 'in_progress' ? null : 'in_progress')}>In Progress ({counts.in_progress})</button>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 8 }}>
-            <Calendar size={14} style={{ color: '#EF4444' }} />
-            <span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>{week.label}</span>
-            <span style={{ fontSize: 12, color: '#64748B', fontWeight: 500 }}>{week.range}</span>
-            <button className="r3-weeknav-arrow" onClick={() => setWeekOffset(w => w - 1)}><ChevronLeft size={14} /></button>
-            <button className="r3-weeknav-arrow" onClick={() => setWeekOffset(w => w + 1)}><ChevronRight size={14} /></button>
-          </span>
-          <div style={{ flex: 1 }} />
-          <span style={{ fontSize: 11, color: '#94A3B8', display: 'flex', alignItems: 'center', gap: 4 }}>Q Search… (/)</span>
-          <span className="r3-weeknav-count">{weekItems.length} items · Page 1/{Math.max(1, Math.ceil(weekItems.length / 8))}</span>
-          <button className="r3-weeknav-arrow"><ChevronLeft size={14} /></button>
-          <button className="r3-weeknav-arrow"><ChevronRight size={14} /></button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 0', borderBottom: '1px solid #F1F5F9', flexWrap: 'wrap' as const }}>
+          <span style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>📅 {week.label}</span>
+          <span style={{ fontSize: '13px', fontWeight: 500, color: '#334155' }}>{week.range}</span>
+          <button style={{ width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setWeekOffset(w => w - 1)}>‹</button>
+          <button style={{ width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setWeekOffset(w => w + 1)}>›</button>
+          <div style={{ width: '1px', height: '20px', background: '#E2E8F0', margin: '0 4px' }} />
+          {([
+            { key: null, label: `All (${counts.all})` },
+            { key: 'to_do', label: `To Do (${counts.to_do})` },
+            { key: 'in_progress', label: `In Prog (${counts.in_progress})` },
+          ] as const).map(f => (
+            <span key={f.key ?? 'all'} onClick={() => setStatusFilter(statusFilter === f.key ? null : f.key)} style={{ padding: '5px 14px', fontSize: '12.5px', fontWeight: (statusFilter === f.key || (f.key === null && !statusFilter)) ? 600 : 500, border: (statusFilter === f.key || (f.key === null && !statusFilter)) ? '1px solid #2563EB' : '1px solid #E2E8F0', borderRadius: '20px', background: (statusFilter === f.key || (f.key === null && !statusFilter)) ? '#EFF6FF' : '#FFF', color: (statusFilter === f.key || (f.key === null && !statusFilter)) ? '#2563EB' : '#334155', cursor: 'pointer' }}>{f.label}</span>
+          ))}
+          <span style={{ marginLeft: 'auto', fontSize: '12.5px', color: '#64748B' }}>{weekItems.length} items</span>
         </div>
 
         {/* ── Views ── */}
@@ -247,26 +232,29 @@ export default function R360MemberDetail() {
 // ═══ PIXEL-BASED RING VIEW ═══
 // All coordinates in pixels. Cards, spokes, labels — same coordinate space.
 const CANVAS_H = 720;
-const CARD_W = 195;
+const CARD_W = 210;
 const CARD_H = 155;
 
+// ═══ TIGHT ORBIT SLOTS ═══
 function computeSlots(W: number) {
   const H = CANVAS_H;
+  const badge = 72;
+  const rEdge = W - badge - CARD_W - 8;
   return [
-    { left: W * 0.03,              top: H * 0.02 },
-    { left: W * 0.50 - CARD_W / 2, top: H * 0.00 },
-    { left: W - W * 0.03 - CARD_W, top: H * 0.02 },
-    { left: W * 0.01,              top: H * 0.36 },
-    { left: W - W * 0.01 - CARD_W, top: H * 0.33 },
-    { left: W * 0.03,              top: H * 0.65 },
-    { left: W * 0.50 - CARD_W / 2, top: H * 0.69 },
-    { left: W - W * 0.03 - CARD_W, top: H * 0.63 },
+    { left: W * 0.02,              top: H * 0.015 },
+    { left: W * 0.50 - CARD_W / 2, top: 0          },
+    { left: rEdge,                  top: H * 0.015 },
+    { left: W * 0.01,              top: H * 0.35  },
+    { left: rEdge,                  top: H * 0.33  },
+    { left: W * 0.02,              top: H * 0.61  },
+    { left: W * 0.50 - CARD_W / 2, top: H * 0.65  },
+    { left: rEdge,                  top: H * 0.59  },
   ];
 }
 
 function computeGeometry(W: number, count: number, ages: number[]) {
   const CX = W / 2;
-  const CY = CANVAS_H * 0.46;
+  const CY = CANVAS_H * 0.42;
   const slots = computeSlots(W);
   const spokes: { x1: number; y1: number; x2: number; y2: number }[] = [];
   const labels: { x: number; y: number; age: number }[] = [];
@@ -333,7 +321,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
   const { slots, spokes, labels, center } = computeGeometry(W, visible.length, ages);
 
   return (
-    <div ref={canvasRef} style={{ position:'relative', width:'100%', height:`${CANVAS_H}px`, overflow:'hidden' }}>
+    <div ref={canvasRef} style={{ position:'relative', width:'100%', height:`${CANVAS_H}px`, overflow:'hidden', boxSizing:'border-box' as const, marginTop:'8px' }}>
       {/* SVG SPOKES — pixel coordinates */}
       <svg width={W} height={CANVAS_H} style={{ position:'absolute', top:0, left:0, zIndex:1, pointerEvents:'none' }}>
         {spokes.map((s, i) => (
@@ -412,7 +400,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
 
       {/* COMPLETED BADGE */}
       {doneCount > 0 && (
-        <div style={{ position:'absolute', right:'20px', top:`${center.y}px`, transform:'translateY(-50%)', zIndex:6, display:'flex', flexDirection:'column', alignItems:'center', gap:'6px' }}>
+        <div style={{ position:'absolute', right:'16px', top:`${center.y}px`, transform:'translateY(-50%)', zIndex:6, display:'flex', flexDirection:'column', alignItems:'center', gap:'6px' }}>
           <div style={{ width:'48px', height:'48px', borderRadius:'50%', background:'#16A34A', color:'#FFF', fontSize:'18px', fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 2px 8px rgba(22,163,74,.3)', fontVariantNumeric:'tabular-nums' }}>{doneCount}</div>
           <span style={{ fontSize:'9.5px', fontWeight:700, color:'#14532D', textTransform:'uppercase', letterSpacing:'.06em', writingMode:'vertical-rl' } as React.CSSProperties}>COMPLETED</span>
         </div>
