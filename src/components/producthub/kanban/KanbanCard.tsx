@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { cn } from '@/lib/utils';
-import { Pencil, Star, MoreHorizontal } from 'lucide-react';
+import { Pencil, Star, MoreHorizontal, Link as LinkIcon, AlertTriangle, Clock, CalendarDays, type LucideIcon } from 'lucide-react';
 import type { Initiative } from '@/types/initiative';
 import { getPriorityLevel, getAvatarColor, getInitials } from '@/types/initiative';
 import { format, differenceInDays, isPast } from 'date-fns';
@@ -29,16 +29,16 @@ function getScoreBorderClass(score: number | null): string {
   return 'border-l-4 border-l-amber-500';
 }
 
-function getDueDateChip(date: string | null) {
+function getDueDateChip(date: string | null): { Icon: LucideIcon; label: string; cls: string } | null {
   if (!date) return null;
   const d = new Date(date);
   const now = new Date();
   const days = differenceInDays(d, now);
   const formatted = format(d, 'MMM d');
 
-  if (isPast(d) && days < 0) return { icon: '⚠', label: formatted, cls: 'text-red-700 bg-red-50' };
-  if (days <= 14) return { icon: '⏰', label: formatted, cls: 'text-amber-700 bg-amber-50' };
-  return { icon: '📅', label: formatted, cls: 'text-emerald-700 bg-emerald-50' };
+  if (isPast(d) && days < 0) return { Icon: AlertTriangle, label: formatted, cls: 'text-red-700 bg-red-50' };
+  if (days <= 14) return { Icon: Clock, label: formatted, cls: 'text-amber-700 bg-amber-50' };
+  return { Icon: CalendarDays, label: formatted, cls: 'text-emerald-700 bg-emerald-50' };
 }
 
 export const KanbanCard: React.FC<KanbanCardProps> = ({ initiative, onClick, onContextMenu, isOverlay, isFocused }) => {
@@ -152,8 +152,8 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ initiative, onClick, onC
           </span>
         )}
         {dueChip && (
-          <span className={cn('text-[10px] px-1.5 py-0.5 rounded', dueChip.cls)}>
-            {dueChip.icon} {dueChip.label}
+          <span className={cn('text-[10px] px-1.5 py-0.5 rounded inline-flex items-center gap-0.5', dueChip.cls)}>
+            <dueChip.Icon className="w-3 h-3" /> {dueChip.label}
           </span>
         )}
       </div>
@@ -216,7 +216,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ initiative, onClick, onC
       {/* Row 5: Badges (conditional) */}
       {(initiative.risk_count > 0) && (
         <div className="mt-2 pt-2 border-t border-zinc-100 flex items-center gap-3">
-          <span className="text-[10px] text-zinc-400">🔗 {initiative.risk_count}</span>
+          <span className="text-[10px] text-zinc-400 flex items-center gap-0.5"><LinkIcon className="w-3 h-3" /> {initiative.risk_count}</span>
         </div>
       )}
     </div>

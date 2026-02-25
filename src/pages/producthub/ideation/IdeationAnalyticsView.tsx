@@ -217,7 +217,7 @@ export default function IdeationAnalyticsView() {
                   fontSize: '11px', fontWeight: 600,
                   color: s.status === 'on-track' ? '#16A34A' : '#D97706',
                 }}>
-                  {s.status === 'on-track' ? '✅ On Track' : '⚠️ At Risk'}
+                  {s.status === 'on-track' ? 'On Track' : 'At Risk'}
                 </span>
               </div>
             </div>

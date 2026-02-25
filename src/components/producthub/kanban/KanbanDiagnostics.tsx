@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CheckCircle2, XCircle, Loader2, Square } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -282,11 +283,11 @@ export function KanbanDiagnostics() {
               <div className="space-y-1">
                 {checks.filter(c => c.group === group).map(check => (
                   <div key={check.id} className="flex items-start gap-3 py-2 px-3 rounded-lg hover:bg-muted/50">
-                    <span className="mt-0.5 text-base">
-                      {check.status === "pass" && "✅"}
-                      {check.status === "fail" && "❌"}
-                      {check.status === "running" && "⏳"}
-                      {check.status === "skip" && "⬜"}
+                    <span className="mt-0.5">
+                      {check.status === "pass" && <CheckCircle2 className="w-4 h-4 text-green-600" />}
+                      {check.status === "fail" && <XCircle className="w-4 h-4 text-red-600" />}
+                      {check.status === "running" && <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />}
+                      {check.status === "skip" && <Square className="w-4 h-4 text-zinc-400" />}
                     </span>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium text-foreground">{check.name}</div>

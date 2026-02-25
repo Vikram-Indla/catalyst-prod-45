@@ -1,17 +1,18 @@
 // =====================================================
-// DETAIL TAB — Placeholder for future tabs
+// DETAIL TAB — Placeholder for future tabs (Lucide icons only)
 // =====================================================
 
 import React from 'react';
+import type { LucideIcon } from 'lucide-react';
 
 interface DetailTabPlaceholderProps {
-  emoji: string;
+  icon: LucideIcon;
   label: string;
 }
 
-export const DetailTabPlaceholder: React.FC<DetailTabPlaceholderProps> = ({ emoji, label }) => (
+export const DetailTabPlaceholder: React.FC<DetailTabPlaceholderProps> = ({ icon: Icon, label }) => (
   <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-    <span className="text-[32px] mb-3">{emoji}</span>
+    <Icon className="w-8 h-8 text-muted-foreground mb-3" />
     <p className="text-[14px] font-medium text-muted-foreground">
       {label} — Coming soon
     </p>

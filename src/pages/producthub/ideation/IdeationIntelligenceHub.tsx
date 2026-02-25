@@ -151,10 +151,10 @@ export default function IdeationIntelligenceHub({ open, onClose, onMerge }: Prop
         {/* ── Card C: Compliance Mapping ── */}
         <ContentCard title="Compliance Mapping" badge="4 standards" badgeColor={C.success}>
            {[
-            { code: 'DGA-ACC-01', desc: 'Digital Accessibility', tagged: 8, total: 15, gap: '✅ Good coverage', gapColor: C.success, barColor: '#16A34A' },
-            { code: 'NCA-SEC-02', desc: 'Security Controls', tagged: 5, total: 15, gap: '⚠️ 2 ideas untagged', gapColor: C.warning, barColor: '#D97706' },
-            { code: 'NDMO-DG-03', desc: 'Data Governance', tagged: 6, total: 15, gap: '✅ Good coverage', gapColor: C.success, barColor: '#16A34A' },
-            { code: 'SDAIA-AI-01', desc: 'AI Ethics', tagged: 3, total: 15, gap: '🔴 Low — 4 AI ideas untagged', gapColor: C.danger, barColor: '#EF4444' },
+            { code: 'DGA-ACC-01', desc: 'Digital Accessibility', tagged: 8, total: 15, gap: 'Good coverage', gapColor: C.success, barColor: '#16A34A' },
+            { code: 'NCA-SEC-02', desc: 'Security Controls', tagged: 5, total: 15, gap: '2 ideas untagged', gapColor: C.warning, barColor: '#D97706' },
+            { code: 'NDMO-DG-03', desc: 'Data Governance', tagged: 6, total: 15, gap: 'Good coverage', gapColor: C.success, barColor: '#16A34A' },
+            { code: 'SDAIA-AI-01', desc: 'AI Ethics', tagged: 3, total: 15, gap: 'Low — 4 AI ideas untagged', gapColor: C.danger, barColor: '#EF4444' },
           ].map(c => (
             <div key={c.code} style={{ marginBottom: '14px', paddingBottom: '14px', borderBottom: `1px solid ${C.surfaceAlt}` }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MoreHorizontal, ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 import { KanbanCard } from './KanbanCard';
@@ -212,7 +212,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
 
         {items.length === 0 && (
           <div className="flex flex-col items-center justify-center py-10 text-center">
-            <span className="text-2xl mb-2">📭</span>
+            <Inbox className="w-6 h-6 text-zinc-300 mb-2" />
             <p className="text-sm text-zinc-400">No initiatives</p>
           </div>
         )}
