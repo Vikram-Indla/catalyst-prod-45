@@ -324,7 +324,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
   const cardH = 105;
   const maxR = Math.min(ringW, ringH) * 0.30;
   const R = Math.max(80, maxR);
-  const panelWidth = panelMode === 'detail' ? 360 : panelMode === 'completed' ? 280 : 0;
+  const panelWidth = panelMode === 'detail' ? 420 : panelMode === 'completed' ? 280 : 0;
 
   const initials = resource?.initials || resource?.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) || '??';
   const resourceName = resource?.name || resource?.full_name || 'Resource';
@@ -495,14 +495,8 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                 background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 boxShadow: '0 0 0 4px #fff, 0 0 0 6px #2563EB, 0 0 20px rgba(37,99,235,.2)',
-                overflow: 'hidden',
               }}>
-                {resource?.avatar_url ? (
-                  <img src={resource.avatar_url} alt={resourceName} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                ) : (
-                  <span style={{ fontFamily: T.sora, fontSize: 24, fontWeight: 800, color: '#FFFFFF' }}>{initials}</span>
-                )}
+                <span style={{ fontFamily: T.sora, fontSize: 24, fontWeight: 800, color: '#FFFFFF' }}>{initials}</span>
               </div>
               <div style={{ fontFamily: T.sora, fontSize: 12, fontWeight: 700, color: '#0F172A', marginTop: 6 }}>{resourceName}</div>
               <div style={{ fontSize: 10, color: '#64748B', fontWeight: 500 }}>{resourceRole}</div>
@@ -605,7 +599,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
           width: panelWidth, overflow: 'hidden',
           transition: 'width 0.3s cubic-bezier(.4,0,.2,1)',
           borderLeft: panelWidth > 0 ? `1px solid ${T.border}` : 'none',
-          background: '#FFFFFF', flexShrink: 0,
+          background: '#FAFBFC', flexShrink: 0,
         }}>
           {panelMode === 'completed' && (
             <div style={{ width: 280, height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -651,198 +645,223 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
           )}
 
           {panelMode === 'detail' && selectedItem && (
-            <div style={{ width: 360, height: '100%', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-              <div style={{ padding: '14px 16px', borderBottom: `1px solid ${T.border}` }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                    <span style={{ fontFamily: T.mono, fontSize: 15, fontWeight: 800, color: '#2563EB' }}>{selectedItem.key}</span>
-                    <StatusPill status={selectedItem.status} />
-                    <PriorityPill priority={selectedItem.priority} />
-                    <HubBadge hub={selectedItem.hub} />
-                  </div>
-                  <button onClick={closePanel} style={{
-                    width: 28, height: 28, borderRadius: 6, border: `1px solid ${T.border}`,
-                    background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <X size={16} color={T.ink3} />
-                  </button>
+            <div style={{ width: 420, height: '100%', display: 'flex', flexDirection: 'column' }}>
+              {/* STICKY HEADER */}
+              <div style={{
+                padding: '16px 20px', borderBottom: `1px solid ${T.border}`, background: '#FAFBFC',
+                position: 'sticky', top: 0, zIndex: 2, flexShrink: 0,
+              }}>
+                {/* Close button */}
+                <button onClick={closePanel} style={{
+                  position: 'absolute', top: 12, right: 12,
+                  width: 32, height: 32, borderRadius: 8, border: 'none',
+                  background: '#F1F5F9', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 16, color: T.ink3, transition: 'background 120ms',
+                }}
+                  onMouseOver={e => (e.currentTarget.style.background = '#E2E8F0')}
+                  onMouseOut={e => (e.currentTarget.style.background = '#F1F5F9')}
+                >✕</button>
+
+                {/* Key — BIG anchor */}
+                <div style={{ fontFamily: T.mono, fontSize: 20, fontWeight: 800, color: '#2563EB', marginBottom: 8 }}>
+                  {selectedItem.key}
                 </div>
-                <div style={{ fontFamily: T.sora, fontSize: 13, fontWeight: 700, color: '#0F172A', lineHeight: 1.35 }}>{selectedItem.title}</div>
-              </div>
 
-              {/* Stale alert */}
-              {(() => {
-                const age = selectedItem.ageDays;
-                const s = staleLevel(age, selectedItem.status);
-                if (!s) return null;
-                return (
-                  <div style={{
-                    margin: '8px 16px', padding: '8px 12px', borderRadius: 6,
-                    background: s === 'critical' ? '#FEF2F2' : '#FFFBEB',
-                    border: `1px solid ${s === 'critical' ? '#FECACA' : '#FDE68A'}`,
-                    fontSize: 11, fontWeight: 600,
-                    color: s === 'critical' ? T.danger : T.warning,
-                  }}>
-                    {s === 'critical' ? '🔴 Critical' : '⚠️ Stale'} — {age} days without resolution
-                  </div>
-                );
-              })()}
-
-              {/* SLA badge */}
-              {(() => {
-                const due = smartDue(selectedItem);
-                if (!due) return null;
-                const sla = slaBadge(due.date);
-                return (
-                  <div style={{ padding: '0 16px 8px' }}>
-                    <span style={{
-                      display: 'inline-block', padding: '3px 10px', borderRadius: 6,
-                      fontSize: 11, fontWeight: 700, background: sla.bg, color: sla.color,
-                    }}>
-                      {sla.label}
-                      {due.source === 'release' && selectedItem.releaseName && (
-                        <span style={{ fontWeight: 400, marginLeft: 4, opacity: 0.7 }}>({selectedItem.releaseName})</span>
-                      )}
-                    </span>
-                  </div>
-                );
-              })()}
-
-              {/* Breadcrumb */}
-              {selectedItem.parentKey && (
-                <div style={{ padding: '4px 16px 8px', display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, flexWrap: 'wrap' }}>
+                {/* Badges row */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
+                  <StatusPill status={selectedItem.status} />
+                  <PriorityPill priority={selectedItem.priority} />
                   <HubBadge hub={selectedItem.hub} />
-                  <span style={{ color: '#94A3B8' }}>{'>'}</span>
-                  <span style={{ fontFamily: T.mono, fontWeight: 600, color: '#64748B' }}>{selectedItem.parentKey}</span>
-                  <span style={{ color: '#94A3B8' }}>{'>'}</span>
-                  <span style={{ fontFamily: T.mono, fontWeight: 700, color: '#2563EB' }}>{selectedItem.key}</span>
                 </div>
-              )}
 
-              {/* Metadata grid */}
-              <div style={{ margin: '0 16px', border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
-                {[
-                  [
-                    { label: 'Project', value: selectedItem.projectName || selectedItem.projectKey || '—' },
-                    { label: 'Assigner', value: selectedItem.assignerName || '—' },
-                  ],
-                  [
-                    { label: 'Assigned', value: `${relativeDate(selectedItem.assignedDate)} · ${new Date(selectedItem.assignedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}` },
-                    { label: 'Days Sitting', value: String(selectedItem.ageDays), isAge: true },
-                  ],
-                  [
-                    { label: 'Release', value: selectedItem.releaseName || '—' },
-                    { label: 'Due', value: (() => {
-                      const due = smartDue(selectedItem);
-                      if (!due) return '—';
-                      return new Date(due.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
-                        (due.source === 'release' && selectedItem.releaseName ? ` (${selectedItem.releaseName})` : '');
-                    })() },
-                  ],
-                ].map((row, ri) => (
-                  <div key={ri} style={{ display: 'flex', borderBottom: ri < 2 ? `1px solid ${T.border}` : 'none' }}>
-                    {row.map((cell: any, ci: number) => {
-                      const age = cell.isAge ? selectedItem.ageDays : 0;
-                      return (
-                        <div key={ci} style={{
-                          flex: 1, padding: '8px 12px',
-                          borderRight: ci === 0 ? `1px solid ${T.border}` : 'none',
-                        }}>
-                          <div style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', color: '#94A3B8', marginBottom: 3, letterSpacing: '0.05em' }}>{cell.label}</div>
-                          <div style={{
-                            fontSize: 11, fontWeight: cell.isAge ? 800 : 500,
-                            color: cell.isAge ? ageHeatColor(age) : '#0F172A',
-                            fontFamily: cell.isAge ? T.mono : T.inter,
-                          }}>
-                            {cell.value}
-                            {cell.isAge && (
-                              <div style={{
-                                marginTop: 4, height: 4, borderRadius: 2, background: T.borderLt,
-                                overflow: 'hidden',
-                              }}>
-                                <div style={{
-                                  height: '100%', borderRadius: 2, width: `${Math.min(100, (age / 30) * 100)}%`,
-                                  background: ageHeatColor(age),
-                                }} />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ))}
+                {/* Title */}
+                <div style={{
+                  fontFamily: T.sora, fontSize: 15, fontWeight: 700, color: '#0F172A',
+                  lineHeight: 1.4,
+                }}>{selectedItem.title}</div>
+
+                {/* Stale/overdue alert */}
+                {(() => {
+                  const age = selectedItem.ageDays;
+                  const s = staleLevel(age, selectedItem.status);
+                  if (!s) return null;
+                  return (
+                    <div style={{
+                      marginTop: 10, padding: '8px 12px', borderRadius: 8,
+                      background: '#FEF2F2', border: '1px solid #FECACA',
+                      fontSize: 12, fontWeight: 600, color: '#EF4444',
+                    }}>
+                      {s === 'critical' ? '🔴 Critical' : '⚠️ Stale'} — {age} days without resolution
+                    </div>
+                  );
+                })()}
               </div>
 
-              {/* Hierarchy */}
-              {selectedItem.parentKey && (
-                <div style={{ margin: '12px 16px 0' }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#94A3B8', marginBottom: 8, letterSpacing: '0.05em' }}>HIERARCHY</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: '#F8FAFC', borderRadius: 6, marginBottom: 2 }}>
-                    <div style={{ width: 16, height: 16, borderRadius: 8, background: '#6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ fontSize: 8, color: '#FFFFFF', fontWeight: 800 }}>P</span>
-                    </div>
-                    <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: '#334155' }}>{selectedItem.parentKey}</span>
-                    <span style={{ fontSize: 10, color: '#64748B', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {selectedItem.parentTitle || ''}
-                    </span>
-                  </div>
-                  <div style={{ width: 2, height: 10, background: T.border, marginLeft: 17 }} />
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: '#EFF6FF', border: `1px solid ${T.accent}`, borderRadius: 6 }}>
-                    <div style={{ width: 16, height: 16, borderRadius: 8, background: T.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ fontSize: 8, color: '#FFFFFF', fontWeight: 800 }}>
-                        {selectedItem.type === 'Bug' ? 'B' : selectedItem.type === 'Story' ? 'S' : selectedItem.type === 'Epic' ? 'E' : 'T'}
-                      </span>
-                    </div>
-                    <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: '#2563EB' }}>{selectedItem.key}</span>
-                    <span style={{ fontSize: 10, color: '#0F172A', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 600 }}>{selectedItem.title}</span>
-                    <StatusPill status={selectedItem.status} small />
-                  </div>
-                </div>
-              )}
+              {/* SCROLLABLE CONTENT */}
+              <div style={{ flex: 1, overflowY: 'auto', padding: '0 20px 20px' }}>
 
-              {/* Siblings */}
-              {(() => {
-                if (!selectedItem.parentKey) return null;
-                const sibs = (siblingMap.get(selectedItem.parentKey) || []).filter(s => s.key !== selectedItem.key);
-                if (sibs.length === 0) return null;
-                const sibDoneCount = sibs.filter(s => s.status === 'done').length;
-                return (
-                  <div style={{ margin: '12px 16px 16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#94A3B8', letterSpacing: '0.05em' }}>SIBLINGS</span>
-                      <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: '#64748B' }}>{sibDoneCount}/{sibs.length}</span>
-                    </div>
-                    <div style={{ height: 3, borderRadius: 2, background: T.borderLt, overflow: 'hidden', marginBottom: 8 }}>
-                      <div style={{ height: '100%', borderRadius: 2, width: `${(sibDoneCount / sibs.length) * 100}%`, background: T.done }} />
-                    </div>
-                    {sibs.slice(0, 6).map(s => (
-                      <div key={s.key} style={{
-                        display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px',
-                        borderBottom: `1px solid ${T.borderLt}`,
-                      }}>
-                        <div style={{
-                          width: 22, height: 22, borderRadius: 11, flexShrink: 0,
-                          background: STATUS_SOLID[s.status].bg,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}>
-                          <span style={{ fontSize: 8, fontWeight: 800, color: '#FFFFFF' }}>
-                            {s.type === 'Bug' ? 'B' : s.type === 'Story' ? 'S' : 'T'}
-                          </span>
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                            <span style={{ fontFamily: T.mono, fontSize: 9.5, fontWeight: 700, color: '#334155' }}>{s.key}</span>
-                            <StatusPill status={s.status} small />
-                            <span style={{ fontFamily: T.mono, fontSize: 9, fontWeight: 700, color: ageHeatColor(s.ageDays), marginLeft: 'auto' }}>{s.ageDays}d</span>
-                          </div>
-                          <div style={{ fontSize: 10, color: '#64748B', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.title}</div>
-                        </div>
-                      </div>
-                    ))}
+                {/* Breadcrumb */}
+                {selectedItem.parentKey && (
+                  <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap', fontSize: 11 }}>
+                    <HubBadge hub={selectedItem.hub} />
+                    <span style={{ fontFamily: T.mono, fontSize: 10, color: '#64748B' }}>{selectedItem.parentKey}</span>
+                    <span style={{ color: '#94A3B8', fontSize: 10 }}>›</span>
+                    <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: '#2563EB' }}>{selectedItem.key}</span>
                   </div>
-                );
-              })()}
+                )}
+
+                {/* Metadata grid */}
+                <div style={{ marginTop: 16, border: `1px solid ${T.border}`, borderRadius: 10, overflow: 'hidden' }}>
+                  {[
+                    [
+                      { label: 'PROJECT', value: selectedItem.projectName || selectedItem.projectKey || '—' },
+                      { label: 'ASSIGNER', value: selectedItem.assignerName || '—' },
+                    ],
+                    [
+                      { label: 'ASSIGNED', value: `${relativeDate(selectedItem.assignedDate)} · ${new Date(selectedItem.assignedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}` },
+                      { label: 'DAYS SITTING', value: String(selectedItem.ageDays), isAge: true },
+                    ],
+                    [
+                      { label: 'RELEASE', value: selectedItem.releaseName || '—' },
+                      { label: 'DUE', value: (() => {
+                        const due = smartDue(selectedItem);
+                        if (!due) return '—';
+                        return new Date(due.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
+                          (due.source === 'release' && selectedItem.releaseName ? ` (${selectedItem.releaseName})` : '');
+                      })() },
+                    ],
+                  ].map((row, ri) => (
+                    <div key={ri} style={{
+                      display: 'flex',
+                      borderBottom: ri < 2 ? `1px solid ${T.border}` : 'none',
+                      background: ri % 2 === 1 ? '#F8FAFC' : '#FFFFFF',
+                    }}>
+                      {row.map((cell: any, ci: number) => {
+                        const age = cell.isAge ? selectedItem.ageDays : 0;
+                        return (
+                          <div key={ci} style={{
+                            flex: 1, padding: '12px 14px',
+                            borderRight: ci === 0 ? `1px solid ${T.border}` : 'none',
+                          }}>
+                            <div style={{
+                              fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: '#64748B',
+                              marginBottom: 4, letterSpacing: '0.04em',
+                            }}>{cell.label}</div>
+                            <div style={{
+                              fontSize: cell.isAge ? 18 : 13,
+                              fontWeight: cell.isAge ? 800 : 500,
+                              color: cell.isAge ? ageHeatColor(age) : '#0F172A',
+                              fontFamily: cell.isAge ? T.mono : T.inter,
+                            }}>
+                              {cell.value}
+                              {cell.isAge && (
+                                <div style={{
+                                  marginTop: 6, height: 4, borderRadius: 2, background: '#E2E8F0',
+                                  overflow: 'hidden',
+                                }}>
+                                  <div style={{
+                                    height: '100%', borderRadius: 2,
+                                    width: `${Math.min(100, (age / 30) * 100)}%`,
+                                    background: ageHeatColor(age),
+                                  }} />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Hierarchy */}
+                {selectedItem.parentKey && (
+                  <div style={{ marginTop: 20 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#94A3B8', marginBottom: 8, letterSpacing: '0.06em' }}>HIERARCHY</div>
+                    {/* Parent node */}
+                    <div style={{
+                      padding: '10px 12px', borderRadius: 8, border: `1px solid ${T.border}`, marginBottom: 0,
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ fontSize: 8, fontWeight: 700, textTransform: 'uppercase', color: '#94A3B8' }}>
+                          {selectedItem.type === 'Sub-task' ? 'STORY' : 'EPIC'}
+                        </span>
+                        <span style={{ fontFamily: T.mono, fontSize: 11, fontWeight: 700, color: '#334155' }}>{selectedItem.parentKey}</span>
+                      </div>
+                      <div style={{ fontSize: 12, color: '#334155', marginTop: 2, lineHeight: 1.35 }}>
+                        {selectedItem.parentTitle || ''}
+                      </div>
+                    </div>
+                    {/* Connector */}
+                    <div style={{ width: 2, height: 12, background: '#E2E8F0', marginLeft: 20 }} />
+                    {/* Current node */}
+                    <div style={{
+                      padding: '10px 12px', borderRadius: 8,
+                      border: `1px solid ${T.accent}`, background: 'rgba(37,99,235,0.03)',
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ fontSize: 8, fontWeight: 700, textTransform: 'uppercase', color: '#94A3B8' }}>
+                          {selectedItem.type.toUpperCase()}
+                        </span>
+                        <span style={{ fontFamily: T.mono, fontSize: 11, fontWeight: 700, color: '#2563EB' }}>{selectedItem.key}</span>
+                        <div style={{ marginLeft: 'auto' }}><StatusPill status={selectedItem.status} small /></div>
+                      </div>
+                      <div style={{ fontSize: 12, color: '#0F172A', marginTop: 2, fontWeight: 600, lineHeight: 1.35 }}>{selectedItem.title}</div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Siblings */}
+                {(() => {
+                  if (!selectedItem.parentKey) return null;
+                  const sibs = (siblingMap.get(selectedItem.parentKey) || []).filter(s => s.key !== selectedItem.key);
+                  if (sibs.length === 0) return null;
+                  const sibDoneCount = sibs.filter(s => s.status === 'done').length;
+                  return (
+                    <div style={{ marginTop: 20 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#94A3B8', letterSpacing: '0.06em' }}>SIBLINGS</span>
+                        <span style={{ fontFamily: T.mono, fontSize: 10, color: '#94A3B8', marginLeft: 'auto' }}>{sibDoneCount}/{sibs.length}</span>
+                      </div>
+                      <div style={{ height: 4, borderRadius: 2, background: '#E2E8F0', overflow: 'hidden', marginBottom: 8 }}>
+                        <div style={{ height: '100%', borderRadius: 2, width: `${(sibDoneCount / sibs.length) * 100}%`, background: T.done }} />
+                      </div>
+                      {sibs.slice(0, 6).map(s => {
+                        const sibInitials = (s.assignerName || s.key).split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+                        return (
+                          <div key={s.key} style={{
+                            display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px',
+                            borderRadius: 8, border: `1px solid ${T.borderLt}`, marginBottom: 4,
+                            cursor: 'pointer', transition: 'background 80ms',
+                          }}
+                            onMouseOver={e => (e.currentTarget.style.background = '#F8FAFC')}
+                            onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
+                          >
+                            <div style={{
+                              width: 26, height: 26, borderRadius: 13, flexShrink: 0,
+                              background: STATUS_SOLID[s.status].bg,
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            }}>
+                              <span style={{ fontSize: 9, fontWeight: 700, color: '#FFFFFF' }}>{sibInitials}</span>
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                                <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: '#334155' }}>{s.key}</span>
+                                <StatusPill status={s.status} small />
+                                <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: '#94A3B8', marginLeft: 'auto' }}>{s.ageDays}d</span>
+                              </div>
+                              <div style={{ fontSize: 11, color: '#64748B', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.title}</div>
+                              {s.assignerName && (
+                                <div style={{ fontSize: 10, color: '#334155', marginTop: 1 }}>{s.assignerName}</div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
           )}
         </div>
