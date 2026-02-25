@@ -5,17 +5,27 @@ import { ProductionEventsTable } from './components/ProductionEventsTable';
 import { useProductionEvents } from './hooks/useProductionEvents';
 import { usePeriodNavigation } from './hooks/usePeriodNavigation';
 import { classifyEventType } from './utils/event-colors';
+import {
+  generateSummaryLead,
+  generateSummaryBody,
+  generateQuarterlySummaryLead,
+  groupEventsByMonth,
+} from './utils/narrative-helpers';
 
 export default function ProductionEventsPage() {
   const { periodType, label, startISO, endISO, handlePeriodTypeChange, handleNavigate } = usePeriodNavigation();
+  // Fix 31: default filter = 'all'
   const [filterType, setFilterType] = useState<string>('all');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const { data: rawEvents = [], isLoading: eventsLoading } = useProductionEvents(periodType, startISO, endISO);
 
-  // Classify events
+  // Fix 4: Classify with summary keyword detection
   const events = useMemo(() =>
-    rawEvents.map(e => ({ ...e, eventType: classifyEventType(e.issueType, []) })),
+    rawEvents.map(e => ({
+      ...e,
+      eventType: classifyEventType(e.issueType, [], e.title + ' ' + (e.subtitle || '')),
+    })),
     [rawEvents]
   );
 
@@ -36,38 +46,35 @@ export default function ProductionEventsPage() {
     return events.filter(e => e.eventType === filterType);
   }, [events, filterType]);
 
-  // Compute counts by event type
-  const typeCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    for (const e of events) {
-      counts[e.eventType] = (counts[e.eventType] || 0) + 1;
-    }
-    return counts;
-  }, [events]);
-
   const syncedAt = events.length > 0
     ? `Last deployed: ${new Date(events[0].deployedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
     : '';
 
-  // AI Summary
+  // Fix 3: Summary generation — editorial prose
   const releaseSet = new Set(events.map(e => e.release).filter(Boolean));
   const periodLabel = periodType === 'weekly' ? 'week' : periodType === 'monthly' ? 'month' : 'quarter';
   const releaseCount = releaseSet.size;
-  const releasePart = releaseCount > 0
-    ? ` across ${releaseCount} release${releaseCount > 1 ? 's' : ''}`
-    : '';
-  const projectName = events.length > 0 && events[0].stories[0]?.project_name
-    ? ` for the ${events[0].stories[0].project_name} programme`
-    : '';
-  const summaryLead = `${events.length} production event${events.length !== 1 ? 's' : ''} deployed this ${periodLabel}${releasePart || projectName}.`;
-  const eventTitles = events.slice(0, 5).map(e => e.title);
-  const summaryBody = events.length > 0
-    ? `Key deployments include ${eventTitles.length > 1 ? eventTitles.slice(0, -1).join(', ') + ', and ' + eventTitles[eventTitles.length - 1] : eventTitles[0]}. All events deployed successfully with zero rollbacks.`
-    : '';
+
+  const summaryLead = useMemo(() => {
+    if (events.length === 0) return '';
+    if (periodType === 'quarterly') {
+      const eventsByMonth = groupEventsByMonth(events);
+      const startDate = new Date(startISO);
+      const quarter = Math.ceil((startDate.getMonth() + 1) / 3);
+      const year = startDate.getFullYear();
+      return generateQuarterlySummaryLead(events, eventsByMonth, quarter, year);
+    }
+    return generateSummaryLead(events, periodLabel, releaseCount);
+  }, [events, periodType, periodLabel, releaseCount, startISO]);
+
+  const summaryBody = useMemo(() => {
+    if (events.length === 0) return '';
+    return generateSummaryBody(events, periodLabel);
+  }, [events, periodLabel]);
 
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", padding: '24px 28px', background: '#FFFFFF', minHeight: '100vh' }}>
-      {/* Page Header — Fix 28: weight 800, tracking */}
+      {/* Page Header — Fix 13: weight 800 */}
       <div className="flex items-start justify-between mb-1">
         <div>
           <h1 style={{
@@ -76,39 +83,32 @@ export default function ProductionEventsPage() {
           }}>
             Production Events
           </h1>
-          {/* Fix 5: updated subtitle */}
           <p style={{ fontSize: 13, color: '#64748B', fontWeight: 400, margin: '4px 0 0' }}>
             Curated record of production deployments and their business impact
           </p>
         </div>
         <div className="flex items-center gap-2">
           {syncedAt && <span style={{ fontSize: 11, color: '#94A3B8', fontWeight: 500, marginRight: 8 }}>{syncedAt}</span>}
-          <button
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              padding: '6px 14px', fontSize: 12, fontWeight: 600,
-              borderRadius: 6, border: '1px solid #E2E8F0',
-              background: '#FFFFFF', color: '#475569', cursor: 'pointer',
-            }}
-          >
-            <FileDown size={14} />
-            Export PDF
+          <button style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            padding: '6px 14px', fontSize: 12, fontWeight: 600,
+            borderRadius: 6, border: '1px solid #E2E8F0',
+            background: '#FFFFFF', color: '#475569', cursor: 'pointer',
+          }}>
+            <FileDown size={14} /> Export PDF
           </button>
-          <button
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              padding: '6px 14px', fontSize: 12, fontWeight: 600,
-              borderRadius: 6, border: '1px solid #E2E8F0',
-              background: '#FFFFFF', color: '#475569', cursor: 'pointer',
-            }}
-          >
-            <RefreshCw size={14} />
-            Sync
+          <button style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            padding: '6px 14px', fontSize: 12, fontWeight: 600,
+            borderRadius: 6, border: '1px solid #E2E8F0',
+            background: '#FFFFFF', color: '#475569', cursor: 'pointer',
+          }}>
+            <RefreshCw size={14} /> Sync
           </button>
         </div>
       </div>
 
-      {/* Fix 1: AI Summary Block (replaces Fix 6 stats bar) */}
+      {/* Fix 25: AI Summary Block with shadow */}
       {events.length > 0 && (
         <div
           className="mb-5 mt-4"
@@ -133,7 +133,7 @@ export default function ProductionEventsPage() {
         </div>
       )}
 
-      {/* Controls — Fix 4 filter chips are inside PeriodControls */}
+      {/* Controls */}
       <div style={{ marginBottom: 16 }}>
         <PeriodControls
           periodType={periodType}
@@ -145,13 +145,23 @@ export default function ProductionEventsPage() {
         />
       </div>
 
-      {/* Table */}
+      {/* Table — Fix 26: pass periodType for quarterly month dividers */}
       <ProductionEventsTable
         events={filteredEvents}
         loading={eventsLoading}
         expandedId={expandedId}
         onToggleExpand={handleToggleExpand}
+        periodType={periodType}
       />
+
+      {/* Fix 40: Print styles */}
+      <style>{`
+        @media print {
+          nav, .sidebar, .controls-row, .btn-outline, .regen-btn, .filter-group { display: none !important; }
+          tr[style*="display: none"] { display: table-row !important; }
+          body { font-size: 12px; }
+        }
+      `}</style>
     </div>
   );
 }
