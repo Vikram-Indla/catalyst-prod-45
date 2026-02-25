@@ -17,7 +17,7 @@
 }
 
 /* ── Layout ── */
-.r3-page { padding: 24px 28px; max-width: 1440px; margin: 0 auto; }
+.r3-page { padding: 20px 16px; max-width: none; margin: 0; }
 .r3-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
 .r3-title { font-size: 24px; font-weight: 800; color: #020617; letter-spacing: -0.5px; margin: 0; }
 .r3-count { font-size: 14px; font-weight: 500; color: #2563EB; }
@@ -76,7 +76,7 @@
 .r3-loc-off { color: #7F1D1D; font-weight: 500; }
 
 /* ── Profile Header ── */
-.r3-profile { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 20px 24px; margin-bottom: 20px; }
+.r3-profile { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 24px; margin-bottom: 0; }
 .r3-profile-top { display: flex; align-items: center; gap: 16px; }
 .r3-profile-avatar {
   width: 48px; height: 48px; border-radius: 50%; display: flex;
