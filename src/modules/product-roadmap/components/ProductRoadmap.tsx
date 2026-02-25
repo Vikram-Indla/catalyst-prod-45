@@ -24,7 +24,12 @@ import type { TimelineConfig, GroupingField, TimelineZoom, RoadmapGroup } from '
 import { DEFAULT_TIMELINE_CONFIG } from '../types/roadmap';
 import { addMonths, subMonths } from 'date-fns';
 
-export function ProductRoadmap() {
+interface ProductRoadmapProps {
+  isFullscreen?: boolean;
+  onToggleFullscreen?: () => void;
+}
+
+export function ProductRoadmap({ isFullscreen = false, onToggleFullscreen }: ProductRoadmapProps) {
   // Filter state
   const { filters, setFilters, activeFilterCount } = useRoadmapFilters();
   
@@ -218,6 +223,8 @@ export function ProductRoadmap() {
             onOpenExportDialog={() => setIsExportDialogOpen(true)}
             itemCount={items.length}
             activeFilterCount={activeFilterCount}
+            isFullscreen={isFullscreen}
+            onToggleFullscreen={onToggleFullscreen}
           />
 
           {/* Main content */}

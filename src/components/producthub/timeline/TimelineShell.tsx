@@ -36,10 +36,12 @@ export const TimelineShell: React.FC<{ onAddNew?: () => void }> = ({ onAddNew })
     return dept?.label || null;
   }, [departments]);
 
-  // Map roadmap view data → TimelineInitiative
+  // Map roadmap view data → TimelineInitiative (only on_roadmap items)
   const initiatives: TimelineInitiative[] = useMemo(() => {
     const items = mdtData?.data ?? [];
-    return items.map((item: any) => ({
+    // Only show items that have been explicitly added to the roadmap
+    const roadmapItems = items.filter((item: any) => item.on_roadmap === true);
+    return roadmapItems.map((item: any) => ({
       id: item.id,
       initiative_key: item.initiative_key || '',
       title: item.title || '',

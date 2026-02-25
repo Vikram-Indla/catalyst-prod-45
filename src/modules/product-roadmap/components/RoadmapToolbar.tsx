@@ -12,6 +12,8 @@ import {
   Plus, 
   ChevronLeft, 
   ChevronRight,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 import { TimelineFilterPopover, TimelineFilterState, DEFAULT_TIMELINE_FILTER } from '@/components/roadmap/TimelineFilterPopover';
 import { Button } from '@/components/ui/button';
@@ -48,6 +50,8 @@ interface RoadmapToolbarProps {
   activeFilterCount: number;
   timelineFilter?: TimelineFilterState;
   onTimelineFilterChange?: (filter: TimelineFilterState) => void;
+  isFullscreen?: boolean;
+  onToggleFullscreen?: () => void;
 }
 
 const GROUPING_OPTIONS: { value: GroupingField; label: string }[] = [
@@ -79,6 +83,8 @@ export function RoadmapToolbar({
   activeFilterCount,
   timelineFilter,
   onTimelineFilterChange,
+  isFullscreen,
+  onToggleFullscreen,
 }: RoadmapToolbarProps) {
   const { tokens, brand } = useRoadmapTheme();
   const [localTimelineFilter, setLocalTimelineFilter] = useState<TimelineFilterState>(DEFAULT_TIMELINE_FILTER);
@@ -280,6 +286,26 @@ export function RoadmapToolbar({
           value={effectiveTimelineFilter}
           onChange={handleTimelineFilterChange}
         />
+
+        {/* Fullscreen toggle */}
+        {onToggleFullscreen && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9"
+                onClick={onToggleFullscreen}
+                style={{
+                  borderColor: tokens.border.default,
+                }}
+              >
+                {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{isFullscreen ? 'Exit fullscreen (Esc)' : 'Fullscreen view'}</TooltipContent>
+          </Tooltip>
+        )}
 
         <div 
           className="w-px h-6 mx-1"
