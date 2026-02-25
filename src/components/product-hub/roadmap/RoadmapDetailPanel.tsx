@@ -2,7 +2,7 @@
  * Product Roadmap — Redesigned Detail Panel (420px)
  * Editable: dates, progress, priority, status, type, owner
  */
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Pencil, Paperclip, Copy, Link2, Star, Trash2, Calendar, ChevronDown, Check, AlertTriangle } from 'lucide-react';
 import { format, parseISO, differenceInMonths, differenceInDays } from 'date-fns';
@@ -14,6 +14,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import type { RoadmapInitiative } from './types/roadmap.types';
 import { TYPE_COLORS, STATUS_COLORS, PRIORITY_COLORS, INK, SURFACE, FONT, DETAIL_PANEL_WIDTH } from './constants/roadmap.constants';
+import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
+import { User } from 'lucide-react';
 
 interface RoadmapDetailPanelProps {
   item: RoadmapInitiative | null;
@@ -54,16 +56,17 @@ const TYPE_OPTIONS = [
   { key: 'improvement', label: 'Improvement', typeId: '90806dac-3ed5-4f99-a11e-290dc0efd376' },
 ];
 
-const TEAM_MEMBERS = [
-  { id: '4e471099-47d7-4589-b132-49eab29f889f', name: 'Adnan Ali' },
-  { id: '2646690b-64a1-4f23-b7a4-27ec2c41ff8c', name: 'Khaled Alghithy' },
-  { id: 'ab5f616d-425c-480a-b5c9-e8a58337abe8', name: 'Yousif Shalaby' },
-  { id: '98fba724-801e-4a78-96a8-b976a8e7404c', name: 'Faisal Javed' },
-  { id: '8023b428-be6a-4da5-bba1-655f1c8eaf4d', name: 'Sulaiman Alessa' },
-  { id: '13860d8f-2443-4925-a484-3797cf1b0d67', name: 'Nour Almani' },
-  { id: '0965e4b9-c083-4e70-bbbd-16a470fe48a1', name: 'Mazen Yehia' },
-  { id: '92c834be-5caa-43e1-b305-dee370903301', name: 'Izza Ali' },
-];
+// Avatar color — deterministic from name (enterprise-approved palette)
+const AVATAR_COLORS = ['#475569', '#334155', '#2563EB', '#0D9488', '#D97706', '#0891B2', '#16A34A', '#334155'];
+function hashColor(name: string): string {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+function initials(name: string): string {
+  const p = name.trim().split(/\s+/);
+  return p.length >= 2 ? (p[0][0] + p[p.length - 1][0]).toUpperCase() : name.substring(0, 2).toUpperCase();
+}
 
 export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanelProps) {
   const [activeTab, setActiveTab] = useState('Details');
@@ -75,6 +78,17 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
   const [showOwnerDropdown, setShowOwnerDropdown] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const { data: approvedProfiles } = useApprovedProfiles();
+
+  const teamMembers = useMemo(() => {
+    return (approvedProfiles || []).map(p => ({
+      value: p.id,
+      label: p.name,
+      avatarUrl: p.avatarUrl || null,
+      initials: p.initials,
+      color: hashColor(p.name),
+    }));
+  }, [approvedProfiles]);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -390,14 +404,32 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                       className="flex items-center gap-3 cursor-pointer"
                       onClick={() => setShowOwnerDropdown(!showOwnerDropdown)}
                     >
-                      <div style={{
-                        width: 32, height: 32, borderRadius: '50%',
-                        background: item.ownerName === 'Unassigned' ? '#94A3B8' : item.ownerColor,
-                        color: '#FFF', fontSize: 12, fontWeight: 700,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      }}>
-                        {item.ownerInitials}
-                      </div>
+                      {(() => {
+                        const ownerProfile = teamMembers.find(m => m.value === item.rawAssigneeId);
+                        const avatarUrl = ownerProfile?.avatarUrl;
+                        const ownerColor = ownerProfile?.color || item.ownerColor;
+                        const ownerInit = ownerProfile?.initials || item.ownerInitials;
+                        if (avatarUrl) {
+                          return (
+                            <img
+                              src={avatarUrl}
+                              alt={item.ownerName}
+                              style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+                              onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                            />
+                          );
+                        }
+                        return (
+                          <div style={{
+                            width: 32, height: 32, borderRadius: '50%',
+                            background: item.ownerName === 'Unassigned' ? '#94A3B8' : ownerColor,
+                            color: '#FFF', fontSize: 12, fontWeight: 700,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                          }}>
+                            {ownerInit}
+                          </div>
+                        );
+                      })()}
                       <div>
                         <div style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>
                           {item.ownerName === 'Unassigned' ? (
@@ -409,8 +441,8 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                       <ChevronDown size={14} style={{ color: INK[4], marginLeft: 'auto' }} />
                     </div>
                     {showOwnerDropdown && (
-                      <Dropdown
-                        options={TEAM_MEMBERS.map(m => ({ value: m.id, label: m.name }))}
+                      <OwnerDropdown
+                        options={teamMembers}
                         onSelect={val => {
                           setShowOwnerDropdown(false);
                           saveField({ assignee_id: val }, 'Owner');
@@ -552,6 +584,74 @@ function Dropdown({ options, onSelect, onClose }: {
           onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
         >
           {o.label}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ═══ OwnerDropdown — with avatars ═══ */
+interface OwnerOption {
+  value: string;
+  label: string;
+  avatarUrl: string | null;
+  initials: string;
+  color: string;
+}
+
+function OwnerDropdown({ options, onSelect, onClose }: {
+  options: OwnerOption[];
+  onSelect: (value: string) => void;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [onClose]);
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50, marginTop: 4,
+        background: '#FFFFFF', border: `1px solid ${SURFACE.border}`, borderRadius: 8,
+        boxShadow: '0 8px 30px rgba(0,0,0,0.12)', maxHeight: 280, overflowY: 'auto',
+      }}
+    >
+      {options.map(o => (
+        <div
+          key={o.value}
+          onClick={e => { e.stopPropagation(); onSelect(o.value); }}
+          className="flex items-center gap-3"
+          style={{
+            padding: '8px 12px', fontSize: 13, color: INK[1], cursor: 'pointer',
+            borderBottom: `1px solid ${SURFACE.borderLight}`,
+          }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = SURFACE.page)}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
+        >
+          {o.avatarUrl ? (
+            <img
+              src={o.avatarUrl}
+              alt={o.label}
+              style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+              onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+            />
+          ) : (
+            <div style={{
+              width: 28, height: 28, borderRadius: '50%',
+              background: o.color, color: '#FFF', fontSize: 10, fontWeight: 700,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            }}>
+              {o.initials}
+            </div>
+          )}
+          <span style={{ fontWeight: 500 }}>{o.label}</span>
         </div>
       ))}
     </div>
