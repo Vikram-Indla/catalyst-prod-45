@@ -9,12 +9,48 @@ import { TimelineLeftPanel } from './TimelineLeftPanel';
 import { TimelineGrid } from './TimelineGrid';
 import { InitiativeDetailPanel } from './InitiativeDetailPanel';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
-import { useTimelineInitiatives, useFilteredInitiatives } from '@/hooks/producthub/useTimelineInitiatives';
+import { useFilteredInitiatives } from '@/hooks/producthub/useTimelineInitiatives';
 import { useTimelineRealtime } from '@/hooks/producthub/useTimelineRealtime';
+import { useMDTBacklog } from '@/hooks/useMDTBacklog';
+import type { TimelineInitiative } from '@/types/producthub/initiative';
+
+/** Convert MDTInitiative → TimelineInitiative */
+function toTimeline(i: any): TimelineInitiative {
+  return {
+    id: i.id,
+    initiative_key: i.initiative_key,
+    title: i.title,
+    description: i.description,
+    status: i.status,
+    assignee_id: i.assignee_id,
+    assignee_name: i.assignee_name,
+    business_owner_id: i.business_owner_id,
+    reporter_id: i.reporter_id,
+    department_id: i.department_id,
+    department_name: i.department_name,
+    department_code: null,
+    target_quarter: i.target_quarter,
+    business_ask_date: i.business_ask_date,
+    kickoff_date: i.kickoff_date,
+    target_complete: i.target_complete,
+    progress: i.progress,
+    sort_order: i.sort_order,
+    risk_count: i.risk_count,
+    is_archived: i.is_archived,
+    score_strategic_alignment: i.score_strategic_alignment,
+    score_business_impact: i.score_business_impact,
+    score_time_urgency: i.score_time_urgency,
+    score_resource_feasibility: i.score_resource_feasibility,
+    computed_score: i.computed_score,
+    created_at: i.created_at,
+    updated_at: i.updated_at,
+  };
+}
 
 export const TimelineShell: React.FC = () => {
   const { activeFilter, searchTerm, groupBy, selectedInitiativeId, isDetailOpen, closeDetail } = useTimelineState();
-  const { data: initiatives, isLoading, error } = useTimelineInitiatives();
+  const { data: mdtData, isLoading, error } = useMDTBacklog();
+  const initiatives = (mdtData?.data ?? []).map(toTimeline);
   const { flat, groups } = useFilteredInitiatives(initiatives, activeFilter, searchTerm, groupBy);
   const leftScrollRef = useRef<HTMLDivElement>(null);
 
