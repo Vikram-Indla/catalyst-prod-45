@@ -57,6 +57,7 @@ export interface RoadmapStats {
   projectCount: number;
   enhancementCount: number;
   improvementCount: number;
+  entityIntegrationCount: number;
   currentQuarter: string;
 }
 

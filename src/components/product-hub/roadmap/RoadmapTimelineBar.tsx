@@ -1,6 +1,9 @@
 /**
  * Product Roadmap — Individual initiative timeline bar
- * ALL bars are SOLID — no dashed/transparent/fallback styling
+ * AUDIT #4: Distinct gradient per type
+ * AUDIT #5: Date labels on bars
+ * AUDIT #6: Box shadow + hover lift
+ * AUDIT #22: focus-visible
  */
 import React, { useState, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
@@ -23,16 +26,17 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const tooltipTimer = useRef<ReturnType<typeof setTimeout>>();
 
-  const barColor = TYPE_COLORS[item.type]?.solid || '#2563EB';
+  const typeConfig = TYPE_COLORS[item.type];
+  const barGradient = typeConfig?.gradient || 'linear-gradient(135deg, #475569, #334155)';
+  const barColor = typeConfig?.solid || '#475569';
   const isOverdue = item.status !== 'Completed' && item.progress < 100 && item.hasRealEndDate && new Date(item.endDate) < new Date();
-  const finalColor = isOverdue ? '#EF4444' : barColor;
   const isFallbackEnd = !item.hasRealEndDate;
 
-  const hoverGradient = item.type === 'project'
-    ? 'linear-gradient(135deg, #2563EB, #3B82F6)'
-    : item.type === 'enhancement'
-    ? 'linear-gradient(135deg, #0D9488, #14B8A6)'
-    : 'linear-gradient(135deg, #D97706, #F59E0B)';
+  // AUDIT #5: Format dates for bar label
+  const fmtShort = (d: string) => {
+    try { return format(parseISO(d), 'd MMM'); } catch { return ''; }
+  };
+  const dateLabel = `${fmtShort(item.startDate)} → ${fmtShort(item.endDate)}`;
 
   const fmtDate = (d: string) => {
     try { return format(parseISO(d), 'MMM d, yyyy'); } catch { return d; }
@@ -69,21 +73,24 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
         style={{
           left: `${left}%`,
           width: `${Math.max(width, 2)}%`,
-          height: 32,
+          height: 26,
           display: 'flex',
           alignItems: 'center',
           overflow: 'hidden',
-          borderRadius: 6,
-          // ALWAYS solid background — never transparent, never dashed
-          background: isHovered ? hoverGradient : finalColor,
+          borderRadius: 5,
+          // AUDIT #4: Distinct gradient per type; overdue = red
+          background: isOverdue ? '#EF4444' : barGradient,
           border: 'none',
           opacity: 1,
-          transform: isHovered ? 'translateY(calc(-50% - 2px)) scaleY(1.06)' : 'translateY(-50%)',
+          // AUDIT #6: Hover lift
+          transform: isHovered ? 'translateY(calc(-50% - 1px))' : 'translateY(-50%)',
+          // AUDIT #6: Box shadow
           boxShadow: isHovered || isSelected
-            ? `0 4px 16px ${finalColor}40, 0 0 0 2px ${finalColor}30`
-            : `0 1px 3px ${finalColor}25`,
+            ? `0 4px 8px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.08)`
+            : '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.06)',
+          filter: isHovered ? 'brightness(1.05)' : 'none',
           zIndex: isSelected ? 10 : isHovered ? 5 : 1,
-          transition: 'transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease',
+          transition: 'transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease',
         }}
       >
         {/* Progress fill */}
@@ -94,23 +101,22 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
               width: `${Math.min(100, item.progress)}%`,
               background: 'rgba(255,255,255,0.18)',
               borderRight: item.progress < 100 ? '2px solid rgba(255,255,255,0.35)' : 'none',
-              borderRadius: '6px 0 0 6px',
+              borderRadius: '5px 0 0 5px',
               zIndex: 0,
               pointerEvents: 'none',
             }}
           />
         )}
 
-        {/* Title text — ALWAYS white on solid color */}
+        {/* Title text */}
         {width > 5 && (
           <span
             className="relative truncate"
             style={{
-              zIndex: 1, fontSize: 12, fontWeight: 600,
+              zIndex: 1, fontSize: 11, fontWeight: 600,
               color: '#FFFFFF',
-              paddingLeft: 10, paddingRight: 10, lineHeight: '32px',
+              paddingLeft: 8, paddingRight: 4, lineHeight: '26px',
               flex: 1,
-              letterSpacing: '-0.01em',
               textShadow: '0 1px 2px rgba(0,0,0,0.15)',
             }}
           >
@@ -118,28 +124,30 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           </span>
         )}
 
-        {/* Progress pill */}
-        {item.progress > 0 && width > 12 && (
+        {/* AUDIT #5: Date label on bar */}
+        {width > 18 && (
           <span
-            className="absolute right-2 top-1/2 -translate-y-1/2"
+            className="relative flex-shrink-0"
             style={{
-              fontSize: 10, fontWeight: 700,
-              color: '#FFFFFF',
-              background: 'rgba(255,255,255,0.2)',
-              borderRadius: 3, padding: '1px 6px',
-              zIndex: 2,
+              zIndex: 1,
+              fontFamily: FONT.mono,
+              fontSize: 9,
+              fontWeight: 500,
+              color: 'rgba(255,255,255,0.7)',
+              paddingRight: 8,
+              paddingLeft: 4,
             }}
           >
-            {item.progress}%
+            {dateLabel}
           </span>
         )}
 
-        {/* Estimated end date indicator — subtle right edge stripe */}
+        {/* Estimated end date indicator */}
         {isFallbackEnd && (
           <div style={{
             position: 'absolute', right: 0, top: 0, bottom: 0,
             width: 3, background: 'rgba(255,255,255,0.4)',
-            borderRadius: '0 6px 6px 0',
+            borderRadius: '0 5px 5px 0',
           }} />
         )}
 
@@ -159,8 +167,8 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
               title={m.title}
               style={{
                 left: `${mPos}%`, top: '50%',
-                width: 8, height: 8, marginTop: -4, marginLeft: -4,
-                background: m.completed ? '#FFFFFF' : finalColor,
+                width: 7, height: 7, marginTop: -3.5, marginLeft: -3.5,
+                background: m.completed ? '#FFFFFF' : barColor,
                 border: '2px solid #FFFFFF', borderRadius: 1,
                 transform: 'rotate(45deg)', zIndex: 3,
                 boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
@@ -188,17 +196,17 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           <div className="flex items-center gap-1.5" style={{ fontSize: 12, color: INK[3], marginBottom: 4 }}>
             <Calendar className="w-3 h-3" />
             {fmtDate(item.startDate)} → {fmtDate(item.endDate)}
-            {isFallbackEnd && <span style={{ fontSize: 10, color: '#94A3B8', fontStyle: 'italic' }}>(est.)</span>}
+            {isFallbackEnd && <span style={{ fontSize: 10, color: INK[4], fontStyle: 'italic' }}>(est.)</span>}
           </div>
           <div className="flex items-center gap-2">
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: finalColor }} />
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: barColor }} />
             <span style={{ fontSize: 11, fontWeight: 500, color: INK[2] }}>
-              {TYPE_COLORS[item.type]?.label || item.type}
+              {typeConfig?.label || item.type}
             </span>
             {item.progress > 0 && (
               <div className="flex items-center gap-1 ml-auto">
                 <div style={{ width: 60, height: 4, background: SURFACE.borderLight, borderRadius: 999, overflow: 'hidden' }}>
-                  <div style={{ width: `${item.progress}%`, height: '100%', background: finalColor, borderRadius: 999 }} />
+                  <div style={{ width: `${item.progress}%`, height: '100%', background: barColor, borderRadius: 999 }} />
                 </div>
                 <span style={{ fontSize: 11, fontWeight: 600, color: INK[1] }}>{item.progress}%</span>
               </div>

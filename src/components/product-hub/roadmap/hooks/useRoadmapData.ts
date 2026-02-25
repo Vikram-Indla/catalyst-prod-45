@@ -247,6 +247,7 @@ export function useRoadmapStats() {
         projectCount: Number(data.roadmap_projects) || 0,
         enhancementCount: Number(data.roadmap_enhancements) || 0,
         improvementCount: Number(data.roadmap_improvements) || 0,
+        entityIntegrationCount: Number(data.roadmap_entity_integrations) || 0,
         currentQuarter: `Q${q} ${now.getFullYear()}`,
       };
     },
@@ -399,7 +400,7 @@ export function useRoadmapData() {
 
   const defaultStats: RoadmapStats = {
     totalOnRoadmap: 0, totalInitiatives: 0, activeCount: 0, validationCount: 0,
-    projectCount: 0, enhancementCount: 0, improvementCount: 0,
+    projectCount: 0, enhancementCount: 0, improvementCount: 0, entityIntegrationCount: 0,
     currentQuarter: `Q${Math.ceil((new Date().getMonth() + 1) / 3)} ${new Date().getFullYear()}`,
   };
 
