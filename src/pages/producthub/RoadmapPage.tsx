@@ -65,7 +65,7 @@ export const RoadmapPage: React.FC = () => {
         </div>
       </div>
 
-      <TimelineShell />
+      <TimelineShell onAddNew={() => setShowCreateDrawer(true)} />
       <CreateInitiativeDrawer open={showCreateDrawer} onClose={() => setShowCreateDrawer(false)} />
     </div>
   );
