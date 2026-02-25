@@ -68,12 +68,21 @@ export const r360Service = {
 
     // Count contributed items for non-developer roles
     let contributedItems: any[] = [];
-    if (isContributorRole(resource.role_name || '') && resource.jira_account_id) {
-      const { data: cItems } = await (supabase as any).from('ph_issues')
-        .select('status, jira_created_at, assignee_account_id')
-        .eq('reporter_account_id', resource.jira_account_id)
-        .neq('assignee_account_id', resource.jira_account_id);
-      contributedItems = cItems || [];
+    if (isContributorRole(resource.role_name || '')) {
+      let contribQuery = (supabase as any).from('ph_issues')
+        .select('status, jira_created_at, assignee_account_id, reporter_account_id');
+      if (resource.jira_account_id) {
+        contribQuery = contribQuery.eq('reporter_account_id', resource.jira_account_id);
+      } else {
+        contribQuery = contribQuery.ilike('reporter_display_name', `%${resource.name}%`);
+      }
+      const { data: cItems } = await contribQuery;
+      // Exclude items where they are also the assignee
+      contributedItems = (cItems || []).filter((i: any) =>
+        resource.jira_account_id
+          ? i.assignee_account_id !== resource.jira_account_id
+          : true
+      );
     }
 
     const all = [...(assignedItems || []), ...contributedItems];
@@ -124,11 +133,14 @@ export const r360Service = {
 
     // Fetch contributor items (reported-by) for non-developer roles
     let contributedData: any[] = [];
-    if (isContributorRole(resource.role_name || '') && resource.jira_account_id) {
+    if (isContributorRole(resource.role_name || '')) {
       let contribQuery = (supabase as any).from('ph_issues')
-        .select(ISSUE_FIELDS)
-        .eq('reporter_account_id', resource.jira_account_id)
-        .neq('assignee_account_id', resource.jira_account_id); // exclude items where they're also assignee
+        .select(ISSUE_FIELDS);
+      if (resource.jira_account_id) {
+        contribQuery = contribQuery.eq('reporter_account_id', resource.jira_account_id);
+      } else {
+        contribQuery = contribQuery.ilike('reporter_display_name', `%${resource.name}%`);
+      }
       if (filters?.search) contribQuery = contribQuery.ilike('summary', `%${filters.search}%`);
       if (filters?.project_keys?.length) contribQuery = contribQuery.in('project_key', filters.project_keys);
       if (filters?.item_types?.length) contribQuery = contribQuery.in('issue_type', filters.item_types);
@@ -136,7 +148,12 @@ export const r360Service = {
 
       const { data: cData, error: cError } = await contribQuery;
       if (cError) throw cError;
-      contributedData = cData || [];
+      // Exclude items where they are also the assignee
+      contributedData = (cData || []).filter((i: any) =>
+        resource.jira_account_id
+          ? i.assignee_account_id !== resource.jira_account_id
+          : i.assignee_display_name !== resource.name
+      );
     }
 
     const mapItem = (item: any, roleOnItem: 'Assignee' | 'Contributor'): R360WorkItem => {
