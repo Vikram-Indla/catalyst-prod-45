@@ -57,6 +57,11 @@ function getInitials(name: string): string {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 }
 
+/** Returns true if the initiative is sourced from ph_initiatives (UUID id), false if Jira-sourced (issue key like MDT-57) */
+function isNativeInitiative(id: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+}
+
 function InlineAvatar({ name, size = 20 }: { name: string; size?: number }) {
   const fontSize = size <= 20 ? 9 : size <= 24 ? 10 : 11;
   return (
@@ -223,6 +228,10 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 
   const handleSave = useCallback(async () => {
     if (!initiative || !hasChanges) return;
+    if (!isNativeInitiative(initiative.id)) {
+      catalystToast.error('Jira-sourced items cannot be edited here');
+      return;
+    }
     setIsSaving(true);
     try {
       const { error } = await (supabase as any)
@@ -247,6 +256,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 
   const handleQuickEdit = useCallback(async (field: string, value: any) => {
     if (!initiative) return;
+    if (!isNativeInitiative(initiative.id)) return;
     try {
       const { error } = await (supabase as any)
         .from('ph_initiatives')
@@ -337,7 +347,13 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
     }
   };
 
+  const isJiraSourced = !isNativeInitiative(initiative.id);
+
   const handleActionClick = (label: string) => {
+    if (isJiraSourced && (label === 'Edit' || label === 'Clone')) {
+      catalystToast.error('Jira-sourced items are read-only');
+      return;
+    }
     switch (label) {
       case 'Edit':
         setIsEditing(true);
@@ -677,6 +693,7 @@ function DetailsContent({
                 key={opt.key}
                 onClick={async () => {
                   if (opt.key === initiative.initiative_type_key) return;
+                  if (!isNativeInitiative(initiative.id)) return;
                   try {
                     const { data: typeRow } = await (supabase as any)
                       .from('initiative_types').select('id').eq('key', opt.key).single();

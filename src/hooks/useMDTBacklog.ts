@@ -38,7 +38,7 @@ export function useMDTBacklog() {
     queryKey: ['mdt-backlog'],
     queryFn: async (): Promise<{ data: MDTInitiative[]; count: number }> => {
       // Fetch Business Requests
-      const { data: brData, error: brError } = await supabase
+      const { data: brData, error: brError } = await (supabase as any)
         .from('ph_issues')
         .select('issue_key, summary, status, priority, assignee_display_name, reporter_display_name, description_text, due_date, labels, story_points, jira_created_at, jira_updated_at, type_icon_url')
         .eq('project_key', 'MDT')
@@ -49,7 +49,7 @@ export function useMDTBacklog() {
       if (brError) throw brError;
 
       // Fetch ALL BRD Tasks for MDT to match against BRs
-      const { data: brdData, error: brdError } = await supabase
+      const { data: brdData, error: brdError } = await (supabase as any)
         .from('ph_issues')
         .select('issue_key, summary, status, priority, assignee_display_name, jira_created_at, jira_updated_at')
         .eq('project_key', 'MDT')
