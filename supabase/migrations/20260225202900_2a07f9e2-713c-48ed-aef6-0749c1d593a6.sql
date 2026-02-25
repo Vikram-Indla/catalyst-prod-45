@@ -1,0 +1,1 @@
+ALTER TABLE ph_work_items ENABLE TRIGGER trg_item_key;
