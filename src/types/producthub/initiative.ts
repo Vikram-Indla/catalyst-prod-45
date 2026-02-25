@@ -2,7 +2,7 @@
 // PRODUCT HUB — Initiative Timeline Types
 // =====================================================
 
-export type InitiativeStatus = 'new_demand' | 'under_review' | 'approved' | 'in_progress' | 'on_hold' | 'delivered' | 'cancelled';
+export type InitiativeStatus = 'new_demand' | 'under_review' | 'approved' | 'in_progress' | 'on_hold' | 'delivered' | 'cancelled' | 'ready_for_development' | 'technical_validation' | 'under_implementation';
 
 export type PriorityLevel = 'unscored' | 'rejected' | 'low' | 'medium' | 'high';
 
@@ -68,6 +68,9 @@ export const STATUS_CONFIG: Record<InitiativeStatus, { label: string; color: str
   on_hold:      { label: 'On Hold',       color: '#6B7280', bg: 'rgba(107,114,128,0.15)', fill: 'rgba(107,114,128,0.40)' },
   delivered:    { label: 'Delivered',      color: '#10B981', bg: 'rgba(16,185,129,0.15)',  fill: 'rgba(16,185,129,0.40)' },
   cancelled:    { label: 'Cancelled',      color: '#EF4444', bg: 'rgba(239,68,68,0.15)',  fill: 'rgba(239,68,68,0.40)' },
+  ready_for_development: { label: 'Ready for Development', color: '#06B6D4', bg: 'rgba(6,182,212,0.15)', fill: 'rgba(6,182,212,0.40)' },
+  technical_validation:  { label: 'Technical Validation',  color: '#8B5CF6', bg: 'rgba(139,92,246,0.15)', fill: 'rgba(139,92,246,0.40)' },
+  under_implementation:  { label: 'Under Implementation',  color: '#F59E0B', bg: 'rgba(245,158,11,0.15)', fill: 'rgba(245,158,11,0.40)' },
 };
 
 export const FILTER_CHIPS: { key: FilterChip; label: string }[] = [

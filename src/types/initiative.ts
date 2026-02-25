@@ -6,7 +6,10 @@ export type InitiativeStatus =
   | 'on_hold'
   | 'delivered'
   | 'closed'
-  | 'cancelled';
+  | 'cancelled'
+  | 'ready_for_development'
+  | 'technical_validation'
+  | 'under_implementation';
 
 export type PriorityLevel = 'High' | 'Medium' | 'Low' | 'Rejected' | 'Unscored';
 
@@ -76,6 +79,9 @@ export const STATUS_DISPLAY: Record<InitiativeStatus, { label: string; dot: stri
   delivered:     { label: 'Delivered',     dot: '#10B981', bg: '#ECFDF5', border: '#A7F3D0', text: '#065F46' },
   closed:        { label: 'Closed',        dot: '#1F2937', bg: '#F3F4F6', border: '#D1D5DB', text: '#111827' },
   cancelled:     { label: 'Cancelled',     dot: '#EF4444', bg: '#FEF2F2', border: '#FECACA', text: '#991B1B' },
+  ready_for_development: { label: 'Ready for Development', dot: '#06B6D4', bg: '#ECFEFF', border: '#A5F3FC', text: '#155E75' },
+  technical_validation:  { label: 'Technical Validation',  dot: '#8B5CF6', bg: '#F5F3FF', border: '#DDD6FE', text: '#5B21B6' },
+  under_implementation:  { label: 'Under Implementation',  dot: '#F59E0B', bg: '#FFFBEB', border: '#FDE68A', text: '#92400E' },
 };
 
 export const PRIORITY_THRESHOLDS: { min: number; max: number; level: PriorityLevel; bg: string; border: string; text: string }[] = [
