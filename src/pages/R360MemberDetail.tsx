@@ -97,6 +97,31 @@ export default function R360MemberDetail() {
     });
   }, [workItems, week.start, week.end, view]);
 
+  // Auto-skip empty weeks: find nearest week with data in the navigation direction
+  const skipDirection = useRef<-1 | 1 | 0>(0);
+  const skipAttempts = useRef(0);
+  const MAX_SKIP = 12;
+
+  useEffect(() => {
+    if (itemsLoading || !workItems.length || view === 'chronology') return;
+    if (skipDirection.current === 0) return; // no skip if user hasn't navigated
+
+    if (weekItems.length === 0 && skipAttempts.current < MAX_SKIP) {
+      skipAttempts.current += 1;
+      setWeekOffset(prev => prev + skipDirection.current);
+    } else {
+      // Found data or exhausted attempts — reset
+      skipDirection.current = 0;
+      skipAttempts.current = 0;
+    }
+  }, [weekItems.length, itemsLoading, workItems.length, view, weekOffset]);
+
+  const navigateWeek = useCallback((dir: -1 | 1) => {
+    skipDirection.current = dir;
+    skipAttempts.current = 0;
+    setWeekOffset(prev => prev + dir);
+  }, []);
+
   // Status counts
   const counts = useMemo(() => {
     const c = { all: weekItems.length, to_do: 0, in_progress: 0, in_qa: 0, done: 0, blocked: 0 };
@@ -191,8 +216,8 @@ export default function R360MemberDetail() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '14px 0', borderBottom: '1px solid #F1F5F9', flexWrap: 'wrap' as const }}>
           <span style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A' }}>📅 {week.label}</span>
           <span style={{ fontSize: '13px', fontWeight: 500, color: '#334155' }}>{week.range}</span>
-          <button style={{ width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setWeekOffset(w => w - 1)}>‹</button>
-          <button style={{ width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setWeekOffset(w => w + 1)}>›</button>
+          <button style={{ width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigateWeek(-1)}>‹</button>
+          <button style={{ width: '28px', height: '28px', border: '1px solid #E2E8F0', borderRadius: '4px', background: '#FFF', cursor: 'pointer', fontSize: '13px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => navigateWeek(1)}>›</button>
           <div style={{ width: '1px', height: '20px', background: '#E2E8F0', margin: '0 4px' }} />
           {([
             { key: null, label: `All (${counts.all})` },
