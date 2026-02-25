@@ -56,9 +56,15 @@ export function Resource360Banner({ summary, isLoading }: Props) {
         width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
         background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
+        overflow: 'hidden',
       }}>
+        {summary.avatar_url ? (
+          <img src={summary.avatar_url} alt={summary.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            onError={e => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).nextElementSibling?.removeAttribute('style'); }} />
+        ) : null}
         <span style={{
           fontFamily: "'Sora', sans-serif", fontSize: 17, fontWeight: 800, color: '#FFFFFF',
+          ...(summary.avatar_url ? { display: 'none' } : {}),
         }}>{initials}</span>
       </div>
 
