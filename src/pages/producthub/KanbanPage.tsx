@@ -4,7 +4,7 @@ import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateIni
 import { KanbanFilterBar } from '@/components/producthub/kanban/KanbanFilterBar';
 import { KanbanBoard } from '@/components/producthub/kanban/KanbanBoard';
 import { InitiativeDetailPanel } from '@/components/producthub/timeline/InitiativeDetailPanel';
-import { useInitiativesMock } from '@/hooks/useInitiativesMock';
+import { useMDTBacklog } from '@/hooks/useMDTBacklog';
 import type { Initiative } from '@/types/initiative';
 import type { FilterChip } from '@/types/producthub/initiative';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
@@ -45,7 +45,7 @@ function toTimelineInitiative(i: Initiative): TimelineInitiative {
 }
 
 export default function KanbanPage() {
-  const { data, isLoading } = useInitiativesMock();
+  const { data, isLoading } = useMDTBacklog();
   const initiatives = data?.data ?? [];
 
   const [searchTerm, setSearchTerm] = useState('');

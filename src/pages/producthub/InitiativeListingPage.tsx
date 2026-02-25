@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { useInitiativesMock } from '@/hooks/useInitiativesMock';
+import { useMDTBacklog, type MDTInitiative, type BRDTask } from '@/hooks/useMDTBacklog';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { ListingToolbar } from '@/components/producthub/listing/ListingToolbar';
 import { InitiativeTable } from '@/components/producthub/listing/InitiativeTable';
@@ -83,7 +83,7 @@ function getGroupSortKey(item: Initiative, groupBy: GroupByField): string {
 }
 
 export default function InitiativeListingPage() {
-  const { data, isLoading } = useInitiativesMock();
+  const { data, isLoading } = useMDTBacklog();
   const [density, setDensity] = useState<Density>(loadDensity);
   const [searchQuery, setSearchQuery] = useState('');
   const [quickFilter, setQuickFilter] = useState('all');
@@ -111,6 +111,17 @@ export default function InitiativeListingPage() {
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const allInitiatives = orderedData ?? data?.data ?? [];
+
+  // Build BRD task map from MDTInitiative data
+  const brdTasksMap = useMemo(() => {
+    const map: Record<string, import('@/hooks/useMDTBacklog').BRDTask[]> = {};
+    for (const item of (data?.data ?? []) as import('@/hooks/useMDTBacklog').MDTInitiative[]) {
+      if (item.brd_tasks && item.brd_tasks.length > 0) {
+        map[item.id] = item.brd_tasks;
+      }
+    }
+    return map;
+  }, [data?.data]);
 
   useEffect(() => {
     if (data?.data && !orderedData) setOrderedData(data.data);
@@ -374,6 +385,7 @@ export default function InitiativeListingPage() {
           density={density}
           columnConfigs={columnConfigs}
           groupBy={groupBy}
+          brdTasksMap={brdTasksMap}
           onRowClick={handleRowClick}
           onStatusChange={handleStatusChange}
           onFavoriteToggle={handleFavoriteToggle}

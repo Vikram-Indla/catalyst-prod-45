@@ -4,7 +4,8 @@
  * Catalyst V5 Design System
  */
 
-import { useMemo, useState, useCallback, useRef, useEffect } from 'react';
+import { useMemo, useState, useCallback, useRef, useEffect, Fragment } from 'react';
+import type { BRDTask } from '@/hooks/useMDTBacklog';
 import {
   useReactTable,
   getCoreRowModel,
@@ -34,6 +35,7 @@ interface Props {
   density: Density;
   columnConfigs: ColumnConfig[];
   groupBy?: GroupByField;
+  brdTasksMap?: Record<string, BRDTask[]>;
   onRowClick: (initiative: Initiative) => void;
   onStatusChange: (id: string, status: InitiativeStatus) => void;
   onFavoriteToggle: (id: string, isFavorited: boolean) => void;
@@ -92,7 +94,7 @@ function Checkbox({ checked, indeterminate, onToggle }: { checked: boolean; inde
 }
 
 export function InitiativeTable({
-  data, loading = false, density, columnConfigs, groupBy = 'none', onRowClick, onStatusChange,
+  data, loading = false, density, columnConfigs, groupBy = 'none', brdTasksMap = {}, onRowClick, onStatusChange,
   onFavoriteToggle, onSelectionChange, onSortChange, onContextMenu, onReorder,
   onInlineEdit, focusedRowIndex = -1, onFocusedRowChange,
 }: Props) {
@@ -100,6 +102,7 @@ export function InitiativeTable({
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [editingCell, setEditingCell] = useState<{ rowId: string; columnId: string; rect: DOMRect } | null>(null);
   const [flashCell, setFlashCell] = useState<string | null>(null);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const rowH = DENSITY_ROW[density];
   const tbodyRef = useRef<HTMLTableSectionElement>(null);
   // Single-click delay to differentiate from double-click
@@ -431,7 +434,18 @@ export function InitiativeTable({
                                 // Don't trigger row click if user clicked on a button (checkbox, icon, etc.)
                                 const target = e.target as HTMLElement;
                                 if (target.closest('button') || target.closest('[role="checkbox"]') || target.closest('[data-drag-handle]')) return;
-                                handleRowSingleClick(row.original);
+                                // Toggle BRD task expansion if tasks exist
+                                const tasks = brdTasksMap[row.original.id];
+                                if (tasks && tasks.length > 0) {
+                                  setExpandedRows(prev => {
+                                    const next = new Set(prev);
+                                    if (next.has(row.original.id)) next.delete(row.original.id);
+                                    else next.add(row.original.id);
+                                    return next;
+                                  });
+                                } else {
+                                  handleRowSingleClick(row.original);
+                                }
                               }}
                               onContextMenu={(e) => { e.preventDefault(); onContextMenu?.(e, row.original); }}
                               onFocus={() => onFocusedRowChange?.(idx)}
@@ -485,6 +499,37 @@ export function InitiativeTable({
                                 </div>
                               </td>
                             </tr>
+
+                            {/* BRD Task Sub-rows */}
+                            {expandedRows.has(row.original.id) && (brdTasksMap[row.original.id] || []).map((task) => (
+                              <tr
+                                key={task.issue_key}
+                                className="h-8 bg-slate-50/80"
+                                style={{ borderBottom: '1px solid #f1f5f9' }}
+                              >
+                                <td className="px-3" />
+                                <td className="px-3 pl-10 text-[12px] font-mono text-blue-600 font-semibold whitespace-nowrap">
+                                  {task.issue_key}
+                                </td>
+                                <td className="px-3 text-[12px] text-zinc-700 truncate" colSpan={2}>
+                                  {task.summary.replace(/^BRD\s+of\s+/i, '')}
+                                </td>
+                                <td className="px-3">
+                                  <span
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium whitespace-nowrap"
+                                    style={{
+                                      background: task.status === 'Done' ? '#ECFDF5' : task.status === 'BRD Sign Off' ? '#FFFBEB' : task.status === 'BRD Under Review' ? '#F5F3FF' : '#F1F5F9',
+                                      color: task.status === 'Done' ? '#065F46' : task.status === 'BRD Sign Off' ? '#92400E' : task.status === 'BRD Under Review' ? '#5B21B6' : '#475569',
+                                    }}
+                                  >
+                                    {task.status}
+                                  </span>
+                                </td>
+                                <td className="px-3 text-[12px] text-zinc-500" colSpan={visibleColCount - 5}>
+                                  {task.assignee_display_name || '—'}
+                                </td>
+                              </tr>
+                            ))}
                           </>
                         )}
                       </Draggable>

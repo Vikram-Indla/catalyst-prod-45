@@ -4,7 +4,7 @@ import { CardsToolbar } from '@/components/producthub/cards/CardsToolbar';
 import { CardsGrid } from '@/components/producthub/cards/CardsGrid';
 import { KanbanFilterBar } from '@/components/producthub/kanban/KanbanFilterBar';
 import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateInitiativeDrawer';
-import { useInitiativesMock } from '@/hooks/useInitiativesMock';
+import { useMDTBacklog } from '@/hooks/useMDTBacklog';
 import type { Initiative } from '@/types/initiative';
 import type { FilterChip } from '@/types/producthub/initiative';
 import type { GridSize } from '@/components/producthub/cards/GridSizeToggle';
@@ -67,7 +67,7 @@ function applySort(items: Initiative[], sort: SortOption): Initiative[] {
 }
 
 const CardsPage: React.FC = () => {
-  const { data, isLoading } = useInitiativesMock();
+  const { data, isLoading } = useMDTBacklog();
   const initiatives = data?.data ?? [];
 
   const [searchTerm, setSearchTerm] = useState('');
