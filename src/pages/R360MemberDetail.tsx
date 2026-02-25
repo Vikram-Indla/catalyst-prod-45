@@ -137,8 +137,10 @@ export default function R360MemberDetail() {
         <div className="r3-profile">
           <div className="r3-profile-top">
             <div className="r3-profile-avatar" style={{ background: `linear-gradient(135deg, ${deptColor}, #0D9488)` }}>
-              <img src={`/admin/users/${slugify(overview.name)}/avatar`} alt="" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-              <span style={{ position: 'absolute', pointerEvents: 'none' }}>{initials(overview.name)}</span>
+              {overview.avatar_url ? (
+                <img src={overview.avatar_url} alt={overview.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+              ) : null}
+              <span style={{ position: 'absolute', pointerEvents: 'none', ...(overview.avatar_url ? { display: 'none' } : {}) }}>{initials(overview.name)}</span>
             </div>
             <div>
               <div className="r3-profile-name">{overview.name}</div>
@@ -201,7 +203,7 @@ export default function R360MemberDetail() {
           <div className="r3-empty">No work items found for this period.</div>
         ) : (
           <>
-            {view === 'ring' && <RingView items={weekItems} name={overview.name} role={overview.role_name} onSelect={setSelectedItem} selected={selectedItem} />}
+            {view === 'ring' && <RingView items={weekItems} name={overview.name} role={overview.role_name} avatarUrl={overview.avatar_url} onSelect={setSelectedItem} selected={selectedItem} />}
             {view === 'chronology' && <ChronologyView items={weekItems} onSelect={setSelectedItem} />}
             {view === 'board' && <BoardView items={weekItems} onSelect={setSelectedItem} />}
           </>
@@ -219,8 +221,8 @@ export default function R360MemberDetail() {
 // ═══════════════════════════════════════════
 // RING VIEW
 // ═══════════════════════════════════════════
-function RingView({ items, name, role, onSelect, selected }: {
-  items: R360WorkItem[]; name: string; role: string;
+function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
+  items: R360WorkItem[]; name: string; role: string; avatarUrl?: string | null;
   onSelect: (i: R360WorkItem) => void; selected: R360WorkItem | null;
 }) {
   const nonDone = items.filter(i => i.status_category !== 'done');
@@ -261,8 +263,10 @@ function RingView({ items, name, role, onSelect, selected }: {
       {/* Center */}
       <div className="r3-ring-center">
         <div className="r3-ring-avatar">
-          <img src={`/admin/users/${slugify(name)}/avatar`} alt="" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-          <span style={{ position: 'absolute', pointerEvents: 'none' }}>{initials(name)}</span>
+          {avatarUrl ? (
+            <img src={avatarUrl} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+          ) : null}
+          <span style={{ position: 'absolute', pointerEvents: 'none', ...(avatarUrl ? { display: 'none' } : {}) }}>{initials(name)}</span>
         </div>
         <div className="r3-ring-name">{name}</div>
         <div className="r3-ring-role">{role}</div>

@@ -52,6 +52,16 @@ export const r360Service = {
       .single();
     if (!resource) return null;
 
+    // Fetch avatar from profiles if profile_id exists
+    let avatar_url: string | null = null;
+    if (resource.profile_id) {
+      const { data: profile } = await (supabase as any).from('profiles')
+        .select('avatar_url')
+        .eq('id', resource.profile_id)
+        .maybeSingle();
+      avatar_url = profile?.avatar_url ?? null;
+    }
+
     // Count work items
     const { data: items } = await (supabase as any).from('ph_issues')
       .select('status, jira_created_at')
@@ -74,6 +84,7 @@ export const r360Service = {
       name: resource.name,
       role_name: resource.role_name || 'Team Member',
       department: resource.department_name || '',
+      avatar_url,
       total_items: all.length,
       open_items: open,
       stale_items: stale,
