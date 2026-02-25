@@ -9,6 +9,7 @@ export const TYPE_COLORS: Record<string, { solid: string; light: string; label: 
   project:     { solid: '#2563EB', light: '#EFF6FF', label: 'Project' },
   enhancement: { solid: '#0D9488', light: '#F0FDFA', label: 'Enhancement' },
   improvement: { solid: '#D97706', light: '#FFFBEB', label: 'Improvement' },
+  sustainable: { solid: '#16A34A', light: '#F0FDF4', label: 'Sustainable' },
 };
 
 // ── Priority Colors ──
