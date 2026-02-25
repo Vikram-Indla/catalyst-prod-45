@@ -47,7 +47,7 @@ export default function ProductionEventsPage() {
   }, [events, filterType]);
 
   const syncedAt = events.length > 0
-    ? `Last deployed: ${new Date(events[0].deployedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
+    ? `Synced ${new Date(events[0].deployedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}, ${new Date(events[0].deployedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`
     : '';
 
   // Fix 3: Summary generation — editorial prose
