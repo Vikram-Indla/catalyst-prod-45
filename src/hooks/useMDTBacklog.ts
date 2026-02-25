@@ -44,7 +44,7 @@ export function useMDTBacklog() {
       const [initResult, profilesResult, deptsResult] = await Promise.all([
         (supabase as any).from('ph_backlog_initiatives_view').select('*').limit(5000),
         supabase.from('profiles').select('id, full_name, avatar_url'),
-        supabase.from('departments').select('id, name'),
+        (supabase as any).from('ph_departments').select('id, name'),
       ]);
 
       if (initResult.error) throw initResult.error;
