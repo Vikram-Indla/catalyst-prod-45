@@ -71,72 +71,144 @@ export default function Resource360PageNew() {
     );
   }
 
+  const NAV_LINKS = [
+    { label: 'Home', path: '/for-you' },
+    { label: 'StrategyHub', path: '/strategyhub' },
+    { label: 'ProductHub', path: '/producthub' },
+    { label: 'ProjectHub', path: '/projecthub', active: true },
+    { label: 'ReleaseHub', path: '/releases' },
+    { label: 'TestHub', path: '/testhub' },
+    { label: 'IncidentHub', path: '/incident' },
+    { label: 'TaskHub', path: '/planner' },
+    { label: 'PlanHub', path: '/planhub' },
+  ];
+
+  const SIDEBAR_ITEMS = [
+    { label: 'All Projects', active: false },
+    { label: 'All Resources', active: true },
+    { label: 'Capacity Planning', active: false },
+    { label: 'Timesheets', active: false },
+  ];
+
   return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', height: '100%', width: '100%',
-      fontFamily: "'Inter', sans-serif", overflow: 'hidden',
-    }}>
-      {/* Banner */}
-      <Resource360Banner summary={summary ?? null} isLoading={summaryLoading} />
-
-      {/* Toolbar: View tabs + AI button */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 12,
-        padding: '0 20px', height: 40, flexShrink: 0,
-        background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
+    <div style={{ height: '100vh', overflow: 'hidden', fontFamily: "'Inter', sans-serif" }}>
+      {/* ── Top Nav ── */}
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, height: 48, zIndex: 50,
+        background: '#0F172A', display: 'flex', alignItems: 'center', padding: '0 16px', gap: 0,
       }}>
-        {VIEW_TABS.map(tab => {
-          const active = activeView === tab.key;
-          return (
-            <button
-              key={tab.key}
-              onClick={() => setActiveView(tab.key)}
+        <span style={{ color: '#FFFFFF', fontWeight: 800, fontSize: 14, whiteSpace: 'nowrap', marginRight: 12 }}>
+          Catalyst<span style={{ fontSize: 9, verticalAlign: 'super', opacity: 0.7 }}>™</span>
+        </span>
+        <div style={{ width: 1, height: 24, background: 'rgba(255,255,255,0.15)', marginRight: 16, flexShrink: 0 }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          {NAV_LINKS.map(l => (
+            <span
+              key={l.label}
               style={{
-                padding: '0 12px', height: 40, fontSize: 12, fontWeight: active ? 700 : 500,
-                color: active ? '#2563EB' : '#64748B', background: 'transparent',
-                border: 'none', borderBottom: active ? '2px solid #2563EB' : '2px solid transparent',
-                cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap',
+                color: l.active ? '#60A5FA' : 'rgba(255,255,255,0.55)',
+                fontWeight: l.active ? 600 : 400,
+                transition: 'color 0.1s',
               }}
-            >{tab.label}</button>
-          );
-        })}
-        <div style={{ flex: 1 }} />
-        <button
-          onClick={() => setAIOpen(true)}
-          style={{
-            background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: 8,
-            padding: '7px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer',
-            display: 'inline-flex', alignItems: 'center', gap: 6, height: 28,
-          }}
-        >
-          <span style={{ fontSize: 11, fontWeight: 800 }}>✦</span>
-          Intelligence
-        </button>
-      </div>
+              onMouseEnter={e => { if (!l.active) (e.target as HTMLElement).style.color = 'rgba(255,255,255,0.9)'; }}
+              onMouseLeave={e => { if (!l.active) (e.target as HTMLElement).style.color = 'rgba(255,255,255,0.55)'; }}
+            >{l.label}</span>
+          ))}
+        </div>
+      </nav>
 
-      {/* View content */}
-      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-        {activeView === 'ring' && (
-          <RingViewV16
-            resource={summary}
-            items={items}
-            onItemClick={handleItemClick}
-            onAiClick={() => setAIOpen(true)}
+      {/* ── Left Sidebar ── */}
+      <aside style={{
+        position: 'fixed', top: 48, left: 0, width: 220, height: 'calc(100vh - 48px)', zIndex: 40,
+        background: '#FFFFFF', borderRight: '1px solid #E2E8F0', paddingTop: 12,
+      }}>
+        <div style={{ padding: '4px 16px', fontSize: 10.5, fontWeight: 700, color: '#94A3B8', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+          ProjectHub
+        </div>
+        <div style={{ marginTop: 4 }}>
+          {SIDEBAR_ITEMS.map(item => (
+            <div
+              key={item.label}
+              style={{
+                padding: '8px 16px 8px 24px', fontSize: 13, cursor: 'pointer',
+                color: item.active ? '#2563EB' : '#64748B',
+                fontWeight: item.active ? 600 : 400,
+                background: item.active ? '#F1F5F9' : 'transparent',
+                borderRight: item.active ? '3px solid #2563EB' : '3px solid transparent',
+              }}
+            >{item.label}</div>
+          ))}
+        </div>
+      </aside>
+
+      {/* ── Main Content ── */}
+      <div style={{
+        paddingTop: 48, marginLeft: 220,
+        height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden',
+      }}>
+        {/* Banner */}
+        <Resource360Banner summary={summary ?? null} isLoading={summaryLoading} />
+
+        {/* Toolbar: View tabs + AI button */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          padding: '0 20px', height: 40, flexShrink: 0,
+          background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
+        }}>
+          {VIEW_TABS.map(tab => {
+            const active = activeView === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => setActiveView(tab.key)}
+                style={{
+                  padding: '0 12px', height: 40, fontSize: 12, fontWeight: active ? 700 : 500,
+                  color: active ? '#2563EB' : '#64748B', background: 'transparent',
+                  border: 'none', borderBottom: active ? '2px solid #2563EB' : '2px solid transparent',
+                  cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                }}
+              >{tab.label}</button>
+            );
+          })}
+          <div style={{ flex: 1 }} />
+          <button
+            onClick={() => setAIOpen(true)}
+            style={{
+              background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: 8,
+              padding: '7px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+              display: 'inline-flex', alignItems: 'center', gap: 6, height: 28,
+            }}
+          >
+            <span style={{ fontSize: 11, fontWeight: 800 }}>✦</span>
+            Intelligence
+          </button>
+        </div>
+
+        {/* View content */}
+        <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          {activeView === 'ring' && (
+            <RingViewV16
+              resource={summary}
+              items={items}
+              onItemClick={handleItemClick}
+              onAiClick={() => setAIOpen(true)}
+            />
+          )}
+          {activeView === 'chronology' && <Resource360Chronology items={items} onItemClick={handleItemClick} />}
+          {activeView === 'board' && <Resource360Board items={items} onItemClick={handleItemClick} />}
+        </div>
+
+        {/* AI Intelligence Panel */}
+        {aiOpen && (
+          <AiIntelligencePanelV16
+            resourceName={resourceName}
+            onClose={() => setAIOpen(false)}
           />
         )}
-        {activeView === 'chronology' && <Resource360Chronology items={items} onItemClick={handleItemClick} />}
-        {activeView === 'board' && <Resource360Board items={items} onItemClick={handleItemClick} />}
+
+        <style>{skeletonCSS}</style>
       </div>
-
-      {/* AI Intelligence Panel */}
-      {aiOpen && (
-        <AiIntelligencePanelV16
-          resourceName={resourceName}
-          onClose={() => setAIOpen(false)}
-        />
-      )}
-
-      <style>{skeletonCSS}</style>
     </div>
   );
 }
