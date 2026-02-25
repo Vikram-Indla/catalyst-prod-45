@@ -23,6 +23,8 @@ interface RoadmapGanttChartProps {
   onHover: (id: string | null) => void;
   scrollRef?: React.RefObject<HTMLDivElement>;
   onScroll?: () => void;
+  collapsedGroups: Set<string>;
+  onToggleGroup: (key: string) => void;
 }
 
 function generatePeriods(start: Date, end: Date, zoom: ZoomLevel): TimelinePeriod[] {
@@ -91,7 +93,7 @@ function calcBarPosition(startDate: string, endDate: string, tlStart: Date, tlEn
   return { left, width };
 }
 
-export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, selectedId, hoveredId, onSelect, onHover, scrollRef, onScroll }: RoadmapGanttChartProps) {
+export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, selectedId, hoveredId, onSelect, onHover, scrollRef, onScroll, collapsedGroups, onToggleGroup }: RoadmapGanttChartProps) {
   const periods = useMemo(() => generatePeriods(timelineStart, timelineEnd, zoom), [timelineStart, timelineEnd, zoom]);
 
   const todayPct = useMemo(() => {
@@ -185,9 +187,9 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
               const typeColor = TYPE_COLORS[group.key]?.solid || group.color || '#64748B';
               return (
                 <div key={group.key}>
-                  {/* Swim lane group header — ALWAYS shown, matching list panel */}
+                  {/* Swim lane group header — clickable to collapse, matching list panel */}
                   <div
-                    className="flex items-center gap-2 px-3 relative"
+                    className="flex items-center gap-2 px-3 relative cursor-pointer select-none"
                     style={{
                       height: GROUP_HEADER_HEIGHT,
                       background: '#F8FAFC',
@@ -195,6 +197,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
                       borderTop: gi > 0 ? `1px solid ${SURFACE.border}` : 'none',
                       zIndex: 10,
                     }}
+                    onClick={() => onToggleGroup(group.key)}
                   >
                     <div style={{
                       width: 10, height: 10, borderRadius: 2.5, flexShrink: 0,
@@ -211,7 +214,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
                     </span>
                   </div>
 
-                  {group.items.map(item => {
+                  {!collapsedGroups.has(group.key) && group.items.map(item => {
                     const pos = calcBarPosition(item.startDate, item.endDate, timelineStart, timelineEnd);
                     return (
                       <div

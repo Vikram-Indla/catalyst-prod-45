@@ -3,7 +3,7 @@
  * Fixes: swim lane headers always shown, gradient type bars, proper owner avatars, 44px rows
  */
 import React from 'react';
-import { ArrowUpDown, ChevronDown, Plus, GripVertical, AlertTriangle } from 'lucide-react';
+import { ArrowUpDown, ChevronDown, ChevronRight, Plus, GripVertical, AlertTriangle } from 'lucide-react';
 import type { RoadmapInitiative, RoadmapGroup } from './types/roadmap.types';
 import { TYPE_COLORS, INK, SURFACE, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT, LIST_PANEL_WIDTH } from './constants/roadmap.constants';
 
@@ -17,6 +17,8 @@ interface RoadmapInitiativeListProps {
   width?: number;
   scrollRef?: React.RefObject<HTMLDivElement>;
   onScroll?: () => void;
+  collapsedGroups: Set<string>;
+  onToggleGroup: (key: string) => void;
 }
 
 /* Owner avatar — person silhouette for unassigned */
@@ -49,7 +51,7 @@ function OwnerAvatar({ initials, color, name }: { initials?: string; color?: str
   );
 }
 
-export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect, onHover, onAddClick, width, scrollRef, onScroll }: RoadmapInitiativeListProps) {
+export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect, onHover, onAddClick, width, scrollRef, onScroll, collapsedGroups, onToggleGroup }: RoadmapInitiativeListProps) {
   const totalCount = groups.reduce((sum, g) => sum + g.items.length, 0);
 
   return (
@@ -75,17 +77,21 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
           const typeColor = TYPE_COLORS[group.key]?.solid || group.color || '#64748B';
           return (
             <div key={group.key}>
-              {/* Swim lane group header — ALWAYS shown */}
+              {/* Swim lane group header — clickable to collapse */}
               <div
-                className="flex items-center gap-2 px-4"
+                className="flex items-center gap-2 px-4 cursor-pointer select-none"
                 style={{
                   height: GROUP_HEADER_HEIGHT,
                   background: '#F8FAFC',
                   borderBottom: `1px solid ${SURFACE.borderLight}`,
                   borderTop: gi > 0 ? `1px solid ${SURFACE.border}` : 'none',
                 }}
+                onClick={() => onToggleGroup(group.key)}
               >
-                <ChevronDown className="w-3.5 h-3.5" style={{ color: INK[4] }} />
+                {collapsedGroups.has(group.key)
+                  ? <ChevronRight className="w-3.5 h-3.5" style={{ color: INK[4] }} />
+                  : <ChevronDown className="w-3.5 h-3.5" style={{ color: INK[4] }} />
+                }
                 {/* 10px colored square with gradient */}
                 <div style={{
                   width: 10, height: 10, borderRadius: 2.5, flexShrink: 0,
@@ -95,7 +101,7 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
                 <span style={{ fontSize: 10, fontWeight: 600, color: '#94A3B8', marginLeft: 'auto' }}>{group.items.length}</span>
               </div>
 
-              {group.items.map(item => (
+              {!collapsedGroups.has(group.key) && group.items.map(item => (
                 <InitiativeRow
                   key={item.id}
                   item={item}
