@@ -3,13 +3,13 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 
 /**
- * Status mapping: Jira MDT statuses → Initiative statuses
+ * Maps Jira status string to InitiativeStatus — uses the actual Jira status directly.
  */
 function mapStatus(jiraStatus: string): InitiativeStatus {
   switch (jiraStatus) {
-    case 'Ready for Development': return 'approved';
-    case 'Technical validation': return 'under_review';
-    case 'Under Implementation': return 'in_progress';
+    case 'Ready for Development': return 'ready_for_development';
+    case 'Technical validation': return 'technical_validation';
+    case 'Under Implementation': return 'under_implementation';
     default: return 'new_demand';
   }
 }

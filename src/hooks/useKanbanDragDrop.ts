@@ -13,7 +13,7 @@ export function useKanbanDragDrop(initiatives: Initiative[]) {
     mutationFn: async ({ id, status }: { id: string; status: InitiativeStatus }) => {
       const { error } = await supabase
         .from('ph_initiatives')
-        .update({ status, updated_at: new Date().toISOString() })
+        .update({ status: status as any, updated_at: new Date().toISOString() })
         .eq('id', id);
       if (error) throw new Error(error.message);
     },
