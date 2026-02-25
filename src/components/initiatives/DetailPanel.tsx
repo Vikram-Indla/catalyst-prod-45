@@ -601,8 +601,13 @@ function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
   const removeMutation = useRemoveFromRoadmap();
   const isOnRoadmap = initiative.on_roadmap === true;
   const isPending = promoteMutation.isPending || removeMutation.isPending;
+  const isJira = !isNativeInitiative(initiative.id);
 
   const handleToggle = async () => {
+    if (isJira) {
+      catalystToast.error('Jira-sourced items cannot be added to roadmap');
+      return;
+    }
     if (isOnRoadmap) {
       await removeMutation.mutateAsync(initiative.id);
     } else {
