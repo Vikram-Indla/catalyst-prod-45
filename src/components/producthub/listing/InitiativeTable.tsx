@@ -240,9 +240,11 @@ export function InitiativeTable({
     }),
     col.accessor('assignee_name', {
       id: 'assignee', size: 150, minSize: 120, header: 'Assignee',
-      cell: ({ getValue }) => {
+      cell: ({ row, getValue }) => {
         const name = getValue();
-        const url = name ? avatarsByName.get(name.toLowerCase()) : undefined;
+        // Prefer direct avatar from data, fallback to name-based lookup
+        const directAvatar = (row.original as any).assignee_avatar;
+        const url = directAvatar || (name ? avatarsByName.get(name.toLowerCase()) : undefined);
         return <AssigneeCell name={name} avatarUrl={url} />;
       },
     }),
