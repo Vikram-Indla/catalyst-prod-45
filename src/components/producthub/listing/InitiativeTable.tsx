@@ -30,6 +30,7 @@ import { InlineCellEditor, EDITABLE_COLUMNS, COLUMN_TO_FIELD } from './InlineCel
 import type { ColumnConfig } from './ColumnManager';
 import { RoadmapBadge } from '@/components/producthub/shared/RoadmapBadge';
 import { InitiativeTypeBadge } from '@/components/producthub/shared/InitiativeTypeBadge';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
 interface Props {
   data: Initiative[];
@@ -101,6 +102,7 @@ export function InitiativeTable({
   onFavoriteToggle, onSelectionChange, onSortChange, onContextMenu, onReorder,
   onInlineEdit, onPromote, focusedRowIndex = -1, onFocusedRowChange,
 }: Props) {
+  const avatarsByName = useProfileAvatarsByName();
   const [sorting, setSorting] = useState<SortingState>([{ id: 'initiative_key', desc: false }]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [editingCell, setEditingCell] = useState<{ rowId: string; columnId: string; rect: DOMRect } | null>(null);
@@ -238,7 +240,11 @@ export function InitiativeTable({
     }),
     col.accessor('assignee_name', {
       id: 'assignee', size: 150, minSize: 120, header: 'Assignee',
-      cell: ({ getValue }) => <AssigneeCell name={getValue()} />,
+      cell: ({ getValue }) => {
+        const name = getValue();
+        const url = name ? avatarsByName.get(name.toLowerCase()) : undefined;
+        return <AssigneeCell name={name} avatarUrl={url} />;
+      },
     }),
     col.accessor('department_name', {
       id: 'department', size: 150, minSize: 100, header: 'Department',
@@ -264,7 +270,7 @@ export function InitiativeTable({
       id: 'ea_review', size: 90, minSize: 80, header: 'EA Review',
       cell: () => <EACell value={null} />,
     }),
-  ], []);
+  ], [avatarsByName]);
 
   const table = useReactTable({
     data,

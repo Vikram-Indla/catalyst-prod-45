@@ -65,7 +65,7 @@ export function ScoreCell({ score }: { score: number | null }) {
 }
 
 /* ── Assignee Cell ── */
-export function AssigneeCell({ name }: { name: string | null }) {
+export function AssigneeCell({ name, avatarUrl }: { name: string | null; avatarUrl?: string }) {
   if (!name) {
     return (
       <div className="flex items-center gap-2">
@@ -76,12 +76,16 @@ export function AssigneeCell({ name }: { name: string | null }) {
   }
   return (
     <div className="flex items-center gap-2 min-w-0">
-      <div
-        className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shrink-0"
-        style={{ backgroundColor: getAvatarColor(name) }}
-      >
-        {getInitials(name)}
-      </div>
+      {avatarUrl ? (
+        <img src={avatarUrl} alt={name} className="w-6 h-6 rounded-full shrink-0 object-cover" />
+      ) : (
+        <div
+          className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shrink-0"
+          style={{ backgroundColor: getAvatarColor(name) }}
+        >
+          {getInitials(name)}
+        </div>
+      )}
       <span className="text-[12px] truncate" style={{ color: '#18181b' }}>{name}</span>
     </div>
   );
