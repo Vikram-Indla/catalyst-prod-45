@@ -4,7 +4,8 @@
  */
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { useBacklogInitiatives } from '@/hooks/useBacklogInitiatives';
+import { useMDTBacklog } from '@/hooks/useMDTBacklog';
+import type { BRDTask } from '@/hooks/useMDTBacklog';
 import { useProfileOptions, useDepartmentOptions } from '@/hooks/useInitiativeLookups';
 import { ListingToolbar } from '@/components/producthub/listing/ListingToolbar';
 import { InitiativeTable } from '@/components/producthub/listing/InitiativeTable';
@@ -94,7 +95,7 @@ function getGroupSortKey(item: Initiative, groupBy: GroupByField): string {
 }
 
 export default function InitiativeListingPage() {
-  const { data: backlogData, isLoading } = useBacklogInitiatives();
+  const { data: mdtData, isLoading } = useMDTBacklog();
   const { data: profiles } = useProfileOptions();
   const { data: departments } = useDepartmentOptions();
 
@@ -110,46 +111,21 @@ export default function InitiativeListingPage() {
     return dept?.label || null;
   }, [departments]);
 
-  // Map ph_backlog_initiatives_view rows → Initiative shape
+  // Map MDT data → Initiative shape
   const mappedInitiatives: Initiative[] = useMemo(() => {
-    return (backlogData || []).map((item: any) => ({
-      id: item.id,
-      initiative_key: item.initiative_key || '',
-      title: item.title || '',
-      description: item.description || null,
-      status: item.status || 'new_demand',
-      assignee_id: item.assignee_id || null,
-      assignee_name: getProfileName(item.assignee_id),
-      assignee_avatar: null,
-      business_owner_id: item.business_owner_id || null,
-      business_owner_name: getProfileName(item.business_owner_id),
-      reporter_id: item.reporter_id || null,
-      department_id: item.department_id || null,
-      department_name: getDepartmentName(item.department_id),
-      target_quarter: item.target_quarter || null,
-      business_ask_date: item.business_ask_date || null,
-      kickoff_date: item.kickoff_date || null,
-      target_complete: item.target_complete || null,
-      progress: item.progress ?? 0,
-      sort_order: item.sort_order ?? 0,
-      risk_count: item.risk_count ?? 0,
-      is_archived: item.is_archived ?? false,
-      is_favorited: false,
-      score_strategic_alignment: null,
-      score_business_impact: null,
-      score_time_urgency: null,
-      score_resource_feasibility: null,
-      computed_score: null,
-      created_at: item.created_at || new Date().toISOString(),
-      updated_at: item.updated_at || new Date().toISOString(),
-      on_roadmap: item.on_roadmap ?? false,
-      initiative_type_key: item.initiative_type_key || null,
-      initiative_type_label: item.initiative_type_label || null,
-      initiative_type_color_hex: item.initiative_type_color_hex || null,
-      health_status: item.health_status || null,
-      business_value: item.business_value || null,
-    }));
-  }, [backlogData, getProfileName, getDepartmentName]);
+    return mdtData?.data ?? [];
+  }, [mdtData]);
+
+  // Build BRD tasks map from MDT data
+  const brdTasksMap = useMemo<Record<string, BRDTask[]>>(() => {
+    const map: Record<string, BRDTask[]> = {};
+    for (const init of (mdtData?.data ?? [])) {
+      if ((init as any).brd_tasks?.length) {
+        map[init.id] = (init as any).brd_tasks;
+      }
+    }
+    return map;
+  }, [mdtData]);
 
   const [density, setDensity] = useState<Density>(loadDensity);
   const [searchQuery, setSearchQuery] = useState('');
@@ -180,10 +156,6 @@ export default function InitiativeListingPage() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const allInitiatives = orderedData ?? mappedInitiatives;
 
-  // BRD tasks map — empty since we're no longer using MDT data
-  const brdTasksMap = useMemo(() => {
-    return {} as Record<string, any[]>;
-  }, []);
 
   // Reset orderedData when source data changes
   useEffect(() => {
