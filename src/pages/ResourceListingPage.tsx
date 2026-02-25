@@ -284,7 +284,8 @@ export default function ResourceListingPage() {
             ) : sorted.map(r => (
               <tr
                 key={r.rid}
-                style={{ borderBottom: '1px solid #F1F5F9' }}
+                style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer' }}
+                onClick={() => navTo(r.id, 'ring')}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#F8FAFC'; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
@@ -367,13 +368,13 @@ export default function ResourceListingPage() {
                 <td style={{ padding: '8px 16px', height: '52px', textAlign: 'center' }}>
                   <TooltipProvider delayDuration={200}>
                     <div style={{ display: 'inline-flex', gap: '6px' }}>
-                      <ActionButton tooltip="360° View" onClick={() => navTo(r.id, 'ring')}>
+                      <ActionButton tooltip="360° View" onClick={(e: React.MouseEvent) => { e.stopPropagation(); navTo(r.id, 'ring'); }}>
                         <RadarIcon />
                       </ActionButton>
-                      <ActionButton tooltip="Chronology" onClick={() => navTo(r.id, 'chronology')}>
+                      <ActionButton tooltip="Chronology" onClick={(e: React.MouseEvent) => { e.stopPropagation(); navTo(r.id, 'chronology'); }}>
                         <ClockIcon />
                       </ActionButton>
-                      <ActionButton tooltip="Board View" onClick={() => navTo(r.id, 'board')}>
+                      <ActionButton tooltip="Board View" onClick={(e: React.MouseEvent) => { e.stopPropagation(); navTo(r.id, 'board'); }}>
                         <BoardIcon />
                       </ActionButton>
                     </div>
@@ -415,7 +416,7 @@ function PillButton({ active, onClick, label }: { active: boolean; onClick: () =
   );
 }
 
-function ActionButton({ tooltip, onClick, children }: { tooltip: string; onClick: () => void; children: React.ReactNode }) {
+function ActionButton({ tooltip, onClick, children }: { tooltip: string; onClick: (e: React.MouseEvent) => void; children: React.ReactNode }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
