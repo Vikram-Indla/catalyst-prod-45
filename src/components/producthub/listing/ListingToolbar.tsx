@@ -45,6 +45,8 @@ const QUICK_FILTERS = [
   { id: 'unscored', label: 'Unscored' },
   { id: 'overdue', label: 'Overdue' },
   { id: 'starred', label: '★ Starred' },
+  { id: 'on_roadmap', label: '🗺️ On Roadmap' },
+  { id: 'not_on_roadmap', label: 'Not on Roadmap' },
 ];
 
 const GROUP_OPTIONS: { id: GroupByField; label: string }[] = [
