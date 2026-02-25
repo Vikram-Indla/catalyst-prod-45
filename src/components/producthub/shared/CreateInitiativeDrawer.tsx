@@ -109,7 +109,6 @@ const TYPE_OPTIONS: { key: string; label: string; Icon: LucideIcon; color: strin
   { key: 'project', label: 'Project', Icon: FolderKanban, color: '#2563EB' },
   { key: 'enhancement', label: 'Enhancement', Icon: Zap, color: '#0D9488' },
   { key: 'improvement', label: 'Improvement', Icon: Wrench, color: '#D97706' },
-  
   { key: 'entity_integration', label: 'Entity Integration', Icon: Link, color: '#8B5CF6' },
 ];
 
