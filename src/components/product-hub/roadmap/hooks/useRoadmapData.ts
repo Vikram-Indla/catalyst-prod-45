@@ -150,9 +150,25 @@ export function useRoadmapInitiatives() {
         // Resolve dates with fallback
         const rawStart = row.roadmap_start_date || row.kickoff_date || null;
         const rawEnd = row.roadmap_end_date || row.target_complete || null;
-        const defaults = getDefaultDates(index);
-        const startDate = rawStart || defaults.startDate;
-        const endDate = rawEnd || defaults.endDate;
+        const hasRealEndDate = !!rawEnd;
+        
+        // Fallback: if no start, spread across 2026; if start but no end, add 3 months
+        let startDate: string;
+        let endDate: string;
+        if (rawStart) {
+          startDate = rawStart;
+          if (rawEnd) {
+            endDate = rawEnd;
+          } else {
+            const fallback = new Date(rawStart);
+            fallback.setMonth(fallback.getMonth() + 3);
+            endDate = fallback.toISOString().slice(0, 10);
+          }
+        } else {
+          const defaults = getDefaultDates(index);
+          startDate = defaults.startDate;
+          endDate = rawEnd || defaults.endDate;
+        }
 
         return {
           id: row.id,
@@ -171,6 +187,13 @@ export function useRoadmapInitiatives() {
           ownerColor: ownerColorFromName(ownerName),
           starred: false,
           milestones: milestones.get(row.id) || [],
+          hasRealEndDate,
+          rawDbId: row.id,
+          rawStatus: row.status || 'new_demand',
+          rawTypeKey: row.initiative_type_key || 'project',
+          rawAssigneeId: row.assignee_id || null,
+          rawBusinessOwnerId: row.business_owner_id || null,
+          rawInitiativeTypeId: row.initiative_type_id || null,
         };
       });
     },

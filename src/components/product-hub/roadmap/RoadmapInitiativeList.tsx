@@ -3,7 +3,7 @@
  * Fixes: type color bars, colored IDs (monospace), owner avatars, swim lane headers, 44px rows
  */
 import React from 'react';
-import { ArrowUpDown, ChevronDown, Plus, GripVertical } from 'lucide-react';
+import { ArrowUpDown, ChevronDown, Plus, GripVertical, AlertTriangle } from 'lucide-react';
 import type { RoadmapInitiative, RoadmapGroup } from './types/roadmap.types';
 import { TYPE_COLORS, INK, SURFACE, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT, LIST_PANEL_WIDTH } from './constants/roadmap.constants';
 
@@ -169,6 +169,11 @@ function InitiativeRow({
           </div>
         )}
       </div>
+
+      {/* End date warning */}
+      {!item.hasRealEndDate && (
+        <div className="flex-shrink-0" style={{ width: 14, height: 14, color: '#D97706' }}><AlertTriangle size={14} /></div>
+      )}
 
       {/* Owner avatar — colored circle with proper initials */}
       <div
