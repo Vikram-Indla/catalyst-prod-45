@@ -3,11 +3,12 @@
  * Static polar ring with weekly chronological paging, inline detail panel,
  * completed toggle sidebar, type ribbons, date chips on spokes.
  * Catalyst V11 Carbon Precision — NO purple, NO warm backgrounds, NO rotation.
+ * ALL DATA from Jira via props — ZERO hardcoded mock items.
  */
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { getStatusCategory, type StatusCategory } from '@/utils/statusCategory';
 import { HUB_COLORS, HUB_SHORT, PRIORITY_COLORS } from '@/constants/resource360';
 import { X, ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import type { Resource360Item } from '@/types/resource360';
 
 // ─── TOKENS ───
 const T = {
@@ -22,74 +23,75 @@ const T = {
   inter: "'Inter', sans-serif",
 };
 
-const STATUS_SOLID: Record<StatusCategory, { bg: string; text: string }> = {
+type StatusCat = 'todo' | 'progress' | 'done';
+
+const STATUS_SOLID: Record<StatusCat, { bg: string; text: string }> = {
   todo: { bg: T.todo, text: '#FFFFFF' },
   progress: { bg: T.progress, text: '#FFFFFF' },
   done: { bg: T.done, text: '#FFFFFF' },
 };
 
-// ─── MOCK DATA ───
+// ─── INTERNAL WORK ITEM (mapped from Resource360Item) ───
 interface WorkItem {
-  key: string; type: string; priority: string; status: StatusCategory;
-  hub: string; assignedDate: string; parentKey: string;
+  key: string; type: string; priority: string; status: StatusCat;
+  hub: string; assignedDate: string; parentKey: string | null;
+  parentTitle: string | null;
   dueDate: string | null; releaseEnd: string | null;
+  releaseName: string | null;
   title: string;
+  assignerName: string | null;
+  projectName: string | null;
+  projectKey: string | null;
+  ageDays: number;
 }
 
-const ACTIVE_ITEMS: WorkItem[] = [
-  { key: 'BAU-5012', type: 'Bug', priority: 'High', status: 'todo', hub: 'PROJ', assignedDate: '2026-02-25', parentKey: 'BAU-4466', dueDate: '2026-02-28', releaseEnd: null, title: 'Login API 500 error on mobile Safari' },
-  { key: 'BAU-5011', type: 'Bug', priority: 'Critical', status: 'progress', hub: 'PROJ', assignedDate: '2026-02-24', parentKey: 'BAU-4466', dueDate: '2026-02-26', releaseEnd: null, title: 'Payment gateway timeout in production' },
-  { key: 'BAU-5009', type: 'Bug', priority: 'Medium', status: 'todo', hub: 'PROJ', assignedDate: '2026-02-23', parentKey: 'BAU-4390', dueDate: null, releaseEnd: null, title: 'Dashboard chart rendering glitch' },
-  { key: 'IP-590', type: 'Task', priority: 'High', status: 'todo', hub: 'INFRA', assignedDate: '2026-02-23', parentKey: 'BAU-4400', dueDate: '2026-02-27', releaseEnd: null, title: 'Deploy Redis cluster to staging' },
-  { key: 'BAU-5007', type: 'Bug', priority: 'Medium', status: 'todo', hub: 'PROJ', assignedDate: '2026-02-22', parentKey: 'BAU-4466', dueDate: null, releaseEnd: null, title: 'Notification badge count incorrect' },
-  { key: 'BAU-5006', type: 'Bug', priority: 'Medium', status: 'todo', hub: 'PROJ', assignedDate: '2026-02-22', parentKey: 'BAU-4466', dueDate: null, releaseEnd: null, title: 'File upload progress not updating' },
-  { key: 'BAU-5005', type: 'Task', priority: 'Medium', status: 'todo', hub: 'PROJ', assignedDate: '2026-02-22', parentKey: 'BAU-4466', dueDate: null, releaseEnd: null, title: 'Migrate user preferences to new schema' },
-  { key: 'BAU-5003', type: 'Bug', priority: 'High', status: 'todo', hub: 'PROJ', assignedDate: '2026-02-20', parentKey: 'BAU-4466', dueDate: '2026-02-28', releaseEnd: null, title: 'Search results pagination broken' },
-  { key: 'BAU-4995', type: 'Bug', priority: 'Medium', status: 'progress', hub: 'PROJ', assignedDate: '2026-02-20', parentKey: 'BAU-4466', dueDate: null, releaseEnd: null, title: 'CSS layout shift on page load' },
-  { key: 'BAU-4980', type: 'Bug', priority: 'High', status: 'progress', hub: 'PROJ', assignedDate: '2026-02-18', parentKey: 'BAU-4466', dueDate: '2026-02-25', releaseEnd: null, title: 'Memory leak in real-time websocket' },
-  { key: 'BAU-4965', type: 'Task', priority: 'High', status: 'progress', hub: 'PROJ', assignedDate: '2026-02-15', parentKey: 'BAU-4390', dueDate: null, releaseEnd: null, title: 'Implement license validation API' },
-  { key: 'BAU-4950', type: 'Task', priority: 'Critical', status: 'todo', hub: 'INFRA', assignedDate: '2026-02-10', parentKey: 'BAU-4400', dueDate: '2026-02-20', releaseEnd: null, title: 'SSL certificate rotation for prod' },
-  { key: 'BAU-4872', type: 'Task', priority: 'Medium', status: 'progress', hub: 'PROJ', assignedDate: '2026-02-03', parentKey: 'BAU-4390', dueDate: null, releaseEnd: null, title: 'Refactor permission middleware' },
-];
+function mapStatusCategory(raw: string): StatusCat {
+  const lower = raw?.toLowerCase() || '';
+  if (lower.includes('done') || lower.includes('closed') || lower.includes('resolved') || lower.includes('complete')) return 'done';
+  if (lower.includes('progress') || lower.includes('in_progress') || lower.includes('review') || lower.includes('qa')) return 'progress';
+  return 'todo';
+}
 
-const DONE_ITEMS: WorkItem[] = [
-  { key: 'BAU-4799', type: 'Bug', priority: 'High', status: 'done', hub: 'PROJ', assignedDate: '2026-01-28', parentKey: 'BAU-4466', dueDate: null, releaseEnd: null, title: 'Fix user avatar upload crash' },
-  { key: 'BAU-4780', type: 'Task', priority: 'Medium', status: 'done', hub: 'PROJ', assignedDate: '2026-01-26', parentKey: 'BAU-4390', dueDate: null, releaseEnd: null, title: 'Add audit logging for license changes' },
-  { key: 'BAU-4760', type: 'Bug', priority: 'Low', status: 'done', hub: 'PROJ', assignedDate: '2026-01-24', parentKey: 'BAU-4466', dueDate: null, releaseEnd: null, title: 'Tooltip z-index overlap fix' },
-  { key: 'BAU-4740', type: 'Task', priority: 'High', status: 'done', hub: 'PROJ', assignedDate: '2026-01-22', parentKey: 'BAU-4466', dueDate: null, releaseEnd: null, title: 'Migrate to React 18 concurrent' },
-  { key: 'BAU-4720', type: 'Bug', priority: 'Medium', status: 'done', hub: 'PROJ', assignedDate: '2026-01-20', parentKey: 'BAU-4466', dueDate: null, releaseEnd: null, title: 'Form validation error messages' },
-  { key: 'BAU-4700', type: 'Task', priority: 'Medium', status: 'done', hub: 'PROJ', assignedDate: '2026-01-18', parentKey: 'BAU-4390', dueDate: null, releaseEnd: null, title: 'Database index optimization' },
-  { key: 'BAU-4680', type: 'Bug', priority: 'High', status: 'done', hub: 'PROJ', assignedDate: '2026-01-16', parentKey: 'BAU-4466', dueDate: null, releaseEnd: null, title: 'Session timeout handling fix' },
-  { key: 'BAU-4660', type: 'Task', priority: 'Low', status: 'done', hub: 'PROJ', assignedDate: '2026-01-14', parentKey: 'BAU-4390', dueDate: null, releaseEnd: null, title: 'Update API documentation' },
-  { key: 'IP-580', type: 'Task', priority: 'High', status: 'done', hub: 'INFRA', assignedDate: '2026-01-12', parentKey: 'BAU-4400', dueDate: null, releaseEnd: null, title: 'Configure load balancer health checks' },
-];
+function mapHubShort(hub: string): string {
+  if (!hub) return 'PROJ';
+  const s = HUB_SHORT as Record<string, string>;
+  if (s[hub]) return s[hub];
+  return hub.replace('Hub', '').toUpperCase().slice(0, 4);
+}
 
-const HIERARCHY: Record<string, { epicKey: string; epicTitle: string; epicAssignee: string; storyKey: string; storyTitle: string; storyAssignee: string; storyStatus: StatusCategory }> = {
-  'BAU-4466': { epicKey: 'BAU-4200', epicTitle: 'Senaei Platform Q1 2026', epicAssignee: 'Dr. Ahmed Al-Rashid', storyKey: 'BAU-4466', storyTitle: 'Senaei App Revamp UI', storyAssignee: 'Yazeed Daraz', storyStatus: 'progress' },
-  'BAU-4390': { epicKey: 'BAU-4200', epicTitle: 'Senaei Platform Q1 2026', epicAssignee: 'Dr. Ahmed Al-Rashid', storyKey: 'BAU-4390', storyTitle: 'License Module Overhaul', storyAssignee: 'Ahmed Hassan', storyStatus: 'progress' },
-  'BAU-4400': { epicKey: 'BAU-4300', epicTitle: 'Infrastructure Hardening', epicAssignee: 'Eng. Fatima Al-Harbi', storyKey: 'BAU-4400', storyTitle: 'Infrastructure Q1', storyAssignee: 'Omar Saeed', storyStatus: 'todo' },
-};
+function mapItemType(raw: string): string {
+  if (!raw) return 'Task';
+  const lower = raw.toLowerCase();
+  if (lower.includes('bug') || lower.includes('defect')) return 'Bug';
+  if (lower.includes('epic')) return 'Epic';
+  if (lower.includes('story')) return 'Story';
+  if (lower.includes('sub')) return 'Sub-task';
+  return 'Task';
+}
 
-const SIBLINGS: Record<string, { name: string; status: StatusCategory; age: number; key: string }[]> = {
-  'BAU-4466': [
-    { name: 'Khalid Mahmoud', status: 'progress', age: 1, key: 'BAU-5010' },
-    { name: 'Sara Al-Otaibi', status: 'todo', age: 2, key: 'BAU-5008' },
-    { name: 'Mohammed Farooq', status: 'done', age: 4, key: 'BAU-5004' },
-    { name: 'Nora Al-Sheikh', status: 'progress', age: 5, key: 'BAU-5002' },
-  ],
-  'BAU-4390': [
-    { name: 'Khalid Mahmoud', status: 'progress', age: 7, key: 'BAU-4964' },
-    { name: 'Sara Al-Otaibi', status: 'todo', age: 9, key: 'BAU-4960' },
-  ],
-  'BAU-4400': [
-    { name: 'Mohammed Farooq', status: 'done', age: 12, key: 'IP-589' },
-    { name: 'Nora Al-Sheikh', status: 'progress', age: 13, key: 'IP-588' },
-    { name: 'Khalid Mahmoud', status: 'todo', age: 15, key: 'IP-587' },
-  ],
-};
+function mapItem(r: Resource360Item): WorkItem {
+  return {
+    key: r.item_key,
+    type: mapItemType(r.item_type),
+    priority: r.priority || 'Medium',
+    status: mapStatusCategory(r.status_category),
+    hub: mapHubShort(r.hub),
+    assignedDate: r.assigned_at?.slice(0, 10) || r.item_created_at?.slice(0, 10) || '2026-01-01',
+    parentKey: r.parent_key || null,
+    parentTitle: r.parent_title || null,
+    dueDate: r.release_end_date || null,
+    releaseEnd: r.release_end_date || null,
+    releaseName: r.release_name || null,
+    title: r.title,
+    assignerName: r.assigner_name || null,
+    projectName: r.project_name || null,
+    projectKey: r.project_key || null,
+    ageDays: r.age_days ?? 0,
+  };
+}
 
 // ─── HELPERS ───
-const NOW = new Date('2026-02-25');
+const NOW = new Date();
 
 function daysBetween(a: Date, b: Date) {
   return Math.floor((b.getTime() - a.getTime()) / 86400000);
@@ -104,10 +106,6 @@ function relativeDate(dateStr: string): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-function itemAge(dateStr: string): number {
-  return daysBetween(new Date(dateStr), NOW);
-}
-
 function getISOWeekStart(dateStr: string): string {
   const d = new Date(dateStr);
   const day = d.getDay();
@@ -117,7 +115,7 @@ function getISOWeekStart(dateStr: string): string {
   return mon.toISOString().slice(0, 10);
 }
 
-function staleLevel(age: number, status: StatusCategory): 'critical' | 'stale' | null {
+function staleLevel(age: number, status: StatusCat): 'critical' | 'stale' | null {
   if (status === 'done') return null;
   if (age > 21) return 'critical';
   if (age > 14) return 'stale';
@@ -173,7 +171,7 @@ function weekRange(weekStart: string): string {
 }
 
 // ─── STATUS PILL ───
-const StatusPill: React.FC<{ status: StatusCategory; small?: boolean }> = ({ status, small }) => {
+const StatusPill: React.FC<{ status: StatusCat; small?: boolean }> = ({ status, small }) => {
   const c = STATUS_SOLID[status];
   const label = status === 'todo' ? 'To Do' : status === 'progress' ? 'In Progress' : 'Done';
   return (
@@ -188,7 +186,7 @@ const StatusPill: React.FC<{ status: StatusCategory; small?: boolean }> = ({ sta
 
 // ─── HUB BADGE ───
 const HubBadge: React.FC<{ hub: string }> = ({ hub }) => {
-  const color = hub === 'INFRA' ? '#4F46E5' : (HUB_COLORS.ProjectHub || T.accent);
+  const color = (HUB_COLORS as Record<string, string>)[hub] || T.accent;
   return (
     <span style={{
       display: 'inline-block', padding: '1px 5px', borderRadius: 4,
@@ -213,7 +211,7 @@ const PriorityPill: React.FC<{ priority: string }> = ({ priority }) => {
 // ═══ MAIN COMPONENT ═══
 interface RingViewV16Props {
   resource: any;
-  items: any[];
+  items: Resource360Item[];
   onItemClick?: (item: any) => void;
   onAiClick?: () => void;
 }
@@ -223,7 +221,7 @@ type PanelMode = 'hidden' | 'completed' | 'detail';
 
 const MAX_PER_PAGE = 8;
 
-const RingViewV16: React.FC<RingViewV16Props> = ({ resource }) => {
+const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ w: 800, h: 600 });
   const [statusFilter, setStatusFilter] = useState<ActiveFilter>('all');
@@ -235,6 +233,23 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource }) => {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const searchRef = useRef<HTMLInputElement>(null);
+
+  // Map raw Jira data to internal WorkItem format
+  const allItems = useMemo(() => rawItems.map(mapItem), [rawItems]);
+  const activeItems = useMemo(() => allItems.filter(i => i.status !== 'done'), [allItems]);
+  const doneItems = useMemo(() => allItems.filter(i => i.status === 'done'), [allItems]);
+
+  // Derive siblings: items sharing the same parent_key
+  const siblingMap = useMemo(() => {
+    const map = new Map<string, WorkItem[]>();
+    allItems.forEach(i => {
+      if (i.parentKey) {
+        if (!map.has(i.parentKey)) map.set(i.parentKey, []);
+        map.get(i.parentKey)!.push(i);
+      }
+    });
+    return map;
+  }, [allItems]);
 
   // Measure container
   useEffect(() => {
@@ -251,7 +266,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource }) => {
 
   // Filter active items
   const filteredActive = useMemo(() => {
-    let items = ACTIVE_ITEMS;
+    let items = activeItems;
     if (statusFilter === 'todo') items = items.filter(i => i.status === 'todo');
     if (statusFilter === 'progress') items = items.filter(i => i.status === 'progress');
     if (searchQuery) {
@@ -259,7 +274,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource }) => {
       items = items.filter(i => i.key.toLowerCase().includes(q) || i.title.toLowerCase().includes(q));
     }
     return items;
-  }, [statusFilter, searchQuery]);
+  }, [activeItems, statusFilter, searchQuery]);
 
   const weeks = useMemo(() => groupByWeek(filteredActive), [filteredActive]);
   const currentWeek = weeks[weekIdx] || null;
@@ -273,9 +288,9 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource }) => {
   useEffect(() => { setRingPage(0); }, [weekIdx]);
 
   // Counts
-  const todoCount = ACTIVE_ITEMS.filter(i => i.status === 'todo').length;
-  const progressCount = ACTIVE_ITEMS.filter(i => i.status === 'progress').length;
-  const doneCount = DONE_ITEMS.length;
+  const todoCount = activeItems.filter(i => i.status === 'todo').length;
+  const progressCount = activeItems.filter(i => i.status === 'progress').length;
+  const doneCount = doneItems.length;
 
   // Keyboard
   useEffect(() => {
@@ -337,11 +352,11 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource }) => {
   const cardW = N <= 4 ? 176 : N <= 6 ? 164 : 150;
   const cardH = 110;
 
-  const initials = resource?.initials || resource?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) || 'AA';
-  const resourceName = resource?.full_name || 'Adnan Ali';
-  const resourceRole = resource?.role || 'React Developer';
+  const initials = resource?.initials || resource?.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) || '??';
+  const resourceName = resource?.name || resource?.full_name || 'Resource';
+  const resourceRole = resource?.role || '';
 
-  const selectedItem = selectedId ? [...ACTIVE_ITEMS, ...DONE_ITEMS].find(i => i.key === selectedId) : null;
+  const selectedItem = selectedId ? allItems.find(i => i.key === selectedId) : null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', fontFamily: T.inter }}>
@@ -353,7 +368,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource }) => {
         <span style={{ fontSize: 10, fontWeight: 700, color: T.ink4, textTransform: 'uppercase', letterSpacing: '0.06em' }}>ACTIVE</span>
         <div style={{ display: 'flex', gap: 4 }}>
           {([
-            { key: 'all' as const, label: `All (${ACTIVE_ITEMS.length})` },
+            { key: 'all' as const, label: `All (${activeItems.length})` },
             { key: 'todo' as const, label: `To Do (${todoCount})` },
             { key: 'progress' as const, label: `In Progress (${progressCount})` },
           ]).map(f => {
@@ -519,7 +534,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource }) => {
               const left = ex - cardW / 2;
               const top = ey - cardH / 2;
               const isSelected = selectedId === item.key;
-              const age = itemAge(item.assignedDate);
+              const age = item.ageDays;
               const stale = staleLevel(age, item.status);
 
               return (
@@ -544,7 +559,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource }) => {
                   onMouseOver={e => { if (!isSelected) (e.currentTarget as any).style.boxShadow = '0 8px 28px rgba(0,0,0,.12)'; }}
                   onMouseOut={e => { if (!isSelected) (e.currentTarget as any).style.boxShadow = '0 2px 12px rgba(0,0,0,.06)'; }}
                 >
-                  {/* Type ribbon */}
+                  {/* Type ribbon — SAME COLOR #334155 for ALL types */}
                   <div style={{
                     height: 22, borderRadius: '8px 8px 0 0', background: '#334155',
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -637,7 +652,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource }) => {
                 </button>
               </div>
               <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0' }}>
-                {DONE_ITEMS.map(item => (
+                {doneItems.map(item => (
                   <div key={item.key} onClick={() => selectCard(item.key)} style={{
                     display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px',
                     cursor: 'pointer', borderBottom: `1px solid ${T.borderLt}`,
@@ -682,7 +697,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource }) => {
 
               {/* Stale alert */}
               {(() => {
-                const age = itemAge(selectedItem.assignedDate);
+                const age = selectedItem.ageDays;
                 const s = staleLevel(age, selectedItem.status);
                 if (!s) return null;
                 return (
@@ -710,53 +725,49 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource }) => {
                       fontSize: 11, fontWeight: 700, background: sla.bg, color: sla.color,
                     }}>
                       {sla.label}
-                      {due.source === 'release' && <span style={{ fontWeight: 400, marginLeft: 4, opacity: 0.7 }}>(Sprint 47)</span>}
+                      {due.source === 'release' && selectedItem.releaseName && (
+                        <span style={{ fontWeight: 400, marginLeft: 4, opacity: 0.7 }}>({selectedItem.releaseName})</span>
+                      )}
                     </span>
                   </div>
                 );
               })()}
 
               {/* Breadcrumb */}
-              {(() => {
-                const h = HIERARCHY[selectedItem.parentKey];
-                if (!h) return null;
-                return (
-                  <div style={{ padding: '4px 16px 8px', display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, flexWrap: 'wrap' }}>
-                    <HubBadge hub={selectedItem.hub} />
-                    <span style={{ color: T.ink4 }}>{'>'}</span>
-                    <span style={{ fontFamily: T.mono, fontWeight: 600, color: T.ink3 }}>{h.epicKey}</span>
-                    <span style={{ color: T.ink4 }}>{'>'}</span>
-                    <span style={{ fontFamily: T.mono, fontWeight: 600, color: T.ink3 }}>{h.storyKey}</span>
-                    <span style={{ color: T.ink4 }}>{'>'}</span>
-                    <span style={{ fontFamily: T.mono, fontWeight: 700, color: T.accent }}>{selectedItem.key}</span>
-                  </div>
-                );
-              })()}
+              {selectedItem.parentKey && (
+                <div style={{ padding: '4px 16px 8px', display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, flexWrap: 'wrap' }}>
+                  <HubBadge hub={selectedItem.hub} />
+                  <span style={{ color: T.ink4 }}>{'>'}</span>
+                  <span style={{ fontFamily: T.mono, fontWeight: 600, color: T.ink3 }}>{selectedItem.parentKey}</span>
+                  <span style={{ color: T.ink4 }}>{'>'}</span>
+                  <span style={{ fontFamily: T.mono, fontWeight: 700, color: T.accent }}>{selectedItem.key}</span>
+                </div>
+              )}
 
               {/* Metadata grid */}
               <div style={{ margin: '0 16px', border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
                 {[
                   [
-                    { label: 'Reporter', value: 'Maali Alanazi' },
-                    { label: 'Assigner', value: 'Eng. Fatima Al-Harbi' },
+                    { label: 'Project', value: selectedItem.projectName || selectedItem.projectKey || '—' },
+                    { label: 'Assigner', value: selectedItem.assignerName || '—' },
                   ],
                   [
                     { label: 'Assigned', value: `${relativeDate(selectedItem.assignedDate)} · ${new Date(selectedItem.assignedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}` },
-                    { label: 'Days Sitting', value: String(itemAge(selectedItem.assignedDate)), isAge: true },
+                    { label: 'Days Sitting', value: String(selectedItem.ageDays), isAge: true },
                   ],
                   [
-                    { label: 'Release', value: 'Sprint 47' },
+                    { label: 'Release', value: selectedItem.releaseName || '—' },
                     { label: 'Due', value: (() => {
                       const due = smartDue(selectedItem);
                       if (!due) return '—';
                       return new Date(due.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
-                        (due.source === 'release' ? ' (Sprint 47)' : '');
+                        (due.source === 'release' && selectedItem.releaseName ? ` (${selectedItem.releaseName})` : '');
                     })() },
                   ],
                 ].map((row, ri) => (
                   <div key={ri} style={{ display: 'flex', borderBottom: ri < 2 ? `1px solid ${T.border}` : 'none' }}>
                     {row.map((cell: any, ci: number) => {
-                      const age = cell.isAge ? itemAge(selectedItem.assignedDate) : 0;
+                      const age = cell.isAge ? selectedItem.ageDays : 0;
                       return (
                         <div key={ci} style={{
                           flex: 1, padding: '8px 12px',
@@ -788,60 +799,51 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource }) => {
                 ))}
               </div>
 
-              {/* Hierarchy */}
-              {(() => {
-                const h = HIERARCHY[selectedItem.parentKey];
-                if (!h) return null;
-                return (
-                  <div style={{ margin: '12px 16px 0' }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: T.ink4, marginBottom: 8, letterSpacing: '0.05em' }}>HIERARCHY</div>
-                    {/* Epic */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: T.surfaceAlt, borderRadius: 6, marginBottom: 2 }}>
-                      <div style={{ width: 16, height: 16, borderRadius: 8, background: '#6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ fontSize: 8, color: '#FFFFFF', fontWeight: 800 }}>E</span>
-                      </div>
-                      <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.ink2 }}>{h.epicKey}</span>
-                      <span style={{ fontSize: 10, color: T.ink3, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{h.epicTitle}</span>
+              {/* Hierarchy (parent) */}
+              {selectedItem.parentKey && (
+                <div style={{ margin: '12px 16px 0' }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: T.ink4, marginBottom: 8, letterSpacing: '0.05em' }}>HIERARCHY</div>
+                  {/* Parent */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: T.surfaceAlt, borderRadius: 6, marginBottom: 2 }}>
+                    <div style={{ width: 16, height: 16, borderRadius: 8, background: '#6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ fontSize: 8, color: '#FFFFFF', fontWeight: 800 }}>P</span>
                     </div>
-                    <div style={{ width: 2, height: 10, background: T.border, marginLeft: 17 }} />
-                    {/* Story */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: T.surfaceAlt, borderRadius: 6, marginBottom: 2 }}>
-                      <div style={{ width: 16, height: 16, borderRadius: 8, background: T.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ fontSize: 8, color: '#FFFFFF', fontWeight: 800 }}>S</span>
-                      </div>
-                      <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.ink2 }}>{h.storyKey}</span>
-                      <span style={{ fontSize: 10, color: T.ink3, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{h.storyTitle}</span>
-                      <StatusPill status={h.storyStatus} small />
-                    </div>
-                    <div style={{ width: 2, height: 10, background: T.border, marginLeft: 17 }} />
-                    {/* Current */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: '#EFF6FF', border: `1px solid ${T.accent}`, borderRadius: 6 }}>
-                      <div style={{ width: 16, height: 16, borderRadius: 8, background: T.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ fontSize: 8, color: '#FFFFFF', fontWeight: 800 }}>T</span>
-                      </div>
-                      <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.accent }}>{selectedItem.key}</span>
-                      <span style={{ fontSize: 10, color: T.ink1, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 600 }}>{selectedItem.title}</span>
-                      <StatusPill status={selectedItem.status} small />
-                    </div>
+                    <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.ink2 }}>{selectedItem.parentKey}</span>
+                    <span style={{ fontSize: 10, color: T.ink3, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {selectedItem.parentTitle || ''}
+                    </span>
                   </div>
-                );
-              })()}
+                  <div style={{ width: 2, height: 10, background: T.border, marginLeft: 17 }} />
+                  {/* Current */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', background: '#EFF6FF', border: `1px solid ${T.accent}`, borderRadius: 6 }}>
+                    <div style={{ width: 16, height: 16, borderRadius: 8, background: T.accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ fontSize: 8, color: '#FFFFFF', fontWeight: 800 }}>
+                        {selectedItem.type === 'Bug' ? 'B' : selectedItem.type === 'Story' ? 'S' : selectedItem.type === 'Epic' ? 'E' : 'T'}
+                      </span>
+                    </div>
+                    <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.accent }}>{selectedItem.key}</span>
+                    <span style={{ fontSize: 10, color: T.ink1, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 600 }}>{selectedItem.title}</span>
+                    <StatusPill status={selectedItem.status} small />
+                  </div>
+                </div>
+              )}
 
-              {/* Siblings */}
+              {/* Siblings — derived from items sharing the same parent */}
               {(() => {
-                const sibs = SIBLINGS[selectedItem.parentKey];
-                if (!sibs || sibs.length === 0) return null;
-                const doneCount = sibs.filter(s => s.status === 'done').length;
+                if (!selectedItem.parentKey) return null;
+                const sibs = (siblingMap.get(selectedItem.parentKey) || []).filter(s => s.key !== selectedItem.key);
+                if (sibs.length === 0) return null;
+                const sibDoneCount = sibs.filter(s => s.status === 'done').length;
                 return (
                   <div style={{ margin: '12px 16px 16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                       <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: T.ink4, letterSpacing: '0.05em' }}>SIBLINGS</span>
-                      <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.ink3 }}>{doneCount}/{sibs.length}</span>
+                      <span style={{ fontFamily: T.mono, fontSize: 10, fontWeight: 700, color: T.ink3 }}>{sibDoneCount}/{sibs.length}</span>
                     </div>
                     <div style={{ height: 3, borderRadius: 2, background: T.borderLt, overflow: 'hidden', marginBottom: 8 }}>
-                      <div style={{ height: '100%', borderRadius: 2, width: `${(doneCount / sibs.length) * 100}%`, background: T.done }} />
+                      <div style={{ height: '100%', borderRadius: 2, width: `${(sibDoneCount / sibs.length) * 100}%`, background: T.done }} />
                     </div>
-                    {sibs.map(s => (
+                    {sibs.slice(0, 6).map(s => (
                       <div key={s.key} style={{
                         display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px',
                         borderBottom: `1px solid ${T.borderLt}`,
@@ -851,15 +853,17 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource }) => {
                           background: STATUS_SOLID[s.status].bg,
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                         }}>
-                          <span style={{ fontSize: 8, fontWeight: 800, color: '#FFFFFF' }}>{s.name.split(' ').map(n => n[0]).join('')}</span>
+                          <span style={{ fontSize: 8, fontWeight: 800, color: '#FFFFFF' }}>
+                            {s.type === 'Bug' ? 'B' : s.type === 'Story' ? 'S' : 'T'}
+                          </span>
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                             <span style={{ fontFamily: T.mono, fontSize: 9.5, fontWeight: 700, color: T.ink2 }}>{s.key}</span>
                             <StatusPill status={s.status} small />
-                            <span style={{ fontFamily: T.mono, fontSize: 9, fontWeight: 700, color: ageHeatColor(s.age), marginLeft: 'auto' }}>{s.age}d</span>
+                            <span style={{ fontFamily: T.mono, fontSize: 9, fontWeight: 700, color: ageHeatColor(s.ageDays), marginLeft: 'auto' }}>{s.ageDays}d</span>
                           </div>
-                          <div style={{ fontSize: 10, color: T.ink3, marginTop: 1 }}>{s.name}</div>
+                          <div style={{ fontSize: 10, color: T.ink3, marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.title}</div>
                         </div>
                       </div>
                     ))}
@@ -873,9 +877,9 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource }) => {
 
       {/* ── TOOLTIP ── */}
       {hoveredId && hoveredId !== selectedId && (() => {
-        const item = [...ACTIVE_ITEMS, ...DONE_ITEMS].find(i => i.key === hoveredId);
+        const item = allItems.find(i => i.key === hoveredId);
         if (!item) return null;
-        const age = itemAge(item.assignedDate);
+        const age = item.ageDays;
         const due = smartDue(item);
         return (
           <div style={{
