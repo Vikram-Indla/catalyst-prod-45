@@ -6,15 +6,18 @@ interface Props {
   isLoading: boolean;
 }
 
-/** Resource banner with avatar, name, role, department */
+/** Resource banner: 66px, gradient avatar initials (NO photo), name, subtitle, 5 stat boxes */
 export function Resource360Banner({ summary, isLoading }: Props) {
   if (isLoading || !summary) {
     return (
-      <div className="flex items-center gap-3 px-4 py-3 animate-pulse">
-        <div className="w-10 h-10 rounded-full bg-slate-200" />
-        <div className="flex flex-col gap-1.5">
-          <div className="w-32 h-4 rounded bg-slate-200" />
-          <div className="w-48 h-3 rounded bg-slate-100" />
+      <div style={{
+        height: 66, display: 'flex', alignItems: 'center', gap: 14,
+        padding: '0 20px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
+      }}>
+        <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#E2E8F0' }} />
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <div style={{ width: 120, height: 14, borderRadius: 4, background: '#E2E8F0' }} />
+          <div style={{ width: 180, height: 10, borderRadius: 4, background: '#F1F5F9' }} />
         </div>
       </div>
     );
@@ -27,44 +30,65 @@ export function Resource360Banner({ summary, isLoading }: Props) {
     .slice(0, 2)
     .toUpperCase();
 
+  const totalItems = summary.total_items ?? 0;
+  const doneItems = summary.done_count ?? 0;
+  const closureRate = totalItems > 0 ? Math.round((doneItems / totalItems) * 100) : 0;
+  const pending = (summary.todo_count ?? 0) + (summary.progress_count ?? 0);
+  const avgAge = 0; // derived from items if needed
+  const staleCount = 0; // derived from items if needed
+
+  const stats = [
+    { label: 'Total', value: String(totalItems), danger: false },
+    { label: 'Closure%', value: `${closureRate}%`, danger: false },
+    { label: 'Pending', value: String(pending), danger: false },
+    { label: 'Avg Age', value: `${avgAge}d`, danger: false },
+    { label: 'Stale', value: String(staleCount), danger: staleCount > 0 },
+  ];
+
   return (
-    <div className="flex items-center gap-3 px-4 py-3" style={{ fontFamily: 'Inter, sans-serif' }}>
-      {/* Avatar */}
-      <div
-        className="relative rounded-full overflow-hidden flex items-center justify-center flex-shrink-0"
-        style={{
-          width: 40, height: 40,
-          background: '#2563EB',
-          boxShadow: '0 0 0 3px #DBEAFE',
-        }}
-      >
-        {summary.avatar_url ? (
-          <img
-            src={summary.avatar_url}
-            alt={summary.name}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-              (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
-            }}
-          />
-        ) : null}
-        <span
-          className={`absolute inset-0 flex items-center justify-center text-white font-bold ${summary.avatar_url ? 'hidden' : ''}`}
-          style={{ fontSize: 14 }}
-        >
-          {initials}
+    <div style={{
+      height: 66, display: 'flex', alignItems: 'center', gap: 14,
+      padding: '0 20px', background: '#FFFFFF', borderBottom: '1px solid #E2E8F0',
+      flexShrink: 0, fontFamily: "'Inter', sans-serif",
+    }}>
+      {/* Avatar — gradient, initials only, NO photo */}
+      <div style={{
+        width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
+        background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <span style={{
+          fontFamily: "'Sora', sans-serif", fontSize: 17, fontWeight: 800, color: '#FFFFFF',
+        }}>{initials}</span>
+      </div>
+
+      {/* Name + subtitle */}
+      <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+        <span style={{
+          fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 800,
+          color: '#0F172A', lineHeight: 1.2,
+        }}>{summary.name}</span>
+        <span style={{ fontSize: 12, color: '#64748B', lineHeight: 1.3 }}>
+          {summary.role}{summary.department ? ` · ${summary.department}` : ''}
         </span>
       </div>
 
-      {/* Name + role */}
-      <div className="flex flex-col min-w-0">
-        <p style={{ fontSize: 22, fontWeight: 900, color: 'var(--r360-text-1, #0A0A0A)', margin: 0, lineHeight: 1.3 }}>
-          {summary.name}
-        </p>
-        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--r360-text-2, #1A1A2E)', margin: 0, lineHeight: 1.3 }}>
-          {summary.role} · {summary.department}
-        </p>
+      {/* Stat boxes — pushed right */}
+      <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
+        {stats.map(s => (
+          <div key={s.label} style={{
+            minWidth: 64, padding: '5px 12px', textAlign: 'center',
+            borderRadius: 8,
+            background: s.danger ? '#FEF2F2' : '#F8FAFC',
+            border: `1px solid ${s.danger ? '#FECACA' : '#E2E8F0'}`,
+          }}>
+            <div style={{
+              fontFamily: "'JetBrains Mono', monospace", fontSize: 17, fontWeight: 800,
+              color: s.danger ? '#EF4444' : '#0F172A', lineHeight: 1.2,
+            }}>{s.value}</div>
+            <div style={{ fontSize: 10, color: '#94A3B8', fontWeight: 500, marginTop: 1 }}>{s.label}</div>
+          </div>
+        ))}
       </div>
     </div>
   );
