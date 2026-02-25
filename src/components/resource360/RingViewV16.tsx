@@ -34,7 +34,7 @@ const STATUS_SOLID: Record<StatusCat, { bg: string; text: string }> = {
 // ─── INTERNAL WORK ITEM (mapped from Resource360Item) ───
 interface WorkItem {
   key: string; type: string; priority: string; status: StatusCat;
-  hub: string; assignedDate: string; parentKey: string | null;
+  hub: string; assignedDate: string; dateLabel: 'Assigned' | 'Created'; parentKey: string | null;
   parentTitle: string | null;
   dueDate: string | null; releaseEnd: string | null;
   releaseName: string | null;
@@ -70,6 +70,7 @@ function mapItemType(raw: string): string {
 }
 
 function mapItem(r: Resource360Item): WorkItem {
+  const hasAssigned = !!r.assigned_at;
   return {
     key: r.item_key,
     type: mapItemType(r.item_type),
@@ -77,6 +78,7 @@ function mapItem(r: Resource360Item): WorkItem {
     status: mapStatusCategory(r.status_category),
     hub: mapHubShort(r.hub),
     assignedDate: r.assigned_at?.slice(0, 10) || r.item_created_at?.slice(0, 10) || '2026-01-01',
+    dateLabel: hasAssigned ? 'Assigned' : 'Created',
     parentKey: r.parent_key || null,
     parentTitle: r.parent_title || null,
     dueDate: r.release_end_date || null,
@@ -507,18 +509,19 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                     />
                     {/* Date chip at midpoint */}
                     <g transform={`translate(${mx}, ${my})`}>
-                      <rect x={-30} y={-10} width={60} height={20} rx={10}
+                      <rect x={-48} y={-11} width={96} height={22} rx={11}
                         fill={isSelected ? T.accent : '#FFFFFF'}
                         stroke={isSelected ? '#1D4ED8' : '#CBD5E1'}
                         strokeWidth={1}
                         opacity={hasSel && !isSelected ? 0.3 : 1}
                       />
-                      <text x={0} y={4} textAnchor="middle" style={{
-                        fontSize: 9.5, fontWeight: 600, fontFamily: T.inter,
-                        fill: isSelected ? '#FFFFFF' : T.ink2,
+                      <text x={0} y={1} textAnchor="middle" dominantBaseline="middle" style={{
+                        fontSize: 8.5, fontWeight: 600, fontFamily: T.mono,
+                        fill: isSelected ? '#FFFFFF' : T.ink3,
                         opacity: hasSel && !isSelected ? 0.3 : 1,
+                        letterSpacing: '0.01em',
                       }}>
-                        {relativeDate(item.assignedDate)}
+                        {item.dateLabel} {relativeDate(item.assignedDate)}
                       </text>
                     </g>
                   </g>
