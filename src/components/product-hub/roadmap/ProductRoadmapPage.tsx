@@ -41,6 +41,7 @@ export function ProductRoadmapPage() {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [zoomScale, setZoomScale] = useState(1);
   const { sidebarExpanded, setSidebarExpanded } = useCatalystContext();
   const [prevSidebar, setPrevSidebar] = useState(true);
   const [timelineStart, setTimelineStart] = useState(() => new Date(2026, 0, 1));
@@ -276,6 +277,8 @@ export function ProductRoadmapPage() {
                 viewMode={viewMode}
                 onViewModeChange={setViewMode}
                 onToday={handleToday}
+                zoomScale={zoomScale}
+                onZoomScaleChange={setZoomScale}
               />
 
               <RoadmapFilters
@@ -292,6 +295,7 @@ export function ProductRoadmapPage() {
           <RoadmapTimeline
             groups={groups}
             zoom={zoom}
+            zoomScale={zoomScale}
             timelineStart={timelineStart}
             timelineEnd={timelineEnd}
             selectedId={selectedId}

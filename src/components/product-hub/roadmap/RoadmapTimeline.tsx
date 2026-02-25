@@ -10,6 +10,7 @@ import type { RoadmapGroup, ZoomLevel } from './types/roadmap.types';
 interface RoadmapTimelineProps {
   groups: RoadmapGroup[];
   zoom: ZoomLevel;
+  zoomScale?: number;
   timelineStart: Date;
   timelineEnd: Date;
   selectedId: string | null;
@@ -21,7 +22,7 @@ interface RoadmapTimelineProps {
 }
 
 export function RoadmapTimeline({
-  groups, zoom, timelineStart, timelineEnd, selectedId, hoveredId, onSelect, onHover, onAddClick, onToggleStar,
+  groups, zoom, zoomScale = 1, timelineStart, timelineEnd, selectedId, hoveredId, onSelect, onHover, onAddClick, onToggleStar,
 }: RoadmapTimelineProps) {
   const [listWidth, setListWidth] = useState(380);
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
@@ -120,6 +121,7 @@ export function RoadmapTimeline({
         timelineStart={timelineStart}
         timelineEnd={timelineEnd}
         zoom={zoom}
+        zoomScale={zoomScale}
         selectedId={selectedId}
         hoveredId={hoveredId}
         onSelect={onSelect}

@@ -24,6 +24,7 @@ interface RoadmapGanttChartProps {
   timelineStart: Date;
   timelineEnd: Date;
   zoom: ZoomLevel;
+  zoomScale?: number;
   selectedId: string | null;
   hoveredId: string | null;
   onSelect: (id: string) => void;
@@ -99,7 +100,7 @@ function calcBarPosition(startDate: string, endDate: string, tlStart: Date, tlEn
   return { left, width };
 }
 
-export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, selectedId, hoveredId, onSelect, onHover, scrollRef, onScroll, collapsedGroups, onToggleGroup }: RoadmapGanttChartProps) {
+export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zoomScale = 1, selectedId, hoveredId, onSelect, onHover, scrollRef, onScroll, collapsedGroups, onToggleGroup }: RoadmapGanttChartProps) {
   const periods = useMemo(() => generatePeriods(timelineStart, timelineEnd, zoom), [timelineStart, timelineEnd, zoom]);
 
   const todayPct = useMemo(() => {
@@ -108,7 +109,8 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
     return pos >= 0 && pos <= 100 ? pos : null;
   }, [timelineStart, timelineEnd]);
 
-  const periodMinWidth = zoom === 'Week' ? 80 : zoom === 'Quarter' ? 200 : 120;
+  const baseWidth = zoom === 'Week' ? 80 : zoom === 'Quarter' ? 200 : 120;
+  const periodMinWidth = Math.round(baseWidth * zoomScale);
   const totalMinWidth = periods.length * periodMinWidth;
 
   return (
