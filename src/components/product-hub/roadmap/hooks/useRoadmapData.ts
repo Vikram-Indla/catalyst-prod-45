@@ -24,29 +24,46 @@ const TYPE_MAP: Record<string, RoadmapInitiative['type']> = {
   improvement: 'improvement',
 };
 
-// ── Color fallback for owners ──
-const OWNER_PALETTE = ['#2563EB', '#0D9488', '#D97706', '#7C3AED', '#E11D48', '#059669'];
+// ── Color fallback for owners — deterministic from name ──
+const OWNER_PALETTE = ['#2563EB', '#7C3AED', '#0D9488', '#EC4899', '#D97706', '#059669', '#E11D48', '#6366F1'];
 
 function getInitials(name: string): string {
-  if (!name) return '??';
+  if (!name || name === 'Unassigned') return '?';
   const parts = name.trim().split(/\s+/);
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
 function splitTitle(title: string): { titleAr: string; titleEn: string } {
+  // Check for Arabic characters
+  const hasArabic = /[\u0600-\u06FF]/.test(title);
   const sep = title.indexOf(' - ');
   if (sep > 0) {
-    return { titleAr: title.slice(0, sep).trim(), titleEn: title.slice(sep + 3).trim() };
+    const left = title.slice(0, sep).trim();
+    const right = title.slice(sep + 3).trim();
+    const leftAr = /[\u0600-\u06FF]/.test(left);
+    return leftAr ? { titleAr: left, titleEn: right || left } : { titleAr: right, titleEn: left || right };
   }
-  return { titleAr: title, titleEn: title };
+  if (hasArabic) return { titleAr: title, titleEn: title };
+  return { titleAr: '', titleEn: title };
 }
 
-function ownerColor(id: string | null): string {
-  if (!id) return '#94A3B8';
+function ownerColorFromName(name: string): string {
+  if (!name || name === 'Unassigned') return '#94A3B8';
   let hash = 0;
-  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) | 0;
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0;
   return OWNER_PALETTE[Math.abs(hash) % OWNER_PALETTE.length];
+}
+
+// ── Default dates: spread initiatives across 2026 when dates are missing ──
+function getDefaultDates(index: number): { startDate: string; endDate: string } {
+  const startMonth = Math.min(index * 2, 10);
+  const start = new Date(2026, startMonth, 1);
+  const end = new Date(2026, startMonth + 3, 0); // last day of 3rd month
+  return {
+    startDate: start.toISOString().slice(0, 10),
+    endDate: end.toISOString().slice(0, 10),
+  };
 }
 
 // ── Fetch profiles for owner resolution ──
@@ -84,6 +101,21 @@ async function fetchMilestones(): Promise<Map<string, RoadmapMilestone[]>> {
   return map;
 }
 
+// ── Try to resolve owner name from the Jira title or issue data ──
+async function fetchIssueOwners(): Promise<Map<string, string>> {
+  const { data } = await (supabase as any)
+    .from('ph_issues')
+    .select('issue_key, assignee_display_name')
+    .not('assignee_display_name', 'is', null);
+  const map = new Map<string, string>();
+  if (data) {
+    for (const d of data) {
+      map.set(d.issue_key, d.assignee_display_name);
+    }
+  }
+  return map;
+}
+
 // ══════════════════════════════════════════
 // useRoadmapInitiatives — main data hook
 // ══════════════════════════════════════════
@@ -91,7 +123,7 @@ export function useRoadmapInitiatives() {
   return useQuery({
     queryKey: ['roadmap-initiatives'],
     queryFn: async (): Promise<RoadmapInitiative[]> => {
-      const [{ data, error }, profiles, milestones] = await Promise.all([
+      const [{ data, error }, profiles, milestones, issueOwners] = await Promise.all([
         (supabase as any)
           .from('ph_roadmap_initiatives_view')
           .select('*')
@@ -100,32 +132,43 @@ export function useRoadmapInitiatives() {
           .order('roadmap_sort_order', { ascending: true }),
         fetchProfiles(),
         fetchMilestones(),
+        fetchIssueOwners(),
       ]);
 
       if (error) throw error;
       if (!data) return [];
 
-      return data.map((row: any): RoadmapInitiative => {
+      return data.map((row: any, index: number): RoadmapInitiative => {
         const { titleAr, titleEn } = splitTitle(row.title || '');
+        
+        // Resolve owner: try assignee_id → business_owner_id → Jira assignee → fallback
         const ownerId = row.assignee_id || row.business_owner_id;
         const ownerProfile = ownerId ? profiles.get(ownerId) : null;
-        const ownerName = ownerProfile?.name || 'Unassigned';
+        const jiraOwner = issueOwners.get(row.initiative_key);
+        const ownerName = ownerProfile?.name || jiraOwner || 'Unassigned';
+
+        // Resolve dates with fallback
+        const rawStart = row.roadmap_start_date || row.kickoff_date || null;
+        const rawEnd = row.roadmap_end_date || row.target_complete || null;
+        const defaults = getDefaultDates(index);
+        const startDate = rawStart || defaults.startDate;
+        const endDate = rawEnd || defaults.endDate;
 
         return {
           id: row.id,
           initiativeKey: row.initiative_key || '',
           title: row.title || '',
           titleAr,
-          titleEn,
+          titleEn: titleEn || row.title || '',
           type: TYPE_MAP[row.initiative_type_key] || 'project',
           priority: row.roadmap_priority === 1 ? 'P0' : row.roadmap_priority === 2 ? 'P1' : 'P2',
           status: STATUS_MAP[row.status] || 'Planned',
           progress: row.progress ?? 0,
-          startDate: row.roadmap_start_date || row.kickoff_date || row.created_at?.slice(0, 10) || '',
-          endDate: row.roadmap_end_date || row.target_complete || '',
+          startDate,
+          endDate,
           ownerName,
           ownerInitials: getInitials(ownerName),
-          ownerColor: ownerColor(ownerId),
+          ownerColor: ownerColorFromName(ownerName),
           starred: false,
           milestones: milestones.get(row.id) || [],
         };
@@ -167,13 +210,11 @@ export function useRoadmapStats() {
 
 // ══════════════════════════════════════════
 // useBacklogItemsNotOnRoadmap — queries ph_issues (Jira backlog)
-// excludes items already promoted to ph_initiatives with on_roadmap=true
 // ══════════════════════════════════════════
 export function useBacklogItemsNotOnRoadmap() {
   return useQuery({
     queryKey: ['backlog-not-on-roadmap'],
     queryFn: async () => {
-      // 1. Get all Business Request items from ph_issues
       const { data: issues, error: issuesErr } = await (supabase as any)
         .from('ph_issues')
         .select('issue_key, summary, status, priority, assignee_display_name')
@@ -182,7 +223,6 @@ export function useBacklogItemsNotOnRoadmap() {
 
       if (issuesErr) throw issuesErr;
 
-      // 2. Get initiative_keys already on the roadmap
       const { data: onRoadmap, error: rmErr } = await (supabase as any)
         .from('ph_initiatives')
         .select('initiative_key')
@@ -193,7 +233,6 @@ export function useBacklogItemsNotOnRoadmap() {
 
       const onRoadmapKeys = new Set((onRoadmap || []).map((r: any) => r.initiative_key));
 
-      // 3. Filter out items already on roadmap
       return (issues || [])
         .filter((row: any) => !onRoadmapKeys.has(row.issue_key))
         .map((row: any) => {
@@ -213,13 +252,12 @@ export function useBacklogItemsNotOnRoadmap() {
 }
 
 // ══════════════════════════════════════════
-// useAddToRoadmap — creates/flags ph_initiatives record from Jira item
+// useAddToRoadmap
 // ══════════════════════════════════════════
 export function useAddToRoadmap() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (issueKey: string) => {
-      // Check if a ph_initiatives record already exists for this key
       const { data: existing } = await (supabase as any)
         .from('ph_initiatives')
         .select('id')
@@ -234,7 +272,6 @@ export function useAddToRoadmap() {
           .eq('id', existing.id);
         if (error) throw error;
       } else {
-        // Fetch the Jira item details
         const { data: issue, error: fetchErr } = await (supabase as any)
           .from('ph_issues')
           .select('issue_key, summary, status, assignee_display_name')
@@ -244,7 +281,6 @@ export function useAddToRoadmap() {
         if (fetchErr) throw fetchErr;
         if (!issue) throw new Error('Issue not found');
 
-        // Create a new ph_initiatives record
         const { error: insertErr } = await (supabase as any)
           .from('ph_initiatives')
           .insert({
@@ -269,7 +305,7 @@ export function useAddToRoadmap() {
 }
 
 // ══════════════════════════════════════════
-// useRemoveFromRoadmap — unflags existing item
+// useRemoveFromRoadmap
 // ══════════════════════════════════════════
 export function useRemoveFromRoadmap() {
   const queryClient = useQueryClient();
@@ -290,7 +326,7 @@ export function useRemoveFromRoadmap() {
 }
 
 // ══════════════════════════════════════════
-// useUpdateInitiative — update progress/status/dates
+// useUpdateInitiative
 // ══════════════════════════════════════════
 export function useUpdateInitiative() {
   const queryClient = useQueryClient();
@@ -310,7 +346,7 @@ export function useUpdateInitiative() {
 }
 
 // ══════════════════════════════════════════
-// Convenience wrapper used by ProductRoadmapPage
+// Convenience wrapper
 // ══════════════════════════════════════════
 export function useRoadmapData() {
   const { data: initiatives = [], isLoading: initLoading, error: initError } = useRoadmapInitiatives();

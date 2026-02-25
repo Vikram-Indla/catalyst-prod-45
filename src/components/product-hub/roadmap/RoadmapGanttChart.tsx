@@ -1,11 +1,11 @@
 /**
  * Product Roadmap — Gantt chart (right panel)
- * Polish: sticky month headers, today gradient, smooth transitions
+ * Fixes: bars render with fallback dates, today gradient, swim lane headers, quarter labels
  */
 import React, { useMemo } from 'react';
 import { RoadmapTimelineBar } from './RoadmapTimelineBar';
 import type { RoadmapGroup, ZoomLevel, TimelinePeriod } from './types/roadmap.types';
-import { SURFACE, INK, ROW_HEIGHT, GROUP_HEADER_HEIGHT } from './constants/roadmap.constants';
+import { TYPE_COLORS, SURFACE, INK, ROW_HEIGHT, GROUP_HEADER_HEIGHT } from './constants/roadmap.constants';
 import {
   startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfWeek, endOfWeek,
   addMonths, addQuarters, addWeeks, format, isWithinInterval,
@@ -56,18 +56,23 @@ function generatePeriods(start: Date, end: Date, zoom: ZoomLevel): TimelinePerio
       cur = addWeeks(cur, 1);
     }
   } else {
+    // Month zoom
     let cur = startOfMonth(start);
     while (cur < end) {
       const mEnd = endOfMonth(cur);
       const isQStart = cur.getMonth() % 3 === 0;
+      const qNum = Math.ceil((cur.getMonth() + 1) / 3);
+      const nowQ = Math.ceil((now.getMonth() + 1) / 3);
+      const isCurrentQ = qNum === nowQ && cur.getFullYear() === now.getFullYear();
       periods.push({
         key: format(cur, 'yyyy-MM'),
         label: format(cur, 'MMM'),
-        sublabel: isQStart ? `Q${Math.ceil((cur.getMonth() + 1) / 3)}` : undefined,
+        sublabel: isQStart ? `Q${qNum}` : undefined,
         startDate: cur, endDate: mEnd,
         isCurrent: isWithinInterval(now, { start: cur, end: mEnd }),
         isQuarterStart: isQStart,
-      });
+        isCurrentQuarter: isCurrentQ,
+      } as any);
       cur = addMonths(cur, 1);
     }
   }
@@ -77,9 +82,11 @@ function generatePeriods(start: Date, end: Date, zoom: ZoomLevel): TimelinePerio
 function calcBarPosition(startDate: string, endDate: string, tlStart: Date, tlEnd: Date) {
   const s = new Date(startDate);
   const e = new Date(endDate);
+  // Validate dates
+  if (isNaN(s.getTime()) || isNaN(e.getTime())) return { left: 5, width: 8 };
   const totalDays = differenceInDays(tlEnd, tlStart) || 1;
   const left = Math.max(0, (differenceInDays(s, tlStart) / totalDays) * 100);
-  const width = Math.max(1, (differenceInDays(e, s) / totalDays) * 100);
+  const width = Math.max(2, (differenceInDays(e, s) / totalDays) * 100);
   return { left, width };
 }
 
@@ -104,23 +111,42 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
             className="flex sticky top-0"
             style={{ height: ROW_HEIGHT, borderBottom: `1px solid ${SURFACE.border}`, background: '#FAFBFC', zIndex: 15 }}
           >
-            {periods.map(p => (
-              <div
-                key={p.key}
-                className="flex-shrink-0 flex flex-col items-center justify-center"
-                style={{
-                  minWidth: periodMinWidth,
-                  width: `${100 / periods.length}%`,
-                  borderRight: `1px solid ${p.isQuarterStart ? SURFACE.border : SURFACE.borderLight}`,
-                  background: p.isCurrent ? 'rgba(37,99,235,0.04)' : 'transparent',
-                }}
-              >
-                {p.sublabel && (
-                  <span style={{ fontSize: 9, fontWeight: 700, color: '#2563EB', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{p.sublabel}</span>
-                )}
-                <span style={{ fontSize: 11, fontWeight: 600, color: INK[2] }}>{p.label}</span>
-              </div>
-            ))}
+            {periods.map(p => {
+              const isCurrentQ = (p as any).isCurrentQuarter;
+              return (
+                <div
+                  key={p.key}
+                  className="flex-shrink-0 flex flex-col items-center justify-center"
+                  style={{
+                    minWidth: periodMinWidth,
+                    width: `${100 / periods.length}%`,
+                    borderRight: `1px solid ${p.isQuarterStart ? SURFACE.border : SURFACE.borderLight}`,
+                    background: p.isCurrent ? 'rgba(37,99,235,0.04)' : 'transparent',
+                  }}
+                >
+                  {/* Quarter label above month */}
+                  {p.sublabel && (
+                    <span style={{
+                      fontSize: 9,
+                      fontWeight: 700,
+                      color: isCurrentQ ? '#2563EB' : '#94A3B8',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                    }}>
+                      {p.sublabel}
+                    </span>
+                  )}
+                  <span style={{
+                    fontSize: 12,
+                    fontWeight: p.isCurrent ? 700 : 500,
+                    color: p.isCurrent ? '#2563EB' : '#64748B',
+                    letterSpacing: '0.02em',
+                  }}>
+                    {p.label}
+                  </span>
+                </div>
+              );
+            })}
           </div>
 
           {/* Body */}
@@ -141,62 +167,89 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, se
               ))}
             </div>
 
-            {/* Today marker — gradient fade: solid red → 25% opacity */}
+            {/* Today marker — gradient fade */}
             {todayPct !== null && (
               <div className="absolute pointer-events-none" style={{ left: `${todayPct}%`, top: 0, bottom: 0, zIndex: 20 }}>
                 <div style={{
                   position: 'absolute', top: -2, left: '50%', transform: 'translateX(-50%)',
-                  fontSize: 9, fontWeight: 700, color: '#FFFFFF', background: '#EF4444',
-                  padding: '1px 6px', borderRadius: 3, whiteSpace: 'nowrap',
+                  fontSize: 10, fontWeight: 700, color: '#FFFFFF', background: '#EF4444',
+                  padding: '2px 8px', borderRadius: 4, whiteSpace: 'nowrap',
+                  textTransform: 'uppercase',
                 }}>
                   Today
                 </div>
                 <div style={{
-                  width: 2, height: '100%', margin: '0 auto', marginTop: 14,
-                  background: 'linear-gradient(180deg, #EF4444 0%, rgba(239,68,68,0.25) 100%)',
+                  width: 2, height: '100%', margin: '0 auto', marginTop: 18,
+                  background: 'linear-gradient(180deg, #EF4444 0%, rgba(239,68,68,0.15) 100%)',
                 }} />
               </div>
             )}
 
             {/* Groups + Rows */}
-            {groups.map(group => (
-              <div key={group.key}>
-                {groups.length > 1 && (
-                  <div style={{ height: GROUP_HEADER_HEIGHT, background: '#FAFBFC', borderBottom: `1px solid ${SURFACE.border}` }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK[3], paddingLeft: 16, lineHeight: `${GROUP_HEADER_HEIGHT}px` }}>
-                      {group.label}
-                    </span>
-                  </div>
-                )}
-                {group.items.map(item => {
-                  const pos = calcBarPosition(item.startDate, item.endDate, timelineStart, timelineEnd);
-                  return (
+            {groups.map((group, gi) => {
+              const typeColor = TYPE_COLORS[group.key]?.solid || group.color || '#64748B';
+              return (
+                <div key={group.key}>
+                  {/* Swim lane group header */}
+                  {groups.length > 1 && (
                     <div
-                      key={item.id}
-                      className="relative flex items-center cursor-pointer"
-                      onMouseEnter={() => onHover(item.id)}
-                      onMouseLeave={() => onHover(null)}
+                      className="flex items-center gap-2 px-4"
                       style={{
-                        height: ROW_HEIGHT,
-                        backgroundColor: selectedId === item.id ? 'rgba(37,99,235,0.06)' : hoveredId === item.id ? '#FAFBFC' : 'transparent',
+                        height: GROUP_HEADER_HEIGHT,
+                        background: '#F8FAFC',
                         borderBottom: `1px solid ${SURFACE.borderLight}`,
-                        transition: 'background-color 0.15s ease',
+                        borderTop: gi > 0 ? `1px solid ${SURFACE.border}` : 'none',
                       }}
-                      onClick={() => onSelect(item.id)}
                     >
-                      <RoadmapTimelineBar
-                        item={item}
-                        left={pos.left}
-                        width={pos.width}
-                        isSelected={selectedId === item.id}
-                        isHovered={hoveredId === item.id}
-                        onClick={() => onSelect(item.id)}
-                      />
+                      {/* Colored square */}
+                      <div style={{
+                        width: 10, height: 10, borderRadius: 2.5,
+                        background: typeColor, flexShrink: 0,
+                      }} />
+                      <span style={{
+                        fontSize: 11, fontWeight: 700, color: '#334155',
+                        letterSpacing: '0.04em',
+                      }}>
+                        {group.label}
+                      </span>
+                      <span style={{
+                        fontSize: 10, fontWeight: 600, color: '#94A3B8',
+                        marginLeft: 'auto',
+                      }}>
+                        {group.items.length}
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
-            ))}
+                  )}
+                  {group.items.map(item => {
+                    const pos = calcBarPosition(item.startDate, item.endDate, timelineStart, timelineEnd);
+                    return (
+                      <div
+                        key={item.id}
+                        className="relative flex items-center cursor-pointer"
+                        onMouseEnter={() => onHover(item.id)}
+                        onMouseLeave={() => onHover(null)}
+                        style={{
+                          height: ROW_HEIGHT,
+                          backgroundColor: selectedId === item.id ? 'rgba(37,99,235,0.06)' : hoveredId === item.id ? '#FAFBFC' : 'transparent',
+                          borderBottom: `1px solid ${SURFACE.borderLight}`,
+                          transition: 'background-color 0.15s ease',
+                        }}
+                        onClick={() => onSelect(item.id)}
+                      >
+                        <RoadmapTimelineBar
+                          item={item}
+                          left={pos.left}
+                          width={pos.width}
+                          isSelected={selectedId === item.id}
+                          isHovered={hoveredId === item.id}
+                          onClick={() => onSelect(item.id)}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
