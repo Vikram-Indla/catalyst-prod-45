@@ -343,15 +343,17 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
     }
   }, [panelMode]);
 
-  // Ring geometry — dims now measures the ring canvas directly (no subtraction needed)
+  // Ring geometry — dims measures the ring canvas; radius accounts for card size
   const ringW = dims.w;
   const ringH = dims.h;
   const cx = ringW / 2;
   const cy = ringH / 2;
-  const R = Math.min(ringW, ringH) * 0.32;
   const N = pageItems.length;
-  const cardW = N <= 4 ? 176 : N <= 6 ? 164 : 150;
-  const cardH = 110;
+  const cardW = N <= 4 ? 170 : N <= 6 ? 156 : 142;
+  const cardH = 105;
+  // Radius must leave room for half a card on each side + some padding
+  const maxR = Math.min(ringW / 2 - cardW / 2 - 16, ringH / 2 - cardH / 2 - 16);
+  const R = Math.max(80, maxR);
   const panelWidth = panelMode === 'detail' ? 360 : panelMode === 'completed' ? 280 : 0;
 
   const initials = resource?.initials || resource?.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) || '??';

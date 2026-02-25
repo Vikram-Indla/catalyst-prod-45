@@ -72,7 +72,7 @@ export default function Resource360PageNew() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, height: '100%', overflow: 'hidden', fontFamily: "'Inter', sans-serif" }}>
       {/* Banner */}
       <Resource360Banner summary={summary ?? null} isLoading={summaryLoading} />
 
