@@ -232,6 +232,9 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
       if (error) throw new Error(error.message);
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives-mock'] });
+      queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['roadmap-summary'] });
       catalystToast.success('Initiative updated');
       setIsEditing(false);
       setEditForm({});
@@ -252,6 +255,9 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
       if (error) throw new Error(error.message);
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives-mock'] });
+      queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['roadmap-summary'] });
       catalystToast.success(`${field.replace(/_/g, ' ')} updated`);
     } catch (err: any) {
       catalystToast.error('Failed to update: ' + err.message);
@@ -323,6 +329,8 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives-mock'] });
+      queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
+      queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
       catalystToast.success(`Cloned as ${nextKey} with all data`);
     } catch (err: any) {
       catalystToast.error('Failed to clone: ' + err.message);
@@ -537,6 +545,8 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                   if (error) throw new Error(error.message);
                   queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
                   queryClient.invalidateQueries({ queryKey: ['ph-initiatives-mock'] });
+                  queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
+                  queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
                   catalystToast.success(`${initiative.initiative_key} deleted`);
                   onClose();
                 } catch (err: any) {
@@ -761,18 +771,10 @@ function DetailsContent({
           })()}
         </div>
 
-        {/* Department */}
+        {/* Created */}
         <div>
-          <FieldLabel>Department</FieldLabel>
-          {isEditing ? (
-            <DepartmentSelect
-              value={getVal('department_id', initiative.department_id) ?? ''}
-              onChange={v => onFieldChange('department_id', v)}
-              departments={departmentOptions || []}
-            />
-          ) : (
-            <div className="text-[13px] text-zinc-900">{initiative.department_name || <span className="text-zinc-400">—</span>}</div>
-          )}
+          <FieldLabel>Created</FieldLabel>
+          <div className="text-[13px] text-zinc-900">{formatAbsoluteDate(initiative.created_at)}</div>
         </div>
 
         {/* Quarter */}
