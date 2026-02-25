@@ -1,8 +1,9 @@
 // =====================================================
 // TIMELINE SHELL — Layout orchestrator
+// Now wired to ph_roadmap_initiatives_view (on_roadmap=true only)
 // =====================================================
 
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback, useMemo } from 'react';
 import { TimelineToolbar } from './TimelineToolbar';
 import { TimelineFilterBar } from './TimelineFilterBar';
 import { TimelineLeftPanel } from './TimelineLeftPanel';
@@ -11,53 +12,69 @@ import { InitiativeDetailPanel } from './InitiativeDetailPanel';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
 import { useFilteredInitiatives } from '@/hooks/producthub/useTimelineInitiatives';
 import { useTimelineRealtime } from '@/hooks/producthub/useTimelineRealtime';
-import { useMDTBacklog } from '@/hooks/useMDTBacklog';
+import { useRoadmapInitiatives } from '@/hooks/useRoadmapInitiatives';
+import { useProfileOptions, useDepartmentOptions } from '@/hooks/useInitiativeLookups';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
-
-/** Convert MDTInitiative → TimelineInitiative */
-function toTimeline(i: any): TimelineInitiative {
-  return {
-    id: i.id,
-    initiative_key: i.initiative_key,
-    title: i.title,
-    description: i.description,
-    status: i.status,
-    assignee_id: i.assignee_id,
-    assignee_name: i.assignee_name,
-    business_owner_id: i.business_owner_id,
-    reporter_id: i.reporter_id,
-    department_id: i.department_id,
-    department_name: i.department_name,
-    department_code: null,
-    target_quarter: i.target_quarter,
-    business_ask_date: i.business_ask_date,
-    kickoff_date: i.kickoff_date,
-    target_complete: i.target_complete,
-    progress: i.progress,
-    sort_order: i.sort_order,
-    risk_count: i.risk_count,
-    is_archived: i.is_archived,
-    score_strategic_alignment: i.score_strategic_alignment,
-    score_business_impact: i.score_business_impact,
-    score_time_urgency: i.score_time_urgency,
-    score_resource_feasibility: i.score_resource_feasibility,
-    computed_score: i.computed_score,
-    created_at: i.created_at,
-    updated_at: i.updated_at,
-  };
-}
 
 export const TimelineShell: React.FC = () => {
   const { activeFilter, searchTerm, groupBy, selectedInitiativeId, isDetailOpen, closeDetail } = useTimelineState();
-  const { data: mdtData, isLoading, error } = useMDTBacklog();
-  const initiatives = (mdtData?.data ?? []).map(toTimeline);
+  const { data: roadmapData, isLoading, error } = useRoadmapInitiatives();
+  const { data: profiles } = useProfileOptions();
+  const { data: departments } = useDepartmentOptions();
+
+  // Resolve IDs to display names
+  const getProfileName = useCallback((id: string | null) => {
+    if (!id || !profiles) return null;
+    const profile = profiles.find(p => p.value === id);
+    return profile?.label || null;
+  }, [profiles]);
+
+  const getDepartmentName = useCallback((id: string | null) => {
+    if (!id || !departments) return null;
+    const dept = departments.find(d => d.value === id);
+    return dept?.label || null;
+  }, [departments]);
+
+  // Map roadmap view data → TimelineInitiative
+  const initiatives: TimelineInitiative[] = useMemo(() => {
+    return (roadmapData || []).map((item: any) => ({
+      id: item.id,
+      initiative_key: item.initiative_key || '',
+      title: item.title || '',
+      description: item.description || null,
+      status: item.status || 'new_demand',
+      assignee_id: item.assignee_id || null,
+      assignee_name: getProfileName(item.assignee_id),
+      business_owner_id: item.business_owner_id || null,
+      reporter_id: item.reporter_id || null,
+      department_id: item.department_id || null,
+      department_name: getDepartmentName(item.department_id),
+      department_code: null,
+      target_quarter: item.target_quarter || null,
+      business_ask_date: item.business_ask_date || null,
+      kickoff_date: item.kickoff_date || null,
+      target_complete: item.target_complete || null,
+      progress: item.progress ?? 0,
+      sort_order: item.sort_order ?? 0,
+      risk_count: item.risk_count ?? 0,
+      is_archived: item.is_archived ?? false,
+      score_strategic_alignment: null,
+      score_business_impact: null,
+      score_time_urgency: null,
+      score_resource_feasibility: null,
+      computed_score: null,
+      created_at: item.created_at || new Date().toISOString(),
+      updated_at: item.updated_at || new Date().toISOString(),
+    }));
+  }, [roadmapData, getProfileName, getDepartmentName]);
+
   const { flat, groups } = useFilteredInitiatives(initiatives, activeFilter, searchTerm, groupBy);
   const leftScrollRef = useRef<HTMLDivElement>(null);
 
   // Realtime subscription
   useTimelineRealtime();
 
-  // Keyboard: Cmd+K to focus search, Shift+scroll for horizontal
+  // Keyboard: Cmd+K to focus search
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -93,7 +110,7 @@ export const TimelineShell: React.FC = () => {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <p className="text-[14px] font-medium text-destructive mb-2">Failed to load initiatives</p>
-            <p className="text-[13px] text-muted-foreground mb-4">{error.message}</p>
+            <p className="text-[13px] text-muted-foreground mb-4">{(error as Error).message}</p>
             <button
               onClick={() => window.location.reload()}
               className="px-4 py-2 text-[13px] font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"

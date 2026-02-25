@@ -1,10 +1,11 @@
 /**
  * Initiative Listing Page — /producthub/backlog
- * Catalyst V5 Data-Dense Table View — Prompt 2 Enhanced
+ * Catalyst V5 Data-Dense Table View — Now wired to ph_initiatives via ph_backlog_initiatives_view
  */
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { useMDTBacklog, type MDTInitiative, type BRDTask } from '@/hooks/useMDTBacklog';
+import { useBacklogInitiatives } from '@/hooks/useBacklogInitiatives';
+import { useProfileOptions, useDepartmentOptions } from '@/hooks/useInitiativeLookups';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
 import { ListingToolbar } from '@/components/producthub/listing/ListingToolbar';
 import { InitiativeTable } from '@/components/producthub/listing/InitiativeTable';
@@ -19,11 +20,8 @@ import type { GroupByField } from '@/components/producthub/listing/ListingToolba
 import { ExportDropdown } from '@/components/producthub/listing/ExportDropdown';
 import { catalystToast } from '@/lib/catalystToast';
 
-
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { getPriorityLevel } from '@/types/initiative';
-
-
 
 const TERMINAL_STATUSES: InitiativeStatus[] = ['delivered', 'closed', 'cancelled'];
 
@@ -48,7 +46,7 @@ function loadDensity(): Density {
 
 function applyQuickFilter(data: Initiative[], filter: string): Initiative[] {
   switch (filter) {
-    case 'my': return data.filter(i => ['Sarah K.', 'Fatima R.', 'Nora A.'].includes(i.assignee_name || ''));
+    case 'my': return data.filter(i => !!i.assignee_name);
     case 'quarter': return data.filter(i => i.target_quarter === 'Q1 2026');
     case 'high': return data.filter(i => i.computed_score !== null && i.computed_score >= 4.0);
     case 'unscored': return data.filter(i => i.computed_score === null);
@@ -83,7 +81,57 @@ function getGroupSortKey(item: Initiative, groupBy: GroupByField): string {
 }
 
 export default function InitiativeListingPage() {
-  const { data, isLoading } = useMDTBacklog();
+  const { data: backlogData, isLoading } = useBacklogInitiatives();
+  const { data: profiles } = useProfileOptions();
+  const { data: departments } = useDepartmentOptions();
+
+  const getProfileName = useCallback((id: string | null) => {
+    if (!id || !profiles) return null;
+    const profile = profiles.find(p => p.value === id);
+    return profile?.label || null;
+  }, [profiles]);
+
+  const getDepartmentName = useCallback((id: string | null) => {
+    if (!id || !departments) return null;
+    const dept = departments.find(d => d.value === id);
+    return dept?.label || null;
+  }, [departments]);
+
+  // Map ph_backlog_initiatives_view rows → Initiative shape
+  const mappedInitiatives: Initiative[] = useMemo(() => {
+    return (backlogData || []).map((item: any) => ({
+      id: item.id,
+      initiative_key: item.initiative_key || '',
+      title: item.title || '',
+      description: item.description || null,
+      status: item.status || 'new_demand',
+      assignee_id: item.assignee_id || null,
+      assignee_name: getProfileName(item.assignee_id),
+      assignee_avatar: null,
+      business_owner_id: item.business_owner_id || null,
+      business_owner_name: getProfileName(item.business_owner_id),
+      reporter_id: item.reporter_id || null,
+      department_id: item.department_id || null,
+      department_name: getDepartmentName(item.department_id),
+      target_quarter: item.target_quarter || null,
+      business_ask_date: item.business_ask_date || null,
+      kickoff_date: item.kickoff_date || null,
+      target_complete: item.target_complete || null,
+      progress: item.progress ?? 0,
+      sort_order: item.sort_order ?? 0,
+      risk_count: item.risk_count ?? 0,
+      is_archived: item.is_archived ?? false,
+      is_favorited: false,
+      score_strategic_alignment: null,
+      score_business_impact: null,
+      score_time_urgency: null,
+      score_resource_feasibility: null,
+      computed_score: null,
+      created_at: item.created_at || new Date().toISOString(),
+      updated_at: item.updated_at || new Date().toISOString(),
+    }));
+  }, [backlogData, getProfileName, getDepartmentName]);
+
   const [density, setDensity] = useState<Density>(loadDensity);
   const [searchQuery, setSearchQuery] = useState('');
   const [quickFilter, setQuickFilter] = useState('all');
@@ -110,22 +158,17 @@ export default function InitiativeListingPage() {
   const exportButtonRef = useRef<HTMLButtonElement>(null);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const allInitiatives = orderedData ?? data?.data ?? [];
+  const allInitiatives = orderedData ?? mappedInitiatives;
 
-  // Build BRD task map from MDTInitiative data
+  // BRD tasks map — empty since we're no longer using MDT data
   const brdTasksMap = useMemo(() => {
-    const map: Record<string, import('@/hooks/useMDTBacklog').BRDTask[]> = {};
-    for (const item of (data?.data ?? []) as import('@/hooks/useMDTBacklog').MDTInitiative[]) {
-      if (item.brd_tasks && item.brd_tasks.length > 0) {
-        map[item.id] = item.brd_tasks;
-      }
-    }
-    return map;
-  }, [data?.data]);
+    return {} as Record<string, any[]>;
+  }, []);
 
+  // Reset orderedData when source data changes
   useEffect(() => {
-    if (data?.data && !orderedData) setOrderedData(data.data);
-  }, [data?.data, orderedData]);
+    setOrderedData(null);
+  }, [mappedInitiatives]);
 
   // Persist columns
   useEffect(() => {
@@ -140,7 +183,6 @@ export default function InitiativeListingPage() {
   const filtered = useMemo(() => {
     let result = applyQuickFilter(allInitiatives, quickFilter);
     result = applySearch(result, searchQuery);
-    // Sort by group field so group headers appear contiguously
     if (groupBy !== 'none') {
       result = [...result].sort((a, b) => {
         const aKey = getGroupSortKey(a, groupBy);
@@ -168,7 +210,6 @@ export default function InitiativeListingPage() {
   // Keyboard navigation
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      // Escape cascade
       if (e.key === 'Escape') {
         if (columnManagerOpen) { setColumnManagerOpen(false); return; }
         if (exportOpen) { setExportOpen(false); return; }
@@ -176,15 +217,11 @@ export default function InitiativeListingPage() {
         if (detailOpen) { setDetailOpen(false); return; }
         if (selectedIds.length > 0) { setSelectedIds([]); return; }
       }
-
-      // Cmd+K → focus search
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         searchInputRef.current?.focus();
         return;
       }
-
-      // Cmd+A → select all
       if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
         const active = document.activeElement;
         if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement) return;
@@ -192,8 +229,6 @@ export default function InitiativeListingPage() {
         setSelectedIds(paginatedData.map(d => d.id));
         return;
       }
-
-      // Arrow up/down
       if (e.key === 'ArrowDown') {
         e.preventDefault();
         setFocusedRow(prev => Math.min(prev + 1, paginatedData.length - 1));
@@ -204,8 +239,6 @@ export default function InitiativeListingPage() {
         setFocusedRow(prev => Math.max(prev - 1, 0));
         return;
       }
-
-      // Enter → open detail
       if (e.key === 'Enter' && focusedRow >= 0 && focusedRow < paginatedData.length) {
         const active = document.activeElement;
         if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement) return;
@@ -213,8 +246,6 @@ export default function InitiativeListingPage() {
         setDetailOpen(true);
         return;
       }
-
-      // Space → toggle checkbox
       if (e.key === ' ' && focusedRow >= 0 && focusedRow < paginatedData.length) {
         const active = document.activeElement;
         if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement) return;
@@ -223,8 +254,6 @@ export default function InitiativeListingPage() {
         setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
         return;
       }
-
-      // Delete/Backspace → bulk delete confirm
       if ((e.key === 'Delete' || e.key === 'Backspace') && selectedIds.length > 0) {
         const active = document.activeElement;
         if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement) return;
