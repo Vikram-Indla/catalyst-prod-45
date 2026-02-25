@@ -287,34 +287,16 @@ const CARD_POSITIONS = [
   { x: 62, y: 58 },   // slot 7: bottom-right
 ];
 
-const CARD_W = 195; // px
-const CARD_H = 140; // approximate px height of a card
-
 const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) => {
   const ringCanvasRef = useRef<HTMLDivElement>(null);
+  const centerRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [statusFilter, setStatusFilter] = useState<ActiveFilter>('all');
   const [weekIdx, setWeekIdx] = useState(0);
   const [ringPage, setRingPage] = useState(0);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [panelMode, setPanelMode] = useState<PanelMode>('hidden');
-  const [canvasSize, setCanvasSize] = useState({ w: 1200, h: 720 });
-
-  // Measure canvas so we can compute card centers in % accurately
-  useEffect(() => {
-    const el = ringCanvasRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver(entries => {
-      for (const e of entries) {
-        setCanvasSize({ w: e.contentRect.width, h: e.contentRect.height });
-      }
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
-  // Card center offset in % (half card width/height as % of canvas)
-  const cardOffsetX = (CARD_W / 2 / canvasSize.w) * 100;
-  const cardOffsetY = (CARD_H / 2 / canvasSize.h) * 100;
+  const [spokes, setSpokes] = useState<Array<{ key: string; x1: number; y1: number; x2: number; y2: number; age: number }>>([]);
 
   const allItems = useMemo(() => rawItems.map(mapItem), [rawItems]);
   const activeItems = useMemo(() => allItems.filter(i => i.status !== 'done'), [allItems]);
@@ -353,6 +335,80 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
   const todoCount = activeItems.filter(i => i.status === 'todo').length;
   const progressCount = activeItems.filter(i => i.status === 'progress').length;
   const doneCount = doneItems.length;
+
+  const computeSpokes = useCallback(() => {
+    const canvasEl = ringCanvasRef.current;
+    const centerEl = centerRef.current;
+    if (!canvasEl || !centerEl) return;
+
+    const canvasRect = canvasEl.getBoundingClientRect();
+    const centerRect = centerEl.getBoundingClientRect();
+    const avatarCx = centerRect.left + centerRect.width / 2 - canvasRect.left;
+    const avatarCy = centerRect.top + centerRect.height / 2 - canvasRect.top;
+
+    // Use spoke hub slightly below avatar center (matches reference layout)
+    const hubX = avatarCx;
+    const hubY = avatarCy + 92;
+
+    const next = pageItems
+      .map((item) => {
+        const cardEl = cardRefs.current[item.key];
+        if (!cardEl) return null;
+
+        const cardRect = cardEl.getBoundingClientRect();
+        const cardCx = cardRect.left + cardRect.width / 2 - canvasRect.left;
+        const cardCy = cardRect.top + cardRect.height / 2 - canvasRect.top;
+
+        // Precise line-rectangle intersection so spoke lands exactly on card border
+        const dx = cardCx - hubX;
+        const dy = cardCy - hubY;
+        const left = cardRect.left - canvasRect.left;
+        const right = left + cardRect.width;
+        const top = cardRect.top - canvasRect.top;
+        const bottom = top + cardRect.height;
+
+        const candidates: number[] = [];
+        if (dx !== 0) {
+          candidates.push((left - hubX) / dx, (right - hubX) / dx);
+        }
+        if (dy !== 0) {
+          candidates.push((top - hubY) / dy, (bottom - hubY) / dy);
+        }
+
+        let bestT = Number.POSITIVE_INFINITY;
+        for (const t of candidates) {
+          if (t <= 0 || t > 1) continue;
+          const x = hubX + dx * t;
+          const y = hubY + dy * t;
+          const onVerticalEdge = x >= left - 0.5 && x <= right + 0.5;
+          const onHorizontalEdge = y >= top - 0.5 && y <= bottom + 0.5;
+          if (onVerticalEdge && onHorizontalEdge && t < bestT) bestT = t;
+        }
+
+        const x2 = Number.isFinite(bestT) ? hubX + dx * bestT : cardCx;
+        const y2 = Number.isFinite(bestT) ? hubY + dy * bestT : cardCy;
+
+        return { key: item.key, x1: hubX, y1: hubY, x2, y2, age: item.ageDays };
+      })
+      .filter((s): s is { key: string; x1: number; y1: number; x2: number; y2: number; age: number } => !!s);
+
+    setSpokes(next);
+  }, [pageItems]);
+
+  useEffect(() => {
+    if (!ringCanvasRef.current) return;
+    const raf = requestAnimationFrame(() => computeSpokes());
+    const timer = window.setTimeout(() => computeSpokes(), 60);
+    const ro = new ResizeObserver(() => computeSpokes());
+    ro.observe(ringCanvasRef.current);
+    window.addEventListener('resize', computeSpokes);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(timer);
+      ro.disconnect();
+      window.removeEventListener('resize', computeSpokes);
+    };
+  }, [computeSpokes, panelMode]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -493,23 +549,21 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
             boxSizing: 'border-box',
             padding: 20,
           }}>
-            {/* SVG spokes — clipped, aligned to card centers */}
+            {/* SVG spokes — pixel-aligned to rendered cards */}
             <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1, overflow: 'hidden', pointerEvents: 'none' }}>
-              {pageItems.map((item, i) => {
-                const pos = CARD_POSITIONS[i];
-                if (!pos) return null;
+              {spokes.map((s) => {
+                const item = pageItems.find((p) => p.key === s.key);
+                if (!item) return null;
                 const isSelected = selectedId === item.key;
                 const hasSel = selectedId !== null;
                 const statusColor = STATUS_CG05[item.status].dot;
-                const cardCenterX = pos.x + cardOffsetX;
-                const cardCenterY = pos.y + cardOffsetY;
                 return (
                   <line key={item.key}
-                    x1="50%" y1="48%"
-                    x2={`${cardCenterX}%`} y2={`${cardCenterY}%`}
+                    x1={s.x1} y1={s.y1}
+                    x2={s.x2} y2={s.y2}
                     stroke={isSelected ? T.accent : statusColor}
                     strokeWidth={isSelected ? 2.5 : 1.2}
-                    strokeDasharray={isSelected ? 'none' : '5 4'}
+                    strokeDasharray={isSelected ? 'none' : '8 5'}
                     strokeLinecap="round"
                     opacity={hasSel ? (isSelected ? 1 : 0.15) : 0.5}
                   />
@@ -518,19 +572,15 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
             </svg>
 
             {/* Date chips on spokes */}
-            {pageItems.map((item, i) => {
-              const pos = CARD_POSITIONS[i];
-              if (!pos) return null;
-              const isSelected = selectedId === item.key;
+            {spokes.map((s) => {
+              const isSelected = selectedId === s.key;
               const hasSel = selectedId !== null;
-              const cardCenterX = pos.x + cardOffsetX;
-              const cardCenterY = pos.y + cardOffsetY;
-              const midLeft = (50 + cardCenterX) / 2;
-              const midTop = (48 + cardCenterY) / 2;
+              const midLeft = (s.x1 + s.x2) / 2;
+              const midTop = (s.y1 + s.y2) / 2;
               return (
-                <div key={`chip-${item.key}`} style={{
+                <div key={`chip-${s.key}`} style={{
                   position: 'absolute',
-                  left: `${midLeft}%`, top: `${midTop}%`,
+                  left: `${midLeft}px`, top: `${midTop}px`,
                   transform: 'translate(-50%, -50%)',
                   zIndex: 2, pointerEvents: 'none',
                   background: isSelected ? T.accent : '#FFFFFF',
@@ -541,7 +591,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
                   opacity: hasSel && !isSelected ? 0.3 : 1,
                   whiteSpace: 'nowrap',
                 }}>
-                  {relativeDate(item.assignedDate)}
+                  {s.age}d ago
                 </div>
               );
             })}
@@ -552,7 +602,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
               transform: 'translate(-50%, -50%)',
               textAlign: 'center', pointerEvents: 'none', zIndex: 3,
             }}>
-              <div style={{
+              <div ref={centerRef} style={{
                 width: 76, height: 76, borderRadius: '50%', margin: '0 auto',
                 background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -578,6 +628,7 @@ const RingViewV16: React.FC<RingViewV16Props> = ({ resource, items: rawItems }) 
               return (
                 <div
                   key={item.key}
+                  ref={(el) => { cardRefs.current[item.key] = el; }}
                   onClick={() => selectCard(item.key)}
                   style={{
                     position: 'absolute',
