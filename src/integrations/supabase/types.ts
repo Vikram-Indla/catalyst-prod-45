@@ -5769,6 +5769,13 @@ export type Database = {
             foreignKeyName: "es_goal_initiatives_initiative_id_fkey"
             columns: ["initiative_id"]
             isOneToOne: false
+            referencedRelation: "ph_backlog_initiatives_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_goal_initiatives_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
             referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
@@ -5777,6 +5784,13 @@ export type Database = {
             columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_goal_initiatives_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
@@ -6479,6 +6493,13 @@ export type Database = {
             foreignKeyName: "es_kr_initiatives_initiative_id_fkey"
             columns: ["initiative_id"]
             isOneToOne: false
+            referencedRelation: "ph_backlog_initiatives_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_kr_initiatives_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
             referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
@@ -6487,6 +6508,13 @@ export type Database = {
             columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "es_kr_initiatives_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
@@ -16878,20 +16906,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "objective_initiative_links_initiative_id_fkey"
-            columns: ["initiative_id"]
-            isOneToOne: false
-            referencedRelation: "ph_backlog_initiatives_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "objective_initiative_links_initiative_id_fkey"
-            columns: ["initiative_id"]
-            isOneToOne: false
-            referencedRelation: "ph_roadmap_initiatives_view"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "objective_initiative_links_objective_id_fkey"
             columns: ["objective_id"]
             isOneToOne: false
@@ -19867,6 +19881,13 @@ export type Database = {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
+            referencedRelation: "ph_backlog_initiatives_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
+            columns: ["linked_initiative_id"]
+            isOneToOne: false
             referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
@@ -19875,6 +19896,13 @@ export type Database = {
             columns: ["linked_initiative_id"]
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
+            columns: ["linked_initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
@@ -20170,6 +20198,13 @@ export type Database = {
             foreignKeyName: "ph_initiative_attachments_initiative_id_fkey"
             columns: ["initiative_id"]
             isOneToOne: false
+            referencedRelation: "ph_backlog_initiatives_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_attachments_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
             referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
@@ -20178,6 +20213,13 @@ export type Database = {
             columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_attachments_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
@@ -20431,6 +20473,13 @@ export type Database = {
             foreignKeyName: "ph_initiative_budget_items_initiative_id_fkey"
             columns: ["initiative_id"]
             isOneToOne: false
+            referencedRelation: "ph_backlog_initiatives_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_budget_items_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
             referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
@@ -20439,6 +20488,13 @@ export type Database = {
             columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_budget_items_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
@@ -20562,6 +20618,13 @@ export type Database = {
             foreignKeyName: "ph_initiative_links_initiative_id_fkey"
             columns: ["initiative_id"]
             isOneToOne: false
+            referencedRelation: "ph_backlog_initiatives_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_links_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
             referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
@@ -20570,6 +20633,13 @@ export type Database = {
             columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_links_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
@@ -20717,6 +20787,13 @@ export type Database = {
             foreignKeyName: "ph_initiative_milestones_initiative_id_fkey"
             columns: ["initiative_id"]
             isOneToOne: false
+            referencedRelation: "ph_backlog_initiatives_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
             referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
@@ -20725,6 +20802,13 @@ export type Database = {
             columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_milestones_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
@@ -20948,6 +21032,13 @@ export type Database = {
             foreignKeyName: "ph_initiative_risks_initiative_id_fkey"
             columns: ["initiative_id"]
             isOneToOne: false
+            referencedRelation: "ph_backlog_initiatives_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
             referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
@@ -20956,6 +21047,13 @@ export type Database = {
             columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_risks_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
@@ -21076,6 +21174,13 @@ export type Database = {
             foreignKeyName: "ph_initiative_scores_initiative_id_fkey"
             columns: ["initiative_id"]
             isOneToOne: true
+            referencedRelation: "ph_backlog_initiatives_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_scores_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: true
             referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
@@ -21084,6 +21189,13 @@ export type Database = {
             columns: ["initiative_id"]
             isOneToOne: true
             referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiative_scores_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: true
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
@@ -21101,19 +21213,28 @@ export type Database = {
           budget_allocated: number | null
           business_ask_date: string | null
           business_owner_id: string | null
+          business_value: string | null
           created_at: string | null
           department_id: string | null
           description: string | null
+          estimated_budget: number | null
+          health_status: string | null
           id: string
           initiative_key: string
+          initiative_type_id: string | null
           is_archived: boolean | null
           is_deleted: boolean | null
           kickoff_date: string | null
+          on_roadmap: boolean
           progress: number | null
           reporter_id: string | null
           risk_count: number | null
+          roadmap_added_at: string | null
+          roadmap_added_by: string | null
+          roadmap_priority: number | null
           sort_order: number | null
           status: Database["public"]["Enums"]["initiative_status"]
+          tags: string[] | null
           target_complete: string | null
           target_quarter: string | null
           title: string
@@ -21124,19 +21245,28 @@ export type Database = {
           budget_allocated?: number | null
           business_ask_date?: string | null
           business_owner_id?: string | null
+          business_value?: string | null
           created_at?: string | null
           department_id?: string | null
           description?: string | null
+          estimated_budget?: number | null
+          health_status?: string | null
           id?: string
           initiative_key: string
+          initiative_type_id?: string | null
           is_archived?: boolean | null
           is_deleted?: boolean | null
           kickoff_date?: string | null
+          on_roadmap?: boolean
           progress?: number | null
           reporter_id?: string | null
           risk_count?: number | null
+          roadmap_added_at?: string | null
+          roadmap_added_by?: string | null
+          roadmap_priority?: number | null
           sort_order?: number | null
           status?: Database["public"]["Enums"]["initiative_status"]
+          tags?: string[] | null
           target_complete?: string | null
           target_quarter?: string | null
           title: string
@@ -21147,19 +21277,28 @@ export type Database = {
           budget_allocated?: number | null
           business_ask_date?: string | null
           business_owner_id?: string | null
+          business_value?: string | null
           created_at?: string | null
           department_id?: string | null
           description?: string | null
+          estimated_budget?: number | null
+          health_status?: string | null
           id?: string
           initiative_key?: string
+          initiative_type_id?: string | null
           is_archived?: boolean | null
           is_deleted?: boolean | null
           kickoff_date?: string | null
+          on_roadmap?: boolean
           progress?: number | null
           reporter_id?: string | null
           risk_count?: number | null
+          roadmap_added_at?: string | null
+          roadmap_added_by?: string | null
+          roadmap_priority?: number | null
           sort_order?: number | null
           status?: Database["public"]["Enums"]["initiative_status"]
+          tags?: string[] | null
           target_complete?: string | null
           target_quarter?: string | null
           title?: string
@@ -21171,6 +21310,13 @@ export type Database = {
             columns: ["department_id"]
             isOneToOne: false
             referencedRelation: "ph_departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiatives_initiative_type_id_fkey"
+            columns: ["initiative_type_id"]
+            isOneToOne: false
+            referencedRelation: "initiative_types"
             referencedColumns: ["id"]
           },
         ]
@@ -22948,6 +23094,13 @@ export type Database = {
             foreignKeyName: "ph_user_favorites_initiative_id_fkey"
             columns: ["initiative_id"]
             isOneToOne: false
+            referencedRelation: "ph_backlog_initiatives_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_user_favorites_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
             referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
@@ -22956,6 +23109,13 @@ export type Database = {
             columns: ["initiative_id"]
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_user_favorites_initiative_id_fkey"
+            columns: ["initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
@@ -55516,52 +55676,55 @@ export type Database = {
       }
       ph_backlog_initiatives_view: {
         Row: {
-          benefit_score: number | null
+          assignee_id: string | null
+          budget_allocated: number | null
+          business_ask_date: string | null
+          business_owner_id: string | null
           business_value: string | null
           created_at: string | null
+          department_id: string | null
           description: string | null
           estimated_budget: number | null
           health_status: string | null
           id: string | null
+          initiative_key: string | null
           initiative_type_color_hex: string | null
           initiative_type_color_token: string | null
           initiative_type_icon: string | null
           initiative_type_id: string | null
           initiative_type_key: string | null
           initiative_type_label: string | null
-          name: string | null
+          is_archived: boolean | null
+          is_deleted: boolean | null
+          kickoff_date: string | null
           on_roadmap: boolean | null
-          owner_id: string | null
+          progress: number | null
+          reporter_id: string | null
+          risk_count: number | null
           roadmap_added_at: string | null
           roadmap_added_by: string | null
           roadmap_priority: number | null
-          source_ra_doc_id: string | null
+          sort_order: number | null
+          status: Database["public"]["Enums"]["initiative_status"] | null
           tags: string[] | null
-          target_pi_ids: Json | null
-          theme_id: string | null
+          target_complete: string | null
+          target_quarter: string | null
+          title: string | null
           updated_at: string | null
-          wsjf_score: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "initiatives_initiative_type_id_fkey"
+            foreignKeyName: "ph_initiatives_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "ph_departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiatives_initiative_type_id_fkey"
             columns: ["initiative_type_id"]
             isOneToOne: false
             referencedRelation: "initiative_types"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "initiatives_source_ra_doc_id_fkey"
-            columns: ["source_ra_doc_id"]
-            isOneToOne: false
-            referencedRelation: "ra_documents"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "initiatives_theme_id_fkey"
-            columns: ["theme_id"]
-            isOneToOne: false
-            referencedRelation: "strategic_themes"
             referencedColumns: ["id"]
           },
         ]
@@ -55678,6 +55841,13 @@ export type Database = {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
+            referencedRelation: "ph_backlog_initiatives_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
+            columns: ["linked_initiative_id"]
+            isOneToOne: false
             referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
@@ -55686,6 +55856,13 @@ export type Database = {
             columns: ["linked_initiative_id"]
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
+            columns: ["linked_initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
@@ -55844,6 +56021,13 @@ export type Database = {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
+            referencedRelation: "ph_backlog_initiatives_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
+            columns: ["linked_initiative_id"]
+            isOneToOne: false
             referencedRelation: "ph_initiatives"
             referencedColumns: ["id"]
           },
@@ -55852,6 +56036,13 @@ export type Database = {
             columns: ["linked_initiative_id"]
             isOneToOne: false
             referencedRelation: "ph_initiatives_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
+            columns: ["linked_initiative_id"]
+            isOneToOne: false
+            referencedRelation: "ph_roadmap_initiatives_view"
             referencedColumns: ["id"]
           },
           {
@@ -56199,52 +56390,55 @@ export type Database = {
       }
       ph_roadmap_initiatives_view: {
         Row: {
-          benefit_score: number | null
+          assignee_id: string | null
+          budget_allocated: number | null
+          business_ask_date: string | null
+          business_owner_id: string | null
           business_value: string | null
           created_at: string | null
+          department_id: string | null
           description: string | null
           estimated_budget: number | null
           health_status: string | null
           id: string | null
+          initiative_key: string | null
           initiative_type_color_hex: string | null
           initiative_type_color_token: string | null
           initiative_type_icon: string | null
           initiative_type_id: string | null
           initiative_type_key: string | null
           initiative_type_label: string | null
-          name: string | null
+          is_archived: boolean | null
+          is_deleted: boolean | null
+          kickoff_date: string | null
           on_roadmap: boolean | null
-          owner_id: string | null
+          progress: number | null
+          reporter_id: string | null
+          risk_count: number | null
           roadmap_added_at: string | null
           roadmap_added_by: string | null
           roadmap_priority: number | null
-          source_ra_doc_id: string | null
+          sort_order: number | null
+          status: Database["public"]["Enums"]["initiative_status"] | null
           tags: string[] | null
-          target_pi_ids: Json | null
-          theme_id: string | null
+          target_complete: string | null
+          target_quarter: string | null
+          title: string | null
           updated_at: string | null
-          wsjf_score: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "initiatives_initiative_type_id_fkey"
+            foreignKeyName: "ph_initiatives_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "ph_departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_initiatives_initiative_type_id_fkey"
             columns: ["initiative_type_id"]
             isOneToOne: false
             referencedRelation: "initiative_types"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "initiatives_source_ra_doc_id_fkey"
-            columns: ["source_ra_doc_id"]
-            isOneToOne: false
-            referencedRelation: "ra_documents"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "initiatives_theme_id_fkey"
-            columns: ["theme_id"]
-            isOneToOne: false
-            referencedRelation: "strategic_themes"
             referencedColumns: ["id"]
           },
         ]
