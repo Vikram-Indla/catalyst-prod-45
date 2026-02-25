@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Props {
@@ -26,19 +26,19 @@ export const R360WeekNav: React.FC<Props> = ({ totalItems, pendingItems, activeF
   ];
 
   return (
-    <div className="r3-week-nav">
+    <div className="r3-week-nav" role="toolbar" aria-label="Week navigation">
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <Calendar size={16} color="#64748B" />
+        <Calendar size={16} color="#64748B" aria-hidden="true" />
         <span style={{ fontSize: 13, fontWeight: 700, color: '#020617' }}>
           {isThisWeek ? 'This Week' : `Week of ${fmt(startOfWeek).split(',')[0]}`}
         </span>
         <span style={{ fontSize: 12, color: '#64748B' }}>
           {fmt(startOfWeek)} – {fmt(endOfWeek)}
         </span>
-        <button className="r3-week-arrow" onClick={() => onWeekChange(weekOffset - 1)}>
+        <button className="r3-week-arrow" onClick={() => onWeekChange(weekOffset - 1)} aria-label="Previous week">
           <ChevronLeft size={14} />
         </button>
-        <button className="r3-week-arrow" onClick={() => onWeekChange(weekOffset + 1)}>
+        <button className="r3-week-arrow" onClick={() => onWeekChange(weekOffset + 1)} aria-label="Next week">
           <ChevronRight size={14} />
         </button>
       </div>
@@ -48,6 +48,8 @@ export const R360WeekNav: React.FC<Props> = ({ totalItems, pendingItems, activeF
             key={f.key}
             className={`r3-filter-pill ${activeFilter === f.key ? 'active' : ''}`}
             onClick={() => onFilterChange(f.key)}
+            aria-pressed={activeFilter === f.key}
+            aria-label={`Filter: ${f.label} (${f.count})`}
           >
             {f.label} <strong style={{ marginLeft: 4 }}>{f.count}</strong>
           </button>

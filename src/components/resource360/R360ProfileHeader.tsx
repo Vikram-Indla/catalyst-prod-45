@@ -14,18 +14,19 @@ const TABS = ['Ring', 'Chronology', 'Board'];
 export const R360ProfileHeader: React.FC<Props> = ({ member, kpis, activeTab, onTabChange }) => {
   const name = member?.full_name || 'Unknown';
   const role = member?.role || 'Team Member';
+  const dept = member?.department;
   const slug = slugify(name);
 
   return (
-    <div className="r3-profile-card">
+    <div className="r3-profile-card" role="banner">
       {/* Top row: avatar + name + KPIs */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, minWidth: 0 }}>
           {/* Avatar with fallback */}
-          <div style={{ position: 'relative' }}>
+          <div style={{ position: 'relative', flexShrink: 0 }}>
             <img
               className="r3-avatar"
-              src={`/admin/users/${slug}/avatar`}
+              src={member?.avatar_url || `/admin/users/${slug}/avatar`}
               alt={name}
               onError={(e) => {
                 (e.currentTarget as HTMLImageElement).style.display = 'none';
@@ -36,20 +37,20 @@ export const R360ProfileHeader: React.FC<Props> = ({ member, kpis, activeTab, on
               {initials(name)}
             </div>
           </div>
-          <div>
-            <h2 className="r3-name">{name}</h2>
-            <p className="r3-role">{role}</p>
+          <div style={{ minWidth: 0 }}>
+            <h2 className="r3-name" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 320 }}>{name}</h2>
+            <p className="r3-role">{role}{dept ? ` · ${dept}` : ''}</p>
           </div>
         </div>
 
         {/* KPI cards: Open + Stale */}
-        <div style={{ display: 'flex', gap: 10 }}>
-          <div className="r3-kpi-card warn">
-            <div className="r3-kpi-value">{kpis?.open_items ?? '—'}</div>
+        <div style={{ display: 'flex', gap: 10, flexShrink: 0 }}>
+          <div className="r3-kpi-card warn" role="status" aria-label={`Open items: ${kpis?.open_items ?? 0}`}>
+            <div className="r3-kpi-value">{kpis?.open_items ?? 0}</div>
             <div className="r3-kpi-label">Open</div>
           </div>
-          <div className="r3-kpi-card neutral">
-            <div className="r3-kpi-value">{kpis?.stale_items ?? '—'}</div>
+          <div className="r3-kpi-card neutral" role="status" aria-label={`Stale items: ${kpis?.stale_items ?? 0}`}>
+            <div className="r3-kpi-value">{kpis?.stale_items ?? 0}</div>
             <div className="r3-kpi-label">Stale</div>
           </div>
         </div>
@@ -57,20 +58,23 @@ export const R360ProfileHeader: React.FC<Props> = ({ member, kpis, activeTab, on
 
       {/* Bottom bar: Tabs + Actions */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 16, paddingTop: 14, borderTop: '1px solid #F1F5F9' }}>
-        <div style={{ display: 'flex', gap: 4 }}>
+        <div style={{ display: 'flex', gap: 4 }} role="tablist" aria-label="View mode">
           {TABS.map(tab => (
             <button
               key={tab}
               className={`r3-tab ${activeTab === tab ? 'active' : ''}`}
               onClick={() => onTabChange(tab)}
+              role="tab"
+              aria-selected={activeTab === tab}
+              aria-label={`${tab} view`}
             >
               {tab}
             </button>
           ))}
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button className="r3-btn-outline">Q1-2026</button>
-          <button className="r3-btn-intel">
+          <button className="r3-btn-outline" aria-label="Quarter filter">Q1-2026</button>
+          <button className="r3-btn-intel" aria-label="Open Intelligence panel">
             <Sparkles size={14} />
             Intelligence
           </button>

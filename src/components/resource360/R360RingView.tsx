@@ -28,17 +28,32 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
 
   if (activeItems.length === 0 && doneCount === 0) {
     return (
-      <div style={{ textAlign: 'center', padding: '60px 20px', color: '#64748B' }}>
-        <div style={{ fontSize: 32, marginBottom: 12 }}>🎯</div>
-        <div style={{ fontSize: 15, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No active work items this week</div>
-        <div style={{ fontSize: 13 }}>Try adjusting filters or navigating to a different week.</div>
+      <div className="r3-ring-canvas" style={{ height: 640, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center', color: '#64748B' }}>
+          <div className="r3-ring-center" style={{ position: 'relative', transform: 'none', left: 'auto', top: 'auto', margin: '0 auto 16px' }}>
+            <img
+              className="r3-ring-avatar"
+              src={member?.avatar_url || `/admin/users/${slug}/avatar`}
+              alt={memberName}
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).style.display = 'none';
+                (e.currentTarget.nextElementSibling as HTMLElement)?.setAttribute('style', 'display:flex');
+              }}
+            />
+            <div className="r3-ring-avatar-fb" style={{ display: 'none' }}>
+              {initials(memberName)}
+            </div>
+          </div>
+          <div style={{ fontSize: 15, fontWeight: 600, color: '#334155', marginBottom: 4 }}>No active items this week</div>
+          <div style={{ fontSize: 13 }}>Assigned work items will orbit here.</div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="r3-ring-canvas" style={{ height: 640 }}>
-      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1 }}>
+    <div className="r3-ring-canvas" style={{ height: 640 }} role="img" aria-label={`Ring view showing ${activeItems.length} active items for ${memberName}`}>
+      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 1 }} aria-hidden="true">
         {activeItems.map((_, i) => {
           const spot = SPOTS[i];
           if (!spot) return null;
@@ -64,7 +79,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             className="r3-spoke-label"
             style={{ position: 'absolute', left: `${midLeft}%`, top: `${midTop}%`, transform: 'translate(-50%,-50%)' }}
           >
-            {getAgeLabel(item.age_days)}
+            {getAgeLabel(item.age_days ?? 0)}
           </div>
         );
       })}
@@ -72,7 +87,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
       <div className="r3-ring-center">
         <img
           className="r3-ring-avatar"
-          src={`/admin/users/${slug}/avatar`}
+          src={member?.avatar_url || `/admin/users/${slug}/avatar`}
           alt={memberName}
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).style.display = 'none';
@@ -90,7 +105,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
         const spot = SPOTS[i];
         if (!spot) return null;
         const ss = resolveStatusStyle(item);
-        const ageColor = getAgeColor(item.age_days);
+        const ageColor = getAgeColor(item.age_days ?? 0);
 
         return (
           <div
@@ -98,20 +113,26 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             className="r3-ring-card"
             style={{ left: spot.left, top: spot.top }}
             onClick={() => onItemClick(item)}
+            role="button"
+            tabIndex={0}
+            aria-label={`${item.item_key} ${item.title}`}
+            onKeyDown={(e) => { if (e.key === 'Enter') onItemClick(item); }}
           >
             <div className="r3-accent-bar" style={{ background: ss.dot }} />
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 {getJiraIcon(item.item_type)}
-                <span style={{ fontSize: 10, fontWeight: 600, color: '#64748B', textTransform: 'capitalize' }}>{item.priority}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, color: '#64748B', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
               <span className="r3-item-key" style={{ fontSize: 11 }}>{item.item_key}</span>
-              <span className="r3-project-tag" style={{ background: item.project_color || '#64748B', fontSize: 9 }}>
-                {item.project_key}
-              </span>
-              <span className="r3-age-badge" style={{ color: ageColor, fontSize: 9 }}>{item.age_days}d</span>
+              {item.project_key && (
+                <span className="r3-project-tag" style={{ background: item.project_color || '#64748B', fontSize: 9 }}>
+                  {item.project_key}
+                </span>
+              )}
+              <span className="r3-age-badge" style={{ color: ageColor, fontSize: 9 }}>{item.age_days ?? 0}d</span>
             </div>
             <div className="r3-title-clamp" style={{ fontSize: 12.5, fontWeight: 500, color: '#020617', marginBottom: 6 }}>
               {item.title}
@@ -125,7 +146,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
       })}
 
       {doneCount > 0 && (
-        <div className="r3-completed-badge">
+        <div className="r3-completed-badge" aria-label={`${doneCount} completed items`}>
           <div className="r3-completed-circle">{doneCount}</div>
           <div className="r3-completed-text">COMPLETED</div>
         </div>
