@@ -186,11 +186,11 @@
   padding: 0 12px;
   font-size: 12px;
   font-weight: 500;
-  font-family: var(--pk-font-body);
-  color: var(--pk-ink-tertiary);
-  background: var(--pk-surface);
-  border: 1px solid var(--pk-border);
-  border-radius: var(--pk-r-full);
+  font-family: var(--pk-font-body, 'Inter', system-ui, sans-serif);
+  color: #3F3F46 !important;
+  background: #FFFFFF !important;
+  border: 1px solid #E4E4E7 !important;
+  border-radius: 9999px;
   cursor: pointer;
   transition: all 0.15s;
   display: inline-flex;
@@ -198,13 +198,13 @@
   gap: 4px;
 }
 .pk-chip:hover {
-  background: var(--pk-surface-tertiary);
-  border-color: var(--pk-border-strong);
+  background: #F4F4F5 !important;
+  border-color: #D4D4D8 !important;
 }
-.pk-chip--active {
-  color: var(--pk-primary);
-  background: var(--pk-primary-bg);
-  border-color: var(--pk-primary);
+.pk-chip.pk-chip--active {
+  color: #2563EB !important;
+  background: #EFF6FF !important;
+  border-color: #2563EB !important;
   font-weight: 600;
 }
 
@@ -380,8 +380,13 @@
 }
 .pk-card--dragging {
   opacity: 0.5;
-  border-style: dashed;
-  border-color: var(--pk-primary);
+  border-style: dashed !important;
+  border-color: var(--pk-primary) !important;
+}
+.pk-card--selected {
+  background: var(--pk-primary-bg) !important;
+  border: 1px solid var(--pk-primary) !important;
+  border-style: solid !important;
 }
 .pk-card--overlay {
   box-shadow: 0 8px 24px rgba(0,0,0,0.12);
@@ -496,24 +501,41 @@
   gap: 2px;
 }
 .pk-priority-bar {
-  width: 12px;
-  height: 3px;
-  border-radius: 1px;
+  width: 12px !important;
+  height: 3px !important;
+  min-height: 3px !important;
+  border-radius: 1px !important;
+  display: block !important;
+  border: none !important;
+  border-style: none !important;
+  border-bottom: none !important;
+  outline: none !important;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
-.pk-priority-bar--filled { background: var(--pk-ink-muted); }
-.pk-priority-bar--unfilled { background: var(--pk-border); }
+.pk-priority-bar--filled { background: #71717A !important; }
+.pk-priority-bar--unfilled { background: #E4E4E7 !important; }
 
 .pk-card-progress {
   flex: 1;
-  height: 4px;
-  background: var(--pk-surface-tertiary);
-  border-radius: 2px;
+  height: 4px !important;
+  min-height: 4px !important;
+  background: #F4F4F5 !important;
+  border: none !important;
+  border-style: none !important;
+  border-bottom: none !important;
+  border-radius: 2px !important;
   overflow: hidden;
+  box-sizing: border-box;
 }
 .pk-card-progress-fill {
-  height: 100%;
-  border-radius: 2px;
+  height: 100% !important;
+  border-radius: 2px !important;
+  border: none !important;
+  border-style: none !important;
+  border-bottom: none !important;
   transition: width 0.3s;
+  box-sizing: border-box;
 }
 
 .pk-card-percent {
