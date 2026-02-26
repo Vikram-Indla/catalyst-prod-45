@@ -8,7 +8,7 @@ import { Resource360Banner } from './Resource360Banner';
 import RingViewV16 from './RingViewV16';
 import { Resource360Chronology } from './Resource360Chronology';
 import { Resource360Board } from './Resource360Board';
-import AiIntelligencePanelV16 from './AiIntelligencePanelV16';
+import AIIntelligencePanel from '@/components/resources/AIIntelligencePanel';
 import './r360-tokens.css';
 
 const VIEW_TABS: { key: ViewMode; label: string }[] = [
@@ -132,9 +132,9 @@ export default function Resource360PageNew() {
       </div>
 
       {/* AI Intelligence Panel */}
-      {aiOpen && (
-        <AiIntelligencePanelV16
-          resourceName={summary?.name ?? 'Resource'}
+      {aiOpen && resourceId && (
+        <AIIntelligencePanel
+          resourceId={resourceId}
           onClose={() => setAIOpen(false)}
         />
       )}

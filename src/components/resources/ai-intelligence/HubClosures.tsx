@@ -1,0 +1,99 @@
+import React from 'react';
+
+export interface HubClosureData {
+  hub: string;
+  closed: number;
+  total: number;
+  pct: number;
+}
+
+const HUB_ICON_STYLES: Record<string, { bg: string; color: string; letter: string }> = {
+  IncidentHub: { bg: '#FEF2F2', color: '#DC2626', letter: 'I' },
+  ProductHub: { bg: '#F0FDFA', color: '#0D9488', letter: 'P' },
+  TestHub: { bg: '#F5F3FF', color: '#7C3AED', letter: 'T' },
+  ProjectHub: { bg: '#EFF6FF', color: '#2563EB', letter: 'J' },
+  ReleaseHub: { bg: '#FFFBEB', color: '#D97706', letter: 'R' },
+  Other: { bg: '#F4F4F5', color: '#71717A', letter: 'O' },
+};
+
+function getPctColor(pct: number): string {
+  if (pct >= 70) return 'var(--rai-success)';
+  if (pct >= 40) return 'var(--rai-warning)';
+  return 'var(--rai-ink-muted)';
+}
+
+interface Props {
+  data: HubClosureData[];
+}
+
+export const HubClosures: React.FC<Props> = ({ data }) => {
+  const sorted = [...data].sort((a, b) => b.pct - a.pct);
+  const totalClosed = sorted.reduce((s, h) => s + h.closed, 0);
+  const totalAll = sorted.reduce((s, h) => s + h.total, 0);
+  const totalPct = totalAll > 0 ? Math.round((totalClosed / totalAll) * 100) : 0;
+
+  return (
+    <div className="rai-section">
+      <div className="rai-section-header">
+        <span className="rai-section-title">Hub Closures</span>
+        <span className="rai-ai-badge">✦ AI</span>
+      </div>
+      <table className="rai-table">
+        <thead>
+          <tr>
+            <th>Hub</th>
+            <th>Closed</th>
+            <th>Total</th>
+            <th>Closure %</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sorted.map(h => {
+            const icon = HUB_ICON_STYLES[h.hub] || HUB_ICON_STYLES.Other;
+            const color = getPctColor(h.pct);
+            return (
+              <tr key={h.hub}>
+                <td>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div className="rai-hub-icon" style={{ background: icon.bg, color: icon.color }}>
+                      {icon.letter}
+                    </div>
+                    <span>{h.hub}</span>
+                  </div>
+                </td>
+                <td style={{ fontFamily: 'var(--rai-font-heading)', fontSize: 15, fontWeight: 700, color }}>{h.closed}</td>
+                <td style={{ fontFamily: 'var(--rai-font-heading)', fontSize: 15, fontWeight: 700 }}>{h.total}</td>
+                <td>
+                  <div className="rai-minibar">
+                    <div className="rai-minibar-track">
+                      <div className="rai-minibar-fill" style={{ width: `${h.pct}%`, background: color }} />
+                    </div>
+                    <span className="rai-minibar-pct" style={{ color }}>{h.pct}%</span>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+          <tr className="rai-total-row">
+            <td>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div className="rai-hub-icon" style={{ background: '#F4F4F5', color: '#3F3F46' }}>Σ</div>
+                <span>Total</span>
+              </div>
+            </td>
+            <td style={{ fontFamily: 'var(--rai-font-heading)', fontSize: 15, fontWeight: 700, color: getPctColor(totalPct) }}>{totalClosed}</td>
+            <td style={{ fontFamily: 'var(--rai-font-heading)', fontSize: 15, fontWeight: 700 }}>{totalAll}</td>
+            <td>
+              <div className="rai-minibar">
+                <div className="rai-minibar-track">
+                  <div className="rai-minibar-fill" style={{ width: `${totalPct}%`, background: getPctColor(totalPct) }} />
+                </div>
+                <span className="rai-minibar-pct" style={{ color: getPctColor(totalPct) }}>{totalPct}%</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+};
