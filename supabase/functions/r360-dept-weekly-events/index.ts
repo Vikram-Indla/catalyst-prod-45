@@ -81,7 +81,7 @@ OUTPUT FORMAT: Return ONLY valid JSON array (no markdown, no code fences):
         "dayClass": "day-sun",
         "callout": null | "escalation" | "risk" | "action" | "delivery_gap" | "observation",
         "calloutLabel": null | "ESCALATION" | "RISK" | "ACTION REQUIRED" | "DELIVERY GAP" | "OBSERVATION",
-        "body": "HTML string with <strong>Name</strong>, <span class='di-ticket-pill'>BAU-1234</span>, <span class='di-ev-st s-done'><span class='di-st-dot'></span>Done</span> inline."
+        "body": "HTML string with <span class='di-ev-actor'>Name</span>, <span class='di-ev-tk'>BAU-1234</span>, <span class='di-ev-st s-done'>Done</span> inline."
       }
     ]
   },
