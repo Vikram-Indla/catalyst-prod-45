@@ -45,7 +45,7 @@ export function useResourceInfo(resourceId: string | undefined) {
       if (ri?.profile_id) {
         const { data: p } = await supabase
           .from('profiles')
-          .select('id, full_name, avatar_url')
+          .select('id, full_name, avatar_url, rid')
           .eq('id', ri.profile_id)
           .maybeSingle();
         profile = p;
@@ -58,7 +58,7 @@ export function useResourceInfo(resourceId: string | undefined) {
         role_name: roleParts.length > 0 ? roleParts.join(' · ') : 'Team Member',
         avatar_url: profile?.avatar_url || null,
         jira_account_id: ri?.jira_account_id || null,
-        rid: ri?.rid || `RES-${String(resourceId).slice(-3).toUpperCase()}`,
+        rid: profile?.rid || ri?.rid || `RES-${String(resourceId).slice(-3).toUpperCase()}`,
       } as ResourceInfo;
     },
     enabled: !!resourceId,
