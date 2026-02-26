@@ -117,48 +117,47 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
       )}
 
       {/* Score + Priority */}
-      <div className="pc-metrics">
-        <div>
-          <div className="pc-metric-label">Score</div>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24, marginBottom: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 4 }}>
+          <span style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: 10, fontWeight: 600, color: '#71717A', textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>SCORE</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2 }}>
+            <div style={{ display: 'flex', flexDirection: 'row' as const, alignItems: 'flex-end', gap: 2 }}>
               {[0, 1, 2, 3, 4].map(i => (
-                <span
+                <div
                   key={i}
                   style={{
                     width: 4,
+                    minWidth: 4,
                     height: 12,
+                    minHeight: 12,
                     borderRadius: 1,
-                    display: 'block',
+                    backgroundColor: i < scoreLevel ? '#71717A' : '#E4E4E7',
+                    flexShrink: 0,
                     border: 'none',
-                    background: i < scoreLevel ? '#71717A' : '#E4E4E7',
                   }}
                 />
               ))}
             </div>
-            <span style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 12,
-              fontWeight: 500,
-              color: initiative.computed_score !== null ? '#18181B' : '#71717A',
-            }}>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: initiative.computed_score !== null ? '#18181B' : '#71717A' }}>
               {initiative.computed_score !== null ? `${initiative.computed_score.toFixed(1)}` : '—'} /5.0
             </span>
           </div>
         </div>
-        <div>
-          <div className="pc-metric-label">Priority</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 4 }}>
+          <span style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: 10, fontWeight: 600, color: '#71717A', textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>PRIORITY</span>
+          <div style={{ display: 'flex', flexDirection: 'row' as const, alignItems: 'center', gap: 2 }}>
             {[0, 1, 2, 3].map(i => (
-              <span
+              <div
                 key={i}
                 style={{
                   width: 16,
+                  minWidth: 16,
                   height: 4,
+                  minHeight: 4,
                   borderRadius: 2,
-                  display: 'block',
+                  backgroundColor: i < priorityLevel ? '#71717A' : '#E4E4E7',
+                  flexShrink: 0,
                   border: 'none',
-                  background: i < priorityLevel ? '#71717A' : '#E4E4E7',
                 }}
               />
             ))}
