@@ -8,7 +8,7 @@
 /* ══════════════════════════════════════════════════════════════
    DESIGN TOKENS
    ══════════════════════════════════════════════════════════════ */
-.di-panel {
+:root {
   --ink: #09090B;
   --ink-secondary: #18181B;
   --ink-tertiary: #3F3F46;
@@ -38,18 +38,14 @@
   --r-md: 6px;
   --r-lg: 8px;
   --r-full: 9999px;
-  font-family: var(--font-body);
-  color: var(--ink);
-  -webkit-font-smoothing: antialiased;
 }
-
-.di-panel *, .di-panel *::before, .di-panel *::after { box-sizing: border-box; }
 
 /* ══════════════════════════════════════════════════════════════
    BACKDROP
    ══════════════════════════════════════════════════════════════ */
 .di-backdrop {
-  position: fixed; inset: 0;
+  position: fixed;
+  inset: 0;
   background: rgba(0,0,0,0.3);
   z-index: 50;
 }
@@ -71,7 +67,13 @@
   z-index: 60;
   display: flex;
   flex-direction: column;
+  font-family: var(--font-body);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
   animation: di-slide-in 300ms ease-out forwards;
+}
+.di-panel *, .di-panel *::before, .di-panel *::after {
+  box-sizing: border-box;
 }
 @keyframes di-slide-in {
   from { transform: translateX(100%); }
@@ -511,6 +513,11 @@
 .di-empty {
   text-align: center;
   padding: 48px 24px;
+}
+.di-empty svg {
+  color: var(--ink-muted);
+  margin: 0 auto 12px;
+  display: block;
 }
 .di-empty-t {
   font: 600 15px var(--font-heading);
