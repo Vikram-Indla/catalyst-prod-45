@@ -12,6 +12,7 @@ interface KanbanCardProps {
   onContextMenu?: (e: React.MouseEvent, initiative: Initiative) => void;
   isOverlay?: boolean;
   isFocused?: boolean;
+  isSelected?: boolean;
 }
 
 const TYPE_COLORS: Record<string, string> = {
@@ -35,7 +36,7 @@ function getProgressColor(progress: number): string {
   return 'var(--pk-primary)';
 }
 
-export const KanbanCard: React.FC<KanbanCardProps> = ({ initiative, onClick, onContextMenu, isOverlay, isFocused }) => {
+export const KanbanCard: React.FC<KanbanCardProps> = ({ initiative, onClick, onContextMenu, isOverlay, isFocused, isSelected }) => {
   const {
     attributes,
     listeners,
@@ -66,6 +67,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ initiative, onClick, onC
 
   let cardClass = 'pk-card';
   if (isDragging) cardClass += ' pk-card--dragging';
+  else if (isSelected) cardClass += ' pk-card--selected';
   if (isOverlay) cardClass += ' pk-card--overlay';
   if (isFocused) cardClass += ' pk-card--focused';
   if (isCancelled) cardClass += ' pk-card--cancelled';
@@ -126,16 +128,31 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ initiative, onClick, onC
       <div className="pk-card-bottom">
         <div className="pk-card-priority">
           {[0, 1, 2, 3].map(i => (
-            <div key={i} className={`pk-priority-bar ${i < filledBars ? 'pk-priority-bar--filled' : 'pk-priority-bar--unfilled'}`} />
+            <div
+              key={i}
+              className={`pk-priority-bar ${i < filledBars ? 'pk-priority-bar--filled' : 'pk-priority-bar--unfilled'}`}
+              style={{
+                width: 12, height: 3, borderRadius: 1, border: 'none',
+                background: i < filledBars ? '#71717A' : '#E4E4E7',
+                display: 'block', flexShrink: 0,
+              }}
+            />
           ))}
         </div>
 
-        <div className="pk-card-progress">
+        <div
+          className="pk-card-progress"
+          style={{ flex: 1, height: 4, background: '#F4F4F5', borderRadius: 2, overflow: 'hidden', border: 'none' }}
+        >
           <div
             className="pk-card-progress-fill"
             style={{
               width: `${Math.min(initiative.progress, 100)}%`,
+              height: '100%',
               backgroundColor: getProgressColor(initiative.progress),
+              borderRadius: 2,
+              border: 'none',
+              transition: 'width 0.3s ease',
             }}
           />
         </div>

@@ -96,6 +96,8 @@ export const KanbanToolbar: React.FC<KanbanToolbarProps> = ({
         )}
       </div>
 
+      <div className="pk-toolbar-divider" />
+
       <div className="pk-toolbar-spacer" />
 
       {/* Export */}
