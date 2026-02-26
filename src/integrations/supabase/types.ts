@@ -21049,6 +21049,7 @@ export type Database = {
           created_at: string | null
           department_id: string | null
           description: string | null
+          ea_review: string | null
           estimated_budget: number | null
           health_status: string | null
           id: string
@@ -21058,6 +21059,7 @@ export type Database = {
           is_deleted: boolean | null
           kickoff_date: string | null
           on_roadmap: boolean
+          priority: string | null
           progress: number | null
           reporter_id: string | null
           risk_count: number | null
@@ -21084,6 +21086,7 @@ export type Database = {
           created_at?: string | null
           department_id?: string | null
           description?: string | null
+          ea_review?: string | null
           estimated_budget?: number | null
           health_status?: string | null
           id?: string
@@ -21093,6 +21096,7 @@ export type Database = {
           is_deleted?: boolean | null
           kickoff_date?: string | null
           on_roadmap?: boolean
+          priority?: string | null
           progress?: number | null
           reporter_id?: string | null
           risk_count?: number | null
@@ -21119,6 +21123,7 @@ export type Database = {
           created_at?: string | null
           department_id?: string | null
           description?: string | null
+          ea_review?: string | null
           estimated_budget?: number | null
           health_status?: string | null
           id?: string
@@ -21128,6 +21133,7 @@ export type Database = {
           is_deleted?: boolean | null
           kickoff_date?: string | null
           on_roadmap?: boolean
+          priority?: string | null
           progress?: number | null
           reporter_id?: string | null
           risk_count?: number | null
@@ -55493,6 +55499,7 @@ export type Database = {
           created_at: string | null
           department_id: string | null
           description: string | null
+          ea_review: string | null
           estimated_budget: number | null
           health_status: string | null
           id: string | null
@@ -55507,6 +55514,7 @@ export type Database = {
           is_deleted: boolean | null
           kickoff_date: string | null
           on_roadmap: boolean | null
+          priority: string | null
           progress: number | null
           reporter_id: string | null
           risk_count: number | null
