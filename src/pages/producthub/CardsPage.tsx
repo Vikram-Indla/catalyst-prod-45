@@ -15,6 +15,7 @@ import { getPriorityLevel, STATUS_DISPLAY } from '@/types/initiative';
 import { getTypeLabel } from '@/utils/initiative-type-utils';
 import { formatDistanceToNow } from 'date-fns';
 import '@/styles/product-cards.css';
+import '@/styles/product-kanban.css';
 
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
