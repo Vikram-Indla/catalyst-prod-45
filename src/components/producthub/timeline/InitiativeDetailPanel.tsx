@@ -337,7 +337,7 @@ const [budgetAllocated, setBudgetAllocated] = useState(0);
             </>
           )}
           {activeTab === 'score' && <DetailTabScore initiative={initiative} />}
-          {activeTab === 'budget' && <InitiativeBudgetTab initiativeId={initiative.id} budgetAllocated={budgetAllocated} onBudgetAllocatedChange={setBudgetAllocated} />}
+          {activeTab === 'budget' && <InitiativeBudgetTab initiativeId={initiative.id} budgetAllocated={budgetAllocated} onBudgetAllocatedChange={(v: string) => setBudgetAllocated(Number(v) || 0)} />}
           {activeTab === 'risks' && <InitiativeRisksTab initiativeId={initiative.id} />}
           {activeTab === 'milestones' && <DetailTabPlaceholder icon={Flag} label="Milestones" />}
           {activeTab === 'links' && <DetailTabPlaceholder icon={LinkIcon} label="Links" />}
