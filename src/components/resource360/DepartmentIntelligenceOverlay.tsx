@@ -110,36 +110,6 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
               </div>
             </div>
 
-            {/* ─── Stats Strip (pure DB, not AI) ─── */}
-            {isLoadingStats ? (
-              <div className="di-stats">
-                {[1,2,3,4].map(i => (
-                  <div key={i} className="di-stat">
-                    <div className="skeleton-bar" style={{ height: 20, width: 40, margin: '0 auto 4px' }} />
-                    <div className="skeleton-bar" style={{ height: 10, width: 60, margin: '0 auto' }} />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="di-stats">
-                <div className="di-stat">
-                  <div className="di-stat-v" style={{ color: '#09090B' }}>{stats.transitions}</div>
-                  <div className="di-stat-l">Transitions</div>
-                </div>
-                <div className="di-stat">
-                  <div className="di-stat-v" style={{ color: '#16A34A' }}>{stats.closed}</div>
-                  <div className="di-stat-l">Closed</div>
-                </div>
-                <div className="di-stat">
-                  <div className="di-stat-v" style={{ color: '#D97706' }}>{stats.inReview}</div>
-                  <div className="di-stat-l">In Review</div>
-                </div>
-                <div className="di-stat">
-                  <div className="di-stat-v" style={{ color: '#09090B' }}>{stats.activeResources}</div>
-                  <div className="di-stat-l">Active Resources</div>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* ─── Hub Groups ─── */}
