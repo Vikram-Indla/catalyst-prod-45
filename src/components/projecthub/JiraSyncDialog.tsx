@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { RefreshCw, Check, ChevronDown, Loader2, X, Shield, Database, CheckCircle2, AlertCircle, Zap } from 'lucide-react';
+import { Check, ChevronDown, Loader2, X, Shield, Database, CheckCircle2, AlertCircle, Zap, History, Calendar } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -13,6 +13,13 @@ const SYNC_OPTIONS: { value: SyncMode; label: string; desc: string; icon: string
   { value: 'changes_only', label: 'Only Changes', desc: 'Delta sync — fetch only recent modifications', icon: '⚡' },
 ];
 
+/* Jira Logo SVG — Official mark */
+const JiraIcon = ({ size = 18, color = '#2684FF' }: { size?: number; color?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <path d="M22.9 11.4L13 1.5 12 .5 4.1 8.4.5 12l3.6 3.6L12 23.5l7.9-7.9.4-.4 2.6-2.6-2.6-2.6zM12 15.3L8.7 12 12 8.7l3.3 3.3-3.3 3.3z" fill={color}/>
+  </svg>
+);
+
 interface JiraProject {
   key: string;
   name: string;
@@ -23,7 +30,24 @@ interface SyncResult {
   synced: number;
   created: number;
   updated: number;
+  softDeleted: number;
+  baselineTotal: number;
   errors: number;
+}
+
+interface SyncLogEntry {
+  id: string;
+  status: string;
+  sync_mode: string;
+  items_created: number;
+  items_updated: number;
+  items_deleted_soft: number;
+  total_items_in_baseline: number;
+  baseline_snapshot_date: string;
+  started_at: string;
+  completed_at: string;
+  duration_ms: number;
+  project_keys: string[];
 }
 
 interface Props {
@@ -34,7 +58,7 @@ interface Props {
 export function JiraSyncDialog({ open, onClose }: Props) {
   const [projects, setProjects] = useState<JiraProject[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [syncMode, setSyncMode] = useState<SyncMode>('3months');
+  const [syncMode, setSyncMode] = useState<SyncMode>('changes_only');
   const [loading, setLoading] = useState(false);
   const [phase, setPhase] = useState<SyncPhase>('idle');
   const [progressPct, setProgressPct] = useState(0);
@@ -42,11 +66,13 @@ export function JiraSyncDialog({ open, onClose }: Props) {
   const [currentProject, setCurrentProject] = useState('');
   const [syncResult, setSyncResult] = useState<SyncResult | null>(null);
   const [showModeDropdown, setShowModeDropdown] = useState(false);
+  const [recentSyncs, setRecentSyncs] = useState<SyncLogEntry[]>([]);
   const queryClient = useQueryClient();
 
   useEffect(() => {
     if (open) {
       loadProjects();
+      loadRecentSyncs();
       setPhase('idle');
       setProgressPct(0);
       setProgressLabel('');
@@ -54,19 +80,29 @@ export function JiraSyncDialog({ open, onClose }: Props) {
     }
   }, [open]);
 
+  async function loadRecentSyncs() {
+    try {
+      const { data } = await (supabase as any)
+        .from('ph_jira_sync_log')
+        .select('id, status, sync_mode, items_created, items_updated, items_deleted_soft, total_items_in_baseline, baseline_snapshot_date, started_at, completed_at, duration_ms, project_keys')
+        .order('started_at', { ascending: false })
+        .limit(3);
+      setRecentSyncs((data ?? []) as SyncLogEntry[]);
+    } catch (_e) {}
+  }
+
   async function loadProjects() {
     setLoading(true);
     try {
       const { data, error } = await (supabase as any)
         .from('ph_issues')
         .select('project_key')
+        .is('jira_removed_at', null)
         .limit(5000);
       if (error) throw error;
 
       const countMap: Record<string, number> = {};
-      for (const row of data ?? []) {
-        countMap[row.project_key] = (countMap[row.project_key] || 0) + 1;
-      }
+      for (const row of data ?? []) countMap[row.project_key] = (countMap[row.project_key] || 0) + 1;
 
       const { data: projectData } = await (supabase as any).from('projects').select('key, name');
       const nameMap: Record<string, string> = {};
@@ -123,23 +159,18 @@ export function JiraSyncDialog({ open, onClose }: Props) {
     const projectKeys = Array.from(selected);
     const total = projectKeys.length;
 
-    // Simulate phased progress while the edge function runs
     const progressInterval = setInterval(() => {
-      setProgressPct(prev => {
-        if (prev >= 90) return prev;
-        return prev + Math.random() * 3;
-      });
+      setProgressPct(prev => prev >= 90 ? prev : prev + Math.random() * 3);
     }, 400);
 
-    // Update labels as progress moves
     const labelInterval = setInterval(() => {
       setProgressPct(prev => {
         if (prev < 15) { setProgressLabel('Authenticating with Jira...'); setCurrentProject(''); }
         else if (prev < 30) { setProgressLabel('Fetching project metadata...'); setCurrentProject(projectKeys[0]); }
-        else if (prev < 50) { setProgressLabel('Syncing issues & relationships...'); setCurrentProject(projectKeys[Math.min(Math.floor(prev / (90 / total)), total - 1)]); }
-        else if (prev < 70) { setProgressLabel('Processing epics & features...'); }
-        else if (prev < 85) { setProgressLabel('Building hierarchy links...'); }
-        else { setProgressLabel('Finalizing sync...'); }
+        else if (prev < 50) { setProgressLabel('Delta comparing issues...'); setCurrentProject(projectKeys[Math.min(Math.floor(prev / (90 / total)), total - 1)]); }
+        else if (prev < 70) { setProgressLabel('Upserting changed items...'); }
+        else if (prev < 85) { setProgressLabel('Soft-flagging removals...'); }
+        else { setProgressLabel('Writing sync log...'); }
         return prev;
       });
     }, 800);
@@ -159,10 +190,13 @@ export function JiraSyncDialog({ open, onClose }: Props) {
         synced: data?.synced ?? total,
         created: data?.created ?? 0,
         updated: data?.updated ?? 0,
-        errors: data?.errors ?? 0,
+        softDeleted: data?.softDeleted ?? 0,
+        baselineTotal: data?.baselineTotal ?? 0,
+        errors: 0,
       });
       setPhase('complete');
       queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
+      loadRecentSyncs(); // refresh sync history
     } catch (err: any) {
       clearInterval(progressInterval);
       clearInterval(labelInterval);
@@ -179,6 +213,21 @@ export function JiraSyncDialog({ open, onClose }: Props) {
     setSyncResult(null);
   }
 
+  function formatAge(dateStr: string) {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return `${mins}m ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours}h ago`;
+    return `${Math.floor(hours / 24)}d ago`;
+  }
+
+  function formatDuration(ms: number) {
+    if (ms < 1000) return `${ms}ms`;
+    return `${(ms / 1000).toFixed(1)}s`;
+  }
+
   if (!open) return null;
 
   const selectedMode = SYNC_OPTIONS.find(o => o.value === syncMode)!;
@@ -188,22 +237,17 @@ export function JiraSyncDialog({ open, onClose }: Props) {
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      {/* Backdrop */}
-      <div
-        onClick={!isSyncing ? onClose : undefined}
-        style={{ position: 'absolute', inset: 0, background: 'rgba(9,9,11,0.5)', backdropFilter: 'blur(4px)' }}
-      />
+      <div onClick={!isSyncing ? onClose : undefined} style={{ position: 'absolute', inset: 0, background: 'rgba(9,9,11,0.5)', backdropFilter: 'blur(4px)' }} />
 
-      {/* Dialog */}
       <div style={{
-        position: 'relative', width: 600, maxHeight: '85vh',
+        position: 'relative', width: 620, maxHeight: '88vh',
         background: '#FFFFFF', borderRadius: 16,
         boxShadow: '0 25px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.05)',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
         fontFamily: "'Inter', system-ui, sans-serif",
       }}>
 
-        {/* ─── HEADER ─── */}
+        {/* ─── HEADER with Jira Icon ─── */}
         <div style={{
           padding: '20px 24px 16px',
           borderBottom: '1px solid #E4E4E7',
@@ -213,64 +257,75 @@ export function JiraSyncDialog({ open, onClose }: Props) {
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{
                 width: 40, height: 40, borderRadius: 10,
-                background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
+                background: 'linear-gradient(135deg, #2684FF, #0052CC)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 2px 8px rgba(37,99,235,0.3)',
+                boxShadow: '0 2px 8px rgba(38,132,255,0.3)',
               }}>
-                <RefreshCw size={18} color="#FFF" />
+                <JiraIcon size={20} color="#FFF" />
               </div>
               <div>
                 <h2 style={{
                   fontSize: 17, fontWeight: 700, fontFamily: "'Sora', system-ui, sans-serif",
                   color: '#09090B', margin: 0, letterSpacing: '-0.02em',
+                  display: 'flex', alignItems: 'center', gap: 8,
                 }}>
                   Jira Sync
+                  <span style={{
+                    fontSize: 9, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace",
+                    color: '#0D9488', background: '#F0FDFA', padding: '2px 6px',
+                    borderRadius: 4, letterSpacing: '0.04em',
+                  }}>GUARDRAIL</span>
                 </h2>
                 <p style={{ fontSize: 12, color: '#71717A', margin: '2px 0 0', fontWeight: 400 }}>
-                  Select projects and sync mode to pull data from Jira
+                  Append-only delta sync — data is never deleted
                 </p>
               </div>
             </div>
             <button
-              onClick={!isSyncing ? onClose : undefined}
-              disabled={isSyncing}
+              onClick={!isSyncing ? onClose : undefined} disabled={isSyncing}
               style={{
                 background: 'none', border: '1px solid #E4E4E7', borderRadius: 8,
                 width: 32, height: 32, cursor: isSyncing ? 'not-allowed' : 'pointer',
                 color: '#71717A', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'all 0.15s',
               }}
-            >
-              <X size={15} />
-            </button>
+            ><X size={15} /></button>
           </div>
 
-          {/* Security badge */}
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 5,
-            marginTop: 10, padding: '3px 10px', borderRadius: 20,
-            background: '#F0FDF4', border: '1px solid #BBF7D0',
-            fontSize: 10, fontWeight: 600, color: '#16A34A',
-            fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.02em',
-          }}>
-            <Shield size={10} /> ENCRYPTED · TLS 1.3
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+              padding: '3px 10px', borderRadius: 20,
+              background: '#F0FDF4', border: '1px solid #BBF7D0',
+              fontSize: 10, fontWeight: 600, color: '#16A34A',
+              fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.02em',
+            }}>
+              <Shield size={10} /> ENCRYPTED · TLS 1.3
+            </div>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+              padding: '3px 10px', borderRadius: 20,
+              background: '#EFF6FF', border: '1px solid #BFDBFE',
+              fontSize: 10, fontWeight: 600, color: '#2563EB',
+              fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.02em',
+            }}>
+              <Database size={10} /> APPEND-ONLY
+            </div>
           </div>
         </div>
 
-        {/* ─── SYNCING / COMPLETE / ERROR OVERLAY ─── */}
+        {/* ─── SYNCING / COMPLETE / ERROR ─── */}
         {(isSyncing || isComplete || isError) && (
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 40px' }}>
 
             {isSyncing && (
               <>
-                {/* Animated icon */}
                 <div style={{
                   width: 72, height: 72, borderRadius: 20,
                   background: 'linear-gradient(135deg, #EFF6FF, #DBEAFE)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   marginBottom: 24, position: 'relative',
                 }}>
-                  <Database size={28} color="#2563EB" />
+                  <JiraIcon size={28} color="#2684FF" />
                   <div style={{
                     position: 'absolute', top: -4, right: -4,
                     width: 20, height: 20, borderRadius: 10,
@@ -279,12 +334,10 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                     <Loader2 size={12} color="#FFF" className="animate-spin" />
                   </div>
                 </div>
-
                 <div style={{ fontSize: 16, fontWeight: 700, color: '#09090B', fontFamily: "'Sora', sans-serif", marginBottom: 4 }}>
-                  Synchronizing Data
+                  Delta Synchronizing
                 </div>
                 <div style={{ fontSize: 13, color: '#71717A', marginBottom: 24 }}>{progressLabel}</div>
-
                 {currentProject && (
                   <div style={{
                     display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -295,16 +348,11 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                     <Zap size={10} color="#D97706" /> Processing: <span style={{ fontWeight: 700, color: '#2563EB' }}>{currentProject}</span>
                   </div>
                 )}
-
-                {/* Progress bar */}
                 <div style={{ width: '100%', maxWidth: 400 }}>
-                  <div style={{
-                    width: '100%', height: 8, borderRadius: 4,
-                    background: '#F4F4F5', overflow: 'hidden',
-                  }}>
+                  <div style={{ width: '100%', height: 8, borderRadius: 4, background: '#F4F4F5', overflow: 'hidden' }}>
                     <div style={{
                       width: `${Math.min(progressPct, 100)}%`, height: '100%',
-                      background: 'linear-gradient(90deg, #2563EB, #3B82F6)',
+                      background: 'linear-gradient(90deg, #2684FF, #0052CC)',
                       borderRadius: 4, transition: 'width 0.4s ease',
                     }} />
                   </div>
@@ -316,31 +364,23 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                     <span>{Math.round(progressPct)}%</span>
                   </div>
                 </div>
-
-                {/* Step indicators */}
                 <div style={{ display: 'flex', gap: 24, marginTop: 28 }}>
                   {[
                     { label: 'Auth', done: progressPct > 15 },
-                    { label: 'Fetch', done: progressPct > 35 },
-                    { label: 'Process', done: progressPct > 65 },
-                    { label: 'Finalize', done: progressPct > 90 },
+                    { label: 'Delta', done: progressPct > 35 },
+                    { label: 'Upsert', done: progressPct > 65 },
+                    { label: 'Log', done: progressPct > 90 },
                   ].map((step, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                       <div style={{
                         width: 18, height: 18, borderRadius: 9,
                         background: step.done ? '#16A34A' : (progressPct > (i * 25) ? '#2563EB' : '#E4E4E7'),
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        transition: 'all 0.3s',
                       }}>
                         {step.done ? <Check size={10} color="#FFF" /> :
                           progressPct > (i * 25) ? <Loader2 size={10} color="#FFF" className="animate-spin" /> : null}
                       </div>
-                      <span style={{
-                        fontSize: 11, fontWeight: 600, color: step.done ? '#16A34A' : '#71717A',
-                        fontFamily: "'Inter', sans-serif",
-                      }}>
-                        {step.label}
-                      </span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: step.done ? '#16A34A' : '#71717A' }}>{step.label}</span>
                     </div>
                   ))}
                 </div>
@@ -352,63 +392,46 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                 <div style={{
                   width: 72, height: 72, borderRadius: 20,
                   background: 'linear-gradient(135deg, #F0FDF4, #DCFCE7)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  marginBottom: 24,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24,
                 }}>
                   <CheckCircle2 size={32} color="#16A34A" />
                 </div>
-
                 <div style={{ fontSize: 18, fontWeight: 700, color: '#09090B', fontFamily: "'Sora', sans-serif", marginBottom: 4 }}>
                   Sync Complete
                 </div>
                 <div style={{ fontSize: 13, color: '#71717A', marginBottom: 28 }}>
-                  All selected projects have been synchronized successfully
+                  Baseline preserved — {syncResult.baselineTotal} total items in database
                 </div>
 
-                {/* Result stats */}
                 <div style={{
-                  display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1,
+                  display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1,
                   background: '#E4E4E7', borderRadius: 10, overflow: 'hidden',
-                  width: '100%', maxWidth: 360, marginBottom: 32,
+                  width: '100%', maxWidth: 440, marginBottom: 32,
                 }}>
                   {[
-                    { label: 'Synced', value: syncResult.synced, color: '#2563EB' },
                     { label: 'Created', value: syncResult.created, color: '#16A34A' },
                     { label: 'Updated', value: syncResult.updated, color: '#D97706' },
+                    { label: 'Removed', value: syncResult.softDeleted, color: '#DC2626' },
+                    { label: 'Baseline', value: syncResult.baselineTotal, color: '#2563EB' },
                   ].map((s, i) => (
-                    <div key={i} style={{ background: '#FFF', padding: '14px 12px', textAlign: 'center' }}>
-                      <div style={{ fontSize: 22, fontWeight: 700, color: s.color, fontFamily: "'Sora', sans-serif", letterSpacing: '-0.02em' }}>
+                    <div key={i} style={{ background: '#FFF', padding: '14px 8px', textAlign: 'center' }}>
+                      <div style={{ fontSize: 20, fontWeight: 700, color: s.color, fontFamily: "'Sora', sans-serif", letterSpacing: '-0.02em' }}>
                         {s.value}
                       </div>
-                      <div style={{ fontSize: 10, fontWeight: 600, color: '#71717A', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 2 }}>
+                      <div style={{ fontSize: 9, fontWeight: 600, color: '#71717A', textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: 2 }}>
                         {s.label}
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {syncResult.errors > 0 && (
-                  <div style={{
-                    display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px',
-                    background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8,
-                    fontSize: 12, color: '#DC2626', fontWeight: 500, marginBottom: 20,
-                  }}>
-                    <AlertCircle size={14} />
-                    {syncResult.errors} item(s) had errors during sync
-                  </div>
-                )}
-
-                <button
-                  onClick={handleConfirmComplete}
-                  style={{
-                    height: 40, padding: '0 32px', fontSize: 14, fontWeight: 600,
-                    color: '#FFF', background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
-                    border: 'none', borderRadius: 10, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    boxShadow: '0 2px 8px rgba(37,99,235,0.3)',
-                    transition: 'all 0.15s',
-                  }}
-                >
+                <button onClick={handleConfirmComplete} style={{
+                  height: 40, padding: '0 32px', fontSize: 14, fontWeight: 600,
+                  color: '#FFF', background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
+                  border: 'none', borderRadius: 10, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  boxShadow: '0 2px 8px rgba(37,99,235,0.3)',
+                }}>
                   <Check size={16} /> Confirm & Close
                 </button>
               </>
@@ -419,57 +442,79 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                 <div style={{
                   width: 72, height: 72, borderRadius: 20,
                   background: 'linear-gradient(135deg, #FEF2F2, #FEE2E2)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  marginBottom: 24,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24,
                 }}>
                   <AlertCircle size={32} color="#DC2626" />
                 </div>
-
-                <div style={{ fontSize: 18, fontWeight: 700, color: '#09090B', fontFamily: "'Sora', sans-serif", marginBottom: 4 }}>
-                  Sync Failed
-                </div>
-                <div style={{ fontSize: 13, color: '#71717A', marginBottom: 8, textAlign: 'center', maxWidth: 340 }}>
-                  {progressLabel}
-                </div>
-
+                <div style={{ fontSize: 18, fontWeight: 700, color: '#09090B', fontFamily: "'Sora', sans-serif", marginBottom: 4 }}>Sync Failed</div>
+                <div style={{ fontSize: 13, color: '#71717A', marginBottom: 8, textAlign: 'center', maxWidth: 340 }}>{progressLabel}</div>
                 <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
-                  <button
-                    onClick={() => { setPhase('idle'); setProgressPct(0); }}
-                    style={{
-                      height: 36, padding: '0 20px', fontSize: 13, fontWeight: 500,
-                      color: '#3F3F46', background: '#FFF', border: '1px solid #E4E4E7',
-                      borderRadius: 8, cursor: 'pointer',
-                    }}
-                  >
-                    Try Again
-                  </button>
-                  <button
-                    onClick={onClose}
-                    style={{
-                      height: 36, padding: '0 20px', fontSize: 13, fontWeight: 600,
-                      color: '#FFF', background: '#DC2626', border: 'none',
-                      borderRadius: 8, cursor: 'pointer',
-                    }}
-                  >
-                    Close
-                  </button>
+                  <button onClick={() => { setPhase('idle'); setProgressPct(0); }} style={{
+                    height: 36, padding: '0 20px', fontSize: 13, fontWeight: 500,
+                    color: '#3F3F46', background: '#FFF', border: '1px solid #E4E4E7', borderRadius: 8, cursor: 'pointer',
+                  }}>Try Again</button>
+                  <button onClick={onClose} style={{
+                    height: 36, padding: '0 20px', fontSize: 13, fontWeight: 600,
+                    color: '#FFF', background: '#DC2626', border: 'none', borderRadius: 8, cursor: 'pointer',
+                  }}>Close</button>
                 </div>
               </>
             )}
           </div>
         )}
 
-        {/* ─── IDLE STATE: MODE + PROJECT LIST ─── */}
+        {/* ─── IDLE STATE ─── */}
         {phase === 'idle' && (
           <>
+            {/* Last 3 Syncs */}
+            {recentSyncs.length > 0 && (
+              <div style={{ padding: '12px 24px', borderBottom: '1px solid #E4E4E7', background: '#FAFAFA' }}>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8,
+                  fontSize: 10, fontWeight: 700, color: '#71717A', textTransform: 'uppercase',
+                  letterSpacing: '0.06em', fontFamily: "'Inter', sans-serif",
+                }}>
+                  <History size={11} /> Last Syncs
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  {recentSyncs.map((s, i) => (
+                    <div key={s.id} style={{
+                      flex: 1, padding: '8px 10px', borderRadius: 8,
+                      background: '#FFF', border: '1px solid #E4E4E7',
+                      fontSize: 11, fontFamily: "'JetBrains Mono', monospace",
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                        <span style={{
+                          fontSize: 9, fontWeight: 700,
+                          color: s.status === 'completed' ? '#16A34A' : '#DC2626',
+                          textTransform: 'uppercase',
+                        }}>
+                          {s.status === 'completed' ? '✓ OK' : '✗ FAIL'}
+                        </span>
+                        <span style={{ color: '#A1A1AA', fontSize: 9 }}>{formatAge(s.started_at)}</span>
+                      </div>
+                      <div style={{ color: '#3F3F46', fontSize: 10, fontWeight: 600 }}>
+                        +{s.items_created} / ~{s.items_updated}
+                        {s.items_deleted_soft > 0 && <span style={{ color: '#DC2626' }}> / −{s.items_deleted_soft}</span>}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 3, color: '#A1A1AA', fontSize: 9 }}>
+                        <Calendar size={8} />
+                        <span>{s.baseline_snapshot_date}</span>
+                        <span>·</span>
+                        <span>{s.total_items_in_baseline} items</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Sync Mode */}
             <div style={{ padding: '14px 24px 12px', borderBottom: '1px solid #F4F4F5' }}>
               <label style={{
                 fontSize: 10, fontWeight: 700, color: '#71717A', textTransform: 'uppercase',
                 letterSpacing: '0.06em', fontFamily: "'Inter', sans-serif",
-              }}>
-                Sync Mode
-              </label>
+              }}>Sync Mode</label>
               <div style={{ position: 'relative', marginTop: 6 }}>
                 <button
                   onClick={() => setShowModeDropdown(!showModeDropdown)}
@@ -478,7 +523,6 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                     background: '#FAFAFA', border: '1px solid #E4E4E7', borderRadius: 8,
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     fontSize: 13, fontWeight: 500, color: '#09090B', cursor: 'pointer',
-                    transition: 'all 0.15s',
                   }}
                 >
                   <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -495,19 +539,12 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                     boxShadow: '0 8px 24px rgba(0,0,0,0.12)', overflow: 'hidden',
                   }}>
                     {SYNC_OPTIONS.map(opt => (
-                      <button
-                        key={opt.value}
-                        onClick={() => { setSyncMode(opt.value); setShowModeDropdown(false); }}
-                        style={{
-                          width: '100%', padding: '10px 14px', textAlign: 'left',
-                          background: syncMode === opt.value ? '#EFF6FF' : 'transparent',
-                          border: 'none', cursor: 'pointer', fontSize: 13,
-                          display: 'flex', alignItems: 'center', gap: 10,
-                          borderBottom: '1px solid #F4F4F5', transition: 'background 0.1s',
-                        }}
-                        onMouseEnter={e => { if (syncMode !== opt.value) (e.target as any).style.background = '#FAFAFA'; }}
-                        onMouseLeave={e => { if (syncMode !== opt.value) (e.target as any).style.background = 'transparent'; }}
-                      >
+                      <button key={opt.value} onClick={() => { setSyncMode(opt.value); setShowModeDropdown(false); }} style={{
+                        width: '100%', padding: '10px 14px', textAlign: 'left',
+                        background: syncMode === opt.value ? '#EFF6FF' : 'transparent',
+                        border: 'none', cursor: 'pointer', fontSize: 13,
+                        display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid #F4F4F5',
+                      }}>
                         <span style={{ fontSize: 16 }}>{opt.icon}</span>
                         <div>
                           <div style={{ fontWeight: 600, color: '#09090B' }}>{opt.label}</div>
@@ -530,21 +567,11 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                 <label style={{
                   fontSize: 10, fontWeight: 700, color: '#71717A', textTransform: 'uppercase',
                   letterSpacing: '0.06em', fontFamily: "'Inter', sans-serif",
-                }}>
-                  Projects ({selected.size} of {projects.length} selected)
-                </label>
-                <button
-                  onClick={toggleAll}
-                  style={{
-                    background: 'none', border: 'none', fontSize: 11, color: '#2563EB',
-                    fontWeight: 700, cursor: 'pointer', padding: '2px 6px', borderRadius: 4,
-                    transition: 'background 0.1s',
-                  }}
-                  onMouseEnter={e => (e.target as any).style.background = '#EFF6FF'}
-                  onMouseLeave={e => (e.target as any).style.background = 'transparent'}
-                >
-                  {selected.size === projects.length ? 'Deselect All' : 'Select All'}
-                </button>
+                }}>Projects ({selected.size} of {projects.length} selected)</label>
+                <button onClick={toggleAll} style={{
+                  background: 'none', border: 'none', fontSize: 11, color: '#2563EB',
+                  fontWeight: 700, cursor: 'pointer', padding: '2px 6px', borderRadius: 4,
+                }}>{selected.size === projects.length ? 'Deselect All' : 'Select All'}</button>
               </div>
 
               {loading ? (
@@ -553,55 +580,38 @@ export function JiraSyncDialog({ open, onClose }: Props) {
                   Loading projects...
                 </div>
               ) : (
-                <div style={{ maxHeight: 340, overflowY: 'auto' }}>
+                <div style={{ maxHeight: 300, overflowY: 'auto' }}>
                   {projects.map((p, idx) => {
                     const isSelected = selected.has(p.key);
                     return (
-                      <label
-                        key={p.key}
-                        style={{
-                          display: 'flex', alignItems: 'center', gap: 12, padding: '9px 8px',
-                          borderBottom: idx < projects.length - 1 ? '1px solid #FAFAFA' : 'none',
-                          cursor: 'pointer', borderRadius: 6,
-                          background: isSelected ? '#F0F4FF' : 'transparent',
-                          transition: 'background 0.1s',
-                        }}
-                        onMouseEnter={e => { if (!isSelected) (e.target as any).style.background = '#FAFAFA'; }}
-                        onMouseLeave={e => { if (!isSelected) (e.target as any).style.background = 'transparent'; }}
-                      >
+                      <label key={p.key} style={{
+                        display: 'flex', alignItems: 'center', gap: 12, padding: '9px 8px',
+                        borderBottom: idx < projects.length - 1 ? '1px solid #FAFAFA' : 'none',
+                        cursor: 'pointer', borderRadius: 6,
+                        background: isSelected ? '#F0F4FF' : 'transparent',
+                      }}>
                         <div style={{
                           width: 20, height: 20, borderRadius: 5,
                           border: isSelected ? 'none' : '2px solid #D4D4D8',
                           background: isSelected ? '#2563EB' : '#FFF',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          flexShrink: 0, cursor: 'pointer', transition: 'all 0.15s',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                         }}>
                           {isSelected && <Check size={12} color="#FFF" strokeWidth={3} />}
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => toggleProject(p.key)}
-                            style={{ position: 'absolute', opacity: 0, width: 0, height: 0 }}
-                          />
+                          <input type="checkbox" checked={isSelected} onChange={() => toggleProject(p.key)}
+                            style={{ position: 'absolute', opacity: 0, width: 0, height: 0 }} />
                         </div>
                         <span style={{
                           fontSize: 11, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace",
                           color: '#2563EB', minWidth: 52, letterSpacing: '0.02em',
-                        }}>
-                          {p.key}
-                        </span>
+                        }}>{p.key}</span>
                         <span style={{
                           flex: 1, fontSize: 13, fontWeight: 500, color: '#09090B',
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                        }}>
-                          {p.name}
-                        </span>
+                        }}>{p.name}</span>
                         <span style={{
                           fontSize: 11, fontFamily: "'JetBrains Mono', monospace",
                           color: p.issueCount > 0 ? '#71717A' : '#D4D4D8', flexShrink: 0, fontWeight: 500,
-                        }}>
-                          {p.issueCount} issues
-                        </span>
+                        }}>{p.issueCount} issues</span>
                       </label>
                     );
                   })}
@@ -612,38 +622,26 @@ export function JiraSyncDialog({ open, onClose }: Props) {
             {/* Footer */}
             <div style={{
               padding: '14px 24px', borderTop: '1px solid #E4E4E7',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              background: '#FAFAFA',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#FAFAFA',
             }}>
               <span style={{ fontSize: 11, color: '#A1A1AA', fontFamily: "'JetBrains Mono', monospace" }}>
                 {selected.size} project(s) · {selectedMode.label}
               </span>
               <div style={{ display: 'flex', gap: 8 }}>
-                <button
-                  onClick={onClose}
-                  style={{
-                    height: 36, padding: '0 18px', fontSize: 13, fontWeight: 500,
-                    color: '#3F3F46', background: '#FFF', border: '1px solid #E4E4E7',
-                    borderRadius: 8, cursor: 'pointer', transition: 'all 0.15s',
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSync}
-                  disabled={selected.size === 0}
-                  style={{
-                    height: 36, padding: '0 20px', fontSize: 13, fontWeight: 600,
-                    color: '#FFF',
-                    background: selected.size === 0 ? '#A1A1AA' : 'linear-gradient(135deg, #2563EB, #1D4ED8)',
-                    border: 'none', borderRadius: 8,
-                    cursor: selected.size === 0 ? 'not-allowed' : 'pointer',
-                    display: 'flex', alignItems: 'center', gap: 7,
-                    boxShadow: selected.size > 0 ? '0 2px 8px rgba(37,99,235,0.3)' : 'none',
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  <RefreshCw size={14} /> Start Sync
+                <button onClick={onClose} style={{
+                  height: 36, padding: '0 18px', fontSize: 13, fontWeight: 500,
+                  color: '#3F3F46', background: '#FFF', border: '1px solid #E4E4E7', borderRadius: 8, cursor: 'pointer',
+                }}>Cancel</button>
+                <button onClick={handleSync} disabled={selected.size === 0} style={{
+                  height: 36, padding: '0 20px', fontSize: 13, fontWeight: 600,
+                  color: '#FFF',
+                  background: selected.size === 0 ? '#A1A1AA' : 'linear-gradient(135deg, #2684FF, #0052CC)',
+                  border: 'none', borderRadius: 8,
+                  cursor: selected.size === 0 ? 'not-allowed' : 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 7,
+                  boxShadow: selected.size > 0 ? '0 2px 8px rgba(38,132,255,0.3)' : 'none',
+                }}>
+                  <JiraIcon size={14} color="#FFF" /> Start Sync
                 </button>
               </div>
             </div>

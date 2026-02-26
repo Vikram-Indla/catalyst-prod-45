@@ -21465,6 +21465,7 @@ export type Database = {
         Row: {
           assignee_account_id: string | null
           assignee_display_name: string | null
+          baseline_date: string | null
           changelog: Json | null
           comments: Json | null
           components: Json | null
@@ -21473,13 +21474,16 @@ export type Database = {
           due_date: string | null
           effective_due_date: string | null
           effective_due_source: string | null
+          first_synced_at: string | null
           fix_versions: Json | null
           hierarchy_level: number | null
           issue_key: string
           issue_type: string
           jira_created_at: string | null
+          jira_removed_at: string | null
           jira_updated_at: string | null
           labels: Json | null
+          last_synced_at: string | null
           parent_key: string | null
           parent_summary: string | null
           priority: string | null
@@ -21494,6 +21498,7 @@ export type Database = {
           status_category: string | null
           story_points: number | null
           summary: string
+          sync_hash: string | null
           synced_at: string | null
           theme_id: string | null
           type_icon_url: string | null
@@ -21501,6 +21506,7 @@ export type Database = {
         Insert: {
           assignee_account_id?: string | null
           assignee_display_name?: string | null
+          baseline_date?: string | null
           changelog?: Json | null
           comments?: Json | null
           components?: Json | null
@@ -21509,13 +21515,16 @@ export type Database = {
           due_date?: string | null
           effective_due_date?: string | null
           effective_due_source?: string | null
+          first_synced_at?: string | null
           fix_versions?: Json | null
           hierarchy_level?: number | null
           issue_key: string
           issue_type?: string
           jira_created_at?: string | null
+          jira_removed_at?: string | null
           jira_updated_at?: string | null
           labels?: Json | null
+          last_synced_at?: string | null
           parent_key?: string | null
           parent_summary?: string | null
           priority?: string | null
@@ -21530,6 +21539,7 @@ export type Database = {
           status_category?: string | null
           story_points?: number | null
           summary?: string
+          sync_hash?: string | null
           synced_at?: string | null
           theme_id?: string | null
           type_icon_url?: string | null
@@ -21537,6 +21547,7 @@ export type Database = {
         Update: {
           assignee_account_id?: string | null
           assignee_display_name?: string | null
+          baseline_date?: string | null
           changelog?: Json | null
           comments?: Json | null
           components?: Json | null
@@ -21545,13 +21556,16 @@ export type Database = {
           due_date?: string | null
           effective_due_date?: string | null
           effective_due_source?: string | null
+          first_synced_at?: string | null
           fix_versions?: Json | null
           hierarchy_level?: number | null
           issue_key?: string
           issue_type?: string
           jira_created_at?: string | null
+          jira_removed_at?: string | null
           jira_updated_at?: string | null
           labels?: Json | null
+          last_synced_at?: string | null
           parent_key?: string | null
           parent_summary?: string | null
           priority?: string | null
@@ -21566,6 +21580,7 @@ export type Database = {
           status_category?: string | null
           story_points?: number | null
           summary?: string
+          sync_hash?: string | null
           synced_at?: string | null
           theme_id?: string | null
           type_icon_url?: string | null
@@ -21706,45 +21721,60 @@ export type Database = {
       }
       ph_jira_sync_log: {
         Row: {
+          baseline_snapshot_date: string | null
           completed_at: string | null
           duration_ms: number | null
           errors: Json | null
           id: string
           items_created: number | null
+          items_deleted_soft: number | null
           items_unchanged: number | null
           items_updated: number | null
           jira_project_id: string | null
+          project_keys: string[] | null
           started_at: string | null
           status: string | null
+          sync_mode: string | null
           sync_type: string | null
+          total_items_in_baseline: number | null
           triggered_by: string | null
         }
         Insert: {
+          baseline_snapshot_date?: string | null
           completed_at?: string | null
           duration_ms?: number | null
           errors?: Json | null
           id?: string
           items_created?: number | null
+          items_deleted_soft?: number | null
           items_unchanged?: number | null
           items_updated?: number | null
           jira_project_id?: string | null
+          project_keys?: string[] | null
           started_at?: string | null
           status?: string | null
+          sync_mode?: string | null
           sync_type?: string | null
+          total_items_in_baseline?: number | null
           triggered_by?: string | null
         }
         Update: {
+          baseline_snapshot_date?: string | null
           completed_at?: string | null
           duration_ms?: number | null
           errors?: Json | null
           id?: string
           items_created?: number | null
+          items_deleted_soft?: number | null
           items_unchanged?: number | null
           items_updated?: number | null
           jira_project_id?: string | null
+          project_keys?: string[] | null
           started_at?: string | null
           status?: string | null
+          sync_mode?: string | null
           sync_type?: string | null
+          total_items_in_baseline?: number | null
           triggered_by?: string | null
         }
         Relationships: [
@@ -23311,6 +23341,7 @@ export type Database = {
           assignee_id: string | null
           assignee_user_id: string | null
           backlog_order: number | null
+          baseline_date: string | null
           completed_at: string | null
           created_at: string | null
           cycle_time_days: number | null
@@ -23322,6 +23353,7 @@ export type Database = {
           environment: string | null
           estimate: number | null
           estimated_hours: number | null
+          first_synced_at: string | null
           flag_reason: string | null
           hierarchy_path: string[] | null
           id: string
@@ -23333,6 +23365,7 @@ export type Database = {
           jira_labels: string[] | null
           jira_priority: string | null
           jira_project_id: string | null
+          jira_removed_at: string | null
           jira_sprint: string | null
           jira_status: string | null
           jira_story_points: number | null
@@ -23356,6 +23389,7 @@ export type Database = {
           status_id: string | null
           story_points: number | null
           summary: string
+          sync_hash: string | null
           sync_source: string | null
           team: string | null
           team_id: string | null
@@ -23373,6 +23407,7 @@ export type Database = {
           assignee_id?: string | null
           assignee_user_id?: string | null
           backlog_order?: number | null
+          baseline_date?: string | null
           completed_at?: string | null
           created_at?: string | null
           cycle_time_days?: number | null
@@ -23384,6 +23419,7 @@ export type Database = {
           environment?: string | null
           estimate?: number | null
           estimated_hours?: number | null
+          first_synced_at?: string | null
           flag_reason?: string | null
           hierarchy_path?: string[] | null
           id?: string
@@ -23395,6 +23431,7 @@ export type Database = {
           jira_labels?: string[] | null
           jira_priority?: string | null
           jira_project_id?: string | null
+          jira_removed_at?: string | null
           jira_sprint?: string | null
           jira_status?: string | null
           jira_story_points?: number | null
@@ -23418,6 +23455,7 @@ export type Database = {
           status_id?: string | null
           story_points?: number | null
           summary: string
+          sync_hash?: string | null
           sync_source?: string | null
           team?: string | null
           team_id?: string | null
@@ -23435,6 +23473,7 @@ export type Database = {
           assignee_id?: string | null
           assignee_user_id?: string | null
           backlog_order?: number | null
+          baseline_date?: string | null
           completed_at?: string | null
           created_at?: string | null
           cycle_time_days?: number | null
@@ -23446,6 +23485,7 @@ export type Database = {
           environment?: string | null
           estimate?: number | null
           estimated_hours?: number | null
+          first_synced_at?: string | null
           flag_reason?: string | null
           hierarchy_path?: string[] | null
           id?: string
@@ -23457,6 +23497,7 @@ export type Database = {
           jira_labels?: string[] | null
           jira_priority?: string | null
           jira_project_id?: string | null
+          jira_removed_at?: string | null
           jira_sprint?: string | null
           jira_status?: string | null
           jira_story_points?: number | null
@@ -23480,6 +23521,7 @@ export type Database = {
           status_id?: string | null
           story_points?: number | null
           summary?: string
+          sync_hash?: string | null
           sync_source?: string | null
           team?: string | null
           team_id?: string | null
