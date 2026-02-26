@@ -95,8 +95,8 @@
 }
 .r3-kpi-val { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .r3-kpi-label { font-size: 10.5px; font-weight: 600; text-transform: uppercase; color: #334155; }
-.r3-kpi--open { border: 1px solid #FDE68A; background: #FFFBEB; }
-.r3-kpi--open .r3-kpi-val { color: #78350F; }
+.r3-kpi--open { border: 1px solid #BFDBFE; background: #EFF6FF; }
+.r3-kpi--open .r3-kpi-val { color: #1E40AF; }
 .r3-kpi--stale { border: 1px solid #E2E8F0; background: #FFFFFF; }
 .r3-kpi--stale .r3-kpi-val { color: #0F172A; }
 
