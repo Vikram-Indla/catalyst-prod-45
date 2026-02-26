@@ -7,6 +7,7 @@ import { InitiativeRisksTab } from './tabs/InitiativeRisksTab';
 import { InitiativeBudgetTab } from './tabs/InitiativeBudgetTab';
 import { InitiativeAuditTab } from './tabs/InitiativeAuditTab';
 import { InitiativeMilestonesTab } from '@/components/producthub/InitiativeMilestonesTab';
+import { InitiativeLinksTab } from '@/components/producthub/InitiativeLinksTab';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import { StatusBadge } from './StatusBadge';
@@ -349,7 +350,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
     switch (label) {
       case 'Attach': handleAttach(); break;
       case 'Clone': handleClone(); break;
-      case 'Link': setShowLinkDialog(true); break;
+      case 'Link': setActiveTab('Links'); break;
       case 'Score': setActiveTab('Score'); panelRef.current?.querySelector('[data-body]')?.scrollTo(0, 0); break;
     }
   };
@@ -445,7 +446,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                 )}
                 {activeTab === 'Risks' && <InitiativeRisksTab initiativeId={initiative.id} />}
                 {activeTab === 'Milestones' && <InitiativeMilestonesTab initiativeId={initiative.id} />}
-                {activeTab === 'Links' && <LinksTab initiativeId={initiative.id} />}
+                {activeTab === 'Links' && <InitiativeLinksTab initiativeId={initiative.id} />}
                 {activeTab === 'Audit' && <InitiativeAuditTab initiativeId={initiative.id} />}
               </div>
             </motion.div>
@@ -453,17 +454,8 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
         )}
       </AnimatePresence>
 
-      {/* Link Dialog */}
-      <AlertDialog open={showLinkDialog} onOpenChange={setShowLinkDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Add Link</AlertDialogTitle>
-            <AlertDialogDescription asChild>
-              <AddLinkForm initiativeId={initiative.id} onClose={() => setShowLinkDialog(false)} />
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Link Dialog — now handled inline within InitiativeLinksTab */}
+
 
       {/* Delete Confirmation */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
@@ -508,116 +500,8 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 }
 
 /* ════════════════════════════════════════════════════
-   ADD LINK FORM
+   ADD LINK FORM + LINKS TAB — Now uses shared component: InitiativeLinksTab
    ════════════════════════════════════════════════════ */
-function AddLinkForm({ initiativeId, onClose }: { initiativeId: string; onClose: () => void }) {
-  const [title, setTitle] = useState('');
-  const [url, setUrl] = useState('');
-  const [category, setCategory] = useState('reference');
-  const [submitting, setSubmitting] = useState(false);
-  const queryClient = useQueryClient();
-
-  const handleSubmit = async () => {
-    if (!title.trim() || !url.trim()) { catalystToast.error('Title and URL required'); return; }
-    setSubmitting(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      await (supabase as any).from('ph_initiative_links').insert({ initiative_id: initiativeId, title: title.trim(), url: url.trim(), category, added_by: user?.id || null });
-      queryClient.invalidateQueries({ queryKey: ['ph-links', initiativeId] });
-      catalystToast.success('Link added');
-      onClose();
-    } catch (err: any) { catalystToast.error('Failed: ' + err.message); }
-    finally { setSubmitting(false); }
-  };
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 12 }}>
-      <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Link title" className="pb-comment-input" style={{ width: '100%' }} />
-      <input type="url" value={url} onChange={e => setUrl(e.target.value)} placeholder="https://..." className="pb-comment-input" style={{ width: '100%' }} />
-      <select value={category} onChange={e => setCategory(e.target.value)} style={{ height: 36, padding: '0 12px', fontSize: 13, border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', color: 'var(--pb-ink)', outline: 'none' }}>
-        <option value="reference">Reference</option>
-        <option value="jira">Jira</option>
-        <option value="confluence">Confluence</option>
-        <option value="figma">Figma</option>
-        <option value="other">Other</option>
-      </select>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 4 }}>
-        <button onClick={onClose} className="pb-panel-action-btn">Cancel</button>
-        <button onClick={handleSubmit} disabled={submitting}
-          style={{ height: 30, padding: '0 14px', fontSize: 12, fontWeight: 600, color: '#fff', background: 'var(--pb-primary)', border: 'none', borderRadius: 'var(--pb-r-md)', cursor: 'pointer', opacity: submitting ? 0.5 : 1 }}>
-          {submitting ? 'Adding…' : 'Add Link'}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-/* ════════════════════════════════════════════════════
-   MILESTONES TAB — Now uses shared component: InitiativeMilestonesTab
-   ════════════════════════════════════════════════════ */
-
-/* ════════════════════════════════════════════════════
-   LINKS TAB — Real data from ph_initiative_links
-   ════════════════════════════════════════════════════ */
-function LinksTab({ initiativeId }: { initiativeId: string }) {
-  const queryClient = useQueryClient();
-  const [showAdd, setShowAdd] = useState(false);
-
-  const { data: links = [], isLoading } = useQuery({
-    queryKey: ['ph-links', initiativeId],
-    queryFn: async () => {
-      const { data, error } = await (supabase as any).from('ph_initiative_links')
-        .select('*').eq('initiative_id', initiativeId).order('created_at', { ascending: false });
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
-  const handleDelete = async (id: string) => {
-    await (supabase as any).from('ph_initiative_links').delete().eq('id', id);
-    queryClient.invalidateQueries({ queryKey: ['ph-links', initiativeId] });
-    catalystToast.success('Link removed');
-  };
-
-  if (isLoading) return <div style={{ padding: 24, color: 'var(--pb-ink-muted)', fontSize: 13 }}>Loading links…</div>;
-
-  return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <h3 className="pb-section-heading" style={{ marginBottom: 0, borderBottom: 'none', paddingBottom: 0 }}>Links</h3>
-        <button onClick={() => setShowAdd(!showAdd)} className="pb-panel-action-btn" style={{ color: 'var(--pb-primary)' }}>
-          <Plus size={14} /> Add Link
-        </button>
-      </div>
-
-      {showAdd && <AddLinkForm initiativeId={initiativeId} onClose={() => { setShowAdd(false); queryClient.invalidateQueries({ queryKey: ['ph-links', initiativeId] }); }} />}
-
-      {links.length === 0 && !showAdd ? (
-        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--pb-ink-muted)' }}>
-          <LinkIcon size={32} style={{ marginBottom: 8, opacity: 0.4 }} />
-          <p style={{ fontSize: 13, fontWeight: 500 }}>No links yet</p>
-          <p style={{ fontSize: 12, marginTop: 4 }}>Add links to related documents, Jira issues, or designs</p>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {links.map((link: any) => (
-            <div key={link.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)' }}>
-              <LinkIcon size={14} style={{ color: 'var(--pb-primary)', flexShrink: 0 }} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <a href={link.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, fontWeight: 500, color: 'var(--pb-primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  {link.title} <ExternalLink size={12} />
-                </a>
-                {link.category && <span style={{ fontSize: 11, color: 'var(--pb-ink-muted)', textTransform: 'capitalize' }}>{link.category}</span>}
-              </div>
-              {link.is_pinned && <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--pb-primary)', background: 'var(--pb-primary-bg)', padding: '2px 6px', borderRadius: 'var(--pb-r-full)' }}>Pinned</span>}
-              <button onClick={() => handleDelete(link.id)} style={{ color: 'var(--pb-ink-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><Trash2 size={14} /></button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 /* ════════════════════════════════════════════════════
    ROADMAP TOGGLE

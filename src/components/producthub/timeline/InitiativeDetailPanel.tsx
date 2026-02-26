@@ -9,6 +9,7 @@ import { DetailTabDetails } from './DetailTabDetails';
 import { DetailTabScore } from './DetailTabScore';
 import { DetailTabPlaceholder } from './DetailTabPlaceholder';
 import { InitiativeMilestonesTab } from '@/components/producthub/InitiativeMilestonesTab';
+import { InitiativeLinksTab } from '@/components/producthub/InitiativeLinksTab';
 import { InitiativeRisksTab } from '@/components/initiatives/tabs/InitiativeRisksTab';
 import { InitiativeBudgetTab } from '@/components/initiatives/tabs/InitiativeBudgetTab';
 import { InitiativeAuditTab } from '@/components/initiatives/tabs/InitiativeAuditTab';
@@ -341,7 +342,7 @@ const [budgetAllocated, setBudgetAllocated] = useState(0);
           {activeTab === 'budget' && <InitiativeBudgetTab initiativeId={initiative.id} budgetAllocated={budgetAllocated} onBudgetAllocatedChange={(v: string) => setBudgetAllocated(Number(v) || 0)} />}
           {activeTab === 'risks' && <InitiativeRisksTab initiativeId={initiative.id} />}
           {activeTab === 'milestones' && <InitiativeMilestonesTab initiativeId={initiative.id} />}
-          {activeTab === 'links' && <DetailTabPlaceholder icon={LinkIcon} label="Links" />}
+          {activeTab === 'links' && <InitiativeLinksTab initiativeId={initiative.id} />}
           {activeTab === 'audit' && <InitiativeAuditTab initiativeId={initiative.id} />}
         </div>
       </div>
