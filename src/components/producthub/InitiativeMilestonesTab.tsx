@@ -56,7 +56,7 @@ export function InitiativeMilestonesTab({ initiativeId }: InitiativeMilestonesTa
           initiative_id: initiativeId,
           title: newTitle.trim(),
           planned_date: newDate || new Date().toISOString().slice(0, 10),
-          status: 'pending',
+          status: 'not_started',
           created_by: user?.id || null,
         })
         .select();
@@ -85,7 +85,7 @@ export function InitiativeMilestonesTab({ initiativeId }: InitiativeMilestonesTa
   };
 
   const toggleStatus = async (id: string, currentStatus: string) => {
-    const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
+    const newStatus = currentStatus === 'completed' ? 'not_started' : 'completed';
     const actualDate = newStatus === 'completed' ? new Date().toISOString().slice(0, 10) : null;
     try {
       const { data: rows, error } = await (supabase as any)
