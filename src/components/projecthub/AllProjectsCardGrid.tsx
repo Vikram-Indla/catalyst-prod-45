@@ -72,11 +72,10 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
                 </button>
               </div>
 
-              {/* Compact stats row — Epics, Features, Stories only */}
+              {/* Compact stats row — Epics and Stories only */}
               <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
                 {[
                   { label: 'E', val: p.total_epics, tip: 'Epics' },
-                  { label: 'F', val: p.total_features ?? 0, tip: 'Features' },
                   { label: 'S', val: p.total_stories, tip: 'Stories' },
                 ].map(i => (
                   <div key={i.label} title={i.tip} style={{
