@@ -148,7 +148,7 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ initiative, onClick, onC
         </div>
 
         {/* Percentage */}
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 500, color: '#71717A', minWidth: 28, textAlign: 'right' as const, flexShrink: 0 }}>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 500, color: '#52525B', minWidth: 28, textAlign: 'right' as const, flexShrink: 0 }}>
           {initiative.progress}%
         </span>
 
