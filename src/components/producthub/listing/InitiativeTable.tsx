@@ -40,6 +40,7 @@ interface Props {
   onReorder?: (sourceIndex: number, destinationIndex: number) => void;
   onInlineEdit?: (id: string, field: string, value: string | number | null) => void;
   onPromote?: (initiative: Initiative) => void;
+  onRoadmapToggle?: (id: string, currentValue: boolean) => void;
   focusedRowIndex?: number;
   onFocusedRowChange?: (index: number) => void;
 }
@@ -84,7 +85,7 @@ function PBCheckbox({ checked, indeterminate, onToggle }: { checked: boolean; in
 export function InitiativeTable({
   data, loading = false, density, columnConfigs, groupBy = 'none', brdTasksMap = {}, onRowClick, onStatusChange,
   onFavoriteToggle, onSelectionChange, onSortChange, onContextMenu, onReorder,
-  onInlineEdit, onPromote, focusedRowIndex = -1, onFocusedRowChange,
+  onInlineEdit, onPromote, onRoadmapToggle, focusedRowIndex = -1, onFocusedRowChange,
 }: Props) {
   const avatarsByName = useProfileAvatarsByName();
   const [sorting, setSorting] = useState<SortingState>([{ id: 'initiative_key', desc: false }]);
@@ -172,7 +173,16 @@ export function InitiativeTable({
     col.display({
       id: 'roadmap', size: 32, minSize: 32, maxSize: 32, enableResizing: false,
       header: () => <Map size={14} style={{ color: 'var(--pb-ink-muted)' }} />,
-      cell: ({ row }) => <RoadmapBadge onRoadmap={row.original.on_roadmap ?? false} />,
+      cell: ({ row }) => (
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onRoadmapToggle?.(row.original.id, row.original.on_roadmap ?? false); }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          title={row.original.on_roadmap ? 'Remove from Roadmap' : 'Add to Roadmap'}
+        >
+          <Map size={16} style={{ color: row.original.on_roadmap ? 'var(--pb-primary)' : 'var(--pb-ink-muted)', opacity: row.original.on_roadmap ? 1 : 0.4, transition: 'all 150ms' }} />
+        </button>
+      ),
     }),
     col.accessor('initiative_key', {
       id: 'initiative_key', size: 90, minSize: 72, header: 'ID',
