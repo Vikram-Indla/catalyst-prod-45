@@ -509,7 +509,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
           {showDone && (
             <div style={{
               position:'absolute', right:'64px', top:'50%', transform:'translateY(-50%)',
-              width:'340px', maxHeight:'420px', background:'#FFFFFF',
+              width:'360px', maxHeight:'420px', background:'#FFFFFF',
               border:'1px solid #E2E8F0', borderRadius:'12px',
               boxShadow:'0 8px 30px rgba(15,23,42,.12), 0 2px 8px rgba(15,23,42,.06)',
               overflow:'hidden', zIndex:11,
@@ -526,7 +526,7 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
                     display:'flex', alignItems:'center', justifyContent:'center',
                   }}>✓</div>
                   <span style={{ fontSize:'13.5px', fontWeight:600, color:'#020617' }}>
-                    Completed Items
+                    Completed This Week
                   </span>
                 </div>
                 <span style={{
@@ -539,10 +539,9 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
               <div style={{ maxHeight:'340px', overflowY:'auto', scrollbarWidth:'thin', padding:'4px 0' }}>
                 {doneItems.map(item => {
                   const closedDate = item.resolved_at || item.updated_at;
-                  const closedLabel = closedDate
-                    ? new Date(closedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                    : '—';
-                  const isContrib = item.role_on_item === 'Contributor';
+                  const resolvedLabel = closedDate
+                    ? new Date(closedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                    : '';
                   return (
                     <div
                       key={item.id}
@@ -550,34 +549,50 @@ function RingView({ items, name, role, avatarUrl, onSelect, selected }: {
                       style={{
                         display:'flex', alignItems:'flex-start', gap:'10px',
                         padding:'10px 16px', cursor:'pointer',
-                        borderBottom:'1px solid #F1F5F9', transition:'background .1s',
+                        borderBottom:'1px solid #F8FAFC', transition:'background .1s',
                       }}
                       onMouseEnter={e => (e.currentTarget.style.background = '#F0FDF4')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     >
+                      {/* Check circle — outlined */}
                       <div style={{
-                        width:'20px', height:'20px', borderRadius:'50%',
-                        background:'#DCFCE7', color:'#16A34A', fontSize:'11px', fontWeight:700,
-                        display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:'2px',
-                      }}>✓</div>
-                      <div style={{ flex:1, minWidth:0 }}>
-                        <div style={{ display:'flex', alignItems:'center', gap:'6px', marginBottom:'2px' }}>
-                          <span style={{ fontSize:'11px', fontWeight:600, color:'#2563EB', fontFamily:"'JetBrains Mono',monospace" }}>{item.item_key}</span>
-                          <span style={{ fontSize:'10px', color:'#64748B' }}>{item.project_name || item.project_key}</span>
-                          <span style={{ marginLeft:'auto', fontSize:'10px', color:'#16A34A', fontWeight:500, whiteSpace:'nowrap' }}>{closedLabel}</span>
-                        </div>
-                        <div style={{ fontSize:'12px', fontWeight:400, color:'#334155', lineHeight:'1.35', overflow:'hidden', display:'-webkit-box', WebkitLineClamp:2, WebkitBoxOrient:'vertical' } as React.CSSProperties}>{item.title}</div>
-                        {isContrib && (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '4px' }}>
-                            <span style={{ fontSize: '10px', color: '#64748B' }}>Closed by</span>
-                            <MiniAvatar name={item.assignee_name} size={16} />
-                            <span style={{ fontSize: '10px', fontWeight: 500, color: '#334155' }}>{item.assignee_name}</span>
-                          </div>
-                        )}
+                        width:'22px', height:'22px', borderRadius:'50%',
+                        background:'#F0FDF4', border:'1.5px solid #16A34A',
+                        display:'flex', alignItems:'center', justifyContent:'center',
+                        flexShrink:0, marginTop:'1px',
+                      }}>
+                        <svg width="12" height="12" viewBox="0 0 12 12">
+                          <path d="M2.5 6l2.5 2.5 4.5-4.5" stroke="#16A34A"
+                            strokeWidth="2" fill="none" strokeLinecap="round"
+                            strokeLinejoin="round" />
+                        </svg>
                       </div>
+
+                      {/* Content */}
+                      <div style={{ flex:1, minWidth:0 }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:'6px', marginBottom:'3px' }}>
+                          <span style={{ fontSize:'11.5px', fontWeight:600, color:'#16A34A', fontFamily:"'JetBrains Mono','Fira Code',monospace" }}>{item.item_key}</span>
+                          <span style={{ fontSize:'9.5px', fontWeight:700, padding:'1px 6px', borderRadius:'3px', color:'#FFF', background:'#16A34A', textTransform:'uppercase' as const, letterSpacing:'.02em' }}>DONE</span>
+                        </div>
+                        <div style={{ fontSize:'12.5px', fontWeight:500, color:'#020617', lineHeight:'1.35', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{item.title}</div>
+                        <div style={{ fontSize:'11px', color:'#64748B', marginTop:'2px' }}>
+                          Resolved{resolvedLabel ? ` · ${resolvedLabel}` : ''}
+                        </div>
+                      </div>
+
+                      {/* Age */}
+                      <span style={{ fontSize:'11px', fontWeight:600, color:'#16A34A', flexShrink:0 }}>{item.age_days}d</span>
                     </div>
                   );
                 })}
+              </div>
+
+              {/* Footer */}
+              <div style={{
+                padding:'10px 16px', borderTop:'1px solid #F1F5F9',
+                fontSize:'11px', color:'#64748B', textAlign:'center',
+              }}>
+                Click any item to view details
               </div>
             </div>
           )}
