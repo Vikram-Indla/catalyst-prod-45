@@ -140,3 +140,6 @@ verify_jwt = false
 
 [functions.r360-dept-weekly-events]
 verify_jwt = false
+
+[functions.r360-dept-intelligence-v4]
+verify_jwt = false

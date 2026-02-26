@@ -1,10 +1,9 @@
 /**
- * Department Intelligence Panel — STEERCOM Weekly Events
- * Nuked & rebuilt from scratch. Matches dept-weekly-events-steercom.html 1:1.
- * Zero KPI grids. Zero leaderboards. Zero purple headers. Zero building emojis.
+ * Department Intelligence Panel V4 — 3-Tab STEERCOM Briefing
+ * Pixel-perfect match to dept-intelligence-steercom-v4.html
  */
-import { useEffect } from 'react';
-import { useDeptWeeklyEventsAI, type HubGroup, type HubEvent } from '@/hooks/useDeptWeeklyEventsAI';
+import { useState, useEffect } from 'react';
+import { useDeptIntelligenceAI, type DigestEvent, type ExecSummary, type Recommendation } from '@/hooks/useDeptIntelligenceAI';
 import '@/styles/dept-intelligence.css';
 
 interface Props {
@@ -12,7 +11,7 @@ interface Props {
   onClose: () => void;
 }
 
-/* ═══ Inline SVG Icons — no external deps ═══ */
+/* ═══ SVG Icons ═══ */
 const ChevronLeft = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
 );
@@ -26,35 +25,174 @@ const XIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
 );
 const DocIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 13h6"/></svg>
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 13h6"/></svg>
 );
 const SpinIcon = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="di-spin"><path d="M21 12a9 9 0 11-6.219-8.56"/><polyline points="21 3 21 9 15 9"/></svg>
 );
 
-/* ═══ Callout helpers ═══ */
-function calloutClass(c: string | null): string {
-  if (!c) return '';
-  if (c === 'escalation' || c === 'risk') return 'di-ev-esc';
-  if (c === 'action' || c === 'delivery_gap') return 'di-ev-rec';
-  if (c === 'observation') return 'di-ev-obs';
-  return '';
-}
-function tagClass(c: string | null): string {
-  if (c === 'escalation' || c === 'risk') return 'tag-esc';
-  if (c === 'action' || c === 'delivery_gap') return 'tag-rec';
-  return 'tag-obs';
+/* ═══ Day helpers ═══ */
+const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
+const DAY_SHORT = ['SUN', 'MON', 'TUE', 'WED', 'THU'];
+const DAY_CSS = ['day-sun', 'day-mon', 'day-tue', 'day-wed', 'day-thu'];
+
+/* ═══ Skeleton ═══ */
+const DigestSkeleton = () => (
+  <div style={{ padding: '16px 28px' }}>
+    {[0, 1, 2, 3, 4].map(i => (
+      <div key={i} style={{ marginBottom: 24 }}>
+        <div className="di-skeleton-bar" style={{ height: 42, width: '100%', marginBottom: 12 }} />
+        {[0, 1, 2].map(j => (
+          <div key={j} className="di-skeleton-bar" style={{ height: 20, width: `${85 - j * 10}%`, marginBottom: 8 }} />
+        ))}
+      </div>
+    ))}
+  </div>
+);
+
+/* ═══ Tab 1: Weekly Digest ═══ */
+function WeeklyDigest({ events, weekStart }: { events: DigestEvent[]; weekStart: Date }) {
+  // Group by dayIndex (0=SUN..4=THU)
+  const days = [0, 1, 2, 3, 4].map(dayIdx => {
+    const dayDate = new Date(weekStart);
+    dayDate.setDate(dayDate.getDate() + dayIdx);
+    const dayEvents = events.filter(e => e.dayIndex === dayIdx);
+    return { dayIdx, dayDate, dayEvents };
+  });
+
+  return (
+    <>
+      {days.map(({ dayIdx, dayDate, dayEvents }) => (
+        <div className="di-day" key={dayIdx}>
+          <div className="di-day-hdr">
+            <span className={`di-day-badge ${DAY_CSS[dayIdx]}`}>{DAY_SHORT[dayIdx]}</span>
+            <span className="di-day-label">{DAY_NAMES[dayIdx]}</span>
+            <span className="di-day-date">{dayDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+            <span className="di-day-count">{dayEvents.length} events</span>
+          </div>
+          <div className="di-day-body">
+            {dayEvents.map((ev, ei) => (
+              <div className="di-ev" key={ei}>
+                <span className="di-ev-n">{String(ev.number).padStart(2, '0')}</span>
+                <span className={`di-ev-hub ${ev.hubCss}`}>{ev.hub}</span>
+                <div className="di-ev-content">
+                  <div className="di-ev-txt">
+                    {ev.signalLabel && ev.signal && (
+                      <span className={`di-ev-signal sig-${ev.signal === 'escalation' ? 'esc' : ev.signal === 'delivery_gap' ? 'gap' : ev.signal === 'action' ? 'action' : ev.signal === 'observation' ? 'observe' : ev.signal}`}>{ev.signalLabel}</span>
+                    )}
+                    <span dangerouslySetInnerHTML={{ __html: ev.body }} />
+                  </div>
+                </div>
+              </div>
+            ))}
+            {dayEvents.length === 0 && (
+              <div className="di-ev">
+                <span className="di-ev-n">—</span>
+                <span className="di-ev-hub hub-oth">—</span>
+                <div className="di-ev-content">
+                  <div className="di-ev-txt" style={{ fontStyle: 'italic', color: 'var(--di-ink-muted)' }}>No significant events recorded</div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+    </>
+  );
 }
 
-/* ═══ Component ═══ */
+/* ═══ Tab 2: Executive Summary ═══ */
+function ExecutiveSummary({ data }: { data: ExecSummary | null }) {
+  if (!data) return (
+    <div className="di-empty">
+      <Sparkle size={24} />
+      <div className="di-empty-t">No executive summary yet</div>
+      <div className="di-empty-s">Click <strong>✦ Refresh AI</strong> to generate.</div>
+    </div>
+  );
+
+  return (
+    <div className="di-exec">
+      <div className="di-exec-hero">
+        <span className="di-exec-pct">{data.closureRate.toFixed(1)}%</span>
+        <span className="di-exec-pct-sub">
+          closure rate — {data.closureNumerator} of {data.closureDenominator} transitions · {data.topContributor} top contributor
+        </span>
+      </div>
+
+      <div className="di-exec-section">
+        <div className="di-exec-label">WHAT WENT WELL</div>
+        {data.wentWell.map((item, i) => (
+          <div key={i} className="di-exec-item" dangerouslySetInnerHTML={{ __html: item }} />
+        ))}
+      </div>
+
+      <div className="di-exec-section">
+        <div className="di-exec-label">WHAT REQUIRES ATTENTION</div>
+        {data.requiresAttention.map((item, i) => (
+          <div key={i} className="di-exec-item di-exec-risk" dangerouslySetInnerHTML={{ __html: item }} />
+        ))}
+      </div>
+
+      <div className="di-exec-section">
+        <div className="di-exec-label">HUB STATUS</div>
+        {data.hubStatus.map((h, i) => (
+          <div key={i} className="di-hub-row">
+            <span className="di-hub-name">
+              <span className={`di-rag-dot rag-${h.rag}`} />
+              {h.hub}
+            </span>
+            <span className="di-hub-stat">{h.stat}</span>
+            <span className={`di-hub-rag rag-${h.rag}-bg`}>
+              {h.rag === 'g' ? 'GREEN' : h.rag === 'a' ? 'AMBER' : 'RED'}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ═══ Tab 3: Recommendations ═══ */
+function Recommendations({ items }: { items: Recommendation[] }) {
+  if (items.length === 0) return (
+    <div className="di-empty">
+      <Sparkle size={24} />
+      <div className="di-empty-t">No recommendations yet</div>
+      <div className="di-empty-s">Click <strong>✦ Refresh AI</strong> to generate.</div>
+    </div>
+  );
+
+  return (
+    <div className="di-recs">
+      {items.map((rec) => (
+        <div className="di-rec-item" key={rec.number}>
+          <span className="di-rec-num">{rec.number}</span>
+          <div className="di-rec-body">
+            <div className="di-rec-title">{rec.title}</div>
+            <div className="di-rec-desc">{rec.description}</div>
+          </div>
+          <span className={`di-rec-pri pri-${rec.priority}`}>
+            {rec.priority === 'high' ? 'HIGH' : 'MEDIUM'}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ═══ Main Component ═══ */
 export default function DepartmentIntelligenceOverlay({ departmentName, onClose }: Props) {
   const {
-    hubGroups, stats, isLoadingStats, isGenerating, hasEvents,
-    weekLabel, weekRange, weekOffset, dataAge, meta,
-    prevWeek, nextWeek, generateEvents,
-  } = useDeptWeeklyEventsAI(departmentName);
+    digest, summary, recommendations,
+    isGenerating, hasData,
+    weekLabel, weekRange, weekStart, weekOffset, dataAge, meta,
+    prevWeek, nextWeek, generateAll,
+  } = useDeptIntelligenceAI(departmentName);
 
-  /* Escape key to close */
+  const [activeTab, setActiveTab] = useState<'digest' | 'summary' | 'recs'>('digest');
+
+  /* Escape to close */
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', h);
@@ -63,12 +201,9 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
 
   return (
     <>
-      {/* Backdrop */}
       <div className="di-backdrop" onClick={onClose} />
 
-      {/* Panel */}
       <div className="di-panel">
-
         {/* ═══ TOP BAR ═══ */}
         <div className="di-topbar">
           <div className="di-topbar-l">
@@ -83,7 +218,7 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
           </div>
           <div className="di-topbar-r">
             {dataAge && <span className="di-age">{dataAge}</span>}
-            <button className="di-btn-p" onClick={generateEvents} disabled={isGenerating}>
+            <button className="di-btn-p" onClick={generateAll} disabled={isGenerating}>
               {isGenerating ? <SpinIcon /> : <Sparkle size={13} />}
               <span>{isGenerating ? 'Generating…' : 'Refresh AI'}</span>
             </button>
@@ -92,86 +227,52 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
           </div>
         </div>
 
-        {/* ═══ SCROLLABLE BODY ═══ */}
-        <div className="di-body">
-
-          {/* ─── Section Header ─── */}
-          <div className="di-header">
-            <div className="di-h-top">
-              <div className="di-h-title">
-                <span className="di-h-t">This Week's Significant Events</span>
-                <span className="di-ai"><Sparkle /> AI</span>
-              </div>
-              <div className="di-wk-sel">
-                <button className="di-wk-nav" onClick={prevWeek}><ChevronLeft /></button>
-                <span className="di-wk-lbl">{weekLabel}</span>
-                <span className="di-wk-rng">{weekRange}</span>
-                <button className="di-wk-nav" onClick={nextWeek} disabled={weekOffset === 0}><ChevronRight /></button>
-              </div>
+        {/* ═══ HEADER (outside scroll) ═══ */}
+        <div className="di-header">
+          <div className="di-h-top">
+            <div className="di-h-title">
+              <span className="di-h-t">This Week's Significant Events</span>
+              <span className="di-ai"><Sparkle /> AI</span>
             </div>
-
+            <div className="di-wk-sel">
+              <button className="di-wk-nav" onClick={prevWeek}><ChevronLeft /></button>
+              <span className="di-wk-lbl">{weekLabel}</span>
+              <span className="di-wk-rng">{weekRange}</span>
+              <button className="di-wk-nav" onClick={nextWeek} disabled={weekOffset === 0}><ChevronRight /></button>
+            </div>
           </div>
 
-          {/* ─── Hub Groups ─── */}
+          {/* 3 TABS */}
+          <div className="di-tabs">
+            <button className={`di-tab ${activeTab === 'digest' ? 'active' : ''}`} onClick={() => setActiveTab('digest')}>
+              Weekly Digest<span className="di-tab-count">{digest.length || 15}</span>
+            </button>
+            <button className={`di-tab ${activeTab === 'summary' ? 'active' : ''}`} onClick={() => setActiveTab('summary')}>
+              Executive Summary
+            </button>
+            <button className={`di-tab ${activeTab === 'recs' ? 'active' : ''}`} onClick={() => setActiveTab('recs')}>
+              Recommendations<span className="di-tab-count">{recommendations.length || 5}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* ═══ SCROLLABLE BODY ═══ */}
+        <div className="di-body">
           {isGenerating ? (
-            <div style={{ padding: '16px 24px' }}>
-              {[1,2,3].map(i => (
-                <div key={i} style={{ marginBottom: 24 }}>
-                  <div className="skeleton-bar" style={{ height: 36, width: '100%', marginBottom: 8 }} />
-                  <div className="skeleton-bar" style={{ height: 18, width: '90%', marginBottom: 6 }} />
-                  <div className="skeleton-bar" style={{ height: 18, width: '85%', marginBottom: 6 }} />
-                  <div className="skeleton-bar" style={{ height: 18, width: '70%', marginBottom: 6 }} />
-                  <div className="skeleton-bar" style={{ height: 18, width: '80%' }} />
-                </div>
-              ))}
-            </div>
-          ) : hasEvents ? (
-            hubGroups.map((group, gi) => (
-              <div className="di-grp" key={gi}>
-                <div className="di-grp-hdr">
-                  <span className="di-grp-dot" style={{ background: group.hubColor }} />
-                  <span className="di-grp-name">{group.hub}</span>
-                  <span className="di-grp-ct">
-                    {group.hub === 'Executive Summary'
-                      ? `${weekLabel} · ${weekRange}`
-                      : `${group.events.length} event${group.events.length !== 1 ? 's' : ''}${group.totalItems != null ? ` · ${group.totalItems} items` : ''}`
-                    }
-                  </span>
-                  {group.rag && (
-                    <span className={`di-rag rag-${group.rag.toLowerCase()[0]}`}>{group.rag}</span>
-                  )}
-                </div>
-                <div className="di-grp-body">
-                  {group.events.map((ev, ei) => {
-                    const cc = calloutClass(ev.callout);
-                    const isExec = group.hub === 'Executive Summary';
-                    return (
-                      <div
-                        key={ei}
-                        className={`di-ev${cc ? ` ${cc}` : ''}`}
-                        style={isExec ? { borderBottom: 'none' } : undefined}
-                      >
-                        <span className="di-ev-n">{String(ev.number).padStart(2, '0')}</span>
-                        <span className={`di-ev-day ${ev.dayClass}`}>{ev.day}</span>
-                        <span className="di-ev-txt">
-                          {ev.calloutLabel && (
-                            <><span className={tagClass(ev.callout)}>{ev.calloutLabel}</span>{' '}</>
-                          )}
-                          <span dangerouslySetInnerHTML={{ __html: ev.body }} />
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))
+            <DigestSkeleton />
+          ) : hasData ? (
+            <>
+              {activeTab === 'digest' && <WeeklyDigest events={digest} weekStart={weekStart} />}
+              {activeTab === 'summary' && <ExecutiveSummary data={summary} />}
+              {activeTab === 'recs' && <Recommendations items={recommendations} />}
+            </>
           ) : (
             <div className="di-empty">
               <Sparkle size={24} />
               <div className="di-empty-t">No AI analysis yet</div>
               <div className="di-empty-s">Click <strong>✦ Refresh AI</strong> to generate the STEERCOM briefing for {weekLabel}.</div>
-              {stats.transitions > 0 && (
-                <div className="di-empty-h">{stats.transitions} transitions detected — ready for analysis.</div>
+              {(meta?.resourceCount ?? 0) > 0 && (
+                <div className="di-empty-h">{meta?.resourceCount} resources detected — ready for analysis.</div>
               )}
             </div>
           )}
@@ -187,7 +288,6 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
           <span className="di-foot-d" />
           <span>{weekLabel} · {weekRange}</span>
         </div>
-
       </div>
     </>
   );
