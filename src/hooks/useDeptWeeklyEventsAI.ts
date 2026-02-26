@@ -139,7 +139,7 @@ async function extractTransitions(jiraIds: string[], nameMap: Map<string, string
     .gte('jira_updated_at', weekStartDate.toISOString())
     .lte('jira_updated_at', weekEndDate.toISOString())
     .order('jira_updated_at', { ascending: true })
-    .limit(500);
+    .limit(2000);
 
   const result: any[] = [];
   (issues || []).forEach((issue: any) => {
@@ -187,6 +187,26 @@ async function extractTransitions(jiraIds: string[], nameMap: Map<string, string
   });
 
   return result;
+}
+
+/* ── Build per-resource summary for richer AI context ── */
+function buildResourceSummary(transitions: any[]): string {
+  const byActor: Record<string, { total: number; closed: number; inReview: number; hubs: Set<string>; tickets: string[] }> = {};
+  transitions.forEach(t => {
+    if (!byActor[t.actor]) byActor[t.actor] = { total: 0, closed: 0, inReview: 0, hubs: new Set(), tickets: [] };
+    const entry = byActor[t.actor];
+    entry.total++;
+    entry.hubs.add(t.hub);
+    if (entry.tickets.length < 5) entry.tickets.push(t.key);
+    const toLower = (t.to || '').toLowerCase();
+    if (['done', 'closed', 'resolved'].includes(toLower)) entry.closed++;
+    if (['in review', 'code review', 'ready for qa', 'under review', 'implementation review', 'uat ready'].includes(toLower)) entry.inReview++;
+  });
+
+  return Object.entries(byActor)
+    .sort((a, b) => b[1].total - a[1].total)
+    .map(([name, d]) => `- ${name}: ${d.total} transitions (${d.closed} closed, ${d.inReview} in review) across ${[...d.hubs].join(', ')}. Tickets: ${d.tickets.join(', ')}`)
+    .join('\n');
 }
 
 /* ── Main hook ── */
@@ -289,6 +309,8 @@ export function useDeptWeeklyEventsAI(department: string | null) {
       const transitions = await extractTransitions(jiraIds, nameMap, weekStartDate, weekEndDate);
       const stats = await computeStats(jiraIds, weekStartDate, weekEndDate);
 
+      const resourceSummary = buildResourceSummary(transitions);
+
       const { data, error } = await supabase.functions.invoke('r360-dept-weekly-events', {
         body: {
           department,
@@ -298,6 +320,7 @@ export function useDeptWeeklyEventsAI(department: string | null) {
           weekRange: weekRangeStr,
           transitions,
           stats,
+          resourceSummary,
         },
       });
 

@@ -10,7 +10,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { department, weekStart, weekEnd, weekNumber, weekRange, transitions, stats } = await req.json();
+    const { department, weekStart, weekEnd, weekNumber, weekRange, transitions, stats, resourceSummary } = await req.json();
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
@@ -103,16 +103,21 @@ OUTPUT FORMAT: Return ONLY valid JSON array (no markdown, no code fences):
   }
 ]
 
-Aim for 15-20 total bullets across all groups. Distribute proportionally to hub activity.`;
+Aim for 20-30 total bullets across all groups. Distribute proportionally to hub activity.
+CRITICAL: Every resource with activity MUST be mentioned by name at least once. Do not ignore anyone.
+If a resource has multiple closures or reviews, highlight them individually.`;
 
     const userPrompt = `Here are the ${transitions.length} transitions for ${department}, Week ${weekNumber} (${weekRange}):
 
 Stats: ${stats.transitions} transitions, ${stats.closed} closed, ${stats.inReview} in review, ${stats.activeResources} active resources.
 
-Transitions data:
-${JSON.stringify(transitions.slice(0, 200), null, 0)}
+PER-RESOURCE BREAKDOWN (CRITICAL — every person listed MUST appear in the briefing):
+${resourceSummary || 'No resource summary available.'}
 
-Generate the STEERCOM weekly events briefing now.`;
+Transitions data:
+${JSON.stringify(transitions, null, 0)}
+
+Generate the STEERCOM weekly events briefing now. Make sure EVERY resource listed above is mentioned by name.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -127,7 +132,7 @@ Generate the STEERCOM weekly events briefing now.`;
           { role: "user", content: userPrompt },
         ],
         temperature: 0.7,
-        max_tokens: 4000,
+        max_tokens: 8000,
       }),
     });
 
