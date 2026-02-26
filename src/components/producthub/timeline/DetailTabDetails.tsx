@@ -1,5 +1,7 @@
 // =====================================================
 // DETAIL TAB — Details content with Inline Editing
+// Uses shadcn Select for clean dropdowns (no rectangle-in-rectangle)
+// Health Status removed per V9 spec
 // =====================================================
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
@@ -7,10 +9,13 @@ import type { TimelineInitiative, InitiativeStatus } from '@/types/producthub/in
 import { STATUS_CONFIG, getPriorityFromScore } from '@/types/producthub/initiative';
 import { format } from 'date-fns';
 import { FolderKanban, Zap, Wrench, Map, Network, Check, Pencil, ChevronDown } from 'lucide-react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { usePromoteToRoadmap, useRemoveFromRoadmap } from '@/hooks/useRoadmapPromotion';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
 
 interface DetailTabDetailsProps {
   initiative: TimelineInitiative;
@@ -33,27 +38,25 @@ const UI_TO_DB_STATUS: Record<string, string> = {
   cancelled: 'cancelled',
 };
 
-const DB_TO_UI_STATUS: Record<string, string> = {
-  new_demand: 'new',
-  under_review: 'portfolio_review',
-  approved: 'demand_approved',
-  in_progress: 'under_implementation',
-  on_hold: 'on_hold',
-  delivered: 'in_support',
-  closed: 'done',
-  cancelled: 'cancelled',
-};
-
-const HEALTH_OPTIONS = [
-  { key: 'on_track', label: 'On Track', color: '#16A34A', bg: '#F0FDF4' },
-  { key: 'at_risk', label: 'At Risk', color: '#D97706', bg: '#FFFBEB' },
-  { key: 'off_track', label: 'Off Track', color: '#EF4444', bg: '#FEF2F2' },
+const EA_REVIEW_OPTIONS = [
+  { key: 'not_required', label: 'Not Required' },
+  { key: 'pending', label: 'Pending' },
+  { key: 'in_review', label: 'In Review' },
+  { key: 'approved', label: 'Approved' },
+  { key: 'rejected', label: 'Rejected' },
 ];
 
 const VALUE_OPTIONS = [
   { key: 'high', label: 'High', color: '#16A34A', bg: '#F0FDF4' },
   { key: 'medium', label: 'Medium', color: '#D97706', bg: '#FFFBEB' },
   { key: 'low', label: 'Low', color: '#64748B', bg: '#F1F5F9' },
+];
+
+const PRIORITY_OPTIONS = [
+  { key: 'critical', label: 'Critical' },
+  { key: 'high', label: 'High' },
+  { key: 'medium', label: 'Medium' },
+  { key: 'low', label: 'Low' },
 ];
 
 const QUARTER_OPTIONS = (() => {
@@ -158,67 +161,6 @@ function EditableDate({ value, onSave }: {
       onKeyDown={e => { if (e.key === 'Escape') setEditing(false); }}
       className="w-full text-[13px] px-1.5 py-0.5 rounded border border-primary/40 bg-background outline-none focus:ring-1 focus:ring-primary/30"
     />
-  );
-}
-
-/** Click-to-select dropdown */
-function EditableSelect({ value, options, onSave, renderValue }: {
-  value: string | null;
-  options: { key: string; label: string; color?: string; bg?: string }[];
-  onSave: (v: string | null) => void;
-  renderValue?: (opt: typeof options[0] | null) => React.ReactNode;
-}) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
-
-  const selected = options.find(o => o.key === value) ?? null;
-
-  const defaultRender = (opt: typeof options[0] | null) => (
-    opt ? (
-      <span className="inline-flex items-center gap-1.5">
-        {opt.color && <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: opt.color }} />}
-        <span>{opt.label}</span>
-      </span>
-    ) : <span className="text-muted-foreground">—</span>
-  );
-
-  const render = renderValue ?? defaultRender;
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        className="group inline-flex items-center gap-1 cursor-pointer hover:text-primary transition-colors text-[13px] min-h-[20px]"
-        onClick={() => setOpen(!open)}
-      >
-        {render(selected)}
-        <ChevronDown size={10} className="opacity-0 group-hover:opacity-60 transition-opacity text-muted-foreground" />
-      </button>
-      {open && (
-        <div className="absolute top-full left-0 mt-1 bg-background border border-border rounded-md shadow-lg py-1 z-[300] min-w-[160px] max-h-[240px] overflow-y-auto"
-          style={{ fontFamily: 'inherit' }}>
-          {options.map(opt => (
-            <button
-              key={opt.key}
-              className="w-full text-left px-3 py-1.5 text-[12px] hover:bg-accent/50 flex items-center gap-2 transition-colors"
-              onClick={() => { onSave(opt.key); setOpen(false); }}
-            >
-              {opt.color && <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: opt.color }} />}
-              <span>{opt.label}</span>
-              {opt.key === value && <Check size={12} className="ml-auto text-primary" />}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
   );
 }
 
@@ -328,6 +270,130 @@ function EditableProgress({ value, onSave }: { value: number; onSave: (v: number
   );
 }
 
+// ---- Shadcn Select wrapper for autosave fields ----
+function AutoSaveSelect({ value, options, onSave, placeholder = 'Select...' }: {
+  value: string | null;
+  options: { key: string; label: string; color?: string; bg?: string }[];
+  onSave: (v: string | null) => void;
+  placeholder?: string;
+}) {
+  return (
+    <Select
+      value={value ?? '__none__'}
+      onValueChange={(v) => onSave(v === '__none__' ? null : v)}
+    >
+      <SelectTrigger className="h-7 text-[13px] border-0 shadow-none px-0 bg-transparent hover:bg-accent/30 focus:ring-0 focus:ring-offset-0 w-auto min-w-[100px] gap-1">
+        <SelectValue placeholder={placeholder}>
+          {(() => {
+            const opt = options.find(o => o.key === value);
+            if (!opt) return <span className="text-muted-foreground">—</span>;
+            return (
+              <span className="inline-flex items-center gap-1.5">
+                {opt.color && <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: opt.color }} />}
+                {opt.label}
+              </span>
+            );
+          })()}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent className="z-[400]">
+        <SelectItem value="__none__" className="text-muted-foreground text-[12px]">— None —</SelectItem>
+        {options.map(opt => (
+          <SelectItem key={opt.key} value={opt.key} className="text-[12px]">
+            <span className="inline-flex items-center gap-1.5">
+              {opt.color && <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: opt.color }} />}
+              {opt.label}
+            </span>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+/** People picker using shadcn Select — loads profiles */
+function PeopleSelect({ value, onSave, placeholder }: {
+  value: string | null;
+  onSave: (id: string | null, name: string | null) => void;
+  placeholder?: string;
+}) {
+  const { data: profiles = [] } = useQuery({
+    queryKey: ['profiles-list'],
+    queryFn: async () => {
+      const { data } = await supabase.from('profiles').select('id, full_name');
+      return (data || []).map((p: any) => ({ id: p.id, name: p.full_name || 'Unnamed' }));
+    },
+    staleTime: 5 * 60_000,
+  });
+
+  return (
+    <Select
+      value={value ?? '__none__'}
+      onValueChange={(v) => {
+        if (v === '__none__') { onSave(null, null); return; }
+        const profile = profiles.find(p => p.id === v);
+        onSave(v, profile?.name ?? null);
+      }}
+    >
+      <SelectTrigger className="h-7 text-[13px] border-0 shadow-none px-0 bg-transparent hover:bg-accent/30 focus:ring-0 focus:ring-offset-0 w-auto min-w-[100px] gap-1">
+        <SelectValue placeholder={placeholder || '—'}>
+          {(() => {
+            const p = profiles.find(p => p.id === value);
+            return p ? <span>{p.name}</span> : <span className="text-muted-foreground">—</span>;
+          })()}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent className="z-[400] max-h-[240px]">
+        <SelectItem value="__none__" className="text-muted-foreground text-[12px]">— None —</SelectItem>
+        {profiles.map(p => (
+          <SelectItem key={p.id} value={p.id} className="text-[12px]">{p.name}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+/** Department picker using shadcn Select */
+function DepartmentSelect({ value, onSave }: {
+  value: string | null;
+  onSave: (id: string | null, name: string | null) => void;
+}) {
+  const { data: departments = [] } = useQuery({
+    queryKey: ['ph-departments-list'],
+    queryFn: async () => {
+      const { data } = await (supabase as any).from('ph_departments').select('id, name');
+      return (data || []).map((d: any) => ({ id: d.id, name: d.name }));
+    },
+    staleTime: 5 * 60_000,
+  });
+
+  return (
+    <Select
+      value={value ?? '__none__'}
+      onValueChange={(v) => {
+        if (v === '__none__') { onSave(null, null); return; }
+        const dept = departments.find((d: any) => d.id === v);
+        onSave(v, dept?.name ?? null);
+      }}
+    >
+      <SelectTrigger className="h-7 text-[13px] border-0 shadow-none px-0 bg-transparent hover:bg-accent/30 focus:ring-0 focus:ring-offset-0 w-auto min-w-[100px] gap-1">
+        <SelectValue placeholder="—">
+          {(() => {
+            const d = departments.find((d: any) => d.id === value);
+            return d ? <span>{d.name}</span> : <span className="text-muted-foreground">—</span>;
+          })()}
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent className="z-[400] max-h-[240px]">
+        <SelectItem value="__none__" className="text-muted-foreground text-[12px]">— None —</SelectItem>
+        {departments.map((d: any) => (
+          <SelectItem key={d.id} value={d.id} className="text-[12px]">{d.name}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 // ---- Field wrapper with border grid ----
 const Field: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
   <div className="py-2.5 px-3">
@@ -341,7 +407,6 @@ const Field: React.FC<{ label: string; children: React.ReactNode }> = ({ label, 
 // ---- Main Component ----
 export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }) => {
   const statusCfg = STATUS_CONFIG[initiative.status];
-  const priority = getPriorityFromScore(initiative.computed_score);
   const queryClient = useQueryClient();
   const [updatingType, setUpdatingType] = useState(false);
 
@@ -360,9 +425,13 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
   // ---- Autosave helper ----
   const autoSave = useCallback(async (field: string, value: any, label: string) => {
     try {
+      // Convert empty strings to null for FK fields
+      const fkFields = ['department_id', 'assignee_id', 'reporter_id', 'business_owner_id', 'product_id'];
+      const sanitized = fkFields.includes(field) && value === '' ? null : value;
+
       const { error } = await supabase
         .from('ph_initiatives')
-        .update({ [field]: value } as any)
+        .update({ [field]: sanitized } as any)
         .eq('id', initiative.id);
       if (error) throw error;
       toast.success(`${label} updated`, {
@@ -430,9 +499,6 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
     color: cfg.color,
   }));
 
-  const healthCfg = initiative.health_status ? HEALTH_OPTIONS.find(h => h.key === initiative.health_status) : null;
-  const valueCfg = initiative.business_value ? VALUE_OPTIONS.find(v => v.key === initiative.business_value) : null;
-
   return (
     <div className="p-5 space-y-5">
       {/* Initiative Type — segmented control */}
@@ -499,119 +565,120 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         </div>
       </div>
 
-      {/* 2-col bordered grid — editable fields */}
+      {/* 2-col bordered grid — all editable fields with shadcn Select */}
       <div className="border border-border rounded-lg overflow-hidden divide-y divide-border">
         <div className="grid grid-cols-2 divide-x divide-border">
           <Field label="Status">
-            <EditableSelect
+            <AutoSaveSelect
               value={initiative.status}
               options={statusOptions}
               onSave={(v) => v && handleStatusChange(v)}
-              renderValue={(opt) => opt ? (
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: opt.color }} />
-                  <span>{opt.label}</span>
-                </span>
-              ) : <span className="text-muted-foreground">—</span>}
+              placeholder="Select status"
             />
           </Field>
           <Field label="EA Review">
-            <span className="text-muted-foreground">—</span>
+            <AutoSaveSelect
+              value={(initiative as any).ea_review ?? null}
+              options={EA_REVIEW_OPTIONS}
+              onSave={(v) => autoSave('ea_review', v, 'EA Review')}
+              placeholder="Select"
+            />
           </Field>
         </div>
 
         <div className="grid grid-cols-2 divide-x divide-border">
-          <Field label="Health Status">
-            <EditableSelect
-              value={initiative.health_status ?? null}
-              options={HEALTH_OPTIONS}
-              onSave={(v) => autoSave('health_status', v, 'Health Status')}
-              renderValue={(opt) => opt ? (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold"
-                  style={{ background: opt.bg, color: opt.color }}>
-                  {opt.label}
-                </span>
-              ) : <span className="text-muted-foreground">—</span>}
-            />
-          </Field>
           <Field label="Business Value">
-            <EditableSelect
-              value={initiative.business_value ?? null}
+            <AutoSaveSelect
+              value={(initiative as any).business_value ?? null}
               options={VALUE_OPTIONS}
               onSave={(v) => autoSave('business_value', v, 'Business Value')}
-              renderValue={(opt) => opt ? (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold"
-                  style={{ background: opt.bg, color: opt.color }}>
-                  {opt.label}
-                </span>
-              ) : <span className="text-muted-foreground">—</span>}
+              placeholder="Select"
+            />
+          </Field>
+          <Field label="Priority">
+            <AutoSaveSelect
+              value={(initiative as any).priority ?? null}
+              options={PRIORITY_OPTIONS}
+              onSave={(v) => autoSave('priority', v, 'Priority')}
+              placeholder="Select"
             />
           </Field>
         </div>
 
         <div className="grid grid-cols-2 divide-x divide-border">
-          <Field label="Priority">
-            <span className="capitalize">{priority}</span>
-            {initiative.computed_score !== null && (
-              <span className="ml-1 text-[11px] text-muted-foreground" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                ({initiative.computed_score.toFixed(2)})
-              </span>
-            )}
-          </Field>
           <Field label="Target Quarter">
-            <EditableSelect
+            <AutoSaveSelect
               value={initiative.target_quarter}
               options={QUARTER_OPTIONS.map(q => ({ key: q, label: q }))}
               onSave={(v) => autoSave('target_quarter', v, 'Target Quarter')}
+              placeholder="Select quarter"
+            />
+          </Field>
+          <Field label="Reporter">
+            <PeopleSelect
+              value={initiative.reporter_id}
+              onSave={(id) => autoSave('reporter_id', id, 'Reporter')}
+              placeholder="Select reporter"
             />
           </Field>
         </div>
 
         <div className="grid grid-cols-2 divide-x divide-border">
-          <Field label="Reporter">
-            {initiative.reporter_name ?? <span className="text-muted-foreground">—</span>}
-          </Field>
           <Field label="Assignee">
-            {initiative.assignee_name ?? <span className="text-muted-foreground">Unassigned</span>}
+            <PeopleSelect
+              value={initiative.assignee_id}
+              onSave={(id) => autoSave('assignee_id', id, 'Assignee')}
+              placeholder="Select assignee"
+            />
           </Field>
-        </div>
-
-        <div className="grid grid-cols-2 divide-x divide-border">
           <Field label="Department">
-            {initiative.department_name ?? <span className="text-muted-foreground">—</span>}
-          </Field>
-          <Field label="Business Owner">
-            <span className="text-muted-foreground">—</span>
+            <DepartmentSelect
+              value={initiative.department_id}
+              onSave={(id) => autoSave('department_id', id, 'Department')}
+            />
           </Field>
         </div>
 
         <div className="grid grid-cols-2 divide-x divide-border">
+          <Field label="Business Owner">
+            <PeopleSelect
+              value={initiative.business_owner_id}
+              onSave={(id) => autoSave('business_owner_id', id, 'Business Owner')}
+              placeholder="Select owner"
+            />
+          </Field>
           <Field label="Business Ask Date">
             <EditableDate
               value={initiative.business_ask_date}
               onSave={(v) => autoSave('business_ask_date', v, 'Business Ask Date')}
             />
           </Field>
+        </div>
+
+        <div className="grid grid-cols-2 divide-x divide-border">
           <Field label="Kickoff Date">
             <EditableDate
               value={initiative.kickoff_date}
               onSave={(v) => autoSave('kickoff_date', v, 'Kickoff Date')}
             />
           </Field>
-        </div>
-
-        <div className="grid grid-cols-2 divide-x divide-border">
           <Field label="Target Complete">
             <EditableDate
               value={initiative.target_complete}
               onSave={(v) => autoSave('target_complete', v, 'Target Complete')}
             />
           </Field>
+        </div>
+
+        <div className="grid grid-cols-2 divide-x divide-border">
           <Field label="Progress">
             <EditableProgress
               value={initiative.progress}
               onSave={(v) => autoSave('progress', v, 'Progress')}
             />
+          </Field>
+          <Field label="">
+            <span />
           </Field>
         </div>
       </div>
