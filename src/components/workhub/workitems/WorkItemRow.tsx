@@ -6,11 +6,8 @@
 import { useState } from 'react';
 import {
   ChevronRight, ChevronDown,
-  Bookmark, BookOpen, Bug, CheckCircle2, Layers,
-  FileText, Settings, AlertTriangle, ListTodo, Wrench,
-  SquareCode, Zap, Shield, Plug, Milestone, CircleDot,
-  LucideIcon,
 } from 'lucide-react';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import type { JiraIssue } from '@/hooks/workhub/useWorkItems';
 import { format } from 'date-fns';
 
@@ -53,46 +50,7 @@ const PRIORITY_COLORS: Record<string, string> = {
   Lowest: '#64748b',
 };
 
-/**
- * Map Jira issue type names to appropriate Lucide icons + colors.
- */
-const TYPE_ICON_MAP: Record<string, { icon: LucideIcon; color: string }> = {
-  'Epic':           { icon: Bookmark,      color: '#7c3aed' },
-  'Story':          { icon: BookOpen,      color: '#16a34a' },
-  'Task':           { icon: CheckCircle2,  color: '#2563eb' },
-  'Sub-task':       { icon: ListTodo,      color: '#2563eb' },
-  'Subtask':        { icon: ListTodo,      color: '#2563eb' },
-  'Bug':            { icon: Bug,           color: '#dc2626' },
-  'QA Bug':         { icon: Bug,           color: '#dc2626' },
-  'Production Incident': { icon: AlertTriangle, color: '#dc2626' },
-  'Defect':         { icon: Bug,           color: '#ea580c' },
-  'BRD Task':       { icon: FileText,      color: '#0284c7' },
-  'Backend':        { icon: SquareCode,    color: '#7c3aed' },
-  'Frontend':       { icon: Layers,        color: '#2563eb' },
-  'DevOps':         { icon: Settings,      color: '#475569' },
-  'Infrastructure': { icon: Wrench,        color: '#475569' },
-  'Security':       { icon: Shield,        color: '#dc2626' },
-  'Integration':    { icon: Plug,          color: '#0d9488' },
-  'Enhancement':    { icon: Zap,           color: '#d97706' },
-  'Improvement':    { icon: Zap,           color: '#d97706' },
-  'Change Request': { icon: FileText,      color: '#6366f1' },
-  'Spike':          { icon: Zap,           color: '#8b5cf6' },
-  'Release':        { icon: Milestone,     color: '#059669' },
-};
-
-function getTypeIcon(issueType: string): { icon: LucideIcon; color: string } {
-  if (TYPE_ICON_MAP[issueType]) return TYPE_ICON_MAP[issueType];
-  const lower = issueType.toLowerCase();
-  for (const [key, val] of Object.entries(TYPE_ICON_MAP)) {
-    if (key.toLowerCase() === lower) return val;
-  }
-  if (lower.includes('bug') || lower.includes('defect')) return { icon: Bug, color: '#dc2626' };
-  if (lower.includes('epic')) return { icon: Bookmark, color: '#7c3aed' };
-  if (lower.includes('story')) return { icon: BookOpen, color: '#16a34a' };
-  if (lower.includes('task')) return { icon: CheckCircle2, color: '#2563eb' };
-  if (lower.includes('sub')) return { icon: ListTodo, color: '#2563eb' };
-  return { icon: CircleDot, color: '#64748b' };
-}
+// Icon rendering now delegated to canonical guardrail
 
 function formatDate(d: string | null) {
   if (!d) return '—';
@@ -107,8 +65,7 @@ export function WorkItemRow({
   const statusStyle = STATUS_COLORS[item.status] || { bg: '#f1f5f9', fg: '#475569' };
   const priorityColor = PRIORITY_COLORS[item.priority] || '#64748b';
   const indentPx = depth * 24;
-  const typeIcon = getTypeIcon(item.issue_type);
-  const TypeIconComponent = typeIcon.icon;
+  // Type icon now uses canonical guardrail
   const [imgError, setImgError] = useState(false);
 
   return (
@@ -135,11 +92,7 @@ export function WorkItemRow({
 
       {/* 2. Type Icon with tooltip */}
       <div className="flex justify-center relative group/type">
-        <TypeIconComponent
-          className="w-4 h-4 shrink-0"
-          style={{ color: typeIcon.color }}
-          strokeWidth={1.8}
-        />
+        <JiraIssueTypeIcon type={item.issue_type} size={16} />
         <div
           className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 rounded text-[10px] font-semibold whitespace-nowrap opacity-0 group-hover/type:opacity-100 pointer-events-none transition-opacity z-50"
           style={{ backgroundColor: '#1e293b', color: '#fff' }}

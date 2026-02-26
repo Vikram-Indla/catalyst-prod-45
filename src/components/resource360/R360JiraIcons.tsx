@@ -1,49 +1,18 @@
-// ═══════════════════════════════════════════════════════════
-// Resource 360° — Jira Issue Type Icons (16×16 SVG)
-// ═══════════════════════════════════════════════════════════
-
+/**
+ * Resource360 Jira Icons — Bridge file
+ * Re-exports from the canonical guardrail: src/lib/jira-issue-type-icons.tsx
+ * DO NOT add icon definitions here.
+ */
 import React from 'react';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
-export const JiraBugIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <circle cx="8" cy="8" r="7" fill="#E5493A"/>
-    <path d="M10 5.5a2 2 0 1 0-4 0v1h4v-1zM5 8h6v2.5a3 3 0 0 1-6 0V8z" fill="#fff"/>
-  </svg>
-);
-
-export const JiraTaskIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <rect x="1" y="1" width="14" height="14" rx="2" fill="#4BADE8"/>
-    <path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-
-export const JiraStoryIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <rect x="1" y="1" width="14" height="14" rx="2" fill="#63BA3C"/>
-    <path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/>
-  </svg>
-);
-
-export const JiraEpicIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <rect x="1" y="1" width="14" height="14" rx="2" fill="#904EE2"/>
-    <path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white"/>
-  </svg>
-);
-
-export const JiraSubtaskIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16">
-    <rect x="1" y="1" width="14" height="14" rx="2" fill="#4BADE8"/>
-    <rect x="5" y="5" width="6" height="6" rx="1" fill="white"/>
-  </svg>
-);
+// Legacy named exports for backward compatibility
+export const JiraBugIcon = () => <JiraIssueTypeIcon type="QA Bug" />;
+export const JiraTaskIcon = () => <JiraIssueTypeIcon type="Task" />;
+export const JiraStoryIcon = () => <JiraIssueTypeIcon type="Story" />;
+export const JiraEpicIcon = () => <JiraIssueTypeIcon type="Epic" />;
+export const JiraSubtaskIcon = () => <JiraIssueTypeIcon type="Sub-task" />;
 
 export function getJiraIcon(itemType: string) {
-  const t = (itemType || '').toLowerCase();
-  if (t.includes('bug') || t.includes('defect')) return <JiraBugIcon />;
-  if (t.includes('story')) return <JiraStoryIcon />;
-  if (t.includes('epic')) return <JiraEpicIcon />;
-  if (t.includes('sub-task') || t.includes('subtask')) return <JiraSubtaskIcon />;
-  return <JiraTaskIcon />;
+  return <JiraIssueTypeIcon type={itemType} />;
 }
