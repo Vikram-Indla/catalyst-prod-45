@@ -29618,6 +29618,63 @@ export type Database = {
         }
         Relationships: []
       }
+      r360_ai_cache: {
+        Row: {
+          computed_at: string
+          created_at: string | null
+          data: Json
+          data_hash: string | null
+          expires_at: string | null
+          id: string
+          is_stale: boolean | null
+          scope_id: string
+          scope_label: string | null
+          scope_type: string
+          section: string
+          stale_at: string | null
+          stale_reason: string | null
+          status: string
+          updated_at: string | null
+          week_start: string | null
+        }
+        Insert: {
+          computed_at?: string
+          created_at?: string | null
+          data: Json
+          data_hash?: string | null
+          expires_at?: string | null
+          id?: string
+          is_stale?: boolean | null
+          scope_id: string
+          scope_label?: string | null
+          scope_type: string
+          section: string
+          stale_at?: string | null
+          stale_reason?: string | null
+          status?: string
+          updated_at?: string | null
+          week_start?: string | null
+        }
+        Update: {
+          computed_at?: string
+          created_at?: string | null
+          data?: Json
+          data_hash?: string | null
+          expires_at?: string | null
+          id?: string
+          is_stale?: boolean | null
+          scope_id?: string
+          scope_label?: string | null
+          scope_type?: string
+          section?: string
+          stale_at?: string | null
+          stale_reason?: string | null
+          status?: string
+          updated_at?: string | null
+          week_start?: string | null
+        }
+        Relationships: []
+      }
       r360_ai_exports: {
         Row: {
           created_at: string
@@ -29669,6 +29726,60 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      r360_ai_jobs: {
+        Row: {
+          attempts: number | null
+          completed_at: string | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          max_attempts: number | null
+          priority: number | null
+          scope_id: string
+          scope_type: string
+          sections: string[]
+          started_at: string | null
+          status: string
+          trigger_detail: Json | null
+          triggered_by: string | null
+          week_start: string | null
+        }
+        Insert: {
+          attempts?: number | null
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          max_attempts?: number | null
+          priority?: number | null
+          scope_id: string
+          scope_type: string
+          sections: string[]
+          started_at?: string | null
+          status?: string
+          trigger_detail?: Json | null
+          triggered_by?: string | null
+          week_start?: string | null
+        }
+        Update: {
+          attempts?: number | null
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          max_attempts?: number | null
+          priority?: number | null
+          scope_id?: string
+          scope_type?: string
+          sections?: string[]
+          started_at?: string | null
+          status?: string
+          trigger_detail?: Json | null
+          triggered_by?: string | null
+          week_start?: string | null
+        }
+        Relationships: []
       }
       r360_ai_profiles: {
         Row: {
@@ -29809,6 +29920,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      r360_ai_resource_index: {
+        Row: {
+          cache_status: string | null
+          department: string
+          has_issues: boolean | null
+          id: string
+          issue_count: number | null
+          last_transition_at: string | null
+          resource_id: string
+          resource_name: string | null
+          role_name: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cache_status?: string | null
+          department: string
+          has_issues?: boolean | null
+          id?: string
+          issue_count?: number | null
+          last_transition_at?: string | null
+          resource_id: string
+          resource_name?: string | null
+          role_name?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cache_status?: string | null
+          department?: string
+          has_issues?: boolean | null
+          id?: string
+          issue_count?: number | null
+          last_transition_at?: string | null
+          resource_id?: string
+          resource_name?: string | null
+          role_name?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       r360_assignments: {
         Row: {
@@ -61259,6 +61409,14 @@ export type Database = {
       r360_effective_due_date: {
         Args: { p_work_item_id: string }
         Returns: string
+      }
+      r360_mark_department_stale: {
+        Args: { p_department: string; p_reason?: string }
+        Returns: undefined
+      }
+      r360_mark_resource_stale: {
+        Args: { p_reason?: string; p_resource_id: string }
+        Returns: undefined
       }
       reassign_workers: {
         Args: {

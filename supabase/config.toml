@@ -131,3 +131,9 @@ verify_jwt = false
 
 [functions.r360-department-intelligence]
 verify_jwt = false
+
+[functions.r360-ai-compute]
+verify_jwt = false
+
+[functions.r360-ai-warmup]
+verify_jwt = false

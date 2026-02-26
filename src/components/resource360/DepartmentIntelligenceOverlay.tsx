@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useDeptAICache } from '@/hooks/useDeptAICache';
 
 interface Props {
   departmentName: string;
@@ -12,6 +13,7 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
   const [generating, setGenerating] = useState(false);
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const { workloadDistribution: cachedWorkload, dataAge, isStale, isComputing, hasCache, refresh: cacheRefresh, refetch: cacheRefetch } = useDeptAICache(departmentName);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -27,12 +29,15 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
     setGenerating(true);
     setError(null);
     try {
+      // Also trigger cache refresh in background
+      cacheRefresh();
       const { data: result, error: fnErr } = await supabase.functions.invoke('r360-department-intelligence', {
         body: { department_name: departmentName },
       });
       if (fnErr) throw new Error(fnErr.message || 'Failed to generate department intelligence');
       if (result?.error) throw new Error(result.error);
       setData(result);
+      cacheRefetch();
       toast.success(`Department intelligence generated — ${result.metrics?.resource_count} resources analyzed`);
     } catch (err: any) {
       console.error(err);
@@ -67,6 +72,11 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
       }}>
         <span style={{ fontSize: 14, fontWeight: 800 }}>✦</span>
         <span style={{ fontSize: 14, fontWeight: 700, flex: 1 }}>Department Intelligence — {departmentName}</span>
+        {hasCache && (
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>
+            Data: {dataAge}{isStale ? ' · ⚠ Stale' : ''}
+          </span>
+        )}
         <button
           onClick={handleGenerate}
           disabled={generating}
@@ -120,12 +130,12 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
         )}
 
         {/* Main content — only Workload Distribution + Weekly Story */}
-        {data && !generating && (
+        {(data || hasCache) && !generating && (
           <>
-            {/* Workload Distribution */}
-            {ai.workload_distribution?.length > 0 && (
+            {/* Workload Distribution — prefer cached, fallback to AI-generated */}
+            {(cachedWorkload?.length > 0 || ai.workload_distribution?.length > 0) && (
               <Section title="Workload Distribution">
-                {ai.workload_distribution.map((w: any, i: number) => (
+                {(cachedWorkload || ai.workload_distribution).map((w: any, i: number) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                     <span style={{ fontSize: 11, color: '#334155', minWidth: 100 }}>{w.label}</span>
                     <div style={{ flex: 1, height: 8, background: '#F1F5F9', borderRadius: 4 }}>
