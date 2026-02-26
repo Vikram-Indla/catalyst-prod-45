@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Pencil, Copy, Star, Target, Trash2, Save, Loader2, ChevronLeft, AlertTriangle, Plus, Activity, ArrowRight, TrendingUp, FolderKanban, Zap, Wrench, Map, Network, DollarSign, Flag, Link as LinkIcon, ClipboardList, Paperclip, ExternalLink, Upload } from 'lucide-react';
 import { InitiativeRisksTab } from './tabs/InitiativeRisksTab';
@@ -285,8 +286,8 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
     invalidateAllInitiatives(queryClient);
   };
 
-  return (
-    <>
+  const portalContent = (
+    <div data-module="product-backlog">
       <AnimatePresence>
         {isOpen && (
           <>
@@ -457,8 +458,10 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   );
+
+  return createPortal(portalContent, document.body);
 }
 
 /* ════════════════════════════════════════════════════

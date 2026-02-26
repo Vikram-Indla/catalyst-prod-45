@@ -433,7 +433,7 @@
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.3);
-  z-index: 50;
+  z-index: 500;
 }
 .pb-panel {
   position: fixed;
@@ -446,7 +446,7 @@
   background: var(--pb-surface);
   border-left: 1px solid var(--pb-border);
   box-shadow: -8px 0 32px rgba(0, 0, 0, 0.08);
-  z-index: 60;
+  z-index: 510;
   display: flex;
   flex-direction: column;
   overflow: hidden;
