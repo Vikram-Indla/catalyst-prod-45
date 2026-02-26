@@ -110,11 +110,63 @@ serve(async (req) => {
 
     console.log(`[r360-daily-cron] Complete: ${successCount} success, ${errorCount} errors`)
 
+    // 5. Trigger AI cache warmup (pre-compute cache for all resources & departments)
+    let cacheWarmupStatus = 'skipped'
+    try {
+      const warmupUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/r360-ai-warmup`
+      const warmupRes = await fetch(warmupUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+          'Content-Type': 'application/json',
+        },
+        body: '{}',
+      })
+      if (warmupRes.ok) {
+        const warmupData = await warmupRes.json()
+        cacheWarmupStatus = `queued ${warmupData.resources_queued || 0} resources, ${warmupData.departments_queued || 0} depts`
+      } else {
+        cacheWarmupStatus = `error: HTTP ${warmupRes.status}`
+      }
+    } catch (e: any) {
+      console.error('[r360-daily-cron] Cache warmup error:', e.message)
+      cacheWarmupStatus = `error: ${e.message}`
+    }
+
+    // 6. Process queued cache jobs (run compute for queued items)
+    let cacheProcessed = 0
+    try {
+      const computeUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/r360-ai-compute`
+      // Run 3 batches of queue processing
+      for (let batch = 0; batch < 3; batch++) {
+        const computeRes = await fetch(computeUrl, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+            'Content-Type': 'application/json',
+          },
+          body: '{}',
+        })
+        if (computeRes.ok) {
+          const result = await computeRes.json()
+          cacheProcessed += result.processed || 0
+          if ((result.processed || 0) === 0) break // No more jobs
+        }
+        await new Promise(resolve => setTimeout(resolve, 2000))
+      }
+    } catch (e: any) {
+      console.error('[r360-daily-cron] Cache compute error:', e.message)
+    }
+
+    console.log(`[r360-daily-cron] Cache: ${cacheWarmupStatus}, processed ${cacheProcessed} jobs`)
+
     return new Response(JSON.stringify({
       processed: toProcess.length,
       skipped: resources.length - toProcess.length,
       success: successCount,
       errors: errorCount,
+      cache_warmup: cacheWarmupStatus,
+      cache_jobs_processed: cacheProcessed,
       details: results,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
