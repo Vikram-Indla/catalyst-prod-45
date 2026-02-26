@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Pencil, Copy, Star, Target, Trash2, Save, Loader2, ChevronLeft, AlertTriangle, Plus, Activity, ArrowRight, TrendingUp, FolderKanban, Zap, Wrench, Map, Network, DollarSign, Flag, Link as LinkIcon, ClipboardList } from 'lucide-react';
+import { X, Pencil, Copy, Star, Target, Trash2, Save, Loader2, ChevronLeft, AlertTriangle, Plus, Activity, ArrowRight, TrendingUp, FolderKanban, Zap, Wrench, Map, Network, DollarSign, Flag, Link as LinkIcon, ClipboardList, Paperclip, ExternalLink, Upload } from 'lucide-react';
 import { InitiativeRisksTab } from './tabs/InitiativeRisksTab';
 import { InitiativeBudgetTab } from './tabs/InitiativeBudgetTab';
 import { InitiativeAuditTab } from './tabs/InitiativeAuditTab';
@@ -9,7 +9,6 @@ import type { Initiative, InitiativeStatus } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import { StatusBadge } from './StatusBadge';
 import { PriorityBadge } from './PriorityBadge';
-import { formatShortName } from '@/lib/format-name';
 import { catalystToast } from '@/lib/catalystToast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
@@ -18,19 +17,13 @@ import { StatusSelect } from '@/components/producthub/shared/StatusSelect';
 import { QuarterSelect } from '@/components/producthub/shared/QuarterSelect';
 import { PeopleSelect } from '@/components/producthub/shared/PeopleSelect';
 import { DepartmentSelect } from '@/components/producthub/shared/DepartmentSelect';
-import { InitiativeTypeBadge } from '@/components/producthub/shared/InitiativeTypeBadge';
 import { usePromoteToRoadmap, useRemoveFromRoadmap } from '@/hooks/useRoadmapPromotion';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import '@/styles/product-backlog.css';
 
 interface DetailPanelProps {
   initiative: Initiative | null;
@@ -43,17 +36,11 @@ interface DetailPanelProps {
 const TABS = ['Details', 'Score', 'Budget', 'Risks', 'Milestones', 'Links', 'Audit'] as const;
 type Tab = typeof TABS[number];
 
-/** Catalyst V11 approved avatar colors — no purple/magenta/pink */
-const AVATAR_COLORS: Record<string, string> = {
-  'Sarah': '#2563eb', 'Ahmed': '#0d9488', 'Fatima': '#0369a1', 'Omar': '#d97706',
-  'Layla': '#0891b2', 'Khalid': '#1e40af', 'Nora': '#b45309', 'Mohammed': '#0f766e',
-  'Ahmad': '#0f766e', 'Amira': '#2563eb', 'Tariq': '#d97706', 'Salman': '#0d9488',
-  'Mansour': '#1e40af', 'Waleed': '#0891b2',
-};
+function isNativeInitiative(id: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+}
 
 function getV5AvatarColor(name: string): string {
-  const firstName = name.split(' ')[0];
-  if (AVATAR_COLORS[firstName]) return AVATAR_COLORS[firstName];
   const colors = ['#2563eb', '#0d9488', '#0369a1', '#d97706', '#0891b2', '#1e40af', '#b45309', '#0f766e', '#475569', '#334155'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
@@ -64,48 +51,27 @@ function getInitials(name: string): string {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 }
 
-/** Returns true if the initiative is sourced from ph_initiatives (UUID id), false if Jira-sourced (issue key like MDT-57) */
-function isNativeInitiative(id: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+function invalidateAllInitiatives(queryClient: ReturnType<typeof useQueryClient>) {
+  queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+  queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
+  queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
+  queryClient.invalidateQueries({ queryKey: ['roadmap-summary'] });
 }
 
 function InlineAvatar({ name, size = 20, avatarUrl }: { name: string; size?: number; avatarUrl?: string }) {
-  const fontSize = size <= 20 ? 9 : size <= 24 ? 10 : 11;
-  if (avatarUrl) {
-    return (
-      <img src={avatarUrl} alt={name}
-        className="rounded-full flex-shrink-0 object-cover"
-        style={{ width: size, height: size }}
-      />
-    );
-  }
+  if (avatarUrl) return <img src={avatarUrl} alt={name} className="rounded-full flex-shrink-0 object-cover" style={{ width: size, height: size }} />;
   return (
-    <div className="rounded-full flex items-center justify-center text-white flex-shrink-0"
-      style={{ width: size, height: size, backgroundColor: getV5AvatarColor(name), fontSize, fontWeight: 600, lineHeight: 1 }}>
+    <div className="pb-avatar" style={{ width: size, height: size, backgroundColor: getV5AvatarColor(name), fontSize: size <= 20 ? 9 : 10 }}>
       {getInitials(name)}
     </div>
   );
 }
 
-function FieldLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="text-[11px] font-medium uppercase tracking-[0.05em] text-zinc-400 mb-1.5">
-      {children}
-    </div>
-  );
-}
-
-function DetailProgressBar({ value, status }: { value: number; status?: InitiativeStatus }) {
-  const clamped = Math.min(Math.max(value, 0), 100);
-  const fillColor = status === 'done' ? '#10b981' : '#2563eb';
-  return (
-    <div className="inline-flex items-center gap-2">
-      <div className="w-20 h-1.5 bg-zinc-200 rounded-full overflow-hidden">
-        <div className="h-full rounded-full" style={{ width: `${clamped}%`, background: fillColor }} />
-      </div>
-      <span className="text-[13px] font-medium text-zinc-900 tabular-nums">{clamped}%</span>
-    </div>
-  );
+function formatAbsoluteDate(dateStr: string | null): string {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '—';
+  return format(d, 'MMM d, yyyy');
 }
 
 function RadarChart({ scores }: { scores: [number, number, number, number] }) {
@@ -121,16 +87,16 @@ function RadarChart({ scores }: { scores: [number, number, number, number] }) {
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
       {[0.2, 0.4, 0.6, 0.8, 1].map((s, i) => (
-        <polygon key={i} points={angles.map(a => `${cx + r * s * Math.cos(a)},${cy - r * s * Math.sin(a)}`).join(' ')} fill="none" stroke="#e4e4e7" strokeWidth="0.5" />
+        <polygon key={i} points={angles.map(a => `${cx + r * s * Math.cos(a)},${cy - r * s * Math.sin(a)}`).join(' ')} fill="none" stroke="var(--pb-border)" strokeWidth="0.5" />
       ))}
       {axisPoints.map((p, i) => (
         <g key={i}>
-          <line x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="#e4e4e7" strokeWidth="0.5" />
-          <text x={p.x + (p.x > cx ? 8 : p.x < cx ? -8 : 0)} y={p.y + (p.y > cy ? 14 : p.y < cy ? -6 : 0)} textAnchor="middle" style={{ fontSize: 9, fill: '#71717a' }}>{labels[i]}</text>
+          <line x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="var(--pb-border)" strokeWidth="0.5" />
+          <text x={p.x + (p.x > cx ? 8 : p.x < cx ? -8 : 0)} y={p.y + (p.y > cy ? 14 : p.y < cy ? -6 : 0)} textAnchor="middle" style={{ fontSize: 9, fill: 'var(--pb-ink-muted)' }}>{labels[i]}</text>
         </g>
       ))}
-      <polygon points={poly} fill="rgba(37,99,235,0.10)" stroke="#2563eb" strokeWidth="1.5" />
-      {dataPoints.map((p, i) => (<circle key={i} cx={p.x} cy={p.y} r="3" fill="#2563eb" />))}
+      <polygon points={poly} fill="rgba(37,99,235,0.10)" stroke="var(--pb-primary)" strokeWidth="1.5" />
+      {dataPoints.map((p, i) => (<circle key={i} cx={p.x} cy={p.y} r="3" fill="var(--pb-primary)" />))}
     </svg>
   );
 }
@@ -139,41 +105,25 @@ function ScoreSlider({ label, value, onChange }: { label: string; value: number;
   const fillPercent = ((value - 1) / 4) * 100;
   return (
     <div style={{ marginBottom: 28 }}>
-      <div className="flex justify-between items-baseline mb-3">
-        <span className="text-[13px] font-medium text-zinc-600">{label}</span>
-        <span className="text-[15px] font-bold text-zinc-900 tabular-nums min-w-[28px] text-right">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 12 }}>
+        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--pb-ink-tertiary)' }}>{label}</span>
+        <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--pb-ink)', fontVariantNumeric: 'tabular-nums', minWidth: 28, textAlign: 'right' }}>
           {value % 1 === 0 ? value : value.toFixed(1)}
         </span>
       </div>
-      <div className="relative w-full h-7 flex items-center cursor-pointer">
-        <div className="absolute left-0 right-0 h-1.5 bg-zinc-200 rounded-full" />
-        <div className="absolute left-0 h-1.5 bg-blue-600 rounded-full pointer-events-none" style={{ width: `${fillPercent}%` }} />
+      <div style={{ position: 'relative', width: '100%', height: 28, display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+        <div style={{ position: 'absolute', left: 0, right: 0, height: 6, background: 'var(--pb-surface-tertiary)', borderRadius: 3 }} />
+        <div style={{ position: 'absolute', left: 0, height: 6, background: 'var(--pb-primary)', borderRadius: 3, width: `${fillPercent}%`, pointerEvents: 'none' }} />
         <input type="range" min="1" max="5" step="0.5" value={value} onChange={(e) => onChange(parseFloat(e.target.value))}
-          className="absolute inset-0 w-full h-7 opacity-0 cursor-pointer z-10" />
-        <div className="absolute w-[18px] h-[18px] bg-white border-[2.5px] border-blue-600 rounded-full shadow-sm pointer-events-none z-[2]"
-          style={{ left: `${fillPercent}%`, transform: 'translateX(-50%)' }} />
+          style={{ position: 'absolute', inset: 0, width: '100%', height: 28, opacity: 0, cursor: 'pointer', zIndex: 10 }} />
+        <div style={{ position: 'absolute', width: 18, height: 18, background: '#fff', border: '2.5px solid var(--pb-primary)', borderRadius: '50%', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', pointerEvents: 'none', zIndex: 2, left: `${fillPercent}%`, transform: 'translateX(-50%)' }} />
       </div>
     </div>
   );
 }
 
-function formatAbsoluteDate(dateStr: string | null): string {
-  if (!dateStr) return '—';
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return '—';
-  return format(d, 'MMM d, yyyy');
-}
-
-/** Invalidate all initiative-related query keys */
-function invalidateAllInitiatives(queryClient: ReturnType<typeof useQueryClient>) {
-  queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
-  queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
-  queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });
-  queryClient.invalidateQueries({ queryKey: ['roadmap-summary'] });
-}
-
 /* ════════════════════════════════════════════════════
-   MAIN DETAIL PANEL
+   MAIN DETAIL PANEL — LINEAR PRECISION
    ════════════════════════════════════════════════════ */
 export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onScoreSave }: DetailPanelProps) {
   const [activeTab, setActiveTab] = useState<Tab>('Details');
@@ -184,6 +134,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
   const [editForm, setEditForm] = useState<Record<string, any>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [budgetAllocated, setBudgetAllocated] = useState(0);
+  const [showLinkDialog, setShowLinkDialog] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   const avatarsByName = useProfileAvatarsByName();
@@ -193,12 +144,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 
   useEffect(() => {
     if (initiative) {
-      setScores({
-        sa: initiative.score_strategic_alignment ?? 3.0,
-        bi: initiative.score_business_impact ?? 3.0,
-        tu: initiative.score_time_urgency ?? 3.0,
-        rf: initiative.score_resource_feasibility ?? 3.0,
-      });
+      setScores({ sa: initiative.score_strategic_alignment ?? 3.0, bi: initiative.score_business_impact ?? 3.0, tu: initiative.score_time_urgency ?? 3.0, rf: initiative.score_resource_feasibility ?? 3.0 });
       setBudgetAllocated((initiative as any).budget_allocated ?? 0);
       setActiveTab('Details');
       setIsEditing(false);
@@ -217,214 +163,117 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
   const priority = getPriorityLevel(computedScore);
 
   const handleAttemptClose = useCallback(() => {
-    if (isEditing && hasChanges) {
-      setShowDiscardDialog(true);
-    } else {
-      setIsEditing(false);
-      setEditForm({});
-      onClose();
-    }
+    if (isEditing && hasChanges) setShowDiscardDialog(true);
+    else { setIsEditing(false); setEditForm({}); onClose(); }
   }, [isEditing, hasChanges, onClose]);
 
   const handleDiscardAndClose = useCallback(() => {
-    setShowDiscardDialog(false);
-    setIsEditing(false);
-    setEditForm({});
-    onClose();
+    setShowDiscardDialog(false); setIsEditing(false); setEditForm({}); onClose();
   }, [onClose]);
 
-  const getFieldValue = useCallback((field: string, original: any) => {
-    return field in editForm ? editForm[field] : original;
-  }, [editForm]);
-
-  const updateEditField = useCallback((field: string, value: any) => {
-    setEditForm(prev => ({ ...prev, [field]: value }));
-  }, []);
+  const getFieldValue = useCallback((field: string, original: any) => field in editForm ? editForm[field] : original, [editForm]);
+  const updateEditField = useCallback((field: string, value: any) => { setEditForm(prev => ({ ...prev, [field]: value })); }, []);
 
   const handleSave = useCallback(async () => {
     if (!initiative || !hasChanges) return;
-    if (!isNativeInitiative(initiative.id)) {
-      catalystToast.error('Jira-sourced items cannot be edited here');
-      return;
-    }
+    if (!isNativeInitiative(initiative.id)) { catalystToast.error('Jira-sourced items cannot be edited here'); return; }
     setIsSaving(true);
     try {
-      const { error } = await (supabase as any)
-        .from('ph_initiatives')
-        .update({ ...editForm, updated_at: new Date().toISOString() })
-        .eq('id', initiative.id);
+      const { error } = await (supabase as any).from('ph_initiatives').update({ ...editForm, updated_at: new Date().toISOString() }).eq('id', initiative.id);
       if (error) throw new Error(error.message);
       invalidateAllInitiatives(queryClient);
       catalystToast.success('Initiative updated');
-      setIsEditing(false);
-      setEditForm({});
-    } catch (err: any) {
-      catalystToast.error('Failed to update: ' + err.message);
-    } finally {
-      setIsSaving(false);
-    }
+      setIsEditing(false); setEditForm({});
+    } catch (err: any) { catalystToast.error('Failed: ' + err.message); }
+    finally { setIsSaving(false); }
   }, [initiative, editForm, hasChanges, queryClient]);
 
   const handleQuickEdit = useCallback(async (field: string, value: any) => {
     if (!initiative) return;
-
-    if (!isNativeInitiative(initiative.id)) {
-      if (field === 'initiative_type_key') {
-        queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
-      }
-      return;
-    }
-
+    if (!isNativeInitiative(initiative.id)) { if (field === 'initiative_type_key') queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] }); return; }
     try {
-      const { error } = await (supabase as any)
-        .from('ph_initiatives')
-        .update({ [field]: value, updated_at: new Date().toISOString() })
-        .eq('id', initiative.id);
+      const { error } = await (supabase as any).from('ph_initiatives').update({ [field]: value, updated_at: new Date().toISOString() }).eq('id', initiative.id);
       if (error) throw new Error(error.message);
       invalidateAllInitiatives(queryClient);
       catalystToast.success(`${field.replace(/_/g, ' ')} updated`);
-    } catch (err: any) {
-      catalystToast.error('Failed to update: ' + err.message);
-    }
+    } catch (err: any) { catalystToast.error('Failed: ' + err.message); }
   }, [initiative, queryClient]);
 
-  /** Save scores to ph_initiative_scores */
   const handleScoreSave = useCallback(async () => {
     if (!initiative) return;
-    if (!isNativeInitiative(initiative.id)) {
-      catalystToast.error('Jira-sourced items cannot be scored here');
-      return;
-    }
+    if (!isNativeInitiative(initiative.id)) { catalystToast.error('Jira-sourced items cannot be scored here'); return; }
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const scorePayload = {
-        initiative_id: initiative.id,
-        strategic_alignment: scores.sa,
-        business_impact: scores.bi,
-        time_urgency: scores.tu,
-        resource_feasibility: scores.rf,
-        computed_score: computedScore,
-        scored_by: user?.id || null,
-        scored_at: new Date().toISOString(),
-      };
-
-      // Upsert into ph_initiative_scores
-      const { error: scoreErr } = await (supabase as any)
-        .from('ph_initiative_scores')
-        .upsert(scorePayload, { onConflict: 'initiative_id' });
-      if (scoreErr) throw new Error(scoreErr.message);
-
-      // Also update the initiative's score fields
-      await (supabase as any)
-        .from('ph_initiatives')
-        .update({
-          score_strategic_alignment: scores.sa,
-          score_business_impact: scores.bi,
-          score_time_urgency: scores.tu,
-          score_resource_feasibility: scores.rf,
-          computed_score: computedScore,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', initiative.id);
-
+      await (supabase as any).from('ph_initiative_scores').upsert({
+        initiative_id: initiative.id, strategic_alignment: scores.sa, business_impact: scores.bi,
+        time_urgency: scores.tu, resource_feasibility: scores.rf, computed_score: computedScore,
+        scored_by: user?.id || null, scored_at: new Date().toISOString(),
+      }, { onConflict: 'initiative_id' });
+      await (supabase as any).from('ph_initiatives').update({
+        score_strategic_alignment: scores.sa, score_business_impact: scores.bi, score_time_urgency: scores.tu,
+        score_resource_feasibility: scores.rf, computed_score: computedScore, updated_at: new Date().toISOString(),
+      }).eq('id', initiative.id);
       invalidateAllInitiatives(queryClient);
       catalystToast.success('Score saved');
-    } catch (err: any) {
-      catalystToast.error('Failed to save score: ' + err.message);
-    }
+    } catch (err: any) { catalystToast.error('Failed: ' + err.message); }
   }, [initiative, scores, computedScore, queryClient]);
 
   if (!initiative) return null;
 
   const handleClone = async () => {
     try {
-      const { data: existing } = await (supabase as any)
-        .from('ph_initiatives')
-        .select('initiative_key')
-        .order('created_at', { ascending: false })
-        .limit(100);
-      const maxNum = (existing || []).reduce((max: number, r: any) => {
-        const num = parseInt(r.initiative_key?.replace(/[A-Z]+-/, '') || '0');
-        return num > max ? num : max;
-      }, 0);
+      const { data: existing } = await (supabase as any).from('ph_initiatives').select('initiative_key').order('created_at', { ascending: false }).limit(100);
+      const maxNum = (existing || []).reduce((max: number, r: any) => { const num = parseInt(r.initiative_key?.replace(/[A-Z]+-/, '') || '0'); return num > max ? num : max; }, 0);
       const prefix = initiative.initiative_key?.replace(/-\d+$/, '') || 'MIM';
       const nextKey = `${prefix}-${String(maxNum + 1).padStart(3, '0')}`;
-
-      const { data: newInit, error: cloneErr } = await (supabase as any)
-        .from('ph_initiatives')
-        .insert({
-          title: `${initiative.title} (Copy)`,
-          initiative_key: nextKey,
-          description: initiative.description,
-          status: 'backlog',
-          progress: 0,
-          department_id: initiative.department_id,
-          assignee_id: initiative.assignee_id,
-          business_owner_id: initiative.business_owner_id,
-          target_quarter: initiative.target_quarter,
-          budget_allocated: (initiative as any).budget_allocated || 0,
-        })
-        .select()
-        .single();
-
-      if (cloneErr) throw new Error(cloneErr.message);
-
-      const { data: budgetItems } = await (supabase as any)
-        .from('ph_initiative_budget_items')
-        .select('*')
-        .eq('initiative_id', initiative.id);
-      if (budgetItems?.length) {
-        await (supabase as any).from('ph_initiative_budget_items').insert(
-          budgetItems.map(({ id, initiative_id, created_at, updated_at, ...item }: any) => ({
-            ...item, initiative_id: newInit.id
-          }))
-        );
-      }
-
-      const { data: risks } = await (supabase as any)
-        .from('ph_initiative_risks')
-        .select('*')
-        .eq('initiative_id', initiative.id);
-      if (risks?.length) {
-        await (supabase as any).from('ph_initiative_risks').insert(
-          risks.map(({ id, initiative_id, created_at, updated_at, risk_score, ...item }: any) => ({
-            ...item, initiative_id: newInit.id, risk_score: item.probability * item.impact,
-          }))
-        );
-      }
-
+      await (supabase as any).from('ph_initiatives').insert({ title: `${initiative.title} (Copy)`, initiative_key: nextKey, description: initiative.description, status: 'backlog', progress: 0, department_id: initiative.department_id, assignee_id: initiative.assignee_id });
       invalidateAllInitiatives(queryClient);
-      catalystToast.success(`Cloned as ${nextKey} with all data`);
-    } catch (err: any) {
-      catalystToast.error('Failed to clone: ' + err.message);
-    }
+      catalystToast.success(`Cloned as ${nextKey}`);
+    } catch (err: any) { catalystToast.error('Failed: ' + err.message); }
+  };
+
+  const handleAttach = async () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.multiple = true;
+    input.onchange = async () => {
+      if (!input.files?.length) return;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        for (const file of Array.from(input.files)) {
+          const path = `initiatives/${initiative.id}/${Date.now()}_${file.name}`;
+          const { error: uploadErr } = await supabase.storage.from('attachments').upload(path, file);
+          if (uploadErr) throw uploadErr;
+          await (supabase as any).from('ph_initiative_attachments').insert({
+            initiative_id: initiative.id, file_name: file.name, file_path: path,
+            file_size: file.size, mime_type: file.type, uploaded_by: user?.id || null,
+          });
+        }
+        queryClient.invalidateQueries({ queryKey: ['ph-attachments', initiative.id] });
+        catalystToast.success(`${input.files.length} file(s) attached`);
+      } catch (err: any) { catalystToast.error('Upload failed: ' + err.message); }
+    };
+    input.click();
   };
 
   const isJiraSourced = !isNativeInitiative(initiative.id);
 
   const handleActionClick = (label: string) => {
-    if (isJiraSourced && (label === 'Edit' || label === 'Clone')) {
-      catalystToast.error('Jira-sourced items are read-only');
-      return;
-    }
+    if (isJiraSourced && (label === 'Edit' || label === 'Clone')) { catalystToast.error('Jira-sourced items are read-only'); return; }
     switch (label) {
-      case 'Edit':
-        setIsEditing(true);
-        break;
-      case 'Clone':
-        handleClone();
-        break;
-      case 'Score':
-        setActiveTab('Score');
-        panelRef.current?.querySelector('[data-body]')?.scrollTo(0, 0);
-        break;
+      case 'Edit': setIsEditing(true); break;
+      case 'Attach': handleAttach(); break;
+      case 'Clone': handleClone(); break;
+      case 'Link': setShowLinkDialog(true); break;
+      case 'Score': setActiveTab('Score'); panelRef.current?.querySelector('[data-body]')?.scrollTo(0, 0); break;
     }
   };
 
-  // Only functional action buttons — removed Attach and Link (dead CTAs)
   const ACTION_BUTTONS = [
     { label: 'Edit', icon: Pencil },
+    { label: 'Attach', icon: Paperclip },
     { label: 'Clone', icon: Copy },
+    { label: 'Link', icon: LinkIcon },
     { label: 'Score', icon: Star },
   ];
 
@@ -432,10 +281,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
     if (!initiative) return;
     const amount = parseFloat(value) || 0;
     setBudgetAllocated(amount);
-    await (supabase as any)
-      .from('ph_initiatives')
-      .update({ budget_allocated: amount, updated_at: new Date().toISOString() })
-      .eq('id', initiative.id);
+    await (supabase as any).from('ph_initiatives').update({ budget_allocated: amount, updated_at: new Date().toISOString() }).eq('id', initiative.id);
     invalidateAllInitiatives(queryClient);
   };
 
@@ -444,153 +290,105 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
       <AnimatePresence>
         {isOpen && (
           <>
-            <motion.div className="fixed inset-0 z-[55]" style={{ background: 'rgba(0,0,0,0.20)' }}
+            <motion.div className="pb-panel-backdrop"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}
               onClick={handleAttemptClose} />
-            <motion.div ref={panelRef} className="fixed top-0 right-0 h-screen z-[60] flex flex-col overflow-hidden"
-              style={{ width: '55%', maxWidth: 840, minWidth: 560, background: '#ffffff', boxShadow: '-8px 0 24px rgba(0,0,0,0.12)' }}
+            <motion.div ref={panelRef} className="pb-panel"
               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
-              transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}>
+              transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}>
 
-              {/* STICKY HEADER */}
-              <div className="flex-shrink-0 bg-white sticky top-0 z-10">
-                {/* Top bar */}
-                <div className="flex items-center justify-between px-6 py-3 border-b border-zinc-100">
-                  <button onClick={handleAttemptClose}
-                    className="flex items-center gap-1 text-sm text-zinc-500 hover:text-zinc-700 transition-colors">
-                    <ChevronLeft className="w-4 h-4" />
-                    Back to list
+              {/* Top bar */}
+              <div className="pb-panel-header">
+                <button onClick={handleAttemptClose} className="pb-panel-back">
+                  <ChevronLeft size={16} /> Back to list
+                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <button onClick={() => setShowDeleteDialog(true)} className="pb-panel-action-btn pb-panel-action-btn-danger">
+                    <Trash2 size={14} /> Delete
                   </button>
-                  <div className="flex items-center gap-2">
-                    <button onClick={() => setShowDeleteDialog(true)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                      <Trash2 className="w-3.5 h-3.5" />
-                      Delete
-                    </button>
-                    <button onClick={handleAttemptClose}
-                      className="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-md">
-                      <X size={16} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Edit mode banner */}
-                {isEditing && (
-                  <div className="flex items-center justify-between px-6 py-2.5 bg-blue-50 border-b border-blue-200">
-                    <div className="flex items-center gap-2">
-                      <Pencil className="w-3.5 h-3.5 text-blue-600" />
-                      <span className="text-sm font-medium text-blue-700">Editing Initiative</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => { setIsEditing(false); setEditForm({}); }}
-                        className="px-3 py-1.5 text-xs font-medium text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg transition-colors">
-                        Cancel
-                      </button>
-                      <button onClick={handleSave} disabled={isSaving || !hasChanges}
-                        className="px-4 py-1.5 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition-colors flex items-center gap-1.5 disabled:opacity-50">
-                        {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                        Save Changes
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Initiative identity */}
-                <div className="px-6 pt-4 pb-3">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-medium font-mono shrink-0">
-                      {initiative.initiative_key}
-                    </span>
-                    {initiative.is_favorited && (
-                      <span className="text-amber-500 text-sm">★</span>
-                    )}
-                  </div>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={getFieldValue('title', initiative.title)}
-                      onChange={e => updateEditField('title', e.target.value)}
-                      className="w-full text-lg font-semibold text-zinc-900 border border-zinc-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                    />
-                  ) : (
-                    <h2 className="text-lg font-semibold text-zinc-900 leading-tight">{initiative.title}</h2>
-                  )}
-                  <div className="mt-3">
-                    <StatusBadge status={getFieldValue('status', initiative.status) as InitiativeStatus} editable={isEditing}
-                      onChange={(s) => { if (isEditing) updateEditField('status', s); else { onStatusChange(initiative.id, s); handleQuickEdit('status', s); } }} />
-                  </div>
-                </div>
-
-                {/* Action bar — visible when NOT editing */}
-                {!isEditing && (
-                  <div className="flex items-center gap-1 px-6 py-3 border-b border-zinc-100">
-                    {ACTION_BUTTONS.map(({ label, icon: Icon }) => (
-                      <button key={label} type="button" onClick={() => handleActionClick(label)}
-                        className="h-8 px-3 inline-flex items-center gap-1.5 text-[13px] text-zinc-500 hover:bg-zinc-100 rounded-md transition-colors">
-                        <Icon size={14} />{label}
-                      </button>
-                    ))}
-                    <button type="button" onClick={() => setShowDeleteDialog(true)}
-                      className="h-8 px-3 inline-flex items-center gap-1.5 text-[13px] text-red-600 hover:bg-red-50 rounded-md transition-colors ml-auto">
-                      <Trash2 size={14} />Delete
-                    </button>
-                  </div>
-                )}
-
-                {/* Tab Bar */}
-                <div className="flex gap-0 border-b border-zinc-200 px-6">
-                  {TABS.map(tab => (
-                    <button key={tab} type="button" onClick={() => setActiveTab(tab)}
-                      className={`px-3.5 py-3 text-[13px] whitespace-nowrap border-b-2 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-                        activeTab === tab
-                          ? 'font-medium text-zinc-900 border-blue-600'
-                          : 'font-normal text-zinc-500 border-transparent hover:text-zinc-700'
-                      }`}>
-                      {tab}
-                    </button>
-                  ))}
+                  <button onClick={handleAttemptClose} className="pb-panel-action-btn">
+                    <X size={16} />
+                  </button>
                 </div>
               </div>
 
-              {/* BODY */}
-              <div data-body className="flex-1 overflow-y-auto p-6">
-                {activeTab === 'Details' && (
-                  <DetailsContent
-                    initiative={initiative}
-                    isEditing={isEditing}
-                    editForm={editForm}
-                    onFieldChange={updateEditField}
-                    onQuickEdit={handleQuickEdit}
-                    onStatusChange={onStatusChange}
+              {/* Edit mode banner */}
+              {isEditing && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 24px', background: 'var(--pb-primary-bg)', borderBottom: '1px solid var(--pb-primary)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <Pencil size={14} style={{ color: 'var(--pb-primary)' }} />
+                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--pb-primary)' }}>Editing Initiative</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <button onClick={() => { setIsEditing(false); setEditForm({}); }} className="pb-panel-action-btn">Cancel</button>
+                    <button onClick={handleSave} disabled={isSaving || !hasChanges}
+                      style={{ height: 30, padding: '0 14px', display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: '#fff', background: 'var(--pb-primary)', border: 'none', borderRadius: 'var(--pb-r-md)', cursor: 'pointer', opacity: isSaving || !hasChanges ? 0.5 : 1 }}>
+                      {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+                      Save Changes
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Identity block */}
+              <div className="pb-panel-identity">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <span className="pb-panel-key">{initiative.initiative_key}</span>
+                  {initiative.is_favorited && <span style={{ color: '#F59E0B', fontSize: 14 }}>★</span>}
+                </div>
+                {isEditing ? (
+                  <input type="text" value={getFieldValue('title', initiative.title)} onChange={e => updateEditField('title', e.target.value)}
+                    style={{ width: '100%', fontFamily: 'var(--pb-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--pb-ink)', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', padding: '6px 12px', outline: 'none' }}
                   />
+                ) : (
+                  <h2 className="pb-panel-title">{initiative.title}</h2>
+                )}
+                <div style={{ marginTop: 12 }}>
+                  <StatusBadge status={getFieldValue('status', initiative.status) as InitiativeStatus} editable={isEditing}
+                    onChange={(s) => { if (isEditing) updateEditField('status', s); else { onStatusChange(initiative.id, s); handleQuickEdit('status', s); } }} />
+                </div>
+              </div>
+
+              {/* Action bar */}
+              {!isEditing && (
+                <div className="pb-panel-actions">
+                  {ACTION_BUTTONS.map(({ label, icon: Icon }) => (
+                    <button key={label} type="button" onClick={() => handleActionClick(label)} className="pb-panel-action-btn">
+                      <Icon size={14} />{label}
+                    </button>
+                  ))}
+                  <button type="button" onClick={() => setShowDeleteDialog(true)} className="pb-panel-action-btn pb-panel-action-btn-danger" style={{ marginLeft: 'auto' }}>
+                    <Trash2 size={14} />Delete
+                  </button>
+                </div>
+              )}
+
+              {/* Tab Bar */}
+              <div className="pb-panel-tabs">
+                {TABS.map(tab => (
+                  <button key={tab} type="button" onClick={() => setActiveTab(tab)}
+                    className={`pb-panel-tab ${activeTab === tab ? 'pb-panel-tab-active' : ''}`}>
+                    {tab}
+                  </button>
+                ))}
+              </div>
+
+              {/* Body */}
+              <div data-body className="pb-panel-body">
+                {activeTab === 'Details' && (
+                  <DetailsContent initiative={initiative} isEditing={isEditing} editForm={editForm}
+                    onFieldChange={updateEditField} onQuickEdit={handleQuickEdit} onStatusChange={onStatusChange} />
                 )}
                 {activeTab === 'Score' && (
                   <ScoreContent initiative={initiative} scores={scores} computedScore={computedScore} priority={priority}
-                    onScoreChange={setScores}
-                    onSave={handleScoreSave} />
+                    onScoreChange={setScores} onSave={handleScoreSave} />
                 )}
                 {activeTab === 'Budget' && (
-                  <InitiativeBudgetTab
-                    initiativeId={initiative.id}
-                    budgetAllocated={budgetAllocated}
-                    onBudgetAllocatedChange={handleUpdateBudgetAllocated}
-                  />
+                  <InitiativeBudgetTab initiativeId={initiative.id} budgetAllocated={budgetAllocated} onBudgetAllocatedChange={handleUpdateBudgetAllocated} />
                 )}
                 {activeTab === 'Risks' && <InitiativeRisksTab initiativeId={initiative.id} />}
-                {activeTab === 'Milestones' && (
-                  <div className="flex flex-col items-center justify-center py-16 text-zinc-400">
-                    <Flag className="w-8 h-8 mb-3" />
-                    <span className="text-sm font-medium">Milestones</span>
-                    <span className="text-xs mt-1">Coming soon</span>
-                  </div>
-                )}
-                {activeTab === 'Links' && (
-                  <div className="flex flex-col items-center justify-center py-16 text-zinc-400">
-                    <LinkIcon className="w-8 h-8 mb-3" />
-                    <span className="text-sm font-medium">Links</span>
-                    <span className="text-xs mt-1">Coming soon</span>
-                  </div>
-                )}
+                {activeTab === 'Milestones' && <MilestonesTab initiativeId={initiative.id} />}
+                {activeTab === 'Links' && <LinksTab initiativeId={initiative.id} />}
                 {activeTab === 'Audit' && <InitiativeAuditTab initiativeId={initiative.id} />}
               </div>
             </motion.div>
@@ -598,50 +396,55 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
         )}
       </AnimatePresence>
 
-      {/* Delete Confirmation — soft delete */}
+      {/* Link Dialog */}
+      <AlertDialog open={showLinkDialog} onOpenChange={setShowLinkDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Add Link</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <AddLinkForm initiativeId={initiative.id} onClose={() => setShowLinkDialog(false)} />
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Confirmation */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                <Trash2 className="w-5 h-5 text-red-600" />
+            <AlertDialogTitle style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 40, height: 40, background: 'var(--pb-danger-bg)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Trash2 size={20} style={{ color: 'var(--pb-danger)' }} />
               </div>
               Delete Initiative?
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div>
-                <p className="text-sm text-zinc-500 mb-1">Are you sure you want to delete:</p>
-                <p className="text-sm font-medium text-zinc-900">{initiative?.initiative_key}: {initiative?.title}</p>
-                <p className="text-xs text-zinc-400 mt-2">This can be undone from the archive.</p>
+                <p style={{ fontSize: 13, color: 'var(--pb-ink-muted)', marginBottom: 4 }}>Are you sure you want to delete:</p>
+                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--pb-ink)' }}>{initiative?.initiative_key}: {initiative?.title}</p>
+                <p style={{ fontSize: 12, color: 'var(--pb-ink-muted)', marginTop: 8 }}>This can be undone from the archive.</p>
               </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="text-zinc-700 bg-white border border-zinc-300 hover:bg-zinc-50 px-4 h-9 rounded-md">Cancel</AlertDialogCancel>
-            <AlertDialogAction className="text-white bg-red-600 hover:bg-red-700 px-4 h-9 rounded-md flex items-center gap-1.5"
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction style={{ background: 'var(--pb-danger)' }}
               onClick={async () => {
                 if (!initiative?.id) return;
                 try {
-                  const { error } = await (supabase as any)
-                    .from('ph_initiatives')
-                    .update({ is_deleted: true })
-                    .eq('id', initiative.id);
-                  if (error) throw new Error(error.message);
+                  await (supabase as any).from('ph_initiatives').update({ is_deleted: true }).eq('id', initiative.id);
                   invalidateAllInitiatives(queryClient);
                   catalystToast.success(`${initiative.initiative_key} deleted`);
                   onClose();
-                } catch (err: any) {
-                  catalystToast.error('Failed to delete: ' + err.message);
-                }
+                } catch (err: any) { catalystToast.error('Failed: ' + err.message); }
               }}>
-              <Trash2 className="w-3.5 h-3.5" />
-              Delete
+              <Trash2 size={14} /> Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Discard Changes Confirmation */}
+      {/* Discard Changes */}
       <AlertDialog open={showDiscardDialog} onOpenChange={setShowDiscardDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -649,8 +452,8 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
             <AlertDialogDescription>You have unsaved changes. Discard them?</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="text-zinc-700 bg-white border border-zinc-300 hover:bg-zinc-50 px-4 h-9 rounded-md">Keep Editing</AlertDialogCancel>
-            <AlertDialogAction className="text-white bg-red-600 hover:bg-red-700 px-4 h-9 rounded-md" onClick={handleDiscardAndClose}>Discard</AlertDialogAction>
+            <AlertDialogCancel>Keep Editing</AlertDialogCancel>
+            <AlertDialogAction style={{ background: 'var(--pb-danger)' }} onClick={handleDiscardAndClose}>Discard</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -659,7 +462,214 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
 }
 
 /* ════════════════════════════════════════════════════
-   ROADMAP TOGGLE — Inline component using hooks at top level
+   ADD LINK FORM
+   ════════════════════════════════════════════════════ */
+function AddLinkForm({ initiativeId, onClose }: { initiativeId: string; onClose: () => void }) {
+  const [title, setTitle] = useState('');
+  const [url, setUrl] = useState('');
+  const [category, setCategory] = useState('reference');
+  const [submitting, setSubmitting] = useState(false);
+  const queryClient = useQueryClient();
+
+  const handleSubmit = async () => {
+    if (!title.trim() || !url.trim()) { catalystToast.error('Title and URL required'); return; }
+    setSubmitting(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      await (supabase as any).from('ph_initiative_links').insert({ initiative_id: initiativeId, title: title.trim(), url: url.trim(), category, added_by: user?.id || null });
+      queryClient.invalidateQueries({ queryKey: ['ph-links', initiativeId] });
+      catalystToast.success('Link added');
+      onClose();
+    } catch (err: any) { catalystToast.error('Failed: ' + err.message); }
+    finally { setSubmitting(false); }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 12 }}>
+      <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Link title" className="pb-comment-input" style={{ width: '100%' }} />
+      <input type="url" value={url} onChange={e => setUrl(e.target.value)} placeholder="https://..." className="pb-comment-input" style={{ width: '100%' }} />
+      <select value={category} onChange={e => setCategory(e.target.value)} style={{ height: 36, padding: '0 12px', fontSize: 13, border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', color: 'var(--pb-ink)', outline: 'none' }}>
+        <option value="reference">Reference</option>
+        <option value="jira">Jira</option>
+        <option value="confluence">Confluence</option>
+        <option value="figma">Figma</option>
+        <option value="other">Other</option>
+      </select>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 4 }}>
+        <button onClick={onClose} className="pb-panel-action-btn">Cancel</button>
+        <button onClick={handleSubmit} disabled={submitting}
+          style={{ height: 30, padding: '0 14px', fontSize: 12, fontWeight: 600, color: '#fff', background: 'var(--pb-primary)', border: 'none', borderRadius: 'var(--pb-r-md)', cursor: 'pointer', opacity: submitting ? 0.5 : 1 }}>
+          {submitting ? 'Adding…' : 'Add Link'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════
+   MILESTONES TAB — Real data from ph_initiative_milestones
+   ════════════════════════════════════════════════════ */
+function MilestonesTab({ initiativeId }: { initiativeId: string }) {
+  const queryClient = useQueryClient();
+  const [showAdd, setShowAdd] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newDate, setNewDate] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const { data: milestones = [], isLoading } = useQuery({
+    queryKey: ['ph-milestones', initiativeId],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any).from('ph_initiative_milestones')
+        .select('*').eq('initiative_id', initiativeId).order('planned_date', { ascending: true });
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const handleAdd = async () => {
+    if (!newTitle.trim()) return;
+    setSubmitting(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      await (supabase as any).from('ph_initiative_milestones').insert({
+        initiative_id: initiativeId, title: newTitle.trim(), planned_date: newDate || null,
+        status: 'pending', created_by: user?.id || null,
+      });
+      queryClient.invalidateQueries({ queryKey: ['ph-milestones', initiativeId] });
+      setNewTitle(''); setNewDate(''); setShowAdd(false);
+      catalystToast.success('Milestone added');
+    } catch (err: any) { catalystToast.error('Failed: ' + err.message); }
+    finally { setSubmitting(false); }
+  };
+
+  const toggleStatus = async (id: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
+    const actualDate = newStatus === 'completed' ? new Date().toISOString().slice(0, 10) : null;
+    await (supabase as any).from('ph_initiative_milestones').update({ status: newStatus, actual_date: actualDate, updated_at: new Date().toISOString() }).eq('id', id);
+    queryClient.invalidateQueries({ queryKey: ['ph-milestones', initiativeId] });
+  };
+
+  const handleDelete = async (id: string) => {
+    await (supabase as any).from('ph_initiative_milestones').delete().eq('id', id);
+    queryClient.invalidateQueries({ queryKey: ['ph-milestones', initiativeId] });
+    catalystToast.success('Milestone removed');
+  };
+
+  if (isLoading) return <div style={{ padding: 24, color: 'var(--pb-ink-muted)', fontSize: 13 }}>Loading milestones…</div>;
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <h3 className="pb-section-heading" style={{ marginBottom: 0, borderBottom: 'none', paddingBottom: 0 }}>Milestones</h3>
+        <button onClick={() => setShowAdd(!showAdd)} className="pb-panel-action-btn" style={{ color: 'var(--pb-primary)' }}>
+          <Plus size={14} /> Add
+        </button>
+      </div>
+
+      {showAdd && (
+        <div style={{ display: 'flex', gap: 8, marginBottom: 16, padding: 12, border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-lg)', background: 'var(--pb-surface-secondary)' }}>
+          <input type="text" value={newTitle} onChange={e => setNewTitle(e.target.value)} placeholder="Milestone title" className="pb-comment-input" style={{ flex: 1 }} />
+          <input type="date" value={newDate} onChange={e => setNewDate(e.target.value)} style={{ height: 36, padding: '0 8px', fontSize: 12, border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-sm)', color: 'var(--pb-ink)', outline: 'none' }} />
+          <button onClick={handleAdd} disabled={submitting || !newTitle.trim()}
+            style={{ height: 36, padding: '0 14px', fontSize: 12, fontWeight: 600, color: '#fff', background: 'var(--pb-primary)', border: 'none', borderRadius: 'var(--pb-r-md)', cursor: 'pointer', opacity: submitting || !newTitle.trim() ? 0.5 : 1 }}>
+            Add
+          </button>
+        </div>
+      )}
+
+      {milestones.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--pb-ink-muted)' }}>
+          <Flag size={32} style={{ marginBottom: 8, opacity: 0.4 }} />
+          <p style={{ fontSize: 13, fontWeight: 500 }}>No milestones yet</p>
+          <p style={{ fontSize: 12, marginTop: 4 }}>Add milestones to track key deliverables</p>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {milestones.map((m: any) => (
+            <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', background: m.status === 'completed' ? 'var(--pb-success-bg)' : 'var(--pb-surface)' }}>
+              <button onClick={() => toggleStatus(m.id, m.status)}
+                style={{ width: 18, height: 18, borderRadius: '50%', border: m.status === 'completed' ? '2px solid var(--pb-success)' : '2px solid var(--pb-border-strong)', background: m.status === 'completed' ? 'var(--pb-success)' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                {m.status === 'completed' && <svg width="10" height="10" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+              </button>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 500, color: m.status === 'completed' ? 'var(--pb-success)' : 'var(--pb-ink)', textDecoration: m.status === 'completed' ? 'line-through' : undefined }}>{m.title}</div>
+                {m.planned_date && <div style={{ fontSize: 11, color: 'var(--pb-ink-muted)', fontFamily: 'var(--pb-font-mono)', marginTop: 2 }}>{formatAbsoluteDate(m.planned_date)}</div>}
+              </div>
+              {m.is_critical_path && <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--pb-danger)', background: 'var(--pb-danger-bg)', padding: '2px 6px', borderRadius: 'var(--pb-r-full)' }}>Critical</span>}
+              <button onClick={() => handleDelete(m.id)} style={{ color: 'var(--pb-ink-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><Trash2 size={14} /></button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════
+   LINKS TAB — Real data from ph_initiative_links
+   ════════════════════════════════════════════════════ */
+function LinksTab({ initiativeId }: { initiativeId: string }) {
+  const queryClient = useQueryClient();
+  const [showAdd, setShowAdd] = useState(false);
+
+  const { data: links = [], isLoading } = useQuery({
+    queryKey: ['ph-links', initiativeId],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any).from('ph_initiative_links')
+        .select('*').eq('initiative_id', initiativeId).order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const handleDelete = async (id: string) => {
+    await (supabase as any).from('ph_initiative_links').delete().eq('id', id);
+    queryClient.invalidateQueries({ queryKey: ['ph-links', initiativeId] });
+    catalystToast.success('Link removed');
+  };
+
+  if (isLoading) return <div style={{ padding: 24, color: 'var(--pb-ink-muted)', fontSize: 13 }}>Loading links…</div>;
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <h3 className="pb-section-heading" style={{ marginBottom: 0, borderBottom: 'none', paddingBottom: 0 }}>Links</h3>
+        <button onClick={() => setShowAdd(!showAdd)} className="pb-panel-action-btn" style={{ color: 'var(--pb-primary)' }}>
+          <Plus size={14} /> Add Link
+        </button>
+      </div>
+
+      {showAdd && <AddLinkForm initiativeId={initiativeId} onClose={() => { setShowAdd(false); queryClient.invalidateQueries({ queryKey: ['ph-links', initiativeId] }); }} />}
+
+      {links.length === 0 && !showAdd ? (
+        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--pb-ink-muted)' }}>
+          <LinkIcon size={32} style={{ marginBottom: 8, opacity: 0.4 }} />
+          <p style={{ fontSize: 13, fontWeight: 500 }}>No links yet</p>
+          <p style={{ fontSize: 12, marginTop: 4 }}>Add links to related documents, Jira issues, or designs</p>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {links.map((link: any) => (
+            <div key={link.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)' }}>
+              <LinkIcon size={14} style={{ color: 'var(--pb-primary)', flexShrink: 0 }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <a href={link.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, fontWeight: 500, color: 'var(--pb-primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  {link.title} <ExternalLink size={12} />
+                </a>
+                {link.category && <span style={{ fontSize: 11, color: 'var(--pb-ink-muted)', textTransform: 'capitalize' }}>{link.category}</span>}
+              </div>
+              {link.is_pinned && <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--pb-primary)', background: 'var(--pb-primary-bg)', padding: '2px 6px', borderRadius: 'var(--pb-r-full)' }}>Pinned</span>}
+              <button onClick={() => handleDelete(link.id)} style={{ color: 'var(--pb-ink-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><Trash2 size={14} /></button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════
+   ROADMAP TOGGLE
    ════════════════════════════════════════════════════ */
 function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
   const promoteMutation = usePromoteToRoadmap();
@@ -668,100 +678,57 @@ function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
   const [localOnRoadmap, setLocalOnRoadmap] = useState<boolean>(initiative.on_roadmap === true);
   const [isToggling, setIsToggling] = useState(false);
   const isPending = promoteMutation.isPending || removeMutation.isPending || isToggling;
-  const isJira = !isNativeInitiative(initiative.id);
 
-  useEffect(() => {
-    setLocalOnRoadmap(initiative.on_roadmap === true);
-  }, [initiative.id, initiative.on_roadmap]);
+  useEffect(() => { setLocalOnRoadmap(initiative.on_roadmap === true); }, [initiative.id, initiative.on_roadmap]);
 
   const handleToggle = async () => {
     const newValue = !localOnRoadmap;
     setLocalOnRoadmap(newValue);
     try {
       setIsToggling(true);
+      const isJira = !isNativeInitiative(initiative.id);
       if (isJira) {
         if (!newValue) {
-          const { data: existing } = await (supabase as any)
-            .from('ph_initiatives')
-            .select('id')
-            .eq('initiative_key', initiative.initiative_key)
-            .maybeSingle();
-          if (existing) {
-            await removeMutation.mutateAsync(existing.id);
-          }
+          const { data: existing } = await (supabase as any).from('ph_initiatives').select('id').eq('initiative_key', initiative.initiative_key).maybeSingle();
+          if (existing) await removeMutation.mutateAsync(existing.id);
         } else {
-          const { data: existing } = await (supabase as any)
-            .from('ph_initiatives')
-            .select('id')
-            .eq('initiative_key', initiative.initiative_key)
-            .maybeSingle();
-
+          const { data: existing } = await (supabase as any).from('ph_initiatives').select('id').eq('initiative_key', initiative.initiative_key).maybeSingle();
           let initiativeId: string;
-          if (existing) {
-            initiativeId = existing.id;
-          } else {
-            const { data: inserted, error: insertError } = await (supabase as any)
-              .from('ph_initiatives')
-              .insert({
-                initiative_key: initiative.initiative_key,
-                title: initiative.title,
-                description: initiative.description || null,
-                status: 'new_demand',
-                assignee_id: initiative.assignee_id || null,
-                department_id: initiative.department_id || null,
-                business_owner_id: initiative.business_owner_id || null,
-                target_quarter: initiative.target_quarter || null,
-                progress: initiative.progress || 0,
-              })
-              .select('id')
-              .single();
+          if (existing) { initiativeId = existing.id; }
+          else {
+            const { data: inserted, error: insertError } = await (supabase as any).from('ph_initiatives').insert({ initiative_key: initiative.initiative_key, title: initiative.title, description: initiative.description || null, status: 'new_demand', assignee_id: initiative.assignee_id || null, department_id: initiative.department_id || null, progress: initiative.progress || 0 }).select('id').single();
             if (insertError) throw insertError;
             initiativeId = inserted.id;
           }
-
-          await promoteMutation.mutateAsync({
-            initiative_id: initiativeId,
-            initiative_type_key: initiative.initiative_type_key || 'project',
-          });
+          await promoteMutation.mutateAsync({ initiative_id: initiativeId, initiative_type_key: initiative.initiative_type_key || 'project' });
         }
         queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
       } else {
-        if (!newValue) {
-          await removeMutation.mutateAsync(initiative.id);
-        } else {
-          await promoteMutation.mutateAsync({
-            initiative_id: initiative.id,
-            initiative_type_key: initiative.initiative_type_key || 'project',
-          });
-        }
+        if (!newValue) await removeMutation.mutateAsync(initiative.id);
+        else await promoteMutation.mutateAsync({ initiative_id: initiative.id, initiative_type_key: initiative.initiative_type_key || 'project' });
       }
     } catch (err) {
       console.error('Roadmap toggle failed:', err);
       setLocalOnRoadmap(!newValue);
       catalystToast.error('Failed to update roadmap status');
-    } finally {
-      setIsToggling(false);
-    }
+    } finally { setIsToggling(false); }
   };
 
   return (
-    <div className="mb-5 border border-zinc-200 rounded-lg p-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-md flex items-center justify-center"
-            style={{ background: localOnRoadmap ? '#DBEAFE' : '#F1F5F9' }}>
-            <Map className="w-4 h-4" style={{ color: localOnRoadmap ? '#2563EB' : '#94A3B8' }} />
+    <div style={{ marginBottom: 20, border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-lg)', padding: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ width: 32, height: 32, borderRadius: 'var(--pb-r-md)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: localOnRoadmap ? 'var(--pb-primary-bg)' : 'var(--pb-surface-tertiary)' }}>
+            <Map size={16} style={{ color: localOnRoadmap ? 'var(--pb-primary)' : 'var(--pb-ink-muted)' }} />
           </div>
           <div>
-            <div className="text-[13px] font-semibold text-zinc-900">{localOnRoadmap ? 'On Roadmap' : 'Not on Roadmap'}</div>
-            <div className="text-[11px] text-zinc-400">{localOnRoadmap ? 'Visible on Product Roadmap timeline' : 'Click toggle to add to roadmap'}</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--pb-ink)' }}>{localOnRoadmap ? 'On Roadmap' : 'Not on Roadmap'}</div>
+            <div style={{ fontSize: 11, color: 'var(--pb-ink-muted)' }}>{localOnRoadmap ? 'Visible on Product Roadmap timeline' : 'Click toggle to add to roadmap'}</div>
           </div>
         </div>
         <button onClick={handleToggle} disabled={isPending}
-          className="relative w-10 h-5 rounded-full transition-colors"
-          style={{ background: localOnRoadmap ? '#2563EB' : '#CBD5E1' }}>
-          <span className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform"
-            style={{ left: localOnRoadmap ? 22 : 2 }} />
+          className={localOnRoadmap ? 'pb-toggle-track pb-toggle-on' : 'pb-toggle-track pb-toggle-off'}>
+          <span className="pb-toggle-thumb" />
         </button>
       </div>
     </div>
@@ -780,34 +747,18 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
   const { data: comments = [], isLoading } = useQuery({
     queryKey: ['ph-comments', initiativeId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
-        .from('ph_comments')
-        .select('id, body, author_id, created_at, updated_at')
-        .eq('work_item_id', initiativeId)
-        .order('created_at', { ascending: true });
+      const { data, error } = await (supabase as any).from('ph_comments')
+        .select('id, body, author_id, created_at, updated_at').eq('work_item_id', initiativeId).order('created_at', { ascending: true });
       if (error) throw error;
-      // Fetch author names
       const authorIds: string[] = (data || []).map((c: any) => c.author_id).filter(Boolean);
       const uniqueAuthorIds = Array.from(new Set(authorIds));
-      const profileMap: Record<string, { name: string; avatar: string | null }> = {};
+      let authorMap: Record<string, string> = {};
       if (uniqueAuthorIds.length > 0) {
-        const { data: profiles } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', uniqueAuthorIds);
-        (profiles || []).forEach((p: any) => {
-          profileMap[p.id] = { name: p.full_name || 'Unknown', avatar: p.avatar_url || null };
-        });
+        const { data: profiles } = await (supabase as any).from('profiles').select('id, display_name').in('id', uniqueAuthorIds);
+        if (profiles) profiles.forEach((p: any) => { authorMap[p.id] = p.display_name; });
       }
-      return (data || []).map((c: any) => {
-        const profile = profileMap[c.author_id];
-        return {
-          id: c.id,
-          body: c.body,
-          author_name: profile?.name || 'Unknown',
-          author_avatar: profile?.avatar || null,
-          created_at: c.created_at,
-        };
-      });
+      return (data || []).map((c: any) => ({ ...c, author_name: authorMap[c.author_id] || 'Unknown' }));
     },
-    staleTime: 30_000,
   });
 
   const handleSubmit = async () => {
@@ -815,97 +766,50 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
     setSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        catalystToast.error('You must be logged in to comment');
-        return;
-      }
-      const { error } = await (supabase as any)
-        .from('ph_comments')
-        .insert({ work_item_id: initiativeId, author_id: user.id, body: newComment.trim() });
-      if (error) throw error;
+      await (supabase as any).from('ph_comments').insert({ work_item_id: initiativeId, work_item_type: 'initiative', body: newComment.trim(), author_id: user?.id || null });
+      queryClient.invalidateQueries({ queryKey: ['ph-comments', initiativeId] });
       setNewComment('');
-      queryClient.invalidateQueries({ queryKey: ['ph-comments', initiativeId] });
-    } catch (err: any) {
-      catalystToast.error('Failed to add comment: ' + err.message);
-    } finally {
-      setSubmitting(false);
-    }
+      catalystToast.success('Comment added');
+    } catch (err: any) { catalystToast.error('Failed: ' + err.message); }
+    finally { setSubmitting(false); }
   };
 
-  const handleDelete = async (commentId: string) => {
-    try {
-      const { error } = await (supabase as any)
-        .from('ph_comments')
-        .delete()
-        .eq('id', commentId);
-      if (error) throw error;
-      queryClient.invalidateQueries({ queryKey: ['ph-comments', initiativeId] });
-      catalystToast.success('Comment deleted');
-    } catch (err: any) {
-      catalystToast.error('Failed to delete comment: ' + err.message);
-    }
+  const handleDelete = async (id: string) => {
+    await (supabase as any).from('ph_comments').delete().eq('id', id);
+    queryClient.invalidateQueries({ queryKey: ['ph-comments', initiativeId] });
+    catalystToast.success('Comment deleted');
   };
-
-  function timeAgo(dateStr: string): string {
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const mins = Math.floor(diff / 60000);
-    if (mins < 1) return 'just now';
-    if (mins < 60) return `${mins}m ago`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours}h ago`;
-    const days = Math.floor(hours / 24);
-    return `${days}d ago`;
-  }
 
   return (
-    <div className="mt-6 pt-5 border-t border-zinc-100">
-      <div className="text-[13px] font-semibold text-zinc-900 mb-4">
-        Comments ({comments.length})
-      </div>
+    <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid var(--pb-border)' }}>
+      <h3 className="pb-section-heading">Comments</h3>
       {isLoading ? (
-        <div className="py-4 text-center text-xs text-zinc-400">Loading comments…</div>
+        <p style={{ fontSize: 13, color: 'var(--pb-ink-muted)' }}>Loading…</p>
+      ) : comments.length === 0 ? (
+        <p style={{ fontSize: 13, color: 'var(--pb-ink-muted)', fontStyle: 'italic' }}>No comments yet.</p>
       ) : (
-        <div className="flex flex-col">
-          {comments.map((c: any, i: number) => (
-            <div key={c.id} className="flex gap-3 py-3 group" style={{ borderBottom: i < comments.length - 1 ? '1px solid #fafafa' : 'none' }}>
-              <InlineAvatar name={c.author_name} size={28} avatarUrl={c.author_avatar} />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-[13px] font-medium text-zinc-900">{formatShortName(c.author_name)}</span>
-                  <span className="text-xs text-zinc-400">{timeAgo(c.created_at)}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleDelete(c.id)}
-                    className="text-xs text-zinc-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity ml-auto"
-                  >
-                    ×
-                  </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 16 }}>
+          {comments.map((c: any) => (
+            <div key={c.id} className="pb-comment">
+              <InlineAvatar name={c.author_name} size={24} avatarUrl={avatarsByName.get(c.author_name?.toLowerCase())} />
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                  <span className="pb-comment-author">{c.author_name}</span>
+                  <span className="pb-comment-time">{format(new Date(c.created_at), 'MMM d, h:mm a')}</span>
                 </div>
-                <p className="text-[13px] text-zinc-600 leading-relaxed">{c.body}</p>
+                <div className="pb-comment-body">{c.body}</div>
               </div>
+              <button onClick={() => handleDelete(c.id)} style={{ color: 'var(--pb-ink-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 4, opacity: 0.5 }}><Trash2 size={12} /></button>
             </div>
           ))}
-          {comments.length === 0 && (
-            <p className="text-xs text-zinc-400 py-3">No comments yet. Be the first to comment.</p>
-          )}
         </div>
       )}
-      <div className="flex gap-3 items-center pt-4 mt-4 border-t border-zinc-100">
-        <input
-          type="text"
-          value={newComment}
-          onChange={e => setNewComment(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
-          placeholder="Write a comment…"
-          className="flex-1 h-10 border border-zinc-200 rounded-md px-3 text-[13px] text-zinc-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 bg-zinc-50"
-          disabled={submitting}
-        />
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={submitting || !newComment.trim()}
-          className="h-10 px-4 text-[13px] font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
-        >
+      <div style={{ display: 'flex', gap: 8 }}>
+        <input type="text" value={newComment} onChange={e => setNewComment(e.target.value)} placeholder="Write a comment…"
+          className="pb-comment-input" style={{ flex: 1 }} disabled={submitting}
+          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }} />
+        <button type="button" onClick={handleSubmit} disabled={submitting || !newComment.trim()}
+          style={{ height: 36, padding: '0 16px', fontSize: 13, fontWeight: 500, background: 'var(--pb-primary)', color: '#fff', border: 'none', borderRadius: 'var(--pb-r-md)', cursor: 'pointer', opacity: submitting || !newComment.trim() ? 0.5 : 1 }}>
           {submitting ? 'Sending…' : 'Send'}
         </button>
       </div>
@@ -914,21 +818,11 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
 }
 
 /* ════════════════════════════════════════════════════
-   DETAILS TAB — No score/priority field, custom dropdowns
+   DETAILS TAB
    ════════════════════════════════════════════════════ */
-function DetailsContent({
-  initiative,
-  isEditing,
-  editForm,
-  onFieldChange,
-  onQuickEdit,
-  onStatusChange,
-}: {
-  initiative: Initiative;
-  isEditing: boolean;
-  editForm: Record<string, any>;
-  onFieldChange: (field: string, value: any) => void;
-  onQuickEdit: (field: string, value: any) => void;
+function DetailsContent({ initiative, isEditing, editForm, onFieldChange, onQuickEdit, onStatusChange }: {
+  initiative: Initiative; isEditing: boolean; editForm: Record<string, any>;
+  onFieldChange: (field: string, value: any) => void; onQuickEdit: (field: string, value: any) => void;
   onStatusChange: (id: string, s: InitiativeStatus) => void;
 }) {
   const { data: departmentOptions } = useDepartmentOptions();
@@ -938,288 +832,151 @@ function DetailsContent({
   const getAvatar = (name: string | null) => name ? avatarsByName.get(name.toLowerCase()) : undefined;
   const [selectedTypeKey, setSelectedTypeKey] = useState<string | null>(initiative.initiative_type_key ?? null);
 
-  useEffect(() => {
-    setSelectedTypeKey(initiative.initiative_type_key ?? null);
-  }, [initiative.id, initiative.initiative_type_key]);
+  useEffect(() => { setSelectedTypeKey(initiative.initiative_type_key ?? null); }, [initiative.id, initiative.initiative_type_key]);
+
+  const TYPE_OPTIONS = [
+    { key: 'project', label: 'Project', Icon: FolderKanban, color: 'var(--pb-teal)' },
+    { key: 'enhancement', label: 'Enhancement', Icon: Zap, color: 'var(--pb-primary)' },
+    { key: 'improvement', label: 'Improvement', Icon: Wrench, color: 'var(--pb-warning)' },
+    { key: 'entity_integration', label: 'Entity Integration', Icon: Network, color: 'var(--pb-purple)' },
+  ];
 
   return (
     <>
-      {/* Initiative Type — moved to top */}
-      <div className="mb-5">
-        <FieldLabel>Initiative Type</FieldLabel>
-        <div className="flex items-center gap-2">
-          {[
-            { key: 'project', label: 'Project', Icon: FolderKanban, color: '#2563EB' },
-            { key: 'enhancement', label: 'Enhancement', Icon: Zap, color: '#0D9488' },
-            { key: 'improvement', label: 'Improvement', Icon: Wrench, color: '#D97706' },
-            { key: 'entity_integration', label: 'Entity Integration', Icon: Network, color: '#8B5CF6' },
-          ].map(opt => {
+      {/* Initiative Type */}
+      <div style={{ marginBottom: 20 }}>
+        <div className="pb-field-label">Initiative Type</div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {TYPE_OPTIONS.map(opt => {
             const isActive = selectedTypeKey === opt.key;
             return (
-              <button
-                key={opt.key}
-                onClick={async () => {
-                  if (opt.key === selectedTypeKey) return;
-                  try {
-                    const { data: typeRow, error: typeError } = await (supabase as any)
-                      .from('initiative_types')
-                      .select('id')
-                      .eq('key', opt.key)
-                      .single();
-
-                    if (typeError) throw typeError;
-                    if (!typeRow?.id) throw new Error('Type lookup failed');
-
-                    const now = new Date().toISOString();
-
-                    if (isNativeInitiative(initiative.id)) {
-                      const { error: updateError } = await (supabase as any)
-                        .from('ph_initiatives')
-                        .update({ initiative_type_id: typeRow.id, updated_at: now })
-                        .eq('id', initiative.id);
-                      if (updateError) throw updateError;
-                    } else {
-                      const { error: overrideError } = await (supabase as any)
-                        .from('ph_issue_initiative_type_overrides')
-                        .upsert(
-                          {
-                            issue_key: initiative.initiative_key,
-                            initiative_type_id: typeRow.id,
-                            updated_at: now,
-                          },
-                          { onConflict: 'issue_key' }
-                        );
-                      if (overrideError) throw overrideError;
-                    }
-
-                    setSelectedTypeKey(opt.key);
-                    onQuickEdit('initiative_type_key', opt.key);
-                    catalystToast.success('Initiative type updated');
-                  } catch (err: any) {
-                    catalystToast.error('Failed to update initiative type: ' + (err?.message || 'Unknown error'));
+              <button key={opt.key} onClick={async () => {
+                if (opt.key === selectedTypeKey) return;
+                try {
+                  const { data: typeRow, error: typeError } = await (supabase as any).from('initiative_types').select('id').eq('key', opt.key).single();
+                  if (typeError) throw typeError;
+                  const now = new Date().toISOString();
+                  if (isNativeInitiative(initiative.id)) {
+                    await (supabase as any).from('ph_initiatives').update({ initiative_type_id: typeRow.id, updated_at: now }).eq('id', initiative.id);
+                  } else {
+                    await (supabase as any).from('ph_issue_initiative_type_overrides').upsert({ issue_key: initiative.initiative_key, initiative_type_id: typeRow.id, updated_at: now }, { onConflict: 'issue_key' });
                   }
-                }}
-                className="flex flex-col items-center p-2 rounded-md cursor-pointer transition-all border-2"
-                style={{
-                  borderColor: isActive ? opt.color : 'transparent',
-                  background: isActive ? '#FFFFFF' : 'transparent',
-                  boxShadow: isActive ? '0 1px 3px rgba(0,0,0,.08)' : 'none',
-                }}
-              >
-                <opt.Icon className="w-4 h-4 mb-0.5" style={{ color: opt.color }} />
-                <span className="text-[10px] font-semibold" style={{ color: isActive ? opt.color : '#64748B' }}>{opt.label}</span>
+                  setSelectedTypeKey(opt.key);
+                  onQuickEdit('initiative_type_key', opt.key);
+                  catalystToast.success('Initiative type updated');
+                } catch (err: any) { catalystToast.error('Failed: ' + (err?.message || 'Unknown error')); }
+              }}
+              className={`pb-type-card ${isActive ? 'pb-type-card-active' : ''}`}>
+                <opt.Icon size={16} style={{ color: opt.color, marginBottom: 2 }} />
+                <span style={{ fontSize: 10, fontWeight: 600, color: isActive ? opt.color : 'var(--pb-ink-muted)' }}>{opt.label}</span>
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Roadmap Toggle */}
       <RoadmapToggleInline initiative={initiative} />
 
       {/* Field Grid */}
-      <div className="grid grid-cols-2 gap-4 gap-x-8">
-        {/* Status */}
-        <div>
-          <FieldLabel>Status</FieldLabel>
+      <div className="pb-field-grid">
+        <div className="pb-field-item">
+          <div className="pb-field-label">Status</div>
+          {isEditing ? <StatusSelect value={getVal('status', initiative.status)} onChange={v => onFieldChange('status', v)} />
+            : <StatusBadge status={initiative.status} />}
+        </div>
+        <div className="pb-field-item">
+          <div className="pb-field-label">EA Review</div>
+          <span className="pb-field-value pb-field-empty">—</span>
+        </div>
+        <div className="pb-field-item">
+          <div className="pb-field-label">Priority</div>
+          <span className="pb-field-value" style={{ textTransform: 'capitalize' }}>{getPriorityLevel(initiative.computed_score ?? null).level}</span>
+        </div>
+        <div className="pb-field-item">
+          <div className="pb-field-label">Target Quarter</div>
+          {isEditing ? <QuarterSelect value={getVal('target_quarter', initiative.target_quarter) ?? ''} onChange={v => onFieldChange('target_quarter', v)} />
+            : <span className="pb-field-value">{initiative.target_quarter || <span className="pb-field-empty">—</span>}</span>}
+        </div>
+        <div className="pb-field-item">
+          <div className="pb-field-label">Reporter</div>
+          {isEditing ? <PeopleSelect value={getVal('reporter_id', initiative.reporter_id) ?? ''} onChange={v => onFieldChange('reporter_id', v)} profiles={profileOptions || []} placeholder="Select reporter" />
+            : <div className="pb-field-value" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {initiative.reporter_id ? (() => { const rp = profileOptions?.find(p => p.value === initiative.reporter_id); const name = rp?.label || ''; return <><InlineAvatar name={name} size={20} avatarUrl={getAvatar(name)} />{name}</>; })()
+                : <span className="pb-field-empty">—</span>}
+            </div>}
+        </div>
+        <div className="pb-field-item">
+          <div className="pb-field-label">Assignee</div>
+          {isEditing ? <PeopleSelect value={getVal('assignee_id', initiative.assignee_id) ?? ''} onChange={v => onFieldChange('assignee_id', v)} profiles={profileOptions || []} placeholder="Select assignee" />
+            : <div className="pb-field-value" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {initiative.assignee_name ? <><InlineAvatar name={initiative.assignee_name} size={20} avatarUrl={getAvatar(initiative.assignee_name)} />{initiative.assignee_name}</>
+                : <span className="pb-field-empty">—</span>}
+            </div>}
+        </div>
+        <div className="pb-field-item">
+          <div className="pb-field-label">Department</div>
+          {isEditing ? <DepartmentSelect value={getVal('department_id', initiative.department_id) ?? ''} onChange={v => onFieldChange('department_id', v)} departments={departmentOptions || []} />
+            : <span className="pb-field-value">{initiative.department_name || <span className="pb-field-empty">—</span>}</span>}
+        </div>
+        <div className="pb-field-item">
+          <div className="pb-field-label">Business Owner</div>
+          {isEditing ? <PeopleSelect value={getVal('business_owner_id', initiative.business_owner_id) ?? ''} onChange={v => onFieldChange('business_owner_id', v)} profiles={profileOptions || []} placeholder="Select business owner" />
+            : <div className="pb-field-value" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {initiative.business_owner_name ? <><InlineAvatar name={initiative.business_owner_name} size={20} avatarUrl={getAvatar(initiative.business_owner_name)} />{initiative.business_owner_name}</>
+                : <span className="pb-field-empty">—</span>}
+            </div>}
+        </div>
+        <div className="pb-field-item">
+          <div className="pb-field-label">Business Ask Date</div>
+          {isEditing ? <input type="date" value={getVal('business_ask_date', initiative.business_ask_date) ? String(getVal('business_ask_date', initiative.business_ask_date)).slice(0, 10) : ''}
+              onChange={e => onFieldChange('business_ask_date', e.target.value || null)} style={{ width: '100%', height: 36, border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', padding: '0 12px', fontSize: 13, color: 'var(--pb-ink)', outline: 'none' }} />
+            : <span className="pb-field-value">{formatAbsoluteDate(initiative.business_ask_date)}</span>}
+        </div>
+        <div className="pb-field-item">
+          <div className="pb-field-label">Kickoff Date</div>
+          {isEditing ? <input type="date" value={getVal('kickoff_date', initiative.kickoff_date) ? String(getVal('kickoff_date', initiative.kickoff_date)).slice(0, 10) : ''}
+              onChange={e => onFieldChange('kickoff_date', e.target.value || null)} style={{ width: '100%', height: 36, border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', padding: '0 12px', fontSize: 13, color: 'var(--pb-ink)', outline: 'none' }} />
+            : <span className="pb-field-value">{formatAbsoluteDate(initiative.kickoff_date)}</span>}
+        </div>
+        <div className="pb-field-item">
+          <div className="pb-field-label">Target Complete</div>
+          {isEditing ? <input type="date" value={getVal('target_complete', initiative.target_complete) ? String(getVal('target_complete', initiative.target_complete)).slice(0, 10) : ''}
+              onChange={e => onFieldChange('target_complete', e.target.value || null)} style={{ width: '100%', height: 36, border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', padding: '0 12px', fontSize: 13, color: 'var(--pb-ink)', outline: 'none' }} />
+            : <span className="pb-field-value">{formatAbsoluteDate(initiative.target_complete)}</span>}
+        </div>
+        <div className="pb-field-item">
+          <div className="pb-field-label">Progress</div>
           {isEditing ? (
-            <StatusSelect
-              value={getVal('status', initiative.status)}
-              onChange={v => onFieldChange('status', v)}
-            />
-          ) : (
-            <StatusBadge status={initiative.status} />
-          )}
-        </div>
-
-        {/* EA Review */}
-        <div>
-          <FieldLabel>EA Review</FieldLabel>
-          <span className="text-[13px] text-zinc-400">—</span>
-        </div>
-
-        {/* Priority */}
-        <div>
-          <FieldLabel>Priority</FieldLabel>
-          <span className="text-[13px] text-zinc-900 capitalize">{getPriorityLevel(initiative.computed_score ?? null).level}</span>
-        </div>
-
-        {/* Target Quarter */}
-        <div>
-          <FieldLabel>Target Quarter</FieldLabel>
-          {isEditing ? (
-            <QuarterSelect
-              value={getVal('target_quarter', initiative.target_quarter) ?? ''}
-              onChange={v => onFieldChange('target_quarter', v)}
-            />
-          ) : (
-            <div className="text-[13px] text-zinc-900">{initiative.target_quarter || <span className="text-zinc-400">—</span>}</div>
-          )}
-        </div>
-
-        {/* Reporter */}
-        <div>
-          <FieldLabel>Reporter</FieldLabel>
-          {isEditing ? (
-            <PeopleSelect
-              value={getVal('reporter_id', initiative.reporter_id) ?? ''}
-              onChange={v => onFieldChange('reporter_id', v)}
-              profiles={profileOptions || []}
-              placeholder="Select reporter"
-            />
-          ) : (
-            <div className="text-[13px] text-zinc-900 flex items-center gap-2">
-              {initiative.reporter_id ? (
-                <>
-                  {(() => {
-                    const rp = profileOptions?.find(p => p.value === initiative.reporter_id);
-                    const name = rp?.label || initiative.reporter_id || '';
-                    return <><InlineAvatar name={name} size={20} avatarUrl={getAvatar(name)} />{name}</>;
-                  })()}
-                </>
-              ) : <span className="text-zinc-400">—</span>}
-            </div>
-          )}
-        </div>
-
-        {/* Assignee */}
-        <div>
-          <FieldLabel>Assignee</FieldLabel>
-          {isEditing ? (
-            <PeopleSelect
-              value={getVal('assignee_id', initiative.assignee_id) ?? ''}
-              onChange={v => onFieldChange('assignee_id', v)}
-              profiles={profileOptions || []}
-              placeholder="Select assignee"
-            />
-          ) : (
-            <div className="text-[13px] text-zinc-900 flex items-center gap-2">
-              {initiative.assignee_name ? (
-                <>
-                  <InlineAvatar name={initiative.assignee_name} size={20} avatarUrl={getAvatar(initiative.assignee_name)} />
-                  {initiative.assignee_name}
-                </>
-              ) : <span className="text-zinc-400">—</span>}
-            </div>
-          )}
-        </div>
-
-        {/* Department */}
-        <div>
-          <FieldLabel>Department</FieldLabel>
-          {isEditing ? (
-            <DepartmentSelect
-              value={getVal('department_id', initiative.department_id) ?? ''}
-              onChange={v => onFieldChange('department_id', v)}
-              departments={departmentOptions || []}
-            />
-          ) : (
-            <div className="text-[13px] text-zinc-900">{initiative.department_name || <span className="text-zinc-400">—</span>}</div>
-          )}
-        </div>
-
-        {/* Business Owner */}
-        <div>
-          <FieldLabel>Business Owner</FieldLabel>
-          {isEditing ? (
-            <PeopleSelect
-              value={getVal('business_owner_id', initiative.business_owner_id) ?? ''}
-              onChange={v => onFieldChange('business_owner_id', v)}
-              profiles={profileOptions || []}
-              placeholder="Select business owner"
-            />
-          ) : (
-            <div className="text-[13px] text-zinc-900 flex items-center gap-2">
-              {initiative.business_owner_name ? (
-                <>
-                  <InlineAvatar name={initiative.business_owner_name} size={20} avatarUrl={getAvatar(initiative.business_owner_name)} />
-                  {initiative.business_owner_name}
-                </>
-              ) : <span className="text-zinc-400">—</span>}
-            </div>
-          )}
-        </div>
-
-        {/* Business Ask Date */}
-        <div>
-          <FieldLabel>Business Ask Date</FieldLabel>
-          {isEditing ? (
-            <input type="date"
-              value={getVal('business_ask_date', initiative.business_ask_date) ? String(getVal('business_ask_date', initiative.business_ask_date)).slice(0, 10) : ''}
-              onChange={e => onFieldChange('business_ask_date', e.target.value || null)}
-              className="w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            />
-          ) : (
-            <div className="text-[13px] text-zinc-900">{formatAbsoluteDate(initiative.business_ask_date)}</div>
-          )}
-        </div>
-
-        {/* Kickoff Date */}
-        <div>
-          <FieldLabel>Kickoff Date</FieldLabel>
-          {isEditing ? (
-            <input type="date"
-              value={getVal('kickoff_date', initiative.kickoff_date) ? String(getVal('kickoff_date', initiative.kickoff_date)).slice(0, 10) : ''}
-              onChange={e => onFieldChange('kickoff_date', e.target.value || null)}
-              className="w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            />
-          ) : (
-            <div className="text-[13px] text-zinc-900">{formatAbsoluteDate(initiative.kickoff_date)}</div>
-          )}
-        </div>
-
-        {/* Target Complete */}
-        <div>
-          <FieldLabel>Target Complete</FieldLabel>
-          {isEditing ? (
-            <input type="date"
-              value={getVal('target_complete', initiative.target_complete) ? String(getVal('target_complete', initiative.target_complete)).slice(0, 10) : ''}
-              onChange={e => onFieldChange('target_complete', e.target.value || null)}
-              className="w-full border border-zinc-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            />
-          ) : (
-            <div className="text-[13px] text-zinc-900">{formatAbsoluteDate(initiative.target_complete)}</div>
-          )}
-        </div>
-
-        {/* Progress */}
-        <div>
-          <FieldLabel>Progress</FieldLabel>
-          {isEditing ? (
-            <div className="flex items-center gap-3">
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={Number(getVal('progress', initiative.progress)) || 0}
-                onChange={e => onFieldChange('progress', Number(e.target.value))}
-                className="flex-1 accent-blue-600"
-              />
-              <span className="text-sm font-medium text-zinc-700 tabular-nums w-10 text-right">{getVal('progress', initiative.progress) ?? 0}%</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <input type="range" min={0} max={100} value={Number(getVal('progress', initiative.progress)) || 0}
+                onChange={e => onFieldChange('progress', Number(e.target.value))} style={{ flex: 1, accentColor: 'var(--pb-primary)' }} />
+              <span className="pb-progress-label" style={{ minWidth: 40, textAlign: 'right' }}>{getVal('progress', initiative.progress) ?? 0}%</span>
             </div>
           ) : (
-            <DetailProgressBar value={initiative.progress} status={initiative.status} />
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <div className="pb-progress-track" style={{ width: 80 }}>
+                <div className="pb-progress-fill" style={{ width: `${Math.min(Math.max(initiative.progress, 0), 100)}%`, background: initiative.status === 'done' ? 'var(--pb-success)' : 'var(--pb-primary)' }} />
+              </div>
+              <span className="pb-progress-label">{initiative.progress}%</span>
+            </div>
           )}
         </div>
       </div>
 
       {/* Description */}
-      <div className="mt-6 pt-5 border-t border-zinc-100">
-        <div className="text-[13px] font-semibold text-zinc-900 mb-2">Description</div>
+      <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid var(--pb-border)' }}>
+        <h3 className="pb-section-heading">Description</h3>
         {isEditing ? (
-          <textarea
-            value={getVal('description', initiative.description) ?? ''}
-            onChange={e => onFieldChange('description', e.target.value)}
-            rows={4}
-            placeholder="Describe this initiative..."
-            className="w-full border border-zinc-300 rounded-lg px-3 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-y"
-          />
+          <textarea value={getVal('description', initiative.description) ?? ''} onChange={e => onFieldChange('description', e.target.value)}
+            rows={4} placeholder="Describe this initiative…"
+            style={{ width: '100%', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', padding: '10px 12px', fontSize: 13, color: 'var(--pb-ink)', outline: 'none', resize: 'vertical', fontFamily: 'var(--pb-font-body)' }} />
         ) : (
-          <p className="text-[13px] text-zinc-700 leading-relaxed">{initiative.description || <span className="text-zinc-400 italic">No description provided for this initiative.</span>}</p>
+          <p style={{ fontSize: 13, color: 'var(--pb-ink-muted)', lineHeight: 1.6, fontStyle: initiative.description ? undefined : 'italic' }}>
+            {initiative.description || 'No description provided for this initiative.'}
+          </p>
         )}
       </div>
 
-      {/* Comments — real data */}
       <CommentsSection initiativeId={initiative.id} />
     </>
   );
@@ -1228,40 +985,35 @@ function DetailsContent({
 /* ════════════════════════════════════════════════════
    SCORE TAB
    ════════════════════════════════════════════════════ */
-function ScoreContent({
-  scores, computedScore, priority, onScoreChange, onSave,
-}: {
-  initiative: Initiative;
-  scores: { sa: number; bi: number; tu: number; rf: number };
-  computedScore: number;
-  priority: ReturnType<typeof getPriorityLevel>;
-  onScoreChange: (s: typeof scores) => void;
-  onSave: () => void;
+function ScoreContent({ scores, computedScore, priority, onScoreChange, onSave }: {
+  initiative: Initiative; scores: { sa: number; bi: number; tu: number; rf: number };
+  computedScore: number; priority: ReturnType<typeof getPriorityLevel>;
+  onScoreChange: (s: typeof scores) => void; onSave: () => void;
 }) {
   return (
-    <div className="flex gap-6 min-h-[400px]">
-      <div className="flex-[3] flex flex-col">
+    <div style={{ display: 'flex', gap: 24, minHeight: 400 }}>
+      <div style={{ flex: 3, display: 'flex', flexDirection: 'column' }}>
         <ScoreSlider label="Strategic Alignment" value={scores.sa} onChange={(v) => onScoreChange({ ...scores, sa: v })} />
         <ScoreSlider label="Business Impact" value={scores.bi} onChange={(v) => onScoreChange({ ...scores, bi: v })} />
         <ScoreSlider label="Time & Urgency" value={scores.tu} onChange={(v) => onScoreChange({ ...scores, tu: v })} />
         <ScoreSlider label="Resource & Feasibility" value={scores.rf} onChange={(v) => onScoreChange({ ...scores, rf: v })} />
         <button type="button" onClick={onSave}
-          className="w-full h-[38px] bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-medium rounded-md mt-auto transition-colors">
+          style={{ width: '100%', height: 38, background: 'var(--pb-primary)', color: '#fff', fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 'var(--pb-r-md)', cursor: 'pointer', marginTop: 'auto' }}>
           Save Score
         </button>
       </div>
-      <div className="flex-[2] bg-zinc-50 border border-zinc-100 rounded-xl p-5 flex flex-col items-center">
-        <div className="text-[52px] font-bold text-zinc-900 leading-none tracking-tight tabular-nums mb-2.5">
+      <div style={{ flex: 2, background: 'var(--pb-surface-secondary)', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-lg)', padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ fontSize: 52, fontWeight: 700, color: 'var(--pb-ink)', lineHeight: 1, fontVariantNumeric: 'tabular-nums', marginBottom: 10 }}>
           {computedScore.toFixed(1)}
         </div>
-        <div className="mb-4"><PriorityBadge score={computedScore} size="md" showScore={false} /></div>
-        <div className="my-2"><RadarChart scores={[scores.sa, scores.bi, scores.tu, scores.rf]} /></div>
-        <div className="mt-3.5 pt-3.5 border-t border-zinc-200 w-full">
-          <p className="text-xs text-zinc-500 leading-relaxed text-center">
-            {priority.level === 'High' && <>Score of {computedScore.toFixed(1)} falls in the <strong className="text-zinc-700">High</strong> range (4.0-5.0).</>}
-            {priority.level === 'Medium' && <>Score of {computedScore.toFixed(1)} falls in the <strong className="text-zinc-700">Medium</strong> range (3.0-3.9).</>}
-            {priority.level === 'Low' && <>Score of {computedScore.toFixed(1)} falls in the <strong className="text-zinc-700">Low</strong> range (2.0-2.9).</>}
-            {priority.level === 'Rejected' && <>Score of {computedScore.toFixed(1)} falls in the <strong className="text-zinc-700">Rejected</strong> range (1.0-1.9).</>}
+        <div style={{ marginBottom: 16 }}><PriorityBadge score={computedScore} size="md" showScore={false} /></div>
+        <div style={{ margin: '8px 0' }}><RadarChart scores={[scores.sa, scores.bi, scores.tu, scores.rf]} /></div>
+        <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--pb-border)', width: '100%' }}>
+          <p style={{ fontSize: 12, color: 'var(--pb-ink-muted)', lineHeight: 1.5, textAlign: 'center' }}>
+            {priority.level === 'High' && <>Score of {computedScore.toFixed(1)} falls in the <strong style={{ color: 'var(--pb-ink-tertiary)' }}>High</strong> range (4.0-5.0).</>}
+            {priority.level === 'Medium' && <>Score of {computedScore.toFixed(1)} falls in the <strong style={{ color: 'var(--pb-ink-tertiary)' }}>Medium</strong> range (3.0-3.9).</>}
+            {priority.level === 'Low' && <>Score of {computedScore.toFixed(1)} falls in the <strong style={{ color: 'var(--pb-ink-tertiary)' }}>Low</strong> range (2.0-2.9).</>}
+            {priority.level === 'Rejected' && <>Score of {computedScore.toFixed(1)} falls in the <strong style={{ color: 'var(--pb-ink-tertiary)' }}>Rejected</strong> range (1.0-1.9).</>}
             {priority.level === 'Unscored' && 'This initiative has not been scored yet.'}
           </p>
         </div>
