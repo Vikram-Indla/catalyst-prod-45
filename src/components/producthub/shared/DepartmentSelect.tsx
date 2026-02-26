@@ -57,7 +57,7 @@ export function DepartmentSelect({ value, onChange, departments, disabled }: Dep
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-1 w-full bg-white border border-zinc-200 rounded-lg shadow-lg overflow-hidden">
+        <div className="absolute mt-1 w-full bg-white border border-zinc-200 rounded-lg shadow-lg overflow-hidden" style={{ zIndex: 9999 }}>
           {departments.length > 5 && (
             <div className="sticky top-0 bg-white border-b border-zinc-100 px-3 py-2.5 flex items-center gap-2">
               <Search className="w-4 h-4 text-zinc-400 shrink-0" />
