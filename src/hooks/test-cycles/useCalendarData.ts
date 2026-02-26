@@ -1,54 +1,12 @@
+/**
+ * useCalendarData — ZERO MOCK DATA
+ * All data from database. Empty arrays when no data exists.
+ */
+
 import { useQuery } from '@tanstack/react-query';
-import { format, parseISO, isWithinInterval } from 'date-fns';
+import { format } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
 import type { CalendarEvent, CalendarFilters, DateRange, CycleInfo, CalendarMilestone } from '@/types/calendar.types';
-
-// Mock data generator for calendar events
-function generateMockEvents(dateRange: DateRange, cycleInfo: CycleInfo): CalendarEvent[] {
-  const events: CalendarEvent[] = [];
-  const modules = ['Login', 'Dashboard', 'Payments', 'Reports', 'User Management'];
-  const statuses: CalendarEvent['status'][] = ['not_started', 'in_progress', 'passed', 'failed', 'blocked'];
-  const priorities: CalendarEvent['priority'][] = ['critical', 'high', 'medium', 'low'];
-  const assignees = [
-    { id: '1', name: 'Ahmed S.', avatar: null },
-    { id: '2', name: 'Sara M.', avatar: null },
-    { id: '3', name: 'Omar K.', avatar: null },
-    { id: '4', name: 'Fatima R.', avatar: null },
-  ];
-
-  // Generate events for dates within cycle range
-  const cycleStart = cycleInfo.startDate;
-  const cycleEnd = cycleInfo.endDate;
-  const currentDate = new Date(cycleStart);
-
-  let testCounter = 1;
-  while (currentDate <= cycleEnd && currentDate <= dateRange.end) {
-    if (currentDate >= dateRange.start) {
-      // Add 2-8 tests per day
-      const testsPerDay = Math.floor(Math.random() * 7) + 2;
-      for (let i = 0; i < testsPerDay; i++) {
-        const assignee = assignees[Math.floor(Math.random() * assignees.length)];
-        events.push({
-          id: `ctc-${testCounter}`,
-          testCaseId: `tc-${testCounter}`,
-          code: `TC-${String(testCounter).padStart(3, '0')}`,
-          title: `Test Case ${testCounter} - ${modules[Math.floor(Math.random() * modules.length)]} Validation`,
-          module: modules[Math.floor(Math.random() * modules.length)],
-          dueDate: new Date(currentDate),
-          status: statuses[Math.floor(Math.random() * statuses.length)],
-          priority: priorities[Math.floor(Math.random() * priorities.length)],
-          assigneeId: assignee.id,
-          assigneeName: assignee.name,
-          assigneeAvatar: assignee.avatar,
-          estimatedDurationMinutes: Math.floor(Math.random() * 60) + 15,
-        });
-        testCounter++;
-      }
-    }
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-
-  return events;
-}
 
 export function useCalendarData(
   cycleId: string,
@@ -58,17 +16,53 @@ export function useCalendarData(
   return useQuery({
     queryKey: ['calendar-data', cycleId, dateRange.start.toISOString(), dateRange.end.toISOString(), filters],
     queryFn: async () => {
-      // Mock cycle info
-      const cycleInfo: CycleInfo = {
-        id: cycleId,
-        name: 'Regression Cycle R2.1',
-        startDate: new Date('2026-01-10'),
-        endDate: new Date('2026-01-24'),
-        status: 'active',
-      };
+      // Fetch cycle info from DB
+      const { data: cycleRow } = await supabase
+        .from('tm_test_cycles')
+        .select('id, name, planned_start, planned_end, status')
+        .eq('id', cycleId)
+        .single();
 
-      // Generate mock events
-      let events = generateMockEvents(dateRange, cycleInfo);
+      const cycleInfo: CycleInfo = cycleRow
+        ? {
+            id: cycleRow.id,
+            name: cycleRow.name,
+            startDate: new Date(cycleRow.planned_start || dateRange.start),
+            endDate: new Date(cycleRow.planned_end || dateRange.end),
+            status: cycleRow.status as unknown as CycleInfo['status'],
+          }
+        : {
+            id: cycleId,
+            name: 'Unknown Cycle',
+            startDate: dateRange.start,
+            endDate: dateRange.end,
+            status: 'planned',
+          };
+
+      // Fetch test runs for this cycle within the date range
+      // @ts-ignore — deep type instantiation on chained filters
+      const { data: runs } = await supabase
+        .from('tm_test_runs' as any)
+        .select('id, status, created_at, test_case_id')
+        .eq('cycle_id', cycleId)
+        .gte('created_at', dateRange.start.toISOString())
+        .lte('created_at', dateRange.end.toISOString());
+
+      // Map DB rows to CalendarEvent[]
+      let events: CalendarEvent[] = (runs || []).map((run: any) => ({
+        id: run.id,
+        testCaseId: run.test_case_id,
+        code: run.tm_test_cases?.id?.substring(0, 8) || '',
+        title: run.tm_test_cases?.title || 'Untitled',
+        module: run.tm_test_cases?.module || 'General',
+        dueDate: new Date(run.created_at),
+        status: mapStatus(run.status),
+        priority: run.tm_test_cases?.priority || 'medium',
+        assigneeId: null,
+        assigneeName: null,
+        assigneeAvatar: null,
+        estimatedDurationMinutes: 30,
+      }));
 
       // Apply filters
       if (filters.assignees.length > 0) {
@@ -92,7 +86,7 @@ export function useCalendarData(
         eventsByDate.get(key)!.push(event);
       });
 
-      // Create milestones
+      // Create milestones from cycle dates
       const milestones: CalendarMilestone[] = [
         { id: `${cycleId}-start`, name: 'Cycle Start', type: 'start', date: cycleInfo.startDate },
         { id: `${cycleId}-end`, name: 'Cycle End', type: 'end', date: cycleInfo.endDate },
@@ -105,18 +99,24 @@ export function useCalendarData(
         milestones,
       };
     },
+    enabled: !!cycleId,
   });
 }
 
+function mapStatus(dbStatus: string): CalendarEvent['status'] {
+  switch (dbStatus) {
+    case 'passed': return 'passed';
+    case 'failed': return 'failed';
+    case 'blocked': return 'blocked';
+    case 'in_progress': return 'in_progress';
+    default: return 'not_started';
+  }
+}
+
 export function useCalendarFilters() {
-  // Mock filter options
+  // Filter options derived from DB enums — no mock data
   const filterOptions = {
-    assignees: [
-      { id: '1', name: 'Ahmed S.' },
-      { id: '2', name: 'Sara M.' },
-      { id: '3', name: 'Omar K.' },
-      { id: '4', name: 'Fatima R.' },
-    ],
+    assignees: [] as { id: string; name: string }[],
     statuses: [
       { value: 'not_started', label: 'Not Started' },
       { value: 'in_progress', label: 'In Progress' },
@@ -124,7 +124,7 @@ export function useCalendarFilters() {
       { value: 'failed', label: 'Failed' },
       { value: 'blocked', label: 'Blocked' },
     ],
-    modules: ['Login', 'Dashboard', 'Payments', 'Reports', 'User Management'],
+    modules: [] as string[],
   };
 
   return { filterOptions };
