@@ -228,8 +228,14 @@ function EditableTextArea({ value, onSave }: {
 function EditableProgress({ value, onSave }: { value: number; onSave: (v: number) => void }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
+  const committed = useRef(false);
+
+  // Sync draft when value changes externally
+  useEffect(() => { if (!editing) setDraft(value); }, [value, editing]);
 
   const commit = () => {
+    if (committed.current) return;
+    committed.current = true;
     setEditing(false);
     if (draft !== value) onSave(draft);
   };
@@ -238,7 +244,7 @@ function EditableProgress({ value, onSave }: { value: number; onSave: (v: number
     return (
       <div
         className="group cursor-pointer"
-        onClick={() => { setDraft(value); setEditing(true); }}
+        onClick={() => { setDraft(value); setEditing(true); committed.current = false; }}
       >
         <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden mt-0.5">
           <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${Math.min(100, value)}%` }} />
@@ -429,11 +435,20 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
       const fkFields = ['department_id', 'assignee_id', 'reporter_id', 'business_owner_id', 'product_id'];
       const sanitized = fkFields.includes(field) && value === '' ? null : value;
 
-      const { error } = await supabase
+      const { data: rows, error } = await supabase
         .from('ph_initiatives')
-        .update({ [field]: sanitized } as any)
-        .eq('id', initiative.id);
+        .update({ [field]: sanitized, updated_at: new Date().toISOString() } as any)
+        .eq('id', initiative.id)
+        .select();
       if (error) throw error;
+
+      // Detect RLS silent rejection (0 rows affected)
+      if (!rows || rows.length === 0) {
+        console.warn('autoSave: update returned 0 rows — possible RLS rejection or wrong ID', { field, id: initiative.id });
+        toast.error(`Failed to persist ${label.toLowerCase()} — no rows updated`);
+        return;
+      }
+
       toast.success(`${label} updated`, {
         duration: 2000,
         icon: <Check size={14} className="text-primary" />,
@@ -441,6 +456,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
       invalidateAll();
     } catch (err: any) {
       toast.error(`Failed to update ${label.toLowerCase()}`);
+      console.error('Initiative update failed:', field, err);
     }
   }, [initiative.id, invalidateAll]);
 
@@ -462,11 +478,17 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         .single();
       if (lookupErr || !typeRow) throw lookupErr || new Error('Type not found');
 
-      const { error } = await supabase
+      const { data: rows, error } = await supabase
         .from('ph_initiatives')
-        .update({ initiative_type_id: typeRow.id } as any)
-        .eq('id', initiative.id);
+        .update({ initiative_type_id: typeRow.id, updated_at: new Date().toISOString() } as any)
+        .eq('id', initiative.id)
+        .select();
       if (error) throw error;
+      if (!rows || rows.length === 0) {
+        toast.error('Failed to persist type — no rows updated');
+        setUpdatingType(false);
+        return;
+      }
 
       toast.success(`Type → ${typeKey}`, {
         duration: 2000,
