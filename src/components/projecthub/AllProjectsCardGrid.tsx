@@ -82,8 +82,8 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
               <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
                 {[
                   { label: 'E', val: p.total_epics, tip: 'Epics' },
+                  { label: 'F', val: p.total_features ?? 0, tip: 'Features' },
                   { label: 'S', val: p.total_stories, tip: 'Stories' },
-                  { label: 'T', val: p.total_tasks, tip: 'Tasks' },
                 ].map(i => (
                   <div key={i.label} title={i.tip} style={{
                     flex: 1, textAlign: 'center', padding: '4px 0', background: '#F8FAFC', borderRadius: 4,

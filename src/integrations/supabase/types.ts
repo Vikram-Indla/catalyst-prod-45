@@ -58899,6 +58899,8 @@ export type Database = {
           status_category: string | null
           tags: string[] | null
           total_epics: number | null
+          total_features: number | null
+          total_issues: number | null
           total_stories: number | null
           total_tasks: number | null
           updated_at: string | null

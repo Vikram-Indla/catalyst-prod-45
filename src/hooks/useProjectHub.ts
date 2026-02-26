@@ -32,7 +32,7 @@ export function useProjects() {
       const { data, error } = await (supabase as any)
         .from('v_project_list')
         .select('*')
-        .order('updated_at', { ascending: false });
+        .order('total_issues', { ascending: false });
 
       if (error) throw new Error(`Failed to fetch projects: ${error.message}`);
       return (data ?? []) as ProjectListItem[];
@@ -273,6 +273,7 @@ export function filterAndSortProjects(
       case 'total_epics': va = a.total_epics; vb = b.total_epics; break;
       case 'total_stories': va = a.total_stories; vb = b.total_stories; break;
       case 'total_tasks': va = a.total_tasks; vb = b.total_tasks; break;
+      case 'total_issues': va = a.total_issues ?? 0; vb = b.total_issues ?? 0; break;
       default: va = a.name.toLowerCase(); vb = b.name.toLowerCase();
     }
 
