@@ -3,7 +3,7 @@
  * Route: /project-hub/resources/:resourceId
  * Contains: Profile Header, Week Nav, Ring/Chronology/Board views, Detail Panel
  */
-import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useCallback, useEffect, useRef, lazy, Suspense } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useR360Overview, useR360WorkItems, useR360Siblings } from '@/hooks/useR360';
 import { R360_DEPT_COLORS, R360_PROJECT_COLORS } from '@/constants/r360';
@@ -12,6 +12,7 @@ import { getJiraIcon } from '@/components/r360/R360JiraIcons';
 import { ChevronLeft, ChevronRight, Calendar, Sparkles, X, ChevronDown } from 'lucide-react';
 import type { R360WorkItem, R360ViewType, R360Filters } from '@/types/r360';
 import '@/styles/r360.css';
+import AiIntelligenceOverlay from '@/components/resource360/AiIntelligenceOverlay';
 
 // ── Week helpers ──
 function getWeekRange(offset: number) {
@@ -94,6 +95,7 @@ export default function R360MemberDetail() {
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItem, setSelectedItem] = useState<R360WorkItem | null>(null);
+  const [aiOpen, setAiOpen] = useState(false);
 
   const { data: overview, isLoading: overviewLoading } = useR360Overview(resourceId || '');
 
@@ -234,7 +236,7 @@ export default function R360MemberDetail() {
             <button className="r3-btn">
               <Calendar size={14} /> Q1-2026
             </button>
-            <button className="r3-btn r3-btn--primary">
+            <button className="r3-btn r3-btn--primary" onClick={() => setAiOpen(true)}>
               <Sparkles size={14} /> Intelligence
             </button>
           </div>
@@ -278,6 +280,16 @@ export default function R360MemberDetail() {
           <DetailPanel item={selectedItem} onClose={() => setSelectedItem(null)} onSelectItem={setSelectedItem} />
         )}
       </div>
+
+      {/* AI Intelligence Overlay */}
+      {aiOpen && overview && (
+        <AiIntelligenceOverlay
+          resourceId={resourceId || ''}
+          resource={{ id: resourceId, full_name: overview.name, role: overview.role_name }}
+          rid={overview.rid || ''}
+          onClose={() => setAiOpen(false)}
+        />
+      )}
     </div>
   );
 }
