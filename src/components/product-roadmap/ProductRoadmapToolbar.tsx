@@ -468,13 +468,6 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
                   placeholder="All priorities"
                 />
                 
-                <MultiSelectDropdown
-                  label="Health"
-                  options={HEALTH_CONFIG.filter(h => h.key !== 'unknown')}
-                  selectedKeys={draftFilters.health}
-                  onToggle={onToggleHealth}
-                  placeholder="All health statuses"
-                />
                 
                 <MultiSelectDropdown
                   label="Milestone Condition"

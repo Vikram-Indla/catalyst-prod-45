@@ -132,7 +132,6 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
   const [selectedType, setSelectedType] = useState('project');
   const [onRoadmap, setOnRoadmap] = useState(false);
   const [roadmapPriority, setRoadmapPriority] = useState('');
-  const [healthStatus, setHealthStatus] = useState('on_track');
   const [businessValue, setBusinessValue] = useState('');
   const [estimatedBudget, setEstimatedBudget] = useState('');
 
@@ -140,7 +139,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
     setSelectedType('project');
     setOnRoadmap(false);
     setRoadmapPriority('');
-    setHealthStatus('on_track');
+    
     setBusinessValue('');
     setEstimatedBudget('');
   };
@@ -224,7 +223,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
       initiative_key: key,
       initiative_type_id: typeId,
       on_roadmap: onRoadmap,
-      health_status: healthStatus || 'on_track',
+      health_status: null,
       business_value: businessValue || null,
       estimated_budget: estimatedBudget ? parseFloat(estimatedBudget) : null,
       roadmap_priority: roadmapPriority ? parseInt(roadmapPriority) : null,
