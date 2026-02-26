@@ -145,11 +145,12 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
 
           {!isLoading && !error && filtered.map((item: any) => {
             const typeColor = TYPE_COLORS[item.type]?.solid || '#94A3B8';
+            const isOnRoadmap = item.alreadyOnRoadmap;
             return (
               <div
                 key={item.id}
                 className="flex items-center gap-3 px-6 py-3 cursor-pointer"
-                style={{ borderBottom: `1px solid ${SURFACE.borderLight}`, transition: 'background-color 0.15s ease' }}
+                style={{ borderBottom: `1px solid ${SURFACE.borderLight}`, transition: 'background-color 0.15s ease', opacity: isOnRoadmap ? 0.6 : 1 }}
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = SURFACE.page)}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
@@ -171,16 +172,25 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
                     )}
                   </div>
                 </div>
-                <button
-                  onClick={() => handleAdd(item.id, item.title)}
-                  disabled={addMutation.isPending}
-                  className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
-                  style={{ color: '#2563EB', border: '1px solid #BFDBFE', background: '#EFF6FF', transition: 'background-color 0.15s ease' }}
-                  onMouseEnter={e => { if (!addMutation.isPending) e.currentTarget.style.backgroundColor = '#DBEAFE'; }}
-                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#EFF6FF')}
-                >
-                  {addMutation.isPending ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />} Add
-                </button>
+                {isOnRoadmap ? (
+                  <span
+                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md"
+                    style={{ color: '#16A34A', border: '1px solid #BBF7D0', background: '#F0FDF4' }}
+                  >
+                    <CheckCircle2 size={12} /> On Roadmap
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => handleAdd(item.id, item.title)}
+                    disabled={addMutation.isPending}
+                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
+                    style={{ color: '#2563EB', border: '1px solid #BFDBFE', background: '#EFF6FF', transition: 'background-color 0.15s ease' }}
+                    onMouseEnter={e => { if (!addMutation.isPending) e.currentTarget.style.backgroundColor = '#DBEAFE'; }}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#EFF6FF')}
+                  >
+                    {addMutation.isPending ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />} Add
+                  </button>
+                )}
               </div>
             );
           })}

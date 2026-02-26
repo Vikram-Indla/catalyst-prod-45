@@ -292,7 +292,6 @@ export function useBacklogItemsNotOnRoadmap() {
       const onRoadmapKeys = new Set((onRoadmap || []).map((r: any) => r.initiative_key));
 
       return (issues || [])
-        .filter((row: any) => !onRoadmapKeys.has(row.issue_key))
         .map((row: any) => {
           const { titleAr, titleEn } = splitTitle(row.summary || '');
           return {
@@ -303,6 +302,7 @@ export function useBacklogItemsNotOnRoadmap() {
             status: row.status || '',
             owner: row.assignee_display_name || '',
             type: 'project' as RoadmapInitiative['type'],
+            alreadyOnRoadmap: onRoadmapKeys.has(row.issue_key),
           };
         });
     },
