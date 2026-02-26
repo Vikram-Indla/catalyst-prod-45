@@ -1,6 +1,6 @@
 /**
  * Initiative Listing Page — /producthub/backlog
- * Catalyst V5 Data-Dense Table View — Now wired to ph_initiatives via ph_backlog_initiatives_view
+ * LINEAR PRECISION Design — pb-* namespace
  */
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
@@ -9,15 +9,12 @@ import type { BRDTask } from '@/hooks/useMDTBacklog';
 import { useProfileOptions, useDepartmentOptions } from '@/hooks/useInitiativeLookups';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-import { ListingToolbar } from '@/components/producthub/listing/ListingToolbar';
 import { InitiativeTable } from '@/components/producthub/listing/InitiativeTable';
-import { BulkActionBar } from '@/components/producthub/listing/BulkActionBar';
 import { Pagination } from '@/components/producthub/listing/Pagination';
 import { DetailPanel } from '@/components/initiatives/DetailPanel';
 import { ContextMenu } from '@/components/initiatives/ContextMenu';
 import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateInitiativeDrawer';
 import { PromoteToRoadmapDialog } from '@/components/producthub/shared/PromoteToRoadmapDialog';
-import { InitiativeTypeBadge } from '@/components/producthub/shared/InitiativeTypeBadge';
 
 import { ColumnManager, DEFAULT_COLUMNS, type ColumnConfig } from '@/components/producthub/listing/ColumnManager';
 import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';
@@ -26,18 +23,37 @@ import { catalystToast } from '@/lib/catalystToast';
 
 import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { getPriorityLevel } from '@/types/initiative';
+import { Search, X, Plus, Download } from 'lucide-react';
+import '@/styles/product-backlog.css';
 
 const TERMINAL_STATUSES: InitiativeStatus[] = ['done', 'cancelled'];
-
 const COLUMN_STORAGE_KEY = 'ph-backlog-columns';
 const DENSITY_STORAGE_KEY = 'ph-backlog-density';
+
+const QUICK_FILTERS = [
+  { id: 'all', label: 'All' },
+  { id: 'my', label: 'My Items' },
+  { id: 'quarter', label: 'This Quarter' },
+  { id: 'high', label: 'High Priority' },
+  { id: 'unscored', label: 'Unscored' },
+  { id: 'overdue', label: 'Overdue' },
+  { id: 'starred', label: 'Starred' },
+  { id: 'on_roadmap', label: 'On Roadmap' },
+  { id: 'not_on_roadmap', label: 'Not on Roadmap' },
+];
+
+const TYPE_LEGEND = [
+  { key: 'project', label: 'Project', color: '#0D9488' },
+  { key: 'enhancement', label: 'Enhancement', color: '#2563EB' },
+  { key: 'improvement', label: 'Improvement', color: '#D97706' },
+  { key: 'entity_integration', label: 'Entity Integration', color: '#7C3AED' },
+];
 
 function loadColumns(): ColumnConfig[] {
   try {
     const raw = localStorage.getItem(COLUMN_STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as ColumnConfig[];
-      // Ensure new columns exist
       const ids = parsed.map(c => c.id);
       if (!ids.includes('roadmap')) parsed.splice(0, 0, { id: 'roadmap', label: 'Roadmap', visible: true });
       if (!ids.includes('type')) {
@@ -114,24 +130,8 @@ export default function InitiativeListingPage() {
 
   const isNative = useCallback((id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(id), []);
 
-  const getProfileName = useCallback((id: string | null) => {
-    if (!id || !profiles) return null;
-    const profile = profiles.find(p => p.value === id);
-    return profile?.label || null;
-  }, [profiles]);
+  const mappedInitiatives: Initiative[] = useMemo(() => mdtData?.data ?? [], [mdtData]);
 
-  const getDepartmentName = useCallback((id: string | null) => {
-    if (!id || !departments) return null;
-    const dept = departments.find(d => d.value === id);
-    return dept?.label || null;
-  }, [departments]);
-
-  // Map MDT data → Initiative shape
-  const mappedInitiatives: Initiative[] = useMemo(() => {
-    return mdtData?.data ?? [];
-  }, [mdtData]);
-
-  // Build BRD tasks map from MDT data
   const brdTasksMap = useMemo<Record<string, BRDTask[]>>(() => {
     const map: Record<string, BRDTask[]> = {};
     for (const init of (mdtData?.data ?? [])) {
@@ -152,6 +152,8 @@ export default function InitiativeListingPage() {
   const [pageSize, setPageSize] = useState(25);
   const [focusedRow, setFocusedRow] = useState(-1);
   const [groupBy, setGroupBy] = useState<GroupByField>('none');
+  const [localSearch, setLocalSearch] = useState('');
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
   const [detailInitiative, setDetailInitiative] = useState<Initiative | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -159,33 +161,26 @@ export default function InitiativeListingPage() {
   const [showCreateDrawer, setShowCreateDrawer] = useState(false);
   const [promoteTarget, setPromoteTarget] = useState<Initiative | null>(null);
 
-  // Column management
   const [columnConfigs, setColumnConfigs] = useState<ColumnConfig[]>(loadColumns);
   const [columnManagerOpen, setColumnManagerOpen] = useState(false);
   const columnsButtonRef = useRef<HTMLButtonElement>(null);
-
-  // Export
   const [exportOpen, setExportOpen] = useState(false);
   const exportButtonRef = useRef<HTMLButtonElement>(null);
-
   const searchInputRef = useRef<HTMLInputElement>(null);
+
   const allInitiatives = orderedData ?? mappedInitiatives;
 
+  useEffect(() => { setOrderedData(null); }, [mappedInitiatives]);
+  useEffect(() => { localStorage.setItem(COLUMN_STORAGE_KEY, JSON.stringify(columnConfigs)); }, [columnConfigs]);
+  useEffect(() => { localStorage.setItem(DENSITY_STORAGE_KEY, density); }, [density]);
 
-  // Reset orderedData when source data changes
-  useEffect(() => {
-    setOrderedData(null);
-  }, [mappedInitiatives]);
+  const handleSearch = useCallback((val: string) => {
+    setLocalSearch(val);
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setSearchQuery(val), 250);
+  }, []);
 
-  // Persist columns
-  useEffect(() => {
-    localStorage.setItem(COLUMN_STORAGE_KEY, JSON.stringify(columnConfigs));
-  }, [columnConfigs]);
-
-  // Persist density
-  useEffect(() => {
-    localStorage.setItem(DENSITY_STORAGE_KEY, density);
-  }, [density]);
+  useEffect(() => { setLocalSearch(searchQuery); }, [searchQuery]);
 
   const filtered = useMemo(() => {
     let result = applyQuickFilter(allInitiatives, quickFilter);
@@ -199,6 +194,15 @@ export default function InitiativeListingPage() {
     }
     return result;
   }, [allInitiatives, quickFilter, searchQuery, groupBy]);
+
+  const filterCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    QUICK_FILTERS.forEach(f => {
+      if (f.id === 'all') counts[f.id] = allInitiatives.length;
+      else counts[f.id] = applyQuickFilter(allInitiatives, f.id).length;
+    });
+    return counts;
+  }, [allInitiatives]);
 
   const paginatedData = useMemo(() => {
     const start = (page - 1) * pageSize;
@@ -236,22 +240,13 @@ export default function InitiativeListingPage() {
         setSelectedIds(paginatedData.map(d => d.id));
         return;
       }
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        setFocusedRow(prev => Math.min(prev + 1, paginatedData.length - 1));
-        return;
-      }
-      if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setFocusedRow(prev => Math.max(prev - 1, 0));
-        return;
-      }
+      if (e.key === 'ArrowDown') { e.preventDefault(); setFocusedRow(prev => Math.min(prev + 1, paginatedData.length - 1)); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); setFocusedRow(prev => Math.max(prev - 1, 0)); }
       if (e.key === 'Enter' && focusedRow >= 0 && focusedRow < paginatedData.length) {
         const active = document.activeElement;
         if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement) return;
         setDetailInitiative(paginatedData[focusedRow]);
         setDetailOpen(true);
-        return;
       }
       if (e.key === ' ' && focusedRow >= 0 && focusedRow < paginatedData.length) {
         const active = document.activeElement;
@@ -259,7 +254,6 @@ export default function InitiativeListingPage() {
         e.preventDefault();
         const id = paginatedData[focusedRow].id;
         setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
-        return;
       }
       if ((e.key === 'Delete' || e.key === 'Backspace') && selectedIds.length > 0) {
         const active = document.activeElement;
@@ -295,9 +289,7 @@ export default function InitiativeListingPage() {
     catalystToast.success(isFavorited ? 'Removed from favorites' : 'Added to favorites');
   }, [isNative, invalidateAll]);
 
-  const handleSortChange = useCallback((s: { id: string; desc: boolean }[]) => {
-    setSorting(s);
-  }, []);
+  const handleSortChange = useCallback((s: { id: string; desc: boolean }[]) => { setSorting(s); }, []);
 
   const handleContextMenu = useCallback((e: React.MouseEvent, initiative: Initiative) => {
     setContextMenu({ pos: { x: e.clientX, y: e.clientY }, initiative });
@@ -389,59 +381,110 @@ export default function InitiativeListingPage() {
     }
   }, [selectedIds, isNative, invalidateAll]);
 
-  const handleScoreSave = useCallback(async (id: string, scores: { strategic_alignment: number; business_impact: number; time_urgency: number; resource_feasibility: number }) => {
-    // Score save is now handled inside DetailPanel directly
+  const handleScoreSave = useCallback(async () => {
     invalidateAll();
   }, [invalidateAll]);
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Title */}
-      <div className="px-6 py-4 border-b bg-card" style={{ minHeight: 72 }}>
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold" style={{ color: '#0F172A' }}>Product Backlog</h1>
+    <div data-module="product-backlog" className="flex flex-col h-full" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+      {/* ── Page Header ── */}
+      <div className="pb-page-header">
+        <h1 className="pb-page-title">Product Backlog</h1>
+        <p className="pb-page-subtitle">Strategic initiative portfolio &amp; prioritization</p>
+      </div>
+
+      {/* ── Toolbar ── */}
+      <div className="pb-toolbar">
+        <button
+          ref={columnsButtonRef}
+          className="pb-toolbar-btn"
+          onClick={() => setColumnManagerOpen(prev => !prev)}
+        >
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="4" height="12" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="8" y="2" width="4" height="12" rx="1" stroke="currentColor" strokeWidth="1.2"/></svg>
+          Columns
+        </button>
+
+        <div className="pb-toolbar-divider" />
+
+        {/* Search */}
+        <div className="pb-search">
+          <Search size={14} className="pb-search-icon" />
+          <input
+            ref={searchInputRef}
+            type="text"
+            value={localSearch}
+            onChange={(e) => handleSearch(e.target.value)}
+            placeholder="Search initiatives…"
+          />
+          {localSearch ? (
+            <button onClick={() => handleSearch('')} style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--pb-ink-muted)' }}>
+              <X size={14} />
+            </button>
+          ) : (
+            <span className="pb-search-kbd">⌘K</span>
+          )}
         </div>
-        <p className="text-sm mt-1" style={{ color: '#64748B' }}>
-          Strategic initiative portfolio &amp; prioritization
-        </p>
+
+        <div style={{ flex: 1 }} />
+
+        <button
+          ref={exportButtonRef}
+          className="pb-toolbar-btn"
+          onClick={() => setExportOpen(prev => !prev)}
+        >
+          <Download size={14} />
+          Export
+        </button>
+
+        <button className="pb-toolbar-btn pb-toolbar-btn-primary" onClick={() => setShowCreateDrawer(true)}>
+          <Plus size={14} />
+          New Initiative
+        </button>
       </div>
 
-      <ListingToolbar
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        activeQuickFilter={quickFilter}
-        onQuickFilterChange={setQuickFilter}
-        density={density}
-        onDensityChange={setDensity}
-        totalCount={filtered.length}
-        searchInputRef={searchInputRef}
-        columnsButtonRef={columnsButtonRef}
-        onColumnsClick={() => setColumnManagerOpen(prev => !prev)}
-        exportButtonRef={exportButtonRef}
-        onExportClick={() => setExportOpen(prev => !prev)}
-        groupBy={groupBy}
-        onGroupByChange={setGroupBy}
-        onNewInitiative={() => setShowCreateDrawer(true)}
-      />
-
-      {/* Type Legend */}
-      <div className="px-6 py-1.5 flex items-center gap-3 border-b" style={{ background: '#FAFBFC', borderColor: '#F1F5F9' }}>
-        <span className="text-[10.5px] font-semibold uppercase tracking-wider" style={{ color: '#94A3B8' }}>Types:</span>
-        <InitiativeTypeBadge typeKey="project" />
-        <InitiativeTypeBadge typeKey="enhancement" />
-        <InitiativeTypeBadge typeKey="improvement" />
-        
-        <InitiativeTypeBadge typeKey="entity_integration" />
+      {/* ── Filter Chips ── */}
+      <div className="pb-filters">
+        {QUICK_FILTERS.map(f => (
+          <button
+            key={f.id}
+            className={`pb-chip ${quickFilter === f.id ? 'pb-chip-active' : ''}`}
+            onClick={() => { setQuickFilter(f.id); setPage(1); }}
+          >
+            {f.label}
+            {quickFilter === f.id && filterCounts[f.id] > 0 && (
+              <span className="pb-chip-count">{filterCounts[f.id]}</span>
+            )}
+          </button>
+        ))}
       </div>
 
-      {/* Bulk Action Bar */}
-      <BulkActionBar
-        selectedCount={selectedIds.length}
-        onAction={handleBulkAction}
-        onCancel={() => setSelectedIds([])}
-      />
+      {/* ── Type Legend Bar ── */}
+      <div className="pb-type-legend">
+        <span className="pb-type-legend-label">Types:</span>
+        {TYPE_LEGEND.map(t => (
+          <span key={t.key} className="pb-type-legend-item">
+            <span className="pb-type-dot" style={{ backgroundColor: t.color }} />
+            {t.label}
+          </span>
+        ))}
+      </div>
 
-      <div className="flex-1 flex flex-col px-6 pb-0 min-h-0">
+      {/* ── Bulk Action Bar ── */}
+      {selectedIds.length > 0 && (
+        <div style={{ position: 'fixed', bottom: 0, left: 240, right: 0, height: 52, background: '#18181B', zIndex: 40, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px' }}>
+          <span style={{ fontSize: 13, fontWeight: 500, color: '#FFFFFF' }}>
+            {selectedIds.length} item{selectedIds.length !== 1 ? 's' : ''} selected
+          </span>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button className="pb-toolbar-btn" style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.2)' }} onClick={() => handleBulkAction('archive')}>Archive</button>
+            <button className="pb-toolbar-btn" style={{ color: '#FCA5A5', borderColor: 'rgba(239,68,68,0.4)' }} onClick={() => handleBulkAction('delete')}>Delete</button>
+          </div>
+          <button style={{ fontSize: 12, color: '#A1A1AA', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setSelectedIds([])}>Cancel</button>
+        </div>
+      )}
+
+      {/* ── Table ── */}
+      <div className="flex-1 flex flex-col min-h-0" style={{ padding: '0 32px' }}>
         <InitiativeTable
           data={paginatedData}
           loading={isLoading}
@@ -463,7 +506,7 @@ export default function InitiativeListingPage() {
         />
       </div>
 
-      {/* Pagination */}
+      {/* ── Pagination ── */}
       <Pagination
         total={filtered.length}
         page={page}

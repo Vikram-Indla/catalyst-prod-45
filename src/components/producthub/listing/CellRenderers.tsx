@@ -1,6 +1,5 @@
 /**
- * CellRenderers — Specialized cell components for the Initiative Table
- * Catalyst V5 Design System
+ * CellRenderers — LINEAR PRECISION Design with pb-* classes
  */
 
 import { format, differenceInDays } from 'date-fns';
@@ -11,56 +10,48 @@ import { STATUS_DISPLAY, getPriorityLevel, getAvatarColor, getInitials } from '@
 export function StatusCell({ status }: { status: InitiativeStatus }) {
   const s = STATUS_DISPLAY[status];
   return (
-    <span
-      className="inline-flex items-center gap-1.5 h-[22px] px-2 rounded-full border text-[11px] font-medium whitespace-nowrap"
-      style={{ backgroundColor: s.bg, borderColor: s.border, color: s.text }}
-    >
-      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: s.dot }} />
+    <span className="pb-status-badge" style={{ backgroundColor: s.bg, borderColor: s.border, color: s.text, border: `1px solid ${s.border}` }}>
+      <span className="pb-status-dot" style={{ backgroundColor: s.dot }} />
       {s.label}
     </span>
   );
 }
 
-/* ── Priority Cell ── */
+/* ── Priority Cell — Monochrome bars ── */
 export function PriorityCell({ score }: { score: number | null }) {
   if (score === null) {
     return (
-      <div className="flex items-center gap-2">
-        <div className="w-10 h-1 rounded-full" style={{ background: '#d4d4d8' }} />
-        <span className="text-[12px] tabular-nums" style={{ color: '#a1a1aa' }}>—</span>
+      <div className="pb-priority-bars">
+        {[1, 2, 3, 4].map(i => (
+          <span key={i} className="pb-priority-bar" />
+        ))}
       </div>
     );
   }
-  let barColor = '#d4d4d8';
-  let textColor = '#a1a1aa';
-  if (score >= 4.0) { barColor = '#059669'; textColor = '#059669'; }
-  else if (score >= 3.0) { barColor = '#2563eb'; textColor = '#2563eb'; }
-  else if (score > 0) { barColor = '#d97706'; textColor = '#d97706'; }
-
+  const filled = score >= 4.0 ? 4 : score >= 3.0 ? 3 : score >= 2.0 ? 2 : 1;
   return (
-    <div className="flex items-center gap-2">
-      <div className="w-10 h-1 rounded-full overflow-hidden" style={{ background: '#e4e4e7' }}>
-        <div className="h-full rounded-full" style={{ width: `${(score / 5) * 100}%`, background: barColor }} />
-      </div>
-      <span className="text-[12px] font-medium tabular-nums" style={{ color: textColor }}>{score.toFixed(1)}</span>
+    <div className="pb-priority-bars">
+      {[1, 2, 3, 4].map(i => (
+        <span key={i} className={`pb-priority-bar ${i <= filled ? 'pb-priority-bar-filled' : ''}`} />
+      ))}
     </div>
   );
 }
 
-/* ── Score Cell ── */
+/* ── Score Cell — Monochrome vertical bars ── */
 export function ScoreCell({ score }: { score: number | null }) {
-  const getScoreColor = (s: number | null) => {
-    if (s === null || s === undefined) return '#a1a1aa';
-    if (s >= 4.0) return '#059669';
-    if (s >= 3.0) return '#2563eb';
-    if (s > 0) return '#d97706';
-    return '#a1a1aa';
-  };
-  if (score === null) return <span style={{ color: '#a1a1aa' }}>—</span>;
+  if (score === null) return <span style={{ color: 'var(--pb-ink-muted)' }}>—</span>;
+  const filled = Math.round(score);
   return (
-    <span className="font-mono text-[12px] font-semibold tabular-nums" style={{ color: getScoreColor(score) }}>
-      {score.toFixed(1)}
-    </span>
+    <div className="pb-score-bars">
+      {[1, 2, 3, 4, 5].map(i => (
+        <span
+          key={i}
+          className={`pb-score-bar ${i <= filled ? 'pb-score-bar-filled' : ''}`}
+          style={{ height: `${4 + i * 2}px` }}
+        />
+      ))}
+    </div>
   );
 }
 
@@ -68,49 +59,45 @@ export function ScoreCell({ score }: { score: number | null }) {
 export function AssigneeCell({ name, avatarUrl }: { name: string | null; avatarUrl?: string }) {
   if (!name) {
     return (
-      <div className="flex items-center gap-2">
-        <div className="w-6 h-6 rounded-full shrink-0" style={{ border: '1.5px dashed #d4d4d8' }} />
-        <span className="text-[12px] italic" style={{ color: '#a1a1aa' }}>Unassigned</span>
+      <div className="pb-assignee">
+        <div style={{ width: 24, height: 24, borderRadius: '50%', border: '1.5px dashed var(--pb-border-strong)' }} />
+        <span style={{ fontSize: 13, fontStyle: 'italic', color: 'var(--pb-ink-muted)' }}>Unassigned</span>
       </div>
     );
   }
   return (
-    <div className="flex items-center gap-2 min-w-0">
+    <div className="pb-assignee">
       {avatarUrl ? (
-        <img src={avatarUrl} alt={name} className="w-6 h-6 rounded-full shrink-0 object-cover" />
+        <img src={avatarUrl} alt={name} className="pb-avatar" style={{ objectFit: 'cover' }} />
       ) : (
-        <div
-          className="w-6 h-6 rounded-full flex items-center justify-center text-white text-[10px] font-semibold shrink-0"
-          style={{ backgroundColor: getAvatarColor(name) }}
-        >
+        <div className="pb-avatar" style={{ backgroundColor: getAvatarColor(name) }}>
           {getInitials(name)}
         </div>
       )}
-      <span className="text-[12px] truncate" style={{ color: '#18181b' }}>{name}</span>
+      <span className="pb-assignee-name">{name}</span>
     </div>
   );
 }
 
 /* ── Date Cell ── */
 export function DateCell({ date, status }: { date: string | null; status?: InitiativeStatus }) {
-  if (!date) return <span className="text-[12px]" style={{ color: '#a1a1aa' }}>—</span>;
+  if (!date) return <span className="pb-date" style={{ color: 'var(--pb-ink-muted)' }}>—</span>;
   const parsed = new Date(date);
-  if (isNaN(parsed.getTime())) return <span className="text-[12px]" style={{ color: '#a1a1aa' }}>—</span>;
+  if (isNaN(parsed.getTime())) return <span className="pb-date" style={{ color: 'var(--pb-ink-muted)' }}>—</span>;
   const formatted = format(parsed, 'MMM dd, yyyy');
 
   const terminalStatuses: InitiativeStatus[] = ['done', 'cancelled'];
   const isOverdue = status && !terminalStatuses.includes(status) && parsed < new Date();
   const isSoon = status && !terminalStatuses.includes(status) && !isOverdue && differenceInDays(parsed, new Date()) <= 14;
 
-  let color = '#52525b';
-  let fontWeight = 400;
-  if (isOverdue) { color = '#dc2626'; fontWeight = 500; }
-  else if (isSoon) { color = '#d97706'; fontWeight = 500; }
+  let color = 'var(--pb-ink-tertiary)';
+  if (isOverdue) color = 'var(--pb-danger)';
+  else if (isSoon) color = 'var(--pb-warning)';
 
   return (
-    <span className="text-[12px] tabular-nums inline-flex items-center gap-1" style={{ color, fontWeight }}>
+    <span className="pb-date" style={{ color, fontWeight: isOverdue || isSoon ? 500 : 400, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
       {isOverdue && (
-        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" className="shrink-0">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
           <path d="M7 1L13 12H1L7 1Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
           <path d="M7 6V8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           <circle cx="7" cy="10.25" r="0.75" fill="currentColor" />
@@ -124,65 +111,31 @@ export function DateCell({ date, status }: { date: string | null; status?: Initi
 /* ── Progress Cell ── */
 export function ProgressCell({ value, status }: { value: number; status?: InitiativeStatus }) {
   const clamped = Math.min(Math.max(value, 0), 100);
-  let fillColor = '#2563eb';
-  if (clamped >= 100) fillColor = '#22c55e';
-  const terminalStatuses: InitiativeStatus[] = ['done', 'cancelled'];
-  // Check overdue only if status provided — we don't have target_complete here
-  if (status === 'done') fillColor = '#22c55e';
-
+  const done = status === 'done' || clamped >= 100;
   return (
-    <div className="inline-flex items-center gap-2">
-      <div className="shrink-0 overflow-hidden" style={{ width: 60, height: 4, borderRadius: 2, background: '#e4e4e7' }}>
-        <div style={{ width: `${clamped}%`, height: '100%', borderRadius: 2, background: fillColor }} />
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ width: 40, height: 4, borderRadius: 2, background: 'var(--pb-surface-tertiary)', overflow: 'hidden', flexShrink: 0 }}>
+        <div style={{ width: `${clamped}%`, height: '100%', borderRadius: 2, background: done ? 'var(--pb-success)' : 'var(--pb-primary)', transition: 'width 300ms ease' }} />
       </div>
-      <span className="text-[12px] tabular-nums" style={{ color: '#71717a', minWidth: 28 }}>{clamped}%</span>
+      <span className="pb-progress-label" style={{ minWidth: 28 }}>{clamped}%</span>
     </div>
   );
 }
 
 /* ── EA Review Cell ── */
 export function EACell({ value }: { value?: boolean | null }) {
-  if (value === true) {
-    return (
-      <span className="inline-flex items-center h-[20px] px-2 rounded text-[11px] font-medium"
-        style={{ background: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca' }}>
-        Required
-      </span>
-    );
-  }
-  if (value === false) {
-    return (
-      <span className="inline-flex items-center h-[20px] px-2 rounded text-[11px] font-medium"
-        style={{ background: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0' }}>
-        Not Required
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex items-center h-[20px] px-2 rounded text-[11px] font-medium"
-      style={{ background: '#fffbeb', color: '#92400e', border: '1px solid #fde68a' }}>
-      Pending
-    </span>
-  );
+  if (value === true) return <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--pb-danger)', background: 'var(--pb-danger-bg)', padding: '2px 8px', borderRadius: 4 }}>Required</span>;
+  if (value === false) return <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--pb-success)', background: 'var(--pb-success-bg)', padding: '2px 8px', borderRadius: 4 }}>Not Required</span>;
+  return <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--pb-warning)', background: 'var(--pb-warning-bg)', padding: '2px 8px', borderRadius: 4 }}>Pending</span>;
 }
 
 /* ── Quarter Cell ── */
 export function QuarterCell({ value }: { value: string | null }) {
-  if (!value) return <span className="text-[12px]" style={{ color: '#a1a1aa' }}>—</span>;
-  return (
-    <span className="inline-flex items-center h-[20px] px-2 rounded text-[12px] font-medium"
-      style={{ background: '#f4f4f5', color: '#52525b' }}>
-      {value}
-    </span>
-  );
+  if (!value) return <span className="pb-date" style={{ color: 'var(--pb-ink-muted)' }}>—</span>;
+  return <span className="pb-quarter">{value}</span>;
 }
 
 /* ── ID Cell ── */
 export function IDCell({ value }: { value: string }) {
-  return (
-    <span className="inline-flex items-center px-1.5 py-0.5 rounded-sm font-mono text-[11px] font-medium"
-      style={{ background: '#eff6ff', color: '#1d4ed8' }}>
-      {value}
-    </span>
-  );
+  return <span className="pb-id">{value}</span>;
 }
