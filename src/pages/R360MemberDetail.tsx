@@ -12,7 +12,7 @@ import { getJiraIcon } from '@/components/r360/R360JiraIcons';
 import { ChevronLeft, ChevronRight, Calendar, Sparkles, X, ChevronDown } from 'lucide-react';
 import type { R360WorkItem, R360ViewType, R360Filters } from '@/types/r360';
 import '@/styles/r360.css';
-import AiIntelligenceOverlay from '@/components/resource360/AiIntelligenceOverlay';
+import AIIntelligencePanel from '@/components/resources/AIIntelligencePanel';
 
 // ── Week helpers ──
 function getWeekRange(offset: number) {
@@ -281,12 +281,10 @@ export default function R360MemberDetail() {
         )}
       </div>
 
-      {/* AI Intelligence Overlay */}
-      {aiOpen && overview && (
-        <AiIntelligenceOverlay
-          resourceId={resourceId || ''}
-          resource={{ id: resourceId, full_name: overview.name, role: overview.role_name }}
-          rid={overview.rid || ''}
+      {/* AI Intelligence Panel */}
+      {aiOpen && resourceId && (
+        <AIIntelligencePanel
+          resourceId={resourceId}
           onClose={() => setAiOpen(false)}
         />
       )}
