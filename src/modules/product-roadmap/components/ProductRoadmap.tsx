@@ -1,14 +1,15 @@
 /**
  * Main Product Roadmap Component
- * Integrates drag & drop, keyboard navigation, and business request drawer
+ * Integrates drag & drop, keyboard navigation, view modes, print, and high contrast
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { DragDropContext } from '@hello-pangea/dnd';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { RoadmapToolbar } from './RoadmapToolbar';
+import { RoadmapToolbar, ViewMode } from './RoadmapToolbar';
 import { RoadmapListPanel } from './RoadmapListPanel';
 import { RoadmapTimelinePanel } from './RoadmapTimelinePanel';
+import { RoadmapSwimlanePanel } from './RoadmapSwimlinePanel';
 import { RoadmapLoadingSkeleton } from './RoadmapLoadingSkeleton';
 import { RoadmapEmptyState } from './RoadmapEmptyState';
 import { RoadmapFilterDialog } from './RoadmapFilterDialog';
@@ -20,9 +21,11 @@ import { useRoadmapFilters } from '../hooks/useRoadmapFilters';
 import { useRoadmapDragDrop } from '../hooks/useRoadmapDragDrop';
 import { useRoadmapKeyboard } from '../hooks/useRoadmapKeyboard';
 import { groupDemands } from '../utils/grouping';
+import { doPrintExport } from '../utils/print-export';
 import type { TimelineConfig, GroupingField, TimelineZoom, RoadmapGroup } from '../types/roadmap';
 import { DEFAULT_TIMELINE_CONFIG } from '../types/roadmap';
 import { addMonths, subMonths } from 'date-fns';
+import { toast } from 'sonner';
 
 interface ProductRoadmapProps {
   isFullscreen?: boolean;
@@ -53,6 +56,10 @@ export function ProductRoadmap({ isFullscreen = false, onToggleFullscreen }: Pro
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
 
+  // V9 state
+  const [viewMode, setViewMode] = useState<ViewMode>('gantt');
+  const [highContrast, setHighContrast] = useState(false);
+
   // Data fetching
   const { data: items = [], isLoading, error } = useRoadmapDemands(filters);
   const reorderMutation = useReorderDemands();
@@ -63,7 +70,7 @@ export function ProductRoadmap({ isFullscreen = false, onToggleFullscreen }: Pro
     if (!grouping) return undefined;
     return groupDemands(items, grouping).map(g => ({
       ...g,
-      isExpanded: expandedGroups.has(g.key) || expandedGroups.size === 0, // Default expanded
+      isExpanded: expandedGroups.has(g.key) || expandedGroups.size === 0,
     }));
   }, [items, grouping, expandedGroups]);
 
@@ -83,55 +90,62 @@ export function ProductRoadmap({ isFullscreen = false, onToggleFullscreen }: Pro
     onDateChange: handleDateChange,
   });
 
-  // Open drawer handler
+  // Drawer handlers
   const handleOpenDrawer = useCallback((id: string) => {
     setSelectedItemId(id);
     setDrawerRequestId(id);
     setIsDrawerOpen(true);
   }, []);
 
-  // Close drawer handler
   const handleCloseDrawer = useCallback(() => {
     setIsDrawerOpen(false);
-    // Keep drawerRequestId to avoid flash during close animation
   }, []);
 
-  // Handle request change in drawer (e.g., when duplicating)
   const handleDrawerRequestChange = useCallback((newRequestId: string) => {
     setDrawerRequestId(newRequestId);
     setSelectedItemId(newRequestId);
   }, []);
 
   const handleEdit = useCallback((id: string) => {
-    // Open drawer for editing
     handleOpenDrawer(id);
   }, [handleOpenDrawer]);
 
   const handleDelete = useCallback((id: string) => {
-    // Open drawer where delete can be done
     handleOpenDrawer(id);
   }, [handleOpenDrawer]);
 
   const handleMove = useCallback((id: string, direction: 'up' | 'down') => {
     const currentIndex = items.findIndex(item => item.id === id);
     if (currentIndex === -1) return;
-
     const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
     if (newIndex < 0 || newIndex >= items.length) return;
-
     const reordered = [...items];
     [reordered[currentIndex], reordered[newIndex]] = [reordered[newIndex], reordered[currentIndex]];
-    
-    const updates = reordered.map((item, index) => ({
-      id: item.id,
-      rank: index + 1,
-    }));
+    const updates = reordered.map((item, index) => ({ id: item.id, rank: index + 1 }));
     handleReorder(updates);
   }, [items, handleReorder]);
 
   const handleCreateNew = useCallback(() => {
     setIsCreateDialogOpen(true);
   }, []);
+
+  // Print handler
+  const handlePrint = useCallback(() => {
+    const success = doPrintExport(items);
+    if (success) toast.success('Print dialog opened');
+  }, [items]);
+
+  // Keyboard: ⌘P for print
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'p' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        handlePrint();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [handlePrint]);
 
   // Keyboard navigation
   const { focusedIndex, setFocusedIndex } = useRoadmapKeyboard({
@@ -148,21 +162,14 @@ export function ProductRoadmap({ isFullscreen = false, onToggleFullscreen }: Pro
   const handleItemClick = useCallback((id: string) => {
     setSelectedItemId(id);
     const index = items.findIndex(item => item.id === id);
-    if (index !== -1) {
-      setFocusedIndex(index);
-    }
-    // Open detail panel instead of drawer
+    if (index !== -1) setFocusedIndex(index);
     setIsDetailPanelOpen(true);
   }, [items, setFocusedIndex]);
 
   const handleToggleGroup = useCallback((key: string) => {
     setExpandedGroups(prev => {
       const next = new Set(prev);
-      if (next.has(key)) {
-        next.delete(key);
-      } else {
-        next.add(key);
-      }
+      if (next.has(key)) next.delete(key); else next.add(key);
       return next;
     });
   }, []);
@@ -171,18 +178,10 @@ export function ProductRoadmap({ isFullscreen = false, onToggleFullscreen }: Pro
     setTimelineConfig(prev => {
       if (direction === 'today') {
         const today = new Date();
-        return {
-          ...prev,
-          startDate: subMonths(today, 1),
-          endDate: addMonths(today, 8),
-        };
+        return { ...prev, startDate: subMonths(today, 1), endDate: addMonths(today, 8) };
       }
       const delta = direction === 'next' ? 3 : -3;
-      return {
-        ...prev,
-        startDate: addMonths(prev.startDate, delta),
-        endDate: addMonths(prev.endDate, delta),
-      };
+      return { ...prev, startDate: addMonths(prev.startDate, delta), endDate: addMonths(prev.endDate, delta) };
     });
   }, []);
 
@@ -190,9 +189,7 @@ export function ProductRoadmap({ isFullscreen = false, onToggleFullscreen }: Pro
     setTimelineConfig(prev => ({ ...prev, zoom }));
   }, []);
 
-  if (isLoading) {
-    return <RoadmapLoadingSkeleton />;
-  }
+  if (isLoading) return <RoadmapLoadingSkeleton />;
 
   if (error) {
     return (
@@ -225,11 +222,26 @@ export function ProductRoadmap({ isFullscreen = false, onToggleFullscreen }: Pro
             activeFilterCount={activeFilterCount}
             isFullscreen={isFullscreen}
             onToggleFullscreen={onToggleFullscreen}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            onPrint={handlePrint}
+            highContrast={highContrast}
+            onToggleHighContrast={() => setHighContrast(p => !p)}
           />
 
           {/* Main content */}
           {items.length === 0 ? (
             <RoadmapEmptyState onCreateClick={() => setIsCreateDialogOpen(true)} />
+          ) : viewMode === 'swimlane' ? (
+            <div className="flex flex-1 overflow-hidden">
+              <RoadmapSwimlanePanel
+                items={items}
+                config={timelineConfig}
+                selectedItemId={selectedItemId}
+                onItemClick={handleItemClick}
+                highContrast={highContrast}
+              />
+            </div>
           ) : (
             <div className="flex flex-1 overflow-hidden">
               {/* List panel */}
@@ -270,7 +282,7 @@ export function ProductRoadmap({ isFullscreen = false, onToggleFullscreen }: Pro
             timelineConfig={timelineConfig}
           />
 
-          {/* Business Request Drawer (for edit actions) */}
+          {/* Business Request Drawer */}
           <BusinessRequestDrawer
             isOpen={isDrawerOpen}
             onClose={handleCloseDrawer}
