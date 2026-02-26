@@ -45,7 +45,7 @@
    ══════════════════════════════════════════════════════════════ */
 .di-backdrop {
   position: fixed;
-  inset: 0;
+  top: 48px; left: 0; right: 0; bottom: 0;
   background: rgba(0,0,0,0.3);
   z-index: 50;
 }
@@ -56,7 +56,7 @@
 .di-panel {
   position: fixed;
   right: 0;
-  top: 0;
+  top: 48px;
   bottom: 0;
   width: 58%;
   max-width: 880px;
