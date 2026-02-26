@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Pencil, Copy, Star, Target, Trash2, ChevronLeft, AlertTriangle, Plus, Activity, ArrowRight, TrendingUp, FolderKanban, Zap, Wrench, Map, Network, DollarSign, Flag, Link as LinkIcon, ClipboardList, Paperclip, ExternalLink, Upload } from 'lucide-react';
+import { X, Pencil, Copy, Star, Target, Trash2, ChevronLeft, ChevronDown, AlertTriangle, Plus, Activity, ArrowRight, TrendingUp, FolderKanban, Zap, Wrench, Map, Network, DollarSign, Flag, Link as LinkIcon, ClipboardList, Paperclip, ExternalLink, Upload } from 'lucide-react';
 import { InitiativeRisksTab } from './tabs/InitiativeRisksTab';
 import { InitiativeBudgetTab } from './tabs/InitiativeBudgetTab';
 import { InitiativeAuditTab } from './tabs/InitiativeAuditTab';
@@ -167,8 +167,9 @@ function InlineEditableDate({ value, onSave, label }: { value: string | null; on
       </span>
     );
   }
-  return <input ref={inputRef} type="date" value={draft} onChange={e => setDraft(e.target.value)} onBlur={commit}
-    onKeyDown={e => { if (e.key === 'Escape') setEditing(false); }}
+  return <input ref={inputRef} type="date" value={draft} onChange={e => { setDraft(e.target.value); const v = e.target.value || null; if (v !== (value ?? null)) onSave(v); }}
+    onBlur={() => setEditing(false)}
+    onKeyDown={e => { if (e.key === 'Enter') { commit(); } if (e.key === 'Escape') setEditing(false); }}
     style={{ width: '100%', height: 32, border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', padding: '0 8px', fontSize: 13, color: 'var(--pb-ink)', outline: 'none' }} />;
 }
 
@@ -853,6 +854,95 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
   );
 }
 
+/* ── EA Review Select ── */
+const EA_REVIEW_OPTIONS = [
+  { value: '', label: '—' },
+  { value: 'not_required', label: 'Not Required' },
+  { value: 'pending', label: 'Pending Review' },
+  { value: 'in_review', label: 'In Review' },
+  { value: 'approved', label: 'Approved' },
+  { value: 'rejected', label: 'Rejected' },
+];
+
+function EAReviewSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const current = EA_REVIEW_OPTIONS.find(o => o.value === value) || EA_REVIEW_OPTIONS[0];
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <div className="pb-field-value group cursor-pointer" onClick={() => setOpen(!open)}
+        style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span className={!value ? 'pb-field-empty' : ''}>{current.label}</span>
+        <ChevronDown size={12} style={{ opacity: 0, transition: 'opacity 0.15s' }} className="group-hover:!opacity-60" />
+      </div>
+      {open && (
+        <div style={{ position: 'absolute', top: '100%', left: -8, zIndex: 100, background: 'white', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', boxShadow: '0 4px 16px rgba(0,0,0,0.1)', minWidth: 180, padding: 4, marginTop: 4 }}>
+          {EA_REVIEW_OPTIONS.map(o => (
+            <div key={o.value} onClick={() => { onChange(o.value); setOpen(false); }}
+              style={{ padding: '6px 10px', fontSize: 13, cursor: 'pointer', borderRadius: 4, background: o.value === value ? 'var(--pb-surface-secondary)' : 'transparent' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--pb-surface-secondary)')}
+              onMouseLeave={e => (e.currentTarget.style.background = o.value === value ? 'var(--pb-surface-secondary)' : 'transparent')}>
+              {o.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Priority Select ── */
+const PRIORITY_OPTIONS = [
+  { value: '', label: '—' },
+  { value: 'critical', label: 'Critical' },
+  { value: 'high', label: 'High' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'low', label: 'Low' },
+];
+
+function PrioritySelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const current = PRIORITY_OPTIONS.find(o => o.value === value) || PRIORITY_OPTIONS[0];
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <div className="pb-field-value group cursor-pointer" onClick={() => setOpen(!open)}
+        style={{ display: 'flex', alignItems: 'center', gap: 6, textTransform: 'capitalize' }}>
+        <span className={!value ? 'pb-field-empty' : ''}>{current.label}</span>
+        <ChevronDown size={12} style={{ opacity: 0, transition: 'opacity 0.15s' }} className="group-hover:!opacity-60" />
+      </div>
+      {open && (
+        <div style={{ position: 'absolute', top: '100%', left: -8, zIndex: 100, background: 'white', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', boxShadow: '0 4px 16px rgba(0,0,0,0.1)', minWidth: 150, padding: 4, marginTop: 4 }}>
+          {PRIORITY_OPTIONS.map(o => (
+            <div key={o.value} onClick={() => { onChange(o.value); setOpen(false); }}
+              style={{ padding: '6px 10px', fontSize: 13, cursor: 'pointer', borderRadius: 4, textTransform: 'capitalize', background: o.value === value ? 'var(--pb-surface-secondary)' : 'transparent' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--pb-surface-secondary)')}
+              onMouseLeave={e => (e.currentTarget.style.background = o.value === value ? 'var(--pb-surface-secondary)' : 'transparent')}>
+              {o.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ════════════════════════════════════════════════════
    DETAILS TAB
    ════════════════════════════════════════════════════ */
@@ -921,11 +1011,11 @@ function DetailsContent({ initiative, onQuickEdit, onStatusChange }: {
         </div>
         <div className="pb-field-item">
           <div className="pb-field-label">EA Review</div>
-          <span className="pb-field-value pb-field-empty">—</span>
+          <EAReviewSelect value={initiative.ea_review ?? ''} onChange={v => onQuickEdit('ea_review', v || null, 'EA Review')} />
         </div>
         <div className="pb-field-item">
           <div className="pb-field-label">Priority</div>
-          <span className="pb-field-value" style={{ textTransform: 'capitalize' }}>{getPriorityLevel(initiative.computed_score ?? null).level}</span>
+          <PrioritySelect value={initiative.priority ?? ''} onChange={v => onQuickEdit('priority', v || null, 'Priority')} />
         </div>
         <div className="pb-field-item">
           <div className="pb-field-label">Target Quarter</div>

@@ -132,6 +132,8 @@ export function useMDTBacklog() {
           on_roadmap: row.on_roadmap ?? false,
           health_status: row.health_status ?? null,
           business_value: row.business_value ?? null,
+          ea_review: row.ea_review ?? null,
+          priority: row.priority ?? null,
           created_at: row.created_at,
           updated_at: row.updated_at,
           brd_tasks: [],
