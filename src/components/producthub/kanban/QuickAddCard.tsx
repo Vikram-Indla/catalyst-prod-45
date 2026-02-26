@@ -21,7 +21,6 @@ export const QuickAddCard: React.FC<QuickAddCardProps> = ({ status }) => {
 
   const createMutation = useMutation({
     mutationFn: async (newTitle: string) => {
-      // Generate next key
       const { data: existing } = await supabase
         .from('ph_initiatives' as any)
         .select('initiative_key')
@@ -61,18 +60,15 @@ export const QuickAddCard: React.FC<QuickAddCardProps> = ({ status }) => {
 
   if (!isOpen) {
     return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="w-full flex items-center gap-1.5 px-3 py-2 text-sm text-zinc-500 border border-dashed border-zinc-300 rounded-lg hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50/30 transition-colors"
-      >
-        <Plus className="w-3.5 h-3.5" />
-        <span>Add Initiative</span>
+      <button onClick={() => setIsOpen(true)} className="pk-add-card-btn">
+        <Plus size={14} />
+        <span>Add initiative</span>
       </button>
     );
   }
 
   return (
-    <div className="bg-white border border-blue-300 rounded-lg p-2.5 shadow-sm">
+    <div className="pk-add-card-form">
       <input
         ref={inputRef}
         type="text"
@@ -86,9 +82,9 @@ export const QuickAddCard: React.FC<QuickAddCardProps> = ({ status }) => {
           if (!title.trim()) { setIsOpen(false); setTitle(''); }
         }}
         placeholder="Initiative title…"
-        className="w-full text-sm px-2 py-1.5 border border-zinc-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+        className="pk-add-card-input"
       />
-      <p className="text-[10px] text-zinc-400 mt-1.5 px-0.5">Press Enter to save, Esc to cancel</p>
+      <p className="pk-add-card-hint">Press Enter to save, Esc to cancel</p>
     </div>
   );
 };

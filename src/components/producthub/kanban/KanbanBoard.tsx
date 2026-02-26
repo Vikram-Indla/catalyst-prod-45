@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -78,7 +78,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const sorted = sortInitiatives(initiatives, sortBy);
   const columnItems = (status: InitiativeStatus) => sorted.filter(i => i.status === status);
 
-  // Collapsed columns state
   const [collapsedCols, setCollapsedCols] = useState<Set<string>>(new Set());
   const toggleCollapse = useCallback((key: string) => {
     setCollapsedCols(prev => {
@@ -88,7 +87,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     });
   }, []);
 
-  // Context menu state
   const [contextMenu, setContextMenu] = useState<{
     initiative: Initiative;
     position: { x: number; y: number };
@@ -98,7 +96,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     setContextMenu({ initiative, position: { x: e.clientX, y: e.clientY } });
   }, []);
 
-  // Status change from context menu
   const queryClient = useQueryClient();
   const statusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: InitiativeStatus }) => {
@@ -116,7 +113,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     onError: () => toast.error('Failed to update status'),
   });
 
-  // Keyboard navigation
   const boardRef = useRef<HTMLDivElement>(null);
   const [focusedCol, setFocusedCol] = useState(0);
   const [focusedCard, setFocusedCard] = useState(0);
@@ -127,7 +123,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     const cols = COLUMNS.filter(c => !collapsedCols.has(c.key));
-
     switch (e.key) {
       case 'ArrowRight':
         e.preventDefault();
@@ -159,7 +154,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
       case 'F':
         if (!e.ctrlKey && !e.metaKey) {
           e.preventDefault();
-          const searchInput = document.querySelector<HTMLInputElement>('input[placeholder*="Search"]');
+          const searchInput = document.querySelector<HTMLInputElement>('.pk-search-input');
           searchInput?.focus();
         }
         break;
@@ -189,15 +184,16 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         },
       }}
     >
-      <div
-        ref={boardRef}
-        className="flex-1 overflow-x-auto p-5 outline-none"
-        tabIndex={0}
-        onKeyDown={handleKeyDown}
-        aria-label="Kanban board. Use arrow keys to navigate, Enter to open card details."
-      >
-        <div className="flex gap-4 min-w-min">
-          {COLUMNS.map((col, colIdx) => (
+      <div className="pk-board-wrapper">
+        <div
+          ref={boardRef}
+          className="pk-board"
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+          aria-label="Kanban board. Use arrow keys to navigate, Enter to open card details."
+          style={{ outline: 'none' }}
+        >
+          {COLUMNS.map((col) => (
             <KanbanColumn
               key={col.key}
               config={col}
@@ -217,13 +213,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
             />
           ))}
         </div>
-
-        {/* Showing X of Y */}
-        <div className="mt-4 text-center">
-          <span className="text-xs text-zinc-400">
-            Showing {initiatives.length} of {totalCount} initiatives
-          </span>
-        </div>
       </div>
 
       <DragOverlay>
@@ -236,7 +225,6 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
         ) : null}
       </DragOverlay>
 
-      {/* Context Menu */}
       {contextMenu && (
         <CardContextMenu
           initiative={contextMenu.initiative}

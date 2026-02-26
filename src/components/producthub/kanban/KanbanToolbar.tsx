@@ -1,11 +1,8 @@
-import React, { useState } from 'react';
-import { cn } from '@/lib/utils';
-import {
-  ArrowUpDown,
-  Rows3, Download, Plus, ChevronDown,
-} from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { ArrowUpDown, Rows3, Download, Plus, ChevronDown, Search } from 'lucide-react';
 import type { SwimlaneField } from './KanbanColumn';
-
+import type { Initiative } from '@/types/initiative';
+import { ExportDropdown } from '@/components/producthub/listing/ExportDropdown';
 
 const SORT_OPTIONS = [
   { key: 'score', label: 'Score' },
@@ -28,6 +25,7 @@ interface KanbanToolbarProps {
   swimlane: SwimlaneField;
   onSwimlaneChange: (value: SwimlaneField) => void;
   onNewInitiative: () => void;
+  initiatives?: Initiative[];
 }
 
 export const KanbanToolbar: React.FC<KanbanToolbarProps> = ({
@@ -36,92 +34,82 @@ export const KanbanToolbar: React.FC<KanbanToolbarProps> = ({
   swimlane,
   onSwimlaneChange,
   onNewInitiative,
+  initiatives = [],
 }) => {
   const [showSort, setShowSort] = useState(false);
   const [showSwimlane, setShowSwimlane] = useState(false);
+  const [showExport, setShowExport] = useState(false);
+  const exportRef = useRef<HTMLButtonElement>(null);
 
   const sortLabel = SORT_OPTIONS.find(s => s.key === sortBy)?.label ?? 'Score';
   const swimlaneLabel = SWIMLANE_OPTIONS.find(s => s.key === swimlane)?.label ?? 'None';
 
   return (
-    <div className="flex items-center justify-between px-5 py-2.5 border-b border-zinc-200 bg-white">
-      <div className="flex items-center gap-3">
-        {/* Swimlane dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => setShowSwimlane(!showSwimlane)}
-            className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-md hover:bg-zinc-50 hover:border-zinc-400 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500"
-          >
-            <Rows3 className="w-4 h-4 text-zinc-500" />
-            <span>Swimlane: {swimlaneLabel}</span>
-            <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
-          </button>
-          {showSwimlane && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => setShowSwimlane(false)} />
-              <div className="absolute top-full left-0 mt-1 w-44 bg-white border border-zinc-200 rounded-lg shadow-lg z-50 py-1">
-                {SWIMLANE_OPTIONS.map(opt => (
-                  <button
-                    key={opt.key}
-                    onClick={() => { onSwimlaneChange(opt.key); setShowSwimlane(false); }}
-                    className={cn(
-                      'w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 transition-colors',
-                      swimlane === opt.key ? 'text-blue-600 font-semibold bg-blue-50/50' : 'text-zinc-700'
-                    )}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Sort dropdown */}
-        <div className="relative">
-          <button
-            onClick={() => setShowSort(!showSort)}
-            className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-md hover:bg-zinc-50 hover:border-zinc-400 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500"
-          >
-            <ArrowUpDown className="w-4 h-4 text-zinc-500" />
-            <span>Sort: {sortLabel}</span>
-            <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
-          </button>
-          {showSort && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => setShowSort(false)} />
-              <div className="absolute top-full left-0 mt-1 w-44 bg-white border border-zinc-200 rounded-lg shadow-lg z-50 py-1">
-                {SORT_OPTIONS.map(opt => (
-                  <button
-                    key={opt.key}
-                    onClick={() => { onSortChange(opt.key); setShowSort(false); }}
-                    className={cn(
-                      'w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 transition-colors',
-                      sortBy === opt.key ? 'text-blue-600 font-semibold bg-blue-50/50' : 'text-zinc-700'
-                    )}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+    <div className="pk-toolbar">
+      {/* Swimlane dropdown */}
+      <div style={{ position: 'relative' }}>
+        <button onClick={() => setShowSwimlane(!showSwimlane)} className="pk-toolbar-btn">
+          <Rows3 size={14} />
+          <span>Swimlane: {swimlaneLabel}</span>
+          <ChevronDown size={12} />
+        </button>
+        {showSwimlane && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setShowSwimlane(false)} />
+            <div className="pk-dropdown">
+              {SWIMLANE_OPTIONS.map(opt => (
+                <button
+                  key={opt.key}
+                  onClick={() => { onSwimlaneChange(opt.key); setShowSwimlane(false); }}
+                  className={`pk-dropdown-item ${swimlane === opt.key ? 'pk-dropdown-item--active' : ''}`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
-      <div className="flex items-center gap-2">
-        <button className="flex items-center gap-1.5 px-3 h-8 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-md hover:bg-zinc-50 hover:border-zinc-400 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500">
-          <Download className="w-4 h-4 text-zinc-500" />
-          <span>Export</span>
+      {/* Sort dropdown */}
+      <div style={{ position: 'relative' }}>
+        <button onClick={() => setShowSort(!showSort)} className="pk-toolbar-btn">
+          <ArrowUpDown size={14} />
+          <span>Sort: {sortLabel}</span>
+          <ChevronDown size={12} />
         </button>
-        <button
-          onClick={onNewInitiative}
-          className="flex items-center gap-1.5 px-4 h-9 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-        >
-          <Plus className="w-4 h-4" />
-          <span>New Initiative</span>
-        </button>
+        {showSort && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setShowSort(false)} />
+            <div className="pk-dropdown">
+              {SORT_OPTIONS.map(opt => (
+                <button
+                  key={opt.key}
+                  onClick={() => { onSortChange(opt.key); setShowSort(false); }}
+                  className={`pk-dropdown-item ${sortBy === opt.key ? 'pk-dropdown-item--active' : ''}`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
+
+      <div className="pk-toolbar-spacer" />
+
+      {/* Export */}
+      <button ref={exportRef} onClick={() => setShowExport(!showExport)} className="pk-toolbar-btn">
+        <Download size={14} />
+        <span>Export</span>
+      </button>
+      <ExportDropdown data={initiatives} anchorRef={exportRef} isOpen={showExport} onClose={() => setShowExport(false)} />
+
+      {/* New Initiative */}
+      <button onClick={onNewInitiative} className="pk-btn-primary">
+        <Plus size={14} />
+        <span>New Initiative</span>
+      </button>
     </div>
   );
 };
