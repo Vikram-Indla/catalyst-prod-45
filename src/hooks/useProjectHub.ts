@@ -224,7 +224,8 @@ export function filterAndSortProjects(
   projects: ProjectListItem[],
   filters: ProjectFilters,
   sortCol: SortColumn,
-  sortDir: SortDirection
+  sortDir: SortDirection,
+  favorites?: Set<string>
 ): ProjectListItem[] {
   let result = [...projects];
 
@@ -238,8 +239,12 @@ export function filterAndSortProjects(
     );
   }
 
+  // Starred filter
+  if (filters.statusChip === 'Starred') {
+    result = result.filter(p => favorites?.has(p.id));
+  }
   // Status chip filter (Active, On Hold, Planning, Completed)
-  if (filters.statusChip !== 'All') {
+  else if (filters.statusChip !== 'All') {
     const map: Record<string, string> = {
       'Active': 'active', 'On Hold': 'on_hold', 'Planning': 'planning', 'Completed': 'completed'
     };
@@ -289,7 +294,7 @@ export function filterAndSortProjects(
 // ─────────────────────────────────────────────
 // 8. Portfolio stats computed from projects array
 // ─────────────────────────────────────────────
-export function computePortfolioStats(projects: ProjectListItem[]) {
+export function computePortfolioStats(projects: ProjectListItem[], favorites?: Set<string>) {
   return {
     total: projects.length,
     active: projects.filter(p => p.status === 'active').length,
@@ -300,6 +305,7 @@ export function computePortfolioStats(projects: ProjectListItem[]) {
     totalInProgress: projects.reduce((s, p) => s + p.work_items_in_progress, 0),
     totalDone: projects.reduce((s, p) => s + p.work_items_done, 0),
     // Status counts for chips
+    statusStarred: favorites ? projects.filter(p => favorites.has(p.id)).length : 0,
     statusActive: projects.filter(p => p.status === 'active').length,
     statusOnHold: projects.filter(p => p.status === 'on_hold').length,
     statusPlanning: projects.filter(p => p.status === 'planning').length,

@@ -1,8 +1,7 @@
 import { Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { formatDistanceToNowStrict } from 'date-fns';
 import type { ProjectListItem } from '@/types/projecthub';
-import { STATUS_CATEGORY_DISPLAY } from '@/types/projecthub';
-import { DistributionBar } from './DistributionBar';
 import { MemberStack } from './MemberStack';
 
 function getGradient(key: string): string {
@@ -26,9 +25,6 @@ function getGradient(key: string): string {
   return `linear-gradient(135deg, ${f}, ${t})`;
 }
 
-const CAT_DOT: Record<string, string> = { todo: '#94A3B8', in_progress: '#3B82F6', done: '#22C55E' };
-const CAT_TEXT: Record<string, string> = { todo: '#94A3B8', in_progress: '#3B82F6', done: '#22C55E' };
-
 interface Props {
   projects: ProjectListItem[];
   favoriteIds: Set<string>;
@@ -43,8 +39,6 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
       {projects.map(p => {
         const isFav = favoriteIds.has(p.id);
         const grad = getGradient(p.project_key);
-        const total = p.work_items_done + p.work_items_in_progress + p.work_items_todo;
-        const completion = total > 0 ? Math.round((p.work_items_done / total) * 100) : 0;
         return (
           <div
             key={p.id}
@@ -78,7 +72,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
                 </button>
               </div>
 
-              {/* Compact stats row */}
+              {/* Compact stats row — Epics, Features, Stories only */}
               <div style={{ display: 'flex', gap: 4, marginBottom: 8 }}>
                 {[
                   { label: 'E', val: p.total_epics, tip: 'Epics' },
@@ -94,24 +88,12 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
                 ))}
               </div>
 
-              {/* Distribution bar */}
-              <DistributionBar todo={p.work_items_todo} inProgress={p.work_items_in_progress} done={p.work_items_done} />
-
-              {/* Footer */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 }}>
-                <div style={{ display: 'flex', gap: 8, fontSize: 10, color: '#64748B' }}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
-                    <span style={{ width: 5, height: 5, borderRadius: 3, background: '#22C55E' }} />
-                    {p.work_items_done}
-                  </span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
-                    <span style={{ width: 5, height: 5, borderRadius: 3, background: '#3B82F6' }} />
-                    {p.work_items_in_progress}
-                  </span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
-                    <span style={{ width: 5, height: 5, borderRadius: 3, background: '#E2E8F0' }} />
-                    {p.work_items_todo}
-                  </span>
+              {/* Footer — Last Sync + Members */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ fontSize: 10, color: '#94A3B8' }}>
+                  {p.last_synced_at
+                    ? `Synced ${formatDistanceToNowStrict(new Date(p.last_synced_at), { addSuffix: true })}`
+                    : 'Not synced'}
                 </div>
                 <MemberStack memberIds={p.member_ids} memberCount={p.member_count} max={3} />
               </div>
