@@ -2,12 +2,16 @@
  * ResourceListingPage — Master resource listing, entry point for Resource Hub
  * Route: /project-hub/resources
  */
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Search } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
+import { toast } from 'sonner';
+
+const DepartmentIntelligenceOverlay = lazy(() => import('@/components/resource360/DepartmentIntelligenceOverlay'));
 
 /* ── Types ── */
 interface Resource {
@@ -92,6 +96,7 @@ export default function ResourceListingPage() {
   const [deptFilter, setDeptFilter] = useState<string>('All');
   const [sortKey, setSortKey] = useState<SortKey>('full_name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
+  const [showDeptIntel, setShowDeptIntel] = useState(false);
 
   const { data: resources = [], isLoading } = useQuery({
     queryKey: ['resources-listing'],
@@ -232,12 +237,37 @@ export default function ResourceListingPage() {
             onBlur={e => { e.currentTarget.style.borderColor = '#B0B8C4'; e.currentTarget.style.boxShadow = 'none'; }}
           />
         </div>
-        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-          <PillButton active={deptFilter === 'All'} onClick={() => setDeptFilter('All')} label={`All`} />
-          {deptNames.map(d => (
-            <PillButton key={d} active={deptFilter === d} onClick={() => setDeptFilter(d)} label={`${d} (${deptCounts[d]})`} />
-          ))}
-        </div>
+        <TooltipProvider delayDuration={200}>
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <PillButton active={deptFilter === 'All'} onClick={() => { setDeptFilter('All'); setShowDeptIntel(false); }} label={`All`} />
+            {deptNames.map(d => (
+              <PillButton key={d} active={deptFilter === d} onClick={() => setDeptFilter(d)} label={`${d} (${deptCounts[d]})`} />
+            ))}
+            <div style={{ width: 1, height: 24, background: '#E2E8F0', margin: '0 4px' }} />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <AIIntelligenceButton
+                    label="Intelligence"
+                    onClick={() => {
+                      if (deptFilter === 'All') {
+                        toast('Select a department filter first', { description: 'Choose Delivery, Product, or another department to enable Department Intelligence.' });
+                        return;
+                      }
+                      setShowDeptIntel(true);
+                    }}
+                    disabled={deptFilter === 'All'}
+                  />
+                </div>
+              </TooltipTrigger>
+              {deptFilter === 'All' && (
+                <TooltipContent side="bottom" className="bg-[#0F172A] text-white text-xs px-3 py-1.5 rounded max-w-[200px]">
+                  Select a department filter to enable AI Intelligence
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </div>
+        </TooltipProvider>
       </div>
 
       {/* Table */}
@@ -407,6 +437,18 @@ export default function ResourceListingPage() {
           100% { background-position: -200% 0; }
         }
       `}</style>
+
+      {/* Department Intelligence Overlay */}
+      {showDeptIntel && deptFilter !== 'All' && (
+        <Suspense fallback={null}>
+          <TooltipProvider>
+            <DepartmentIntelligenceOverlay
+              departmentName={deptFilter}
+              onClose={() => setShowDeptIntel(false)}
+            />
+          </TooltipProvider>
+        </Suspense>
+      )}
     </div>
   );
 }

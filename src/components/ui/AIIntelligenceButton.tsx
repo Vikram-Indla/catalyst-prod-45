@@ -4,11 +4,12 @@
  */
 import React from 'react';
 
-interface AIIntelligenceButtonProps {
+export interface AIIntelligenceButtonProps {
   label: string;
   isActive?: boolean;
   onClick: () => void;
   className?: string;
+  disabled?: boolean;
 }
 
 export function AIIntelligenceButton({
@@ -16,20 +17,23 @@ export function AIIntelligenceButton({
   isActive = false,
   onClick,
   className,
+  disabled = false,
 }: AIIntelligenceButtonProps) {
   return (
     <button
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
       className={className}
+      disabled={disabled}
       style={{
-        background: isActive ? '#1D4ED8' : '#2563EB',
+        background: disabled ? '#94A3B8' : isActive ? '#1D4ED8' : '#2563EB',
         color: '#FFFFFF',
         border: 'none',
         borderRadius: '8px',
         padding: '7px 14px',
         fontSize: '12px',
         fontWeight: 600,
-        cursor: 'pointer',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        opacity: disabled ? 0.6 : 1,
         display: 'inline-flex',
         alignItems: 'center',
         gap: '5px',

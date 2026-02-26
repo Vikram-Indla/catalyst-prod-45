@@ -128,3 +128,6 @@ verify_jwt = false
 
 [functions.r360-daily-cron]
 verify_jwt = false
+
+[functions.r360-department-intelligence]
+verify_jwt = false
