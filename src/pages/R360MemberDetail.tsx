@@ -144,12 +144,16 @@ export default function R360MemberDetail() {
     setWeekOffset(prev => prev + dir);
   }, []);
 
-  // Status counts
+  // Status counts — week-scoped
   const counts = useMemo(() => {
     const c = { all: weekItems.length, to_do: 0, in_progress: 0, in_qa: 0, done: 0, blocked: 0 };
     weekItems.forEach(i => { (c as any)[i.status_category] = ((c as any)[i.status_category] || 0) + 1; });
     return c;
   }, [weekItems]);
+
+  // Week-scoped KPIs for banner (must match pill counts)
+  const weekOpenItems = useMemo(() => weekItems.filter(i => i.status_category !== 'done').length, [weekItems]);
+  const weekStaleItems = useMemo(() => weekItems.filter(i => i.status_category !== 'done' && (i.age_days || 0) > 14).length, [weekItems]);
 
   // Avg age of open items
   const avgAge = useMemo(() => {
@@ -206,11 +210,11 @@ export default function R360MemberDetail() {
             </div>
             <div style={{ display: 'flex', gap: '10px' }}>
               <div style={{ padding: '8px 22px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, border: '1px solid #FDE68A', background: '#FFFBEB' }}>
-                <div style={{ fontSize: '22px', fontWeight: 700, color: '#78350F' }}>{overview.open_items}</div>
+                <div style={{ fontSize: '22px', fontWeight: 700, color: '#78350F' }}>{weekOpenItems}</div>
                 <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#78350F', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>OPEN</div>
               </div>
               <div style={{ padding: '8px 22px', borderRadius: '8px', minWidth: '76px', textAlign: 'center' as const, border: '1px solid #E2E8F0', background: '#FFFFFF' }}>
-                <div style={{ fontSize: '22px', fontWeight: 700, color: '#0F172A' }}>{overview.stale_items}</div>
+                <div style={{ fontSize: '22px', fontWeight: 700, color: '#0F172A' }}>{weekStaleItems}</div>
                 <div style={{ fontSize: '10.5px', fontWeight: 600, color: '#334155', textTransform: 'uppercase' as const, letterSpacing: '.03em' }}>STALE</div>
               </div>
             </div>
