@@ -32806,6 +32806,7 @@ export type Database = {
         Row: {
           assignment_id: string | null
           assignments: Json | null
+          avatar_url: string | null
           contract_end_date: string | null
           contract_start_date: string | null
           country_id: string | null
@@ -32833,6 +32834,7 @@ export type Database = {
         Insert: {
           assignment_id?: string | null
           assignments?: Json | null
+          avatar_url?: string | null
           contract_end_date?: string | null
           contract_start_date?: string | null
           country_id?: string | null
@@ -32860,6 +32862,7 @@ export type Database = {
         Update: {
           assignment_id?: string | null
           assignments?: Json | null
+          avatar_url?: string | null
           contract_end_date?: string | null
           contract_start_date?: string | null
           country_id?: string | null
@@ -61581,6 +61584,7 @@ export type Database = {
         Args: { p_execution_id: string; p_step_id: string }
         Returns: Json
       }
+      sync_avatar_urls: { Args: never; Returns: undefined }
       t10_archive_list: { Args: { p_list_id: string }; Returns: Json }
       t10_checkout_week: {
         Args: {

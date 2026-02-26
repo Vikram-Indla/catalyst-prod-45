@@ -1,14 +1,17 @@
 /**
  * ResourceListingPage — Master resource listing, entry point for Resource Hub
  * Route: /project-hub/resources
+ * Executive Elevation: avatar pipeline, dynamic dept pills, filled action buttons, export dropdown
  */
-import React, { useState, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useMemo, useRef, useEffect, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Search } from 'lucide-react';
+import {
+  Search, RotateCw, Clock, LayoutGrid, Sparkles,
+  Download, ChevronDown, FileDown, ChevronUp,
+} from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import { toast } from 'sonner';
 
 const DepartmentIntelligenceOverlay = lazy(() => import('@/components/resource360/DepartmentIntelligenceOverlay'));
@@ -46,7 +49,7 @@ const COLUMNS: { key: SortKey | 'actions'; label: string; minWidth?: number; wid
   { key: 'assignment_name', label: 'ASSIGNMENT' },
   { key: 'location_type', label: 'LOCATION' },
   { key: 'vendor_name', label: 'VENDOR' },
-  { key: 'actions', label: 'ACTIONS', width: 120, center: true },
+  { key: 'actions', label: 'ACTIONS', width: 140, center: true },
 ];
 
 /* ── Helpers ── */
@@ -57,37 +60,53 @@ const getInitials = (name: string) => {
     : (parts[0]?.[0] || '?').toUpperCase();
 };
 
+const AVATAR_COLORS = ['#6b7a8d', '#7a8b6b', '#8b7a6b', '#6b6b8b', '#6b8b8b', '#8b6b7a', '#7a6b8b', '#6b8b7a'];
+
 const hashColor = (name: string) => {
-  const colors = ['#2563EB', '#7C3AED', '#0D9488', '#D97706', '#DC2626', '#0891B2', '#4F46E5', '#059669'];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  return colors[Math.abs(hash) % colors.length];
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 };
 
-/* ── Action Icons (SVG) ── */
-const RadarIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <circle cx="12" cy="12" r="9" />
-    <circle cx="12" cy="12" r="5" />
-    <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-    <path d="M12 3v4M12 17v4M3 12h4M17 12h4" />
-  </svg>
-);
+/* ── Export helpers ── */
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
-const ClockIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <circle cx="12" cy="12" r="9" />
-    <path d="M12 7v5l3 3" />
-  </svg>
-);
+function exportCSV(data: Resource[]) {
+  const headers = ['Resource ID', 'Name', 'Department', 'Job Role', 'Assignment', 'Location', 'Vendor'];
+  const rows = data.map(r => [
+    r.rid,
+    `"${(r.full_name || '').replace(/"/g, '""')}"`,
+    `"${(r.dept_name || '').replace(/"/g, '""')}"`,
+    `"${(r.job_role || '').replace(/"/g, '""')}"`,
+    `"${(r.assignment_name || '').replace(/"/g, '""')}"`,
+    r.location_type || '',
+    `"${(r.vendor_name || '').replace(/"/g, '""')}"`,
+  ]);
+  const csv = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  downloadBlob(blob, `resources_${new Date().toISOString().split('T')[0]}.csv`);
+}
 
-const BoardIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-    <rect x="3" y="3" width="5" height="18" rx="1" />
-    <rect x="10" y="3" width="5" height="12" rx="1" />
-    <rect x="17" y="3" width="5" height="15" rx="1" />
-  </svg>
-);
+function exportJSON(data: Resource[]) {
+  const json = JSON.stringify(data.map(r => ({
+    resource_id: r.rid,
+    name: r.full_name,
+    department: r.dept_name,
+    job_role: r.job_role,
+    assignment: r.assignment_name,
+    location: r.location_type,
+    vendor: r.vendor_name,
+  })), null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  downloadBlob(blob, `resources_${new Date().toISOString().split('T')[0]}.json`);
+}
 
 /* ── Component ── */
 export default function ResourceListingPage() {
@@ -97,19 +116,28 @@ export default function ResourceListingPage() {
   const [sortKey, setSortKey] = useState<SortKey>('full_name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [showDeptIntel, setShowDeptIntel] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  // Close export dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (exportRef.current && !exportRef.current.contains(e.target as Node)) setExportOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const { data: resources = [], isLoading } = useQuery({
     queryKey: ['resources-listing'],
     queryFn: async () => {
-      // Fetch resource_inventory with lookups
       const { data, error } = await supabase
         .from('resource_inventory')
-        .select('id, rid, name, role_name, profile_id, department_id, assignment_id, vendor_id, vendor_name, department_name, location_id, jira_account_id')
+        .select('id, rid, name, role_name, profile_id, department_id, assignment_id, vendor_id, vendor_name, department_name, location_id, jira_account_id, avatar_url')
         .eq('is_active', true)
         .order('name', { ascending: true });
       if (error) throw error;
 
-      // Fetch lookups + profiles + ticket presence in parallel
       const profileIds = (data || []).map((r: any) => r.profile_id).filter(Boolean);
       const [{ data: depts }, { data: assignments }, { data: locations }, { data: profiles }, { data: assignedRids }, { data: contributedAccounts }] = await Promise.all([
         supabase.from('capacity_departments').select('id, name'),
@@ -118,13 +146,10 @@ export default function ResourceListingPage() {
         profileIds.length > 0
           ? supabase.from('profiles').select('id, avatar_url').in('id', profileIds)
           : Promise.resolve({ data: [] }),
-        // Distinct resource_ids that have assigned tickets
         (supabase as any).from('vw_wh_resource_360').select('resource_id'),
-        // Distinct reporter_account_ids that have contributed tickets
         (supabase as any).from('ph_issues').select('reporter_account_id'),
       ]);
 
-      // Build sets of rids/jira_ids that have tickets
       const ridsWithAssigned = new Set((assignedRids || []).map((r: any) => r.resource_id));
       const jiraIdsWithContrib = new Set((contributedAccounts || []).map((r: any) => r.reporter_account_id).filter(Boolean));
 
@@ -135,7 +160,6 @@ export default function ResourceListingPage() {
 
       return ((data || []) as any[])
         .filter((r: any) => {
-          // Only show resources that have assigned or contributed tickets
           const hasAssigned = ridsWithAssigned.has(r.rid);
           const hasContributed = r.jira_account_id && jiraIdsWithContrib.has(r.jira_account_id);
           return hasAssigned || hasContributed;
@@ -149,12 +173,12 @@ export default function ResourceListingPage() {
           dept_name: deptMap.get(r.department_id) || r.department_name || null,
           assignment_name: assignMap.get(r.assignment_id) || null,
           vendor_name: r.vendor_name || null,
-          avatar_url: r.profile_id ? (avatarMap.get(r.profile_id) || null) : null,
+          avatar_url: r.avatar_url || (r.profile_id ? (avatarMap.get(r.profile_id) || null) : null),
         }));
     },
   });
 
-  // Department counts
+  // Department counts (dynamic from data)
   const deptCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     resources.forEach(r => {
@@ -164,7 +188,10 @@ export default function ResourceListingPage() {
     return counts;
   }, [resources]);
 
-  const deptNames = useMemo(() => Object.keys(deptCounts).sort(), [deptCounts]);
+  const deptNames = useMemo(() =>
+    Object.entries(deptCounts).sort(([, a], [, b]) => b - a).map(([name]) => name),
+    [deptCounts]
+  );
 
   // Filter
   const filtered = useMemo(() => {
@@ -178,7 +205,8 @@ export default function ResourceListingPage() {
         (r.full_name || '').toLowerCase().includes(q) ||
         (r.job_role || '').toLowerCase().includes(q) ||
         (r.dept_name || '').toLowerCase().includes(q) ||
-        (r.assignment_name || '').toLowerCase().includes(q)
+        (r.assignment_name || '').toLowerCase().includes(q) ||
+        (r.rid || '').toLowerCase().includes(q)
       );
     }
     return list;
@@ -219,8 +247,9 @@ export default function ResourceListingPage() {
         </span>
       </div>
 
-      {/* Search + Dept Pills */}
+      {/* Toolbar: Search + Dept Pills + Intelligence + Export */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
+        {/* Search */}
         <div style={{ position: 'relative', width: '100%', maxWidth: '420px' }}>
           <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
           <input
@@ -237,28 +266,52 @@ export default function ResourceListingPage() {
             onBlur={e => { e.currentTarget.style.borderColor = '#B0B8C4'; e.currentTarget.style.boxShadow = 'none'; }}
           />
         </div>
-        <TooltipProvider delayDuration={200}>
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <PillButton active={deptFilter === 'All'} onClick={() => { setDeptFilter('All'); setShowDeptIntel(false); }} label={`All`} />
-            {deptNames.map(d => (
-              <PillButton key={d} active={deptFilter === d} onClick={() => setDeptFilter(d)} label={`${d} (${deptCounts[d]})`} />
-            ))}
-            <div style={{ width: 1, height: 24, background: '#E2E8F0', margin: '0 4px' }} />
+
+        {/* Department pills (dynamic) */}
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <PillButton active={deptFilter === 'All'} onClick={() => { setDeptFilter('All'); setShowDeptIntel(false); }}
+            label={`All`} />
+          {deptNames.map(d => (
+            <PillButton key={d} active={deptFilter === d} onClick={() => setDeptFilter(d)}
+              label={`${d} (${deptCounts[d]})`} />
+          ))}
+
+          <div style={{ width: 1, height: 24, background: '#E2E8F0', margin: '0 4px' }} />
+
+          {/* Intelligence button — Blue */}
+          <TooltipProvider delayDuration={200}>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div>
-                  <AIIntelligenceButton
-                    label="Intelligence"
-                    onClick={() => {
-                      if (deptFilter === 'All') {
-                        toast('Select a department filter first', { description: 'Choose Delivery, Product, or another department to enable Department Intelligence.' });
-                        return;
-                      }
-                      setShowDeptIntel(true);
-                    }}
-                    disabled={deptFilter === 'All'}
-                  />
-                </div>
+                <button
+                  onClick={() => {
+                    if (deptFilter === 'All') {
+                      toast('Select a department filter first', { description: 'Choose a department to enable Intelligence.' });
+                      return;
+                    }
+                    setShowDeptIntel(true);
+                  }}
+                  style={{
+                    background: deptFilter === 'All' ? '#94A3B8' : '#2563EB',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '8px 20px',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    cursor: deptFilter === 'All' ? 'not-allowed' : 'pointer',
+                    opacity: deptFilter === 'All' ? 0.6 : 1,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: '0 1px 4px rgba(37,99,235,0.25)',
+                    transition: 'background 150ms, box-shadow 150ms',
+                  }}
+                  onMouseEnter={e => { if (deptFilter !== 'All') { e.currentTarget.style.background = '#1D4ED8'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.3)'; } }}
+                  onMouseLeave={e => { if (deptFilter !== 'All') { e.currentTarget.style.background = '#2563EB'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(37,99,235,0.25)'; } }}
+                >
+                  <Sparkles size={14} strokeWidth={2.2} />
+                  Intelligence
+                </button>
               </TooltipTrigger>
               {deptFilter === 'All' && (
                 <TooltipContent side="bottom" className="bg-[#0F172A] text-white text-xs px-3 py-1.5 rounded max-w-[200px]">
@@ -266,8 +319,51 @@ export default function ResourceListingPage() {
                 </TooltipContent>
               )}
             </Tooltip>
+          </TooltipProvider>
+
+          <div style={{ width: 1, height: 24, background: '#E2E8F0', margin: '0 4px' }} />
+
+          {/* Export dropdown */}
+          <div ref={exportRef} style={{ position: 'relative' }}>
+            <button
+              onClick={() => setExportOpen(o => !o)}
+              style={{
+                background: '#FFFFFF', color: '#334155',
+                border: '1.5px solid #E2E8F0', borderRadius: '8px',
+                padding: '8px 14px', fontSize: '13px', fontWeight: 600,
+                cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
+                transition: 'border-color 150ms',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#94A3B8'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = '#E2E8F0'; }}
+            >
+              <Download size={14} strokeWidth={2} />
+              Export
+              <ChevronDown size={13} style={{
+                transition: 'transform 150ms',
+                transform: exportOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+              }} />
+            </button>
+            {exportOpen && (
+              <div style={{
+                position: 'absolute', top: '100%', right: 0, marginTop: '4px',
+                background: '#fff', borderRadius: '8px', border: '1px solid #e5e7eb',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.12)', minWidth: '180px',
+                zIndex: 20, overflow: 'hidden',
+              }}>
+                <ExportMenuItem
+                  label="Export as CSV"
+                  onClick={() => { exportCSV(filtered); setExportOpen(false); toast.success('CSV exported'); }}
+                />
+                <div style={{ height: 1, background: '#f0f0f0' }} />
+                <ExportMenuItem
+                  label="Export as JSON"
+                  onClick={() => { exportJSON(filtered); setExportOpen(false); toast.success('JSON exported'); }}
+                />
+              </div>
+            )}
           </div>
-        </TooltipProvider>
+        </div>
       </div>
 
       {/* Table */}
@@ -275,160 +371,158 @@ export default function ResourceListingPage() {
         border: '1.5px solid #E2E8F0', borderRadius: '12px', overflow: 'hidden',
         background: '#FFFFFF',
       }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr>
-              {COLUMNS.map(col => (
-                <th
-                  key={col.key}
-                  onClick={() => col.key !== 'actions' && handleSort(col.key as SortKey)}
-                  style={{
-                    background: '#F1F5F9', padding: '0 16px', height: '40px',
-                    fontSize: '10.5px', fontWeight: 800, textTransform: 'uppercase' as const,
-                    letterSpacing: '0.08em', color: '#475569',
-                    borderBottom: '2px solid #B0B8C4',
-                    cursor: col.key !== 'actions' ? 'pointer' : 'default',
-                    textAlign: col.center ? 'center' : 'left',
-                    minWidth: col.minWidth, width: col.width,
-                    userSelect: 'none', whiteSpace: 'nowrap',
-                  }}
-                >
-                  {col.label}
-                  {col.key !== 'actions' && sortKey === col.key && (
-                    <span style={{ marginLeft: '4px' }}>{sortDir === 'asc' ? '▲' : '▼'}</span>
-                  )}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              Array.from({ length: 6 }).map((_, i) => (
-                <tr key={i}>
-                  {COLUMNS.map(col => (
-                    <td key={col.key} style={{ padding: '12px 16px', height: '52px' }}>
-                      <div style={{
-                        height: '16px', borderRadius: '4px',
-                        background: 'linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%)',
-                        backgroundSize: '200% 100%',
-                        animation: 'r360shimmer 1.5s infinite',
-                        width: col.key === 'actions' ? '80px' : '60%',
-                      }} />
-                    </td>
-                  ))}
-                </tr>
-              ))
-            ) : sorted.length === 0 ? (
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
               <tr>
-                <td colSpan={7} style={{ textAlign: 'center', padding: '60px 20px' }}>
-                  <div style={{ opacity: 0.4, fontSize: '48px', marginBottom: '12px' }}>🔍</div>
-                  <div style={{ fontSize: '15px', fontWeight: 700, color: '#0F172A', marginBottom: '4px' }}>No resources found</div>
-                  <div style={{ fontSize: '12px', color: '#94A3B8' }}>Try adjusting your search or filters</div>
-                </td>
-              </tr>
-            ) : sorted.map(r => (
-              <tr
-                key={r.rid}
-                style={{ borderBottom: '1px solid #F1F5F9', cursor: 'pointer' }}
-                onClick={() => navTo(r.id, 'ring')}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#F8FAFC'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
-              >
-                {/* RESOURCE */}
-                <td style={{ padding: '8px 16px', height: '52px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    {r.avatar_url ? (
-                      <img
-                        src={r.avatar_url}
-                        alt={r.full_name}
-                        style={{
-                          width: '36px', height: '36px', borderRadius: '50%',
-                          objectFit: 'cover', flexShrink: 0,
-                        }}
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                          if (fallback) fallback.style.display = 'flex';
-                        }}
-                      />
-                    ) : null}
-                    <div style={{
-                      width: '36px', height: '36px', borderRadius: '50%',
-                      background: hashColor(r.full_name), color: '#FFF',
-                      display: r.avatar_url ? 'none' : 'flex',
-                      alignItems: 'center', justifyContent: 'center',
-                      fontSize: '12px', fontWeight: 700, flexShrink: 0,
-                    }}>
-                      {getInitials(r.full_name)}
-                    </div>
-                    <div>
-                      <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#0F172A', lineHeight: 1.3 }}>{r.full_name}</div>
-                      <div style={{ fontSize: '10.5px', fontWeight: 400, color: '#475569' }}>RID: {r.rid}</div>
-                    </div>
-                  </div>
-                </td>
-                {/* DEPARTMENT */}
-                <td style={{ padding: '8px 16px', height: '52px' }}>
-                  {r.dept_name ? (
-                    <span style={{
-                      display: 'inline-flex', alignItems: 'center', gap: '6px',
-                      background: '#F1F5F9', borderRadius: '4px', padding: '3px 9px',
-                      fontSize: '11px', fontWeight: 600, color: '#334155',
-                    }}>
-                      <span style={{
-                        width: '6px', height: '6px', borderRadius: '50%',
-                        background: DEPT_COLORS[r.dept_name] || '#94A3B8',
-                      }} />
-                      {r.dept_name}
+                {COLUMNS.map(col => (
+                  <th
+                    key={col.key}
+                    onClick={() => col.key !== 'actions' && handleSort(col.key as SortKey)}
+                    style={{
+                      background: '#FAFAFA', padding: '0 16px', height: '40px',
+                      fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
+                      letterSpacing: '0.07em', color: '#475569',
+                      borderBottom: '1px solid #e5e7eb',
+                      cursor: col.key !== 'actions' ? 'pointer' : 'default',
+                      textAlign: col.center ? 'center' : 'left',
+                      minWidth: col.minWidth, width: col.width,
+                      userSelect: 'none', whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                      {col.label}
+                      {col.key !== 'actions' && sortKey === col.key && (
+                        sortDir === 'asc'
+                          ? <ChevronUp size={12} strokeWidth={2.5} />
+                          : <ChevronDown size={12} strokeWidth={2.5} />
+                      )}
                     </span>
-                  ) : <span style={{ fontSize: '12px', color: '#94A3B8' }}>—</span>}
-                </td>
-                {/* JOB ROLE */}
-                <td style={{ padding: '8px 16px', height: '52px', fontSize: '13px', fontWeight: 600, color: '#334155' }}>
-                  {r.job_role || '—'}
-                </td>
-                {/* ASSIGNMENT */}
-                <td style={{ padding: '8px 16px', height: '52px', fontSize: '12px', fontWeight: 400, color: '#374151' }}>
-                  {r.assignment_name || '—'}
-                </td>
-                {/* LOCATION */}
-                <td style={{ padding: '8px 16px', height: '52px' }}>
-                  {r.location_type ? (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 500 }}>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                Array.from({ length: 6 }).map((_, i) => (
+                  <tr key={i}>
+                    {COLUMNS.map(col => (
+                      <td key={col.key} style={{ padding: '12px 16px', height: '60px' }}>
+                        <div style={{
+                          height: '16px', borderRadius: '4px',
+                          background: 'linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%)',
+                          backgroundSize: '200% 100%',
+                          animation: 'r360shimmer 1.5s infinite',
+                          width: col.key === 'actions' ? '100px' : '60%',
+                        }} />
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : sorted.length === 0 ? (
+                <tr>
+                  <td colSpan={7} style={{ textAlign: 'center', padding: '60px 20px' }}>
+                    <Search size={32} style={{ color: '#D1D5DB', margin: '0 auto 12px' }} />
+                    <div style={{ fontSize: '15px', fontWeight: 700, color: '#0F172A', marginBottom: '4px' }}>No resources match your search.</div>
+                    <div style={{ fontSize: '12px', color: '#94A3B8' }}>Try adjusting your search or filters</div>
+                  </td>
+                </tr>
+              ) : sorted.map(r => (
+                <tr
+                  key={r.rid}
+                  style={{ borderBottom: '1px solid #f3f4f6', cursor: 'pointer', height: '60px' }}
+                  onClick={() => navTo(r.id, 'ring')}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#F8FAFC'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                >
+                  {/* RESOURCE */}
+                  <td style={{ padding: '8px 16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <ResourceAvatar name={r.full_name} avatarUrl={r.avatar_url} />
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{
+                          fontSize: '14px', fontWeight: 600, color: '#111',
+                          lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                          maxWidth: '200px',
+                        }}>{r.full_name}</div>
+                        <div style={{ fontSize: '12px', color: '#9ca3af', marginTop: 1 }}>RID: {r.rid}</div>
+                      </div>
+                    </div>
+                  </td>
+                  {/* DEPARTMENT */}
+                  <td style={{ padding: '8px 16px' }}>
+                    {r.dept_name ? (
                       <span style={{
-                        width: '6px', height: '6px', borderRadius: '50%',
-                        background: r.location_type === 'Onsite' ? '#059669' : '#D97706',
-                      }} />
-                      <span style={{ color: r.location_type === 'Onsite' ? '#059669' : '#D97706' }}>
-                        {r.location_type}
+                        display: 'inline-flex', alignItems: 'center', gap: '6px',
+                        fontSize: '13px', fontWeight: 500, color: '#374151',
+                      }}>
+                        <span style={{
+                          width: '6px', height: '6px', borderRadius: '50%',
+                          background: DEPT_COLORS[r.dept_name] || '#2563EB', flexShrink: 0,
+                        }} />
+                        {r.dept_name}
                       </span>
-                    </span>
-                  ) : <span style={{ fontSize: '12px', color: '#94A3B8' }}>—</span>}
-                </td>
-                {/* VENDOR */}
-                <td style={{ padding: '8px 16px', height: '52px', fontSize: '12px', fontWeight: 400, color: '#374151' }}>
-                  {r.vendor_name || '—'}
-                </td>
-                {/* ACTIONS */}
-                <td style={{ padding: '8px 16px', height: '52px', textAlign: 'center' }}>
-                  <TooltipProvider delayDuration={200}>
-                    <div style={{ display: 'inline-flex', gap: '6px' }}>
-                      <ActionButton tooltip="360° View" onClick={(e: React.MouseEvent) => { e.stopPropagation(); navTo(r.id, 'ring'); }}>
-                        <RadarIcon />
-                      </ActionButton>
-                      <ActionButton tooltip="Chronology" onClick={(e: React.MouseEvent) => { e.stopPropagation(); navTo(r.id, 'chronology'); }}>
-                        <ClockIcon />
-                      </ActionButton>
-                      <ActionButton tooltip="Board View" onClick={(e: React.MouseEvent) => { e.stopPropagation(); navTo(r.id, 'board'); }}>
-                        <BoardIcon />
-                      </ActionButton>
+                    ) : <span style={{ fontSize: '13px', color: '#d1d5db' }}>—</span>}
+                  </td>
+                  {/* JOB ROLE */}
+                  <td style={{ padding: '8px 16px', fontSize: '14px', fontWeight: 600, color: '#111' }}>
+                    {r.job_role || '—'}
+                  </td>
+                  {/* ASSIGNMENT */}
+                  <td style={{
+                    padding: '8px 16px', fontSize: '13px', color: '#4b5563',
+                    maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                  }}>
+                    {r.assignment_name || '—'}
+                  </td>
+                  {/* LOCATION */}
+                  <td style={{ padding: '8px 16px' }}>
+                    {r.location_type ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 500 }}>
+                        <span style={{
+                          width: '6px', height: '6px', borderRadius: '50%',
+                          background: r.location_type === 'Onsite' ? '#16a34a' : '#d97706',
+                        }} />
+                        <span style={{ color: r.location_type === 'Onsite' ? '#16a34a' : '#d97706' }}>
+                          {r.location_type}
+                        </span>
+                      </span>
+                    ) : <span style={{ fontSize: '13px', color: '#d1d5db' }}>—</span>}
+                  </td>
+                  {/* VENDOR */}
+                  <td style={{ padding: '8px 16px', fontSize: '13px', color: '#374151' }}>
+                    {r.vendor_name || <span style={{ color: '#d1d5db' }}>—</span>}
+                  </td>
+                  {/* ACTIONS — 3 filled buttons */}
+                  <td style={{ padding: '8px 16px', textAlign: 'center' }}>
+                    <div style={{ display: 'inline-flex', gap: '8px' }}>
+                      <ActionBtn
+                        tooltip="Resource 360°"
+                        bg="#1e293b" bgHover="#0f172a"
+                        icon={<RotateCw size={16} strokeWidth={1.9} />}
+                        onClick={(e) => { e.stopPropagation(); navTo(r.id, 'ring'); }}
+                      />
+                      <ActionBtn
+                        tooltip="Chronology View"
+                        bg="#2563eb" bgHover="#1d4ed8"
+                        shadowColor="rgba(37,99,235,0.2)"
+                        icon={<Clock size={16} strokeWidth={1.9} />}
+                        onClick={(e) => { e.stopPropagation(); navTo(r.id, 'chronology'); }}
+                      />
+                      <ActionBtn
+                        tooltip="Board View"
+                        bg="#0d9488" bgHover="#0f766e"
+                        shadowColor="rgba(13,148,136,0.2)"
+                        icon={<LayoutGrid size={16} strokeWidth={1.9} />}
+                        onClick={(e) => { e.stopPropagation(); navTo(r.id, 'board'); }}
+                      />
                     </div>
-                  </TooltipProvider>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <style>{`
@@ -460,12 +554,16 @@ function PillButton({ active, onClick, label }: { active: boolean; onClick: () =
     <button
       onClick={onClick}
       style={{
-        background: active ? '#EFF6FF' : '#F1F5F9',
-        border: `1px solid ${active ? '#2563EB' : '#E2E8F0'}`,
-        color: active ? '#2563EB' : '#374151',
-        borderRadius: '16px', padding: '5px 14px',
-        fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+        background: '#FFFFFF',
+        border: `1.5px solid ${active ? '#111' : '#e5e7eb'}`,
+        color: active ? '#111' : '#6b7280',
+        borderRadius: '20px',
+        padding: '8px 18px',
+        fontSize: '13px',
+        fontWeight: 500,
+        cursor: 'pointer',
         whiteSpace: 'nowrap',
+        transition: 'border-color 150ms, color 150ms',
       }}
     >
       {label}
@@ -473,35 +571,101 @@ function PillButton({ active, onClick, label }: { active: boolean; onClick: () =
   );
 }
 
-function ActionButton({ tooltip, onClick, children }: { tooltip: string; onClick: (e: React.MouseEvent) => void; children: React.ReactNode }) {
+function ResourceAvatar({ name, avatarUrl }: { name: string; avatarUrl: string | null }) {
+  const [imgError, setImgError] = useState(false);
+
+  if (avatarUrl && !imgError) {
+    return (
+      <img
+        src={avatarUrl}
+        alt={name}
+        style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+        onError={() => setImgError(true)}
+      />
+    );
+  }
+
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button
-          onClick={onClick}
+    <div style={{
+      width: 40, height: 40, borderRadius: '50%',
+      background: hashColor(name), color: '#ffffff',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: '13px', fontWeight: 600, flexShrink: 0,
+    }}>
+      {getInitials(name)}
+    </div>
+  );
+}
+
+function ActionBtn({
+  tooltip, bg, bgHover, shadowColor, icon, onClick,
+}: {
+  tooltip: string;
+  bg: string;
+  bgHover: string;
+  shadowColor?: string;
+  icon: React.ReactNode;
+  onClick: (e: React.MouseEvent) => void;
+}) {
+  return (
+    <TooltipProvider delayDuration={200}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={onClick}
+            aria-label={tooltip}
+            title={tooltip}
+            style={{
+              width: 34, height: 34, borderRadius: 7,
+              border: 'none', background: bg, color: '#ffffff',
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer', padding: 0,
+              transition: 'background 0.12s ease, box-shadow 0.12s ease, transform 0.12s ease',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = bgHover;
+              e.currentTarget.style.boxShadow = `0 2px 8px ${shadowColor || 'rgba(0,0,0,0.12)'}`;
+              e.currentTarget.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = bg;
+              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
+            {icon}
+          </button>
+        </TooltipTrigger>
+        <TooltipContent
+          side="top"
           style={{
-            width: '32px', height: '32px', borderRadius: '6px',
-            border: '1.5px solid #E2E8F0', background: '#FFFFFF',
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', color: '#475569', padding: 0,
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.borderColor = '#2563EB';
-            e.currentTarget.style.background = '#EFF6FF';
-            e.currentTarget.style.color = '#2563EB';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.borderColor = '#E2E8F0';
-            e.currentTarget.style.background = '#FFFFFF';
-            e.currentTarget.style.color = '#475569';
+            background: '#1e293b', color: '#f1f5f9',
+            fontSize: '11px', borderRadius: '6px',
+            padding: '4px 8px',
           }}
         >
-          {children}
-        </button>
-      </TooltipTrigger>
-      <TooltipContent side="top" className="bg-[#0F172A] text-white text-xs px-2 py-1 rounded">
-        {tooltip}
-      </TooltipContent>
-    </Tooltip>
+          {tooltip}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
+function ExportMenuItem({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: 'flex', alignItems: 'center', gap: '8px', width: '100%',
+        padding: '10px 14px', fontSize: '13px', fontWeight: 500, color: '#1a1d21',
+        background: 'transparent', border: 'none', cursor: 'pointer',
+        textAlign: 'left', transition: 'background 100ms',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.background = '#f5f5f5'; }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+    >
+      <FileDown size={14} strokeWidth={2} color="#6b7280" />
+      {label}
+    </button>
   );
 }
