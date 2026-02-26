@@ -297,11 +297,11 @@ serve(async (req) => {
       function normalizeType(t: string): string {
         const l = t.toLowerCase().trim();
         if (l === 'epic') return 'Epic';
-        if (['story', 'business request', 'change request', 'business gap'].includes(l)) return 'Story';
+        if (l === 'story') return 'Story';
         if (['bug', 'qa bug', 'defect'].includes(l)) return 'Bug';
         if (['sub-task', 'subtask'].includes(l)) return 'Subtask';
-        if (['feature', 'frontend', 'backend', 'integration', 'api requirement', 'brd task', 'entity figma', 'figma'].includes(l)) return 'Feature';
         if (l === 'production incident') return 'Incident';
+        // Preserve Jira integrity: no synthetic "Feature" bucketing
         return 'Task';
       }
       function normalizePriority(p: string): string {
@@ -314,7 +314,7 @@ serve(async (req) => {
 
       // Compute a hash for change detection
       function computeHash(issue: any): string {
-        return `${issue.summary}|${issue.status}|${issue.priority}|${issue.assignee_account_id}|${issue.due_date}|${JSON.stringify(issue.labels)}`;
+        return `${issue.issue_type}|${issue.summary}|${issue.status}|${issue.priority}|${issue.assignee_account_id}|${issue.due_date}|${JSON.stringify(issue.labels)}`;
       }
 
       // Process issues
