@@ -69,6 +69,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
     : '??';
   const weekNum = getWeekNumber(selectedDate);
   const avatarBg = name ? getAvatarColor(name) : '#2563EB';
+  const avatarUrl = resource?.avatar_url || null;
 
   const noAIData = !patternData?.summary && !patternData?.insights?.length;
 
@@ -99,7 +100,10 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
 
         {/* Identity bar */}
         <div className="rai-identity">
-          <div className="rai-avatar" style={{ background: avatarBg }}>{initials}</div>
+          {avatarUrl ? (
+            <img src={avatarUrl} alt={name} className="rai-avatar" style={{ background: avatarBg, objectFit: 'cover' }} onError={(e) => { e.currentTarget.style.display = 'none'; const next = e.currentTarget.nextElementSibling as HTMLElement; if (next) next.style.display = 'flex'; }} />
+          ) : null}
+          <div className="rai-avatar" style={{ background: avatarBg, display: avatarUrl ? 'none' : 'flex' }}>{initials}</div>
           <div style={{ flex: 1 }}>
             {resourceLoading ? (
               <>
