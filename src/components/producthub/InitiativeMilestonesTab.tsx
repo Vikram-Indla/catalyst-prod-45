@@ -8,6 +8,7 @@ import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Plus, Flag, Trash2, Check } from 'lucide-react';
+import { logInitiativeAudit } from '@/lib/initiativeAudit';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -69,6 +70,13 @@ export function InitiativeMilestonesTab({ initiativeId }: InitiativeMilestonesTa
       setNewDate('');
       setShowAdd(false);
       toast.success('Milestone added');
+      logInitiativeAudit({
+        initiative_id: initiativeId,
+        action: 'milestone_added',
+        entity_type: 'milestone',
+        entity_id: rows[0]?.id,
+        new_value: JSON.stringify({ title: newTitle.trim(), planned_date: newDate }),
+      });
     } catch (err: any) {
       toast.error('Failed: ' + err.message);
     } finally {
@@ -92,6 +100,15 @@ export function InitiativeMilestonesTab({ initiativeId }: InitiativeMilestonesTa
       }
       invalidate();
       toast.success(newStatus === 'completed' ? 'Milestone completed' : 'Milestone reopened');
+      logInitiativeAudit({
+        initiative_id: initiativeId,
+        action: newStatus === 'completed' ? 'milestone_completed' : 'milestone_reopened',
+        entity_type: 'milestone',
+        entity_id: id,
+        field_name: 'status',
+        old_value: currentStatus,
+        new_value: newStatus,
+      });
     } catch (err: any) {
       toast.error('Update failed: ' + err.message);
     }
@@ -106,6 +123,12 @@ export function InitiativeMilestonesTab({ initiativeId }: InitiativeMilestonesTa
       if (error) throw error;
       invalidate();
       toast.success('Milestone removed');
+      logInitiativeAudit({
+        initiative_id: initiativeId,
+        action: 'milestone_deleted',
+        entity_type: 'milestone',
+        entity_id: id,
+      });
     } catch (err: any) {
       toast.error('Delete failed: ' + err.message);
     }

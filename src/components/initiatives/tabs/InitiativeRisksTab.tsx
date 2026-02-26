@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
+import { logInitiativeAudit } from '@/lib/initiativeAudit';
 import { Plus, ShieldAlert, X, ChevronDown, Search } from 'lucide-react';
 import { useProfileOptions } from '@/hooks/useInitiativeLookups';
 
@@ -86,6 +87,12 @@ export function InitiativeRisksTab({ initiativeId }: InitiativeRisksTabProps) {
 
     if (error) { catalystToast.error('Failed to create risk'); return; }
     catalystToast.success(`${nextKey} created`);
+    logInitiativeAudit({
+      initiative_id: initiativeId,
+      action: 'risk_added',
+      entity_type: 'risk',
+      new_value: JSON.stringify({ risk_key: nextKey, title: riskForm.title.trim(), category: riskForm.category, risk_score: riskForm.probability * riskForm.impact }),
+    });
     refetchRisks();
     setShowAddRisk(false);
     setRiskForm({ title: '', description: '', category: 'technical', probability: 3, impact: 3, mitigation_plan: '', contingency_plan: '', owner_id: '', due_date: '' });

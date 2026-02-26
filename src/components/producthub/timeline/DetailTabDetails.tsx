@@ -13,6 +13,7 @@ import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { usePromoteToRoadmap, useRemoveFromRoadmap } from '@/hooks/useRoadmapPromotion';
+import { logInitiativeAudit } from '@/lib/initiativeAudit';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -453,6 +454,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         duration: 2000,
         icon: <Check size={14} className="text-primary" />,
       });
+      // Note: DB triggers (initiative_audit_trigger, trg_ph_initiative_audit) handle audit logging for ph_initiatives fields
       invalidateAll();
     } catch (err: any) {
       toast.error(`Failed to update ${label.toLowerCase()}`);
@@ -494,6 +496,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         duration: 2000,
         icon: <Check size={14} className="text-primary" />,
       });
+      // Note: DB trigger handles audit logging for ph_initiatives field changes
       invalidateAll();
     } catch {
       toast.error('Failed to update type');

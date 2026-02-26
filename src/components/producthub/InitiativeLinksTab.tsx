@@ -8,6 +8,7 @@ import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Plus, Link as LinkIcon, ExternalLink, Trash2 } from 'lucide-react';
+import { logInitiativeAudit } from '@/lib/initiativeAudit';
 import { toast } from 'sonner';
 
 interface InitiativeLinksTabProps {
@@ -54,6 +55,13 @@ function AddLinkForm({ initiativeId, onClose }: { initiativeId: string; onClose:
       }
       queryClient.invalidateQueries({ queryKey: ['ph-links', initiativeId] });
       toast.success('Link added');
+      logInitiativeAudit({
+        initiative_id: initiativeId,
+        action: 'link_added',
+        entity_type: 'link',
+        entity_id: rows[0]?.id,
+        new_value: JSON.stringify({ title: title.trim(), url: url.trim(), category }),
+      });
       onClose();
     } catch (err: any) {
       toast.error('Failed: ' + err.message);
@@ -133,6 +141,12 @@ export function InitiativeLinksTab({ initiativeId }: InitiativeLinksTabProps) {
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['ph-links', initiativeId] });
       toast.success('Link removed');
+      logInitiativeAudit({
+        initiative_id: initiativeId,
+        action: 'link_deleted',
+        entity_type: 'link',
+        entity_id: id,
+      });
     } catch (err: any) {
       toast.error('Delete failed: ' + err.message);
     }
