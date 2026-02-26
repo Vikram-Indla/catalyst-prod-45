@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Pencil, Copy, Star, Target, Trash2, Save, Loader2, ChevronLeft, AlertTriangle, Plus, Activity, ArrowRight, TrendingUp, FolderKanban, Zap, Wrench, Map, Network, DollarSign, Flag, Link as LinkIcon, ClipboardList, Paperclip, ExternalLink, Upload } from 'lucide-react';
+import { X, Pencil, Copy, Star, Target, Trash2, ChevronLeft, AlertTriangle, Plus, Activity, ArrowRight, TrendingUp, FolderKanban, Zap, Wrench, Map, Network, DollarSign, Flag, Link as LinkIcon, ClipboardList, Paperclip, ExternalLink, Upload } from 'lucide-react';
 import { InitiativeRisksTab } from './tabs/InitiativeRisksTab';
 import { InitiativeBudgetTab } from './tabs/InitiativeBudgetTab';
 import { InitiativeAuditTab } from './tabs/InitiativeAuditTab';
@@ -123,6 +123,114 @@ function ScoreSlider({ label, value, onChange }: { label: string; value: number;
   );
 }
 
+/* ── Inline Editable Title ── */
+function InlineEditableTitle({ value, onSave }: { value: string; onSave: (v: string) => void }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value);
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => { if (editing) inputRef.current?.focus(); }, [editing]);
+  const commit = () => {
+    setEditing(false);
+    const trimmed = draft.trim();
+    if (trimmed && trimmed !== value) onSave(trimmed);
+  };
+  if (!editing) {
+    return (
+      <h2 className="pb-panel-title group cursor-pointer" onClick={() => { setDraft(value); setEditing(true); }}
+        style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        {value}
+        <Pencil size={12} style={{ opacity: 0, transition: 'opacity 0.15s' }} className="group-hover:!opacity-60" />
+      </h2>
+    );
+  }
+  return (
+    <input ref={inputRef} value={draft} onChange={e => setDraft(e.target.value)}
+      onBlur={commit} onKeyDown={e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') setEditing(false); }}
+      style={{ width: '100%', fontFamily: 'var(--pb-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--pb-ink)', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', padding: '6px 12px', outline: 'none' }}
+    />
+  );
+}
+
+/* ── Inline Editable Date ── */
+function InlineEditableDate({ value, onSave, label }: { value: string | null; onSave: (v: string | null) => void; label: string }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value ?? '');
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => { if (editing) inputRef.current?.focus(); }, [editing]);
+  const commit = () => { setEditing(false); const v = draft || null; if (v !== (value ?? null)) onSave(v); };
+  if (!editing) {
+    return (
+      <span className="pb-field-value group cursor-pointer" onClick={() => { setDraft(value ? String(value).slice(0, 10) : ''); setEditing(true); }}
+        style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+        {value ? formatAbsoluteDate(value) : <span className="pb-field-empty">—</span>}
+        <Pencil size={10} style={{ opacity: 0, transition: 'opacity 0.15s' }} className="group-hover:!opacity-60" />
+      </span>
+    );
+  }
+  return <input ref={inputRef} type="date" value={draft} onChange={e => setDraft(e.target.value)} onBlur={commit}
+    onKeyDown={e => { if (e.key === 'Escape') setEditing(false); }}
+    style={{ width: '100%', height: 32, border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', padding: '0 8px', fontSize: 13, color: 'var(--pb-ink)', outline: 'none' }} />;
+}
+
+/* ── Inline Editable Textarea ── */
+function InlineEditableTextArea({ value, onSave }: { value: string | null; onSave: (v: string | null) => void }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value ?? '');
+  const ref = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => { if (editing && ref.current) { ref.current.focus(); ref.current.style.height = 'auto'; ref.current.style.height = ref.current.scrollHeight + 'px'; } }, [editing]);
+  const commit = () => { setEditing(false); const v = draft.trim() || null; if (v !== (value ?? null)) onSave(v); };
+  if (!editing) {
+    return (
+      <div className="group cursor-pointer" onClick={() => { setDraft(value ?? ''); setEditing(true); }}
+        style={{ padding: 4, margin: -4, borderRadius: 'var(--pb-r-md)', transition: 'background 0.15s' }}
+        onMouseEnter={e => (e.currentTarget.style.background = 'var(--pb-surface-secondary)')}
+        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+        <p style={{ fontSize: 13, color: value ? 'var(--pb-ink)' : 'var(--pb-ink-muted)', lineHeight: 1.6, fontStyle: value ? undefined : 'italic' }}>
+          {value || 'No description provided. Click to edit.'}
+        </p>
+        <span style={{ fontSize: 10, color: 'var(--pb-ink-muted)', opacity: 0, transition: 'opacity 0.15s', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4 }} className="group-hover:!opacity-60">
+          <Pencil size={9} /> Click to edit
+        </span>
+      </div>
+    );
+  }
+  return (
+    <div>
+      <textarea ref={ref} value={draft} onChange={e => { setDraft(e.target.value); e.target.style.height = 'auto'; e.target.style.height = e.target.scrollHeight + 'px'; }}
+        onBlur={commit} onKeyDown={e => { if (e.key === 'Escape') setEditing(false); }}
+        style={{ width: '100%', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', padding: '10px 12px', fontSize: 13, color: 'var(--pb-ink)', outline: 'none', resize: 'none', minHeight: 80, fontFamily: 'var(--pb-font-body)' }} />
+      <p style={{ fontSize: 10, color: 'var(--pb-ink-muted)', marginTop: 4 }}>Press Escape to cancel • Click away to save</p>
+    </div>
+  );
+}
+
+/* ── Inline Editable Progress ── */
+function InlineEditableProgress({ value, onSave, status }: { value: number; onSave: (v: number) => void; status: string }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value);
+  const commit = () => { setEditing(false); if (draft !== value) onSave(draft); };
+  if (!editing) {
+    return (
+      <div className="group cursor-pointer" onClick={() => { setDraft(value); setEditing(true); }}
+        style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+        <div className="pb-progress-track" style={{ width: 80 }}>
+          <div className="pb-progress-fill" style={{ width: `${Math.min(Math.max(value, 0), 100)}%`, background: status === 'done' ? 'var(--pb-success)' : 'var(--pb-primary)' }} />
+        </div>
+        <span className="pb-progress-label">{value}%</span>
+        <Pencil size={10} style={{ opacity: 0, transition: 'opacity 0.15s', color: 'var(--pb-ink-muted)' }} className="group-hover:!opacity-60" />
+      </div>
+    );
+  }
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <input type="range" min={0} max={100} step={5} value={draft} autoFocus
+        onChange={e => setDraft(Number(e.target.value))} onBlur={commit} onMouseUp={commit}
+        style={{ flex: 1, accentColor: 'var(--pb-primary)' }} />
+      <span className="pb-progress-label" style={{ minWidth: 40, textAlign: 'right', fontWeight: 600, color: 'var(--pb-primary)' }}>{draft}%</span>
+    </div>
+  );
+}
+
 /* ════════════════════════════════════════════════════
    MAIN DETAIL PANEL — LINEAR PRECISION
    ════════════════════════════════════════════════════ */
@@ -130,17 +238,12 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
   const [activeTab, setActiveTab] = useState<Tab>('Details');
   const [scores, setScores] = useState({ sa: 3.0, bi: 3.0, tu: 3.0, rf: 3.0 });
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showDiscardDialog, setShowDiscardDialog] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editForm, setEditForm] = useState<Record<string, any>>({});
-  const [isSaving, setIsSaving] = useState(false);
   const [budgetAllocated, setBudgetAllocated] = useState(0);
   const [showLinkDialog, setShowLinkDialog] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   const avatarsByName = useProfileAvatarsByName();
 
-  const hasChanges = Object.keys(editForm).length > 0;
   const getAvatar = (name: string | null) => name ? avatarsByName.get(name.toLowerCase()) : undefined;
 
   useEffect(() => {
@@ -148,55 +251,27 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
       setScores({ sa: initiative.score_strategic_alignment ?? 3.0, bi: initiative.score_business_impact ?? 3.0, tu: initiative.score_time_urgency ?? 3.0, rf: initiative.score_resource_feasibility ?? 3.0 });
       setBudgetAllocated((initiative as any).budget_allocated ?? 0);
       setActiveTab('Details');
-      setIsEditing(false);
-      setEditForm({});
     }
   }, [initiative]);
 
   useEffect(() => {
     if (!isOpen) return;
-    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') handleAttemptClose(); };
+    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
-  }, [isOpen, isEditing, hasChanges]);
+  }, [isOpen, onClose]);
 
   const computedScore = +((scores.sa + scores.bi + scores.tu + scores.rf) / 4).toFixed(1);
   const priority = getPriorityLevel(computedScore);
 
-  const handleAttemptClose = useCallback(() => {
-    if (isEditing && hasChanges) setShowDiscardDialog(true);
-    else { setIsEditing(false); setEditForm({}); onClose(); }
-  }, [isEditing, hasChanges, onClose]);
-
-  const handleDiscardAndClose = useCallback(() => {
-    setShowDiscardDialog(false); setIsEditing(false); setEditForm({}); onClose();
-  }, [onClose]);
-
-  const getFieldValue = useCallback((field: string, original: any) => field in editForm ? editForm[field] : original, [editForm]);
-  const updateEditField = useCallback((field: string, value: any) => { setEditForm(prev => ({ ...prev, [field]: value })); }, []);
-
-  const handleSave = useCallback(async () => {
-    if (!initiative || !hasChanges) return;
-    if (!isNativeInitiative(initiative.id)) { catalystToast.error('Jira-sourced items cannot be edited here'); return; }
-    setIsSaving(true);
-    try {
-      const { error } = await (supabase as any).from('ph_initiatives').update({ ...editForm, updated_at: new Date().toISOString() }).eq('id', initiative.id);
-      if (error) throw new Error(error.message);
-      invalidateAllInitiatives(queryClient);
-      catalystToast.success('Initiative updated');
-      setIsEditing(false); setEditForm({});
-    } catch (err: any) { catalystToast.error('Failed: ' + err.message); }
-    finally { setIsSaving(false); }
-  }, [initiative, editForm, hasChanges, queryClient]);
-
-  const handleQuickEdit = useCallback(async (field: string, value: any) => {
+  const handleQuickEdit = useCallback(async (field: string, value: any, label?: string) => {
     if (!initiative) return;
     if (!isNativeInitiative(initiative.id)) { if (field === 'initiative_type_key') queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] }); return; }
     try {
       const { error } = await (supabase as any).from('ph_initiatives').update({ [field]: value, updated_at: new Date().toISOString() }).eq('id', initiative.id);
       if (error) throw new Error(error.message);
       invalidateAllInitiatives(queryClient);
-      catalystToast.success(`${field.replace(/_/g, ' ')} updated`);
+      catalystToast.success(`${label || field.replace(/_/g, ' ')} updated`);
     } catch (err: any) { catalystToast.error('Failed: ' + err.message); }
   }, [initiative, queryClient]);
 
@@ -260,9 +335,8 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
   const isJiraSourced = !isNativeInitiative(initiative.id);
 
   const handleActionClick = (label: string) => {
-    if (isJiraSourced && (label === 'Edit' || label === 'Clone')) { catalystToast.error('Jira-sourced items are read-only'); return; }
+    if (isJiraSourced && label === 'Clone') { catalystToast.error('Jira-sourced items are read-only'); return; }
     switch (label) {
-      case 'Edit': setIsEditing(true); break;
       case 'Attach': handleAttach(); break;
       case 'Clone': handleClone(); break;
       case 'Link': setShowLinkDialog(true); break;
@@ -271,7 +345,6 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
   };
 
   const ACTION_BUTTONS = [
-    { label: 'Edit', icon: Pencil },
     { label: 'Attach', icon: Paperclip },
     { label: 'Clone', icon: Copy },
     { label: 'Link', icon: LinkIcon },
@@ -293,43 +366,25 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
           <>
             <motion.div className="pb-panel-backdrop"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}
-              onClick={handleAttemptClose} />
+              onClick={onClose} />
             <motion.div ref={panelRef} className="pb-panel"
               initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
               transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}>
 
               {/* Top bar */}
               <div className="pb-panel-header">
-                <button onClick={handleAttemptClose} className="pb-panel-back">
+                <button onClick={onClose} className="pb-panel-back">
                   <ChevronLeft size={16} /> Back to list
                 </button>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <button onClick={() => setShowDeleteDialog(true)} className="pb-panel-action-btn pb-panel-action-btn-danger">
                     <Trash2 size={14} /> Delete
                   </button>
-                  <button onClick={handleAttemptClose} className="pb-panel-action-btn">
+                  <button onClick={onClose} className="pb-panel-action-btn">
                     <X size={16} />
                   </button>
                 </div>
               </div>
-
-              {/* Edit mode banner */}
-              {isEditing && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 24px', background: 'var(--pb-primary-bg)', borderBottom: '1px solid var(--pb-primary)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <Pencil size={14} style={{ color: 'var(--pb-primary)' }} />
-                    <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--pb-primary)' }}>Editing Initiative</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <button onClick={() => { setIsEditing(false); setEditForm({}); }} className="pb-panel-action-btn">Cancel</button>
-                    <button onClick={handleSave} disabled={isSaving || !hasChanges}
-                      style={{ height: 30, padding: '0 14px', display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, color: '#fff', background: 'var(--pb-primary)', border: 'none', borderRadius: 'var(--pb-r-md)', cursor: 'pointer', opacity: isSaving || !hasChanges ? 0.5 : 1 }}>
-                      {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-                      Save Changes
-                    </button>
-                  </div>
-                </div>
-              )}
 
               {/* Identity block */}
               <div className="pb-panel-identity">
@@ -337,32 +392,24 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                   <span className="pb-panel-key">{initiative.initiative_key}</span>
                   {initiative.is_favorited && <span style={{ color: '#F59E0B', fontSize: 14 }}>★</span>}
                 </div>
-                {isEditing ? (
-                  <input type="text" value={getFieldValue('title', initiative.title)} onChange={e => updateEditField('title', e.target.value)}
-                    style={{ width: '100%', fontFamily: 'var(--pb-font-heading)', fontSize: 20, fontWeight: 700, color: 'var(--pb-ink)', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', padding: '6px 12px', outline: 'none' }}
-                  />
-                ) : (
-                  <h2 className="pb-panel-title">{initiative.title}</h2>
-                )}
+                <InlineEditableTitle value={initiative.title} onSave={(v) => handleQuickEdit('title', v, 'Title')} />
                 <div style={{ marginTop: 12 }}>
-                  <StatusBadge status={getFieldValue('status', initiative.status) as InitiativeStatus} editable={isEditing}
-                    onChange={(s) => { if (isEditing) updateEditField('status', s); else { onStatusChange(initiative.id, s); handleQuickEdit('status', s); } }} />
+                  <StatusBadge status={initiative.status} editable={true}
+                    onChange={(s) => { onStatusChange(initiative.id, s); handleQuickEdit('status', s, 'Status'); }} />
                 </div>
               </div>
 
               {/* Action bar */}
-              {!isEditing && (
-                <div className="pb-panel-actions">
-                  {ACTION_BUTTONS.map(({ label, icon: Icon }) => (
-                    <button key={label} type="button" onClick={() => handleActionClick(label)} className="pb-panel-action-btn">
-                      <Icon size={14} />{label}
-                    </button>
-                  ))}
-                  <button type="button" onClick={() => setShowDeleteDialog(true)} className="pb-panel-action-btn pb-panel-action-btn-danger" style={{ marginLeft: 'auto' }}>
-                    <Trash2 size={14} />Delete
+              <div className="pb-panel-actions">
+                {ACTION_BUTTONS.map(({ label, icon: Icon }) => (
+                  <button key={label} type="button" onClick={() => handleActionClick(label)} className="pb-panel-action-btn">
+                    <Icon size={14} />{label}
                   </button>
-                </div>
-              )}
+                ))}
+                <button type="button" onClick={() => setShowDeleteDialog(true)} className="pb-panel-action-btn pb-panel-action-btn-danger" style={{ marginLeft: 'auto' }}>
+                  <Trash2 size={14} />Delete
+                </button>
+              </div>
 
               {/* Tab Bar */}
               <div className="pb-panel-tabs">
@@ -377,8 +424,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
               {/* Body */}
               <div data-body className="pb-panel-body">
                 {activeTab === 'Details' && (
-                  <DetailsContent initiative={initiative} isEditing={isEditing} editForm={editForm}
-                    onFieldChange={updateEditField} onQuickEdit={handleQuickEdit} onStatusChange={onStatusChange} />
+                  <DetailsContent initiative={initiative} onQuickEdit={handleQuickEdit} onStatusChange={onStatusChange} />
                 )}
                 {activeTab === 'Score' && (
                   <ScoreContent initiative={initiative} scores={scores} computedScore={computedScore} priority={priority}
@@ -445,19 +491,6 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Discard Changes */}
-      <AlertDialog open={showDiscardDialog} onOpenChange={setShowDiscardDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
-            <AlertDialogDescription>You have unsaved changes. Discard them?</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Keep Editing</AlertDialogCancel>
-            <AlertDialogAction style={{ background: 'var(--pb-danger)' }} onClick={handleDiscardAndClose}>Discard</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 
@@ -823,15 +856,14 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
 /* ════════════════════════════════════════════════════
    DETAILS TAB
    ════════════════════════════════════════════════════ */
-function DetailsContent({ initiative, isEditing, editForm, onFieldChange, onQuickEdit, onStatusChange }: {
-  initiative: Initiative; isEditing: boolean; editForm: Record<string, any>;
-  onFieldChange: (field: string, value: any) => void; onQuickEdit: (field: string, value: any) => void;
+function DetailsContent({ initiative, onQuickEdit, onStatusChange }: {
+  initiative: Initiative;
+  onQuickEdit: (field: string, value: any, label?: string) => void;
   onStatusChange: (id: string, s: InitiativeStatus) => void;
 }) {
   const { data: departmentOptions } = useDepartmentOptions();
   const { data: profileOptions } = useProfileOptions();
   const avatarsByName = useProfileAvatarsByName();
-  const getVal = (field: string, original: any) => field in editForm ? editForm[field] : original;
   const getAvatar = (name: string | null) => name ? avatarsByName.get(name.toLowerCase()) : undefined;
   const [selectedTypeKey, setSelectedTypeKey] = useState<string | null>(initiative.initiative_type_key ?? null);
 
@@ -880,12 +912,12 @@ function DetailsContent({ initiative, isEditing, editForm, onFieldChange, onQuic
 
       <RoadmapToggleInline initiative={initiative} />
 
-      {/* Field Grid */}
+      {/* Field Grid — all inline editable */}
       <div className="pb-field-grid">
         <div className="pb-field-item">
           <div className="pb-field-label">Status</div>
-          {isEditing ? <StatusSelect value={getVal('status', initiative.status)} onChange={v => onFieldChange('status', v)} />
-            : <StatusBadge status={initiative.status} />}
+          <StatusBadge status={initiative.status} editable={true}
+            onChange={(s) => { onStatusChange(initiative.id, s); onQuickEdit('status', s, 'Status'); }} />
         </div>
         <div className="pb-field-item">
           <div className="pb-field-label">EA Review</div>
@@ -897,87 +929,50 @@ function DetailsContent({ initiative, isEditing, editForm, onFieldChange, onQuic
         </div>
         <div className="pb-field-item">
           <div className="pb-field-label">Target Quarter</div>
-          {isEditing ? <QuarterSelect value={getVal('target_quarter', initiative.target_quarter) ?? ''} onChange={v => onFieldChange('target_quarter', v)} />
-            : <span className="pb-field-value">{initiative.target_quarter || <span className="pb-field-empty">—</span>}</span>}
+          <QuarterSelect value={initiative.target_quarter ?? ''} onChange={v => onQuickEdit('target_quarter', v, 'Target Quarter')} />
         </div>
         <div className="pb-field-item">
           <div className="pb-field-label">Reporter</div>
-          {isEditing ? <PeopleSelect value={getVal('reporter_id', initiative.reporter_id) ?? ''} onChange={v => onFieldChange('reporter_id', v)} profiles={profileOptions || []} placeholder="Select reporter" />
-            : <div className="pb-field-value" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              {initiative.reporter_id ? (() => { const rp = profileOptions?.find(p => p.value === initiative.reporter_id); const name = rp?.label || ''; return <><InlineAvatar name={name} size={20} avatarUrl={getAvatar(name)} />{name}</>; })()
-                : <span className="pb-field-empty">—</span>}
-            </div>}
+          <PeopleSelect value={initiative.reporter_id ?? ''} onChange={v => onQuickEdit('reporter_id', v, 'Reporter')} profiles={profileOptions || []} placeholder="Select reporter" />
         </div>
         <div className="pb-field-item">
           <div className="pb-field-label">Assignee</div>
-          {isEditing ? <PeopleSelect value={getVal('assignee_id', initiative.assignee_id) ?? ''} onChange={v => onFieldChange('assignee_id', v)} profiles={profileOptions || []} placeholder="Select assignee" />
-            : <div className="pb-field-value" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              {initiative.assignee_name ? <><InlineAvatar name={initiative.assignee_name} size={20} avatarUrl={getAvatar(initiative.assignee_name)} />{initiative.assignee_name}</>
-                : <span className="pb-field-empty">—</span>}
-            </div>}
+          <PeopleSelect value={initiative.assignee_id ?? ''} onChange={v => onQuickEdit('assignee_id', v, 'Assignee')} profiles={profileOptions || []} placeholder="Select assignee" />
         </div>
         <div className="pb-field-item">
           <div className="pb-field-label">Department</div>
-          {isEditing ? <DepartmentSelect value={getVal('department_id', initiative.department_id) ?? ''} onChange={v => onFieldChange('department_id', v)} departments={departmentOptions || []} />
-            : <span className="pb-field-value">{initiative.department_name || <span className="pb-field-empty">—</span>}</span>}
+          <DepartmentSelect value={initiative.department_id ?? ''} onChange={v => onQuickEdit('department_id', v, 'Department')} departments={departmentOptions || []} />
         </div>
         <div className="pb-field-item">
           <div className="pb-field-label">Business Owner</div>
-          {isEditing ? <PeopleSelect value={getVal('business_owner_id', initiative.business_owner_id) ?? ''} onChange={v => onFieldChange('business_owner_id', v)} profiles={profileOptions || []} placeholder="Select business owner" />
-            : <div className="pb-field-value" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              {initiative.business_owner_name ? <><InlineAvatar name={initiative.business_owner_name} size={20} avatarUrl={getAvatar(initiative.business_owner_name)} />{initiative.business_owner_name}</>
-                : <span className="pb-field-empty">—</span>}
-            </div>}
+          <PeopleSelect value={initiative.business_owner_id ?? ''} onChange={v => onQuickEdit('business_owner_id', v, 'Business Owner')} profiles={profileOptions || []} placeholder="Select business owner" />
         </div>
         <div className="pb-field-item">
           <div className="pb-field-label">Business Ask Date</div>
-          {isEditing ? <input type="date" value={getVal('business_ask_date', initiative.business_ask_date) ? String(getVal('business_ask_date', initiative.business_ask_date)).slice(0, 10) : ''}
-              onChange={e => onFieldChange('business_ask_date', e.target.value || null)} style={{ width: '100%', height: 36, border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', padding: '0 12px', fontSize: 13, color: 'var(--pb-ink)', outline: 'none' }} />
-            : <span className="pb-field-value">{formatAbsoluteDate(initiative.business_ask_date)}</span>}
+          <InlineEditableDate value={initiative.business_ask_date} label="Business Ask Date"
+            onSave={v => onQuickEdit('business_ask_date', v, 'Business Ask Date')} />
         </div>
         <div className="pb-field-item">
           <div className="pb-field-label">Kickoff Date</div>
-          {isEditing ? <input type="date" value={getVal('kickoff_date', initiative.kickoff_date) ? String(getVal('kickoff_date', initiative.kickoff_date)).slice(0, 10) : ''}
-              onChange={e => onFieldChange('kickoff_date', e.target.value || null)} style={{ width: '100%', height: 36, border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', padding: '0 12px', fontSize: 13, color: 'var(--pb-ink)', outline: 'none' }} />
-            : <span className="pb-field-value">{formatAbsoluteDate(initiative.kickoff_date)}</span>}
+          <InlineEditableDate value={initiative.kickoff_date} label="Kickoff Date"
+            onSave={v => onQuickEdit('kickoff_date', v, 'Kickoff Date')} />
         </div>
         <div className="pb-field-item">
           <div className="pb-field-label">Target Complete</div>
-          {isEditing ? <input type="date" value={getVal('target_complete', initiative.target_complete) ? String(getVal('target_complete', initiative.target_complete)).slice(0, 10) : ''}
-              onChange={e => onFieldChange('target_complete', e.target.value || null)} style={{ width: '100%', height: 36, border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', padding: '0 12px', fontSize: 13, color: 'var(--pb-ink)', outline: 'none' }} />
-            : <span className="pb-field-value">{formatAbsoluteDate(initiative.target_complete)}</span>}
+          <InlineEditableDate value={initiative.target_complete} label="Target Complete"
+            onSave={v => onQuickEdit('target_complete', v, 'Target Complete')} />
         </div>
         <div className="pb-field-item">
           <div className="pb-field-label">Progress</div>
-          {isEditing ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <input type="range" min={0} max={100} value={Number(getVal('progress', initiative.progress)) || 0}
-                onChange={e => onFieldChange('progress', Number(e.target.value))} style={{ flex: 1, accentColor: 'var(--pb-primary)' }} />
-              <span className="pb-progress-label" style={{ minWidth: 40, textAlign: 'right' }}>{getVal('progress', initiative.progress) ?? 0}%</span>
-            </div>
-          ) : (
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-              <div className="pb-progress-track" style={{ width: 80 }}>
-                <div className="pb-progress-fill" style={{ width: `${Math.min(Math.max(initiative.progress, 0), 100)}%`, background: initiative.status === 'done' ? 'var(--pb-success)' : 'var(--pb-primary)' }} />
-              </div>
-              <span className="pb-progress-label">{initiative.progress}%</span>
-            </div>
-          )}
+          <InlineEditableProgress value={initiative.progress} status={initiative.status}
+            onSave={v => onQuickEdit('progress', v, 'Progress')} />
         </div>
       </div>
 
       {/* Description */}
       <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid var(--pb-border)' }}>
         <h3 className="pb-section-heading">Description</h3>
-        {isEditing ? (
-          <textarea value={getVal('description', initiative.description) ?? ''} onChange={e => onFieldChange('description', e.target.value)}
-            rows={4} placeholder="Describe this initiative…"
-            style={{ width: '100%', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', padding: '10px 12px', fontSize: 13, color: 'var(--pb-ink)', outline: 'none', resize: 'vertical', fontFamily: 'var(--pb-font-body)' }} />
-        ) : (
-          <p style={{ fontSize: 13, color: 'var(--pb-ink-muted)', lineHeight: 1.6, fontStyle: initiative.description ? undefined : 'italic' }}>
-            {initiative.description || 'No description provided for this initiative.'}
-          </p>
-        )}
+        <InlineEditableTextArea value={initiative.description} onSave={v => onQuickEdit('description', v, 'Description')} />
       </div>
 
       <CommentsSection initiativeId={initiative.id} />
