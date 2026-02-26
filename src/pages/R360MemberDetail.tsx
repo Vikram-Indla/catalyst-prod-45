@@ -108,7 +108,7 @@ export default function R360MemberDetail() {
 
   const { data: workItems = [], isLoading: itemsLoading } = useR360WorkItems(resourceId || '', filters);
 
-  const week = getWeekRange(weekOffset);
+  const week = useMemo(() => getWeekRange(weekOffset), [weekOffset]);
 
   // Filter items by week for ring/board (chronology shows all with date grouping)
   const weekItems = useMemo(() => {
