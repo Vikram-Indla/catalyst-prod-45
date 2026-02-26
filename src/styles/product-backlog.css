@@ -255,8 +255,10 @@
 .pb-table thead th:hover {
   background: var(--pb-surface-tertiary);
 }
+/* FIX 10: Enforce 36px row height */
 .pb-table tbody tr {
-  height: var(--pb-row-h);
+  height: 36px;
+  max-height: 36px;
   border-bottom: 1px solid var(--pb-border);
   cursor: pointer;
   transition: background 80ms;
@@ -736,4 +738,91 @@
 @keyframes pb-flash {
   0% { background: #dcfce7; }
   100% { background: transparent; }
+}
+
+/* ── FIX 5: View Toggle Button Group ── */
+.pb-view-toggle-group {
+  display: inline-flex;
+  border: 1px solid var(--pb-border);
+  border-radius: var(--pb-r-md);
+  overflow: hidden;
+}
+.pb-view-toggle-btn {
+  height: 32px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--pb-font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--pb-ink-tertiary);
+  background: var(--pb-surface);
+  border: none;
+  border-right: 1px solid var(--pb-border);
+  cursor: pointer;
+  transition: all 120ms;
+  white-space: nowrap;
+}
+.pb-view-toggle-btn:last-child {
+  border-right: none;
+}
+.pb-view-toggle-btn:hover {
+  background: var(--pb-surface-tertiary);
+}
+.pb-view-toggle-active {
+  background: var(--pb-surface-secondary);
+  color: var(--pb-ink);
+  font-weight: 600;
+}
+
+/* ── FIX 1 & 12: Light Bulk Action Bar ── */
+.pb-bulk-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 48px;
+  padding: 0 32px;
+  background: var(--pb-surface);
+  border-top: 1px solid var(--pb-border);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+}
+.pb-bulk-btn {
+  height: 32px;
+  padding: 0 12px;
+  font-family: var(--pb-font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--pb-ink-tertiary);
+  background: transparent;
+  border: 1px solid var(--pb-border);
+  border-radius: var(--pb-r-md);
+  cursor: pointer;
+  transition: all 120ms;
+}
+.pb-bulk-btn:hover {
+  background: var(--pb-surface-tertiary);
+}
+.pb-bulk-btn-danger {
+  color: var(--pb-danger);
+  border-color: var(--pb-danger);
+}
+.pb-bulk-btn-danger:hover {
+  background: var(--pb-danger-bg);
+}
+.pb-bulk-cancel {
+  font-family: var(--pb-font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--pb-ink-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 120ms;
+}
+.pb-bulk-cancel:hover {
+  color: var(--pb-ink);
 }

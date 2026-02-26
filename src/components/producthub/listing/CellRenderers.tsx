@@ -17,18 +17,9 @@ export function StatusCell({ status }: { status: InitiativeStatus }) {
   );
 }
 
-/* ── Priority Cell — Monochrome bars ── */
+/* ── Priority Cell — FIX 3: Monochrome horizontal bars, no dashes ── */
 export function PriorityCell({ score }: { score: number | null }) {
-  if (score === null) {
-    return (
-      <div className="pb-priority-bars">
-        {[1, 2, 3, 4].map(i => (
-          <span key={i} className="pb-priority-bar" />
-        ))}
-      </div>
-    );
-  }
-  const filled = score >= 4.0 ? 4 : score >= 3.0 ? 3 : score >= 2.0 ? 2 : 1;
+  const filled = score === null ? 0 : score >= 4.0 ? 4 : score >= 3.0 ? 3 : score >= 2.0 ? 2 : score >= 1.0 ? 1 : 0;
   return (
     <div className="pb-priority-bars">
       {[1, 2, 3, 4].map(i => (
@@ -38,17 +29,16 @@ export function PriorityCell({ score }: { score: number | null }) {
   );
 }
 
-/* ── Score Cell — Monochrome vertical bars ── */
+/* ── Score Cell — FIX 4: Monochrome vertical bars, equal height, no em dash ── */
 export function ScoreCell({ score }: { score: number | null }) {
-  if (score === null) return <span style={{ color: 'var(--pb-ink-muted)' }}>—</span>;
-  const filled = Math.round(score);
+  const filled = score === null ? 0 : Math.min(5, Math.max(0, Math.round(score)));
   return (
     <div className="pb-score-bars">
       {[1, 2, 3, 4, 5].map(i => (
         <span
           key={i}
           className={`pb-score-bar ${i <= filled ? 'pb-score-bar-filled' : ''}`}
-          style={{ height: `${4 + i * 2}px` }}
+          style={{ height: 12 }}
         />
       ))}
     </div>

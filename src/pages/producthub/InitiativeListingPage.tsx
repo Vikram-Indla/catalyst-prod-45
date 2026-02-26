@@ -385,6 +385,14 @@ export default function InitiativeListingPage() {
     invalidateAll();
   }, [invalidateAll]);
 
+  const handleRoadmapToggle = useCallback(async (id: string, currentValue: boolean) => {
+    if (isNative(id)) {
+      await (supabase as any).from('ph_initiatives').update({ on_roadmap: !currentValue, updated_at: new Date().toISOString() }).eq('id', id);
+      invalidateAll();
+    }
+    catalystToast.success(currentValue ? 'Removed from roadmap' : 'Added to roadmap');
+  }, [isNative, invalidateAll]);
+
   return (
     <div data-module="product-backlog" className="flex flex-col h-full" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
       {/* ── Page Header ── */}
@@ -393,16 +401,28 @@ export default function InitiativeListingPage() {
         <p className="pb-page-subtitle">Strategic initiative portfolio &amp; prioritization</p>
       </div>
 
-      {/* ── Toolbar ── */}
+      {/* ── Toolbar — FIX 5: View toggle group added ── */}
       <div className="pb-toolbar">
-        <button
-          ref={columnsButtonRef}
-          className="pb-toolbar-btn"
-          onClick={() => setColumnManagerOpen(prev => !prev)}
-        >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="4" height="12" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="8" y="2" width="4" height="12" rx="1" stroke="currentColor" strokeWidth="1.2"/></svg>
-          Columns
-        </button>
+        {/* View toggle button group */}
+        <div className="pb-view-toggle-group">
+          <button className="pb-view-toggle-btn pb-view-toggle-active" title="Standard">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>
+            Standard
+          </button>
+          <button
+            ref={columnsButtonRef}
+            className="pb-view-toggle-btn"
+            onClick={() => setColumnManagerOpen(prev => !prev)}
+            title="Columns"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="4" height="12" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="8" y="2" width="4" height="12" rx="1" stroke="currentColor" strokeWidth="1.2"/></svg>
+            Columns
+          </button>
+          <button className="pb-view-toggle-btn" title="Group" onClick={() => catalystToast.success('Grouping coming soon')}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="4" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="2" y="8" width="12" height="4" rx="1" stroke="currentColor" strokeWidth="1.2"/></svg>
+            Group: None
+          </button>
+        </div>
 
         <div className="pb-toolbar-divider" />
 
@@ -469,17 +489,19 @@ export default function InitiativeListingPage() {
         ))}
       </div>
 
-      {/* ── Bulk Action Bar ── */}
+      {/* ── FIX 1 & 12: Light bulk action bar ── */}
       {selectedIds.length > 0 && (
-        <div style={{ position: 'fixed', bottom: 0, left: 240, right: 0, height: 52, background: '#18181B', zIndex: 40, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px' }}>
-          <span style={{ fontSize: 13, fontWeight: 500, color: '#FFFFFF' }}>
+        <div className="pb-bulk-bar">
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--pb-ink)', fontFamily: 'var(--pb-font-body)' }}>
             {selectedIds.length} item{selectedIds.length !== 1 ? 's' : ''} selected
           </span>
+          <div style={{ width: 1, height: 20, background: 'var(--pb-border)' }} />
           <div style={{ display: 'flex', gap: 8 }}>
-            <button className="pb-toolbar-btn" style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.2)' }} onClick={() => handleBulkAction('archive')}>Archive</button>
-            <button className="pb-toolbar-btn" style={{ color: '#FCA5A5', borderColor: 'rgba(239,68,68,0.4)' }} onClick={() => handleBulkAction('delete')}>Delete</button>
+            <button className="pb-bulk-btn" onClick={() => handleBulkAction('archive')}>Archive</button>
+            <button className="pb-bulk-btn pb-bulk-btn-danger" onClick={() => handleBulkAction('delete')}>Delete</button>
           </div>
-          <button style={{ fontSize: 12, color: '#A1A1AA', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setSelectedIds([])}>Cancel</button>
+          <div style={{ flex: 1 }} />
+          <button className="pb-bulk-cancel" onClick={() => setSelectedIds([])}>Clear selection</button>
         </div>
       )}
 
@@ -501,6 +523,7 @@ export default function InitiativeListingPage() {
           onReorder={handleReorder}
           onInlineEdit={handleInlineEdit}
           onPromote={setPromoteTarget}
+          onRoadmapToggle={handleRoadmapToggle}
           focusedRowIndex={focusedRow}
           onFocusedRowChange={setFocusedRow}
         />
