@@ -2,6 +2,7 @@ import React from 'react';
 import { Star, MoreHorizontal, FolderKanban, Zap, Wrench, Link, type LucideIcon } from 'lucide-react';
 import type { Initiative } from '@/types/initiative';
 import { STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/initiative';
+import { InitiativeMetrics } from '@/components/backlog/MetricBars';
 import { formatDistanceToNow, format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
@@ -40,25 +41,12 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; Icon: LucideIc
   entity_integration: { label: 'Entity Integration', color: '#7C3AED', Icon: Link },
 };
 
-function getScoreLevel(score: number | null): number {
-  if (score === null) return 0;
-  return Math.round(score);
-}
-
-function getPriorityLevel(score: number | null): number {
-  if (score === null) return 0;
-  if (score >= 4.0) return 4;
-  if (score >= 3.0) return 3;
-  if (score >= 2.0) return 2;
-  return 1;
-}
 
 export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, isSelected, onClick }) => {
   const queryClient = useQueryClient();
   const status = STATUS_DISPLAY[initiative.status];
   const pillStyle = STATUS_PILL_STYLES[initiative.status] || DEFAULT_STATUS_PILL;
-  const scoreLevel = getScoreLevel(initiative.computed_score);
-  const priorityLevel = getPriorityLevel(initiative.computed_score);
+  
   const typeKey = initiative.initiative_type_key || '';
   const typeConf = TYPE_CONFIG[typeKey];
 
@@ -117,52 +105,8 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
       )}
 
       {/* Score + Priority */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 24, marginBottom: 10 }}>
-        <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 4 }}>
-          <span style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: 10, fontWeight: 600, color: '#71717A', textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>SCORE</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ display: 'flex', flexDirection: 'row' as const, alignItems: 'flex-end', gap: 2 }}>
-              {[0, 1, 2, 3, 4].map(i => (
-                <div
-                  key={i}
-                  style={{
-                    width: 4,
-                    minWidth: 4,
-                    height: 12,
-                    minHeight: 12,
-                    borderRadius: 1,
-                    backgroundColor: i < scoreLevel ? '#71717A' : '#E4E4E7',
-                    flexShrink: 0,
-                    border: 'none',
-                  }}
-                />
-              ))}
-            </div>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: initiative.computed_score !== null ? '#18181B' : '#71717A' }}>
-              {initiative.computed_score !== null ? `${initiative.computed_score.toFixed(1)}` : '—'} /5.0
-            </span>
-          </div>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column' as const, gap: 4 }}>
-          <span style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: 10, fontWeight: 600, color: '#71717A', textTransform: 'uppercase' as const, letterSpacing: '0.06em' }}>PRIORITY</span>
-          <div style={{ display: 'flex', flexDirection: 'row' as const, alignItems: 'center', gap: 2 }}>
-            {[0, 1, 2, 3].map(i => (
-              <div
-                key={i}
-                style={{
-                  width: 16,
-                  minWidth: 16,
-                  height: 4,
-                  minHeight: 4,
-                  borderRadius: 2,
-                  backgroundColor: i < priorityLevel ? '#71717A' : '#E4E4E7',
-                  flexShrink: 0,
-                  border: 'none',
-                }}
-              />
-            ))}
-          </div>
-        </div>
+      <div style={{ marginBottom: 10 }}>
+        <InitiativeMetrics score={initiative.computed_score} />
       </div>
 
       {/* Progress */}
