@@ -1,9 +1,8 @@
 import React from 'react';
-import { Star, MoreHorizontal } from 'lucide-react';
+import { Star, MoreHorizontal, FolderKanban, Zap, Wrench, Link, type LucideIcon } from 'lucide-react';
 import type { Initiative } from '@/types/initiative';
 import { STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/initiative';
 import { formatDistanceToNow, format } from 'date-fns';
-import { getTypeLabel } from '@/utils/initiative-type-utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -16,7 +15,9 @@ interface PCInitiativeCardProps {
 
 const STATUS_PILL_STYLES: Record<string, { color: string; bg: string; border: string }> = {
   new: { color: '#2563EB', bg: '#EFF6FF', border: 'rgba(37,99,235,0.2)' },
-  portfolio_review: { color: '#8B5CF6', bg: '#F5F3FF', border: 'rgba(139,92,246,0.2)' },
+  new_demand: { color: '#2563EB', bg: '#EFF6FF', border: 'rgba(37,99,235,0.2)' },
+  portfolio_review: { color: '#16A34A', bg: '#F0FDF4', border: 'rgba(22,163,74,0.2)' },
+  under_review: { color: '#8B5CF6', bg: '#F5F3FF', border: 'rgba(139,92,246,0.2)' },
   technical_validation: { color: '#A855F7', bg: '#FAF5FF', border: 'rgba(168,85,247,0.2)' },
   estimate: { color: '#6366F1', bg: '#EEF2FF', border: 'rgba(99,102,241,0.2)' },
   demand_approved: { color: '#06B6D4', bg: '#ECFEFF', border: 'rgba(6,182,212,0.2)' },
@@ -30,11 +31,13 @@ const STATUS_PILL_STYLES: Record<string, { color: string; bg: string; border: st
   cancelled: { color: '#DC2626', bg: '#FEF2F2', border: 'rgba(220,38,38,0.2)' },
 };
 
-const TYPE_COLORS: Record<string, string> = {
-  project: '#0D9488',
-  enhancement: '#2563EB',
-  improvement: '#D97706',
-  entity_integration: '#7C3AED',
+const DEFAULT_STATUS_PILL = { color: '#71717A', bg: '#F4F4F5', border: 'rgba(113,113,122,0.2)' };
+
+const TYPE_CONFIG: Record<string, { label: string; color: string; Icon: LucideIcon }> = {
+  project: { label: 'Project', color: '#0D9488', Icon: FolderKanban },
+  enhancement: { label: 'Enhancement', color: '#2563EB', Icon: Zap },
+  improvement: { label: 'Improvement', color: '#D97706', Icon: Wrench },
+  entity_integration: { label: 'Entity Integration', color: '#7C3AED', Icon: Link },
 };
 
 function getScoreLevel(score: number | null): number {
@@ -53,10 +56,11 @@ function getPriorityLevel(score: number | null): number {
 export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, isSelected, onClick }) => {
   const queryClient = useQueryClient();
   const status = STATUS_DISPLAY[initiative.status];
-  const pillStyle = STATUS_PILL_STYLES[initiative.status] || STATUS_PILL_STYLES.new;
+  const pillStyle = STATUS_PILL_STYLES[initiative.status] || DEFAULT_STATUS_PILL;
   const scoreLevel = getScoreLevel(initiative.computed_score);
   const priorityLevel = getPriorityLevel(initiative.computed_score);
-  const typeColor = TYPE_COLORS[initiative.initiative_type_key || ''] || '#71717A';
+  const typeKey = initiative.initiative_type_key || '';
+  const typeConf = TYPE_CONFIG[typeKey];
 
   const handleStar = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -96,7 +100,7 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
           style={{ color: pillStyle.color, background: pillStyle.bg, borderColor: pillStyle.border }}
         >
           <span className="pc-status-dot" style={{ background: pillStyle.color }} />
-          {status.label}
+          {status?.label || initiative.status}
         </span>
         <span className="pc-card-id">{initiative.initiative_key}</span>
       </div>
@@ -104,11 +108,11 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
       {/* Title */}
       <div className="pc-card-title">{initiative.title}</div>
 
-      {/* Type badge */}
-      {initiative.initiative_type_key && (
-        <div className="pc-type-badge" style={{ color: typeColor }}>
-          <span className="pc-type-dot" style={{ background: typeColor }} />
-          {getTypeLabel(initiative.initiative_type_key)}
+      {/* Type badge — SVG icon + colored text */}
+      {typeConf && (
+        <div className="pc-type-badge" style={{ color: typeConf.color }}>
+          <typeConf.Icon size={13} />
+          {typeConf.label}
         </div>
       )}
 
@@ -116,33 +120,74 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
       <div className="pc-metrics">
         <div>
           <div className="pc-metric-label">Score</div>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <div className="pc-score-bars">
-              {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className={`pc-score-bar ${i <= scoreLevel ? 'pc-score-bar--filled' : 'pc-score-bar--empty'}`} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2 }}>
+              {[0, 1, 2, 3, 4].map(i => (
+                <span
+                  key={i}
+                  style={{
+                    width: 4,
+                    height: 12,
+                    borderRadius: 1,
+                    display: 'block',
+                    border: 'none',
+                    background: i < scoreLevel ? '#71717A' : '#E4E4E7',
+                  }}
+                />
               ))}
             </div>
-            <span className={`pc-score-text ${initiative.computed_score === null ? 'pc-score-text--unscored' : ''}`}>
-              {initiative.computed_score !== null ? `${initiative.computed_score.toFixed(1)} /5.0` : '— /5.0'}
+            <span style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 12,
+              fontWeight: 500,
+              color: initiative.computed_score !== null ? '#18181B' : '#71717A',
+            }}>
+              {initiative.computed_score !== null ? `${initiative.computed_score.toFixed(1)}` : '—'} /5.0
             </span>
           </div>
         </div>
         <div>
           <div className="pc-metric-label">Priority</div>
-          <div className="pc-priority-bars">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className={`pc-priority-bar ${i <= priorityLevel ? 'pc-priority-bar--filled' : 'pc-priority-bar--empty'}`} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {[0, 1, 2, 3].map(i => (
+              <span
+                key={i}
+                style={{
+                  width: 16,
+                  height: 4,
+                  borderRadius: 2,
+                  display: 'block',
+                  border: 'none',
+                  background: i < priorityLevel ? '#71717A' : '#E4E4E7',
+                }}
+              />
             ))}
           </div>
         </div>
       </div>
 
       {/* Progress */}
-      <div className="pc-progress">
-        <div className="pc-progress-track">
-          <div className="pc-progress-fill" style={{ width: `${initiative.progress}%` }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <div style={{ flex: 1, height: 4, background: '#F4F4F5', borderRadius: 2, overflow: 'hidden', border: 'none' }}>
+          <div style={{
+            height: '100%',
+            width: `${Math.min(initiative.progress, 100)}%`,
+            background: '#2563EB',
+            borderRadius: 2,
+            border: 'none',
+            transition: 'width 0.3s ease',
+          }} />
         </div>
-        <span className="pc-progress-text">{initiative.progress}%</span>
+        <span style={{
+          fontFamily: "'JetBrains Mono', monospace",
+          fontSize: 11,
+          fontWeight: 500,
+          color: '#71717A',
+          minWidth: 28,
+          textAlign: 'right' as const,
+        }}>
+          {initiative.progress}%
+        </span>
       </div>
 
       {/* Footer */}

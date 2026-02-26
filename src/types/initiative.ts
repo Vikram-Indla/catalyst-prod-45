@@ -111,8 +111,8 @@ export function getPriorityLevel(score: number | null): { level: PriorityLevel; 
   return match || { level: 'Unscored', ...UNSCORED_STYLE };
 }
 
-/** FIX 7 — Deterministic avatar colors per user with full variation */
-const AVATAR_PALETTE = ['#2563EB', '#0D9488', '#D97706', '#7C3AED', '#DC2626', '#16A34A', '#C026D3', '#0284C7'];
+/** Deterministic avatar colors — Catalyst-approved only (no purple/pink/magenta/golden-hour) */
+const AVATAR_PALETTE = ['#0D9488', '#2563EB', '#D97706', '#16A34A', '#DC2626', '#71717A', '#0284C7'];
 
 export function getAvatarColor(name: string): string {
   let hash = 0;
