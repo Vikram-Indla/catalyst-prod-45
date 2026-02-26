@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
+import { logInitiativeAudit } from '@/lib/initiativeAudit';
 import { Plus, Wallet, ChevronDown } from 'lucide-react';
 
 interface InitiativeBudgetTabProps {
@@ -57,6 +58,12 @@ export function InitiativeBudgetTab({ initiativeId, budgetAllocated, onBudgetAll
     } as any);
     if (error) { catalystToast.error('Failed to add budget item'); return; }
     catalystToast.success('Budget item added');
+    logInitiativeAudit({
+      initiative_id: initiativeId,
+      action: 'budget_item_added',
+      entity_type: 'budget_item',
+      new_value: JSON.stringify({ category: budgetForm.category, description: budgetForm.description.trim(), planned_amount: budgetForm.planned_amount }),
+    });
     refetchBudget();
     setShowAddBudget(false);
     setBudgetForm({ category: 'development', description: '', expense_type: 'opex', planned_amount: '', vendor: '', po_number: '', fiscal_quarter: '' });

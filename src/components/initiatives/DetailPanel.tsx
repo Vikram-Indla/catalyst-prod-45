@@ -302,6 +302,13 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
       }).eq('id', initiative.id);
       invalidateAllInitiatives(queryClient);
       catalystToast.success('Score saved');
+      const { logInitiativeAudit } = await import('@/lib/initiativeAudit');
+      logInitiativeAudit({
+        initiative_id: initiative.id,
+        action: 'score_saved',
+        entity_type: 'score',
+        new_value: JSON.stringify({ sa: scores.sa, bi: scores.bi, tu: scores.tu, rf: scores.rf, computed: computedScore }),
+      });
     } catch (err: any) { catalystToast.error('Failed: ' + err.message); }
   }, [initiative, scores, computedScore, queryClient]);
 
