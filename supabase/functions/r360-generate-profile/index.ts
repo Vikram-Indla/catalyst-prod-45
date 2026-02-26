@@ -44,8 +44,9 @@ serve(async (req) => {
       .eq('resource_id', resource_id)
       .maybeSingle()
 
-    if (!metrics) {
-      // Trigger compute first
+    // Re-compute if no metrics OR stale/empty metrics
+    if (!metrics || metrics.total_items < 5) {
+      console.log(`[r360-generate-profile] Triggering compute for ${resource_id} (current total: ${metrics?.total_items || 0})`)
       const computeUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/r360-compute-metrics`
       const computeRes = await fetch(computeUrl, {
         method: 'POST',
@@ -62,10 +63,14 @@ serve(async (req) => {
 
       if (!computeRes.ok) {
         const errText = await computeRes.text()
+        console.error('Compute failed:', errText)
         throw new Error(`Compute failed: ${errText}`)
       }
 
-      // Re-fetch
+      const computeResult = await computeRes.json()
+      console.log(`[r360-generate-profile] Compute result:`, JSON.stringify(computeResult))
+
+      // Re-fetch fresh metrics
       const { data: freshMetrics } = await supabase
         .from('r360_resource_metrics')
         .select('*')
