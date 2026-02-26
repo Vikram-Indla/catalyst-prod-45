@@ -6,6 +6,7 @@ import { X, Pencil, Copy, Star, Target, Trash2, ChevronLeft, ChevronDown, AlertT
 import { InitiativeRisksTab } from './tabs/InitiativeRisksTab';
 import { InitiativeBudgetTab } from './tabs/InitiativeBudgetTab';
 import { InitiativeAuditTab } from './tabs/InitiativeAuditTab';
+import { InitiativeMilestonesTab } from '@/components/producthub/InitiativeMilestonesTab';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import { StatusBadge } from './StatusBadge';
@@ -443,7 +444,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
                   <InitiativeBudgetTab initiativeId={initiative.id} budgetAllocated={budgetAllocated} onBudgetAllocatedChange={handleUpdateBudgetAllocated} />
                 )}
                 {activeTab === 'Risks' && <InitiativeRisksTab initiativeId={initiative.id} />}
-                {activeTab === 'Milestones' && <MilestonesTab initiativeId={initiative.id} />}
+                {activeTab === 'Milestones' && <InitiativeMilestonesTab initiativeId={initiative.id} />}
                 {activeTab === 'Links' && <LinksTab initiativeId={initiative.id} />}
                 {activeTab === 'Audit' && <InitiativeAuditTab initiativeId={initiative.id} />}
               </div>
@@ -552,103 +553,8 @@ function AddLinkForm({ initiativeId, onClose }: { initiativeId: string; onClose:
 }
 
 /* ════════════════════════════════════════════════════
-   MILESTONES TAB — Real data from ph_initiative_milestones
+   MILESTONES TAB — Now uses shared component: InitiativeMilestonesTab
    ════════════════════════════════════════════════════ */
-function MilestonesTab({ initiativeId }: { initiativeId: string }) {
-  const queryClient = useQueryClient();
-  const [showAdd, setShowAdd] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
-  const [newDate, setNewDate] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-
-  const { data: milestones = [], isLoading } = useQuery({
-    queryKey: ['ph-milestones', initiativeId],
-    queryFn: async () => {
-      const { data, error } = await (supabase as any).from('ph_initiative_milestones')
-        .select('*').eq('initiative_id', initiativeId).order('planned_date', { ascending: true });
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
-  const handleAdd = async () => {
-    if (!newTitle.trim()) return;
-    setSubmitting(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      await (supabase as any).from('ph_initiative_milestones').insert({
-        initiative_id: initiativeId, title: newTitle.trim(), planned_date: newDate || null,
-        status: 'pending', created_by: user?.id || null,
-      });
-      queryClient.invalidateQueries({ queryKey: ['ph-milestones', initiativeId] });
-      setNewTitle(''); setNewDate(''); setShowAdd(false);
-      catalystToast.success('Milestone added');
-    } catch (err: any) { catalystToast.error('Failed: ' + err.message); }
-    finally { setSubmitting(false); }
-  };
-
-  const toggleStatus = async (id: string, currentStatus: string) => {
-    const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
-    const actualDate = newStatus === 'completed' ? new Date().toISOString().slice(0, 10) : null;
-    await (supabase as any).from('ph_initiative_milestones').update({ status: newStatus, actual_date: actualDate, updated_at: new Date().toISOString() }).eq('id', id);
-    queryClient.invalidateQueries({ queryKey: ['ph-milestones', initiativeId] });
-  };
-
-  const handleDelete = async (id: string) => {
-    await (supabase as any).from('ph_initiative_milestones').delete().eq('id', id);
-    queryClient.invalidateQueries({ queryKey: ['ph-milestones', initiativeId] });
-    catalystToast.success('Milestone removed');
-  };
-
-  if (isLoading) return <div style={{ padding: 24, color: 'var(--pb-ink-muted)', fontSize: 13 }}>Loading milestones…</div>;
-
-  return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <h3 className="pb-section-heading" style={{ marginBottom: 0, borderBottom: 'none', paddingBottom: 0 }}>Milestones</h3>
-        <button onClick={() => setShowAdd(!showAdd)} className="pb-panel-action-btn" style={{ color: 'var(--pb-primary)' }}>
-          <Plus size={14} /> Add
-        </button>
-      </div>
-
-      {showAdd && (
-        <div style={{ display: 'flex', gap: 8, marginBottom: 16, padding: 12, border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-lg)', background: 'var(--pb-surface-secondary)' }}>
-          <input type="text" value={newTitle} onChange={e => setNewTitle(e.target.value)} placeholder="Milestone title" className="pb-comment-input" style={{ flex: 1 }} />
-          <input type="date" value={newDate} onChange={e => setNewDate(e.target.value)} style={{ height: 36, padding: '0 8px', fontSize: 12, border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-sm)', color: 'var(--pb-ink)', outline: 'none' }} />
-          <button onClick={handleAdd} disabled={submitting || !newTitle.trim()}
-            style={{ height: 36, padding: '0 14px', fontSize: 12, fontWeight: 600, color: '#fff', background: 'var(--pb-primary)', border: 'none', borderRadius: 'var(--pb-r-md)', cursor: 'pointer', opacity: submitting || !newTitle.trim() ? 0.5 : 1 }}>
-            Add
-          </button>
-        </div>
-      )}
-
-      {milestones.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--pb-ink-muted)' }}>
-          <Flag size={32} style={{ marginBottom: 8, opacity: 0.4 }} />
-          <p style={{ fontSize: 13, fontWeight: 500 }}>No milestones yet</p>
-          <p style={{ fontSize: 12, marginTop: 4 }}>Add milestones to track key deliverables</p>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {milestones.map((m: any) => (
-            <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', border: '1px solid var(--pb-border)', borderRadius: 'var(--pb-r-md)', background: m.status === 'completed' ? 'var(--pb-success-bg)' : 'var(--pb-surface)' }}>
-              <button onClick={() => toggleStatus(m.id, m.status)}
-                style={{ width: 18, height: 18, borderRadius: '50%', border: m.status === 'completed' ? '2px solid var(--pb-success)' : '2px solid var(--pb-border-strong)', background: m.status === 'completed' ? 'var(--pb-success)' : 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                {m.status === 'completed' && <svg width="10" height="10" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-              </button>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 500, color: m.status === 'completed' ? 'var(--pb-success)' : 'var(--pb-ink)', textDecoration: m.status === 'completed' ? 'line-through' : undefined }}>{m.title}</div>
-                {m.planned_date && <div style={{ fontSize: 11, color: 'var(--pb-ink-muted)', fontFamily: 'var(--pb-font-mono)', marginTop: 2 }}>{formatAbsoluteDate(m.planned_date)}</div>}
-              </div>
-              {m.is_critical_path && <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--pb-danger)', background: 'var(--pb-danger-bg)', padding: '2px 6px', borderRadius: 'var(--pb-r-full)' }}>Critical</span>}
-              <button onClick={() => handleDelete(m.id)} style={{ color: 'var(--pb-ink-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><Trash2 size={14} /></button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 /* ════════════════════════════════════════════════════
    LINKS TAB — Real data from ph_initiative_links
