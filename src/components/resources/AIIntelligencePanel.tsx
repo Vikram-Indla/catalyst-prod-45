@@ -101,7 +101,20 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
         {/* Identity bar */}
         <div className="rai-identity">
           {avatarUrl ? (
-            <img src={avatarUrl} alt={name} className="rai-avatar" style={{ background: avatarBg, objectFit: 'cover' }} onError={(e) => { e.currentTarget.style.display = 'none'; const next = e.currentTarget.nextElementSibling as HTMLElement; if (next) next.style.display = 'flex'; }} />
+            <img
+              src={avatarUrl}
+              alt={name}
+              style={{
+                width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', flexShrink: 0,
+                border: '2px solid #E4E4E7', background: avatarBg,
+              }}
+              onError={(e) => {
+                const el = e.currentTarget;
+                el.style.display = 'none';
+                const fallback = el.nextElementSibling as HTMLElement;
+                if (fallback) fallback.style.display = 'flex';
+              }}
+            />
           ) : null}
           <div className="rai-avatar" style={{ background: avatarBg, display: avatarUrl ? 'none' : 'flex' }}>{initials}</div>
           <div style={{ flex: 1 }}>
