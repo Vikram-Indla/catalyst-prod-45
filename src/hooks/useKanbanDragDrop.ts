@@ -5,15 +5,36 @@ import { toast } from 'sonner';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 
+/**
+ * Map Kanban column IDs (13 UI statuses) → valid DB enum values (8 values).
+ * The DB enum is: new_demand, under_review, approved, in_progress, on_hold, delivered, closed, cancelled
+ */
+const UI_TO_DB_STATUS: Record<string, string> = {
+  new: 'new_demand',
+  portfolio_review: 'under_review',
+  technical_validation: 'under_review',
+  estimate: 'under_review',
+  demand_approved: 'approved',
+  analysis: 'approved',
+  ready_for_development: 'approved',
+  under_implementation: 'in_progress',
+  on_hold: 'on_hold',
+  implementation_review: 'in_progress',
+  in_support: 'delivered',
+  done: 'closed',
+  cancelled: 'cancelled',
+};
+
 export function useKanbanDragDrop(initiatives: Initiative[]) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: InitiativeStatus }) => {
+      const dbStatus = UI_TO_DB_STATUS[status] || 'new_demand';
       const { error } = await supabase
         .from('ph_initiatives')
-        .update({ status: status as any, updated_at: new Date().toISOString() })
+        .update({ status: dbStatus as any, updated_at: new Date().toISOString() })
         .eq('id', id);
       if (error) throw new Error(error.message);
     },
