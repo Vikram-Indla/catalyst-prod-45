@@ -265,11 +265,15 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
   const computedScore = +((scores.sa + scores.bi + scores.tu + scores.rf) / 4).toFixed(1);
   const priority = getPriorityLevel(computedScore);
 
+  const UUID_FK_FIELDS = ['department_id', 'assignee_id', 'reporter_id', 'business_owner_id', 'product_id'];
   const handleQuickEdit = useCallback(async (field: string, value: any, label?: string) => {
     if (!initiative) return;
     if (!isNativeInitiative(initiative.id)) { if (field === 'initiative_type_key') queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] }); return; }
+    // Sanitize: empty strings on UUID FK columns must be null to avoid FK constraint violations
+    let sanitized = value;
+    if (UUID_FK_FIELDS.includes(field) && (value === '' || value === undefined)) sanitized = null;
     try {
-      const { error } = await (supabase as any).from('ph_initiatives').update({ [field]: value, updated_at: new Date().toISOString() }).eq('id', initiative.id);
+      const { error } = await (supabase as any).from('ph_initiatives').update({ [field]: sanitized, updated_at: new Date().toISOString() }).eq('id', initiative.id);
       if (error) throw new Error(error.message);
       invalidateAllInitiatives(queryClient);
       catalystToast.success(`${label || field.replace(/_/g, ' ')} updated`);
