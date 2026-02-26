@@ -29,15 +29,24 @@ export const KanbanFilterBar: React.FC<KanbanFilterBarProps> = ({
         <span className="pk-search-kbd">⌘K</span>
       </div>
 
-      {FILTER_CHIPS.map(chip => (
-        <button
-          key={chip.key}
-          onClick={() => onFilterChange(chip.key)}
-          className={`pk-chip ${activeFilter === chip.key ? 'pk-chip--active' : ''}`}
-        >
-          {chip.label}
-        </button>
-      ))}
+      {FILTER_CHIPS.map(chip => {
+        const isActive = activeFilter === chip.key;
+        return (
+          <button
+            key={chip.key}
+            onClick={() => onFilterChange(chip.key)}
+            className="pk-chip"
+            style={{
+              background: isActive ? '#EFF6FF' : '#FFFFFF',
+              color: isActive ? '#2563EB' : '#3F3F46',
+              border: isActive ? '1px solid #2563EB' : '1px solid #E4E4E7',
+              fontWeight: isActive ? 600 : 500,
+            }}
+          >
+            {chip.label}
+          </button>
+        );
+      })}
     </div>
   );
 };

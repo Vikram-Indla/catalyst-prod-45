@@ -30,11 +30,6 @@ function getPriorityBars(score: number | null): number {
   return 1;
 }
 
-function getProgressColor(progress: number): string {
-  if (progress >= 75) return 'var(--pk-success)';
-  if (progress >= 50) return 'var(--pk-teal)';
-  return 'var(--pk-primary)';
-}
 
 export const KanbanCard: React.FC<KanbanCardProps> = ({ initiative, onClick, onContextMenu, isOverlay, isFocused, isSelected }) => {
   const {
@@ -124,51 +119,49 @@ export const KanbanCard: React.FC<KanbanCardProps> = ({ initiative, onClick, onC
         )}
       </div>
 
-      {/* Bottom: Priority bars + Progress + Avatar */}
-      <div className="pk-card-bottom">
-        <div className="pk-card-priority">
-          {[0, 1, 2, 3].map(i => (
+      {/* Bottom: Priority bars + Progress + Avatar — ALL in one flex row */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
+        {/* Priority: 4 solid rectangles */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
+          {[1, 2, 3, 4].map(level => (
             <div
-              key={i}
-              className={`pk-priority-bar ${i < filledBars ? 'pk-priority-bar--filled' : 'pk-priority-bar--unfilled'}`}
+              key={level}
               style={{
-                width: 12, height: 3, borderRadius: 1, border: 'none',
-                background: i < filledBars ? '#71717A' : '#E4E4E7',
-                display: 'block', flexShrink: 0,
+                width: 12,
+                height: 3,
+                borderRadius: 1,
+                backgroundColor: level <= filledBars ? '#71717A' : '#E4E4E7',
               }}
             />
           ))}
         </div>
 
-        <div
-          className="pk-card-progress"
-          style={{ flex: 1, height: 4, background: '#F4F4F5', borderRadius: 2, overflow: 'hidden', border: 'none' }}
-        >
-          <div
-            className="pk-card-progress-fill"
-            style={{
-              width: `${Math.min(initiative.progress, 100)}%`,
-              height: '100%',
-              backgroundColor: getProgressColor(initiative.progress),
-              borderRadius: 2,
-              border: 'none',
-              transition: 'width 0.3s ease',
-            }}
-          />
+        {/* Progress: solid continuous track */}
+        <div style={{ flex: 1, height: 4, backgroundColor: '#F4F4F5', borderRadius: 2, overflow: 'hidden' }}>
+          <div style={{
+            height: '100%',
+            width: `${Math.min(initiative.progress, 100)}%`,
+            backgroundColor: initiative.progress >= 75 ? '#16A34A' : initiative.progress >= 50 ? '#0D9488' : '#2563EB',
+            borderRadius: 2,
+            transition: 'width 0.3s ease',
+          }} />
         </div>
 
-        <span className="pk-card-percent">{initiative.progress}%</span>
+        {/* Percentage */}
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 500, color: '#71717A', minWidth: 28, textAlign: 'right' as const, flexShrink: 0 }}>
+          {initiative.progress}%
+        </span>
 
+        {/* Avatar */}
         {initiative.assignee_name ? (
           <div
-            className="pk-card-avatar"
-            style={{ backgroundColor: getAvatarColor(initiative.assignee_name) }}
+            style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: getAvatarColor(initiative.assignee_name), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#fff', flexShrink: 0 }}
             title={initiative.assignee_name}
           >
             {getInitials(initiative.assignee_name)}
           </div>
         ) : (
-          <div className="pk-card-avatar pk-card-avatar--empty">?</div>
+          <div style={{ width: 24, height: 24, borderRadius: '50%', backgroundColor: '#E4E4E7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 600, color: '#71717A', flexShrink: 0 }}>?</div>
         )}
       </div>
     </div>
