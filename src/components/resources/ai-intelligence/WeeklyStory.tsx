@@ -156,20 +156,6 @@ export const WeeklyStory: React.FC<Props> = ({ data, selectedDate, onPrevWeek, o
             })}
           </div>
 
-          {/* Weekly KPIs */}
-          <div className="rai-kpi-grid">
-            {[
-              { key: 'pickedUp', label: isAr ? KPI_LABELS_AR.pickedUp : 'PICKED UP', value: data.kpis.pickedUp, color: 'var(--rai-ink)' },
-              { key: 'closed', label: isAr ? KPI_LABELS_AR.closed : 'CLOSED', value: data.kpis.closed, color: 'var(--rai-success)' },
-              { key: 'inReview', label: isAr ? KPI_LABELS_AR.inReview : 'IN REVIEW', value: data.kpis.inReview, color: 'var(--rai-warning)' },
-              { key: 'remaining', label: isAr ? KPI_LABELS_AR.remaining : 'REMAINING', value: data.kpis.remaining, color: 'var(--rai-ink)' },
-            ].map(k => (
-              <div key={k.key} className="rai-kpi-cell">
-                <div className="rai-kpi-value" style={{ color: k.color }}>{k.value}</div>
-                <div className="rai-kpi-label" style={isAr ? { fontFamily: 'var(--rai-font-ar)' } : {}}>{k.label}</div>
-              </div>
-            ))}
-          </div>
         </div>
       )}
 
