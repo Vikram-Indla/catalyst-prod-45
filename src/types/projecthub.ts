@@ -96,12 +96,14 @@ export interface ProjectListItem {
   health_status: ProjectHealth;
   status_category: ProjectStatusCategory;
   total_epics: number;
+  total_features: number;
   total_stories: number;
   total_tasks: number;
   work_items_todo: number;
   work_items_in_progress: number;
   work_items_done: number;
   completion_percentage: number;
+  total_issues: number;
   updated_at: string;
   created_at: string;
   owner_id: string;
@@ -125,7 +127,7 @@ export interface ProjectTeamMember {
 }
 
 export type ViewMode = 'list' | 'card' | 'cards';
-export type SortColumn = 'name' | 'department' | 'status' | 'health_status' | 'total_epics' | 'total_stories' | 'total_tasks';
+export type SortColumn = 'name' | 'department' | 'status' | 'health_status' | 'total_epics' | 'total_stories' | 'total_tasks' | 'total_issues';
 export type SortDirection = 'asc' | 'desc';
 
 export interface ProjectFilters {

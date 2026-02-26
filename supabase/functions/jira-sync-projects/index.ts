@@ -12,6 +12,17 @@ serve(async (req) => {
   }
 
   try {
+    // Parse request body for selective sync
+    let projectKeys: string[] | null = null;
+    let syncMode: string = '3months';
+    try {
+      const body = await req.json();
+      projectKeys = body?.projectKeys ?? null;
+      syncMode = body?.syncMode ?? '3months';
+    } catch (_e) {
+      // No body = sync all
+    }
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
@@ -117,6 +128,14 @@ serve(async (req) => {
       if (!jiraKeySet.has(ap.key) && countMap[ap.key] && countMap[ap.key].total > 0) {
         activeJiraProjects.push({ key: ap.key, name: ap.name, projectTypeKey: ap.type });
       }
+    }
+
+    // Filter to selected projects if specified
+    if (projectKeys && projectKeys.length > 0) {
+      const selectedSet = new Set(projectKeys);
+      const filtered = activeJiraProjects.filter((jp: any) => selectedSet.has(jp.key));
+      activeJiraProjects.length = 0;
+      activeJiraProjects.push(...filtered);
     }
 
     console.log(`[jira-sync-projects] ${activeJiraProjects.length} active projects (with issues)`);
