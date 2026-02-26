@@ -87,9 +87,15 @@ export function useWeeklyStory(resourceId: string | undefined, jiraAccountId: st
             item.status === 'In Review' || item.status === 'Review' ? 'review' :
             item.status_category === 'In Progress' ? 'progress' : undefined;
 
+          // Arabic contextual text wrapping the English summary
+          const statusAr = item.status_category === 'Done' ? 'تم إغلاق' :
+            item.status === 'In Review' || item.status === 'Review' ? 'قيد المراجعة:' :
+            item.status_category === 'In Progress' ? 'جارٍ العمل على' : 'تم تحديث';
+
           return {
             time,
             text: `${item.summary}`,
+            textAr: `${statusAr} ${item.summary}`,
             refs: [item.issue_key],
             statusBadge,
           };
