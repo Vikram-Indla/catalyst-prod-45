@@ -12,10 +12,11 @@ import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 
 function classifyHub(key: string): string {
-  if (key.startsWith('INC-')) return 'IncidentHub';
+  if (!key) return 'Other';
+  if (key.startsWith('BAU-') || key.startsWith('INC-')) return 'IncidentHub';
   if (key.startsWith('PRD-') || key.startsWith('PB-')) return 'ProductHub';
   if (key.startsWith('TST-') || key.startsWith('TC-')) return 'TestHub';
-  if (key.startsWith('PRJ-') || key.startsWith('SPR-') || key.startsWith('BAU-') || key.startsWith('SEN-') || key.startsWith('FAC-') || key.startsWith('OPS-') || key.startsWith('SUP-') || key.startsWith('LND-')) return 'ProjectHub';
+  if (key.startsWith('PRJ-') || key.startsWith('SPR-') || key.startsWith('SEN-') || key.startsWith('FAC-') || key.startsWith('OPS-') || key.startsWith('SUP-') || key.startsWith('LND-')) return 'ProjectHub';
   if (key.startsWith('REL-')) return 'ReleaseHub';
   return 'Other';
 }
@@ -36,7 +37,7 @@ export function useResourceInfo(resourceId: string | undefined) {
       if (!resourceId) return null;
       const { data: ri } = await (supabase
         .from('resource_inventory' as any)
-        .select('id, rid, name, role_name, jira_account_id, profile_id')
+        .select('id, rid, name, role_name, department_name, jira_account_id, profile_id')
         .eq('id', resourceId)
         .maybeSingle() as any);
 
@@ -50,10 +51,11 @@ export function useResourceInfo(resourceId: string | undefined) {
         profile = p;
       }
 
+      const roleParts = [ri?.role_name, ri?.department_name].filter(Boolean);
       return {
         id: resourceId,
         full_name: profile?.full_name || ri?.name || 'Unknown',
-        role_name: ri?.role_name || 'Team Member',
+        role_name: roleParts.length > 0 ? roleParts.join(' · ') : 'Team Member',
         avatar_url: profile?.avatar_url || null,
         jira_account_id: ri?.jira_account_id || null,
         rid: ri?.rid || `RES-${String(resourceId).slice(-3).toUpperCase()}`,
@@ -121,9 +123,9 @@ export function useDeliveryBacklog(resourceId: string | undefined, jiraAccountId
       };
 
       const metrics: BacklogMetrics = {
-        avgSubtaskDays: typeAvgs('Sub-task'),
-        avgStoryDays: typeAvgs('Story'),
-        avgBugDays: typeAvgs('Defect') ?? typeAvgs('QA Bug'),
+        avgSubtaskDays: typeAvgs('Sub-task') ?? typeAvgs('Subtask'),
+        avgStoryDays: typeAvgs('Story') ?? typeAvgs('Frontend'),
+        avgBugDays: typeAvgs('QA Bug') ?? typeAvgs('Defect') ?? typeAvgs('Bug'),
         pickupSpeedHours: null,
       };
 

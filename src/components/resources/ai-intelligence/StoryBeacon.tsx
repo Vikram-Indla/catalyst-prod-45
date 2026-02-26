@@ -9,6 +9,8 @@ export const StoryBeacon: React.FC<Props> = ({ hook, onScrollToStory }) => {
   const [visible, setVisible] = useState(false);
   const timeoutRef = useRef<number>();
 
+  const displayHook = hook && hook.trim().length > 0 ? hook : "This week's story awaits…";
+
   useEffect(() => {
     const storyEl = document.getElementById('weeklyStory');
     const teaserEl = document.getElementById('storyTeaser');
@@ -22,7 +24,6 @@ export const StoryBeacon: React.FC<Props> = ({ hook, onScrollToStory }) => {
         const storyVisible = storyEntry?.isIntersecting ?? false;
         const teaserVisible = teaserEntry?.isIntersecting ?? false;
 
-        // Show when story is below fold AND teaser is not visible
         setVisible(!storyVisible && !teaserVisible);
       },
       { threshold: 0.1 }
@@ -31,7 +32,6 @@ export const StoryBeacon: React.FC<Props> = ({ hook, onScrollToStory }) => {
     observer.observe(storyEl);
     if (teaserEl) observer.observe(teaserEl);
 
-    // Show after 800ms delay initially
     timeoutRef.current = window.setTimeout(() => {
       if (!storyEl.getBoundingClientRect || storyEl.getBoundingClientRect().top > window.innerHeight) {
         setVisible(true);
@@ -51,7 +51,7 @@ export const StoryBeacon: React.FC<Props> = ({ hook, onScrollToStory }) => {
       <div className="rai-beacon-pill" onClick={onScrollToStory}>
         <span className="rai-beacon-arrow">↓</span>
         <span style={{ fontStyle: 'italic', maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          "{hook}"
+          "{displayHook}"
         </span>
         <span style={{ fontSize: 10, opacity: 0.7 }}>↓ عربي</span>
       </div>

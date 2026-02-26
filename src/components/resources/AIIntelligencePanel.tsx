@@ -24,6 +24,7 @@ import {
 } from '@/hooks/useAIIntelligence';
 import { useWeeklyStory } from '@/hooks/useWeeklyStory';
 import { getWeekNumber } from '@/constants/r360WeekConfig';
+import { getAvatarColor } from '@/types/initiative';
 
 interface Props {
   resourceId: string;
@@ -34,7 +35,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
   const bodyRef = useRef<HTMLDivElement>(null);
 
   // Data hooks
-  const { data: resource } = useResourceInfo(resourceId);
+  const { data: resource, isLoading: resourceLoading } = useResourceInfo(resourceId);
   const { data: hubClosures = [] } = useHubClosures(resourceId, resource?.jira_account_id);
   const { data: backlogData } = useDeliveryBacklog(resourceId, resource?.jira_account_id);
   const { data: patternData } = useAIPatterns(resourceId);
@@ -62,8 +63,12 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
     }
   }, []);
 
-  const initials = resource?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) || '??';
+  const name = resource?.full_name || '';
+  const initials = name
+    ? name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
+    : '??';
   const weekNum = getWeekNumber(selectedDate);
+  const avatarBg = name ? getAvatarColor(name) : '#2563EB';
 
   const noAIData = !patternData?.summary && !patternData?.insights?.length;
 
@@ -76,7 +81,7 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
       <div className="rai-panel">
         {/* Top bar */}
         <div className="rai-topbar">
-          <button className="rai-topbar-btn" onClick={onClose}>← Back</button>
+          <button className="rai-topbar-btn" onClick={onClose}>← Back to Resources</button>
           <div style={{ flex: 1 }} />
           {stalenessLabel && (
             <span style={{ fontSize: 11, color: 'var(--rai-ink-muted)', fontFamily: 'var(--rai-font-mono)' }}>
@@ -84,23 +89,32 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
             </span>
           )}
           <button className="rai-topbar-btn" onClick={syncData} disabled={syncing}>
-            {syncing ? '⏳ Syncing…' : '🔄 Sync'}
+            {syncing ? '⏳ Syncing…' : '🔄 Sync Data'}
           </button>
           <button className="rai-topbar-btn rai-primary-btn" onClick={refreshAI} disabled={isGenerating}>
             {isGenerating ? '⏳ Generating…' : '✨ Refresh AI'}
           </button>
-          <button className="rai-topbar-btn" onClick={onClose}>✕</button>
+          <button className="rai-topbar-btn" onClick={onClose} style={{ width: 30, height: 30, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
         </div>
 
         {/* Identity bar */}
         <div className="rai-identity">
-          <div className="rai-avatar">{initials}</div>
+          <div className="rai-avatar" style={{ background: avatarBg }}>{initials}</div>
           <div style={{ flex: 1 }}>
-            <div className="rai-name">{resource?.full_name || 'Loading…'}</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span className="rai-role-subtitle">{resource?.role_name || 'Team Member'}</span>
-              <span className="rai-rid-badge">{resource?.rid || ''}</span>
-            </div>
+            {resourceLoading ? (
+              <>
+                <div className="rai-skeleton" style={{ height: 22, width: 160, borderRadius: 4, marginBottom: 6 }} />
+                <div className="rai-skeleton" style={{ height: 14, width: 120, borderRadius: 4 }} />
+              </>
+            ) : (
+              <>
+                <div className="rai-name">{name || 'Loading…'}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span className="rai-role-subtitle">{resource?.role_name || 'Team Member'}</span>
+                  <span className="rai-rid-badge">{resource?.rid || ''}</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -138,12 +152,13 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
 
           {/* Story Teaser */}
           <StoryTeaser
-            hook={storyData?.hookEn || 'Loading weekly story…'}
+            hook={storyData?.hookEn || ''}
             weekNumber={weekNum}
             closed={storyData?.kpis.closed || 0}
             inReview={storyData?.kpis.inReview || 0}
             remaining={storyData?.kpis.remaining || 0}
             onScrollToStory={scrollToStory}
+            isLoading={storyLoading}
           />
 
           {/* Resource Pattern */}
