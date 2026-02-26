@@ -13,11 +13,13 @@ interface ToolbarProps {
     statusOnHold: number;
     statusPlanning: number;
     statusCompleted: number;
+    statusStarred: number;
   };
 }
 
 const CHIPS = [
   { label: 'All', key: 'All', countKey: 'total' as const },
+  { label: '★ Starred', key: 'Starred', countKey: 'statusStarred' as const },
   { label: 'Active', key: 'Active', countKey: 'statusActive' as const },
   { label: 'On Hold', key: 'On Hold', countKey: 'statusOnHold' as const },
   { label: 'Planning', key: 'Planning', countKey: 'statusPlanning' as const },

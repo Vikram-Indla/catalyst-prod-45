@@ -58931,6 +58931,7 @@ export type Database = {
           description: string | null
           health_status: string | null
           id: string | null
+          last_synced_at: string | null
           member_count: number | null
           member_ids: string[] | null
           name: string | null

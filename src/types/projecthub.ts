@@ -111,6 +111,7 @@ export interface ProjectListItem {
   tags: string[] | null;
   member_count: number;
   member_ids: string[] | null;
+  last_synced_at: string | null;
 }
 
 // get_project_team RPC row shape

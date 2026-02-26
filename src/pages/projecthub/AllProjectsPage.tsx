@@ -45,8 +45,8 @@ export default function AllProjectsPage() {
   const allMemberIds = useMemo(() => projects.flatMap(p => p.member_ids ?? []), [projects]);
   useMemberProfiles(allMemberIds);
 
-  const filtered = useMemo(() => filterAndSortProjects(projects, filters, sortCol, sortDir), [projects, filters, sortCol, sortDir]);
-  const stats = useMemo(() => computePortfolioStats(projects), [projects]);
+  const filtered = useMemo(() => filterAndSortProjects(projects, filters, sortCol, sortDir, favorites), [projects, filters, sortCol, sortDir, favorites]);
+  const stats = useMemo(() => computePortfolioStats(projects, favorites), [projects, favorites]);
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   const pageData = filtered.slice(page * perPage, (page + 1) * perPage);
 
