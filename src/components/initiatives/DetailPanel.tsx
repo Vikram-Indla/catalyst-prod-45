@@ -209,10 +209,11 @@ function InlineEditableTextArea({ value, onSave }: { value: string | null; onSav
 function InlineEditableProgress({ value, onSave, status }: { value: number; onSave: (v: number) => void; status: string }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
-  const commit = () => { setEditing(false); if (draft !== value) onSave(draft); };
+  const committed = useRef(false);
+  const commit = () => { if (committed.current) return; committed.current = true; setEditing(false); if (draft !== value) onSave(draft); };
   if (!editing) {
     return (
-      <div className="group cursor-pointer" onClick={() => { setDraft(value); setEditing(true); }}
+      <div className="group cursor-pointer" onClick={() => { setDraft(value); committed.current = false; setEditing(true); }}
         style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
         <div className="pb-progress-track" style={{ width: 80 }}>
           <div className="pb-progress-fill" style={{ width: `${Math.min(Math.max(value, 0), 100)}%`, background: status === 'done' ? 'var(--pb-success)' : 'var(--pb-primary)' }} />
@@ -225,9 +226,12 @@ function InlineEditableProgress({ value, onSave, status }: { value: number; onSa
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
       <input type="range" min={0} max={100} step={5} value={draft} autoFocus
-        onChange={e => setDraft(Number(e.target.value))} onBlur={commit} onMouseUp={commit}
+        onChange={e => setDraft(Number(e.target.value))}
+        onBlur={commit}
+        onKeyDown={e => { if (e.key === 'Enter') commit(); }}
         style={{ flex: 1, accentColor: 'var(--pb-primary)' }} />
       <span className="pb-progress-label" style={{ minWidth: 40, textAlign: 'right', fontWeight: 600, color: 'var(--pb-primary)' }}>{draft}%</span>
+      <button onClick={commit} style={{ fontSize: 11, fontWeight: 600, color: 'var(--pb-primary)', background: 'var(--pb-primary-bg)', border: '1px solid var(--pb-primary)', borderRadius: 4, padding: '2px 8px', cursor: 'pointer' }}>Save</button>
     </div>
   );
 }
