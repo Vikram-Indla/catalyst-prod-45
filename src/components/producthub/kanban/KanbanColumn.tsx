@@ -2,7 +2,6 @@ import React, { useMemo, useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { MoreHorizontal, ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 import { KanbanCard } from './KanbanCard';
 import { WipIndicator } from './WipIndicator';
@@ -81,26 +80,13 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
   const toggleLane = (key: string) =>
     setCollapsedLanes(prev => ({ ...prev, [key]: !prev[key] }));
 
-  // Collapsed column
   if (isCollapsed) {
     return (
-      <button
-        onClick={onToggleCollapse}
-        className={cn(
-          'flex-shrink-0 w-12 min-w-[48px] rounded-xl border flex flex-col items-center py-3 bg-white shadow-sm cursor-pointer transition-all hover:bg-zinc-50',
-          overWip ? 'border-amber-400' : 'border-zinc-200'
-        )}
-        aria-label={`Expand ${config.label} column`}
-      >
-        <span className="w-2.5 h-2.5 rounded-full mb-2 shrink-0" style={{ backgroundColor: config.color }} />
-        <span
-          className="text-xs font-semibold text-zinc-700 whitespace-nowrap"
-          style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
-        >
-          {config.label}
-        </span>
-        <span className="text-[10px] text-zinc-400 font-semibold mt-2 tabular-nums">{items.length}</span>
-        <ChevronRight className="w-3.5 h-3.5 text-zinc-400 mt-2" />
+      <button onClick={onToggleCollapse} className="pk-column-collapsed" aria-label={`Expand ${config.label} column`}>
+        <span className="pk-column-dot" style={{ backgroundColor: config.color }} />
+        <span className="pk-column-collapsed-name">{config.label}</span>
+        <span className="pk-column-collapsed-count">{items.length}</span>
+        <ChevronRight size={14} style={{ color: 'var(--pk-ink-muted)', marginTop: 8 }} />
       </button>
     );
   }
@@ -109,49 +95,31 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
 
   return (
     <div
-      className={cn(
-        'flex-shrink-0 w-[300px] min-w-[300px] rounded-xl border flex flex-col bg-white shadow-sm transition-all',
-        isOver && 'border-blue-400 bg-blue-50/30',
-        !isOver && overWip && 'border-red-300 shadow-[0_0_0_2px_rgba(239,68,68,0.15)]',
-        !isOver && !overWip && approachingWip && 'border-amber-300 shadow-[0_0_0_2px_rgba(251,191,36,0.15)]',
-        !isOver && !overWip && !approachingWip && 'border-zinc-200'
-      )}
+      className={`pk-column${isOver ? ' pk-column--over' : ''}${overWip ? ' pk-column--wip-over' : ''}${approachingWip ? ' pk-column--wip-approaching' : ''}`}
       aria-label={`${config.label} column with ${items.length} items`}
     >
-      {/* Header — sticky */}
-      <div className="flex items-center justify-between px-3 py-2.5 border-b border-zinc-100 sticky top-0 bg-white z-10 rounded-t-xl">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: config.color }} />
-          <span className="text-sm font-semibold text-zinc-900 truncate">{config.label}</span>
-          <WipIndicator count={items.length} limit={config.wip} />
-        </div>
-        <div className="flex items-center gap-0.5">
-          <button
-            onClick={onToggleCollapse}
-            className="w-7 h-7 flex items-center justify-center rounded-md text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500"
-            aria-label={`Collapse ${config.label} column`}
-          >
-            <ChevronLeft className="w-3.5 h-3.5" />
+      {/* Header */}
+      <div className="pk-column-header">
+        <span className="pk-column-dot" style={{ backgroundColor: config.color }} />
+        <span className="pk-column-name">{config.label}</span>
+        <WipIndicator count={items.length} limit={config.wip} />
+        <div className="pk-column-actions">
+          <button onClick={onToggleCollapse} className="pk-column-action-btn" aria-label={`Collapse ${config.label}`}>
+            <ChevronLeft size={14} />
           </button>
-          <div className="relative">
-            <button
-              onClick={() => setShowMenu(!showMenu)}
-              className="w-7 h-7 flex items-center justify-center rounded-md text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500"
-            >
-              <MoreHorizontal className="w-4 h-4" />
+          <div style={{ position: 'relative' }}>
+            <button onClick={() => setShowMenu(!showMenu)} className="pk-column-action-btn">
+              <MoreHorizontal size={14} />
             </button>
             {showMenu && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
-                <div className="absolute right-0 top-full mt-1 w-40 bg-white border border-zinc-200 rounded-lg shadow-lg z-50 py-1">
-                  <div className="px-3 py-1.5 text-[10px] text-zinc-400 font-medium">
+                <div className="pk-dropdown" style={{ right: 0, left: 'auto' }}>
+                  <div style={{ padding: '6px 12px', fontSize: 10, color: 'var(--pk-ink-muted)', fontFamily: 'var(--pk-font-mono)' }}>
                     Total Score: {totalScore.toFixed(1)}
                   </div>
-                  <div className="h-px bg-zinc-100 my-1" />
-                  <button
-                    onClick={() => { onToggleCollapse(); setShowMenu(false); }}
-                    className="w-full text-left px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-50"
-                  >
+                  <div className="pk-context-separator" />
+                  <button onClick={() => { onToggleCollapse(); setShowMenu(false); }} className="pk-dropdown-item">
                     Collapse Column
                   </button>
                 </div>
@@ -164,10 +132,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
       {/* Body */}
       <div
         ref={setNodeRef}
-        className={cn(
-          'flex-1 overflow-y-auto p-2 space-y-2 scrollbar-thin scrollbar-thumb-zinc-200',
-          isOver && 'bg-blue-50/20'
-        )}
+        className="pk-column-body"
         style={{ maxHeight: 'calc(100vh - 280px)' }}
         role="listbox"
         aria-label={`${config.label} cards`}
@@ -193,7 +158,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
                   onToggle={() => toggleLane(laneKey)}
                 />
                 {!collapsedLanes[laneKey] && (
-                  <div className="space-y-2 mt-1.5 mb-2">
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 6, marginBottom: 8 }}>
                     {grouped[laneKey].map(item => (
                       <KanbanCard
                         key={item.id}
@@ -211,15 +176,16 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
         </SortableContext>
 
         {items.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-10 text-center">
-            <Inbox className="w-6 h-6 text-zinc-300 mb-2" />
-            <p className="text-sm text-zinc-400">No initiatives</p>
+          <div className="pk-empty">
+            <Inbox size={36} className="pk-empty-icon" />
+            <p className="pk-empty-text">No initiatives</p>
+            <p className="pk-empty-hint">Drag cards here or add new</p>
           </div>
         )}
       </div>
 
       {/* Footer */}
-      <div className="px-2 pb-2 pt-1">
+      <div className="pk-column-footer">
         <QuickAddCard status={config.key} />
       </div>
     </div>

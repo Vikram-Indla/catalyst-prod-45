@@ -1,17 +1,17 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { KanbanToolbar } from '@/components/producthub/kanban/KanbanToolbar';
 import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateInitiativeDrawer';
 import { KanbanFilterBar } from '@/components/producthub/kanban/KanbanFilterBar';
 import { KanbanBoard } from '@/components/producthub/kanban/KanbanBoard';
 import { InitiativeDetailPanel } from '@/components/producthub/timeline/InitiativeDetailPanel';
 import { useMDTBacklog } from '@/hooks/useMDTBacklog';
+import { supabase } from '@/integrations/supabase/client';
 import type { Initiative } from '@/types/initiative';
 import type { FilterChip } from '@/types/producthub/initiative';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 import type { SwimlaneField } from '@/components/producthub/kanban/KanbanColumn';
+import '@/styles/product-kanban.css';
 
-
-/** Adapt Initiative → TimelineInitiative for the detail panel */
 function toTimelineInitiative(i: Initiative): TimelineInitiative {
   return {
     id: i.id,
@@ -61,22 +61,24 @@ export default function KanbanPage() {
   const [swimlane, setSwimlane] = useState<SwimlaneField>('none');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showCreateDrawer, setShowCreateDrawer] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
-  // Filter logic
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id ?? null));
+  }, []);
+
   const filtered = useMemo(() => {
     let result = initiatives;
-
     if (searchTerm) {
       const q = searchTerm.toLowerCase();
       result = result.filter(
-        i =>
-          i.title.toLowerCase().includes(q) ||
-          i.initiative_key.toLowerCase().includes(q) ||
-          i.department_name?.toLowerCase().includes(q)
+        i => i.title.toLowerCase().includes(q) || i.initiative_key.toLowerCase().includes(q) || i.department_name?.toLowerCase().includes(q)
       );
     }
-
     switch (activeFilter) {
+      case 'my':
+        if (currentUserId) result = result.filter(i => i.assignee_id === currentUserId);
+        break;
       case 'high':
         result = result.filter(i => (i.computed_score ?? 0) >= 4.0);
         break;
@@ -99,9 +101,8 @@ export default function KanbanPage() {
         break;
       }
     }
-
     return result;
-  }, [initiatives, searchTerm, activeFilter]);
+  }, [initiatives, searchTerm, activeFilter, currentUserId]);
 
   const selectedInitiative = selectedId ? initiatives.find(i => i.id === selectedId) : null;
 
@@ -115,32 +116,34 @@ export default function KanbanPage() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-[#f8f9fb]">
-        <div className="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full" />
+      <div className="pk-page" data-module="product-kanban">
+        <div className="pk-page-header">
+          <h1 className="pk-page-title">Product Kanban</h1>
+          <p className="pk-page-subtitle">Drag initiatives between status columns to update workflow</p>
+        </div>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 32, height: 32, border: '2px solid var(--pk-primary)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-[#f8f9fb]">
-      {/* Header */}
-      <div className="px-6 py-4 bg-white border-b border-zinc-200">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-zinc-900">Product Kanban</h1>
-        </div>
-        <p className="text-sm text-zinc-500 mt-1">Drag initiatives between status columns to update workflow</p>
+    <div className="pk-page" data-module="product-kanban">
+      <div className="pk-page-header">
+        <h1 className="pk-page-title">Product Kanban</h1>
+        <p className="pk-page-subtitle">Drag initiatives between status columns to update workflow</p>
       </div>
 
-      {/* Toolbar */}
       <KanbanToolbar
         sortBy={sortBy}
         onSortChange={setSortBy}
         swimlane={swimlane}
         onSwimlaneChange={setSwimlane}
         onNewInitiative={() => setShowCreateDrawer(true)}
+        initiatives={filtered}
       />
 
-      {/* Filter Bar */}
       <KanbanFilterBar
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
@@ -148,7 +151,6 @@ export default function KanbanPage() {
         onFilterChange={setActiveFilter}
       />
 
-      {/* Board */}
       <KanbanBoard
         initiatives={filtered}
         sortBy={sortBy}
@@ -157,7 +159,6 @@ export default function KanbanPage() {
         totalCount={initiatives.length}
       />
 
-      {/* Detail Panel */}
       {selectedInitiative && (
         <InitiativeDetailPanel
           initiative={toTimelineInitiative(selectedInitiative)}
@@ -165,8 +166,6 @@ export default function KanbanPage() {
           onClose={handleCloseDetail}
         />
       )}
-
-      
 
       <CreateInitiativeDrawer open={showCreateDrawer} onClose={() => setShowCreateDrawer(false)} />
     </div>

@@ -5,18 +5,30 @@ import type { Initiative, InitiativeStatus } from '@/types/initiative';
 /**
  * Maps database initiative_status enum to UI InitiativeStatus type.
  */
+const STATUS_MAP: Record<string, InitiativeStatus> = {
+  new_demand: 'new',
+  new: 'new',
+  under_review: 'portfolio_review',
+  portfolio_review: 'portfolio_review',
+  technical_validation: 'technical_validation',
+  estimate: 'estimate',
+  approved: 'demand_approved',
+  demand_approved: 'demand_approved',
+  analysis: 'analysis',
+  ready_for_development: 'ready_for_development',
+  in_progress: 'under_implementation',
+  under_implementation: 'under_implementation',
+  implementation_review: 'implementation_review',
+  on_hold: 'on_hold',
+  delivered: 'in_support',
+  in_support: 'in_support',
+  closed: 'done',
+  done: 'done',
+  cancelled: 'cancelled',
+};
+
 function mapDbStatus(dbStatus: string): InitiativeStatus {
-  const statusMap: Record<string, InitiativeStatus> = {
-    new_demand: 'new',
-    under_review: 'portfolio_review',
-    approved: 'demand_approved',
-    in_progress: 'under_implementation',
-    on_hold: 'on_hold',
-    delivered: 'in_support',
-    closed: 'done',
-    cancelled: 'cancelled',
-  };
-  return statusMap[dbStatus] || 'new';
+  return STATUS_MAP[dbStatus] || 'new';
 }
 
 export interface BRDTask {
@@ -40,11 +52,19 @@ export function useMDTBacklog() {
   return useQuery({
     queryKey: ['mdt-backlog'],
     queryFn: async (): Promise<{ data: MDTInitiative[]; count: number }> => {
-      // Fetch initiatives and profiles/departments in parallel
-      const [initResult, profilesResult, deptsResult] = await Promise.all([
+      // Get current user for favorites
+      const { data: { user } } = await supabase.auth.getUser();
+      const currentUserId = user?.id;
+
+      // Fetch initiatives, profiles, departments, scores, favorites in parallel
+      const [initResult, profilesResult, deptsResult, scoresResult, favsResult] = await Promise.all([
         (supabase as any).from('ph_backlog_initiatives_view').select('*').limit(5000),
         supabase.from('profiles').select('id, full_name, avatar_url'),
         (supabase as any).from('ph_departments').select('id, name'),
+        (supabase as any).from('ph_initiative_scores').select('initiative_id, strategic_alignment, business_impact, time_urgency, resource_feasibility, computed_score'),
+        currentUserId
+          ? (supabase as any).from('ph_user_favorites').select('initiative_id').eq('user_id', currentUserId)
+          : Promise.resolve({ data: [] }),
       ]);
 
       if (initResult.error) throw initResult.error;
@@ -60,9 +80,22 @@ export function useMDTBacklog() {
         deptMap.set(d.id, d.name);
       });
 
+      const scoreMap = new Map<string, any>();
+      (scoresResult.data || []).forEach((s: any) => {
+        scoreMap.set(s.initiative_id, s);
+      });
+
+      const favSet = new Set<string>();
+      (favsResult.data || []).forEach((f: any) => {
+        favSet.add(f.initiative_id);
+      });
+
       const initiatives: MDTInitiative[] = (initResult.data || []).map((row: any, idx: number) => {
         const assigneeProfile = row.assignee_id ? profileMap.get(row.assignee_id) : null;
+        const businessOwnerProfile = row.business_owner_id ? profileMap.get(row.business_owner_id) : null;
+        const reporterProfile = row.reporter_id ? profileMap.get(row.reporter_id) : null;
         const deptName = row.department_id ? deptMap.get(row.department_id) : null;
+        const scores = scoreMap.get(row.id);
 
         return {
           id: row.id,
@@ -74,9 +107,9 @@ export function useMDTBacklog() {
           assignee_name: assigneeProfile?.name || null,
           assignee_avatar: assigneeProfile?.avatar || null,
           business_owner_id: row.business_owner_id || null,
-          business_owner_name: null,
+          business_owner_name: businessOwnerProfile?.name || null,
           reporter_id: row.reporter_id || null,
-          reporter_name: null,
+          reporter_name: reporterProfile?.name || null,
           department_id: row.department_id || null,
           department_name: deptName || null,
           target_quarter: row.target_quarter || null,
@@ -87,12 +120,12 @@ export function useMDTBacklog() {
           sort_order: row.sort_order ?? idx,
           risk_count: row.risk_count ?? 0,
           is_archived: row.is_archived ?? false,
-          is_favorited: false,
-          score_strategic_alignment: null,
-          score_business_impact: null,
-          score_time_urgency: null,
-          score_resource_feasibility: null,
-          computed_score: null,
+          is_favorited: favSet.has(row.id),
+          score_strategic_alignment: scores?.strategic_alignment ?? null,
+          score_business_impact: scores?.business_impact ?? null,
+          score_time_urgency: scores?.time_urgency ?? null,
+          score_resource_feasibility: scores?.resource_feasibility ?? null,
+          computed_score: scores?.computed_score ?? null,
           initiative_type_key: row.initiative_type_key ?? null,
           initiative_type_label: row.initiative_type_label ?? null,
           initiative_type_color_hex: row.initiative_type_color_hex ?? null,

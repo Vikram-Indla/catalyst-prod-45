@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { cn } from '@/lib/utils';
 import { Pencil, UserPlus, Star, Copy, ArrowRightLeft, Tag, Files, Archive, Trash2 } from 'lucide-react';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 import { STATUS_DISPLAY } from '@/types/initiative';
@@ -40,81 +39,49 @@ export const CardContextMenu: React.FC<CardContextMenuProps> = ({
     return () => { document.removeEventListener('mousedown', handler); document.removeEventListener('keydown', handler); };
   }, [onClose]);
 
-  // Clamp position to viewport
   const x = Math.min(position.x, window.innerWidth - 220);
   const y = Math.min(position.y, window.innerHeight - 380);
 
-  const Item: React.FC<{
-    icon: React.ReactNode;
-    label: string;
-    danger?: boolean;
-    onClick: () => void;
-    onMouseEnter?: () => void;
-  }> = ({ icon, label, danger, onClick, onMouseEnter }) => (
-    <button
-      onClick={() => { onClick(); onClose(); }}
-      onMouseEnter={onMouseEnter}
-      className={cn(
-        'w-full flex items-center gap-2.5 px-3 h-8 text-sm rounded-md transition-colors',
-        danger
-          ? 'text-red-600 hover:bg-red-50'
-          : 'text-zinc-700 hover:bg-zinc-50'
-      )}
-    >
-      <span className={cn('w-4 h-4 shrink-0', danger ? 'text-red-500' : 'text-zinc-400')}>
-        {icon}
-      </span>
-      {label}
-    </button>
-  );
-
   return createPortal(
-    <div
-      ref={menuRef}
-      className="fixed z-[9999] w-52 bg-white border border-zinc-200 rounded-lg shadow-xl py-1.5 animate-in fade-in zoom-in-95 duration-100"
-      style={{ left: x, top: y }}
-    >
-      <Item icon={<Pencil className="w-4 h-4" />} label="Edit Details" onClick={onEditDetails} />
-      <Item icon={<UserPlus className="w-4 h-4" />} label="Assign To..." onClick={() => toast.info('Assign dialog coming soon')} />
-      <Item
-        icon={<Star className="w-4 h-4" />}
-        label={initiative.is_favorited ? 'Unstar' : 'Star'}
-        onClick={() => toast.info('Toggle star coming soon')}
-      />
-      <Item
-        icon={<Copy className="w-4 h-4" />}
-        label="Copy ID"
-        onClick={() => {
-          navigator.clipboard.writeText(initiative.initiative_key);
-          toast.success(`Copied ${initiative.initiative_key}`);
-        }}
-      />
+    <div ref={menuRef} className="pk-context-menu" style={{ position: 'fixed', left: x, top: y, zIndex: 9999 }}>
+      <button className="pk-context-item" onClick={() => { onEditDetails(); onClose(); }}>
+        <Pencil size={14} className="pk-context-icon" /> Edit Details
+      </button>
+      <button className="pk-context-item" onClick={() => { toast.info('Assign dialog coming soon'); onClose(); }}>
+        <UserPlus size={14} className="pk-context-icon" /> Assign To...
+      </button>
+      <button className="pk-context-item" onClick={() => { toast.info('Toggle star coming soon'); onClose(); }}>
+        <Star size={14} className="pk-context-icon" /> {initiative.is_favorited ? 'Unstar' : 'Star'}
+      </button>
+      <button className="pk-context-item" onClick={() => {
+        navigator.clipboard.writeText(initiative.initiative_key);
+        toast.success(`Copied ${initiative.initiative_key}`);
+        onClose();
+      }}>
+        <Copy size={14} className="pk-context-icon" /> Copy ID
+      </button>
 
-      <div className="h-px bg-zinc-100 my-1 mx-2" />
+      <div className="pk-context-separator" />
 
       {/* Status submenu */}
-      <div className="relative" onMouseEnter={() => setShowStatusSub(true)} onMouseLeave={() => setShowStatusSub(false)}>
-        <button className="w-full flex items-center justify-between gap-2.5 px-3 h-8 text-sm text-zinc-700 hover:bg-zinc-50 rounded-md transition-colors">
-          <span className="flex items-center gap-2.5">
-            <ArrowRightLeft className="w-4 h-4 text-zinc-400" />
-            Change Status
+      <div style={{ position: 'relative' }} onMouseEnter={() => setShowStatusSub(true)} onMouseLeave={() => setShowStatusSub(false)}>
+        <button className="pk-context-item" style={{ justifyContent: 'space-between' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <ArrowRightLeft size={14} className="pk-context-icon" /> Change Status
           </span>
-          <span className="text-zinc-400 text-xs">▸</span>
+          <span style={{ fontSize: 12, color: 'var(--pk-ink-muted)' }}>▸</span>
         </button>
         {showStatusSub && (
-          <div className="absolute left-full top-0 ml-1 w-44 bg-white border border-zinc-200 rounded-lg shadow-xl py-1.5 z-[10000]">
+          <div className="pk-context-menu" style={{ position: 'absolute', left: '100%', top: 0, marginLeft: 4, zIndex: 10000 }}>
             {STATUSES.map(s => {
               const cfg = STATUS_DISPLAY[s];
               return (
                 <button
                   key={s}
                   onClick={() => { onStatusChange(s); onClose(); }}
-                  className={cn(
-                    'w-full flex items-center gap-2.5 px-3 h-8 text-sm rounded-md transition-colors',
-                    initiative.status === s ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-zinc-700 hover:bg-zinc-50'
-                  )}
+                  className={`pk-context-item${initiative.status === s ? ' pk-dropdown-item--active' : ''}`}
                 >
-                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: cfg.dot }} />
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: cfg.dot, flexShrink: 0 }} />
                   {cfg.label}
                 </button>
               );
@@ -123,13 +90,21 @@ export const CardContextMenu: React.FC<CardContextMenuProps> = ({
         )}
       </div>
 
-      <Item icon={<Tag className="w-4 h-4" />} label="Set Priority" onClick={() => toast.info('Priority dialog coming soon')} />
+      <button className="pk-context-item" onClick={() => { toast.info('Priority dialog coming soon'); onClose(); }}>
+        <Tag size={14} className="pk-context-icon" /> Set Priority
+      </button>
 
-      <div className="h-px bg-zinc-100 my-1 mx-2" />
+      <div className="pk-context-separator" />
 
-      <Item icon={<Files className="w-4 h-4" />} label="Duplicate" onClick={() => toast.info('Duplicate coming soon')} />
-      <Item icon={<Archive className="w-4 h-4" />} label="Archive" onClick={() => toast.info('Archive coming soon')} />
-      <Item icon={<Trash2 className="w-4 h-4" />} label="Delete" danger onClick={() => toast.info('Delete confirmation coming soon')} />
+      <button className="pk-context-item" onClick={() => { toast.info('Duplicate coming soon'); onClose(); }}>
+        <Files size={14} className="pk-context-icon" /> Duplicate
+      </button>
+      <button className="pk-context-item" onClick={() => { toast.info('Archive coming soon'); onClose(); }}>
+        <Archive size={14} className="pk-context-icon" /> Archive
+      </button>
+      <button className="pk-context-item pk-context-item--danger" onClick={() => { toast.info('Delete confirmation coming soon'); onClose(); }}>
+        <Trash2 size={14} className="pk-context-icon" /> Delete
+      </button>
     </div>,
     document.body
   );
