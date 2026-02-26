@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { HUB_COLORS, HUB_SHORT } from '@/constants/resource360';
 
 interface Props {
   departmentName: string;
@@ -20,7 +19,6 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
     return () => window.removeEventListener('keydown', handler);
   }, [onClose]);
 
-  // Auto-generate on mount
   useEffect(() => {
     handleGenerate();
   }, [departmentName]);
@@ -46,12 +44,8 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
     }
   };
 
-  const metrics = data?.metrics || {};
   const ai = data?.ai || {};
   const resourceSummaries = data?.resource_summaries || [];
-  const hubDist = metrics.hub_distribution || {};
-  const weeklyHistory = metrics.weekly_closure_history || [];
-  const maxWeekly = Math.max(...weeklyHistory, 1);
 
   return (
     <div
@@ -125,148 +119,9 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
           </div>
         )}
 
-        {/* Main content */}
+        {/* Main content — only Workload Distribution + Weekly Story */}
         {data && !generating && (
           <>
-            {/* Department Header */}
-            <Section title="Department Overview">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <div style={{
-                  width: 80, height: 80, borderRadius: 16,
-                  background: 'linear-gradient(135deg, #2563EB, #4F46E5)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#FFFFFF', fontSize: 24, fontWeight: 700,
-                  boxShadow: '0 0 0 3px #FFFFFF, 0 0 0 5px #7C3AED',
-                }}>
-                  🏢
-                </div>
-                <div>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: '#0F172A' }}>{departmentName}</div>
-                  <div style={{ fontSize: 13, color: '#334155' }}>{metrics.resource_count} resources · {metrics.resources_with_metrics} with data</div>
-                  <div style={{ display: 'flex', gap: 6, marginTop: 6 }}>
-                    <StatPill label="Total" value={metrics.total_items} />
-                    <StatPill label="Done" value={metrics.done_count} color="#059669" />
-                    <StatPill label="In Progress" value={metrics.in_progress_count} color="#2563EB" />
-                    <StatPill label="To Do" value={metrics.todo_count} color="#D97706" />
-                  </div>
-                </div>
-              </div>
-            </Section>
-
-            {/* Department Pattern */}
-            {ai.department_pattern && (
-              <Section title="Department Pattern">
-                <p style={{ fontSize: 13, lineHeight: 1.7, color: '#334155', margin: 0 }}>{ai.department_pattern}</p>
-              </Section>
-            )}
-
-            {/* Delivery Summary */}
-            {ai.delivery_summary && (
-              <Section title="Delivery Summary">
-                <p style={{ fontSize: 13, lineHeight: 1.7, color: '#334155', margin: 0 }}>{ai.delivery_summary}</p>
-              </Section>
-            )}
-
-            {/* Hub Performance */}
-            <Section title="Hub Performance">
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 10 }}>
-                {Object.entries(hubDist).map(([hub, v]: [string, any]) => {
-                  const hubColor = HUB_COLORS[hub] || '#64748B';
-                  return (
-                    <div key={hub} style={{
-                      padding: '10px 12px', borderRadius: 8,
-                      borderLeft: `4px solid ${hubColor}`, background: '#F8FAFC',
-                    }}>
-                      <div style={{ fontSize: 10, fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
-                        {HUB_SHORT[hub] || hub}
-                      </div>
-                      <div style={{ fontSize: 18, fontWeight: 900, color: '#0F172A' }}>{v.pct ?? 0}%</div>
-                      <div style={{ fontSize: 10, color: '#64748B' }}>{v.count ?? 0} items · {v.closure_pct ?? 0}% closed</div>
-                    </div>
-                  );
-                })}
-              </div>
-            </Section>
-
-            {/* Delivery Metrics */}
-            <Section title="Delivery Metrics (Dept Averages)">
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
-                <MetricCard label="Avg Subtask" value={metrics.avg_subtask_days != null ? `${metrics.avg_subtask_days.toFixed(1)}d` : '—'} />
-                <MetricCard label="Avg Story" value={metrics.avg_story_days != null ? `${metrics.avg_story_days.toFixed(1)}d` : '—'} />
-                <MetricCard label="Avg Bug" value={metrics.avg_bug_days != null ? `${metrics.avg_bug_days.toFixed(1)}d` : '—'} />
-                <MetricCard label="Pickup Speed" value={metrics.pickup_speed_hours != null ? `${metrics.pickup_speed_hours.toFixed(0)}h` : '—'} />
-              </div>
-              {weeklyHistory.length > 0 && (
-                <div style={{ marginTop: 16 }}>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: '#64748B', textTransform: 'uppercase', marginBottom: 8 }}>Weekly Closures (Department)</div>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 60 }}>
-                    {weeklyHistory.map((v: number, i: number) => (
-                      <div key={i} style={{
-                        flex: 1,
-                        height: `${Math.max((v / maxWeekly) * 100, 4)}%`,
-                        background: '#2563EB',
-                        borderRadius: '3px 3px 0 0',
-                        opacity: 0.7,
-                      }} title={`Week ${i + 1}: ${v} items`} />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </Section>
-
-            {/* Strength & Risk */}
-            {(ai.strength_analysis || ai.risk_assessment) && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
-                {ai.strength_analysis && (
-                  <div style={{ padding: 16, borderRadius: 8, background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
-                    <div style={{ fontSize: 10.5, fontWeight: 800, textTransform: 'uppercase', color: '#059669', marginBottom: 8 }}>💪 Strengths</div>
-                    <p style={{ fontSize: 12, lineHeight: 1.6, color: '#166534', margin: 0 }}>{ai.strength_analysis}</p>
-                  </div>
-                )}
-                {ai.risk_assessment && (
-                  <div style={{ padding: 16, borderRadius: 8, background: '#FEF2F2', border: '1px solid #FECACA' }}>
-                    <div style={{ fontSize: 10.5, fontWeight: 800, textTransform: 'uppercase', color: '#DC2626', marginBottom: 8 }}>⚠️ Risks</div>
-                    <p style={{ fontSize: 12, lineHeight: 1.6, color: '#991B1B', margin: 0 }}>{ai.risk_assessment}</p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Behavioral Patterns */}
-            {ai.behavioral_patterns?.length > 0 && (
-              <Section title="Department Behavioral Patterns">
-                <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
-                  {ai.behavioral_patterns.map((p: any, i: number) => (
-                    <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
-                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#7C3AED', marginTop: 5, flexShrink: 0 }} />
-                      <div>
-                        <span style={{ fontSize: 13, color: '#334155', lineHeight: 1.6 }}>{p.pattern_text}</span>
-                        {p.evidence_refs?.length > 0 && (
-                          <span style={{ marginLeft: 6, fontSize: 11, color: '#0D9488' }}>
-                            [{p.evidence_refs.join(', ')}]
-                          </span>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </Section>
-            )}
-
-            {/* Team Dynamics */}
-            {ai.team_dynamics?.length > 0 && (
-              <Section title="Team Dynamics & Recommendations">
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {ai.team_dynamics.map((td: any, i: number) => (
-                    <div key={i} style={{ padding: '12px 16px', borderRadius: 8, background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
-                      <div style={{ fontSize: 12, color: '#334155', lineHeight: 1.6, marginBottom: 6 }}>{td.observation}</div>
-                      <div style={{ fontSize: 11, color: '#2563EB', fontWeight: 600 }}>→ {td.recommendation}</div>
-                    </div>
-                  ))}
-                </div>
-              </Section>
-            )}
-
             {/* Workload Distribution */}
             {ai.workload_distribution?.length > 0 && (
               <Section title="Workload Distribution">
@@ -333,7 +188,7 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
             }}>
               <span>Generated: {data.generated_at ? new Date(data.generated_at).toLocaleString() : '—'}</span>
               <span>·</span>
-              <span>{metrics.resource_count} resources · {metrics.total_items} items analyzed</span>
+              <span>{data.metrics?.resource_count} resources · {data.metrics?.total_items} items analyzed</span>
             </div>
           </>
         )}
@@ -380,22 +235,6 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
     </div>
     {children}
   </div>
-);
-
-const MetricCard = ({ label, value }: { label: string; value: string }) => (
-  <div style={{ padding: '10px 12px', borderRadius: 8, background: '#F8FAFC', textAlign: 'center' }}>
-    <div style={{ fontSize: 20, fontWeight: 900, color: '#0F172A' }}>{value}</div>
-    <div style={{ fontSize: 9.5, fontWeight: 700, textTransform: 'uppercase' as const, color: '#64748B', marginTop: 4 }}>{label}</div>
-  </div>
-);
-
-const StatPill = ({ label, value, color }: { label: string; value: number; color?: string }) => (
-  <span style={{
-    fontSize: 11, padding: '2px 8px', borderRadius: 4,
-    background: '#F1F5F9', color: color || '#475569', fontWeight: 600,
-  }}>
-    {label}: {value}
-  </span>
 );
 
 const MiniStat = ({ label, value, color }: { label: string; value: number; color: string }) => (
