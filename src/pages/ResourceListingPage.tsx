@@ -112,7 +112,7 @@ function exportJSON(data: Resource[]) {
 export default function ResourceListingPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
-  const [deptFilter, setDeptFilter] = useState<string>('All');
+  const [deptFilter, setDeptFilter] = useState<string>('Delivery');
   const [sortKey, setSortKey] = useState<SortKey>('full_name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [showDeptIntel, setShowDeptIntel] = useState(false);
