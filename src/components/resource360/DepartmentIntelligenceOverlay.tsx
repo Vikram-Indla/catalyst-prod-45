@@ -1,9 +1,9 @@
 /**
  * Department Intelligence Panel — STEERCOM Weekly Events
- * Pixel-perfect match to dept-weekly-events-steercom.html reference.
- * Single section: Hub-grouped weekly events with RAG badges and callout variants.
+ * Nuked & rebuilt from scratch. Matches dept-weekly-events-steercom.html 1:1.
+ * Zero KPI grids. Zero leaderboards. Zero purple headers. Zero building emojis.
  */
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDeptWeeklyEventsAI, type HubGroup, type HubEvent } from '@/hooks/useDeptWeeklyEventsAI';
 import '@/styles/dept-intelligence.css';
 
@@ -12,26 +12,41 @@ interface Props {
   onClose: () => void;
 }
 
-/* ═══ SVG Icons (inline, no deps) ═══ */
-const ChevronLeftIcon = () => (
+/* ═══ Inline SVG Icons — no external deps ═══ */
+const ChevronLeft = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
 );
-const ChevronRightIcon = () => (
+const ChevronRight = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
 );
-const SparkleIcon = ({ size = 10 }: { size?: number }) => (
+const Sparkle = ({ size = 10 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v18M3 12h18M5.636 5.636l12.728 12.728M18.364 5.636L5.636 18.364"/></svg>
 );
-const CloseIcon = () => (
+const XIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
 );
 const DocIcon = () => (
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 13h6"/></svg>
 );
-const RefreshIcon = () => (
+const SpinIcon = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="di-spin"><path d="M21 12a9 9 0 11-6.219-8.56"/><polyline points="21 3 21 9 15 9"/></svg>
 );
 
+/* ═══ Callout helpers ═══ */
+function calloutClass(c: string | null): string {
+  if (!c) return '';
+  if (c === 'escalation' || c === 'risk') return 'di-ev-esc';
+  if (c === 'action' || c === 'delivery_gap') return 'di-ev-rec';
+  if (c === 'observation') return 'di-ev-obs';
+  return '';
+}
+function tagClass(c: string | null): string {
+  if (c === 'escalation' || c === 'risk') return 'tag-esc';
+  if (c === 'action' || c === 'delivery_gap') return 'tag-rec';
+  return 'tag-obs';
+}
+
+/* ═══ Component ═══ */
 export default function DepartmentIntelligenceOverlay({ departmentName, onClose }: Props) {
   const {
     hubGroups, stats, isLoadingStats, isGenerating, hasEvents,
@@ -39,22 +54,26 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
     prevWeek, nextWeek, generateEvents,
   } = useDeptWeeklyEventsAI(departmentName);
 
+  /* Escape key to close */
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
   }, [onClose]);
 
   return (
     <>
+      {/* Backdrop */}
       <div className="di-backdrop" onClick={onClose} />
+
+      {/* Panel */}
       <div className="di-panel">
 
         {/* ═══ TOP BAR ═══ */}
         <div className="di-topbar">
           <div className="di-topbar-l">
             <button className="di-back" onClick={onClose}>
-              <ChevronLeftIcon /> Back
+              <ChevronLeft /> Back
             </button>
             <div className="di-sep" />
             <div className="di-title-bar">
@@ -65,11 +84,11 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
           <div className="di-topbar-r">
             {dataAge && <span className="di-age">{dataAge}</span>}
             <button className="di-btn-p" onClick={generateEvents} disabled={isGenerating}>
-              {isGenerating ? <RefreshIcon /> : <SparkleIcon size={13} />}
+              {isGenerating ? <SpinIcon /> : <Sparkle size={13} />}
               <span>{isGenerating ? 'Generating…' : 'Refresh AI'}</span>
             </button>
             <button className="di-btn-g">Export PDF</button>
-            <button className="di-close" onClick={onClose}><CloseIcon /></button>
+            <button className="di-close" onClick={onClose}><XIcon /></button>
           </div>
         </div>
 
@@ -81,17 +100,17 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
             <div className="di-h-top">
               <div className="di-h-title">
                 <span className="di-h-t">This Week's Significant Events</span>
-                <span className="di-ai"><SparkleIcon /> AI</span>
+                <span className="di-ai"><Sparkle /> AI</span>
               </div>
               <div className="di-wk-sel">
-                <button className="di-wk-nav" onClick={prevWeek}><ChevronLeftIcon /></button>
+                <button className="di-wk-nav" onClick={prevWeek}><ChevronLeft /></button>
                 <span className="di-wk-lbl">{weekLabel}</span>
                 <span className="di-wk-rng">{weekRange}</span>
-                <button className="di-wk-nav" onClick={nextWeek} disabled={weekOffset === 0}><ChevronRightIcon /></button>
+                <button className="di-wk-nav" onClick={nextWeek} disabled={weekOffset === 0}><ChevronRight /></button>
               </div>
             </div>
 
-            {/* ─── Stats Strip ─── */}
+            {/* ─── Stats Strip (pure DB, not AI) ─── */}
             {isLoadingStats ? (
               <div className="di-stats">
                 {[1,2,3,4].map(i => (
@@ -126,7 +145,7 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
           {/* ─── Hub Groups ─── */}
           {isGenerating ? (
             <div style={{ padding: '16px 24px' }}>
-              {[1, 2, 3].map(i => (
+              {[1,2,3].map(i => (
                 <div key={i} style={{ marginBottom: 24 }}>
                   <div className="skeleton-bar" style={{ height: 36, width: '100%', marginBottom: 8 }} />
                   <div className="skeleton-bar" style={{ height: 18, width: '90%', marginBottom: 6 }} />
@@ -154,19 +173,19 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
                 </div>
                 <div className="di-grp-body">
                   {group.events.map((ev, ei) => {
-                    const calloutCls = getCalloutClass(ev.callout);
-                    const isExecSummary = group.hub === 'Executive Summary';
+                    const cc = calloutClass(ev.callout);
+                    const isExec = group.hub === 'Executive Summary';
                     return (
                       <div
                         key={ei}
-                        className={`di-ev${calloutCls ? ` ${calloutCls}` : ''}`}
-                        style={isExecSummary ? { borderBottom: 'none' } : undefined}
+                        className={`di-ev${cc ? ` ${cc}` : ''}`}
+                        style={isExec ? { borderBottom: 'none' } : undefined}
                       >
                         <span className="di-ev-n">{String(ev.number).padStart(2, '0')}</span>
                         <span className={`di-ev-day ${ev.dayClass}`}>{ev.day}</span>
                         <span className="di-ev-txt">
                           {ev.calloutLabel && (
-                            <><span className={getTagClass(ev.callout)}>{ev.calloutLabel}</span>{' '}</>
+                            <><span className={tagClass(ev.callout)}>{ev.calloutLabel}</span>{' '}</>
                           )}
                           <span dangerouslySetInnerHTML={{ __html: ev.body }} />
                         </span>
@@ -178,7 +197,7 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
             ))
           ) : (
             <div className="di-empty">
-              <SparkleIcon size={24} />
+              <Sparkle size={24} />
               <div className="di-empty-t">No AI analysis yet</div>
               <div className="di-empty-s">Click <strong>✦ Refresh AI</strong> to generate the STEERCOM briefing for {weekLabel}.</div>
               {stats.transitions > 0 && (
@@ -202,24 +221,4 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
       </div>
     </>
   );
-}
-
-/* ═══ Helpers ═══ */
-function getCalloutClass(callout: string | null): string {
-  if (!callout) return '';
-  switch (callout) {
-    case 'escalation': case 'risk': return 'di-ev-esc';
-    case 'action': case 'delivery_gap': return 'di-ev-rec';
-    case 'observation': return 'di-ev-obs';
-    default: return '';
-  }
-}
-
-function getTagClass(callout: string | null): string {
-  switch (callout) {
-    case 'escalation': case 'risk': return 'tag-esc';
-    case 'action': case 'delivery_gap': return 'tag-rec';
-    case 'observation': return 'tag-obs';
-    default: return 'tag-obs';
-  }
 }
