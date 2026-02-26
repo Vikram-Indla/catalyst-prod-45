@@ -192,6 +192,15 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
 
   const [activeTab, setActiveTab] = useState<'digest' | 'summary' | 'recs'>('digest');
 
+  /* Auto-generate on first open if no data */
+  const [autoTriggered, setAutoTriggered] = useState(false);
+  useEffect(() => {
+    if (!autoTriggered && !hasData && !isGenerating) {
+      setAutoTriggered(true);
+      generateAll();
+    }
+  }, [autoTriggered, hasData, isGenerating, generateAll]);
+
   /* Escape to close */
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -245,13 +254,13 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
           {/* 3 TABS */}
           <div className="di-tabs">
             <button className={`di-tab ${activeTab === 'digest' ? 'active' : ''}`} onClick={() => setActiveTab('digest')}>
-              Weekly Digest<span className="di-tab-count">{digest.length || 15}</span>
+              Weekly Digest{digest.length > 0 && <span className="di-tab-count">{digest.length}</span>}
             </button>
             <button className={`di-tab ${activeTab === 'summary' ? 'active' : ''}`} onClick={() => setActiveTab('summary')}>
               Executive Summary
             </button>
             <button className={`di-tab ${activeTab === 'recs' ? 'active' : ''}`} onClick={() => setActiveTab('recs')}>
-              Recommendations<span className="di-tab-count">{recommendations.length || 5}</span>
+              Recommendations{recommendations.length > 0 && <span className="di-tab-count">{recommendations.length}</span>}
             </button>
           </div>
         </div>
