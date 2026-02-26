@@ -1,6 +1,6 @@
 /**
  * useAIIntelligence — Data fetching for AI Intelligence Panel
- * Sources: ph_issues, resource_inventory, profiles, r360_resource_metrics, r360_ai_profiles
+ * Sources: ph_issues, resource_inventory, profiles, r360_resource_metrics, r360_ai_profiles, r360_ai_behavioral_patterns
  */
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,7 +8,7 @@ import { isDeveloperRole } from '@/constants/r360RoleClassification';
 import type { HubClosureData } from '@/components/resources/ai-intelligence/HubClosures';
 import type { BacklogHub, BacklogMetrics } from '@/components/resources/ai-intelligence/DeliveryBacklog';
 import type { PatternInsight } from '@/components/resources/ai-intelligence/BehavioralPatterns';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 
 function classifyHub(key: string): string {
@@ -34,7 +34,6 @@ export function useResourceInfo(resourceId: string | undefined) {
     queryKey: ['r360-ai-resource-info', resourceId],
     queryFn: async () => {
       if (!resourceId) return null;
-      // Try resource_inventory first
       const { data: ri } = await (supabase
         .from('resource_inventory' as any)
         .select('id, role_name, jira_account_id, user_id')
@@ -104,7 +103,6 @@ export function useDeliveryBacklog(resourceId: string | undefined, jiraAccountId
     queryFn: async (): Promise<{ metrics: BacklogMetrics; hubs: BacklogHub[] }> => {
       if (!jiraAccountId) return { metrics: { avgSubtaskDays: null, avgStoryDays: null, avgBugDays: null, pickupSpeedHours: null }, hubs: [] };
 
-      // Get all issues for this resource
       const { data: issues, error } = await (supabase
         .from('ph_issues')
         .select('issue_key, status, status_category, issue_type, jira_created_at, jira_updated_at, summary')
@@ -112,7 +110,6 @@ export function useDeliveryBacklog(resourceId: string | undefined, jiraAccountId
 
       if (error || !issues) return { metrics: { avgSubtaskDays: null, avgStoryDays: null, avgBugDays: null, pickupSpeedHours: null }, hubs: [] };
 
-      // Compute avg days per type (using jira_created_at and jira_updated_at for Done items)
       const doneItems = issues.filter((i: any) => i.status_category === 'Done');
       const typeAvgs = (type: string) => {
         const typed = doneItems.filter((i: any) => i.issue_type === type && i.jira_created_at && i.jira_updated_at);
@@ -127,10 +124,9 @@ export function useDeliveryBacklog(resourceId: string | undefined, jiraAccountId
         avgSubtaskDays: typeAvgs('Sub-task'),
         avgStoryDays: typeAvgs('Story'),
         avgBugDays: typeAvgs('Defect') ?? typeAvgs('QA Bug'),
-        pickupSpeedHours: null, // would need first transition data
+        pickupSpeedHours: null,
       };
 
-      // Open items grouped by hub
       const openItems = issues.filter((i: any) => i.status_category !== 'Done' && i.status !== 'Cancelled' && i.status !== 'Canceled');
       const hubMap = new Map<string, { openCount: number; statuses: Set<string>; titles: string[] }>();
 
@@ -163,26 +159,34 @@ export function useAIPatterns(resourceId: string | undefined) {
     queryFn: async (): Promise<{ summary: string | null; warning: string | null; insights: PatternInsight[] }> => {
       if (!resourceId) return { summary: null, warning: null, insights: [] };
 
-      // Try cached AI profile
+      // Get AI profile for summary
       const { data: profile } = await (supabase
         .from('r360_ai_profiles' as any)
-        .select('resource_pattern, resource_warning, behavioral_patterns')
+        .select('resource_pattern, role_expectation')
         .eq('resource_id', resourceId)
         .order('generated_at', { ascending: false })
         .limit(1)
         .maybeSingle() as any);
 
-      if (!profile) return { summary: null, warning: null, insights: [] };
+      // Get behavioral patterns from dedicated table
+      const { data: patterns } = await (supabase
+        .from('r360_ai_behavioral_patterns' as any)
+        .select('pattern_text, evidence_refs, sort_order')
+        .eq('resource_id', resourceId)
+        .order('sort_order', { ascending: true }) as any);
 
-      const patterns = Array.isArray(profile.behavioral_patterns) ? profile.behavioral_patterns : [];
-      const insights: PatternInsight[] = patterns.map((p: any) => ({
-        text: typeof p === 'string' ? p : (p.text || ''),
-        refs: Array.isArray(p.refs) ? p.refs : [],
+      const insights: PatternInsight[] = (patterns || []).map((p: any) => ({
+        text: p.pattern_text || '',
+        refs: Array.isArray(p.evidence_refs) ? p.evidence_refs : [],
       }));
 
+      // Derive warning from role anomalies if present
+      const roleExp = profile?.role_expectation as any;
+      const warning = roleExp?.anomalies?.length > 0 ? roleExp.anomalies[0] : null;
+
       return {
-        summary: profile.resource_pattern || null,
-        warning: profile.resource_warning || null,
+        summary: profile?.resource_pattern || null,
+        warning,
         insights,
       };
     },
@@ -213,6 +217,29 @@ export function useStalenessLabel(resourceId: string | undefined) {
   });
 }
 
+/** Check if AI profile exists and is fresh (generated in last 24h) */
+export function useAIProfileStatus(resourceId: string | undefined) {
+  return useQuery({
+    queryKey: ['r360-ai-profile-status', resourceId],
+    queryFn: async () => {
+      if (!resourceId) return { exists: false, stale: true };
+      const { data } = await (supabase
+        .from('r360_ai_profiles' as any)
+        .select('generated_at')
+        .eq('resource_id', resourceId)
+        .order('generated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle() as any);
+
+      if (!data) return { exists: false, stale: true };
+      const ageHours = (Date.now() - new Date(data.generated_at).getTime()) / 3600000;
+      return { exists: true, stale: ageHours > 24 };
+    },
+    enabled: !!resourceId,
+    staleTime: 60 * 1000,
+  });
+}
+
 export function useAIActions(resourceId: string, jiraAccountId: string | null | undefined) {
   const queryClient = useQueryClient();
   const [syncing, setSyncing] = useState(false);
@@ -227,6 +254,7 @@ export function useAIActions(resourceId: string, jiraAccountId: string | null | 
     queryClient.invalidateQueries({ queryKey: ['r360-ai-delivery-backlog'] });
     queryClient.invalidateQueries({ queryKey: ['r360-ai-behavioral-patterns'] });
     queryClient.invalidateQueries({ queryKey: ['r360-ai-staleness'] });
+    queryClient.invalidateQueries({ queryKey: ['r360-ai-profile-status'] });
     queryClient.invalidateQueries({ queryKey: ['r360-weekly-story'] });
   }, [queryClient]);
 
@@ -265,4 +293,24 @@ export function useAIActions(resourceId: string, jiraAccountId: string | null | 
   }, [resourceId, invalidateAll]);
 
   return { syncData, refreshAI, syncing, generating, invalidateAll };
+}
+
+/**
+ * Auto-trigger AI profile generation if no cached profile exists.
+ * Called once when panel opens. Won't re-trigger if profile already exists.
+ */
+export function useAutoGenerateIfMissing(resourceId: string, jiraAccountId: string | null | undefined) {
+  const { data: status } = useAIProfileStatus(resourceId);
+  const { refreshAI, generating } = useAIActions(resourceId, jiraAccountId);
+  const [triggered, setTriggered] = useState(false);
+
+  useEffect(() => {
+    if (!status || triggered || generating) return;
+    if (!status.exists) {
+      setTriggered(true);
+      refreshAI();
+    }
+  }, [status, triggered, generating, refreshAI]);
+
+  return { autoGenerating: generating && triggered };
 }

@@ -2,6 +2,7 @@
  * AIIntelligencePanel — Resource 360° AI Intelligence Side Panel
  * LINEAR PRECISION design (9.5/10 contrast)
  * 55% width, max 840px, slide-right animation
+ * Auto-triggers AI generation if no cached profile exists.
  */
 import React, { useCallback, useEffect, useRef } from 'react';
 import '@/styles/ai-intelligence.css';
@@ -19,6 +20,7 @@ import {
   useAIPatterns,
   useStalenessLabel,
   useAIActions,
+  useAutoGenerateIfMissing,
 } from '@/hooks/useAIIntelligence';
 import { useWeeklyStory } from '@/hooks/useWeeklyStory';
 import { getWeekNumber } from '@/constants/r360WeekConfig';
@@ -40,6 +42,10 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
   const { syncData, refreshAI, syncing, generating } = useAIActions(resourceId, resource?.jira_account_id);
   const { storyData, isLoading: storyLoading, selectedDate, onPrevWeek, onNextWeek } = useWeeklyStory(resourceId, resource?.jira_account_id);
 
+  // Auto-trigger AI generation if no profile exists
+  const { autoGenerating } = useAutoGenerateIfMissing(resourceId, resource?.jira_account_id);
+  const isGenerating = generating || autoGenerating;
+
   // Escape to close
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -51,14 +57,15 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
     const el = document.getElementById('weeklyStory');
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
-      // Blue flash
       el.style.background = 'var(--rai-primary-bg)';
       setTimeout(() => { el.style.background = ''; }, 1200);
     }
   }, []);
 
-  const initials = resource?.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2) || '??';
+  const initials = resource?.full_name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) || '??';
   const weekNum = getWeekNumber(selectedDate);
+
+  const noAIData = !patternData?.summary && !patternData?.insights?.length;
 
   return (
     <div data-module="ai-intelligence">
@@ -79,8 +86,8 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
           <button className="rai-topbar-btn" onClick={syncData} disabled={syncing}>
             {syncing ? '⏳ Syncing…' : '🔄 Sync'}
           </button>
-          <button className="rai-topbar-btn rai-primary-btn" onClick={refreshAI} disabled={generating}>
-            {generating ? '⏳ Generating…' : '✨ Refresh AI'}
+          <button className="rai-topbar-btn rai-primary-btn" onClick={refreshAI} disabled={isGenerating}>
+            {isGenerating ? '⏳ Generating…' : '✨ Refresh AI'}
           </button>
           <button className="rai-topbar-btn" onClick={onClose}>✕</button>
         </div>
@@ -99,6 +106,36 @@ const AIIntelligencePanel: React.FC<Props> = ({ resourceId, onClose }) => {
 
         {/* Scrollable body */}
         <div className="rai-body" ref={bodyRef}>
+          {/* Auto-generating banner */}
+          {isGenerating && noAIData && (
+            <div style={{
+              margin: '0 0 16px 0',
+              padding: '16px 20px',
+              background: 'var(--rai-primary-bg, #EFF6FF)',
+              border: '1px solid rgba(37, 99, 235, 0.15)',
+              borderRadius: 8,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+            }}>
+              <div style={{
+                width: 20, height: 20,
+                border: '2px solid #2563EB',
+                borderTopColor: 'transparent',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+              }} />
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#1E40AF' }}>
+                  Generating AI Intelligence…
+                </div>
+                <div style={{ fontSize: 11, color: '#3B82F6', marginTop: 2 }}>
+                  First-time analysis — computing metrics and generating behavioral patterns.
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Story Teaser */}
           <StoryTeaser
             hook={storyData?.hookEn || 'Loading weekly story…'}

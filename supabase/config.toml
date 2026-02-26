@@ -125,3 +125,6 @@ verify_jwt = false
 
 [functions.r360-compute-metrics]
 verify_jwt = false
+
+[functions.r360-daily-cron]
+verify_jwt = false
