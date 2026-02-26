@@ -21,6 +21,7 @@ import { useRoadmapFilters } from './hooks/useRoadmapFilters';
 
 import { INK, SURFACE, FONT, SCROLLBAR_CSS } from './constants/roadmap.constants';
 import '@/styles/roadmap-ringfenced.css';
+import '@/styles/product-kanban.css';
 
 export function ProductRoadmapPage() {
   const { initiatives, stats, isLoading, error } = useRoadmapData();
