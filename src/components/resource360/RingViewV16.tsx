@@ -9,7 +9,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { HUB_COLORS, HUB_SHORT, PRIORITY_COLORS } from '@/constants/resource360';
 import { X, ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
-import { JiraBugIcon, JiraTaskIcon, JiraStoryIcon, JiraEpicIcon, JiraSubtaskIcon } from './R360JiraIcons';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import type { Resource360Item } from '@/types/resource360';
 
 // ─── TOKENS ───
@@ -29,26 +29,20 @@ type StatusCat = 'todo' | 'progress' | 'done';
 
 // ─── CG-05 STATUS COLORS (DEF-02 fix) ───
 const STATUS_CG05: Record<StatusCat, { dot: string; bg: string; text: string }> = {
-  todo:     { dot: '#D97706', bg: '#FFFBEB', text: '#78350F' },   // AMBER, not dark/navy
-  progress: { dot: '#2563EB', bg: '#EFF6FF', text: '#1E3A5F' },   // BLUE
-  done:     { dot: '#16A34A', bg: '#F0FDF4', text: '#14532D' },   // GREEN
+  todo:     { dot: '#D97706', bg: '#FFFBEB', text: '#78350F' },
+  progress: { dot: '#2563EB', bg: '#EFF6FF', text: '#1E3A5F' },
+  done:     { dot: '#16A34A', bg: '#F0FDF4', text: '#14532D' },
 };
 
-// Keep solid for ribbon/top bar
 const STATUS_SOLID: Record<StatusCat, { bg: string; text: string }> = {
   todo:     { bg: '#D97706', text: '#FFFFFF' },
   progress: { bg: '#2563EB', text: '#FFFFFF' },
   done:     { bg: '#16A34A', text: '#FFFFFF' },
 };
 
-// ─── JIRA ICON HELPER (DEF-05 fix) ───
+// ─── JIRA ICON HELPER — delegates to canonical guardrail ───
 function getJiraIconForType(typeStr: string) {
-  const lower = (typeStr || '').toLowerCase();
-  if (lower.includes('bug') || lower.includes('defect')) return <JiraBugIcon />;
-  if (lower.includes('epic')) return <JiraEpicIcon />;
-  if (lower.includes('story')) return <JiraStoryIcon />;
-  if (lower.includes('sub')) return <JiraSubtaskIcon />;
-  return <JiraTaskIcon />;
+  return <JiraIssueTypeIcon type={typeStr} />;
 }
 
 // ─── JIRA TYPE BADGE STYLES (DEF-05) ───

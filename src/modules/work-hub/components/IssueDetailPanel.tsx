@@ -3,10 +3,11 @@
 
 import React, { useState } from 'react';
 import { 
-  X, ExternalLink, MoreHorizontal, Eye, Share2, Zap, Bug, Bookmark, CircleDot, Settings2,
+  X, ExternalLink, MoreHorizontal, Eye, Share2, Zap, Settings2,
   ChevronDown, ChevronUp, Download, FileText, Plus, Paperclip, Link as LinkIcon, 
-  MessageSquare, Clock, AlertTriangle
+  MessageSquare, Clock
 } from 'lucide-react';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
@@ -58,15 +59,7 @@ interface IssueDetailPanelProps {
   onFieldChange?: (field: string, value: any) => void;
 }
 
-// Type icons matching Jira
-const typeIcons: Record<string, { icon: React.ReactNode; color: string }> = {
-  Feature: { icon: <Zap className="h-4 w-4" />, color: 'text-amber-500' },
-  Story: { icon: <Bookmark className="h-4 w-4" />, color: 'text-green-600' },
-  Task: { icon: <CircleDot className="h-4 w-4" />, color: 'text-blue-500' },
-  Defect: { icon: <Bug className="h-4 w-4" />, color: 'text-red-500' },
-  Subtask: { icon: <CircleDot className="h-4 w-4" />, color: 'text-gray-500' },
-  Incident: { icon: <AlertTriangle className="h-4 w-4" />, color: 'text-amber-600' },
-};
+// Type icons — delegated to canonical guardrail (src/lib/jira-issue-type-icons.tsx)
 
 // Status lozenge - NEUTRAL STYLING (no colors per status)
 const formatStatusLabel = (status: string): string => status.toUpperCase();
@@ -80,7 +73,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
 
   if (!item) return null;
 
-  const typeInfo = typeIcons[item.type] || typeIcons['Task'];
+  // typeInfo now from canonical guardrail
   // Status label - neutral styling
   const statusLabel = formatStatusLabel(item.status);
 
@@ -104,7 +97,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
       {/* Header - matching screenshot3_issue_detail.png */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 flex-shrink-0">
         <div className="flex items-center gap-2">
-          <span className={typeInfo.color}>{typeInfo.icon}</span>
+          <JiraIssueTypeIcon type={item.type} size={16} />
           <span className="text-[13px] font-medium text-slate-700">{item.key}</span>
         </div>
         <div className="flex items-center gap-1">
