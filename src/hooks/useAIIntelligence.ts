@@ -36,27 +36,27 @@ export function useResourceInfo(resourceId: string | undefined) {
       if (!resourceId) return null;
       const { data: ri } = await (supabase
         .from('resource_inventory' as any)
-        .select('id, role_name, jira_account_id, user_id')
+        .select('id, rid, name, role_name, jira_account_id, profile_id')
         .eq('id', resourceId)
         .maybeSingle() as any);
 
       let profile: any = null;
-      if (ri?.user_id) {
+      if (ri?.profile_id) {
         const { data: p } = await supabase
           .from('profiles')
           .select('id, full_name, avatar_url')
-          .eq('id', ri.user_id)
+          .eq('id', ri.profile_id)
           .maybeSingle();
         profile = p;
       }
 
       return {
         id: resourceId,
-        full_name: profile?.full_name || 'Unknown',
+        full_name: profile?.full_name || ri?.name || 'Unknown',
         role_name: ri?.role_name || 'Team Member',
         avatar_url: profile?.avatar_url || null,
         jira_account_id: ri?.jira_account_id || null,
-        rid: `RES-${String(resourceId).slice(-3).toUpperCase()}`,
+        rid: ri?.rid || `RES-${String(resourceId).slice(-3).toUpperCase()}`,
       } as ResourceInfo;
     },
     enabled: !!resourceId,
