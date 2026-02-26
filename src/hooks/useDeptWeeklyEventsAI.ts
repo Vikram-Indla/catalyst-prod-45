@@ -55,6 +55,14 @@ function getHubFromKey(key: string): string {
   return 'Other';
 }
 
+/* ── Date helpers ── */
+function formatLocalYMD(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
 /* ── Fetch department resource jira IDs ── */
 async function getDeptJiraIds(department: string) {
   const { data: resources } = await supabase
@@ -94,7 +102,7 @@ async function computeStats(jiraIds: string[], weekStartDate: Date, weekEndDate:
 
   (issues || []).forEach((issue: any) => {
     const cl = issue.changelog;
-    if (cl && Array.isArray(cl)) {
+    if (Array.isArray(cl) && cl.length > 0) {
       cl.forEach((entry: any) => {
         const d = new Date(entry.created || entry.timestamp || issue.jira_updated_at);
         if (d < weekStartDate || d > weekEndDate) return;
@@ -110,12 +118,12 @@ async function computeStats(jiraIds: string[], weekStartDate: Date, weekEndDate:
         });
       });
     } else {
-      // No changelog — count as 1 transition
+      // Empty/missing changelog — treat latest issue movement as one transition in the selected week
       transitions++;
       activeSet.add(issue.assignee_account_id);
       const s = (issue.status || '').toLowerCase();
       if (['done', 'closed', 'resolved'].includes(s)) closed++;
-      if (['in review', 'code review', 'ready for qa'].includes(s)) inReview++;
+      if (['in review', 'code review', 'ready for qa', 'under review', 'implementation review'].includes(s)) inReview++;
     }
   });
 
@@ -139,7 +147,7 @@ async function extractTransitions(jiraIds: string[], nameMap: Map<string, string
     const actor = nameMap.get(issue.assignee_account_id) || issue.assignee_display_name || 'Unknown';
     const hub = getHubFromKey(issue.issue_key || '');
 
-    if (cl && Array.isArray(cl)) {
+    if (Array.isArray(cl) && cl.length > 0) {
       cl.forEach((entry: any) => {
         const d = new Date(entry.created || entry.timestamp || issue.jira_updated_at);
         if (d < weekStartDate || d > weekEndDate) return;
@@ -193,7 +201,7 @@ export function useDeptWeeklyEventsAI(department: string | null) {
   const weekEndDate = getWeekEnd(weekStartDate);
   const weekNum = getWeekNumber(weekStartDate);
   const weekRangeStr = formatWeekRange(weekStartDate);
-  const weekStartStr = weekStartDate.toISOString().split('T')[0];
+  const weekStartStr = formatLocalYMD(weekStartDate);
 
   // Stats query (pure DB, always runs)
   const statsQ = useQuery({
@@ -285,7 +293,7 @@ export function useDeptWeeklyEventsAI(department: string | null) {
         body: {
           department,
           weekStart: weekStartStr,
-          weekEnd: weekEndDate.toISOString().split('T')[0],
+          weekEnd: formatLocalYMD(weekEndDate),
           weekNumber: weekNum,
           weekRange: weekRangeStr,
           transitions,
@@ -295,7 +303,8 @@ export function useDeptWeeklyEventsAI(department: string | null) {
 
       if (error) throw error;
 
-      // Invalidate to pick up new cache
+      // Invalidate to pick up fresh stats + new cache
+      qc.invalidateQueries({ queryKey: ['di-stats', department, weekOffset] });
       qc.invalidateQueries({ queryKey: ['di-hub-events', department, weekOffset] });
       qc.invalidateQueries({ queryKey: ['di-cache-age', department, weekOffset] });
     } catch (e) {
