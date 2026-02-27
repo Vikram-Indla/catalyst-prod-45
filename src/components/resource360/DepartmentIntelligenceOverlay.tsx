@@ -2,11 +2,12 @@
  * Department Intelligence Panel V5 — Role-Based Executive Briefing
  * 3-Tab: Executive Summary (default) → Weekly Digest → Recommendations
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Sparkles, X, FileText, RefreshCw, Trophy, Code, CheckSquare, BookOpen, PenTool, Users, Server, ChevronRightIcon } from 'lucide-react';
 import { useDeptIntelligenceAI, type DigestEvent, type ExecSummaryV5, type Recommendation, type RoleContribution, type ProjectActivity } from '@/hooks/useDeptIntelligenceAI';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import ClaimDrillInPanel from './ClaimDrillInPanel';
 import '@/styles/dept-intelligence.css';
 
 /* ═══ Resource Avatar ═══ */
@@ -292,6 +293,31 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
   // Tab 1 = Executive Summary (default), Tab 2 = Weekly Digest, Tab 3 = Recommendations
   const [activeTab, setActiveTab] = useState<'summary' | 'digest' | 'recs'>('summary');
 
+  // Drill-in panel state
+  const [drillIn, setDrillIn] = useState<{ resourceName: string; claimText: string } | null>(null);
+
+  // Handle clicks on .di-claim elements via event delegation
+  const handleBodyClick = useCallback((e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const claim = target.closest('.di-claim') as HTMLElement | null;
+    if (!claim) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Walk up to find the resource name from .di-res-name sibling
+    const resRow = claim.closest('.di-res-row');
+    let resourceName = 'Unknown';
+    if (resRow) {
+      const nameEl = resRow.querySelector('.di-res-name');
+      if (nameEl) resourceName = nameEl.textContent?.trim() || 'Unknown';
+    }
+
+    const claimText = claim.textContent?.replace(/›/g, '').trim() || '';
+    if (claimText) {
+      setDrillIn({ resourceName, claimText });
+    }
+  }, []);
+
   /* Auto-generate on first open if no data */
   const [autoTriggered, setAutoTriggered] = useState(false);
   useEffect(() => {
@@ -365,8 +391,7 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
           </div>
         </div>
 
-        {/* ═══ SCROLLABLE BODY ═══ */}
-        <div className="di-body">
+        <div className="di-body" onClick={handleBodyClick}>
           {isGenerating ? (
             <DigestSkeleton />
           ) : hasData ? (
@@ -398,6 +423,16 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
           <span>{weekLabel} · {weekRange}</span>
         </div>
       </div>
+
+      {/* Claim Drill-In Panel */}
+      {drillIn && (
+        <ClaimDrillInPanel
+          resourceName={drillIn.resourceName}
+          claimText={drillIn.claimText}
+          weekStart={weekStart}
+          onClose={() => setDrillIn(null)}
+        />
+      )}
     </>
   );
 }
