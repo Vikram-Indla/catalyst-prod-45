@@ -1,7 +1,7 @@
 /**
- * Chunk 1 — Strategy Room Dashboard
+ * Chunk 1 v2 — Strategy Room Dashboard
+ * 35-point audit fixes applied.
  * Scope: [data-srd] — ring-fenced --srd-* tokens, zero global leak
- * Job: "Where do things stand RIGHT NOW?" — pure status cockpit
  */
 
 import { useState } from 'react';
@@ -28,6 +28,16 @@ const TOKENS = `
   -webkit-font-smoothing:antialiased; line-height:1.5;
 }
 @keyframes srd-pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes srd-fadeup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+/* #26 hover on banner */
+[data-srd] .srd-banner:hover{box-shadow:0 4px 16px rgba(37,99,235,.15);transform:translateY(-1px)}
+/* #27 button hovers */
+[data-srd] .srd-btn:hover{border-color:var(--srd-bdr-s);background:var(--srd-bg-2)}
+[data-srd] .srd-btn-p:hover{background:var(--srd-blue-h)}
+/* #28 chip hover */
+[data-srd] .srd-chip:hover{background:var(--srd-bg-2)}
+/* #29 link hover */
+[data-srd] .srd-link:hover{text-decoration:underline}
 `;
 
 /* ─── helpers ─── */
@@ -36,34 +46,34 @@ const M = (sz = 11): React.CSSProperties => ({ fontFamily: "'JetBrains Mono',mon
 const F = (g = 8): React.CSSProperties => ({ display: 'flex', alignItems: 'center', gap: g });
 const D = (c: string, s = 8): React.CSSProperties => ({ width: s, height: s, borderRadius: '50%', background: c, flexShrink: 0 });
 const P = (bg: string, c: string): React.CSSProperties => ({ ...M(11), fontWeight: 700, padding: '3px 10px', borderRadius: 'var(--srd-pill)', background: bg, color: c, whiteSpace: 'nowrap' });
+/* #12 standardized delta format */
 const DT = (t: string): React.CSSProperties => ({ ...M(11), fontWeight: 600, padding: '2px 7px', borderRadius: 'var(--srd-pill)', marginInlineStart: 4, background: t === 'up' ? 'var(--srd-green-bg)' : t === 'down' ? 'var(--srd-red-bg)' : 'var(--srd-bg-3)', color: t === 'up' ? 'var(--srd-green-t)' : t === 'down' ? 'var(--srd-red-t)' : 'var(--srd-ink-m)' });
-const BT = (h = 6): React.CSSProperties => ({ height: h, background: 'var(--srd-bg-3)', borderRadius: 'var(--srd-pill)', overflow: 'hidden' });
-const BF = (c: string, p: number): React.CSSProperties => ({ height: '100%', width: `${p}%`, background: c, borderRadius: 'var(--srd-pill)', transition: 'width .8s' });
-const SECT: React.CSSProperties = { fontSize: 10, fontWeight: 700, color: 'var(--srd-ink-m)', textTransform: 'uppercase', letterSpacing: '.06em', margin: '14px 0 6px' };
-const LINK: React.CSSProperties = { fontSize: 11, fontWeight: 600, color: 'var(--srd-blue)', cursor: 'pointer' };
+const BT = (h = 6): React.CSSProperties => ({ height: h, background: 'var(--srd-bg-3)', borderRadius: 'var(--srd-pill)', overflow: 'hidden', display: 'flex' });
+/* #17 #18 min-width on bar segments */
+const BF = (c: string, p: number): React.CSSProperties => ({ height: '100%', minWidth: p > 0 ? 6 : 0, width: `${p}%`, background: c, transition: 'width .8s' });
+const BF_SINGLE = (c: string, p: number): React.CSSProperties => ({ height: '100%', width: `${p}%`, background: c, borderRadius: 'var(--srd-pill)', transition: 'width .8s' });
+/* #10 increased section header margin */
+const SECT: React.CSSProperties = { fontSize: 10, fontWeight: 700, color: 'var(--srd-ink-m)', textTransform: 'uppercase', letterSpacing: '.06em', margin: '18px 0 6px' };
+const LINK = 'srd-link';
+const LINK_S: React.CSSProperties = { fontSize: 11, fontWeight: 600, color: 'var(--srd-blue)', cursor: 'pointer', textDecoration: 'none' };
 
 /* ─── atoms ─── */
-function Btn({ children, primary, onClick }: { children: React.ReactNode; primary?: boolean; onClick?: () => void }) {
-  return (
-    <button onClick={onClick} style={{ height: 32, padding: '0 14px', fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: primary ? 600 : 500, borderRadius: 'var(--srd-r2)', cursor: 'pointer', ...F(6), border: `1px solid ${primary ? 'var(--srd-blue)' : 'var(--srd-bdr)'}`, background: primary ? 'var(--srd-blue)' : 'var(--srd-bg)', color: primary ? '#fff' : 'var(--srd-ink-3)', transition: 'all .15s' }}>
-      {children}
-    </button>
-  );
-}
-
 function Ico({ d, sz = 14 }: { d: string; sz?: number }) {
   return <svg width={sz} height={sz} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={d} /></svg>;
 }
 
-function W({ title, link, foot, children }: { title: string; link?: string; foot?: React.ReactNode; children: React.ReactNode }) {
+/* #5 stretch + #30 stagger animation */
+function W({ title, link, foot, children, delay = 0 }: { title: string; link?: string; foot?: React.ReactNode; children: React.ReactNode; delay?: number }) {
   return (
-    <div style={{ border: '1px solid var(--srd-bdr)', borderRadius: 'var(--srd-r4)', background: 'var(--srd-bg)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ border: '1px solid var(--srd-bdr)', borderRadius: 'var(--srd-r4)', background: 'var(--srd-bg)', overflow: 'hidden', display: 'flex', flexDirection: 'column', animation: `srd-fadeup .4s ease ${delay}s both` }}>
       <div style={{ ...F(8), justifyContent: 'space-between', padding: '14px 20px 10px' }}>
+        {/* #14 Sora for titles */}
         <span style={{ ...S(13), color: 'var(--srd-ink)' }}>{title}</span>
-        {link && <span style={LINK}>{link}</span>}
+        {link && <span className={LINK} style={LINK_S}>{link}</span>}
       </div>
       <div style={{ padding: '0 20px 16px', flex: 1 }}>{children}</div>
-      {foot && <div style={{ borderTop: '1px solid var(--srd-bdr)', padding: '10px 20px', ...F(12), fontSize: 11, color: 'var(--srd-ink-m)' }}>{foot}</div>}
+      {/* #32 stronger footer border */}
+      {foot && <div style={{ borderTop: '1px solid var(--srd-bdr-s)', padding: '10px 20px', ...F(12), fontSize: 11, color: 'var(--srd-ink-m)' }}>{foot}</div>}
     </div>
   );
 }
@@ -72,18 +82,11 @@ function Row({ name, pct, ct, tag, util, uc, c = 'var(--srd-blue)' }: { name: st
   return (
     <div style={{ ...F(8), height: 30 }}>
       <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--srd-ink)', width: 100, flexShrink: 0 }}>{name}</span>
-      <div style={{ flex: 1 }}><div style={BT()}><div style={BF(c, pct)} /></div></div>
+      <div style={{ flex: 1 }}><div style={{ height: 6, background: 'var(--srd-bg-3)', borderRadius: 'var(--srd-pill)', overflow: 'hidden' }}><div style={BF_SINGLE(c, pct)} /></div></div>
       {util && <span style={{ ...M(10), fontWeight: 600, width: 34, textAlign: 'end', color: uc }}>{util}</span>}
       <span style={{ ...M(11), fontWeight: 600, color: 'var(--srd-ink-2)', width: 28, textAlign: 'end' }}>{ct}</span>
-      {tag && <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 'var(--srd-pill)', background: 'var(--srd-red-bg)', color: 'var(--srd-red-t)' }}>{tag}</span>}
-    </div>
-  );
-}
-
-function Leg({ items }: { items: { c: string; t: string }[] }) {
-  return (
-    <div style={{ ...F(12), flexWrap: 'wrap', marginTop: 8 }}>
-      {items.map((l, i) => <span key={i} style={{ ...F(5), fontSize: 11, color: 'var(--srd-ink-m)' }}><span style={D(l.c, 6)} />{l.t}</span>)}
+      {/* #19 'No cost assigned' → blue-bg instead of red */}
+      {tag && <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 'var(--srd-pill)', background: 'var(--srd-ai-bg)', color: 'var(--srd-ai-d)' }}>{tag}</span>}
     </div>
   );
 }
@@ -92,10 +95,10 @@ function Leg({ items }: { items: { c: string; t: string }[] }) {
 const THEMES = [
   { n: 'Digital Transformation', s: 'On Track', c: 'var(--srd-green)', bg: 'var(--srd-green-bg)', tc: 'var(--srd-green-t)' },
   { n: 'Workforce Development', s: 'Off Track', c: 'var(--srd-red)', bg: 'var(--srd-red-bg)', tc: 'var(--srd-red-t)' },
-  { n: 'Supply Chain Excellence', s: 'On Track', c: 'var(--srd-green)', bg: 'var(--srd-green-bg)', tc: 'var(--srd-green-t)' },
+  { n: 'Supply Chain', s: 'On Track', c: 'var(--srd-green)', bg: 'var(--srd-green-bg)', tc: 'var(--srd-green-t)' },
   { n: 'Sustainability & ESG', s: 'At Risk', c: 'var(--srd-ai)', bg: 'var(--srd-ai-bg)', tc: 'var(--srd-ai-d)' },
-  { n: 'Innovation & R&D Hub', s: 'At Risk', c: 'var(--srd-ai)', bg: 'var(--srd-ai-bg)', tc: 'var(--srd-ai-d)' },
-  { n: 'Regulatory Modernization', s: 'On Track', c: 'var(--srd-green)', bg: 'var(--srd-green-bg)', tc: 'var(--srd-green-t)' },
+  { n: 'Innovation & R&D', s: 'At Risk', c: 'var(--srd-ai)', bg: 'var(--srd-ai-bg)', tc: 'var(--srd-ai-d)' },
+  { n: 'Regulatory', s: 'On Track', c: 'var(--srd-green)', bg: 'var(--srd-green-bg)', tc: 'var(--srd-green-t)' },
 ];
 
 export default function StrategyRoomDashboard({ onOpenBrief, onDownloadBrief }: StrategyRoomDashboardProps) {
@@ -103,142 +106,197 @@ export default function StrategyRoomDashboard({ onOpenBrief, onDownloadBrief }: 
     <div data-srd style={{ maxWidth: 1440, margin: '0 auto', background: 'var(--srd-bg)', minHeight: '100vh' }}>
       <style>{TOKENS}</style>
 
-      {/* HEADER */}
-      <header style={{ padding: '20px 32px 14px', borderBottom: '1px solid var(--srd-bdr)', ...F(8), justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          <div style={{ fontSize: 13, color: 'var(--srd-ink-m)' }}>Good morning, <b style={{ color: 'var(--srd-ink-3)', fontWeight: 600 }}>Dr. Abdullah</b></div>
+      {/* ═══ HEADER — #1 greeting REMOVED ═══ */}
+      <header style={{ padding: '16px 32px 14px', borderBottom: '1px solid var(--srd-bdr)', ...F(8), justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <h1 style={{ ...S(22), color: 'var(--srd-ink)', letterSpacing: '-0.025em', margin: 0 }}>Strategy Room</h1>
           <div style={{ ...F(12), marginTop: 2 }}>
-            <span style={{ ...M(11), color: 'var(--srd-ink-m)', ...F(5) }}><span style={{ ...D('var(--srd-green)', 6), animation: 'srd-pulse 2s infinite' }} />Live · Updated 12 min ago</span>
+            {/* #33 pulse animation with explicit style */}
+            <span style={{ ...M(11), color: 'var(--srd-ink-m)', ...F(5) }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--srd-green)', flexShrink: 0, animation: 'srd-pulse 2s ease-in-out infinite' }} />
+              Live · Updated 12 min ago
+            </span>
             <span style={{ ...M(11), color: 'var(--srd-ink-m)' }}>FY 2026 · Q1</span>
           </div>
         </div>
         <div style={F(8)}>
-          <Btn primary onClick={onOpenBrief}><Ico d="M13 2L3 14h9l-1 8 10-12h-9l1-8" />AI Intelligence</Btn>
+          {/* #27 hover classes */}
+          <button className="srd-btn-p" onClick={onOpenBrief} style={{ height: 32, padding: '0 14px', fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: 600, borderRadius: 'var(--srd-r2)', cursor: 'pointer', ...F(6), border: '1px solid var(--srd-blue)', background: 'var(--srd-blue)', color: '#fff', transition: 'all .15s' }}>
+            <Ico d="M13 2L3 14h9l-1 8 10-12h-9l1-8" />AI Intelligence
+          </button>
+          {/* #35 settings gear */}
+          <button className="srd-btn" style={{ width: 32, height: 32, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid transparent', borderRadius: 'var(--srd-r2)', cursor: 'pointer', background: 'none', color: 'var(--srd-ink-m)', transition: 'all .15s' }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" /></svg>
+          </button>
         </div>
       </header>
 
-      {/* VISION STRIP */}
+      {/* ═══ VISION STRIP ═══ */}
       <div style={{ padding: '8px 32px', background: 'var(--srd-blue-bg)', borderBottom: '1px solid rgba(37,99,235,.08)', ...F(12), fontSize: 13 }}>
         <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--srd-blue)', textTransform: 'uppercase', letterSpacing: '.08em', background: 'rgba(37,99,235,.08)', padding: '3px 8px', borderRadius: 'var(--srd-r)' }}>Vision 2030</span>
         <span style={{ fontWeight: 500, color: 'var(--srd-ink-2)', flex: 1 }}>Transforming the Kingdom into a leading global industrial powerhouse and logistics hub</span>
         <span style={{ ...M(11), color: 'var(--srd-blue)', background: 'rgba(37,99,235,.08)', padding: '2px 8px', borderRadius: 'var(--srd-pill)' }}>Target 2030</span>
       </div>
 
-      {/* INTELLIGENCE BANNER */}
-      <div onClick={onOpenBrief} style={{ margin: '20px 32px 0', border: '1px solid var(--srd-blue-bdr)', borderRadius: 'var(--srd-r4)', padding: '14px 20px', ...F(16), background: 'var(--srd-blue-bg)', cursor: 'pointer' }}>
-        <div style={{ ...S(18, 800), width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: 'var(--srd-red-bg)', color: 'var(--srd-red-t)', border: '2px solid var(--srd-red)' }}>D-</div>
+      {/* ═══ INTELLIGENCE BANNER — #7 tighter, #26 hover, #34 reduced gap ═══ */}
+      <div className="srd-banner" onClick={onOpenBrief} style={{ margin: '12px 32px 0', border: '1px solid var(--srd-blue-bdr)', borderRadius: 'var(--srd-r4)', padding: '12px 20px', ...F(12), background: 'var(--srd-blue-bg)', cursor: 'pointer', transition: 'all .2s' }}>
+        <div style={{ ...S(18, 800), width: 42, height: 42, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: 'var(--srd-red-bg)', color: 'var(--srd-red-t)', border: '2px solid var(--srd-red)' }}>D-</div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ ...S(14), color: 'var(--srd-ink)' }}>AI Brief Available — 2 decisions require your attention</div>
-          <div style={{ fontSize: 12, color: 'var(--srd-ink-m)', marginTop: 2 }}>Published Feb 20, 2026 · Score 47/100 · Next review: Mar 1</div>
+          <div style={{ ...S(13), color: 'var(--srd-ink)' }}>AI Brief Available — 2 decisions require your attention</div>
+          <div style={{ fontSize: 11, color: 'var(--srd-ink-m)', marginTop: 1 }}>Published Feb 20, 2026 · Score 47/100 · Next review: Mar 1</div>
         </div>
-        <div style={F(8)}>
-          <span style={P('var(--srd-red-bg)', 'var(--srd-red-t)')}>2 decisions</span>
-          <span style={P('var(--srd-ai-bg)', 'var(--srd-ai-d)')}>3 data issues</span>
-        </div>
-        
+        <span style={P('var(--srd-red-bg)', 'var(--srd-red-t)')}>2 decisions</span>
+        <span style={P('var(--srd-ai-bg)', 'var(--srd-ai-d)')}>3 data issues</span>
       </div>
 
-      {/* THEME HEALTH STRIP */}
-      <div style={{ margin: '16px 32px 0', ...F(8), flexWrap: 'wrap' }}>
+      {/* ═══ THEME STRIP — #4 scrollable, shorter names to prevent orphan ═══ */}
+      <div style={{ margin: '12px 32px 0', ...F(6), overflowX: 'auto', WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' as const }}>
         {THEMES.map((t, i) => (
-          <div key={i} style={{ ...F(6), padding: '6px 14px', border: '1px solid var(--srd-bdr)', borderRadius: 'var(--srd-pill)', fontSize: 12, fontWeight: 500, color: 'var(--srd-ink)', cursor: 'pointer', background: 'var(--srd-bg)' }}>
-            <span style={D(t.c)} />{t.n}
+          <div key={i} className="srd-chip" style={{ ...F(5), padding: '5px 12px', border: '1px solid var(--srd-bdr)', borderRadius: 'var(--srd-pill)', fontSize: 12, fontWeight: 500, color: 'var(--srd-ink)', cursor: 'pointer', background: 'var(--srd-bg)', whiteSpace: 'nowrap', flexShrink: 0, transition: 'background .15s' }}>
+            <span style={D(t.c, 7)} />{t.n}
             <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 'var(--srd-pill)', background: t.bg, color: t.tc }}>{t.s}</span>
           </div>
         ))}
       </div>
 
-      {/* DASHBOARD */}
-      <main style={{ padding: '20px 32px 40px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* ═══ DASHBOARD — #5 align-items: stretch ═══ */}
+      <main style={{ padding: '16px 32px 40px', display: 'flex', flexDirection: 'column', gap: 14 }}>
 
         {/* ROW 1 */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, alignItems: 'stretch' }}>
 
-          {/* BUDGET */}
-          <W title="Budget Position" link="Full Planner →" foot={<><span style={{ ...F(5) }}><span style={D('var(--srd-red)', 6)} />43 missing costs</span><span style={{ ...M(10), color: 'var(--srd-ink-m)', marginInlineStart: 'auto' }}>2h ago</span></>}>
-            <div style={F(6)}><span style={{ ...S(26, 800), color: 'var(--srd-ink)' }}>SAR 11.8M</span><span style={DT('up')}>↑ 4% vs FY25</span></div>
-            <div style={{ fontSize: 12, color: 'var(--srd-ink-m)', marginTop: 2 }}>Annual budget · FY 2026 · <b style={{ color: 'var(--srd-ink-3)' }}>43% data confidence</b></div>
-            <div style={{ display: 'flex', height: 8, borderRadius: 'var(--srd-pill)', overflow: 'hidden', marginTop: 12 }}>
-              <div style={{ width: '73%', background: 'var(--srd-blue)' }} /><div style={{ width: '20%', background: 'var(--srd-teal)' }} /><div style={{ width: '5%', background: 'var(--srd-ai)' }} /><div style={{ width: '2%', background: 'var(--srd-purple)' }} />
+          {/* ─── BUDGET ─── */}
+          <W title="Budget Position" link="Full Planner →" delay={0.05} foot={
+            <>
+              <span style={F(5)}><span style={D('var(--srd-red)', 6)} />43 missing costs</span>
+              {/* #22 add second footer stat */}
+              <span style={{ ...F(5), marginInlineStart: 8 }}><span style={D('var(--srd-ai)', 6)} />11 renewals ≤90 days</span>
+              {/* #15 larger footer timestamp */}
+              <span style={{ ...M(11), color: 'var(--srd-ink-m)', marginInlineStart: 'auto' }}>2h ago</span>
+            </>
+          }>
+            <div style={F(6)}>
+              <span style={{ ...S(26, 800) }}>SAR 11.8M</span>
+              <span style={DT('up')}>↑ 4% vs FY25</span>
             </div>
-            <Leg items={[{ c: 'var(--srd-blue)', t: 'In-house 8.6M' }, { c: 'var(--srd-teal)', t: 'Outsourced 2.3M' }, { c: 'var(--srd-ai)', t: 'Co-sourced 598K' }, { c: 'var(--srd-purple)', t: 'Licenses 312K' }]} />
+            {/* #16 confidence flagged as badge */}
+            <div style={{ fontSize: 12, color: 'var(--srd-ink-m)', marginTop: 2 }}>
+              Annual budget · FY 2026 · <span style={{ fontWeight: 700, color: 'var(--srd-ai-d)', background: 'var(--srd-ai-bg)', padding: '1px 7px', borderRadius: 'var(--srd-pill)', fontSize: 11 }}>43% data confidence</span>
+            </div>
+            {/* #18 min-width on bar segments */}
+            <div style={{ ...BT(8), marginTop: 12, borderRadius: 'var(--srd-pill)' }}>
+              <div style={BF('var(--srd-blue)', 73)} />
+              <div style={BF('var(--srd-teal)', 20)} />
+              <div style={BF('var(--srd-ai)', 5)} />
+              <div style={BF('var(--srd-purple)', 2)} />
+            </div>
+            {/* #8 legend as 2x2 grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 12px', marginTop: 8 }}>
+              {[{ c: 'var(--srd-blue)', t: 'In-house 8.6M' }, { c: 'var(--srd-teal)', t: 'Outsourced 2.3M' }, { c: 'var(--srd-ai)', t: 'Co-sourced 598K' }, { c: 'var(--srd-purple)', t: 'Licenses 312K' }].map((l, i) => (
+                <span key={i} style={{ ...F(5), fontSize: 11, color: 'var(--srd-ink-m)' }}><span style={D(l.c, 6)} />{l.t}</span>
+              ))}
+            </div>
             <div style={SECT}>By Department</div>
             {[{ name: 'Delivery', pct: 45, ct: 34 }, { name: 'Product', pct: 25, ct: 19 }, { name: 'Operations', pct: 16, ct: 12 }, { name: 'Tech Support', pct: 9, ct: 7, tag: 'No cost assigned' }, { name: 'Governance', pct: 5, ct: 4, tag: 'No cost assigned' }].map((d, i) => <Row key={i} {...d} />)}
           </W>
 
-          {/* WORKFORCE */}
-          <W title="Workforce" link="Details →" foot={<><span style={{ ...F(5) }}><span style={D('var(--srd-ink-m)', 6)} />Thiqah (gov't staffing): 32%</span><span style={{ ...M(10), color: 'var(--srd-ink-m)', marginInlineStart: 'auto' }}>2h ago</span></>}>
-            <div style={F(6)}><span style={{ ...S(26, 800), color: 'var(--srd-ink)' }}>76</span><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--srd-ink-m)' }}>team members</span><span style={DT('up')}>↑ 3 this month</span></div>
+          {/* ─── WORKFORCE ─── */}
+          <W title="Workforce" link="Details →" delay={0.1} foot={
+            <>
+              <span style={F(5)}><span style={D('var(--srd-ink-m)', 6)} />Thiqah (gov't staffing): 32%</span>
+              <span style={{ ...M(11), color: 'var(--srd-ink-m)', marginInlineStart: 'auto' }}>2h ago</span>
+            </>
+          }>
+            {/* #12 standardized delta */}
+            <div style={F(6)}><span style={{ ...S(26, 800) }}>76</span><span style={{ fontSize: 13, fontWeight: 500, color: 'var(--srd-ink-m)' }}>team members</span><span style={DT('up')}>↑ 3 vs last month</span></div>
             <div style={{ fontSize: 12, color: 'var(--srd-ink-m)', marginTop: 2 }}>5 departments · 7 vendors · <b style={{ color: 'var(--srd-ink-3)' }}>99% avg utilization</b></div>
             <div style={{ ...F(12), marginTop: 8 }}>
               {[{ c: 'var(--srd-blue)', n: 7, l: 'Full-time' }, { c: 'var(--srd-teal)', n: 59, l: 'Vendor' }, { c: 'var(--srd-purple)', n: 5, l: 'Freelance' }].map((x, i) => (
                 <span key={i} style={{ ...F(5), fontSize: 12, color: 'var(--srd-ink-m)' }}><span style={D(x.c, 6)} /><b style={{ color: 'var(--srd-ink-2)' }}>{x.n}</b> {x.l}</span>
               ))}
             </div>
-            <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+            {/* #20 Over-allocated: softer red (opacity 0.7 on bg) */}
+            <div style={{ display: 'flex', gap: 6, marginTop: 12 }}>
               {[{ v: 0, l: 'Unassigned' }, { v: 1, l: 'Under-utilized' }, { v: 5, l: 'Committed' }, { v: 70, l: 'Over-allocated', d: true }].map((b, i) => (
-                <div key={i} style={{ flex: 1, textAlign: 'center', border: `1px solid ${b.d ? 'var(--srd-red-bg)' : 'var(--srd-bdr)'}`, borderRadius: 'var(--srd-r2)', padding: '8px 4px', background: b.d ? 'var(--srd-red-bg)' : 'var(--srd-bg)' }}>
-                  <div style={{ ...S(18), color: b.d ? 'var(--srd-red-t)' : 'var(--srd-ink)' }}>{b.v}</div>
+                <div key={i} style={{ flex: 1, textAlign: 'center', border: `1px solid ${b.d ? 'rgba(220,38,38,.2)' : 'var(--srd-bdr)'}`, borderRadius: 'var(--srd-r2)', padding: '7px 4px', background: b.d ? 'rgba(254,242,242,.7)' : 'var(--srd-bg)' }}>
+                  <div style={{ ...S(17), color: b.d ? 'var(--srd-red-t)' : 'var(--srd-ink)' }}>{b.v}</div>
                   <div style={{ fontSize: 10, color: b.d ? 'var(--srd-red-t)' : 'var(--srd-ink-m)', marginTop: 1 }}>{b.l}</div>
                 </div>
               ))}
             </div>
             <div style={SECT}>By Department</div>
-            {[{ name: 'Delivery', pct: 100, ct: 34, util: '100%', uc: 'var(--srd-green-t)' }, { name: 'Product', pct: 100, ct: 19, util: '100%', uc: 'var(--srd-green-t)' }, { name: 'Operations', pct: 100, ct: 12, util: '100%', uc: 'var(--srd-green-t)' }, { name: 'Governance', pct: 81, ct: 4, util: '81%', uc: 'var(--srd-ai)' }].map((d, i) => <Row key={i} {...d} />)}
+            {/* #25 show all 5 departments */}
+            {[
+              { name: 'Delivery', pct: 100, ct: 34, util: '100%', uc: 'var(--srd-green-t)' },
+              { name: 'Product', pct: 100, ct: 19, util: '100%', uc: 'var(--srd-green-t)' },
+              { name: 'Operations', pct: 100, ct: 12, util: '100%', uc: 'var(--srd-green-t)' },
+              { name: 'Tech Support', pct: 92, ct: 7, util: '92%', uc: 'var(--srd-green-t)' },
+              { name: 'Governance', pct: 81, ct: 4, util: '81%', uc: 'var(--srd-ai)' },
+            ].map((d, i) => <Row key={i} {...d} />)}
           </W>
 
-          {/* CONTRACTS */}
-          <W title="Contract Status" link="All Contracts →" foot={<><span style={{ fontSize: 11, color: 'var(--srd-ai-d)' }}>⚡ Top source: Internal staffing — 48 resources (63%)</span><span style={{ ...M(10), color: 'var(--srd-ink-m)', marginInlineStart: 'auto' }}>2h ago</span></>}>
+          {/* ─── CONTRACTS ─── */}
+          <W title="Contract Status" link="All Contracts →" delay={0.15} foot={
+            <>
+              <span style={{ fontSize: 11, color: 'var(--srd-ai-d)' }}>⚡ Top source: Internal staffing — 48 resources (63%)</span>
+              <span style={{ ...M(11), color: 'var(--srd-ink-m)', marginInlineStart: 'auto' }}>2h ago</span>
+            </>
+          }>
+            {/* #9 more padding, #13 letter-spacing */}
             <div style={{ display: 'flex', gap: 2 }}>
               {[{ n: 3, l: 'Expired', c: 'var(--srd-red)', tc: 'var(--srd-red-t)' }, { n: 8, l: '≤3 Months', c: 'var(--srd-ai)', tc: 'var(--srd-ai-d)' }, { n: 24, l: '3–6 Months', c: 'var(--srd-blue)', tc: 'var(--srd-blue)' }, { n: 41, l: '>6 Months', c: 'var(--srd-green)', tc: 'var(--srd-green-t)' }].map((b, i) => (
-                <div key={i} style={{ flex: 1, textAlign: 'center', padding: '10px 4px 8px', borderBottom: `2px solid ${b.c}`, borderRadius: 'var(--srd-r) var(--srd-r) 0 0', background: 'var(--srd-bg-2)' }}>
-                  <div style={{ ...S(22, 800), color: b.tc }}>{b.n}</div>
-                  <div style={{ fontSize: 10, color: 'var(--srd-ink-m)', textTransform: 'uppercase', marginTop: 2, fontWeight: 600 }}>{b.l}</div>
+                <div key={i} style={{ flex: 1, textAlign: 'center', padding: '10px 4px', borderBottom: `2px solid ${b.c}`, borderRadius: 'var(--srd-r) var(--srd-r) 0 0', background: 'var(--srd-bg-2)' }}>
+                  <div style={{ ...S(20, 800), color: b.tc }}>{b.n}</div>
+                  <div style={{ fontSize: 10, color: 'var(--srd-ink-m)', textTransform: 'uppercase', marginTop: 4, fontWeight: 600, letterSpacing: '.03em' }}>{b.l}</div>
                 </div>
               ))}
             </div>
-            <div style={{ fontSize: 11, color: 'var(--srd-ink-m)', textAlign: 'center', margin: '4px 0 10px' }}>76 total contracts across 5 departments</div>
-            <div style={{ display: 'flex', height: 8, borderRadius: 'var(--srd-pill)', overflow: 'hidden' }}>
-              <div style={{ width: '4%', background: 'var(--srd-red)' }} /><div style={{ width: '10%', background: 'var(--srd-ai)' }} /><div style={{ width: '32%', background: 'var(--srd-blue)' }} /><div style={{ width: '54%', background: 'var(--srd-green)' }} />
+            <div style={{ fontSize: 11, color: 'var(--srd-ink-m)', textAlign: 'center', margin: '6px 0 10px' }}>76 total contracts across 5 departments</div>
+            {/* #17 min-width on bar segments */}
+            <div style={{ ...BT(8), borderRadius: 'var(--srd-pill)' }}>
+              <div style={BF('var(--srd-red)', 4)} />
+              <div style={BF('var(--srd-ai)', 10)} />
+              <div style={BF('var(--srd-blue)', 32)} />
+              <div style={BF('var(--srd-green)', 54)} />
             </div>
             <div style={SECT}>Expiring Soonest</div>
             {[{ n: 'Abdulrahman AlRajhi', d: 'Technical Support', dt: 'Mar 29' }, { n: 'Mahmoud Gameel', d: 'Delivery', dt: 'Mar 29' }, { n: 'Abdulrahman Alghizzy', d: 'Product', dt: 'Mar 29' }].map((e, i) => (
-              <div key={i} style={{ ...F(8), height: 30, fontSize: 12 }}>
-                <span style={D('var(--srd-red)', 6)} /><span style={{ fontWeight: 600, color: 'var(--srd-ink)', flex: 1 }}>{e.n}</span>
+              <div key={i} style={{ ...F(8), height: 28, fontSize: 12 }}>
+                <span style={D('var(--srd-red)', 6)} />
+                <span style={{ fontWeight: 600, color: 'var(--srd-ink)', flex: 1 }}>{e.n}</span>
                 <span style={{ color: 'var(--srd-ink-m)', width: 110, flexShrink: 0 }}>{e.d}</span>
                 <span style={{ ...M(12), color: 'var(--srd-red-t)', fontWeight: 600 }}>{e.dt}</span>
               </div>
             ))}
-            <span style={{ ...LINK, display: 'block', marginTop: 6, fontSize: 12 }}>+8 more within 3 months →</span>
+            <span className={LINK} style={{ ...LINK_S, display: 'block', marginTop: 6, fontSize: 12 }}>+8 more within 3 months →</span>
           </W>
         </div>
 
-        {/* ROW 2 */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+        {/* ROW 2 — #5 stretch */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, alignItems: 'stretch' }}>
 
-          {/* EXECUTION */}
-          <W title="Execution Snapshot" foot={<span>73 initiatives not connected to any strategic theme</span>}>
+          {/* ─── EXECUTION — #23 danger items FIRST ─── */}
+          <W title="Execution Snapshot" delay={0.2} foot={<span>73 initiatives not connected to any strategic theme</span>}>
             {[
-              { l: 'Total Work Items', v: '295', d: '↑ 12', dt: 'up' },
-              { l: 'Active Workstreams', v: '7', d: '→ 0', dt: 'flat' },
-              { l: 'Avg. Alignment', v: '74%', d: '↓ 3%', dt: 'down', t: 'target 85%', vc: 'var(--srd-ai)' },
-              { l: 'Goals At Risk', v: '4', d: '↑ 1', dt: 'down', vc: 'var(--srd-ai)' },
               { l: 'Unlinked Initiatives', v: '73', t: 'of 295', vc: 'var(--srd-red-t)' },
+              { l: 'Goals At Risk', v: '4', d: '↑ 1 vs Q4', dt: 'down', vc: 'var(--srd-ai)' },
+              { l: 'Avg. Alignment', v: '74%', d: '↓ 3% vs Q4', dt: 'down', t: 'target 85%', vc: 'var(--srd-ai)' },
+              { l: 'Total Work Items', v: '295', d: '↑ 12 vs Q4', dt: 'up' },
+              { l: 'Active Workstreams', v: '7', d: '→ 0 vs Q4', dt: 'flat' },
             ].map((k, i) => (
-              <div key={i} style={{ ...F(8), justifyContent: 'space-between', padding: '10px 0', borderBottom: i < 4 ? '1px solid var(--srd-bdr)' : 'none' }}>
+              <div key={i} style={{ ...F(8), justifyContent: 'space-between', padding: '9px 0', borderBottom: i < 4 ? '1px solid var(--srd-bdr)' : 'none' }}>
                 <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--srd-ink)' }}>{k.l}</span>
                 <div style={F(8)}>
                   {k.t && <span style={{ ...M(10), color: 'var(--srd-ink-m)' }}>{k.t}</span>}
                   {k.d && <span style={DT(k.dt)}>{k.d}</span>}
-                  <span style={{ ...S(16), color: k.vc || 'var(--srd-ink)' }}>{k.v}</span>
+                  <span style={{ ...S(15), color: k.vc || 'var(--srd-ink)' }}>{k.v}</span>
                 </div>
               </div>
             ))}
           </W>
 
-          {/* ALIGNMENT */}
-          <W title="Initiative → Theme Alignment" foot={<span>% of initiatives linked to at least one strategic theme</span>}>
+          {/* ─── ALIGNMENT — #24 reduced bar height ─── */}
+          <W title="Initiative → Theme Alignment" delay={0.25} foot={<span>% of initiatives linked to at least one strategic theme</span>}>
             {[
               { n: 'Data & AI', p: 90, c: 'var(--srd-green)', tc: 'var(--srd-green-t)' },
               { n: 'Senaie', p: 84, c: 'var(--srd-green)', tc: 'var(--srd-green-t)' },
@@ -248,20 +306,20 @@ export default function StrategyRoomDashboard({ onOpenBrief, onDownloadBrief }: 
               { n: 'Delivery', p: 64, c: 'var(--srd-blue)', tc: 'var(--srd-blue)' },
               { n: 'Standalone', p: 48, c: 'var(--srd-ai)', tc: 'var(--srd-ai-d)' },
             ].map((a, i) => (
-              <div key={i} style={{ ...F(10), height: 34 }}>
-                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--srd-ink)', width: 100, textAlign: 'end', flexShrink: 0 }}>{a.n}</span>
-                <div style={{ flex: 1 }}><div style={BT(8)}><div style={BF(a.c, a.p)} /></div></div>
+              <div key={i} style={{ ...F(10), height: 32 }}>
+                <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--srd-ink)', width: 90, textAlign: 'end', flexShrink: 0 }}>{a.n}</span>
+                <div style={{ flex: 1 }}><div style={{ height: 8, background: 'var(--srd-bg-3)', borderRadius: 'var(--srd-pill)', overflow: 'hidden' }}><div style={BF_SINGLE(a.c, a.p)} /></div></div>
                 <span style={{ ...M(12), fontWeight: 600, width: 36, textAlign: 'end', color: a.tc }}>{a.p}%</span>
               </div>
             ))}
           </W>
 
-          {/* INVESTMENT (empty) */}
-          <W title="Investment Allocation" foot={<span style={{ ...M(10), color: 'var(--srd-ink-m)' }}>Pending setup</span>}>
+          {/* ─── INVESTMENT (empty) ─── */}
+          <W title="Investment Allocation" delay={0.3} foot={<span style={{ ...M(11), color: 'var(--srd-ink-m)' }}>Pending setup</span>}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 100, gap: 6, textAlign: 'center' }}>
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--srd-bdr-s)" strokeWidth="1.5"><circle cx="12" cy="12" r="10" /><path d="M12 6v12M8 10h8M8 14h8" /></svg>
               <span style={{ fontSize: 13, color: 'var(--srd-ink-m)', fontStyle: 'italic' }}>Investment tracking not configured</span>
-              <span style={{ fontSize: 12, color: 'var(--srd-blue)', fontWeight: 600, cursor: 'pointer' }}>Set up in Strategy Settings →</span>
+              <span className={LINK} style={{ ...LINK_S, fontSize: 12 }}>Set up in Strategy Settings →</span>
             </div>
           </W>
         </div>
