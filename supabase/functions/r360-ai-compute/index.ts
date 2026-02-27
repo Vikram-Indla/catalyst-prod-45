@@ -213,6 +213,13 @@ async function computeResourceAI(resourceId: string, sections: string[], weekSta
 async function computeDepartmentAI(department: string, sections: string[], weekStart?: string) {
   console.log(`[r360-ai-compute] Computing department ${department}, sections: ${sections.join(',')}`)
 
+  // Try materialized view first for instant resource list + pre-aggregated stats
+  const { data: mvData } = await supabase
+    .from('mv_dept_intelligence_stats')
+    .select('*')
+    .eq('department_name', department)
+    .maybeSingle()
+
   // Get resources in department
   const { data: resources } = await supabase
     .from('resource_inventory')

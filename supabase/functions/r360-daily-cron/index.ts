@@ -158,6 +158,14 @@ serve(async (req) => {
       console.error('[r360-daily-cron] Cache compute error:', e.message)
     }
 
+    // Refresh materialized view for instant department stats
+    try {
+      await supabase.rpc('refresh_dept_intelligence_stats')
+      console.log('[r360-daily-cron] Materialized view refreshed')
+    } catch (e: any) {
+      console.error('[r360-daily-cron] MV refresh error:', e.message)
+    }
+
     console.log(`[r360-daily-cron] Cache: ${cacheWarmupStatus}, processed ${cacheProcessed} jobs`)
 
     return new Response(JSON.stringify({
