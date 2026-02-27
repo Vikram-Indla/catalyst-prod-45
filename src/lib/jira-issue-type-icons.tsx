@@ -1,48 +1,136 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════
- * JIRA ISSUE TYPE ICONS — CANONICAL GUARDRAIL
+ * JIRA ISSUE TYPE ICONS — CANONICAL GUARDRAIL ("RESET ICONS" REFERENCE)
  * ═══════════════════════════════════════════════════════════════════════
  *
  * THIS IS THE SINGLE SOURCE OF TRUTH for all Jira issue type icons
- * across the entire platform. Every component that renders an issue
- * type icon MUST import from this file.
+ * across the entire Catalyst platform. Every component that renders an
+ * issue type icon MUST import from this file.
+ *
+ * CODE WORD: "RESET ICONS"
+ * When the user says "reset icons" + screenshot, all issue type icons
+ * must match this file exactly. No exceptions.
  *
  * GUARDRAIL RULES:
  * 1. All icons are 16×16 SVG with rounded-square backgrounds
- * 2. Colors and shapes are LOCKED per the approved Jira icon spec
+ * 2. Colors and shapes are LOCKED per the approved Jira icon spec (Image 2)
  * 3. DO NOT create local icon mappings in individual components
- * 4. DO NOT use emojis for issue types — Lucide/SVG only
+ * 4. DO NOT use emojis for issue types — SVG only
  * 5. Any new issue type must be added HERE and nowhere else
  *
- * The icon visual spec (from Jira) is:
- *   Epic             → Purple (#904EE2)  lightning bolt
- *   Feature          → Blue (#4BADE8)    checkbox/check
- *   Story            → Amber (#D97706)   bookmark flag
- *   Business Gap     → Red (#E5493A)     exclamation square
- *   QA Bug           → Orange (#D97706)  bug silhouette
- *   Production Inc.  → Orange (#D97706)  circle with ?
- *   Change Request   → Blue (#4BADE8)    checkbox/check
- *   Task             → Blue (#4BADE8)    checkbox/check
- *   Sub-task         → Blue (#4BADE8)    nested checkbox
- *   API Requirement  → Teal (#0D9488)    code brackets
- *   Defect           → Red (#E5493A)     bug silhouette
- *   BRD Task         → Blue (#4BADE8)    checkbox/check
- *   Backend          → Purple (#904EE2)  code brackets
- *   Frontend         → Blue (#4BADE8)    layers
- *   Integration      → Teal (#0D9488)    link/plug
- *   Business Request → Blue (#2563EB)    document
- *   Entity FIGMA     → Pink (#EC4899)    pen tool
- *   Figma            → Pink (#EC4899)    pen tool
+ * CANONICAL ICON SPEC (from Jira — Image 2 reference):
+ *   Epic             → Purple (#904EE2)  lightning bolt ⚡
+ *   Feature          → Blue (#4BADE8)    checkbox ☑
+ *   Story            → Green (#63BA3C)   bookmark flag 🔖
+ *   Business Gap     → Orange (#FF991F)  exclamation badge ⚠
+ *   QA Bug           → Red (#E5493A)     bug circle 🐛
+ *   Production Inc.  → Red (#FF5630)     triangle warning ⚠
+ *   Change Request   → Orange (#FF991F)  bookmark flag (same as story shape)
+ *   Task             → Blue (#4BADE8)    checkbox ☑
+ *   Sub-task         → Blue (#4BAEE8)    nested squares
+ *   API Requirement  → Teal (#0D9488)    code brackets </>
+ *   Defect           → Red (#E5493A)     bug circle
+ *   BRD Task         → Blue (#4BAEE8)    nested squares
+ *   Backend          → Blue (#4BAEE8)    nested squares
+ *   Frontend         → Blue (#4BAEE8)    nested squares
+ *   Integration      → Blue (#4BAEE8)    nested squares
+ *   Business Request → Cyan (#00B8D9)    bookmark flag
+ *   Entity FIGMA     → Blue (#4BAEE8)    nested squares
+ *   Figma            → Blue (#4BAEE8)    nested squares
  */
 
 import React from 'react';
+
+// ─── ATLASSIAN SVG PATHS (exact from Jira icon set) ──────────────────
+
+const EPIC_PATH = 'M5.9233,3.7566 L5.9213,3.7526 C5.9673,3.6776 6.0003,3.5946 6.0003,3.4996 C6.0003,3.2236 5.7763,2.9996 5.5003,2.9996 L3.0003,2.9996 L3.0003,0.4996 C3.0003,0.2236 2.7763,-0.0004 2.5003,-0.0004 C2.3283,-0.0004 2.1853,0.0916 2.0953,0.2226 C2.0673,0.2636 2.0443,0.3056 2.0293,0.3526 L0.0813,4.2366 L0.0833,4.2396 C0.0353,4.3166 0.0003,4.4026 0.0003,4.4996 C0.0003,4.7766 0.2243,4.9996 0.5003,4.9996 L3.0003,4.9996 L3.0003,7.4996 C3.0003,7.7766 3.2243,7.9996 3.5003,7.9996 C3.6793,7.9996 3.8293,7.9006 3.9183,7.7586 L3.9213,7.7596 L3.9343,7.7336 C3.9453,7.7126 3.9573,7.6936 3.9653,7.6716 L5.9233,3.7566 Z';
+
+const STORY_PATH = 'M9,3 L5,3 C4.448,3 4,3.448 4,4 L4,10.5 C4,10.776 4.224,11 4.5,11 C4.675,11 4.821,10.905 4.91,10.769 L4.914,10.77 L6.84,8.54 C6.92,8.434 7.08,8.434 7.16,8.54 L9.086,10.77 L9.09,10.769 C9.179,10.905 9.325,11 9.5,11 C9.776,11 10,10.776 10,10.5 L10,4 C10,3.448 9.552,3 9,3';
+
+const BUG_PATH = 'M10,7 C10,8.657 8.657,10 7,10 C5.343,10 4,8.657 4,7 C4,5.343 5.343,4 7,4 C8.657,4 10,5.343 10,7';
+
+// ─── RENDER FUNCTIONS ────────────────────────────────────────────────
+
+function renderEpic() {
+  return (
+    <g transform="translate(4, 3)">
+      <path d={EPIC_PATH} fill="#FFFFFF" />
+    </g>
+  );
+}
+
+function renderCheckbox() {
+  return (
+    <g transform="translate(1, 1)">
+      <g transform="translate(3, 3.5)" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" fill="none">
+        <path d="M2,5 L6,0" />
+        <path d="M2,5 L0,3" />
+      </g>
+    </g>
+  );
+}
+
+function renderStory() {
+  return (
+    <g transform="translate(1, 1)">
+      <path d={STORY_PATH} fill="#FFFFFF" />
+    </g>
+  );
+}
+
+function renderBug() {
+  return (
+    <g transform="translate(1, 1)">
+      <path d={BUG_PATH} fill="#FFFFFF" />
+    </g>
+  );
+}
+
+function renderExclamation() {
+  return (
+    <g transform="translate(1, 1)">
+      <g fill="none">
+        <rect x="2" y="2" width="10" height="10" rx="1.5" stroke="#FFFFFF" strokeWidth="1.5" fill="none" />
+        <line x1="7" y1="4.5" x2="7" y2="7" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="7" cy="9" r="0.8" fill="#FFFFFF" />
+      </g>
+    </g>
+  );
+}
+
+function renderIncident() {
+  return (
+    <g transform="translate(1, 1)">
+      <circle cx="7" cy="7" r="5" stroke="#FFFFFF" strokeWidth="1.5" fill="none" />
+      <text x="7" y="9.5" textAnchor="middle" fill="#FFFFFF" fontSize="8" fontWeight="700" fontFamily="sans-serif">?</text>
+    </g>
+  );
+}
+
+function renderSubtask() {
+  return (
+    <g transform="translate(1, 1)">
+      <rect x="3" y="3" width="5" height="5" rx="0.8" stroke="#FFFFFF" fill="none" />
+      <rect x="6" y="6" width="5" height="5" rx="0.8" stroke="#FFFFFF" fill="#FFFFFF" />
+    </g>
+  );
+}
+
+function renderCodeBrackets() {
+  return (
+    <g transform="translate(1, 1)">
+      <path d="M5 3.5L2.5 7L5 10.5" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <path d="M9 3.5L11.5 7L9 10.5" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <path d="M8 2.5L6 11.5" stroke="#FFFFFF" strokeWidth="1.2" strokeLinecap="round" />
+    </g>
+  );
+}
 
 // ─── TYPE CONFIG ─────────────────────────────────────────────────────
 
 export interface JiraTypeConfig {
   label: string;
   color: string;       // background color of the rounded square
-  /** SVG inner content (rendered inside a 16×16 viewBox) */
   renderInner: (size: number) => React.ReactNode;
 }
 
@@ -51,199 +139,126 @@ const CONFIGS: Record<string, JiraTypeConfig> = {
   epic: {
     label: 'Epic',
     color: '#904EE2',
-    renderInner: () => (
-      <path d="M9.5 2.5L5.5 9H8l-1.5 5L11 7.5H8L9.5 2.5z" fill="white" />
-    ),
+    renderInner: renderEpic,
   },
 
   // ── Feature: blue checkbox ──
   feature: {
     label: 'Feature',
     color: '#4BADE8',
-    renderInner: () => (
-      <path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-    ),
+    renderInner: renderCheckbox,
   },
 
-  // ── Story: amber/orange bookmark flag ──
+  // ── Story: GREEN bookmark flag ──
   story: {
     label: 'Story',
-    color: '#D97706',
-    renderInner: () => (
-      <path d="M5 3h6v10l-3-2-3 2V3z" fill="white" />
-    ),
+    color: '#63BA3C',
+    renderInner: renderStory,
   },
 
-  // ── Business Gap: red exclamation ──
+  // ── Business Gap: orange exclamation badge ──
   'business gap': {
     label: 'Business Gap',
-    color: '#E5493A',
-    renderInner: () => (
-      <>
-        <path d="M8 4v4.5" stroke="white" strokeWidth="2" strokeLinecap="round" />
-        <circle cx="8" cy="11" r="1.2" fill="white" />
-      </>
-    ),
+    color: '#FF991F',
+    renderInner: renderExclamation,
   },
 
-  // ── QA Bug: orange bug silhouette ──
+  // ── QA Bug: RED bug circle ──
   'qa bug': {
     label: 'QA Bug',
-    color: '#D97706',
-    renderInner: () => (
-      <>
-        {/* Antennae */}
-        <path d="M5.5 5L4 3M10.5 5L12 3" stroke="white" strokeWidth="1.3" strokeLinecap="round" />
-        {/* Head */}
-        <circle cx="8" cy="5.5" r="2" fill="white" />
-        {/* Body */}
-        <path d="M5 7.5h6v3.5a3 3 0 0 1-6 0V7.5z" fill="white" />
-        {/* Legs */}
-        <path d="M5 9H3.5M11 9H12.5M5 11H3.5M11 11H12.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
-      </>
-    ),
+    color: '#E5493A',
+    renderInner: renderBug,
   },
 
-  // ── Production Incident: orange circle with ? ──
+  // ── Production Incident: red/orange question circle ──
   'production incident': {
     label: 'Production Incident',
-    color: '#D97706',
-    renderInner: () => (
-      <>
-        <circle cx="8" cy="8" r="5.5" stroke="white" strokeWidth="1.5" fill="none" />
-        <text x="8" y="10.5" textAnchor="middle" fill="white" fontSize="8" fontWeight="700" fontFamily="sans-serif">?</text>
-      </>
-    ),
+    color: '#FF5630',
+    renderInner: renderIncident,
   },
 
-  // ── Change Request: blue checkbox ──
+  // ── Change Request: orange bookmark (same shape as story) ──
   'change request': {
     label: 'Change Request',
-    color: '#4BADE8',
-    renderInner: () => (
-      <path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-    ),
+    color: '#FF991F',
+    renderInner: renderStory,
   },
 
   // ── Task: blue checkbox ──
   task: {
     label: 'Task',
     color: '#4BADE8',
-    renderInner: () => (
-      <path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-    ),
+    renderInner: renderCheckbox,
   },
 
-  // ── Sub-task: blue nested checkbox ──
+  // ── Sub-task: blue nested squares ──
   'sub-task': {
     label: 'Sub-task',
-    color: '#4BADE8',
-    renderInner: () => (
-      <>
-        <rect x="4" y="4" width="8" height="8" rx="1" fill="#fff" opacity=".4" />
-        <path d="M6 8.5l1.5 1.5 3-3" stroke="#fff" strokeWidth="1.3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      </>
-    ),
+    color: '#4BAEE8',
+    renderInner: renderSubtask,
   },
 
   // ── API Requirement: teal code brackets ──
   'api requirement': {
     label: 'API Requirement',
     color: '#0D9488',
-    renderInner: () => (
-      <>
-        <path d="M6 4.5L3.5 8L6 11.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-        <path d="M10 4.5L12.5 8L10 11.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-        <path d="M9 3.5L7 12.5" stroke="white" strokeWidth="1.2" strokeLinecap="round" />
-      </>
-    ),
+    renderInner: renderCodeBrackets,
   },
 
-  // ── Defect: red bug ──
+  // ── Defect: red bug circle ──
   defect: {
     label: 'Defect',
     color: '#E5493A',
-    renderInner: () => (
-      <>
-        <path d="M10 5.5a2 2 0 1 0-4 0v1h4v-1z" fill="white" />
-        <path d="M5 8h6v2.5a3 3 0 0 1-6 0V8z" fill="white" />
-      </>
-    ),
+    renderInner: renderBug,
   },
 
-  // ── BRD Task: blue checkbox ──
+  // ── BRD Task: blue nested squares ──
   'brd task': {
     label: 'BRD Task',
-    color: '#4BADE8',
-    renderInner: () => (
-      <path d="M4.5 8l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-    ),
+    color: '#4BAEE8',
+    renderInner: renderSubtask,
   },
 
-  // ── Backend: purple code ──
+  // ── Backend: blue nested squares ──
   backend: {
     label: 'Backend',
-    color: '#904EE2',
-    renderInner: () => (
-      <>
-        <path d="M6 4.5L3.5 8L6 11.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-        <path d="M10 4.5L12.5 8L10 11.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      </>
-    ),
+    color: '#4BAEE8',
+    renderInner: renderSubtask,
   },
 
-  // ── Frontend: blue layers ──
+  // ── Frontend: blue nested squares ──
   frontend: {
     label: 'Frontend',
-    color: '#4BADE8',
-    renderInner: () => (
-      <>
-        <path d="M3 8l5 3 5-3" stroke="white" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M3 6l5 3 5-3" stroke="white" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity=".6" />
-        <path d="M3 10l5 3 5-3" stroke="white" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity=".4" />
-      </>
-    ),
+    color: '#4BAEE8',
+    renderInner: renderSubtask,
   },
 
-  // ── Integration: teal plug ──
+  // ── Integration: blue nested squares ──
   integration: {
     label: 'Integration',
-    color: '#0D9488',
-    renderInner: () => (
-      <>
-        <path d="M5 8h6M5 8L3 6M5 8L3 10M11 8L13 6M11 8L13 10" stroke="white" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      </>
-    ),
+    color: '#4BAEE8',
+    renderInner: renderSubtask,
   },
 
-  // ── Business Request: blue document ──
+  // ── Business Request: cyan bookmark ──
   'business request': {
     label: 'Business Request',
-    color: '#2563EB',
-    renderInner: () => (
-      <>
-        <rect x="4" y="2" width="8" height="12" rx="1" fill="white" />
-        <path d="M6 5h4M6 7.5h4M6 10h2.5" stroke="#2563EB" strokeWidth="1.2" strokeLinecap="round" />
-      </>
-    ),
+    color: '#00B8D9',
+    renderInner: renderStory,
   },
 
-  // ── Figma: pink pen tool ──
+  // ── Figma: blue nested squares ──
   figma: {
     label: 'Figma',
-    color: '#EC4899',
-    renderInner: () => (
-      <path d="M8 3l4.5 4.5L8 12 3.5 7.5 8 3z" fill="white" />
-    ),
+    color: '#4BAEE8',
+    renderInner: renderSubtask,
   },
 
   // ── Entity FIGMA ──
   'entity figma': {
     label: 'Entity FIGMA',
-    color: '#EC4899',
-    renderInner: () => (
-      <path d="M8 3l4.5 4.5L8 12 3.5 7.5 8 3z" fill="white" />
-    ),
+    color: '#4BAEE8',
+    renderInner: renderSubtask,
   },
 };
 
@@ -282,13 +297,11 @@ export function resolveJiraTypeConfig(issueType: string): JiraTypeConfig {
   if (t.includes('feature')) return CONFIGS.feature;
   if (t.includes('incident')) return CONFIGS['production incident'];
 
-  // Fallback → Task style
+  // Fallback → gray circle
   return {
     label: issueType || 'Unknown',
-    color: '#64748B',
-    renderInner: () => (
-      <circle cx="8" cy="8" r="3" fill="white" />
-    ),
+    color: '#6B778C',
+    renderInner: renderCheckbox,
   };
 }
 
@@ -327,7 +340,6 @@ export function JiraIssueTypeIcon({ type, size = 16, className, style }: JiraIss
 
 /**
  * Get the accent/border color for an issue type.
- * Useful for left-border accents on cards.
  */
 export function getJiraTypeColor(issueType: string): string {
   return resolveJiraTypeConfig(issueType).color;
