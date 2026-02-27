@@ -12,7 +12,7 @@ import { HIERARCHY_LEVELS } from '@/types/hierarchy';
 import type { WorkItem } from '@/types/hierarchy';
 import type { LucideProps } from 'lucide-react';
 import { useProjectId } from '@/hooks/useProjectDashboard';
-import { useFullHierarchyTree, useDeleteWorkItem } from '@/hooks/useHierarchy';
+import { useFullHierarchyTree, useDeleteWorkItem, useMoveWorkItem } from '@/hooks/useHierarchy';
 import { supabase } from '@/integrations/supabase/client';
 import { WorkItemTree, TreeSkeleton } from '@/components/hierarchy/WorkItemTree';
 import { DetailPanel } from '@/components/hierarchy/DetailPanel';
@@ -40,6 +40,7 @@ export default function HierarchyPage() {
   const { data: treeItems = [], isLoading, isError, refetch } = useFullHierarchyTree(projectId || '');
   const queryClient = useQueryClient();
   const deleteMutation = useDeleteWorkItem(projectId || '');
+  const moveMutation = useMoveWorkItem(projectId || '');
 
   const [allExpanded, setAllExpanded] = useState(false);
   const [selectedItem, setSelectedItem] = useState<WorkItem | null>(null);
@@ -65,6 +66,15 @@ export default function HierarchyPage() {
 
   const handleAddChild = (parent: WorkItem) => { setCreateParent(parent); setCreateOpen(true); };
   const handleCreateRoot = () => { setCreateParent(null); setCreateOpen(true); };
+
+  const handleMove = async (itemId: string, newParentId: string) => {
+    try {
+      await moveMutation.mutateAsync({ itemId, newParentId });
+      toast.success('Work item moved');
+    } catch (err: any) {
+      toast.error(err?.message || 'Cannot move work item');
+    }
+  };
 
   const handleDeleteRequest = (item: WorkItem) => { setDeleteConfirm(item); };
   const handleDeleteConfirm = async () => {
@@ -144,7 +154,7 @@ export default function HierarchyPage() {
               </button>
             </div>
           ) : (
-            <WorkItemTree items={treeItems} selectedId={selectedItem?.id || null} onSelect={setSelectedItem} onDelete={handleDeleteRequest} allExpanded={allExpanded} />
+            <WorkItemTree items={treeItems} selectedId={selectedItem?.id || null} onSelect={setSelectedItem} onDelete={handleDeleteRequest} onMove={handleMove} allExpanded={allExpanded} />
           )}
         </div>
         <div style={{ overflowY: 'auto', minHeight: 0 }}>

@@ -1,17 +1,19 @@
 /**
  * WorkItemTree — Main tree view for Work Item Hierarchy
- * Stage D: Delete actions, skeleton loading, full DB wiring
+ * Stage D: Full DB wiring, drag-and-drop hierarchy moves
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { ChevronRight, ChevronDown, GripVertical, MoreHorizontal, Trash2 } from 'lucide-react';
 import type { WorkItem } from '@/types/hierarchy';
+import { canBeParentOf } from '@/types/hierarchy';
 
 interface WorkItemTreeProps {
   items: WorkItem[];
   selectedId: string | null;
   onSelect: (item: WorkItem) => void;
   onDelete?: (item: WorkItem) => void;
+  onMove?: (itemId: string, newParentId: string) => void;
   allExpanded: boolean;
 }
 
@@ -157,19 +159,49 @@ function ActionsMenu({ item, onDelete }: { item: WorkItem; onDelete?: (item: Wor
   );
 }
 
+/* ── DnD State ── */
+type DragState = {
+  draggedItem: WorkItem | null;
+  dragOverId: string | null;
+  isValidDrop: boolean;
+};
+
 /* ── Single tree row ── */
 function TreeRow({
   item, depth, expanded, onToggle, selected, onSelect, onDelete,
+  dragState, onDragStart, onDragOver, onDragEnd, onDrop,
 }: {
   item: WorkItem; depth: number; expanded: boolean; onToggle: (id: string) => void;
   selected: boolean; onSelect: (item: WorkItem) => void; onDelete?: (item: WorkItem) => void;
+  dragState: DragState;
+  onDragStart: (item: WorkItem) => void;
+  onDragOver: (e: React.DragEvent, targetItem: WorkItem) => void;
+  onDragEnd: () => void;
+  onDrop: (e: React.DragEvent, targetItem: WorkItem) => void;
 }) {
   const hasChildren = item.children.length > 0;
+  const isDragged = dragState.draggedItem?.id === item.id;
+  const isDragOver = dragState.dragOverId === item.id;
+  const isValidTarget = isDragOver && dragState.isValidDrop;
+  const isInvalidTarget = isDragOver && !dragState.isValidDrop;
+
+  let borderLeft = 'none';
+  if (isValidTarget) borderLeft = '2px solid #2563EB';
+  if (isInvalidTarget) borderLeft = '2px solid #DC2626';
 
   return (
     <div
       role="treeitem" aria-expanded={hasChildren ? expanded : undefined}
       aria-level={depth + 1} aria-selected={selected} tabIndex={0}
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', item.id);
+        onDragStart(item);
+      }}
+      onDragOver={(e) => onDragOver(e, item)}
+      onDragEnd={onDragEnd}
+      onDrop={(e) => onDrop(e, item)}
       onClick={() => onSelect(item)}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(item); }
@@ -182,9 +214,12 @@ function TreeRow({
         paddingLeft: depth * 20 + 12, paddingRight: 12, borderBottom: '1px solid #E2E8F0',
         background: selected ? '#EFF6FF' : undefined, cursor: 'pointer', outline: 'none',
         fontFamily: "'Inter', sans-serif",
+        opacity: isDragged ? 0.5 : 1,
+        borderLeft,
+        transition: 'opacity 150ms ease, border-left 150ms ease',
       }}
     >
-      <GripVertical size={14} className="hi-row-action" style={{ color: '#94A3B8', flexShrink: 0 }} />
+      <GripVertical size={14} className="hi-row-action" style={{ color: '#94A3B8', flexShrink: 0, cursor: 'grab' }} />
 
       {hasChildren ? (
         <button onClick={(e) => { e.stopPropagation(); onToggle(item.id); }}
@@ -223,19 +258,27 @@ function TreeRow({
 /* ── Recursive subtree ── */
 function TreeBranch({
   items, depth, expandedIds, onToggle, selectedId, onSelect, onDelete,
+  dragState, onDragStart, onDragOver, onDragEnd, onDrop,
 }: {
   items: WorkItem[]; depth: number; expandedIds: Set<string>; onToggle: (id: string) => void;
   selectedId: string | null; onSelect: (item: WorkItem) => void; onDelete?: (item: WorkItem) => void;
+  dragState: DragState;
+  onDragStart: (item: WorkItem) => void;
+  onDragOver: (e: React.DragEvent, targetItem: WorkItem) => void;
+  onDragEnd: () => void;
+  onDrop: (e: React.DragEvent, targetItem: WorkItem) => void;
 }) {
   return (
     <>
       {items.map((item) => (
         <div key={item.id} role="group">
-          <TreeRow item={item} depth={depth} expanded={expandedIds.has(item.id)} onToggle={onToggle}
-            selected={selectedId === item.id} onSelect={onSelect} onDelete={onDelete} />
+          <TreeRow item={item} depth={Math.min(depth, 8)} expanded={expandedIds.has(item.id)} onToggle={onToggle}
+            selected={selectedId === item.id} onSelect={onSelect} onDelete={onDelete}
+            dragState={dragState} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd} onDrop={onDrop} />
           {expandedIds.has(item.id) && item.children.length > 0 && (
             <TreeBranch items={item.children} depth={depth + 1} expandedIds={expandedIds}
-              onToggle={onToggle} selectedId={selectedId} onSelect={onSelect} onDelete={onDelete} />
+              onToggle={onToggle} selectedId={selectedId} onSelect={onSelect} onDelete={onDelete}
+              dragState={dragState} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd} onDrop={onDrop} />
           )}
         </div>
       ))}
@@ -257,9 +300,23 @@ function countAll(items: WorkItem[]): number {
   return c;
 }
 
-export function WorkItemTree({ items, selectedId, onSelect, onDelete, allExpanded }: WorkItemTreeProps) {
+/** Check if targetId is a descendant of itemId */
+function isDescendant(items: WorkItem[], itemId: string, targetId: string): boolean {
+  function findAndCheck(nodes: WorkItem[], underItem: boolean): boolean {
+    for (const node of nodes) {
+      if (underItem && node.id === targetId) return true;
+      const isUnder = underItem || node.id === itemId;
+      if (node.children.length > 0 && findAndCheck(node.children, isUnder)) return true;
+    }
+    return false;
+  }
+  return findAndCheck(items, false);
+}
+
+export function WorkItemTree({ items, selectedId, onSelect, onDelete, onMove, allExpanded }: WorkItemTreeProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const prevAllExpanded = useRef(allExpanded);
+  const [dragState, setDragState] = useState<DragState>({ draggedItem: null, dragOverId: null, isValidDrop: false });
 
   useEffect(() => {
     if (allExpanded !== prevAllExpanded.current) {
@@ -271,6 +328,45 @@ export function WorkItemTree({ items, selectedId, onSelect, onDelete, allExpande
   const toggle = useCallback((id: string) => {
     setExpandedIds((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
   }, []);
+
+  const handleDragStart = useCallback((item: WorkItem) => {
+    setDragState({ draggedItem: item, dragOverId: null, isValidDrop: false });
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent, targetItem: WorkItem) => {
+    e.preventDefault();
+    if (!dragState.draggedItem) return;
+    if (dragState.draggedItem.id === targetItem.id) {
+      setDragState(prev => ({ ...prev, dragOverId: null, isValidDrop: false }));
+      return;
+    }
+    // Can't drop on own descendant
+    if (isDescendant(items, dragState.draggedItem.id, targetItem.id)) {
+      setDragState(prev => ({ ...prev, dragOverId: targetItem.id, isValidDrop: false }));
+      return;
+    }
+    const isValid = canBeParentOf(targetItem.hierarchyLevel, dragState.draggedItem.hierarchyLevel);
+    e.dataTransfer.dropEffect = isValid ? 'move' : 'none';
+    setDragState(prev => ({ ...prev, dragOverId: targetItem.id, isValidDrop: isValid }));
+  }, [dragState.draggedItem, items]);
+
+  const handleDragEnd = useCallback(() => {
+    setDragState({ draggedItem: null, dragOverId: null, isValidDrop: false });
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent, targetItem: WorkItem) => {
+    e.preventDefault();
+    if (!dragState.draggedItem || dragState.draggedItem.id === targetItem.id) {
+      setDragState({ draggedItem: null, dragOverId: null, isValidDrop: false });
+      return;
+    }
+    const isValid = canBeParentOf(targetItem.hierarchyLevel, dragState.draggedItem.hierarchyLevel)
+      && !isDescendant(items, dragState.draggedItem.id, targetItem.id);
+    if (isValid && onMove) {
+      onMove(dragState.draggedItem.id, targetItem.id);
+    }
+    setDragState({ draggedItem: null, dragOverId: null, isValidDrop: false });
+  }, [dragState.draggedItem, items, onMove]);
 
   const total = countAll(items);
 
@@ -286,7 +382,9 @@ export function WorkItemTree({ items, selectedId, onSelect, onDelete, allExpande
       </div>
       <div role="tree" aria-label="Work Item Hierarchy">
         <TreeBranch items={items} depth={0} expandedIds={expandedIds} onToggle={toggle}
-          selectedId={selectedId} onSelect={onSelect} onDelete={onDelete} />
+          selectedId={selectedId} onSelect={onSelect} onDelete={onDelete}
+          dragState={dragState} onDragStart={handleDragStart} onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd} onDrop={handleDrop} />
       </div>
       <style>{`
         .hi-tree-row:hover { background: #F8FAFC !important; }
