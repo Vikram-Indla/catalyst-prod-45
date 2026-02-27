@@ -41,9 +41,9 @@ interface Props {
 
 /* ═══ Inject chevron claims into descriptions (client-side fallback) ═══ */
 function injectClaims(html: string): string {
-  if (html.includes('di-claim')) return html; // already has claims
-  // Match patterns like "25 defects", "5 items re-opened", "11 transitions", "3 items", "1 item", "100% closure"
-  return html.replace(/\b(\d+%?\s+(?:defects?|items?|transitions?|closures?|bugs?|incidents?|stories|sub-tasks?|designs?|deployments?|rollbacks?|escalations?|sign-offs?|BRDs?)(?:\s+(?:closed|re-opened|raised|logged|initiated|delivered|delegated|managed|completed|resolved|in (?:QA|review)))?)\b/gi,
+  if (html.includes('di-claim')) return html;
+  // Only wrap "N noun" — e.g. "25 defects", "1 closure", "5 items" — NOT the trailing verb/status
+  return html.replace(/\b(\d+%?\s+(?:defects?|items?|transitions?|closures?|bugs?|incidents?|stories|sub-tasks?|designs?|deployments?|rollbacks?|escalations?|sign-offs?|BRDs?|tasks?))\b/gi,
     '<span class="di-claim">$1</span>'
   );
 }
