@@ -27,11 +27,22 @@ const OVERLAY_TOKENS = `
 }
 @media print {
   .brief-controller-dashboard { display: none !important; }
-  .brief-controller-overlay {
+  .brief-controller-overlay,
+  .brief-controller-overlay *,
+  .sri-root-container,
+  .sri-root-container * {
     position: static !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+  .brief-controller-overlay {
     background: white !important;
     backdrop-filter: none !important;
+    inset: auto !important;
+    z-index: auto !important;
   }
+  body { overflow: visible !important; }
 }
 `;
 
