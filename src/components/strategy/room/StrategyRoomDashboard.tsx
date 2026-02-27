@@ -103,7 +103,7 @@ const THEMES = [
 
 export default function StrategyRoomDashboard({ onOpenBrief, onDownloadBrief }: StrategyRoomDashboardProps) {
   return (
-    <div data-srd style={{ maxWidth: 1440, margin: '0 auto', background: 'var(--srd-bg)', minHeight: '100vh' }}>
+    <div data-srd style={{ width: '100%', margin: '0 auto', background: 'var(--srd-bg)', minHeight: '100vh' }}>
       <style>{TOKENS}</style>
 
       {/* ═══ HEADER — #1 greeting REMOVED ═══ */}
