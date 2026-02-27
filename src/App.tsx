@@ -17,6 +17,7 @@ const AllProjectsPageLazy = lazy(() => import("./pages/projecthub/AllProjectsPag
 const ProjectEpicBacklogPageLazy = lazy(() => import("./pages/project-hub/ProjectEpicBacklogPage"));
 const ProjectFeatureBacklogPageLazy = lazy(() => import("./pages/project-hub/ProjectFeatureBacklogPage"));
 const ProjectStoryBacklogPageLazy = lazy(() => import("./pages/project-hub/ProjectStoryBacklogPage"));
+const HierarchyPageLazy = lazy(() => import("./pages/project-hub/HierarchyPage"));
 import { List, Columns3, AlignJustify, GanttChart, Tag, BarChart3, Sparkles as SparklesIcon, Activity as ActivityIcon } from 'lucide-react';
 import PHPlaceholderBase from "./pages/project-hub/PhasePlaceholderPage";
 const PH_ICONS: Record<string, any> = { Backlog: List, Board: Columns3, List: AlignJustify, Timeline: GanttChart, Releases: Tag, Reports: BarChart3, 'Sprint Predictor': SparklesIcon, 'Risk Scanner': ActivityIcon };
@@ -1169,6 +1170,7 @@ const App = () => (
               <Route path="/project-hub/:key/feature-backlog" element={<Suspense fallback={<div />}><ProjectFeatureBacklogPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/story-backlog" element={<Suspense fallback={<div />}><ProjectStoryBacklogPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/board" element={<Suspense fallback={<div />}><ProjectBoardPageLazy /></Suspense>} />
+              <Route path="/project-hub/:key/hierarchy" element={<Suspense fallback={<div />}><HierarchyPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/list" element={<Suspense fallback={<div />}><WorkItemsListPageLazy /></Suspense>} />
               <Route path="/project-hub/:key/timeline" element={<Suspense fallback={<div />}><PHPlaceholder title="Timeline" phase="Phase 3" /></Suspense>} />
               <Route path="/project-hub/:key/releases" element={<Suspense fallback={<div />}><PHPlaceholder title="Releases" phase="Phase 3" /></Suspense>} />
