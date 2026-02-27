@@ -9042,6 +9042,293 @@ export type Database = {
           },
         ]
       }
+      hi_hierarchy_levels: {
+        Row: {
+          color: string
+          color_text: string
+          icon: string
+          id: number
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          color: string
+          color_text: string
+          icon: string
+          id: number
+          name: string
+          sort_order: number
+        }
+        Update: {
+          color?: string
+          color_text?: string
+          icon?: string
+          id?: number
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      hi_priorities: {
+        Row: {
+          color: string
+          color_text: string
+          icon: string | null
+          id: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          color: string
+          color_text: string
+          icon?: string | null
+          id?: string
+          name: string
+          sort_order: number
+        }
+        Update: {
+          color?: string
+          color_text?: string
+          icon?: string | null
+          id?: string
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      hi_project_sequences: {
+        Row: {
+          last_number: number
+          project_id: string
+        }
+        Insert: {
+          last_number?: number
+          project_id: string
+        }
+        Update: {
+          last_number?: number
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hi_project_sequences_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hi_project_versions: {
+        Row: {
+          archived: boolean | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          project_id: string
+          release_date: string | null
+          released: boolean | null
+          start_date: string | null
+          status: string | null
+        }
+        Insert: {
+          archived?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          project_id: string
+          release_date?: string | null
+          released?: boolean | null
+          start_date?: string | null
+          status?: string | null
+        }
+        Update: {
+          archived?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          project_id?: string
+          release_date?: string | null
+          released?: boolean | null
+          start_date?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hi_project_versions_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hi_statuses: {
+        Row: {
+          color: string
+          color_text: string
+          id: string
+          is_default: boolean | null
+          is_terminal: boolean | null
+          name: string
+          project_id: string | null
+          sort_order: number
+        }
+        Insert: {
+          color: string
+          color_text: string
+          id?: string
+          is_default?: boolean | null
+          is_terminal?: boolean | null
+          name: string
+          project_id?: string | null
+          sort_order: number
+        }
+        Update: {
+          color?: string
+          color_text?: string
+          id?: string
+          is_default?: boolean | null
+          is_terminal?: boolean | null
+          name?: string
+          project_id?: string | null
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hi_statuses_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hi_work_items: {
+        Row: {
+          assignee_id: string | null
+          created_at: string | null
+          description: Json | null
+          due_date: string | null
+          fix_version_id: string | null
+          hierarchy_level: number
+          id: string
+          key: string
+          labels: string[] | null
+          last_modified_by: string | null
+          number: number
+          parent_id: string | null
+          priority_id: string | null
+          project_id: string
+          reporter_id: string
+          resolved_at: string | null
+          root_id: string | null
+          status_id: string
+          title: string
+          updated_at: string | null
+          version: number | null
+        }
+        Insert: {
+          assignee_id?: string | null
+          created_at?: string | null
+          description?: Json | null
+          due_date?: string | null
+          fix_version_id?: string | null
+          hierarchy_level: number
+          id?: string
+          key: string
+          labels?: string[] | null
+          last_modified_by?: string | null
+          number: number
+          parent_id?: string | null
+          priority_id?: string | null
+          project_id: string
+          reporter_id: string
+          resolved_at?: string | null
+          root_id?: string | null
+          status_id: string
+          title: string
+          updated_at?: string | null
+          version?: number | null
+        }
+        Update: {
+          assignee_id?: string | null
+          created_at?: string | null
+          description?: Json | null
+          due_date?: string | null
+          fix_version_id?: string | null
+          hierarchy_level?: number
+          id?: string
+          key?: string
+          labels?: string[] | null
+          last_modified_by?: string | null
+          number?: number
+          parent_id?: string | null
+          priority_id?: string | null
+          project_id?: string
+          reporter_id?: string
+          resolved_at?: string | null
+          root_id?: string | null
+          status_id?: string
+          title?: string
+          updated_at?: string | null
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hi_work_items_fix_version_id_fkey"
+            columns: ["fix_version_id"]
+            isOneToOne: false
+            referencedRelation: "hi_project_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hi_work_items_hierarchy_level_fkey"
+            columns: ["hierarchy_level"]
+            isOneToOne: false
+            referencedRelation: "hi_hierarchy_levels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hi_work_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "hi_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hi_work_items_priority_id_fkey"
+            columns: ["priority_id"]
+            isOneToOne: false
+            referencedRelation: "hi_priorities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hi_work_items_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hi_work_items_root_id_fkey"
+            columns: ["root_id"]
+            isOneToOne: false
+            referencedRelation: "hi_work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hi_work_items_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "hi_statuses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hierarchy_configs: {
         Row: {
           created_at: string | null
@@ -61298,6 +61585,74 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      hi_get_hierarchy_tree: {
+        Args: { p_root_id: string }
+        Returns: {
+          assignee_display_name: string
+          assignee_email: string
+          assignee_id: string
+          completed_count: number
+          created_at: string
+          due_date: string
+          fix_version_id: string
+          fix_version_name: string
+          hierarchy_color: string
+          hierarchy_color_text: string
+          hierarchy_level: number
+          hierarchy_name: string
+          id: string
+          key: string
+          labels: string[]
+          parent_id: string
+          priority_color: string
+          priority_color_text: string
+          priority_name: string
+          root_id: string
+          status_color: string
+          status_color_text: string
+          status_id: string
+          status_is_terminal: boolean
+          status_name: string
+          title: string
+          total_descendants: number
+          updated_at: string
+        }[]
+      }
+      hi_get_project_work_items: {
+        Args: {
+          p_hierarchy_level?: number
+          p_limit?: number
+          p_offset?: number
+          p_project_id: string
+          p_status_id?: string
+        }
+        Returns: {
+          assignee_display_name: string
+          created_at: string
+          due_date: string
+          fix_version_name: string
+          hierarchy_color: string
+          hierarchy_color_text: string
+          hierarchy_level: number
+          hierarchy_name: string
+          id: string
+          key: string
+          parent_id: string
+          parent_key: string
+          priority_color: string
+          priority_color_text: string
+          priority_name: string
+          status_color: string
+          status_color_text: string
+          status_name: string
+          title: string
+          updated_at: string
+        }[]
+      }
+      hi_validate_hierarchy_move: {
+        Args: { p_new_parent_id: string; p_node_id: string }
         Returns: boolean
       }
       import_automation_results: {
