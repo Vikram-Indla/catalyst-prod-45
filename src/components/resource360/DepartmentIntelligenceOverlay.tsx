@@ -150,22 +150,6 @@ function ExecutiveSummaryV5({ data, avatarMap }: { data: ExecSummaryV5 | null; a
         </div>
       )}
 
-      {/* Project Activity */}
-      {data.projectActivity.length > 0 && (
-        <div className="di-exec-section">
-          <div className="di-exec-label">PROJECT ACTIVITY</div>
-          {data.projectActivity.map((prj, i) => (
-            <div className="di-prj-row" key={i}>
-              <span className="di-prj-name">{prj.name}</span>
-              <span className="di-prj-desc">{prj.desc}</span>
-              <span className={`di-prj-badge prj-${prj.status === 'risk' ? 'risk' : prj.status === 'stalled' ? 'stalled' : 'active'}`}>
-                {prj.status === 'risk' ? 'AT RISK' : prj.status === 'stalled' ? 'STALLED' : 'ACTIVE'}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
-
       {/* Requires Attention */}
       {data.requiresAttention.length > 0 && (
         <div className="di-exec-section">
@@ -267,6 +251,33 @@ function Recommendations({ items }: { items: Recommendation[] }) {
   );
 }
 
+/* ═══ Tab: Project Activity ═══ */
+function ProjectActivityTab({ projects }: { projects: ProjectActivity[] }) {
+  if (projects.length === 0) return (
+    <div className="di-empty">
+      <Sparkles size={24} />
+      <div className="di-empty-t">No project activity yet</div>
+      <div className="di-empty-s">Click <strong>✦ Refresh AI</strong> to generate.</div>
+    </div>
+  );
+
+  return (
+    <div className="di-exec">
+      <div className="di-exec-section" style={{ paddingTop: 0 }}>
+        {projects.map((prj, i) => (
+          <div className="di-prj-row" key={i}>
+            <span className="di-prj-name">{prj.name}</span>
+            <span className="di-prj-desc">{prj.desc}</span>
+            <span className={`di-prj-badge prj-${prj.status === 'risk' ? 'risk' : prj.status === 'stalled' ? 'stalled' : 'active'}`}>
+              {prj.status === 'risk' ? 'AT RISK' : prj.status === 'stalled' ? 'STALLED' : 'ACTIVE'}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /** Parse inline CSS string like "background:#EDE9FE;color:#5B21B6" to React style */
 function parseCssStyle(css: string): React.CSSProperties {
   const style: Record<string, string> = {};
@@ -291,7 +302,7 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
   const avatarMap = useProfileAvatarsByName();
 
   // Tab 1 = Executive Summary (default), Tab 2 = Weekly Digest, Tab 3 = Recommendations
-  const [activeTab, setActiveTab] = useState<'summary' | 'digest' | 'recs'>('summary');
+  const [activeTab, setActiveTab] = useState<'summary' | 'digest' | 'projects' | 'recs'>('summary');
 
   // Drill-in panel state
   const [drillIn, setDrillIn] = useState<{ resourceName: string; claimText: string } | null>(null);
@@ -377,13 +388,16 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
             </div>
           </div>
 
-          {/* 3 TABS — Executive Summary first */}
+          {/* 4 TABS */}
           <div className="di-tabs">
             <button className={`di-tab ${activeTab === 'summary' ? 'active' : ''}`} onClick={() => setActiveTab('summary')}>
               Executive Summary
             </button>
             <button className={`di-tab ${activeTab === 'digest' ? 'active' : ''}`} onClick={() => setActiveTab('digest')}>
               Weekly Digest{digest.length > 0 && <span className="di-tab-count">{digest.length}</span>}
+            </button>
+            <button className={`di-tab ${activeTab === 'projects' ? 'active' : ''}`} onClick={() => setActiveTab('projects')}>
+              Project Activity{(summaryV5?.projectActivity?.length ?? 0) > 0 && <span className="di-tab-count">{summaryV5?.projectActivity?.length}</span>}
             </button>
             <button className={`di-tab ${activeTab === 'recs' ? 'active' : ''}`} onClick={() => setActiveTab('recs')}>
               Recommendations{recommendations.length > 0 && <span className="di-tab-count">{recommendations.length}</span>}
@@ -398,6 +412,7 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
             <>
               {activeTab === 'summary' && <ExecutiveSummaryV5 data={summaryV5} avatarMap={avatarMap} />}
               {activeTab === 'digest' && <WeeklyDigest events={digest} weekStart={weekStart} />}
+              {activeTab === 'projects' && <ProjectActivityTab projects={summaryV5?.projectActivity || []} />}
               {activeTab === 'recs' && <Recommendations items={recommendations} />}
             </>
           ) : (
