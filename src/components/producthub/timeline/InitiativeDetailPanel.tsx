@@ -146,7 +146,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
         .update({ title: trimmed, updated_at: new Date().toISOString() })
         .eq('id', initiative.id);
       if (error) throw error;
-      toast.success('Title saved');
+      toast.success('Title saved', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
       queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
     } catch { toast.error('Failed to save title'); }
@@ -163,7 +163,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
       queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
-      toast.success('Initiative deleted');
+      toast.success('Initiative deleted', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
       handleClose();
     },
     onError: () => toast.error('Failed to delete'),
@@ -190,7 +190,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
       });
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
-      toast.success('Initiative cloned');
+      toast.success('Initiative cloned', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
     } catch { toast.error('Clone failed'); }
   };
 
@@ -218,6 +218,19 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
           </button>
           <div className="idp-action-group">
             <button className="idp-action-btn" onClick={handleClone}>Clone</button>
+            <button className="idp-action-btn idp-action-btn--archive" onClick={() => {
+              (async () => {
+                try {
+                  const { error } = await (supabase as any).from('ph_initiatives')
+                    .update({ is_archived: !initiative.is_archived, updated_at: new Date().toISOString() })
+                    .eq('id', initiative.id);
+                  if (error) throw error;
+                  queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+                  queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
+                  toast.success(initiative.is_archived ? 'Restored' : 'Archived', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
+                } catch { toast.error('Failed to archive'); }
+              })();
+            }}>{initiative.is_archived ? 'Restore' : 'Archive'}</button>
             <button className="idp-action-btn idp-action-btn--delete" onClick={() => setShowDeleteConfirm(true)}>Delete</button>
             <div className="idp-divider" />
             <button className="idp-close-btn" onClick={handleClose}>✕</button>

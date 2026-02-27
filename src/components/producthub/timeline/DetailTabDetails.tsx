@@ -251,7 +251,7 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
       });
       queryClient.invalidateQueries({ queryKey: ['pk-comments', initiativeId] });
       setNewComment('');
-      toast.success('Comment posted');
+      toast.success('Comment posted', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
     } catch (err: any) {
       toast.error('Failed: ' + err.message);
     } finally {
@@ -262,7 +262,7 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
   const handleDelete = async (id: string) => {
     await (supabase as any).from('ph_comments').delete().eq('id', id);
     queryClient.invalidateQueries({ queryKey: ['pk-comments', initiativeId] });
-    toast.success('Comment deleted');
+    toast.success('Comment deleted', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
   };
 
   return (
@@ -357,7 +357,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         toast.error(`Failed to persist ${label.toLowerCase()}`);
         return;
       }
-      toast.success(`${label} updated`, { duration: 2000, icon: <Check size={14} style={{ color: '#2563EB' }} /> });
+      toast.success(`${label} updated`, { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center', icon: <Check size={14} style={{ color: '#2563EB' }} /> });
       invalidateAll();
     } catch (err: any) {
       toast.error(`Failed to update ${label.toLowerCase()}`);
@@ -382,7 +382,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         .eq('id', initiative.id).select();
       if (error) throw error;
       if (!rows || rows.length === 0) { toast.error('Failed to persist type'); return; }
-      toast.success(`Type → ${typeKey}`, { duration: 2000 });
+      toast.success(`Type → ${typeKey}`, { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
       invalidateAll();
     } catch { toast.error('Failed to update type'); }
     finally { setUpdatingType(false); }
