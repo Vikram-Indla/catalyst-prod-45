@@ -43,9 +43,9 @@ interface Props {
 /* ═══ Inject chevron claims into descriptions (client-side fallback) ═══ */
 function injectClaims(html: string): string {
   if (html.includes('di-claim')) return html;
-  // Only wrap "N noun" — e.g. "25 defects", "1 closure", "5 items" — NOT the trailing verb/status
-  return html.replace(/\b(\d+%?\s+(?:defects?|items?|transitions?|closures?|bugs?|incidents?|stories|sub-tasks?|designs?|deployments?|rollbacks?|escalations?|sign-offs?|BRDs?|tasks?))\b/gi,
-    '<span class="di-claim">$1</span>'
+  // Only wrap the numeric portion (e.g. "25", "5", "1") — the noun stays plain text
+  return html.replace(/\b(\d+%?)\s+(defects?|items?|transitions?|closures?|bugs?|incidents?|stories|sub-tasks?|designs?|deployments?|rollbacks?|escalations?|sign-offs?|BRDs?|tasks?)\b/gi,
+    '<span class="di-claim">$1</span> $2'
   );
 }
 
@@ -323,7 +323,11 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
       if (nameEl) resourceName = nameEl.textContent?.trim() || 'Unknown';
     }
 
-    const claimText = claim.textContent?.replace(/›/g, '').trim() || '';
+    // The claim now only contains the number; grab the following noun from adjacent text
+    const num = claim.textContent?.trim() || '';
+    // Get the text node right after the claim span to capture the noun
+    const nextText = claim.nextSibling?.textContent?.trim().split(/[,.\s]/)[0] || '';
+    const claimText = nextText ? `${num} ${nextText}` : num;
     if (claimText) {
       setDrillIn({ resourceName, claimText });
     }
