@@ -58,8 +58,11 @@ Hub RAG logic:
 ═══ SECTION 3: RECOMMENDATIONS ═══
 Generate exactly 5 recommendation cards:
 - number: 1–5
-- title: short action title
-- description: 1–2 sentences explaining why and what to do
+- title: short action title (plain text, NO HTML)
+- description: 1–2 sentences explaining why and what to do. Use HTML spans for inline references:
+  - <span class="di-ev-actor">Name</span> for people
+  - <span class="di-ev-tk">BAU-1234</span> for tickets
+  - <span class="di-ev-st s-done">Done</span> for statuses
 - priority: "high" | "medium"
 
 Sort by priority descending (high items first).

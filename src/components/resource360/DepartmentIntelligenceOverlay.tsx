@@ -173,7 +173,7 @@ function Recommendations({ items }: { items: Recommendation[] }) {
           <span className="di-rec-num">{rec.number}</span>
           <div className="di-rec-body">
             <div className="di-rec-title">{rec.title}</div>
-            <div className="di-rec-desc">{rec.description}</div>
+            <div className="di-rec-desc" dangerouslySetInnerHTML={{ __html: rec.description }} />
           </div>
           <span className={`di-rec-pri pri-${rec.priority}`}>
             {rec.priority === 'high' ? 'HIGH' : 'MEDIUM'}
