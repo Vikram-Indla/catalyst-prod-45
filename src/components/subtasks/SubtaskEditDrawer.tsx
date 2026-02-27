@@ -32,7 +32,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Trash2, Palette, Server, Plug, Settings } from 'lucide-react';
+import { Trash2, Palette, Server, Plug, Figma } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 import { ChangeNumberSelect } from '@/components/common/ChangeNumberSelect';
@@ -61,10 +61,10 @@ const TYPE_ICONS: Record<SubtaskType, React.ElementType> = {
   frontend: Palette,
   backend: Server,
   integration: Plug,
-  technical: Settings,
+  figma: Figma,
 };
 
-const TYPE_OPTIONS: SubtaskType[] = ['frontend', 'backend', 'integration', 'technical'];
+const TYPE_OPTIONS: SubtaskType[] = ['frontend', 'backend', 'integration', 'figma'];
 const STATUS_OPTIONS: SubtaskStatus[] = ['todo', 'in_progress', 'done'];
 
 export function SubtaskEditDrawer({
@@ -80,7 +80,7 @@ export function SubtaskEditDrawer({
 
   // Form state
   const [name, setName] = useState('');
-  const [type, setType] = useState<SubtaskType>('technical');
+  const [type, setType] = useState<SubtaskType>('frontend');
   const [status, setStatus] = useState<SubtaskStatus>('todo');
   const [assigneeId, setAssigneeId] = useState<string | null>(null);
   const [releaseId, setReleaseId] = useState<string | null>(null);

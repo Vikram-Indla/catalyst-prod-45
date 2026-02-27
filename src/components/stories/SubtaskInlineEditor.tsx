@@ -3,7 +3,7 @@
  * Types: Frontend (blue), Backend (olive), Integration (amber), Technical (bronze)
  */
 
-import { Trash2, Palette, Server, Plug, Settings } from 'lucide-react';
+import { Trash2, Palette, Server, Plug, Figma } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -19,8 +19,8 @@ import { SUBTASK_TYPES, type SubtaskInput, type SubtaskType } from '@/types/stor
 interface SubtaskInlineEditorProps {
   subtasks: SubtaskInput[];
   onChange: (subtasks: SubtaskInput[]) => void;
-  teamMembers: Array<{ id: string; full_name: string; avatar_url?: string }>;
-  releases: Array<{ id: string; name: string }>;
+  teamMembers?: Array<{ id: string; full_name: string; avatar_url?: string }>;
+  releases?: Array<{ id: string; name: string }>;
   defaultReleaseId?: string;
 }
 
@@ -28,7 +28,7 @@ const TYPE_ICONS: Record<SubtaskType, React.ReactNode> = {
   frontend: <Palette className="h-3 w-3" />,
   backend: <Server className="h-3 w-3" />,
   integration: <Plug className="h-3 w-3" />,
-  technical: <Settings className="h-3 w-3" />,
+  figma: <Figma className="h-3 w-3" />,
 };
 
 export function SubtaskInlineEditor({
