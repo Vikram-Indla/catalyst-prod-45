@@ -10,14 +10,21 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { department, weekStart, weekEnd, weekNumber, weekRange, transitions, stats, resourceSummary } = await req.json();
+    const { department, weekStart, weekEnd, weekNumber, weekRange, transitions, stats, resourceSummary, roleBreakdown } = await req.json();
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
+    const roleBreakdownStr = roleBreakdown
+      ? Object.entries(roleBreakdown).map(([group, members]) => `  ${group}: ${(members as string[]).join(', ')}`).join('\n')
+      : 'No role data available.';
+
     const systemPrompt = `You are a Senior Project Manager writing a weekly STEERCOM briefing for the ${department} department. You have ${transitions.length} status transitions across resources for Week ${weekNumber} (${weekRange}).
 
 VOICE: Write like you are presenting to a Steering Committee of CIOs. Every sentence states a fact, quantifies impact, and surfaces the "so what". Use: "batch-resolved", "commenced work", "cycle time", "closure rate", "sprint velocity", "backlog hygiene". Never use casual praise. Quantify everything.
+
+ROLE BREAKDOWN OF THE TEAM:
+${roleBreakdownStr}
 
 GENERATE THREE SECTIONS:
 
@@ -39,39 +46,71 @@ Each bullet has:
   - <span class="di-ev-tk">BAU-1234</span> for tickets
   - <span class="di-ev-st s-done">Done</span> for statuses (use s-done/s-prog/s-rev/s-blk/s-qa/s-todo/s-reopen)
 
-═══ SECTION 2: EXECUTIVE SUMMARY ═══
-Generate:
-- closureRate: number (e.g. 26.7)
-- closureNumerator: number
-- closureDenominator: number
-- topContributor: string (name)
-- topContributorPct: number
-- wentWell: string[] (exactly 3 items, HTML allowed with <strong>)
-- requiresAttention: string[] (exactly 3 items, HTML allowed with <strong> and status spans)
-- hubStatus: array of { hub, stat, rag } where rag is "g"/"a"/"r"
+═══ SECTION 2: EXECUTIVE SUMMARY (ROLE-BASED) ═══
 
-Hub RAG logic:
-- GREEN: closure rate ≥70%, no blockers, stable backlog
-- AMBER: closure 40–69%, OR any blocker, OR single-resource dependency
-- RED: closure <40%, OR stalled ≥2 weeks, OR multiple blockers
+2A. topContributor: The person with the most impactful contributions this week.
+- name: string (full name)
+- role: string (job title from resource inventory)
+- roleGroup: "developer"|"qa"|"product_owner"|"ux_designer"|"delivery_mgmt"|"devops"
+- projects: string[] (project names they worked on)
+- consecutiveWeeks: number (set to 1 unless you know otherwise)
+- kpis: array of {value, label} — use ROLE-SPECIFIC metrics:
+  If developer: "Defects Closed", "Moved to QA", "Projects"
+  If qa: "Bugs Raised", "Incidents Raised", "Projects"
+  If product_owner: "Stories Logged", "BRDs Initiated", "Projects"
+  If ux_designer: "Designs Delivered", "Design Reviews", "Projects"
+  If delivery_mgmt: "Tasks Delegated", "Escalations Managed", "Projects"
+  If devops: "Deployments", "Rollbacks", "Projects"
+
+2B. roleContributions: Array of role group cards. One per active role group.
+Each card:
+- role: display name (e.g. "Developers", "QA Engineers", "Product Owners", "UX Designers", "Delivery Management", "DevOps")
+- roleCss: CSS class ("role-dev"|"role-qa"|"role-po"|"role-ux"|"role-mgmt"|"role-devops")
+- resourceCount: number
+- projects: string[] (project names)
+- kpis: ROLE-SPECIFIC metrics array:
+  Developers: "Defects Closed", "Sub-tasks Closed", "Re-Opened", "Moved to QA"
+  QA Engineers: "Bugs Raised", "Incidents Raised", "Items in QA"
+  Product Owners: "Stories Logged", "BRDs Initiated", "Sign-Offs"
+  UX Designers: "Designs Delivered", "Design Reviews"
+  Delivery Mgmt: "Tasks Delegated", "Escalations Managed"
+  DevOps: "Deployments", "Rollbacks"
+- resources: array of {name, desc} — desc is HTML with <strong>project names</strong> bolded
+
+2C. projectActivity: Array of projects.
+Each: { name, desc (1 sentence), status: "active"|"risk"|"stalled" }
+
+2D. requiresAttention: string[] — each item MUST name the person, their role, the project, and the specific risk. Use HTML with <strong> for names.
 
 ═══ SECTION 3: RECOMMENDATIONS ═══
 Generate exactly 5 recommendation cards:
 - number: 1–5
 - title: short action title (plain text, NO HTML)
-- description: 1–2 sentences explaining why and what to do. Use HTML spans for inline references:
-  - <span class="di-ev-actor">Name</span> for people
-  - <span class="di-ev-tk">BAU-1234</span> for tickets
-  - <span class="di-ev-st s-done">Done</span> for statuses
+- roleTag: role group label (e.g. "QA ENGINEERS", "DEVELOPERS")
+- roleTagCss: inline CSS for the tag (e.g. "background:#EDE9FE;color:#5B21B6")
+  Role tag colors:
+    Developers: "background:#DBEAFE;color:#1E3A8A"
+    QA Engineers: "background:#EDE9FE;color:#5B21B6"
+    Product Owners: "background:#CCFBF1;color:#134E4A"
+    UX Designers: "background:#FCE7F3;color:#9D174D"
+    Delivery Mgmt: "background:#FEF3C7;color:#78350F"
+    DevOps: "background:#DCFCE7;color:#166534"
+- project: string (project names separated by " · ")
+- description: 1–2 sentences explaining why and what to do.
 - priority: "high" | "medium"
 
 Sort by priority descending (high items first).
 
 OUTPUT: Return ONLY valid JSON (no markdown, no code fences):
 {
-  "digest": [ { "number": 1, "day": "SUN", "dayIndex": 0, "hub": "INC", "hubCss": "hub-inc", "signal": null, "signalLabel": null, "body": "..." } ],
-  "summary": { "closureRate": 26.7, "closureNumerator": 51, "closureDenominator": 191, "topContributor": "Name", "topContributorPct": 49, "wentWell": ["..."], "requiresAttention": ["..."], "hubStatus": [{ "hub": "IncidentHub", "stat": "...", "rag": "g" }] },
-  "recommendations": [ { "number": 1, "title": "...", "description": "...", "priority": "high" } ]
+  "digest": [ ... ],
+  "summaryV5": {
+    "topContributor": { "name": "...", "role": "...", "roleGroup": "developer", "projects": ["..."], "consecutiveWeeks": 1, "kpis": [{"value": 25, "label": "Defects Closed"}, ...] },
+    "roleContributions": [ { "role": "Developers", "roleCss": "role-dev", "resourceCount": 7, "projects": ["..."], "kpis": [...], "resources": [{"name": "...", "desc": "..."}] } ],
+    "projectActivity": [ { "name": "...", "desc": "...", "status": "active" } ],
+    "requiresAttention": [ "<strong>Name (Role, Project):</strong> ..." ]
+  },
+  "recommendations": [ { "number": 1, "title": "...", "roleTag": "QA ENGINEERS", "roleTagCss": "background:#EDE9FE;color:#5B21B6", "project": "Senaei BA · Mobile FE", "description": "...", "priority": "high" } ]
 }`;
 
     const userPrompt = `Here are the ${transitions.length} transitions for ${department}, Week ${weekNumber} (${weekRange}):
@@ -84,7 +123,7 @@ ${resourceSummary || 'No resource summary available.'}
 Transitions data:
 ${JSON.stringify(transitions, null, 0)}
 
-Generate the full 3-section STEERCOM briefing now.`;
+Generate the full 3-section role-based STEERCOM briefing now.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -99,7 +138,7 @@ Generate the full 3-section STEERCOM briefing now.`;
           { role: "user", content: userPrompt },
         ],
         temperature: 0.7,
-        max_tokens: 10000,
+        max_tokens: 12000,
       }),
     });
 
@@ -129,7 +168,7 @@ Generate the full 3-section STEERCOM briefing now.`;
       parsed = JSON.parse(content);
     } catch {
       console.error("Failed to parse AI response:", content.substring(0, 500));
-      parsed = { digest: [], summary: null, recommendations: [] };
+      parsed = { digest: [], summaryV5: null, recommendations: [] };
     }
 
     // Cache
@@ -147,6 +186,57 @@ Generate the full 3-section STEERCOM briefing now.`;
       computed_at: new Date().toISOString(),
       is_stale: false,
     }, { onConflict: "scope_type,scope_id,section,week_start" });
+
+    // Save top contributor to di_weekly_awards
+    if (parsed.summaryV5?.topContributor) {
+      const tc = parsed.summaryV5.topContributor;
+
+      // Check previous week's winner for consecutive tracking
+      const prevWeekStart = new Date(weekStart);
+      prevWeekStart.setDate(prevWeekStart.getDate() - 7);
+      const prevWeekStartStr = `${prevWeekStart.getFullYear()}-${String(prevWeekStart.getMonth() + 1).padStart(2, '0')}-${String(prevWeekStart.getDate()).padStart(2, '0')}`;
+
+      const { data: prevAward } = await sb
+        .from("di_weekly_awards")
+        .select("resource_name, consecutive_weeks")
+        .eq("department", department)
+        .eq("week_start", prevWeekStartStr)
+        .maybeSingle();
+
+      const consecutiveWeeks = (prevAward && prevAward.resource_name === tc.name)
+        ? (prevAward.consecutive_weeks || 1) + 1
+        : 1;
+
+      await sb.from("di_weekly_awards").upsert({
+        department,
+        week_number: weekNumber,
+        week_start: weekStart,
+        week_end: weekEnd,
+        resource_id: tc.name,
+        resource_name: tc.name,
+        job_role: tc.role || '',
+        role_group: tc.roleGroup || 'developer',
+        total_score: tc.kpis?.reduce((s: number, k: any) => s + (k.value || 0), 0) || 0,
+        kpis: tc.kpis || [],
+        projects: tc.projects || [],
+        consecutive_weeks: consecutiveWeeks,
+      }, { onConflict: "department,week_number,week_start" });
+
+      // Update the cached data with correct consecutive weeks
+      if (parsed.summaryV5.topContributor) {
+        parsed.summaryV5.topContributor.consecutiveWeeks = consecutiveWeeks;
+        await sb.from("r360_ai_cache").upsert({
+          scope_type: "department",
+          scope_id: department,
+          section: "dept_intel_v4",
+          week_start: weekStart,
+          data: parsed,
+          status: "fresh",
+          computed_at: new Date().toISOString(),
+          is_stale: false,
+        }, { onConflict: "scope_type,scope_id,section,week_start" });
+      }
+    }
 
     return new Response(JSON.stringify(parsed), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

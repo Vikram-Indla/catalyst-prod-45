@@ -4243,6 +4243,57 @@ export type Database = {
           },
         ]
       }
+      di_weekly_awards: {
+        Row: {
+          consecutive_weeks: number | null
+          created_at: string | null
+          department: string
+          id: string
+          job_role: string
+          kpis: Json
+          projects: string[]
+          resource_id: string
+          resource_name: string
+          role_group: string
+          total_score: number
+          week_end: string
+          week_number: number
+          week_start: string
+        }
+        Insert: {
+          consecutive_weeks?: number | null
+          created_at?: string | null
+          department: string
+          id?: string
+          job_role: string
+          kpis?: Json
+          projects?: string[]
+          resource_id: string
+          resource_name: string
+          role_group: string
+          total_score: number
+          week_end: string
+          week_number: number
+          week_start: string
+        }
+        Update: {
+          consecutive_weeks?: number | null
+          created_at?: string | null
+          department?: string
+          id?: string
+          job_role?: string
+          kpis?: Json
+          projects?: string[]
+          resource_id?: string
+          resource_name?: string
+          role_group?: string
+          total_score?: number
+          week_end?: string
+          week_number?: number
+          week_start?: string
+        }
+        Relationships: []
+      }
       discussion_mentions: {
         Row: {
           created_at: string
