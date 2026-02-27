@@ -445,24 +445,13 @@
 .di-res-desc { font: 400 13px/1.7 var(--di-font-body); color: #3F3F46; flex: 1; }
 .di-res-desc strong { color: #09090B; font-weight: 600; }
 
-/* Claim chevron — small drill-in indicator next to numeric claims */
+/* Claim link — only on the numeric value */
 .di-claim {
-  font-weight: 600; color: var(--di-primary); cursor: pointer;
-  border-bottom: 1px dashed var(--di-primary);
-  padding-bottom: 1px;
+  font-weight: 700; color: var(--di-primary); cursor: pointer;
+  border-bottom: 1px solid var(--di-primary);
+  padding-bottom: 0px;
 }
-.di-claim::after {
-  content: '›';
-  display: inline-block;
-  margin-left: 3px;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--di-primary);
-  vertical-align: baseline;
-  transition: transform 0.15s;
-}
-.di-claim:hover { color: var(--di-primary-hover); }
-.di-claim:hover::after { transform: translateX(2px); }
+.di-claim:hover { color: var(--di-primary-hover); border-bottom-color: var(--di-primary-hover); }
 
 /* Project Activity */
 .di-prj-row {
