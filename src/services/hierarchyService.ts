@@ -63,7 +63,7 @@ function buildTree(items: WorkItem[]): WorkItem[] {
 }
 
 export async function fetchHierarchyTree(rootId: string): Promise<WorkItem[]> {
-  const { data, error } = await supabase.rpc('hi_get_hierarchy_tree', { p_root_id: rootId } as any);
+  const { data, error } = await (supabase.rpc as any)('hi_get_hierarchy_tree', { p_root_id: rootId });
   if (error) throw error;
   const items = (data || []).map(transformWorkItem);
   return buildTree(items);
@@ -73,11 +73,11 @@ export async function fetchProjectWorkItems(projectId: string, filters?: {
   hierarchyLevel?: number;
   statusId?: string;
 }): Promise<WorkItem[]> {
-  const { data, error } = await supabase.rpc('hi_get_project_work_items', {
+  const { data, error } = await (supabase.rpc as any)('hi_get_project_work_items', {
     p_project_id: projectId,
     p_hierarchy_level: filters?.hierarchyLevel ?? null,
     p_status_id: filters?.statusId ?? null,
-  } as any);
+  });
   if (error) throw error;
   return (data || []).map(transformWorkItem);
 }
@@ -87,11 +87,11 @@ export async function fetchRootEpics(projectId: string): Promise<WorkItem[]> {
 }
 
 export async function fetchAllWorkItemsTree(projectId: string): Promise<WorkItem[]> {
-  const { data, error } = await supabase.rpc('hi_get_project_work_items', {
+  const { data, error } = await (supabase.rpc as any)('hi_get_project_work_items', {
     p_project_id: projectId,
     p_hierarchy_level: null,
     p_status_id: null,
-  } as any);
+  });
   if (error) throw error;
   const items = (data || []).map(transformWorkItem);
   return buildTree(items);

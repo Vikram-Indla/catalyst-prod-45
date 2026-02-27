@@ -61630,8 +61630,12 @@ export type Database = {
         }
         Returns: {
           assignee_display_name: string
+          assignee_email: string
+          assignee_id: string
+          completed_count: number
           created_at: string
           due_date: string
+          fix_version_id: string
           fix_version_name: string
           hierarchy_color: string
           hierarchy_color_text: string
@@ -61639,15 +61643,20 @@ export type Database = {
           hierarchy_name: string
           id: string
           key: string
+          labels: string[]
           parent_id: string
           parent_key: string
           priority_color: string
           priority_color_text: string
+          priority_id: string
           priority_name: string
           status_color: string
           status_color_text: string
+          status_id: string
+          status_is_terminal: boolean
           status_name: string
           title: string
+          total_descendants: number
           updated_at: string
         }[]
       }
