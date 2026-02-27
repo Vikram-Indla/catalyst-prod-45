@@ -1,11 +1,10 @@
 /**
- * CreateInitiativeDrawer — Slide-in form for creating a new initiative.
- * Stage C redesign: dark header, grouped sections, type selector, roadmap toggle.
+ * CreateInitiativeDialog — Centered modal for creating a new initiative.
+ * MARAM V3.1 · Catalyst V11 Carbon Precision
  */
-import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, FileText, Tag, Users, Calendar, Map, Bot, FolderKanban, Zap, Wrench, Leaf, Link, RefreshCw, GitMerge, type LucideIcon } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { createPortal } from 'react-dom';
+import { X, Loader2, FileText, Tag, Users, Calendar, RefreshCw, GitMerge } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -16,6 +15,15 @@ import { StatusSelect } from './StatusSelect';
 import { QuarterSelect } from './QuarterSelect';
 import { PeopleSelect } from './PeopleSelect';
 import { DepartmentSelect } from './DepartmentSelect';
+
+/* ── Token constants ── */
+const T = {
+  ink: '#09090B', inkSec: '#18181B', inkMuted: '#71717A',
+  surface: '#FFFFFF', surfSec: '#F8FAFC',
+  border: '#E2E8F0', borderStrong: '#CBD5E1',
+  primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: '#EFF6FF',
+  danger: '#DC2626',
+};
 
 export interface ConversionSource {
   type: 'single' | 'merge';
@@ -30,21 +38,17 @@ interface CreateInitiativeDrawerProps {
   onCreated?: (initiativeKey: string) => void;
 }
 
+/* ── Hooks ── */
 function useNextInitiativeKey() {
   return useQuery({
     queryKey: ['next-initiative-key'],
     queryFn: async () => {
-      const { data } = await (supabase as any)
-        .from('ph_initiatives')
-        .select('initiative_key');
+      const { data } = await (supabase as any).from('ph_initiatives').select('initiative_key');
       if (data && data.length > 0) {
         let maxNum = 0;
         for (const row of data) {
           const match = row.initiative_key?.match(/MIM-(\d+)/);
-          if (match) {
-            const num = parseInt(match[1], 10);
-            if (num > maxNum) maxNum = num;
-          }
+          if (match) { const num = parseInt(match[1], 10); if (num > maxNum) maxNum = num; }
         }
         return `MIM-${String(maxNum + 1).padStart(3, '0')}`;
       }
@@ -73,20 +77,11 @@ function useCreateInitiative() {
           target_complete: newInit.target_complete || null,
           business_ask_date: newInit.business_ask_date || null,
           initiative_key: newInit.initiative_key,
-          progress: 0,
-          sort_order: 0,
-          is_archived: false,
+          progress: 0, sort_order: 0, is_archived: false,
           initiative_type_id: newInit.initiative_type_id || null,
-          on_roadmap: newInit.on_roadmap || false,
-          roadmap_added_at: newInit.on_roadmap ? new Date().toISOString() : null,
-          health_status: newInit.health_status || 'on_track',
-          business_value: newInit.business_value || null,
-          estimated_budget: newInit.estimated_budget || null,
-          roadmap_priority: newInit.roadmap_priority || null,
-          tags: newInit.tags || [],
+          on_roadmap: false,
         })
-        .select()
-        .single();
+        .select().single();
       if (error) throw new Error(error.message);
       return data;
     },
@@ -99,22 +94,48 @@ function useCreateInitiative() {
       queryClient.invalidateQueries({ queryKey: ['roadmap-summary'] });
       catalystToast.success(`${data.initiative_key} created`);
     },
-    onError: (err: Error) => {
-      catalystToast.error('Failed to create: ' + err.message);
-    },
+    onError: (err: Error) => { catalystToast.error('Failed to create: ' + err.message); },
   });
 }
 
-const TYPE_OPTIONS: { key: string; label: string; Icon: LucideIcon; color: string }[] = [
-  { key: 'project', label: 'Project', Icon: FolderKanban, color: '#2563EB' },
-  { key: 'enhancement', label: 'Enhancement', Icon: Zap, color: '#0D9488' },
-  { key: 'improvement', label: 'Improvement', Icon: Wrench, color: '#D97706' },
-  { key: 'entity_integration', label: 'Entity Integration', Icon: Link, color: '#8B5CF6' },
+const TYPE_OPTIONS = [
+  { key: 'project', label: 'Project' },
+  { key: 'enhancement', label: 'Enhancement' },
+  { key: 'improvement', label: 'Improvement' },
+  { key: 'entity_integration', label: 'Entity Integration' },
 ];
 
-const LABEL = "block text-[11px] font-semibold text-[#334155] uppercase tracking-[0.05em] mb-1.5";
-const INPUT = "w-full h-9 px-3 text-[13px] bg-white border border-[#E2E8F0] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow placeholder:text-[#94A3B8]";
+const EMPTY_FORM = {
+  title: '', description: '', status: 'new',
+  department_id: '', assignee_id: '', business_owner_id: '',
+  reporter_id: '', target_quarter: '', kickoff_date: '',
+  target_complete: '', business_ask_date: '',
+};
 
+/* ── Sub-components ── */
+function SectionHeader({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <div className="flex items-center gap-2 pt-4 pb-3 border-t" style={{ borderColor: T.border, marginTop: 4 }}>
+      <span style={{ color: T.inkSec, display: 'flex' }}>{icon}</span>
+      <span style={{ fontSize: 13, fontWeight: 700, color: T.inkSec, fontFamily: "'Inter',sans-serif", letterSpacing: '.02em' }}>{label}</span>
+    </div>
+  );
+}
+
+function FieldWrapper({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <label className="block text-[11px] font-semibold uppercase tracking-[0.06em] mb-1.5" style={{ color: T.inkSec }}>
+        {label}{required && <span style={{ color: T.danger, marginLeft: 2 }}>*</span>}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+const INPUT_CLS = "w-full h-9 px-3 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow placeholder:text-[#94A3B8]";
+
+/* ── Main Component ── */
 export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCreated }: CreateInitiativeDrawerProps) {
   const { data: nextKey } = useNextInitiativeKey();
   const createMutation = useCreateInitiative();
@@ -122,32 +143,21 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
   const { data: profileOptions } = useProfileOptions();
   const { data: initiativeTypes } = useInitiativeTypes();
 
-  const [form, setForm] = useState({
-    title: '', description: '', status: 'new',
-    department_id: '', assignee_id: '', business_owner_id: '',
-    reporter_id: '', target_quarter: '', kickoff_date: '',
-    target_complete: '', business_ask_date: '',
-  });
+  const [form, setForm] = useState({ ...EMPTY_FORM });
   const [titleError, setTitleError] = useState(false);
   const [selectedType, setSelectedType] = useState('project');
-  const [onRoadmap, setOnRoadmap] = useState(false);
-  const [roadmapPriority, setRoadmapPriority] = useState('');
-  const [businessValue, setBusinessValue] = useState('');
-  const [estimatedBudget, setEstimatedBudget] = useState('');
+  const [closing, setClosing] = useState(false);
 
-  const resetNewFields = () => {
+  const resetForm = useCallback(() => {
+    setForm({ ...EMPTY_FORM });
+    setTitleError(false);
     setSelectedType('project');
-    setOnRoadmap(false);
-    setRoadmapPriority('');
-    
-    setBusinessValue('');
-    setEstimatedBudget('');
-  };
+  }, []);
 
   useEffect(() => {
     if (open) {
+      setClosing(false);
       if (conversionSource) {
-        const src = conversionSource;
         const resolveDeptId = (deptName?: string): string => {
           if (!deptName || !departmentOptions) return '';
           const exact = departmentOptions.find((d: any) => d.label.toLowerCase() === deptName.toLowerCase());
@@ -168,7 +178,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
           });
           return match?.value || '';
         };
-
+        const src = conversionSource;
         if (src.type === 'single') {
           const p = src.primaryIdea;
           setForm({
@@ -179,8 +189,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
             reporter_id: '', target_quarter: '', kickoff_date: '', target_complete: '', business_ask_date: '',
           });
         } else if (src.type === 'merge' && src.mergeIdea) {
-          const p = src.primaryIdea;
-          const m = src.mergeIdea;
+          const p = src.primaryIdea; const m = src.mergeIdea;
           setForm({
             title: `${p.title} & ${m.title.split(' ').slice(0, 3).join(' ')} Platform`,
             description: `Consolidated from 2 ideation submissions:\n\n• ${p.key}: ${p.title} (IMPACT ${p.impact.toFixed(2)}, ${p.votes} votes)\n• ${m.key}: ${m.title} (IMPACT ${m.impact.toFixed(2)}, ${m.votes} votes)\n\n---\nCombined IMPACT: ${p.impact.toFixed(2)} (weighted by vote count)\nTotal votes: ${p.votes + m.votes}`,
@@ -190,31 +199,29 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
           });
         }
       } else {
-        setForm({
-          title: '', description: '', status: 'new',
-          department_id: '', assignee_id: '', business_owner_id: '',
-          reporter_id: '', target_quarter: '', kickoff_date: '',
-          target_complete: '', business_ask_date: '',
-        });
+        resetForm();
       }
-      setTitleError(false);
-      resetNewFields();
     }
-  }, [open, conversionSource, departmentOptions, profileOptions]);
+  }, [open, conversionSource, departmentOptions, profileOptions, resetForm]);
 
   useEffect(() => {
     if (!open) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') doClose(); };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [open, onClose]);
+  }, [open]);
 
   const updateField = useCallback((field: string, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }));
     if (field === 'title') setTitleError(false);
   }, []);
 
-  const handleCreate = async () => {
+  const doClose = useCallback(() => {
+    setClosing(true);
+    setTimeout(() => { onClose(); setClosing(false); }, 200);
+  }, [onClose]);
+
+  const handleCreate = async (addAnother: boolean) => {
     if (!form.title.trim()) { setTitleError(true); return; }
     const key = nextKey || 'MIM-001';
     const typeId = initiativeTypes?.find((t: any) => t.key === selectedType)?.id || null;
@@ -222,303 +229,241 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
       ...form,
       initiative_key: key,
       initiative_type_id: typeId,
-      on_roadmap: onRoadmap,
-      health_status: null,
-      business_value: businessValue || null,
-      estimated_budget: estimatedBudget ? parseFloat(estimatedBudget) : null,
-      roadmap_priority: roadmapPriority ? parseInt(roadmapPriority) : null,
     });
     onCreated?.(key);
-    onClose();
+    if (addAnother) {
+      resetForm();
+    } else {
+      doClose();
+    }
   };
 
-  return (
-    <AnimatePresence>
-      {open && (
-        <>
-          <motion.div
-            className="fixed inset-0 z-[200]"
-            style={{ background: 'rgba(0,0,0,0.20)' }}
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={onClose}
-          />
-          <motion.div
-            className="fixed top-0 right-0 h-screen z-[201] flex flex-col overflow-hidden bg-white"
-            style={{ width: '55%', maxWidth: 840, minWidth: 480, boxShadow: '-8px 0 24px rgba(0,0,0,0.12)' }}
-            initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
-            transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-          >
-            {/* Header — Light */}
-            <div className="flex-shrink-0 px-5 py-3.5 flex items-center justify-between border-b border-[#E2E8F0] bg-white">
-              <div>
-                <h2 className="text-[15px] font-bold" style={{ color: '#0F172A' }}>New Initiative</h2>
-                {nextKey && (
-                  <span className="text-[11px] font-mono font-semibold px-1.5 py-0.5 rounded mt-1 inline-block" style={{ background: '#0D9488', color: '#fff' }}>
-                    {nextKey}
-                  </span>
-                )}
-              </div>
-              <button
-                onClick={onClose}
-                className="w-7 h-7 flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-[#F1F5F9] rounded-md transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+  if (!open) return null;
 
-            {/* Scrollable Body */}
-            <div className="flex-1 overflow-y-auto">
-              {/* Conversion Banners */}
-              {conversionSource?.type === 'single' && (
-                <div className="mx-5 mt-4 p-3 rounded-lg" style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
-                  <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: '#0F172A' }}><RefreshCw className="w-3.5 h-3.5" /> Converting idea to initiative</div>
-                  <div className="text-[12px] mt-1" style={{ color: '#334155' }}>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#2563EB' }}>{conversionSource.primaryIdea.key}</span>
-                    {' · '}{conversionSource.primaryIdea.title}
-                  </div>
-                </div>
+  const dialog = (
+    <>
+      <style>{`
+        @keyframes niSlideIn{from{opacity:0;transform:translate(-50%,-50%) scale(.96)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+        @keyframes niSlideOut{from{opacity:1;transform:translate(-50%,-50%) scale(1)}to{opacity:0;transform:translate(-50%,-50%) scale(.96)}}
+        @keyframes niFadeIn{from{opacity:0}to{opacity:1}}
+        @keyframes niFadeOut{from{opacity:1}to{opacity:0}}
+      `}</style>
+
+      {/* Backdrop */}
+      <div
+        onClick={doClose}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 600,
+          background: 'rgba(0,0,0,.5)',
+          animation: `${closing ? 'niFadeOut 200ms' : 'niFadeIn 150ms'} ease-out forwards`,
+        }}
+      />
+
+      {/* Dialog */}
+      <div style={{
+        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)',
+        zIndex: 610, width: 580, maxHeight: '90vh', display: 'flex', flexDirection: 'column',
+        background: T.surface, borderRadius: 16,
+        boxShadow: '0 24px 80px rgba(0,0,0,.18)',
+        fontFamily: "'Inter',-apple-system,'Segoe UI',system-ui,sans-serif",
+        animation: `${closing ? 'niSlideOut 200ms' : 'niSlideIn 250ms'} cubic-bezier(.4,0,.2,1) forwards`,
+      }}>
+
+        {/* ─── HEADER ─── */}
+        <div style={{ padding: '20px 24px 16px', flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: T.ink, fontFamily: "'Sora',sans-serif", letterSpacing: '-.02em' }}>New Initiative</div>
+              {nextKey && (
+                <div style={{
+                  display: 'inline-block', marginTop: 6, fontSize: 12, fontWeight: 600,
+                  color: T.primary, background: T.primaryBg, padding: '2px 10px',
+                  borderRadius: 4, fontFamily: "'JetBrains Mono',monospace", lineHeight: '20px',
+                }}>{nextKey}</div>
               )}
-              {conversionSource?.type === 'merge' && conversionSource.mergeIdea && (
-                <div className="mx-5 mt-4 p-3 rounded-lg" style={{ background: '#F5F3FF', border: '1px solid #DDD6FE' }}>
-                  <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: '#0F172A' }}><GitMerge className="w-3.5 h-3.5" /> Merging 2 ideas into 1 initiative</div>
-                  <div className="text-[12px] mt-1" style={{ color: '#334155' }}>
-                    Primary: <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#2563EB' }}>{conversionSource.primaryIdea.key}</span>
-                    {' · '}{conversionSource.primaryIdea.title}
-                  </div>
-                  <div className="text-[12px] mt-0.5" style={{ color: '#334155' }}>
-                    Merging: <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#2563EB' }}>{conversionSource.mergeIdea.key}</span>
-                    {' · '}{conversionSource.mergeIdea.title}
-                  </div>
-                </div>
-              )}
+            </div>
+            <button onClick={doClose} style={{
+              border: 'none', background: 'transparent', cursor: 'pointer',
+              fontSize: 20, color: T.inkMuted, padding: 4, lineHeight: 1, marginTop: -2,
+            }}>
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
 
-              {/* Section 1: Details */}
-              <div className="px-5 py-4 border-b border-[#F1F5F9]">
-                <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.06em] mb-3" style={{ color: '#0F172A' }}>
-                  <FileText className="w-3.5 h-3.5" /> Details
-                </div>
-                <div className="space-y-3">
-                  <div>
-                    <label className={LABEL}>Title <span className="text-red-500">*</span></label>
-                    <input
-                      type="text"
-                      value={form.title}
-                      onChange={e => updateField('title', e.target.value)}
-                      placeholder="e.g. Digital Platform Modernization"
-                      className={cn(INPUT, titleError && 'border-red-500 ring-2 ring-red-500/20')}
-                      autoFocus
-                    />
-                    {titleError && <p className="text-xs text-red-500 mt-1">Title is required</p>}
-                  </div>
-                  <div>
-                    <label className={LABEL}>Description</label>
-                    <textarea
-                      value={form.description}
-                      onChange={e => updateField('description', e.target.value)}
-                      placeholder="Brief description of the initiative scope and objectives..."
-                      rows={3}
-                      className="w-full px-3 py-2 text-[13px] bg-white border border-[#E2E8F0] rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-shadow placeholder:text-[#94A3B8]"
-                    />
-                  </div>
-                </div>
+        {/* ─── SCROLLABLE BODY ─── */}
+        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '0 24px 4px' }}>
+
+          {/* Conversion banners */}
+          {conversionSource?.type === 'single' && (
+            <div className="p-3 rounded-lg mb-3" style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
+              <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: T.ink }}>
+                <RefreshCw className="w-3.5 h-3.5" /> Converting idea to initiative
               </div>
-
-              {/* Section 2: Classification */}
-              <div className="px-5 py-4 border-b border-[#F1F5F9]">
-                <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.06em] mb-3" style={{ color: '#0F172A' }}>
-                  <Tag className="w-3.5 h-3.5" /> Classification
-                </div>
-                <div className="space-y-3">
-                  {/* Type Selector — shadcn Select */}
-                  <div>
-                    <label className={LABEL}>Initiative Type</label>
-                    <Select value={selectedType} onValueChange={setSelectedType}>
-                      <SelectTrigger className="w-full h-9 text-[13px] border-[#E2E8F0]">
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {TYPE_OPTIONS.map(opt => (
-                          <SelectItem key={opt.key} value={opt.key}>
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  {/* Status + Department */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className={LABEL}>Status</label>
-                      <StatusSelect value={form.status} onChange={v => updateField('status', v)} />
-                    </div>
-                    <div>
-                      <label className={LABEL}>Department</label>
-                      <DepartmentSelect
-                        value={form.department_id}
-                        onChange={v => updateField('department_id', v)}
-                        departments={departmentOptions || []}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 3: People */}
-              <div className="px-5 py-4 border-b border-[#F1F5F9]">
-                <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.06em] mb-3" style={{ color: '#0F172A' }}>
-                  <Users className="w-3.5 h-3.5" /> People
-                </div>
-                <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className={LABEL}>Assignee</label>
-                      <PeopleSelect value={form.assignee_id} onChange={v => updateField('assignee_id', v)} profiles={profileOptions || []} placeholder="Select assignee" />
-                    </div>
-                    <div>
-                      <label className={LABEL}>Business Owner</label>
-                      <PeopleSelect value={form.business_owner_id} onChange={v => updateField('business_owner_id', v)} profiles={profileOptions || []} placeholder="Select business owner" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className={LABEL}>Reporter</label>
-                      <PeopleSelect value={form.reporter_id} onChange={v => updateField('reporter_id', v)} profiles={profileOptions || []} placeholder="Select reporter" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 4: Planning */}
-              <div className="px-5 py-4 border-b border-[#F1F5F9]">
-                <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.06em] mb-3" style={{ color: '#0F172A' }}>
-                  <Calendar className="w-3.5 h-3.5" /> Planning
-                </div>
-                <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className={LABEL}>Target Quarter</label>
-                      <QuarterSelect value={form.target_quarter} onChange={v => updateField('target_quarter', v)} />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className={LABEL}>Kickoff Date</label>
-                      <input type="date" value={form.kickoff_date} onChange={e => updateField('kickoff_date', e.target.value)} className={cn(INPUT, 'appearance-none')} />
-                    </div>
-                    <div>
-                      <label className={LABEL}>Target Complete</label>
-                      <input type="date" value={form.target_complete} onChange={e => updateField('target_complete', e.target.value)} className={cn(INPUT, 'appearance-none')} />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className={LABEL}>Business Ask Date</label>
-                      <input type="date" value={form.business_ask_date} onChange={e => updateField('business_ask_date', e.target.value)} className={cn(INPUT, 'appearance-none')} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 5: Roadmap */}
-              <div className="px-5 py-4">
-                <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.06em] mb-3" style={{ color: '#0F172A' }}>
-                  <Map className="w-3.5 h-3.5" /> Roadmap
-                </div>
-
-                <div className={cn(
-                  'rounded-lg p-3 border transition-colors',
-                  onRoadmap ? 'bg-[#EFF6FF] border-[#BFDBFE]' : 'bg-[#F8FAFC] border-[#E2E8F0]'
-                )}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white" style={{ background: '#2563EB' }}><Map className="w-4 h-4" /></div>
-                      <div>
-                        <div className="text-[13px] font-semibold" style={{ color: '#0F172A' }}>Add to Roadmap</div>
-                        <div className="text-[11px]" style={{ color: '#64748B' }}>Make visible on the Product Roadmap timeline</div>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setOnRoadmap(!onRoadmap)}
-                      className={cn(
-                        'relative w-10 h-[22px] rounded-full transition-colors',
-                        onRoadmap ? 'bg-[#2563EB]' : 'bg-[#E2E8F0]'
-                      )}
-                    >
-                      <span className={cn(
-                        'absolute top-[2px] w-[18px] h-[18px] rounded-full bg-white shadow-sm transition-transform',
-                        onRoadmap ? 'left-[20px]' : 'left-[2px]'
-                      )} />
-                    </button>
-                  </div>
-
-                  {onRoadmap && (
-                    <div className="mt-2.5 pt-2.5 border-t border-[#BFDBFE] grid grid-cols-2 gap-3">
-                      <div>
-                        <label className={LABEL}>Roadmap Priority</label>
-                        <select value={roadmapPriority} onChange={e => setRoadmapPriority(e.target.value)} className={cn(INPUT, 'appearance-none border-[#BFDBFE]')}>
-                          <option value="">Auto (by score)</option>
-                          <option value="1">1 — Critical</option>
-                          <option value="2">2 — High</option>
-                          <option value="3">3 — Medium</option>
-                          <option value="4">4 — Low</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className={LABEL}>Delivery Window</label>
-                        <select disabled className={cn(INPUT, 'appearance-none border-[#BFDBFE] bg-[#F8FAFC]')} style={{ color: '#64748B' }}>
-                          <option>{form.target_quarter || 'Set in Planning ↑'}</option>
-                        </select>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* AI Tip Banner */}
-                <div className="flex items-start gap-2 p-2.5 rounded-lg mt-3" style={{ background: '#F5F3FF', border: '1px solid #DDD6FE' }}>
-                  <Bot className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#7C3AED' }} />
-                  <p className="text-[11.5px] leading-relaxed" style={{ color: '#334155' }}>
-                    <strong style={{ color: '#7C3AED' }} className="font-semibold">Req Assist™:</strong> Score will be calculated after the initiative is created. Use the Score tab to set scoring criteria.
-                  </p>
-                </div>
+              <div className="text-[12px] mt-1" style={{ color: '#334155' }}>
+                <span style={{ fontFamily: "'JetBrains Mono',monospace", fontWeight: 600, color: T.primary }}>{conversionSource.primaryIdea.key}</span>
+                {' · '}{conversionSource.primaryIdea.title}
               </div>
             </div>
-
-            {/* Sticky Footer */}
-            <div className="px-5 py-3 border-t border-[#E2E8F0] bg-white flex items-center gap-2 flex-shrink-0">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 border border-[#E2E8F0] bg-white rounded-md text-[13px] font-medium hover:bg-[#F8FAFC] transition-colors"
-                style={{ color: '#334155' }}
-              >
-                Cancel
-              </button>
-              <div className="flex-1" />
-              <button
-                type="button"
-                className="px-4 py-2 border rounded-md text-[13px] font-medium hover:bg-[#EFF6FF] transition-colors"
-                style={{ borderColor: '#2563EB', color: '#2563EB' }}
-              >
-                + Create & Add Another
-              </button>
-              <button
-                type="button"
-                onClick={handleCreate}
-                disabled={createMutation.isPending || !form.title.trim()}
-                className="px-5 py-2 text-white rounded-md text-[13px] font-semibold transition-colors disabled:opacity-50 flex items-center gap-2"
-                style={{ background: '#2563EB' }}
-              >
-                {createMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                + Create
-              </button>
+          )}
+          {conversionSource?.type === 'merge' && conversionSource.mergeIdea && (
+            <div className="p-3 rounded-lg mb-3" style={{ background: '#F5F3FF', border: '1px solid #DDD6FE' }}>
+              <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: T.ink }}>
+                <GitMerge className="w-3.5 h-3.5" /> Merging 2 ideas into 1 initiative
+              </div>
+              <div className="text-[12px] mt-1" style={{ color: '#334155' }}>
+                Primary: <span style={{ fontFamily: "'JetBrains Mono',monospace", fontWeight: 600, color: T.primary }}>{conversionSource.primaryIdea.key}</span>
+                {' · '}{conversionSource.primaryIdea.title}
+              </div>
+              <div className="text-[12px] mt-0.5" style={{ color: '#334155' }}>
+                Merging: <span style={{ fontFamily: "'JetBrains Mono',monospace", fontWeight: 600, color: T.primary }}>{conversionSource.mergeIdea.key}</span>
+                {' · '}{conversionSource.mergeIdea.title}
+              </div>
             </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+          )}
+
+          {/* §1 DETAILS */}
+          <SectionHeader icon={<FileText className="w-4 h-4" />} label="DETAILS" />
+          <FieldWrapper label="Title" required>
+            <input
+              type="text"
+              value={form.title}
+              onChange={e => updateField('title', e.target.value)}
+              placeholder="e.g. Digital Platform Modernization"
+              autoFocus
+              className={cn(INPUT_CLS, titleError && 'border-red-500 ring-2 ring-red-500/20')}
+              style={{ borderColor: titleError ? undefined : T.border }}
+            />
+            {titleError && <p className="text-xs text-red-500 mt-1">Title is required</p>}
+          </FieldWrapper>
+          <FieldWrapper label="Description">
+            <textarea
+              value={form.description}
+              onChange={e => updateField('description', e.target.value)}
+              placeholder="Brief description of the initiative scope and objectives..."
+              rows={3}
+              className="w-full px-3 py-2 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-shadow placeholder:text-[#94A3B8]"
+              style={{ borderColor: T.border }}
+            />
+          </FieldWrapper>
+
+          {/* §2 CLASSIFICATION */}
+          <SectionHeader icon={<Tag className="w-4 h-4" />} label="CLASSIFICATION" />
+          <FieldWrapper label="Initiative Type">
+            <select
+              value={selectedType}
+              onChange={e => setSelectedType(e.target.value)}
+              className={cn(INPUT_CLS)}
+              style={{ borderColor: T.border }}
+            >
+              {TYPE_OPTIONS.map(opt => (
+                <option key={opt.key} value={opt.key}>{opt.label}</option>
+              ))}
+            </select>
+          </FieldWrapper>
+          <div className="grid grid-cols-2 gap-4">
+            <FieldWrapper label="Status">
+              <StatusSelect value={form.status} onChange={v => updateField('status', v)} />
+            </FieldWrapper>
+            <FieldWrapper label="Department">
+              <DepartmentSelect
+                value={form.department_id}
+                onChange={v => updateField('department_id', v)}
+                departments={departmentOptions || []}
+              />
+            </FieldWrapper>
+          </div>
+
+          {/* §3 PEOPLE */}
+          <SectionHeader icon={<Users className="w-4 h-4" />} label="PEOPLE" />
+          <div className="grid grid-cols-2 gap-4">
+            <FieldWrapper label="Assignee">
+              <PeopleSelect value={form.assignee_id} onChange={v => updateField('assignee_id', v)} profiles={profileOptions || []} placeholder="Select assignee" />
+            </FieldWrapper>
+            <FieldWrapper label="Business Owner">
+              <PeopleSelect value={form.business_owner_id} onChange={v => updateField('business_owner_id', v)} profiles={profileOptions || []} placeholder="Select business owner" />
+            </FieldWrapper>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <FieldWrapper label="Reporter">
+              <PeopleSelect value={form.reporter_id} onChange={v => updateField('reporter_id', v)} profiles={profileOptions || []} placeholder="Select reporter" />
+            </FieldWrapper>
+            <div />
+          </div>
+
+          {/* §4 PLANNING */}
+          <SectionHeader icon={<Calendar className="w-4 h-4" />} label="PLANNING" />
+          <div className="grid grid-cols-2 gap-4">
+            <FieldWrapper label="Target Quarter">
+              <QuarterSelect value={form.target_quarter} onChange={v => updateField('target_quarter', v)} />
+            </FieldWrapper>
+            <div />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <FieldWrapper label="Kickoff Date">
+              <input type="date" value={form.kickoff_date} onChange={e => updateField('kickoff_date', e.target.value)}
+                className={cn(INPUT_CLS, 'appearance-none')} style={{ borderColor: T.border, fontFamily: "'JetBrains Mono',monospace" }} />
+            </FieldWrapper>
+            <FieldWrapper label="Target Complete">
+              <input type="date" value={form.target_complete} onChange={e => updateField('target_complete', e.target.value)}
+                className={cn(INPUT_CLS, 'appearance-none')} style={{ borderColor: T.border, fontFamily: "'JetBrains Mono',monospace" }} />
+            </FieldWrapper>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <FieldWrapper label="Business Ask Date">
+              <input type="date" value={form.business_ask_date} onChange={e => updateField('business_ask_date', e.target.value)}
+                className={cn(INPUT_CLS, 'appearance-none')} style={{ borderColor: T.border, fontFamily: "'JetBrains Mono',monospace" }} />
+            </FieldWrapper>
+            <div />
+          </div>
+
+          <div style={{ height: 8 }} />
+        </div>
+
+        {/* ─── FOOTER ─── */}
+        <div style={{
+          padding: '16px 24px', flexShrink: 0,
+          borderTop: `1px solid ${T.border}`, display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between',
+        }}>
+          <button onClick={doClose} style={{
+            padding: '9px 20px', border: `1px solid ${T.border}`, borderRadius: 8,
+            background: T.surface, fontSize: 13, fontWeight: 500, cursor: 'pointer',
+            color: T.inkSec,
+          }}>Cancel</button>
+
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button
+              onClick={() => handleCreate(true)}
+              disabled={createMutation.isPending}
+              style={{
+                padding: '9px 20px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+                cursor: 'pointer', border: `1.5px solid ${T.primary}`,
+                background: T.surface, color: T.primary, opacity: createMutation.isPending ? 0.5 : 1,
+              }}
+            >+ Create &amp; Add Another</button>
+
+            <button
+              onClick={() => handleCreate(false)}
+              disabled={createMutation.isPending || !form.title.trim()}
+              className="flex items-center gap-2"
+              style={{
+                padding: '9px 24px', border: 'none', borderRadius: 8,
+                background: T.primary, color: '#fff', fontSize: 13, fontWeight: 600,
+                cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,.25)',
+                opacity: (createMutation.isPending || !form.title.trim()) ? 0.5 : 1,
+              }}
+            >
+              {createMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+              + Create
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
   );
+
+  return createPortal(dialog, document.body);
 }
 
 export default CreateInitiativeDrawer;
