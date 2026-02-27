@@ -3,7 +3,7 @@
  * Total budget input, summary cards, utilization bar, budget table, add/edit modal
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -20,6 +20,37 @@ const CAT_COLORS: Record<string, string> = {
 const STATUSES = ['draft', 'approved', 'committed', 'paid', 'cancelled'];
 
 const fmtSAR = (n: number) => `SAR ${n.toLocaleString('en-US')}`;
+
+/* ── Custom Dropdown (no native <select>) ── */
+function CustomSelect({ value, options, onChange, placeholder }: { value: string; options: string[]; onChange: (v: string) => void; placeholder?: string }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button type="button" onClick={() => setOpen(!open)} className="idp-form-input" style={{ width: '100%', textAlign: 'left', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span>{value || placeholder || 'Select…'}</span>
+        <span style={{ fontSize: 10, color: 'var(--idp-ink-muted)', marginLeft: 4 }}>▾</span>
+      </button>
+      {open && (
+        <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 20, background: 'var(--idp-surface)', border: '1px solid var(--idp-border)', borderRadius: 6, marginTop: 2, maxHeight: 200, overflowY: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+          {options.map(opt => (
+            <div key={opt} onClick={() => { onChange(opt); setOpen(false); }}
+              style={{ padding: '7px 12px', fontSize: 12, cursor: 'pointer', color: 'var(--idp-ink)', background: opt === value ? 'var(--idp-surface-secondary)' : undefined }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--idp-surface-secondary)')}
+              onMouseLeave={e => (e.currentTarget.style.background = opt === value ? 'var(--idp-surface-secondary)' : 'transparent')}>
+              {opt}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function ToggleButtons({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
@@ -254,10 +285,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
               {/* Category */}
               <div className="idp-form-field" style={{ marginBottom: 0 }}>
                 <label className="idp-form-label">Category <span className="idp-form-required">*</span></label>
-                <select className="idp-form-input" value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                  style={{ appearance: 'none', cursor: 'pointer' }}>
-                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                <CustomSelect value={form.category} options={CATEGORIES} onChange={v => setForm(f => ({ ...f, category: v }))} />
               </div>
               {/* Expense Type */}
               <div className="idp-form-field" style={{ marginBottom: 0 }}>
