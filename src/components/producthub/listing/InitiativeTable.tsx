@@ -51,7 +51,7 @@ function getGroupKey(item: Initiative, groupBy: GroupByField): string {
     case 'priority': return getPriorityLevel(item.computed_score).level;
     case 'department': return item.department_name || 'Unassigned';
     case 'quarter': return item.target_quarter || 'No Quarter';
-    case 'assignee': return item.reporter_name || 'Unassigned';
+    case 'assignee': return item.assignee_name || 'Unassigned';
     default: return '';
   }
 }
@@ -213,11 +213,12 @@ export function InitiativeTable({
       id: 'score', size: 70, minSize: 60, header: 'Score',
       cell: ({ getValue }) => <ScoreCell score={getValue()} />,
     }),
-    col.accessor('reporter_name', {
-      id: 'reporter', size: 150, minSize: 120, header: 'Reported by',
+    col.accessor('assignee_name', {
+      id: 'assignee', size: 150, minSize: 120, header: 'Assignee',
       cell: ({ row, getValue }) => {
         const name = getValue();
-        const url = name ? avatarsByName.get(name.toLowerCase()) : undefined;
+        const directAvatar = (row.original as any).assignee_avatar;
+        const url = directAvatar || (name ? avatarsByName.get(name.toLowerCase()) : undefined);
         return <AssigneeCell name={name} avatarUrl={url} />;
       },
     }),

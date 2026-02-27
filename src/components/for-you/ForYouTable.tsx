@@ -184,7 +184,7 @@ export function ForYouTable({
           Updated
         </span>
         <span className="text-[11px] font-semibold text-[hsl(215,16%,47%)] uppercase tracking-[0.06em] flex items-center">
-          Assignee
+          Reported by
         </span>
       </div>
 
@@ -266,26 +266,27 @@ export function ForYouTable({
                   {item.updatedAt}
                 </div>
 
-                {/* Assignee — avatar + name + inline Open → */}
+                {/* Reported by — avatar + name */}
                 <div className="flex items-center gap-2 min-w-0">
                   <div className="flex items-center gap-2.5 min-w-0">
-                    {/* Avatar — rounded-xl square, profile photo with initials fallback (Capacity Planner style) */}
                     {(() => {
-                      const avatarUrl = nameAvatarMap.get(item.assignee.name.toLowerCase());
+                      const reporterName = item.reporter || item.assignee.name;
+                      const reporterInitials = reporterName.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
+                      const avatarUrl = nameAvatarMap.get(reporterName.toLowerCase());
                       return avatarUrl ? (
                         <img 
                           src={avatarUrl} 
-                          alt={item.assignee.name}
+                          alt={reporterName}
                           className="w-7 h-7 rounded-xl object-cover shrink-0 border-2 border-[hsl(213,94%,83%)]"
                         />
                       ) : (
                         <div className="w-7 h-7 rounded-xl flex items-center justify-center text-[10px] font-bold shrink-0 bg-[hsl(217,92%,95%)] text-[hsl(217,91%,60%)] border-2 border-[hsl(213,94%,83%)]">
-                          {item.assignee.initials}
+                          {reporterInitials}
                         </div>
                       );
                     })()}
                     <span className="text-[13px] font-medium text-[hsl(215,25%,27%)]">
-                      {item.assignee.name}
+                      {item.reporter || item.assignee.name}
                     </span>
                   </div>
 
