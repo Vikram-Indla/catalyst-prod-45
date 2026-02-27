@@ -125,7 +125,7 @@ export function AIExecutiveBrief({ open, onClose }: Props) {
             <Sparkles size={18} color="#fff" />
           </div>
           <div>
-            <div style={{ fontSize: 20, fontWeight: 800, color: C.ink1 }}>CIO Executive Brief</div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: C.ink1 }}>Executive Brief</div>
             <div style={{ fontSize: 12, color: C.ink4 }}>
               Strategy Room · {publishedDateStr ? `Published ${publishedDateStr}` : 'No brief published'} {versionStr && `· ${versionStr}`}
             </div>
