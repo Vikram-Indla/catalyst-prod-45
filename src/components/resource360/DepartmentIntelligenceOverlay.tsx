@@ -44,11 +44,17 @@ interface Props {
 
 /* ═══ Inject chevron claims into descriptions (client-side fallback) ═══ */
 function injectClaims(html: string): string {
-  if (html.includes('di-claim')) return html;
-  // Only wrap the numeric portion (e.g. "25", "5", "1") — the noun stays plain text
-  return html.replace(/\b(\d+%?)\s+(defects?|items?|transitions?|closures?|bugs?|incidents?|stories|sub-tasks?|designs?|deployments?|rollbacks?|escalations?|sign-offs?|BRDs?|tasks?)\b/gi,
+  // First, fix any AI-generated over-wrapped claims: <span class="di-claim">25 defects</span> → <span class="di-claim">25</span> defects
+  let fixed = html.replace(/<span class="di-claim">(\d+%?)\s+([^<]+?)<\/span>/gi,
     '<span class="di-claim">$1</span> $2'
   );
+  // Then inject claims for any remaining un-wrapped numeric+noun pairs
+  if (!fixed.includes('di-claim')) {
+    fixed = fixed.replace(/\b(\d+%?)\s+(defects?|items?|transitions?|closures?|bugs?|incidents?|stories|sub-tasks?|designs?|deployments?|rollbacks?|escalations?|sign-offs?|BRDs?|tasks?|projects?)\b/gi,
+      '<span class="di-claim">$1</span> $2'
+    );
+  }
+  return fixed;
 }
 
 /* ═══ Day helpers ═══ */

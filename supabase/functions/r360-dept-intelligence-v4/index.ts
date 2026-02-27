@@ -111,7 +111,7 @@ Each card:
   UX Designers: "Designs Delivered", "Design Reviews"
   Delivery Mgmt: "Tasks Delegated", "Escalations Managed"
   DevOps: "Deployments", "Rollbacks"
-- resources: array of {name, desc} — ONLY include resources who have at least 1 transition/contribution this week. Do NOT include resources with zero activity. desc is HTML with <strong>project names</strong> bolded. IMPORTANT: Wrap every numeric claim (like "Closed 25 defects", "5 items re-opened", "12 closures") in <span class="di-claim">25 defects closed</span> so it becomes a clickable drill-in link. Every number+action pair MUST be wrapped.
+- resources: array of {name, desc} — ONLY include resources who have at least 1 transition/contribution this week. Do NOT include resources with zero activity. desc is HTML with <strong>project names</strong> bolded. IMPORTANT: Only wrap the NUMERIC VALUE in <span class="di-claim">N</span> — NOT the noun after it. Example: '<span class="di-claim">25</span> defects closed' or '<span class="di-claim">5</span> items re-opened'. The descriptive text (defects, items, closures, projects, transitions) must be plain text, NOT inside the span. Only the number is clickable.
 
 2C. projectActivity: Array of STRUCTURED project cards, sorted by total transitions descending (highest-velocity first). STALLED projects always last.
 Each project object:
