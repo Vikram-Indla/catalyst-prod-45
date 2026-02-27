@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -265,7 +266,8 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
       <button className="idp-add-btn" onClick={openAdd}>+ Add Milestone</button>
 
       {/* M4 — Add/Edit Modal */}
-      {showModal && (
+      {showModal && createPortal(
+        <div data-module="initiative-detail-panel">
         <div className="idp-modal-backdrop" onClick={() => setShowModal(false)}>
           <div className="idp-modal" style={{ width: 520 }} onClick={e => e.stopPropagation()}>
             <div className="idp-modal-header">
@@ -331,6 +333,8 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
             </div>
           </div>
         </div>
+        </div>,
+        document.body
       )}
     </div>
   );
