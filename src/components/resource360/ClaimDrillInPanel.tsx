@@ -12,6 +12,7 @@ interface ClaimDrillInProps {
   resourceName: string;
   claimText: string;       // e.g. "3 closures", "5 items re-opened"
   weekStart: Date;
+  avatarMap: Map<string, string>;
   onClose: () => void;
 }
 
@@ -37,7 +38,18 @@ function getStatusStyle(cat: string) {
   return STATUS_COLORS[cat] || STATUS_COLORS['To Do'];
 }
 
-export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, onClose }: ClaimDrillInProps) {
+const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", "#6b8b7a"];
+function hashColor(name: string): string {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  return parts.length >= 2 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
+}
+
+export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, avatarMap, onClose }: ClaimDrillInProps) {
   const [tickets, setTickets] = useState<TicketRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -150,12 +162,26 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           flexShrink: 0,
         }}>
-          <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#94a3b8', marginBottom: 4 }}>
-              Drill-in · {resourceName}
-            </div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#0f172a' }}>
-              {claimText}
+          <div style={{ minWidth: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
+            {(() => {
+              const url = avatarMap.get(resourceName.toLowerCase());
+              if (url) {
+                return <img src={url} alt={resourceName} style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />;
+              }
+              return (
+                <div style={{ width: 36, height: 36, borderRadius: '50%', background: hashColor(resourceName), display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 12, fontWeight: 600, flexShrink: 0 }}>
+                  {getInitials(resourceName)}
+                </div>
+              );
+            })()}
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#94a3b8', marginBottom: 2 }}>
+                DRILL-IN
+              </div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                <span style={{ fontSize: 15, fontWeight: 700, color: '#0f172a' }}>{resourceName}</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: '#64748b' }}>· {claimText}</span>
+              </div>
             </div>
           </div>
           <button onClick={onClose} style={{

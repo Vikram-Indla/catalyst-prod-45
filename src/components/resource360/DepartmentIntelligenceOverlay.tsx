@@ -445,6 +445,7 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
           resourceName={drillIn.resourceName}
           claimText={drillIn.claimText}
           weekStart={weekStart}
+          avatarMap={avatarMap}
           onClose={() => setDrillIn(null)}
         />
       )}
