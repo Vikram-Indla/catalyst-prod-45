@@ -1,7 +1,7 @@
 /**
  * StrategyRoom — Route controller (Chunk 3)
- * Composes Chunk 1 (Dashboard) + Chunk 2 (Brief)
- * Handles Open / Close / Download Brief
+ * ZERO MOCK DATA. Composes Dashboard + Brief.
+ * Data will be fetched from Supabase and passed as props.
  */
 
 import { useState, useCallback, useEffect } from 'react';
@@ -60,6 +60,10 @@ export default function StrategyRoom() {
   const [briefOpen, setBriefOpen] = useState(false);
   const [printAfterOpen, setPrintAfterOpen] = useState(false);
 
+  /* ─── Dashboard data state — all null until wired to Supabase ─── */
+  // Future: fetch from Supabase tables and pass as props
+  // When data is null, dashboard shows Empty states per widget
+
   const printBriefInNewWindow = useCallback(() => {
     const briefRoot = document.querySelector('.sri-root-container') as HTMLElement | null;
     if (!briefRoot) {
@@ -114,7 +118,6 @@ export default function StrategyRoom() {
     setPrintAfterOpen(true);
   }, []);
 
-  /* Trigger print after overlay renders */
   useEffect(() => {
     if (briefOpen && printAfterOpen) {
       const timer = setTimeout(() => {
@@ -125,7 +128,6 @@ export default function StrategyRoom() {
     }
   }, [briefOpen, printAfterOpen, printBriefInNewWindow]);
 
-  /* Escape key closes brief */
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && briefOpen) handleCloseBrief();
@@ -134,16 +136,13 @@ export default function StrategyRoom() {
     return () => document.removeEventListener('keydown', handler);
   }, [briefOpen, handleCloseBrief]);
 
-  /* Lock body scroll when overlay is open */
   useEffect(() => {
     if (briefOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
+    return () => { document.body.style.overflow = ''; };
   }, [briefOpen]);
 
   return (
@@ -158,12 +157,24 @@ export default function StrategyRoom() {
         Skip to dashboard content
       </a>
 
-      {/* Dashboard (Chunk 1) */}
+      {/* Dashboard — all data props null (empty states shown) until wired to Supabase */}
       <div id="dashboard-main" className="brief-controller-dashboard">
-        <StrategyRoomDashboard onOpenBrief={handleOpenBrief} onDownloadBrief={handleDownloadBrief} />
+        <StrategyRoomDashboard
+          onOpenBrief={handleOpenBrief}
+          onDownloadBrief={handleDownloadBrief}
+          themes={null}
+          budget={null}
+          workforce={null}
+          contracts={null}
+          execution={null}
+          alignment={null}
+          brief={null}
+          fiscal={null}
+          updatedAgo={null}
+        />
       </div>
 
-      {/* Brief Overlay (Chunk 2) */}
+      {/* Brief Overlay */}
       {briefOpen && (
         <div
           className="brief-controller-overlay"
