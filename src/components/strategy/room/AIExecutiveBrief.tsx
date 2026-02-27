@@ -32,6 +32,8 @@ const TOKENS = `
 @media print {
   [data-sri] .sri-actions { display:none !important; }
   [data-sri] { background:white !important; }
+  .sri-root-container, .sri-root-container *, [data-sri], [data-sri] * { overflow:visible !important; position:static !important; height:auto !important; }
+  .sri-root-container { display:block !important; }
 }
 `;
 
@@ -187,7 +189,7 @@ export function AIExecutiveBrief({ open, onClose }: Props) {
   const grading = GRADING_DATA;
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: '#FFFFFF', zIndex: 300, overflowY: 'auto' }}>
+    <div className="sri-root-container" style={{ position: 'fixed', inset: 0, background: '#FFFFFF', zIndex: 300, overflowY: 'auto' }}>
       <div data-sri style={{ maxWidth: 1120, margin: "0 auto", padding: "24px 0 60px" }}>
         <style>{TOKENS}</style>
 
