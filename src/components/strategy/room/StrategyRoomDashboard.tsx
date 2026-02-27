@@ -83,6 +83,36 @@ const TOKENS = `
 [data-srd] .srd-btn-p:hover{background:var(--srd-blue-h)}
 [data-srd] .srd-chip:hover{background:var(--srd-bg-2)}
 [data-srd] .srd-link:hover{text-decoration:underline}
+
+/* Responsive: header */
+[data-srd] .srd-header { padding: 16px 32px 14px; display:flex; align-items:flex-start; justify-content:space-between; gap:8px; border-bottom:1px solid var(--srd-bdr); }
+[data-srd] .srd-vision { margin: 12px 32px 0; }
+[data-srd] .srd-brief-banner { margin: 12px 32px 0; }
+[data-srd] .srd-themes { margin: 12px 32px 0; }
+[data-srd] .srd-main { padding: 16px 32px 40px; }
+[data-srd] .srd-grid { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:14px; align-items:stretch; }
+
+@media (max-width: 1100px) {
+  [data-srd] .srd-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  [data-srd] .srd-header { padding: 12px 16px 10px; flex-wrap:wrap; }
+  [data-srd] .srd-header .srd-hdr-actions { width:100%; justify-content:flex-end; }
+  [data-srd] .srd-vision { margin: 8px 16px 0; }
+  [data-srd] .srd-brief-banner { margin: 8px 16px 0; flex-wrap:wrap; gap:8px; }
+  [data-srd] .srd-brief-banner .srd-brief-grade { width:36px; height:36px; font-size:15px !important; }
+  [data-srd] .srd-themes { margin: 8px 16px 0; }
+  [data-srd] .srd-main { padding: 12px 16px 32px; }
+  [data-srd] .srd-grid { grid-template-columns: 1fr; }
+  [data-srd] .srd-vision { flex-wrap:wrap; }
+}
+@media (max-width: 480px) {
+  [data-srd] .srd-header { padding: 10px 12px 8px; }
+  [data-srd] .srd-vision { margin: 8px 12px 0; padding: 8px 12px !important; }
+  [data-srd] .srd-brief-banner { margin: 8px 12px 0; padding: 10px 12px !important; }
+  [data-srd] .srd-themes { margin: 8px 12px 0; }
+  [data-srd] .srd-main { padding: 10px 12px 24px; }
+}
 `;
 
 /* ─── helpers ─── */
@@ -177,10 +207,10 @@ export default function StrategyRoomDashboard({
       <style>{TOKENS}</style>
 
       {/* HEADER */}
-      <header style={{ padding: '16px 32px 14px', borderBottom: '1px solid var(--srd-bdr)', ...F(8), justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <header className="srd-header">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <h1 style={{ ...S(22), color: 'var(--srd-ink)', letterSpacing: '-0.025em', margin: 0 }}>Strategy Room</h1>
-          <div style={{ ...F(12), marginTop: 2 }}>
+          <div style={{ ...F(12), marginTop: 2, flexWrap: 'wrap' }}>
             <span style={{ ...M(11), color: 'var(--srd-ink-m)', ...F(5) }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--srd-green)', flexShrink: 0, animation: 'srd-pulse 2s ease-in-out infinite' }} />
               Live{updatedAgo ? ` · Updated ${updatedAgo}` : ''}
@@ -188,7 +218,7 @@ export default function StrategyRoomDashboard({
             {fiscal && <span style={{ ...M(11), color: 'var(--srd-ink-m)' }}>FY {fiscal.year} · {fiscal.quarter}</span>}
           </div>
         </div>
-        <div style={F(8)}>
+        <div className="srd-hdr-actions" style={F(8)}>
           {onDownloadBrief && (
             <button className="srd-btn" onClick={onDownloadBrief} style={{ height: 32, padding: '0 14px', fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: 500, borderRadius: 'var(--srd-r2)', cursor: 'pointer', ...F(6), border: '1px solid var(--srd-bdr)', background: 'var(--srd-bg)', color: 'var(--srd-ink-3)', transition: 'all .15s' }}>
               <Ico d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />Download Brief
@@ -205,7 +235,7 @@ export default function StrategyRoomDashboard({
 
       {/* VISION — editable, from database */}
       {vision && (
-        <div style={{ margin: '12px 32px 0', border: '1px solid var(--srd-blue-bdr)', borderRadius: 'var(--srd-r4)', padding: '10px 20px', background: 'var(--srd-blue-bg)', ...F(12), fontSize: 13 }}>
+        <div className="srd-vision" style={{ border: '1px solid var(--srd-blue-bdr)', borderRadius: 'var(--srd-r4)', padding: '10px 20px', background: 'var(--srd-blue-bg)', ...F(12), fontSize: 13, flexWrap: 'wrap' }}>
           <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--srd-blue)', textTransform: 'uppercase', letterSpacing: '.08em', background: 'rgba(37,99,235,.08)', padding: '3px 8px', borderRadius: 'var(--srd-r)', flexShrink: 0 }}>Vision {visionYear}</span>
           {editingVision ? (
             <div style={{ flex: 1, ...F(6) }}>
@@ -231,8 +261,8 @@ export default function StrategyRoomDashboard({
 
       {/* INTELLIGENCE BANNER */}
       {brief && (
-        <div className="srd-banner" onClick={onOpenBrief} style={{ margin: '12px 32px 0', border: '1px solid var(--srd-blue-bdr)', borderRadius: 'var(--srd-r4)', padding: '12px 20px', ...F(12), background: 'var(--srd-blue-bg)', cursor: 'pointer', transition: 'all .2s' }}>
-          <div style={{ ...S(18, 800), width: 42, height: 42, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: 'var(--srd-red-bg)', color: 'var(--srd-red-t)', border: '2px solid var(--srd-red)' }}>{brief.grade}</div>
+        <div className="srd-banner srd-brief-banner" onClick={onOpenBrief} style={{ border: '1px solid var(--srd-blue-bdr)', borderRadius: 'var(--srd-r4)', padding: '12px 20px', ...F(12), background: 'var(--srd-blue-bg)', cursor: 'pointer', transition: 'all .2s', flexWrap: 'wrap' }}>
+          <div className="srd-brief-grade" style={{ ...S(18, 800), width: 42, height: 42, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, background: 'var(--srd-red-bg)', color: 'var(--srd-red-t)', border: '2px solid var(--srd-red)' }}>{brief.grade}</div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ ...S(13), color: 'var(--srd-ink)' }}>{brief.headline}</div>
             <div style={{ fontSize: 11, color: 'var(--srd-ink-m)', marginTop: 1 }}>Published {brief.publishedAt} · Score {brief.score} · Next review: {brief.nextReview}</div>
@@ -245,7 +275,7 @@ export default function StrategyRoomDashboard({
 
       {/* THEMES */}
       {themes && themes.length > 0 && (
-        <div style={{ margin: '12px 32px 0', ...F(6), overflowX: 'auto', scrollbarWidth: 'none' as const }}>
+        <div className="srd-themes" style={{ ...F(6), overflowX: 'auto', scrollbarWidth: 'none' as const }}>
           {themes.map((t, i) => { const s2 = st(t.status); return (
             <div key={i} className="srd-chip" style={{ ...F(5), padding: '5px 12px', border: '1px solid var(--srd-bdr)', borderRadius: 'var(--srd-pill)', fontSize: 12, fontWeight: 500, color: 'var(--srd-ink)', cursor: 'pointer', background: 'var(--srd-bg)', whiteSpace: 'nowrap', flexShrink: 0, transition: 'background .15s' }}>
               <span style={Dot(s2.color, 7)} />{t.name}
@@ -256,8 +286,8 @@ export default function StrategyRoomDashboard({
       )}
 
       {/* DASHBOARD */}
-      <main style={{ padding: '16px 32px 40px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, alignItems: 'stretch' }}>
+      <main className="srd-main" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div className="srd-grid">
 
           {/* BUDGET */}
           <Widget title="Budget Position" link="Full Planner →" delay={0.05} foot={budget ? (<>{(budget.footerStats || []).map((f, i) => <span key={i} style={{ ...F(5), marginInlineEnd: 8 }}><span style={Dot(f.color, 6)} />{f.label}</span>)}<span style={{ ...M(11), color: 'var(--srd-ink-m)', marginInlineStart: 'auto' }}>{budget.updatedAt}</span></>) : null}>
@@ -291,7 +321,7 @@ export default function StrategyRoomDashboard({
           </Widget>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, alignItems: 'stretch' }}>
+        <div className="srd-grid">
           {/* EXECUTION */}
           <Widget title="Execution Snapshot" delay={0.2} foot={execution && execution.length > 0 ? <span>{execution[0]?.footerNote || '—'}</span> : null}>
             {execution && execution.length > 0 ? execution.map((k, i) => (
