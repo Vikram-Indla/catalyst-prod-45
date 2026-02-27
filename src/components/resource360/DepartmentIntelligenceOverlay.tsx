@@ -3,10 +3,36 @@
  * 3-Tab: Executive Summary (default) → Weekly Digest → Recommendations
  */
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Sparkles, X, FileText, RefreshCw, Trophy, Code, CheckSquare, BookOpen, PenTool, Users, Server } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Sparkles, X, FileText, RefreshCw, Trophy, Code, CheckSquare, BookOpen, PenTool, Users, Server, ChevronRightIcon } from 'lucide-react';
 import { useDeptIntelligenceAI, type DigestEvent, type ExecSummaryV5, type Recommendation, type RoleContribution, type ProjectActivity } from '@/hooks/useDeptIntelligenceAI';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import '@/styles/dept-intelligence.css';
+
+/* ═══ Resource Avatar ═══ */
+const AVATAR_COLORS = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", "#6b8b7a"];
+function hashColor(name: string): string {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  return parts.length >= 2 ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
+}
+
+function ResAvatar({ name, avatarMap, size = 28 }: { name: string; avatarMap: Map<string, string>; size?: number }) {
+  const url = avatarMap.get(name.toLowerCase());
+  const px = `${size}px`;
+  if (url) {
+    return <img src={url} alt={name} style={{ width: px, height: px, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />;
+  }
+  return (
+    <div style={{ width: px, height: px, borderRadius: '50%', background: hashColor(name), display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: size <= 24 ? '9px' : '10px', fontWeight: 600, flexShrink: 0, fontFamily: 'var(--di-font-body)' }}>
+      {getInitials(name)}
+    </div>
+  );
+}
 
 interface Props {
   departmentName: string;
@@ -43,7 +69,7 @@ const DigestSkeleton = () => (
 );
 
 /* ═══ Tab 1: Executive Summary V5 (Role-Based) ═══ */
-function ExecutiveSummaryV5({ data }: { data: ExecSummaryV5 | null }) {
+function ExecutiveSummaryV5({ data, avatarMap }: { data: ExecSummaryV5 | null; avatarMap: Map<string, string> }) {
   if (!data) return (
     <div className="di-empty">
       <Sparkles size={24} />
@@ -102,6 +128,7 @@ function ExecutiveSummaryV5({ data }: { data: ExecSummaryV5 | null }) {
               </div>
               {rc.resources.map((res, ri) => (
                 <div className="di-res-row" key={ri}>
+                  <ResAvatar name={res.name} avatarMap={avatarMap} size={28} />
                   <span className="di-res-name">{res.name}</span>
                   <span className="di-res-desc" dangerouslySetInnerHTML={{ __html: res.desc }} />
                 </div>
@@ -249,6 +276,7 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
     weekLabel, weekRange, weekStart, weekOffset, dataAge, meta,
     prevWeek, nextWeek, generateAll,
   } = useDeptIntelligenceAI(departmentName);
+  const avatarMap = useProfileAvatarsByName();
 
   // Tab 1 = Executive Summary (default), Tab 2 = Weekly Digest, Tab 3 = Recommendations
   const [activeTab, setActiveTab] = useState<'summary' | 'digest' | 'recs'>('summary');
@@ -332,7 +360,7 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
             <DigestSkeleton />
           ) : hasData ? (
             <>
-              {activeTab === 'summary' && <ExecutiveSummaryV5 data={summaryV5} />}
+              {activeTab === 'summary' && <ExecutiveSummaryV5 data={summaryV5} avatarMap={avatarMap} />}
               {activeTab === 'digest' && <WeeklyDigest events={digest} weekStart={weekStart} />}
               {activeTab === 'recs' && <Recommendations items={recommendations} />}
             </>
