@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -280,7 +281,8 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
       <button className="idp-add-btn" onClick={openAdd}>+ Add Budget Item</button>
 
       {/* B5 — Add/Edit Modal */}
-      {showModal && (
+      {showModal && createPortal(
+        <div data-module="initiative-detail-panel">
         <div className="idp-modal-backdrop" onClick={() => setShowModal(false)}>
           <div className="idp-modal" style={{ width: 480 }} onClick={e => e.stopPropagation()}>
             <div className="idp-modal-header">
@@ -323,6 +325,8 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
             </div>
           </div>
         </div>
+        </div>,
+        document.body
       )}
     </div>
   );
