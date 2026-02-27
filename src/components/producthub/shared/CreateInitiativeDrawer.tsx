@@ -15,6 +15,7 @@ import { StatusSelect } from './StatusSelect';
 import { QuarterSelect } from './QuarterSelect';
 import { PeopleSelect } from './PeopleSelect';
 import { DepartmentSelect } from './DepartmentSelect';
+import { InitiativeTypeSelect } from './InitiativeTypeSelect';
 
 /* ── Token constants ── */
 const T = {
@@ -133,7 +134,7 @@ function FieldWrapper({ label, required, children }: { label: string; required?:
   );
 }
 
-const INPUT_CLS = "w-full h-9 px-3 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow placeholder:text-[#94A3B8]";
+const INPUT_CLS = "w-full h-9 px-3 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow placeholder:text-[#71717A]";
 
 /* ── Main Component ── */
 export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCreated }: CreateInitiativeDrawerProps) {
@@ -342,7 +343,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
               onChange={e => updateField('description', e.target.value)}
               placeholder="Brief description of the initiative scope and objectives..."
               rows={3}
-              className="w-full px-3 py-2 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-shadow placeholder:text-[#94A3B8]"
+              className="w-full px-3 py-2 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-shadow placeholder:text-[#71717A]"
               style={{ borderColor: T.border }}
             />
           </FieldWrapper>
@@ -350,16 +351,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
           {/* §2 CLASSIFICATION */}
           <SectionHeader icon={<Tag className="w-4 h-4" />} label="CLASSIFICATION" />
           <FieldWrapper label="Initiative Type">
-            <select
-              value={selectedType}
-              onChange={e => setSelectedType(e.target.value)}
-              className={cn(INPUT_CLS)}
-              style={{ borderColor: T.border }}
-            >
-              {TYPE_OPTIONS.map(opt => (
-                <option key={opt.key} value={opt.key}>{opt.label}</option>
-              ))}
-            </select>
+            <InitiativeTypeSelect value={selectedType} onChange={setSelectedType} />
           </FieldWrapper>
           <div className="grid grid-cols-2 gap-4">
             <FieldWrapper label="Status">
