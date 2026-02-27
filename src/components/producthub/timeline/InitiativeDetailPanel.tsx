@@ -158,7 +158,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
         .update({ title: trimmed, updated_at: new Date().toISOString() })
         .eq('id', initiative.id);
       if (error) throw error;
-      toast.success('Title saved', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
+      // Silent auto-save
       queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
     } catch { toast.error('Failed to save title'); }

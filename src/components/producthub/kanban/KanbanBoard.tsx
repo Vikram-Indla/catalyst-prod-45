@@ -108,7 +108,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
       queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
-      toast.success('Status updated');
+      // Silent auto-save
     },
     onError: () => toast.error('Failed to update status'),
   });

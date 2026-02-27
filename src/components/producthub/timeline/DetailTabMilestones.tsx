@@ -136,7 +136,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
       const { error } = await (supabase as any).from('ph_initiative_milestones').update(payload).eq('id', editing.id);
       if (error) { toast.error('Failed to update'); return; }
       logInitiativeAudit({ initiative_id: initiativeId, action: 'updated', entity_type: 'milestone', entity_id: editing.id, field_name: 'milestone', new_value: form.title });
-      toast.success('Milestone updated', TOAST_OPTS);
+      // Silent auto-save
     } else {
       payload.status = 'not_started';
       payload.sort_order = milestones.length + 1;

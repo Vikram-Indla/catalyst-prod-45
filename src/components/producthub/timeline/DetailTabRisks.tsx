@@ -135,7 +135,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
       const { error } = await (supabase as any).from('ph_initiative_risks').update(payload).eq('id', editingRisk.id);
       if (error) { toast.error('Failed to update'); return; }
       logInitiativeAudit({ initiative_id: initiativeId, action: 'updated', entity_type: 'risk', entity_id: editingRisk.id, new_value: form.title });
-      toast.success('Risk updated', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
+      // Silent auto-save
     } else {
       // Generate key
       const maxKey = risks.reduce((max: number, r: any) => {

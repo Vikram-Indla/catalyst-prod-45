@@ -99,7 +99,7 @@ export const TimelineContextMenu: React.FC<TimelineContextMenuProps> = ({
         .eq('id' as never, initiative.id as never);
       if (error) throw new Error(error.message);
       await queryClient.invalidateQueries({ queryKey: ['ph-timeline-initiatives'] });
-      catalystToast.success(`Status changed to ${STATUS_CONFIG[status].label}`);
+      // Silent auto-save
     } catch (err: unknown) {
       catalystToast.error(err instanceof Error ? err.message : 'Status update failed');
     }
