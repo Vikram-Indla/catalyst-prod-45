@@ -124,10 +124,10 @@ function PS({ value, onChange }: { value: string | null | undefined; onChange: (
   }, []);
 
   const { data: profiles = [] } = useQuery({
-    queryKey: ['profiles-list'],
+    queryKey: ['profiles-list-with-avatars'],
     queryFn: async () => {
-      const { data } = await supabase.from('profiles').select('id, full_name');
-      return (data || []).map((p: any) => ({ id: p.id, name: p.full_name || 'Unnamed' }));
+      const { data } = await supabase.from('profiles').select('id, full_name, avatar_url');
+      return (data || []).map((p: any) => ({ id: p.id, name: p.full_name || 'Unnamed', avatar_url: p.avatar_url || null }));
     },
     staleTime: 5 * 60_000,
   });
@@ -140,8 +140,11 @@ function PS({ value, onChange }: { value: string | null | undefined; onChange: (
       <button className="idp-ps-trigger" onClick={() => { setOpen(!open); setQ(''); }}>
         {selected ? (
           <>
-            <div className="idp-avatar" style={{ width: 22, height: 22, minWidth: 22, borderRadius: '50%', background: hashColor(selected.name), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ color: '#fff', fontSize: 9, fontWeight: 700, lineHeight: 1 }}>{getInitialsFromName(selected.name)}</span>
+            <div className="idp-avatar" style={{ width: 22, height: 22, minWidth: 22, borderRadius: '50%', background: hashColor(selected.name), display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+              {selected.avatar_url ? (
+                <img src={selected.avatar_url} alt={selected.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { e.currentTarget.style.display = 'none'; const fb = e.currentTarget.nextElementSibling as HTMLElement; if (fb) fb.style.display = 'flex'; }} />
+              ) : null}
+              <span style={{ color: '#fff', fontSize: 9, fontWeight: 700, lineHeight: 1, display: selected.avatar_url ? 'none' : 'flex' }}>{getInitialsFromName(selected.name)}</span>
             </div>
             <span className="idp-ps-name">{selected.name}</span>
           </>
@@ -163,8 +166,11 @@ function PS({ value, onChange }: { value: string | null | undefined; onChange: (
               <button key={p.id} onClick={() => { onChange(p.id); setOpen(false); }}
                 className={`idp-dd-option${p.id === value ? ' idp-dd-option--selected' : ''}`}
                 style={{ gap: 8 }}>
-                <div style={{ width: 22, height: 22, minWidth: 22, borderRadius: '50%', background: hashColor(p.name), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ color: '#fff', fontSize: 9, fontWeight: 700, lineHeight: 1 }}>{getInitialsFromName(p.name)}</span>
+                <div style={{ width: 22, height: 22, minWidth: 22, borderRadius: '50%', background: hashColor(p.name), display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                  {p.avatar_url ? (
+                    <img src={p.avatar_url} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { e.currentTarget.style.display = 'none'; const fb = e.currentTarget.nextElementSibling as HTMLElement; if (fb) fb.style.display = 'flex'; }} />
+                  ) : null}
+                  <span style={{ color: '#fff', fontSize: 9, fontWeight: 700, lineHeight: 1, display: p.avatar_url ? 'none' : 'flex' }}>{getInitialsFromName(p.name)}</span>
                 </div>
                 <span>{p.name}</span>
               </button>
