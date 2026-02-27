@@ -1,14 +1,20 @@
 /**
- * HierarchyPage — Work Item Hierarchy (Stage A skeleton)
+ * HierarchyPage — Work Item Hierarchy (Stage C)
  * Route: /project-hub/:key/hierarchy
  * Two-column layout: tree panel (2fr) + detail panel (1fr)
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { ChevronRight, ChevronDown, Plus, Zap, Puzzle, BookOpen, ListChecks } from 'lucide-react';
 import { HIERARCHY_LEVELS } from '@/types/hierarchy';
+import type { WorkItem } from '@/types/hierarchy';
 import type { LucideProps } from 'lucide-react';
+import { useProjectId } from '@/hooks/useProjectDashboard';
+import { useFullHierarchyTree } from '@/hooks/useHierarchy';
+import { WorkItemTree } from '@/components/hierarchy/WorkItemTree';
+import { DetailPanel } from '@/components/hierarchy/DetailPanel';
+import { CreateWorkItemModal } from '@/components/hierarchy/CreateWorkItemModal';
 
 const ICON_MAP: Record<string, React.ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>>> = {
   zap: Zap,
@@ -17,9 +23,43 @@ const ICON_MAP: Record<string, React.ForwardRefExoticComponent<Omit<LucideProps,
   'list-checks': ListChecks,
 };
 
+function countAll(items: WorkItem[]): number {
+  let c = items.length;
+  for (const item of items) c += countAll(item.children);
+  return c;
+}
+
+function countCompleted(items: WorkItem[]): number {
+  let c = 0;
+  for (const item of items) {
+    if (item.status.isTerminal) c++;
+    c += countCompleted(item.children);
+  }
+  return c;
+}
+
 export default function HierarchyPage() {
   const { key: projectKey } = useParams<{ key: string }>();
+  const { data: projectId } = useProjectId(projectKey);
+  const { data: treeItems = [], isLoading } = useFullHierarchyTree(projectId || '');
+
   const [allExpanded, setAllExpanded] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<WorkItem | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createParent, setCreateParent] = useState<WorkItem | null>(null);
+
+  const totalItems = useMemo(() => countAll(treeItems), [treeItems]);
+  const completedItems = useMemo(() => countCompleted(treeItems), [treeItems]);
+
+  const handleAddChild = (parent: WorkItem) => {
+    setCreateParent(parent);
+    setCreateOpen(true);
+  };
+
+  const handleCreateRoot = () => {
+    setCreateParent(null);
+    setCreateOpen(true);
+  };
 
   return (
     <div style={{
@@ -37,11 +77,11 @@ export default function HierarchyPage() {
         background: '#FFFFFF',
       }}>
         <h1 style={{
-          fontSize: 20,
+          fontSize: 22,
           fontWeight: 700,
           color: '#0F172A',
           margin: 0,
-          letterSpacing: '-0.02em',
+          letterSpacing: '-0.025em',
           lineHeight: 1.2,
         }}>
           Work Item Hierarchy
@@ -51,7 +91,7 @@ export default function HierarchyPage() {
           color: '#64748B',
           margin: '4px 0 0',
         }}>
-          {projectKey?.toUpperCase() || 'Project'} · 0 items
+          {projectKey?.toUpperCase() || 'Project'} · {totalItems} items · {completedItems} completed
         </p>
       </div>
 
@@ -110,10 +150,11 @@ export default function HierarchyPage() {
         <div style={{ flex: 1 }} />
 
         <button
+          onClick={handleCreateRoot}
           style={{
             height: 32,
             padding: '0 14px',
-            fontSize: 12,
+            fontSize: 13,
             fontWeight: 600,
             fontFamily: "'Inter', sans-serif",
             color: '#FFFFFF',
@@ -134,116 +175,117 @@ export default function HierarchyPage() {
       {/* TWO-COLUMN LAYOUT */}
       <div style={{
         flex: 1,
-        display: 'flex',
+        display: 'grid',
+        gridTemplateColumns: '2fr 1fr',
+        gap: 24,
         overflow: 'hidden',
         minHeight: 0,
+        padding: 24,
       }}>
         {/* TREE PANEL */}
-        <div style={{
-          flex: 2,
-          overflowY: 'auto',
-          padding: 24,
-          borderRight: '1px solid #E2E8F0',
-        }}>
-          {/* EMPTY STATE */}
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: 300,
-            gap: 16,
-            textAlign: 'center',
-          }}>
-            {/* Level legend */}
+        <div style={{ overflowY: 'auto', minHeight: 0 }}>
+          {isLoading ? (
+            <div style={{ textAlign: 'center', padding: 48, color: '#64748B', fontSize: 13 }}>
+              Loading hierarchy…
+            </div>
+          ) : treeItems.length === 0 ? (
+            /* EMPTY STATE */
             <div style={{
+              border: '1px solid #E2E8F0',
+              borderRadius: 8,
+              background: '#FFFFFF',
               display: 'flex',
-              gap: 12,
-              marginBottom: 8,
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: 300,
+              gap: 16,
+              textAlign: 'center',
+              padding: 24,
             }}>
-              {HIERARCHY_LEVELS.map((level) => {
-                const Icon = ICON_MAP[level.icon] || Zap;
-                return (
-                  <div key={level.id} style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 5,
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: level.colorText,
-                    padding: '4px 10px',
-                    borderRadius: 9999,
-                    background: `${level.color}10`,
-                    border: `1px solid ${level.color}30`,
-                  }}>
-                    <Icon size={12} />
-                    {level.name}
-                  </div>
-                );
-              })}
-            </div>
+              {/* Level legend */}
+              <div style={{ display: 'flex', gap: 12, marginBottom: 8 }}>
+                {HIERARCHY_LEVELS.map((level) => {
+                  const Icon = ICON_MAP[level.icon] || Zap;
+                  return (
+                    <div key={level.id} style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 5,
+                      fontSize: 11,
+                      fontWeight: 600,
+                      color: level.colorText,
+                      padding: '4px 10px',
+                      borderRadius: 9999,
+                      background: `${level.color}10`,
+                      border: `1px solid ${level.color}30`,
+                    }}>
+                      <Icon size={12} />
+                      {level.name}
+                    </div>
+                  );
+                })}
+              </div>
 
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.5">
-              <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" />
-            </svg>
-            <div>
-              <p style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', margin: 0 }}>
-                No work items yet
-              </p>
-              <p style={{ fontSize: 12, color: '#64748B', margin: '4px 0 0', maxWidth: 320 }}>
-                Create your first Epic to start building the hierarchy for {projectKey?.toUpperCase() || 'this project'}.
-              </p>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.5">
+                <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" />
+              </svg>
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', margin: 0 }}>
+                  No work items yet
+                </p>
+                <p style={{ fontSize: 12, color: '#64748B', margin: '4px 0 0', maxWidth: 320 }}>
+                  Create your first Epic to start building the hierarchy for {projectKey?.toUpperCase() || 'this project'}.
+                </p>
+              </div>
+              <button
+                onClick={handleCreateRoot}
+                style={{
+                  height: 34,
+                  padding: '0 16px',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  fontFamily: "'Inter', sans-serif",
+                  color: '#FFFFFF',
+                  background: '#2563EB',
+                  border: 'none',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  marginTop: 4,
+                }}
+              >
+                <Plus size={14} />
+                Create Epic
+              </button>
             </div>
-            <button
-              style={{
-                height: 34,
-                padding: '0 16px',
-                fontSize: 13,
-                fontWeight: 600,
-                fontFamily: "'Inter', sans-serif",
-                color: '#FFFFFF',
-                background: '#2563EB',
-                border: 'none',
-                borderRadius: 6,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                marginTop: 4,
-              }}
-            >
-              <Plus size={14} />
-              Create Epic
-            </button>
-          </div>
+          ) : (
+            <WorkItemTree
+              items={treeItems}
+              selectedId={selectedItem?.id || null}
+              onSelect={setSelectedItem}
+              allExpanded={allExpanded}
+            />
+          )}
         </div>
 
         {/* DETAIL PANEL */}
-        <div style={{
-          flex: 1,
-          overflowY: 'auto',
-          padding: 24,
-          background: '#FFFFFF',
-          minWidth: 280,
-        }}>
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: 200,
-            gap: 8,
-            textAlign: 'center',
-          }}>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.5">
-              <path d="M15 15l6 6M10 17a7 7 0 110-14 7 7 0 010 14z" />
-            </svg>
-            <p style={{ fontSize: 13, color: '#64748B', margin: 0 }}>
-              Select a work item to view details
-            </p>
-          </div>
+        <div style={{ overflowY: 'auto', minHeight: 0 }}>
+          <DetailPanel item={selectedItem} onAddChild={handleAddChild} />
         </div>
       </div>
+
+      {/* CREATE MODAL */}
+      {projectId && (
+        <CreateWorkItemModal
+          open={createOpen}
+          onClose={() => { setCreateOpen(false); setCreateParent(null); }}
+          projectId={projectId}
+          parentItem={createParent}
+        />
+      )}
     </div>
   );
 }

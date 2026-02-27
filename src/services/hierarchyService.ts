@@ -85,3 +85,14 @@ export async function fetchProjectWorkItems(projectId: string, filters?: {
 export async function fetchRootEpics(projectId: string): Promise<WorkItem[]> {
   return fetchProjectWorkItems(projectId, { hierarchyLevel: 1 });
 }
+
+export async function fetchAllWorkItemsTree(projectId: string): Promise<WorkItem[]> {
+  const { data, error } = await supabase.rpc('hi_get_project_work_items', {
+    p_project_id: projectId,
+    p_hierarchy_level: null,
+    p_status_id: null,
+  } as any);
+  if (error) throw error;
+  const items = (data || []).map(transformWorkItem);
+  return buildTree(items);
+}

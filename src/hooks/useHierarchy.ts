@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchHierarchyTree, fetchRootEpics } from '@/services/hierarchyService';
+import { fetchHierarchyTree, fetchRootEpics, fetchAllWorkItemsTree } from '@/services/hierarchyService';
 import { supabase } from '@/integrations/supabase/client';
 
 // ALL hooks accept projectId — read from useParams() in the page component
@@ -18,6 +18,14 @@ export function useHierarchyTree(rootId: string | null) {
     queryKey: ['hierarchy', 'tree', rootId],
     queryFn: () => fetchHierarchyTree(rootId!),
     enabled: !!rootId,
+  });
+}
+
+export function useFullHierarchyTree(projectId: string) {
+  return useQuery({
+    queryKey: ['hierarchy', projectId, 'full-tree'],
+    queryFn: () => fetchAllWorkItemsTree(projectId),
+    enabled: !!projectId,
   });
 }
 
