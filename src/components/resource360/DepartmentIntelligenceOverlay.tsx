@@ -2,7 +2,9 @@
  * Department Intelligence Panel V5 — Role-Based Executive Briefing
  * 3-Tab: Executive Summary (default) → Weekly Digest → Recommendations
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { ChevronLeft, ChevronRight, Sparkles, X, FileText, RefreshCw, Trophy, Code, CheckSquare, BookOpen, PenTool, Users, Server, ChevronRightIcon } from 'lucide-react';
 import { useDeptIntelligenceAI, type DigestEvent, type ExecSummaryV5, type Recommendation, type RoleContribution, type ProjectActivity } from '@/hooks/useDeptIntelligenceAI';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
@@ -79,7 +81,7 @@ const DigestSkeleton = () => (
 );
 
 /* ═══ Tab 1: Executive Summary V5 (Role-Based) ═══ */
-function ExecutiveSummaryV5({ data, avatarMap }: { data: ExecSummaryV5 | null; avatarMap: Map<string, string> }) {
+function ExecutiveSummaryV5({ data, avatarMap, roleMap }: { data: ExecSummaryV5 | null; avatarMap: Map<string, string>; roleMap: Map<string, string> }) {
   if (!data) return (
     <div className="di-empty">
       <Sparkles size={24} />
@@ -141,7 +143,14 @@ function ExecutiveSummaryV5({ data, avatarMap }: { data: ExecSummaryV5 | null; a
                 .map((res, ri) => (
                 <div className="di-res-row" key={ri}>
                   <ResAvatar name={res.name} avatarMap={avatarMap} size={28} />
-                  <span className="di-res-name">{res.name}</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                    <span className="di-res-name">{res.name}</span>
+                    {roleMap.get(res.name.toLowerCase()) && (
+                      <span style={{ fontSize: 10, color: '#94a3b8', fontWeight: 500, lineHeight: 1.2 }}>
+                        {roleMap.get(res.name.toLowerCase())}
+                      </span>
+                    )}
+                  </div>
                   <span className="di-res-desc" dangerouslySetInnerHTML={{ __html: injectClaims(res.desc) }} />
                 </div>
               ))}
@@ -301,6 +310,23 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
   } = useDeptIntelligenceAI(departmentName);
   const avatarMap = useProfileAvatarsByName();
 
+  // Fetch role names from resource_inventory keyed by lowercase name
+  const { data: roleMap = new Map<string, string>() } = useQuery({
+    queryKey: ['di-resource-roles'],
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from('resource_inventory')
+        .select('name, role_name')
+        .not('role_name', 'is', null);
+      const map = new Map<string, string>();
+      (data || []).forEach((r: any) => {
+        if (r.name && r.role_name) map.set(r.name.toLowerCase(), r.role_name);
+      });
+      return map;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
   // Tab 1 = Executive Summary (default), Tab 2 = Weekly Digest, Tab 3 = Recommendations
   const [activeTab, setActiveTab] = useState<'summary' | 'digest' | 'projects' | 'recs'>('summary');
 
@@ -414,7 +440,7 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
             <DigestSkeleton />
           ) : hasData ? (
             <>
-              {activeTab === 'summary' && <ExecutiveSummaryV5 data={summaryV5} avatarMap={avatarMap} />}
+              {activeTab === 'summary' && <ExecutiveSummaryV5 data={summaryV5} avatarMap={avatarMap} roleMap={roleMap} />}
               {activeTab === 'digest' && <WeeklyDigest events={digest} weekStart={weekStart} />}
               {activeTab === 'projects' && <ProjectActivityTab projects={summaryV5?.projectActivity || []} />}
               {activeTab === 'recs' && <Recommendations items={recommendations} />}
