@@ -279,6 +279,7 @@ export function JiraIssueTypeIcon({ type, size = 16, className, style }: JiraIss
       width={size}
       height={size}
       alt={cfg.label}
+      title={cfg.label}
       className={className}
       style={{ flexShrink: 0, ...style }}
       draggable={false}
