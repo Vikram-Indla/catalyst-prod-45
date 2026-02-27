@@ -4,7 +4,7 @@
  */
 
 import { Checkbox } from '@/components/ui/checkbox';
-import { ChevronRight, Palette, Server, Plug, Settings } from 'lucide-react';
+import { ChevronRight, Palette, Server, Plug, Figma } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Subtask, SubtaskType } from '@/types/subtask';
 import { SUBTASK_TYPE_CONFIG, SUBTASK_STATUS_CONFIG } from '@/types/subtask';
@@ -19,7 +19,7 @@ const TYPE_ICONS: Record<SubtaskType, React.ElementType> = {
   frontend: Palette,
   backend: Server,
   integration: Plug,
-  technical: Settings,
+  figma: Figma,
 };
 
 function getInitials(name: string): string {

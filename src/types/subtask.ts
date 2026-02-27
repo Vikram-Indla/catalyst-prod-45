@@ -2,7 +2,7 @@
  * Subtask Types and Configurations
  */
 
-export type SubtaskType = 'frontend' | 'backend' | 'integration' | 'technical';
+export type SubtaskType = 'frontend' | 'backend' | 'integration' | 'figma';
 export type SubtaskStatus = 'todo' | 'in_progress' | 'done';
 
 export interface Subtask {
@@ -52,11 +52,11 @@ export const SUBTASK_TYPE_CONFIG = {
     color: '#f59e0b',
     bgColor: 'rgba(245, 158, 11, 0.1)',
   },
-  technical: {
-    label: 'Technical',
-    icon: 'Cog',
-    color: '#6b7280',
-    bgColor: 'rgba(107, 114, 128, 0.15)',
+  figma: {
+    label: 'Figma',
+    icon: 'Figma',
+    color: '#a259ff',
+    bgColor: 'rgba(162, 89, 255, 0.12)',
   },
 } as const;
 
