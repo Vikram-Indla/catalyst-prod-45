@@ -75,7 +75,7 @@ Each card:
   UX Designers: "Designs Delivered", "Design Reviews"
   Delivery Mgmt: "Tasks Delegated", "Escalations Managed"
   DevOps: "Deployments", "Rollbacks"
-- resources: array of {name, desc} — desc is HTML with <strong>project names</strong> bolded
+- resources: array of {name, desc} — desc is HTML with <strong>project names</strong> bolded. IMPORTANT: Wrap every numeric claim (like "Closed 25 defects", "5 items re-opened", "12 closures") in <span class="di-claim">25 defects closed</span> so it becomes a clickable drill-in link. Every number+action pair MUST be wrapped.
 
 2C. projectActivity: Array of projects.
 Each: { name, desc (1 sentence), status: "active"|"risk"|"stalled" }

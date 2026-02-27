@@ -440,10 +440,29 @@
 .di-role-kpi-v { font: 700 16px var(--di-font-heading); color: #09090B; }
 .di-role-kpi-l { font: 500 11px var(--di-font-body); color: #71717A; }
 
-.di-res-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0 10px 42px; }
-.di-res-name { font: 600 13px var(--di-font-body); color: #09090B; min-width: 140px; flex-shrink: 0; }
+.di-res-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0 10px 42px; }
+.di-res-name { font: 600 13px var(--di-font-body); color: #09090B; min-width: 130px; flex-shrink: 0; }
 .di-res-desc { font: 400 13px/1.7 var(--di-font-body); color: #3F3F46; flex: 1; }
 .di-res-desc strong { color: #09090B; font-weight: 600; }
+
+/* Claim chevron — small drill-in indicator next to numeric claims */
+.di-claim {
+  font-weight: 600; color: var(--di-primary); cursor: pointer;
+  border-bottom: 1px dashed var(--di-primary);
+  padding-bottom: 1px;
+}
+.di-claim::after {
+  content: '›';
+  display: inline-block;
+  margin-left: 3px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--di-primary);
+  vertical-align: baseline;
+  transition: transform 0.15s;
+}
+.di-claim:hover { color: var(--di-primary-hover); }
+.di-claim:hover::after { transform: translateX(2px); }
 
 /* Project Activity */
 .di-prj-row {
