@@ -75,14 +75,9 @@ function WeeklyDigest({ events, weekStart }: { events: DigestEvent[]; weekStart:
             {dayEvents.map((ev, ei) => (
               <div className="di-ev" key={ei}>
                 <span className="di-ev-n">{String(ev.number).padStart(2, '0')}</span>
-                {ev.hub === 'INC' ? (
-                  <span className="di-ev-hub" style={{ background: '#FEE2E2', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                    <JiraIssueTypeIcon type="Incident" size={12} />
-                    <span style={{ color: '#991B1B' }}>INC</span>
-                  </span>
-                ) : (
-                  <span className={`di-ev-hub ${ev.hubCss}`}>{ev.hub}</span>
-                )}
+                <span className="di-ev-hub-icon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 20, flexShrink: 0 }}>
+                  <JiraIssueTypeIcon type={ev.hub === 'INC' ? 'Incident' : ev.hub === 'PRD' ? 'Story' : ev.hub === 'TST' ? 'Bug' : ev.hub === 'PRJ' ? 'Task' : ev.hub === 'REL' ? 'Epic' : 'Task'} size={16} />
+                </span>
                 <div className="di-ev-content">
                   <div className="di-ev-txt">
                     {ev.signalLabel && ev.signal && (
