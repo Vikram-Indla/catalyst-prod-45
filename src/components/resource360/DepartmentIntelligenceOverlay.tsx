@@ -3,6 +3,7 @@
  * Pixel-perfect match to dept-intelligence-steercom-v4.html
  */
 import { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, Sparkles, X, FileText, RefreshCw } from 'lucide-react';
 import { useDeptIntelligenceAI, type DigestEvent, type ExecSummary, type Recommendation } from '@/hooks/useDeptIntelligenceAI';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import '@/styles/dept-intelligence.css';
@@ -11,26 +12,6 @@ interface Props {
   departmentName: string;
   onClose: () => void;
 }
-
-/* ═══ SVG Icons ═══ */
-const ChevronLeft = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-);
-const ChevronRight = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-);
-const Sparkle = ({ size = 10 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v18M3 12h18M5.636 5.636l12.728 12.728M18.364 5.636L5.636 18.364"/></svg>
-);
-const XIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-);
-const DocIcon = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 9h6M9 13h6"/></svg>
-);
-const SpinIcon = () => (
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="di-spin"><path d="M21 12a9 9 0 11-6.219-8.56"/><polyline points="21 3 21 9 15 9"/></svg>
-);
 
 /* ═══ Day helpers ═══ */
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
@@ -108,7 +89,7 @@ function WeeklyDigest({ events, weekStart }: { events: DigestEvent[]; weekStart:
 function ExecutiveSummary({ data }: { data: ExecSummary | null }) {
   if (!data) return (
     <div className="di-empty">
-      <Sparkle size={24} />
+      <Sparkles size={24} />
       <div className="di-empty-t">No executive summary yet</div>
       <div className="di-empty-s">Click <strong>✦ Refresh AI</strong> to generate.</div>
     </div>
@@ -160,7 +141,7 @@ function ExecutiveSummary({ data }: { data: ExecSummary | null }) {
 function Recommendations({ items }: { items: Recommendation[] }) {
   if (items.length === 0) return (
     <div className="di-empty">
-      <Sparkle size={24} />
+      <Sparkles size={24} />
       <div className="di-empty-t">No recommendations yet</div>
       <div className="di-empty-s">Click <strong>✦ Refresh AI</strong> to generate.</div>
     </div>
@@ -220,22 +201,22 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
         <div className="di-topbar">
           <div className="di-topbar-l">
             <button className="di-back" onClick={onClose}>
-              <ChevronLeft /> Back
+              <ChevronLeft size={14} /> Back
             </button>
             <div className="di-sep" />
             <div className="di-title-bar">
-              <div className="di-dept-icon"><DocIcon /></div>
+              <div className="di-dept-icon"><FileText size={15} stroke="white" /></div>
               <span className="di-dept-name">{departmentName}</span>
             </div>
           </div>
           <div className="di-topbar-r">
             {dataAge && <span className="di-age">{dataAge}</span>}
             <button className="di-btn-p" onClick={generateAll} disabled={isGenerating}>
-              {isGenerating ? <SpinIcon /> : <Sparkle size={13} />}
+              {isGenerating ? <RefreshCw size={13} className="di-spin" /> : <Sparkles size={13} />}
               <span>{isGenerating ? 'Generating…' : 'Refresh AI'}</span>
             </button>
             <button className="di-btn-g">Export PDF</button>
-            <button className="di-close" onClick={onClose}><XIcon /></button>
+            <button className="di-close" onClick={onClose}><X size={14} /></button>
           </div>
         </div>
 
@@ -244,13 +225,13 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
           <div className="di-h-top">
             <div className="di-h-title">
               <span className="di-h-t">This Week's Significant Events</span>
-              <span className="di-ai"><Sparkle /> AI</span>
+              <span className="di-ai"><Sparkles size={10} /> AI</span>
             </div>
             <div className="di-wk-sel">
-              <button className="di-wk-nav" onClick={prevWeek}><ChevronLeft /></button>
+              <button className="di-wk-nav" onClick={prevWeek}><ChevronLeft size={14} /></button>
               <span className="di-wk-lbl">{weekLabel}</span>
               <span className="di-wk-rng">{weekRange}</span>
-              <button className="di-wk-nav" onClick={nextWeek} disabled={weekOffset === 0}><ChevronRight /></button>
+              <button className="di-wk-nav" onClick={nextWeek} disabled={weekOffset === 0}><ChevronRight size={14} /></button>
             </div>
           </div>
 
@@ -280,7 +261,7 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
             </>
           ) : (
             <div className="di-empty">
-              <Sparkle size={24} />
+              <Sparkles size={24} />
               <div className="di-empty-t">No AI analysis yet</div>
               <div className="di-empty-s">Click <strong>✦ Refresh AI</strong> to generate the STEERCOM briefing for {weekLabel}.</div>
               {(meta?.resourceCount ?? 0) > 0 && (
