@@ -26,23 +26,33 @@ const OVERLAY_TOKENS = `
   to { opacity: 1; }
 }
 @media print {
+  html, body, #root {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
   .brief-controller-dashboard { display: none !important; }
-  .brief-controller-overlay,
-  .brief-controller-overlay *,
-  .sri-root-container,
-  .sri-root-container * {
+  .brief-controller-overlay {
+    position: static !important;
+    inset: auto !important;
+    z-index: auto !important;
+    background: white !important;
+    backdrop-filter: none !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    display: block !important;
+  }
+  .brief-controller-overlay * {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+  .sri-root-container {
     position: static !important;
     overflow: visible !important;
     height: auto !important;
     max-height: none !important;
   }
-  .brief-controller-overlay {
-    background: white !important;
-    backdrop-filter: none !important;
-    inset: auto !important;
-    z-index: auto !important;
-  }
-  body { overflow: visible !important; }
 }
 `;
 
