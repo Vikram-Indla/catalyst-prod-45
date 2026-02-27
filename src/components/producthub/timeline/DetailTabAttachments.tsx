@@ -8,6 +8,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logInitiativeAudit } from '@/lib/initiativeAudit';
+import { Upload, Paperclip, Download, Pin, PinOff, Trash2 } from 'lucide-react';
 
 interface DetailTabAttachmentsProps {
   initiativeId: string;
@@ -164,7 +165,7 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ init
           border: dragging ? '2px dashed var(--idp-primary)' : '2px dashed var(--idp-border-strong)',
           background: dragging ? 'var(--idp-primary-bg)' : 'var(--idp-surface-secondary)',
         }}>
-        <span style={{ fontSize: 22, marginBottom: 4 }}>📁</span>
+        <Upload size={20} style={{ marginBottom: 4, color: 'var(--idp-ink-tertiary)' }} />
         <span style={{ fontSize: 13, color: 'var(--idp-ink-tertiary)' }}>
           Drag files here or <span style={{ fontWeight: 600, color: 'var(--idp-primary)' }}>browse</span>
         </span>
@@ -187,7 +188,7 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ init
       {/* A3 — File Cards */}
       {sortedFiles.length === 0 ? (
         <div style={{ border: '1px solid var(--idp-border)', borderRadius: 8, padding: '40px 20px', textAlign: 'center' }}>
-          <div style={{ fontSize: 28, marginBottom: 8 }}>📎</div>
+          <Paperclip size={28} style={{ margin: '0 auto 8px', color: 'var(--idp-ink-tertiary)' }} />
           <div style={{ fontSize: 13, color: 'var(--idp-ink-tertiary)' }}>No attachments yet</div>
         </div>
       ) : sortedFiles.map((f: any) => {
@@ -207,17 +208,18 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ init
               background: ft.bg, color: ft.color, fontSize: 10, fontWeight: 800,
             }}>{ft.label}</div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--idp-ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {f.is_pinned ? '📌 ' : ''}{f.file_name}
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--idp-ink)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4 }}>
+                {f.is_pinned && <Pin size={11} style={{ flexShrink: 0 }} />}
+                {f.file_name}
               </div>
               <div style={{ fontSize: 11, color: 'var(--idp-ink-muted)' }}>
                 {formatSize(f.file_size)} · {ft.label} · {f.uploader?.full_name || 'Unknown'} · {timeAgo(f.created_at)}
               </div>
             </div>
             <div style={{ display: 'flex', gap: 2, opacity: hoveredCard === f.id ? 1 : 0, transition: 'opacity 0.15s', flexShrink: 0 }}>
-              <button onClick={() => handleDownload(f)} className="idp-hover-action-btn" title="Download">⬇️</button>
-              <button onClick={() => handlePin(f)} className="idp-hover-action-btn" title={f.is_pinned ? 'Unpin' : 'Pin'}>{f.is_pinned ? '📍' : '📌'}</button>
-              <button onClick={() => handleDelete(f)} className="idp-hover-action-btn" title="Delete">🗑️</button>
+              <button onClick={() => handleDownload(f)} className="idp-hover-action-btn" title="Download"><Download size={14} /></button>
+              <button onClick={() => handlePin(f)} className="idp-hover-action-btn" title={f.is_pinned ? 'Unpin' : 'Pin'}>{f.is_pinned ? <PinOff size={14} /> : <Pin size={14} />}</button>
+              <button onClick={() => handleDelete(f)} className="idp-hover-action-btn" title="Delete"><Trash2 size={14} /></button>
             </div>
           </div>
         );

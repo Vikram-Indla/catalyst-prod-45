@@ -6,7 +6,10 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { ChevronLeft } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import {
+  ArrowLeft, X, Building2, Zap, Wrench, Link2, Archive, Copy, Trash2,
+} from 'lucide-react';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
 import { DetailTabDetails } from './DetailTabDetails';
@@ -51,11 +54,18 @@ const STATUS_LABELS: Record<string, string> = {
   closed: 'Done', cancelled: 'Cancelled',
 };
 
-const TYPE_MAP: Record<string, { icon: string; textColor: string; fillColor: string }> = {
-  project:             { icon: '🏗', textColor: '#08736B', fillColor: '#0D9488' },
-  enhancement:         { icon: '⚡', textColor: '#2563EB', fillColor: '#2563EB' },
-  improvement:         { icon: '🔧', textColor: '#9A5402', fillColor: '#D97706' },
-  entity_integration:  { icon: '🔗', textColor: '#7C3AED', fillColor: '#7C3AED' },
+const TYPE_ICON_MAP: Record<string, LucideIcon> = {
+  project: Building2,
+  enhancement: Zap,
+  improvement: Wrench,
+  entity_integration: Link2,
+};
+
+const TYPE_COLORS: Record<string, { textColor: string; fillColor: string }> = {
+  project:             { textColor: '#08736B', fillColor: '#0D9488' },
+  enhancement:         { textColor: '#2563EB', fillColor: '#2563EB' },
+  improvement:         { textColor: '#9A5402', fillColor: '#D97706' },
+  entity_integration:  { textColor: '#7C3AED', fillColor: '#7C3AED' },
 };
 
 const PRIORITY_LEVELS: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
@@ -99,7 +109,9 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
   const dbStatus = UI_TO_DB[initiative.status] || initiative.status;
   const pillColors = STATUS_PILL_COLORS[dbStatus] || STATUS_PILL_COLORS.new_demand;
   const statusLabel = STATUS_LABELS[dbStatus] || initiative.status;
-  const typeInfo = TYPE_MAP[initiative.initiative_type_key || ''];
+  const typeKey = initiative.initiative_type_key || '';
+  const typeColors = TYPE_COLORS[typeKey];
+  const TypeIcon = TYPE_ICON_MAP[typeKey];
   const priority = (initiative as any).priority || 'medium';
   const priorityBars = PRIORITY_LEVELS[priority.toLowerCase()] || 2;
 
@@ -214,7 +226,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
         {/* Top Bar */}
         <div className="idp-topbar">
           <button className="idp-back-btn" onClick={handleClose}>
-            <span className="idp-back-arrow">←</span> Back to list
+            <ArrowLeft size={14} /> Back to list
           </button>
           <div className="idp-action-group">
             <button className="idp-action-btn" onClick={handleClone}>Clone</button>
@@ -233,7 +245,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
             }}>{initiative.is_archived ? 'Restore' : 'Archive'}</button>
             <button className="idp-action-btn idp-action-btn--delete" onClick={() => setShowDeleteConfirm(true)}>Delete</button>
             <div className="idp-divider" />
-            <button className="idp-close-btn" onClick={handleClose}>✕</button>
+            <button className="idp-close-btn" onClick={handleClose}><X size={16} /></button>
           </div>
         </div>
 
@@ -241,7 +253,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
         <div className="idp-identity">
           {initiative.is_archived && (
             <div className="idp-archived-banner">
-              <span style={{ fontSize: 13 }}>📦</span>
+              <Archive size={14} />
               <span>This initiative has been archived</span>
             </div>
           )}
@@ -278,10 +290,10 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
               <div className="idp-status-dot" style={{ background: pillColors.text }} />
               <span style={{ color: pillColors.text }}>{statusLabel}</span>
             </div>
-            {typeInfo && (
+            {typeColors && TypeIcon && (
               <div className="idp-type-badge">
-                <span className="idp-type-icon">{typeInfo.icon}</span>
-                <span className="idp-type-label" style={{ color: typeInfo.textColor }}>
+                <TypeIcon size={13} className="idp-type-icon" />
+                <span className="idp-type-label" style={{ color: typeColors.textColor }}>
                   {initiative.initiative_type_label || initiative.initiative_type_key}
                 </span>
               </div>

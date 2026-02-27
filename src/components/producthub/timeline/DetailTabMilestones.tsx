@@ -8,6 +8,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logInitiativeAudit } from '@/lib/initiativeAudit';
+import { CheckCircle2, RotateCcw, Pencil, Trash2, Flag, CircleDot, X } from 'lucide-react';
 
 interface DetailTabMilestonesProps {
   initiativeId: string;
@@ -153,7 +154,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
       status: 'completed', actual_date: new Date().toISOString().slice(0, 10),
     }).eq('id', m.id);
     logInitiativeAudit({ initiative_id: initiativeId, action: 'completed', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
-    toast.success(`✅ ${m.title} completed`, TOAST_OPTS);
+    toast.success(`${m.title} completed`, TOAST_OPTS);
     refetch();
   };
   const handleReopen = async (m: any) => {
@@ -161,7 +162,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
       status: 'in_progress', actual_date: null,
     }).eq('id', m.id);
     logInitiativeAudit({ initiative_id: initiativeId, action: 'reopened', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
-    toast.success(`↩️ ${m.title} reopened`, TOAST_OPTS);
+    toast.success(`${m.title} reopened`, TOAST_OPTS);
     refetch();
   };
   const handleDelete = async (m: any) => {
@@ -184,15 +185,21 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
     <div style={{ padding: '20px 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
       {/* M1 — Progress Summary */}
       <div style={{ display: 'flex', gap: 12, marginBottom: 4 }}>
-        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--idp-success-text)' }}>✓ {counts.completed} Completed</span>
-        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--idp-primary)' }}>● {counts.active} Active</span>
-        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--idp-ink-muted)' }}>○ {counts.upcoming} Upcoming</span>
+        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--idp-success-text)', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <CheckCircle2 size={12} /> {counts.completed} Completed
+        </span>
+        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--idp-primary)', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <CircleDot size={12} /> {counts.active} Active
+        </span>
+        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--idp-ink-muted)', display: 'flex', alignItems: 'center', gap: 4 }}>
+          ○ {counts.upcoming} Upcoming
+        </span>
       </div>
 
       {/* M2 — Milestone Cards */}
       {milestones.length === 0 ? (
         <div style={{ border: '1px solid var(--idp-border)', borderRadius: 8, padding: '40px 20px', textAlign: 'center' }}>
-          <div style={{ fontSize: 28, marginBottom: 8 }}>🏁</div>
+          <Flag size={28} style={{ margin: '0 auto 8px', color: 'var(--idp-ink-tertiary)' }} />
           <div style={{ fontSize: 13, color: 'var(--idp-ink-tertiary)' }}>No milestones yet</div>
         </div>
       ) : milestones.map((m: any) => {
@@ -210,7 +217,11 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
               {/* Row 1: title + badges */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--idp-ink)' }}>{m.title}</span>
-                {m.is_critical_path && <span style={{ fontSize: 10 }}>🔴</span>}
+                {m.is_critical_path && (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 16, height: 16, borderRadius: '50%', background: '#FEE2E2' }}>
+                    <Flag size={9} style={{ color: '#D92525' }} />
+                  </span>
+                )}
                 <span style={{
                   fontSize: 10, fontWeight: 500, padding: '1px 6px', borderRadius: 4,
                   background: 'var(--idp-surface-tertiary)', color: 'var(--idp-ink-muted-strong)',
@@ -239,12 +250,12 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
             {/* Hover actions */}
             <div style={{ display: 'flex', gap: 2, opacity: hoveredCard === m.id ? 1 : 0, transition: 'opacity 0.15s', flexShrink: 0 }}>
               {m.status?.toLowerCase() !== 'completed' ? (
-                <button onClick={() => handleComplete(m)} className="idp-hover-action-btn" title="Complete">✅</button>
+                <button onClick={() => handleComplete(m)} className="idp-hover-action-btn" title="Complete"><CheckCircle2 size={14} /></button>
               ) : (
-                <button onClick={() => handleReopen(m)} className="idp-hover-action-btn" title="Reopen">↩️</button>
+                <button onClick={() => handleReopen(m)} className="idp-hover-action-btn" title="Reopen"><RotateCcw size={14} /></button>
               )}
-              <button onClick={() => openEdit(m)} className="idp-hover-action-btn" title="Edit">✏️</button>
-              <button onClick={() => handleDelete(m)} className="idp-hover-action-btn" title="Delete">🗑</button>
+              <button onClick={() => openEdit(m)} className="idp-hover-action-btn" title="Edit"><Pencil size={14} /></button>
+              <button onClick={() => handleDelete(m)} className="idp-hover-action-btn" title="Delete"><Trash2 size={14} /></button>
             </div>
           </div>
         );
@@ -259,7 +270,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
           <div className="idp-modal" style={{ width: 520 }} onClick={e => e.stopPropagation()}>
             <div className="idp-modal-header">
               <h3 className="idp-modal-title">{editing ? 'Edit Milestone' : 'Add Milestone'}</h3>
-              <button className="idp-modal-close" onClick={() => setShowModal(false)}>✕</button>
+              <button className="idp-modal-close" onClick={() => setShowModal(false)}><X size={16} /></button>
             </div>
             <div className="idp-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div className="idp-form-field" style={{ marginBottom: 0 }}>
@@ -305,9 +316,9 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
                     width: 20, height: 20, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center',
                     border: form.is_critical_path ? '1.5px solid var(--idp-danger)' : '1.5px solid var(--idp-border)',
                     background: form.is_critical_path ? 'var(--idp-danger-bg)' : 'var(--idp-surface)',
-                    cursor: 'pointer', fontSize: 10,
+                    cursor: 'pointer',
                   }}>
-                  {form.is_critical_path ? '🔴' : ''}
+                  {form.is_critical_path && <Flag size={10} style={{ color: '#D92525' }} />}
                 </button>
                 <span style={{ fontSize: 12, color: 'var(--idp-ink-secondary)' }}>Critical Path</span>
               </div>

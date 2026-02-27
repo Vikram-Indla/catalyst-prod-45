@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logInitiativeAudit } from '@/lib/initiativeAudit';
 import { getInitialsFromName, hashColor } from '@/types/producthub/initiative';
+import { Pencil, Trash2, Shield, X } from 'lucide-react';
 
 /* ── Custom Dropdown (no native <select>) ── */
 function CustomSelect({ value, options, onChange }: { value: string; options: string[]; onChange: (v: string) => void }) {
@@ -233,7 +234,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
       {/* R3 — Risk Cards */}
       {risks.length === 0 ? (
         <div style={{ border: '1px solid var(--idp-border)', borderRadius: 8, padding: '40px 20px', textAlign: 'center' }}>
-          <div style={{ fontSize: 28, marginBottom: 8 }}>🛡</div>
+          <Shield size={28} style={{ margin: '0 auto 8px', color: 'var(--idp-ink-tertiary)' }} />
           <div style={{ fontSize: 13, color: 'var(--idp-ink-tertiary)' }}>No risks identified</div>
         </div>
       ) : (
@@ -263,8 +264,8 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
                   background: `color-mix(in srgb, ${sColor} 14%, transparent)`, color: sColor,
                 }}>{sevLabel(sc)}</span>
                 <div style={{ display: 'flex', gap: 2, opacity: hoveredCard === r.id ? 1 : 0, transition: 'opacity 0.15s' }}>
-                  <button onClick={() => openEdit(r)} className="idp-hover-action-btn">✏️</button>
-                  <button onClick={() => handleDelete(r.id)} className="idp-hover-action-btn">🗑</button>
+                  <button onClick={() => openEdit(r)} className="idp-hover-action-btn"><Pencil size={14} /></button>
+                  <button onClick={() => handleDelete(r.id)} className="idp-hover-action-btn"><Trash2 size={14} /></button>
                 </div>
               </div>
             );
@@ -281,7 +282,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
           <div className="idp-modal" style={{ width: 520 }} onClick={e => e.stopPropagation()}>
             <div className="idp-modal-header">
               <h3 className="idp-modal-title">{editingRisk ? 'Edit Risk' : 'Add Risk'}</h3>
-              <button className="idp-modal-close" onClick={() => setShowModal(false)}>✕</button>
+              <button className="idp-modal-close" onClick={() => setShowModal(false)}><X size={16} /></button>
             </div>
             <div className="idp-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div className="idp-form-field" style={{ marginBottom: 0 }}>
