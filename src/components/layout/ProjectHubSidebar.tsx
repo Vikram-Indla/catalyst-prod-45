@@ -22,6 +22,7 @@ import {
   Layers,
   LayoutList,
   BookOpen,
+  GitBranch,
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
@@ -65,6 +66,7 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
             { id: 'feature-backlog', title: 'Feature Backlog', path: `${base}/feature-backlog`, icon: LayoutList, exact: false },
             { id: 'story-backlog',   title: 'Story Backlog',   path: `${base}/story-backlog`,   icon: BookOpen,   exact: false },
             { id: 'board',           title: 'Board',           path: `${base}/board`,           icon: Columns3,   exact: false },
+            { id: 'hierarchy',       title: 'Hierarchy',       path: `${base}/hierarchy`,       icon: GitBranch,  exact: false },
             { id: 'timeline',        title: 'Timeline',        path: `${base}/timeline`,        icon: GanttChart, exact: false },
           ],
         },
