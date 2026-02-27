@@ -4,6 +4,7 @@
  */
 import { useState, useEffect } from 'react';
 import { useDeptIntelligenceAI, type DigestEvent, type ExecSummary, type Recommendation } from '@/hooks/useDeptIntelligenceAI';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import '@/styles/dept-intelligence.css';
 
 interface Props {
@@ -74,7 +75,14 @@ function WeeklyDigest({ events, weekStart }: { events: DigestEvent[]; weekStart:
             {dayEvents.map((ev, ei) => (
               <div className="di-ev" key={ei}>
                 <span className="di-ev-n">{String(ev.number).padStart(2, '0')}</span>
-                <span className={`di-ev-hub ${ev.hubCss}`}>{ev.hub}</span>
+                {ev.hub === 'INC' ? (
+                  <span className="di-ev-hub" style={{ background: '#FEE2E2', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                    <JiraIssueTypeIcon type="Incident" size={12} />
+                    <span style={{ color: '#991B1B' }}>INC</span>
+                  </span>
+                ) : (
+                  <span className={`di-ev-hub ${ev.hubCss}`}>{ev.hub}</span>
+                )}
                 <div className="di-ev-content">
                   <div className="di-ev-txt">
                     {ev.signalLabel && ev.signal && (
