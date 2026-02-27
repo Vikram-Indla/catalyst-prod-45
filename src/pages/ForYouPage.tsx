@@ -2,16 +2,21 @@
  * For You Page - Personalized work items with AI Assistant
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { MessageSquare, AlertCircle, FileText } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
+import { MessageSquare, AlertCircle, FileText, Sparkles, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useForYouData } from '@/hooks/useForYouData';
 import { ForYouHeader, ForYouSubTabs, ForYouToolbar, ForYouTable, ForYouTableSkeleton, ForYouPagination } from '@/components/for-you';
 import { BulkActionsBar } from '@/components/business-requests/table-view/BulkActionsBar';
 import { CatalystAIPanel } from '@/components/catalyst-ai';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData, AIWorkItemType } from '@/components/catalyst-ai/CatalystAIPanel';
+
+const DepartmentIntelligenceOverlay = lazy(() => import('@/components/resource360/DepartmentIntelligenceOverlay'));
+
+const DEPT_OPTIONS = ['Delivery', 'Product', 'Governance', 'Operations', 'Technical Support', 'Strategy & Planning'];
 
 export default function ForYouPage() {
   const {
@@ -50,6 +55,23 @@ export default function ForYouPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   
+  // Department Intelligence state
+  const [showDeptIntel, setShowDeptIntel] = useState(false);
+  const [selectedDept, setSelectedDept] = useState('');
+  const [showDeptPicker, setShowDeptPicker] = useState(false);
+  const deptPickerRef = useRef<HTMLDivElement>(null);
+
+  // Close dept picker on outside click
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (deptPickerRef.current && !deptPickerRef.current.contains(e.target as Node)) {
+        setShowDeptPicker(false);
+      }
+    };
+    if (showDeptPicker) document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showDeptPicker]);
+
   // Initial load animation flag
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
@@ -194,7 +216,97 @@ export default function ForYouPage() {
 
         {/* Work Section */}
         <section className="bg-surface-0">
-          <h2 className="text-[14px] font-semibold text-[hsl(222,47%,11%)] mb-4">Your work</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-[14px] font-semibold text-[hsl(222,47%,11%)]">Your work</h2>
+
+            {/* Intelligence Button with Department Picker */}
+            <div ref={deptPickerRef} style={{ position: 'relative' }}>
+              <button
+                onClick={() => setShowDeptPicker(v => !v)}
+                style={{
+                  background: '#2563EB',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '7px 18px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 1px 4px rgba(37,99,235,0.25)',
+                  transition: 'background 150ms',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#1D4ED8'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#2563EB'; }}
+              >
+                <Sparkles size={14} strokeWidth={2.2} />
+                Intelligence
+                <ChevronDown size={12} style={{ opacity: 0.7 }} />
+              </button>
+
+              {/* Department Picker Dropdown */}
+              {showDeptPicker && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '100%',
+                    right: 0,
+                    marginTop: 6,
+                    background: '#FFFFFF',
+                    border: '1px solid #E2E8F0',
+                    borderRadius: 10,
+                    boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+                    minWidth: 220,
+                    padding: '6px',
+                    zIndex: 50,
+                  }}
+                >
+                  <div style={{ padding: '8px 12px 6px', fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Select Department
+                  </div>
+                  {DEPT_OPTIONS.map(dept => (
+                    <button
+                      key={dept}
+                      onClick={() => {
+                        setSelectedDept(dept);
+                        setShowDeptPicker(false);
+                        setShowDeptIntel(true);
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 10,
+                        width: '100%',
+                        padding: '9px 12px',
+                        border: 'none',
+                        background: 'transparent',
+                        borderRadius: 7,
+                        cursor: 'pointer',
+                        fontSize: 13,
+                        fontWeight: 500,
+                        color: '#1E293B',
+                        transition: 'background 100ms',
+                        textAlign: 'left',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = '#F1F5F9'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                    >
+                      <span style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
+                        background: dept === 'Delivery' ? '#2563EB' : dept === 'Product' ? '#7C3AED' : dept === 'Governance' ? '#0D9488' : dept === 'Operations' ? '#D97706' : dept === 'Technical Support' ? '#DC2626' : '#0891B2',
+                        flexShrink: 0,
+                      }} />
+                      {dept}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Controls Row */}
           <div className="flex items-center gap-4 mb-4">
@@ -261,6 +373,18 @@ export default function ForYouPage() {
         onStartTask={handleStartTask}
         onKeyClick={handleKeyClick}
       />
+
+      {/* Department Intelligence Overlay */}
+      {showDeptIntel && selectedDept && (
+        <Suspense fallback={null}>
+          <TooltipProvider>
+            <DepartmentIntelligenceOverlay
+              departmentName={selectedDept}
+              onClose={() => setShowDeptIntel(false)}
+            />
+          </TooltipProvider>
+        </Suspense>
+      )}
     </div>
   );
 }

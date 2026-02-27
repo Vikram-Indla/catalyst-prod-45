@@ -3,18 +3,16 @@
  * Route: /project-hub/resources
  * Executive Elevation: avatar pipeline, dynamic dept pills, filled action buttons, export dropdown
  */
-import React, { useState, useMemo, useRef, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import {
-  Search, RotateCw, Clock, LayoutGrid, Sparkles,
+  Search, RotateCw, Clock, LayoutGrid,
   Download, ChevronDown, FileDown, ChevronUp,
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
-
-const DepartmentIntelligenceOverlay = lazy(() => import('@/components/resource360/DepartmentIntelligenceOverlay'));
 
 /* ── Types ── */
 interface Resource {
@@ -115,7 +113,7 @@ export default function ResourceListingPage() {
   const [deptFilter, setDeptFilter] = useState<string>('Delivery');
   const [sortKey, setSortKey] = useState<SortKey>('full_name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
-  const [showDeptIntel, setShowDeptIntel] = useState(false);
+  
   const [exportOpen, setExportOpen] = useState(false);
   const exportRef = useRef<HTMLDivElement>(null);
 
@@ -269,57 +267,12 @@ export default function ResourceListingPage() {
 
         {/* Department pills (dynamic) */}
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <PillButton active={deptFilter === 'All'} onClick={() => { setDeptFilter('All'); setShowDeptIntel(false); }}
+          <PillButton active={deptFilter === 'All'} onClick={() => { setDeptFilter('All'); }}
             label={`All`} />
           {deptNames.map(d => (
             <PillButton key={d} active={deptFilter === d} onClick={() => setDeptFilter(d)}
               label={`${d} (${deptCounts[d]})`} />
           ))}
-
-          <div style={{ width: 1, height: 24, background: '#E2E8F0', margin: '0 4px' }} />
-
-          {/* Intelligence button — Blue */}
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => {
-                    if (deptFilter === 'All') {
-                      toast('Select a department filter first', { description: 'Choose a department to enable Intelligence.' });
-                      return;
-                    }
-                    setShowDeptIntel(true);
-                  }}
-                  style={{
-                    background: deptFilter === 'All' ? '#94A3B8' : '#2563EB',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    borderRadius: '8px',
-                    padding: '8px 20px',
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    cursor: deptFilter === 'All' ? 'not-allowed' : 'pointer',
-                    opacity: deptFilter === 'All' ? 0.6 : 1,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    boxShadow: '0 1px 4px rgba(37,99,235,0.25)',
-                    transition: 'background 150ms, box-shadow 150ms',
-                  }}
-                  onMouseEnter={e => { if (deptFilter !== 'All') { e.currentTarget.style.background = '#1D4ED8'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.3)'; } }}
-                  onMouseLeave={e => { if (deptFilter !== 'All') { e.currentTarget.style.background = '#2563EB'; e.currentTarget.style.boxShadow = '0 1px 4px rgba(37,99,235,0.25)'; } }}
-                >
-                  <Sparkles size={14} strokeWidth={2.2} />
-                  Intelligence
-                </button>
-              </TooltipTrigger>
-              {deptFilter === 'All' && (
-                <TooltipContent side="bottom" className="bg-[#0F172A] text-white text-xs px-3 py-1.5 rounded max-w-[200px]">
-                  Select a department filter to enable AI Intelligence
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </TooltipProvider>
 
           <div style={{ width: 1, height: 24, background: '#E2E8F0', margin: '0 4px' }} />
 
@@ -532,17 +485,6 @@ export default function ResourceListingPage() {
         }
       `}</style>
 
-      {/* Department Intelligence Overlay */}
-      {showDeptIntel && deptFilter !== 'All' && (
-        <Suspense fallback={null}>
-          <TooltipProvider>
-            <DepartmentIntelligenceOverlay
-              departmentName={deptFilter}
-              onClose={() => setShowDeptIntel(false)}
-            />
-          </TooltipProvider>
-        </Suspense>
-      )}
     </div>
   );
 }
