@@ -2,6 +2,7 @@ import { Link2, Plus, ExternalLink, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { LinkedItem } from '@/types/release';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 interface LinkedItemsPanelProps {
   linkedItems: LinkedItem[];
@@ -10,14 +11,8 @@ interface LinkedItemsPanelProps {
   onAddItem?: () => void;
 }
 
-const getTypeIcon = (type: string) => {
-  switch (type) {
-    case 'story': return '📖';
-    case 'defect': return '🐛';
-    case 'task': return '✓';
-    case 'epic': return '⚡';
-    default: return '📌';
-  }
+const getTypeIconComponent = (type: string) => {
+  return <JiraIssueTypeIcon type={type} size={16} />;
 };
 
 const getTypeColor = (type: string) => {
@@ -56,7 +51,7 @@ export function LinkedItemsPanel({
               className="flex items-center justify-between p-2 rounded-md hover:bg-muted group"
             >
               <div className="flex items-center gap-2 flex-1 min-w-0">
-                <span>{getTypeIcon(item.type)}</span>
+                {getTypeIconComponent(item.type)}
                 <Badge variant="secondary" className={getTypeColor(item.type) + " text-[10px] uppercase"}>
                   {item.type}
                 </Badge>

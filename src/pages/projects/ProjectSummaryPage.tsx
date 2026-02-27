@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -529,7 +530,7 @@ function ListView() {
                   {/* Feature Row */}
                   <TableRow key={feature.key}>
                     <TableCell><Checkbox /></TableCell>
-                    <TableCell>📦</TableCell>
+                    <TableCell><JiraIssueTypeIcon type="Feature" size={16} /></TableCell>
                     <TableCell>
                       <Link to={`/browse/${feature.key}`} className="text-primary font-medium hover:underline">
                         {feature.key}
@@ -577,7 +578,7 @@ function ListView() {
                       <>
                         <TableRow key={story.key} className="bg-muted/30">
                           <TableCell><Checkbox /></TableCell>
-                          <TableCell className="pl-6">📗</TableCell>
+                          <TableCell className="pl-6"><JiraIssueTypeIcon type="Story" size={16} /></TableCell>
                           <TableCell>
                             <Link to={`/browse/${story.key}`} className="text-primary font-medium hover:underline">
                               {story.key}
@@ -623,7 +624,7 @@ function ListView() {
                         {isStoryExpanded && hasSubtasks && story.subtasks.map((subtask) => (
                           <TableRow key={subtask.key} className="bg-muted/50">
                             <TableCell><Checkbox /></TableCell>
-                            <TableCell className="pl-12">☑️</TableCell>
+                            <TableCell className="pl-12"><JiraIssueTypeIcon type="Subtask" size={16} /></TableCell>
                             <TableCell>
                               <Link to={`/browse/${subtask.key}`} className="text-primary font-medium hover:underline">
                                 {subtask.key}

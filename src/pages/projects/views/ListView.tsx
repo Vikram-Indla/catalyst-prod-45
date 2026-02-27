@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { Search, Filter, MoreHorizontal, ChevronRight, ChevronDown } from 'lucide-react';
 import { ProjectData } from '../../../types/project.types';
 import { Input } from '@/components/ui/input';
@@ -87,7 +88,7 @@ export default function ListView({ project }: ListViewProps) {
                 {/* FEATURE ROW */}
                 <div className="grid grid-cols-[40px_50px_90px_1fr_120px_100px_80px_100px_50px] px-3 py-2.5 border-b border-border bg-card items-center">
                   <div><Checkbox /></div>
-                  <div className="text-lg">📦</div>
+                  <div><JiraIssueTypeIcon type="Feature" size={16} /></div>
                   <a href={`/browse/${feature.key}`} className="text-sm font-medium text-primary no-underline hover:underline">
                     {feature.key}
                   </a>
@@ -137,7 +138,7 @@ export default function ListView({ project }: ListViewProps) {
                     <React.Fragment key={story.key}>
                       <div className="grid grid-cols-[40px_50px_90px_1fr_120px_100px_80px_100px_50px] px-3 py-2.5 border-b border-border bg-card items-center">
                         <div><Checkbox /></div>
-                        <div className="text-lg pl-6">📗</div>
+                        <div className="pl-6"><JiraIssueTypeIcon type="Story" size={16} /></div>
                         <a href={`/browse/${story.key}`} className="text-sm font-medium text-primary no-underline hover:underline">
                           {story.key}
                         </a>
@@ -186,7 +187,7 @@ export default function ListView({ project }: ListViewProps) {
                           className="grid grid-cols-[40px_50px_90px_1fr_120px_100px_80px_100px_50px] px-3 py-2.5 border-b border-border bg-card items-center"
                         >
                           <div><Checkbox /></div>
-                          <div className="text-lg pl-12">☑️</div>
+                          <div className="pl-12"><JiraIssueTypeIcon type="Subtask" size={16} /></div>
                           <a href={`/browse/${subtask.key}`} className="text-sm font-medium text-primary no-underline hover:underline">
                             {subtask.key}
                           </a>

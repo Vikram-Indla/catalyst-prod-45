@@ -1,9 +1,10 @@
 import React from 'react';
-import { X, ExternalLink, MoreHorizontal, Zap, Bug, Bookmark, CircleDot, Settings2 } from 'lucide-react';
+import { X, ExternalLink, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 interface WorkItem {
   id: string;
@@ -30,14 +31,7 @@ interface WorkItemDetailPanelProps {
 }
 
 // Design System V2 compliant - Story uses teal (not green)
-const typeIcons: Record<string, { icon: React.ReactNode; color: string }> = {
-  Feature: { icon: <Zap className="h-4 w-4" />, color: 'text-amber-500' },
-  Story: { icon: <Bookmark className="h-4 w-4" />, color: 'text-[#0d9488] dark:text-[#14b8a6]' },
-  Task: { icon: <CircleDot className="h-4 w-4" />, color: 'text-blue-500' },
-  Defect: { icon: <Bug className="h-4 w-4" />, color: 'text-red-500' },
-  Subtask: { icon: <CircleDot className="h-4 w-4" />, color: 'text-muted-foreground' },
-  Incident: { icon: <Settings2 className="h-4 w-4" />, color: 'text-amber-600' },
-};
+// Type icons now use canonical JiraIssueTypeIcon component
 
 // Design System V2 compliant - Done uses teal (not green)
 const statusStyles: Record<string, { bg: string; text: string; label: string }> = {
@@ -54,7 +48,7 @@ const statusStyles: Record<string, { bg: string; text: string; label: string }> 
 export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps) {
   if (!item) return null;
 
-  const typeInfo = typeIcons[item.type] || typeIcons['Task'];
+  // typeInfo no longer needed — using JiraIssueTypeIcon directly
   const statusStyle = statusStyles[item.status] || statusStyles['Backlog'];
 
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
@@ -69,7 +63,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <span className={typeInfo.color}>{typeInfo.icon}</span>
+          <JiraIssueTypeIcon type={item.type} size={16} />
           <span className="text-sm font-medium text-foreground">Jira work item</span>
         </div>
         <div className="flex items-center gap-1">
@@ -124,7 +118,7 @@ export function WorkItemDetailPanel({ item, onClose }: WorkItemDetailPanelProps)
           <div className="mb-4">
             <div className="text-xs font-semibold text-muted-foreground uppercase mb-1">Parent</div>
             <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
-              <span className="text-amber-500"><Zap className="h-4 w-4" /></span>
+              <JiraIssueTypeIcon type="Epic" size={16} />
               <span className="text-sm text-[#2563eb] hover:underline cursor-pointer">
                 {item.parentKey} {item.parentSummary}
               </span>
