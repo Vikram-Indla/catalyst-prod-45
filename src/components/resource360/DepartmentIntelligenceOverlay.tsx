@@ -412,8 +412,24 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
             </div>
             <div className="di-wk-sel">
               <button className="di-wk-nav" onClick={prevWeek}><ChevronLeft size={14} /></button>
-              <span className="di-wk-lbl">{weekLabel}</span>
-              <span className="di-wk-rng">{weekRange}</span>
+              {weekOffset === 0 ? (
+                <>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', letterSpacing: '0.3px' }}>THIS WEEK</span>
+                  <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 500, margin: '0 2px' }}>·</span>
+                  <span className="di-wk-rng">{weekRange}</span>
+                </>
+              ) : weekOffset === -1 ? (
+                <>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: '#475569' }}>LAST WEEK</span>
+                  <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 500, margin: '0 2px' }}>·</span>
+                  <span className="di-wk-rng">{weekRange}</span>
+                </>
+              ) : (
+                <>
+                  <span className="di-wk-lbl">{weekLabel}</span>
+                  <span className="di-wk-rng">{weekRange}</span>
+                </>
+              )}
               <button className="di-wk-nav" onClick={nextWeek} disabled={weekOffset === 0}><ChevronRight size={14} /></button>
             </div>
           </div>
