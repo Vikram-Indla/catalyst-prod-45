@@ -78,6 +78,21 @@ export function useMoveWorkItem(projectId: string) {
   });
 }
 
+export function useDeleteWorkItem(projectId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (itemId: string) => {
+      const { error } = await supabase.from('hi_work_items' as any)
+        .delete()
+        .eq('id', itemId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hierarchy', projectId] });
+    },
+  });
+}
+
 export function useStatuses(projectId: string) {
   return useQuery({
     queryKey: ['hierarchy', projectId, 'statuses'],
