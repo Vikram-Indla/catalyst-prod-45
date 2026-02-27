@@ -8,6 +8,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logInitiativeAudit } from '@/lib/initiativeAudit';
+import { Pencil, Trash2, FolderOpen, X } from 'lucide-react';
 
 interface DetailTabBudgetProps {
   initiativeId: string;
@@ -218,7 +219,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
       {/* B4 — Budget Table */}
       {items.length === 0 ? (
         <div style={{ border: '1px solid var(--idp-border)', borderRadius: 8, padding: '40px 20px', textAlign: 'center' }}>
-          <div style={{ fontSize: 28, marginBottom: 8 }}>📂</div>
+          <FolderOpen size={28} style={{ margin: '0 auto 8px', color: 'var(--idp-ink-tertiary)' }} />
           <div style={{ fontSize: 13, color: 'var(--idp-ink-tertiary)' }}>No budget items yet</div>
         </div>
       ) : (
@@ -267,8 +268,8 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
                 {(item.status || 'draft').replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())}
               </span>
               <div style={{ display: 'flex', gap: 2, opacity: hoveredRow === item.id ? 1 : 0, transition: 'opacity 0.15s' }}>
-                <button onClick={() => openEdit(item)} className="idp-hover-action-btn">✏️</button>
-                <button onClick={() => handleDelete(item.id)} className="idp-hover-action-btn">🗑</button>
+                <button onClick={() => openEdit(item)} className="idp-hover-action-btn"><Pencil size={14} /></button>
+                <button onClick={() => handleDelete(item.id)} className="idp-hover-action-btn"><Trash2 size={14} /></button>
               </div>
             </div>
           ))}
@@ -284,7 +285,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
           <div className="idp-modal" style={{ width: 480 }} onClick={e => e.stopPropagation()}>
             <div className="idp-modal-header">
               <h3 className="idp-modal-title">{editingItem ? 'Edit Budget Item' : 'Add Budget Item'}</h3>
-              <button className="idp-modal-close" onClick={() => setShowModal(false)}>✕</button>
+              <button className="idp-modal-close" onClick={() => setShowModal(false)}><X size={16} /></button>
             </div>
             <div className="idp-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {/* Category */}

@@ -6,25 +6,30 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import type { LucideIcon } from 'lucide-react';
+import {
+  Pencil, CheckCircle2, AlertTriangle, Wallet, Paperclip, BarChart3,
+  Copy, Archive, Trash2, PlusCircle,
+} from 'lucide-react';
 
 interface DetailTabActivityProps {
   initiativeId: string;
 }
 
-const FILTER_CHIPS = [
-  { key: 'all', label: 'All', icon: '' },
-  { key: 'edit', label: 'Edits', icon: '✏️' },
-  { key: 'milestone', label: 'Milestones', icon: '✅' },
-  { key: 'risk', label: 'Risks', icon: '⚠️' },
-  { key: 'budget', label: 'Budget', icon: '💰' },
-  { key: 'attachment', label: 'Files', icon: '📎' },
-  { key: 'score', label: 'Score', icon: '📊' },
+const FILTER_CHIPS: { key: string; label: string; Icon: LucideIcon | null }[] = [
+  { key: 'all', label: 'All', Icon: null },
+  { key: 'edit', label: 'Edits', Icon: Pencil },
+  { key: 'milestone', label: 'Milestones', Icon: CheckCircle2 },
+  { key: 'risk', label: 'Risks', Icon: AlertTriangle },
+  { key: 'budget', label: 'Budget', Icon: Wallet },
+  { key: 'attachment', label: 'Files', Icon: Paperclip },
+  { key: 'score', label: 'Score', Icon: BarChart3 },
 ];
 
-const ENTITY_ICONS: Record<string, string> = {
-  initiative: '✏️', field: '✏️', milestone: '✅', risk: '⚠️',
-  budget: '💰', budget_item: '💰', attachment: '📎', score: '📊',
-  clone: '📋', archive: '📦', delete: '🗑️', create: '🆕',
+const ENTITY_ICON_MAP: Record<string, LucideIcon> = {
+  initiative: Pencil, field: Pencil, milestone: CheckCircle2, risk: AlertTriangle,
+  budget: Wallet, budget_item: Wallet, attachment: Paperclip, score: BarChart3,
+  clone: Copy, archive: Archive, delete: Trash2, create: PlusCircle,
 };
 
 function timeAgo(dateStr: string) {
@@ -41,10 +46,10 @@ function timeAgo(dateStr: string) {
 }
 
 function avatarColor(name: string) {
+  const PALETTE = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", "#6b8b7a"];
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  const hue = Math.abs(hash) % 360;
-  return `hsl(${hue}, 55%, 55%)`;
+  return PALETTE[Math.abs(hash) % PALETTE.length];
 }
 
 function initials(name: string) {
@@ -71,8 +76,8 @@ function formatAction(entry: any): string {
   return `${action} ${entityLabel} ${new_value || ''}`.trim();
 }
 
-function getIcon(entry: any): string {
-  return ENTITY_ICONS[entry.entity_type] || ENTITY_ICONS[entry.action] || '✏️';
+function getIconComponent(entry: any): LucideIcon {
+  return ENTITY_ICON_MAP[entry.entity_type] || ENTITY_ICON_MAP[entry.action] || Pencil;
 }
 
 function matchesFilter(entry: any, filter: string): boolean {
@@ -119,8 +124,9 @@ export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ initiative
                 border: active ? '1px solid var(--idp-primary)' : '1px solid var(--idp-border)',
                 background: active ? 'var(--idp-primary-bg)' : 'var(--idp-surface)',
                 color: active ? 'var(--idp-primary)' : 'var(--idp-ink-muted)',
+                display: 'flex', alignItems: 'center', gap: 5,
               }}>
-              {chip.icon && <span style={{ marginRight: 4 }}>{chip.icon}</span>}
+              {chip.Icon && <chip.Icon size={12} />}
               {chip.label}
             </button>
           );
@@ -134,7 +140,7 @@ export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ initiative
         </div>
       ) : filtered.map((entry: any, idx: number) => {
         const name = entry.user?.full_name || 'System';
-        const icon = getIcon(entry);
+        const EntryIcon = getIconComponent(entry);
         return (
           <div key={entry.id} style={{
             display: 'flex', gap: 12, padding: '14px 0',
@@ -152,9 +158,9 @@ export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ initiative
                 <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--idp-ink)' }}>{name}</span>
                 <span style={{ fontSize: 11, color: 'var(--idp-ink-muted)' }}>{timeAgo(entry.created_at)}</span>
               </div>
-              <div style={{ fontSize: 13, color: 'var(--idp-ink-secondary)', lineHeight: 1.5, marginTop: 3 }}>
-                <span style={{ marginRight: 6 }}>{icon}</span>
-                {formatAction(entry)}
+              <div style={{ fontSize: 13, color: 'var(--idp-ink-secondary)', lineHeight: 1.5, marginTop: 3, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <EntryIcon size={13} />
+                <span>{formatAction(entry)}</span>
               </div>
             </div>
           </div>
