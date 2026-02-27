@@ -1,6 +1,6 @@
 /**
  * DetailPanel — Right-side detail view for selected work item
- * Stage E: Skeleton loading, null handling, smooth transitions, design compliance
+ * Stage E: Skeleton, null handling, transitions, design compliance
  */
 
 import { motion, AnimatePresence } from 'framer-motion';
@@ -71,7 +71,7 @@ function FieldRow({ label, children }: { label: string; children: React.ReactNod
 }
 
 function EmptyValue() {
-  return <span style={{ color: '#94A3B8', fontWeight: 400 }}>—</span>;
+  return <span style={{ color: '#64748B', fontWeight: 400 }}>—</span>;
 }
 
 export function DetailPanel({ item, onAddChild }: DetailPanelProps) {
@@ -80,7 +80,7 @@ export function DetailPanel({ item, onAddChild }: DetailPanelProps) {
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200,
         background: '#F8FAFC', border: '1px dashed #E2E8F0', borderRadius: 8,
-        color: '#94A3B8', fontSize: 13, fontFamily: "'Inter', sans-serif",
+        color: '#64748B', fontSize: 13, fontFamily: "'Inter', sans-serif",
       }}>
         Select a work item to view details
       </div>

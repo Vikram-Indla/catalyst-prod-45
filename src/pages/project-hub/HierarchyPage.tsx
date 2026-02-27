@@ -1,10 +1,9 @@
 /**
- * HierarchyPage — Work Item Hierarchy (Stage D: Full DB wiring)
+ * HierarchyPage — Work Item Hierarchy (Stage E: Full polish)
  * Route: /project-hub/:key/hierarchy
- * Realtime, toasts, delete confirmation, skeleton loading, error retry
  */
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { ChevronRight, ChevronDown, Plus, Zap, Puzzle, BookOpen, ListChecks, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -47,6 +46,7 @@ export default function HierarchyPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [createParent, setCreateParent] = useState<WorkItem | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<WorkItem | null>(null);
+  const [expandedParentIds, setExpandedParentIds] = useState<Set<string>>(new Set());
 
   const totalItems = useMemo(() => countAll(treeItems), [treeItems]);
   const completedItems = useMemo(() => countCompleted(treeItems), [treeItems]);
@@ -64,19 +64,51 @@ export default function HierarchyPage() {
     return () => { supabase.removeChannel(channel); };
   }, [projectId, queryClient]);
 
-  const handleAddChild = (parent: WorkItem) => { setCreateParent(parent); setCreateOpen(true); };
-  const handleCreateRoot = () => { setCreateParent(null); setCreateOpen(true); };
+  // Escape key to close modals / deselect
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (deleteConfirm) { setDeleteConfirm(null); return; }
+        if (createOpen) { setCreateOpen(false); setCreateParent(null); return; }
+      }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [deleteConfirm, createOpen]);
 
-  const handleMove = async (itemId: string, newParentId: string) => {
+  const handleAddChild = useCallback((parent: WorkItem) => {
+    setCreateParent(parent);
+    setCreateOpen(true);
+  }, []);
+
+  const handleCreateRoot = useCallback(() => {
+    setCreateParent(null);
+    setCreateOpen(true);
+  }, []);
+
+  const handleCreateClose = useCallback(() => {
+    // Auto-expand parent after creating a child
+    if (createParent) {
+      setExpandedParentIds(prev => {
+        const next = new Set(prev);
+        next.add(createParent.id);
+        return next;
+      });
+    }
+    setCreateOpen(false);
+    setCreateParent(null);
+  }, [createParent]);
+
+  const handleMove = useCallback(async (itemId: string, newParentId: string) => {
     try {
       await moveMutation.mutateAsync({ itemId, newParentId });
       toast.success('Work item moved');
     } catch (err: any) {
       toast.error(err?.message || 'Cannot move work item');
     }
-  };
+  }, [moveMutation]);
 
-  const handleDeleteRequest = (item: WorkItem) => { setDeleteConfirm(item); };
+  const handleDeleteRequest = useCallback((item: WorkItem) => { setDeleteConfirm(item); }, []);
   const handleDeleteConfirm = async () => {
     if (!deleteConfirm) return;
     try {
@@ -89,8 +121,10 @@ export default function HierarchyPage() {
     setDeleteConfirm(null);
   };
 
+  const handleDeselect = useCallback(() => { setSelectedItem(null); }, []);
+
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#F8FAFC', fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#F8FAFC', fontFamily: "'Inter', sans-serif" }}>
       {/* PAGE HEADER */}
       <div style={{ padding: '20px 24px 16px', borderBottom: '1px solid #E2E8F0', background: '#FFFFFF' }}>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.025em', lineHeight: 1.2 }}>
@@ -154,7 +188,16 @@ export default function HierarchyPage() {
               </button>
             </div>
           ) : (
-            <WorkItemTree items={treeItems} selectedId={selectedItem?.id || null} onSelect={setSelectedItem} onDelete={handleDeleteRequest} onMove={handleMove} allExpanded={allExpanded} />
+            <WorkItemTree
+              items={treeItems}
+              selectedId={selectedItem?.id || null}
+              onSelect={setSelectedItem}
+              onDeselect={handleDeselect}
+              onDelete={handleDeleteRequest}
+              onMove={handleMove}
+              onAddChild={handleAddChild}
+              allExpanded={allExpanded}
+            />
           )}
         </div>
         <div style={{ overflowY: 'auto', minHeight: 0 }}>
@@ -166,7 +209,7 @@ export default function HierarchyPage() {
       {projectId && (
         <CreateWorkItemModal
           open={createOpen}
-          onClose={() => { setCreateOpen(false); setCreateParent(null); }}
+          onClose={handleCreateClose}
           projectId={projectId}
           parentItem={createParent}
         />
