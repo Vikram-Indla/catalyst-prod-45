@@ -11,10 +11,10 @@ import type { TimelineInitiative } from '@/types/producthub/initiative';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
 import { DetailTabDetails } from './DetailTabDetails';
 import { DetailTabScore } from './DetailTabScore';
+import { DetailTabBudget } from './DetailTabBudget';
+import { DetailTabRisks } from './DetailTabRisks';
 import { InitiativeMilestonesTab } from '@/components/producthub/InitiativeMilestonesTab';
 import { InitiativeLinksTab } from '@/components/producthub/InitiativeLinksTab';
-import { InitiativeRisksTab } from '@/components/initiatives/tabs/InitiativeRisksTab';
-import { InitiativeBudgetTab } from '@/components/initiatives/tabs/InitiativeBudgetTab';
 import { InitiativeAuditTab } from '@/components/initiatives/tabs/InitiativeAuditTab';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
@@ -87,7 +87,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
   const [isVisible, setIsVisible] = useState(false);
   const [closing, setClosing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [budgetAllocated, setBudgetAllocated] = useState(0);
+  
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState(initiative.title);
   const titleRef = useRef<HTMLInputElement>(null);
@@ -315,14 +315,8 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
         <div className="idp-content">
           {activeTab === 'overview' && <DetailTabDetails initiative={initiative} />}
           {activeTab === 'score' && <DetailTabScore initiative={initiative} />}
-          {activeTab === 'budget' && (
-            <InitiativeBudgetTab
-              initiativeId={initiative.id}
-              budgetAllocated={budgetAllocated}
-              onBudgetAllocatedChange={(v: string) => setBudgetAllocated(Number(v) || 0)}
-            />
-          )}
-          {activeTab === 'risks' && <InitiativeRisksTab initiativeId={initiative.id} />}
+          {activeTab === 'budget' && <DetailTabBudget initiativeId={initiative.id} />}
+          {activeTab === 'risks' && <DetailTabRisks initiativeId={initiative.id} />}
           {activeTab === 'milestones' && <InitiativeMilestonesTab initiativeId={initiative.id} />}
           {activeTab === 'attachments' && <InitiativeLinksTab initiativeId={initiative.id} />}
           {activeTab === 'activity' && <InitiativeAuditTab initiativeId={initiative.id} />}

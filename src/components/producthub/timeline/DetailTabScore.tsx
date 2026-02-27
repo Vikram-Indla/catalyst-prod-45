@@ -1,118 +1,188 @@
-// =====================================================
-// DETAIL TAB — Score tab with radar chart + sliders
-// =====================================================
+/**
+ * Detail Tab — Score (MARAM V3.1 + Catalyst V11 Carbon Precision)
+ * Weighted sliders, SVG radar chart, composite score, Supabase persistence
+ */
 
-import React, { useState, useCallback } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
-import { RadarChart } from './RadarChart';
-import { catalystToast } from '@/lib/catalystToast';
+import { toast } from 'sonner';
 
 interface DetailTabScoreProps {
   initiative: TimelineInitiative;
 }
 
-const DIMENSIONS = [
-  { key: 'sa', label: 'Strategic Alignment', field: 'score_strategic_alignment' },
-  { key: 'bi', label: 'Business Impact', field: 'score_business_impact' },
-  { key: 'tu', label: 'Technical Urgency', field: 'score_time_urgency' },
-  { key: 'rf', label: 'Risk Factor', field: 'score_resource_feasibility' },
-] as const;
+const DIMS = [
+  { key: 'sa' as const, label: 'Strategic Alignment', weight: 30, field: 'strategic_alignment' },
+  { key: 'bi' as const, label: 'Business Impact', weight: 30, field: 'business_impact' },
+  { key: 'tu' as const, label: 'Time & Urgency', weight: 20, field: 'time_urgency' },
+  { key: 'rf' as const, label: 'Resource Feasibility', weight: 20, field: 'resource_feasibility' },
+];
+
+type ScoreKeys = 'sa' | 'bi' | 'tu' | 'rf';
+
+/* ── SVG Pentagon Radar ── */
+function RadarSVG({ scores }: { scores: Record<ScoreKeys, number> }) {
+  const size = 200;
+  const cx = 100, cy = 100, R = 72;
+  const keys: ScoreKeys[] = ['sa', 'bi', 'tu', 'rf'];
+  const labels = ['SA', 'BI', 'TU', 'RF'];
+  const n = 4;
+
+  const vertex = (i: number, r: number) => {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)];
+  };
+
+  const polygon = (r: number) =>
+    Array.from({ length: n }, (_, i) => vertex(i, r).join(',')).join(' ');
+
+  const dataPoints = keys.map((k, i) => vertex(i, R * (scores[k] / 5)));
+  const dataPolygon = dataPoints.map(p => p.join(',')).join(' ');
+
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      {/* Concentric pentagons */}
+      {[0.2, 0.4, 0.6, 0.8, 1.0].map(f => (
+        <polygon key={f} points={polygon(R * f)} fill="none" stroke="var(--idp-border)" strokeWidth="0.5" />
+      ))}
+      {/* Axis lines */}
+      {Array.from({ length: n }, (_, i) => {
+        const [x, y] = vertex(i, R);
+        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="var(--idp-border)" strokeWidth="0.5" />;
+      })}
+      {/* Data polygon */}
+      <polygon points={dataPolygon} fill="rgba(37,99,235,0.15)" stroke="var(--idp-primary)" strokeWidth="2" />
+      {/* Data dots */}
+      {dataPoints.map(([x, y], i) => (
+        <circle key={i} cx={x} cy={y} r={4} fill="var(--idp-primary)" stroke="#fff" strokeWidth="2" />
+      ))}
+      {/* Labels */}
+      {labels.map((lbl, i) => {
+        const [x, y] = vertex(i, R + 20);
+        return (
+          <text key={lbl} x={x} y={y} textAnchor="middle" dominantBaseline="central"
+            style={{ fontSize: 10, fill: 'var(--idp-ink-tertiary)', fontWeight: 600, fontFamily: 'var(--idp-font-body)' }}>
+            {lbl}
+          </text>
+        );
+      })}
+    </svg>
+  );
+}
 
 export const DetailTabScore: React.FC<DetailTabScoreProps> = ({ initiative }) => {
   const queryClient = useQueryClient();
-  const [scores, setScores] = useState({
-    sa: initiative.score_strategic_alignment ?? 0,
-    bi: initiative.score_business_impact ?? 0,
-    tu: initiative.score_time_urgency ?? 0,
-    rf: initiative.score_resource_feasibility ?? 0,
-  });
   const [saving, setSaving] = useState(false);
 
-  const handleChange = useCallback((key: 'sa' | 'bi' | 'tu' | 'rf', value: number) => {
-    setScores(prev => ({ ...prev, [key]: value }));
-  }, []);
+  // Fetch existing scores from ph_initiative_scores
+  const { data: dbScores } = useQuery({
+    queryKey: ['idp-scores', initiative.id],
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from('ph_initiative_scores')
+        .select('strategic_alignment, business_impact, time_urgency, resource_feasibility')
+        .eq('initiative_id', initiative.id)
+        .maybeSingle();
+      return data;
+    },
+    staleTime: 30_000,
+  });
+
+  const [scores, setScores] = useState<Record<ScoreKeys, number>>({
+    sa: 4.2, bi: 3.8, tu: 4.5, rf: 3.2,
+  });
+
+  // Seed from DB when available
+  useEffect(() => {
+    if (dbScores) {
+      setScores({
+        sa: dbScores.strategic_alignment ?? 4.2,
+        bi: dbScores.business_impact ?? 3.8,
+        tu: dbScores.time_urgency ?? 4.5,
+        rf: dbScores.resource_feasibility ?? 3.2,
+      });
+    }
+  }, [dbScores]);
+
+  const composite = useMemo(
+    () => +(scores.sa * 0.3 + scores.bi * 0.3 + scores.tu * 0.2 + scores.rf * 0.2).toFixed(1),
+    [scores],
+  );
+
+  const badge = useMemo(() => {
+    if (composite >= 4.0) return { label: 'High', color: 'var(--idp-success)', bg: 'rgba(22,163,74,0.15)' };
+    if (composite >= 3.0) return { label: 'Medium', color: 'var(--idp-warning)', bg: 'rgba(217,119,6,0.15)' };
+    if (composite >= 2.0) return { label: 'Low', color: 'var(--idp-primary)', bg: 'rgba(37,99,235,0.15)' };
+    return { label: 'Rejected', color: 'var(--idp-danger)', bg: 'rgba(220,38,38,0.15)' };
+  }, [composite]);
 
   const handleSave = useCallback(async () => {
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from('ph_initiatives' as never)
-        .update({
-          score_strategic_alignment: scores.sa,
-          score_business_impact: scores.bi,
-          score_time_urgency: scores.tu,
-          score_resource_feasibility: scores.rf,
-        } as never)
-        .eq('id' as never, initiative.id as never);
-
-      if (error) throw new Error(error.message);
-
-      await queryClient.invalidateQueries({ queryKey: ['ph-timeline-initiatives'] });
-      catalystToast.success('Scores updated successfully');
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to save scores';
-      catalystToast.error(message);
+      // Upsert into ph_initiative_scores
+      const { error } = await (supabase as any)
+        .from('ph_initiative_scores')
+        .upsert({
+          initiative_id: initiative.id,
+          strategic_alignment: scores.sa,
+          business_impact: scores.bi,
+          time_urgency: scores.tu,
+          resource_feasibility: scores.rf,
+          composite_score: composite,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'initiative_id' });
+      if (error) throw error;
+      toast.success('Score saved', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
+      queryClient.invalidateQueries({ queryKey: ['idp-scores', initiative.id] });
+      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+    } catch {
+      toast.error('Failed to save score');
     } finally {
       setSaving(false);
     }
-  }, [scores, initiative.id, queryClient]);
-
-  const computedScore = (scores.sa * 0.3 + scores.bi * 0.3 + scores.tu * 0.2 + scores.rf * 0.2);
+  }, [scores, composite, initiative.id, queryClient]);
 
   return (
-    <div className="p-5 space-y-6">
-      {/* Score sliders */}
-      <div className="space-y-4">
-        {DIMENSIONS.map(dim => (
-          <div key={dim.key}>
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[12px] font-semibold text-muted-foreground">{dim.label}</span>
-              <span className="text-[12px] font-semibold text-primary" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                {scores[dim.key].toFixed(1)}
-              </span>
+    <div className="idp-score">
+      <div className="idp-score-layout">
+        {/* LEFT — Sliders */}
+        <div className="idp-score-sliders">
+          {DIMS.map(dim => (
+            <div key={dim.key}>
+              <div className="idp-score-slider-header">
+                <span className="idp-score-slider-label">{dim.label}</span>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                  <span className="idp-score-slider-weight">({dim.weight}%)</span>
+                  <span className="idp-score-slider-value">{scores[dim.key].toFixed(1)}</span>
+                </div>
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={50}
+                step={1}
+                value={Math.round(scores[dim.key] * 10)}
+                onChange={e => setScores(prev => ({ ...prev, [dim.key]: parseInt(e.target.value) / 10 }))}
+                style={{ width: '100%' }}
+              />
             </div>
-            <input
-              type="range"
-              min={0}
-              max={5}
-              step={0.1}
-              value={scores[dim.key]}
-              onChange={e => handleChange(dim.key, parseFloat(e.target.value))}
-              className="w-full h-1.5 bg-muted rounded-full appearance-none cursor-pointer
-                [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-[18px] [&::-webkit-slider-thumb]:h-[18px]
-                [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:border-2
-                [&::-webkit-slider-thumb]:border-white [&::-webkit-slider-thumb]:shadow-sm [&::-webkit-slider-thumb]:cursor-pointer"
-            />
-          </div>
-        ))}
-      </div>
+          ))}
+          <button className="idp-score-save" onClick={handleSave} disabled={saving}>
+            {saving ? 'Saving…' : 'Save Score'}
+          </button>
+        </div>
 
-      {/* Computed total */}
-      <div className="flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-[52px] font-bold text-primary leading-none" style={{ fontVariantNumeric: 'tabular-nums' }}>
-            {computedScore.toFixed(2)}
-          </div>
-          <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider mt-1">
-            Computed Score
+        {/* RIGHT — Radar + Composite */}
+        <div className="idp-score-chart">
+          <RadarSVG scores={scores} />
+          <div className="idp-score-composite">{composite.toFixed(1)}</div>
+          <div className="idp-score-badge" style={{ background: badge.bg, color: badge.color }}>
+            {badge.label}
           </div>
         </div>
       </div>
-
-      {/* Radar chart */}
-      <RadarChart values={scores} size={200} />
-
-      {/* Save button */}
-      <button
-        onClick={handleSave}
-        disabled={saving}
-        className="w-full h-9 bg-primary text-primary-foreground text-[13px] font-medium rounded-lg
-          hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      >
-        {saving ? 'Saving…' : 'Save Score'}
-      </button>
     </div>
   );
 };
