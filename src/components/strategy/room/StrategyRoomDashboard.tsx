@@ -4,7 +4,10 @@
  * Scope: [data-srd] — ring-fenced --srd-* tokens, zero global leak
  */
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useVision } from '@/hooks/strategy/useStrategyData';
+import { useUpdateVision } from '@/hooks/strategy/useStrategyMutations';
+import { Pencil, Check, X } from 'lucide-react';
 
 interface StrategyRoomDashboardProps {
   onOpenBrief: () => void;
@@ -102,6 +105,38 @@ const THEMES = [
 ];
 
 export default function StrategyRoomDashboard({ onOpenBrief, onDownloadBrief }: StrategyRoomDashboardProps) {
+  const { data: vision } = useVision();
+  const updateVision = useUpdateVision();
+  const [editingVision, setEditingVision] = useState(false);
+  const [visionDraft, setVisionDraft] = useState('');
+  const visionInputRef = useRef<HTMLInputElement>(null);
+
+  const visionTitle = vision?.title || 'Transforming the Kingdom into a leading global industrial powerhouse and logistics hub';
+  const visionYear = vision?.target_year || 2030;
+
+  useEffect(() => {
+    if (editingVision && visionInputRef.current) {
+      visionInputRef.current.focus();
+      visionInputRef.current.select();
+    }
+  }, [editingVision]);
+
+  const startEditVision = () => {
+    setVisionDraft(visionTitle);
+    setEditingVision(true);
+  };
+
+  const saveVision = () => {
+    if (vision && visionDraft.trim() && visionDraft.trim() !== visionTitle) {
+      updateVision.mutate({ id: vision.id, title: visionDraft.trim() });
+    }
+    setEditingVision(false);
+  };
+
+  const cancelEditVision = () => {
+    setEditingVision(false);
+  };
+
   return (
     <div data-srd style={{ width: '100%', margin: '0 auto', background: 'var(--srd-bg)', minHeight: '100vh' }}>
       <style>{TOKENS}</style>
@@ -133,9 +168,26 @@ export default function StrategyRoomDashboard({ onOpenBrief, onDownloadBrief }: 
 
       {/* ═══ VISION STRIP ═══ */}
       <div style={{ padding: '8px 32px', background: 'var(--srd-blue-bg)', borderBottom: '1px solid rgba(37,99,235,.08)', ...F(12), fontSize: 13 }}>
-        <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--srd-blue)', textTransform: 'uppercase', letterSpacing: '.08em', background: 'rgba(37,99,235,.08)', padding: '3px 8px', borderRadius: 'var(--srd-r)' }}>Vision 2030</span>
-        <span style={{ fontWeight: 500, color: 'var(--srd-ink-2)', flex: 1 }}>Transforming the Kingdom into a leading global industrial powerhouse and logistics hub</span>
-        <span style={{ ...M(11), color: 'var(--srd-blue)', background: 'rgba(37,99,235,.08)', padding: '2px 8px', borderRadius: 'var(--srd-pill)' }}>Target 2030</span>
+        <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--srd-blue)', textTransform: 'uppercase', letterSpacing: '.08em', background: 'rgba(37,99,235,.08)', padding: '3px 8px', borderRadius: 'var(--srd-r)', flexShrink: 0 }}>Vision {visionYear}</span>
+        {editingVision ? (
+          <div style={{ flex: 1, ...F(6) }}>
+            <input
+              ref={visionInputRef}
+              value={visionDraft}
+              onChange={e => setVisionDraft(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') saveVision(); if (e.key === 'Escape') cancelEditVision(); }}
+              style={{ flex: 1, fontWeight: 500, color: 'var(--srd-ink-2)', fontSize: 13, fontFamily: "'Inter',sans-serif", background: 'var(--srd-bg)', border: '1px solid var(--srd-blue-bdr)', borderRadius: 'var(--srd-r)', padding: '4px 10px', outline: 'none' }}
+            />
+            <button onClick={saveVision} style={{ width: 26, height: 26, borderRadius: 'var(--srd-r)', background: 'var(--srd-blue)', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={14} /></button>
+            <button onClick={cancelEditVision} style={{ width: 26, height: 26, borderRadius: 'var(--srd-r)', background: 'var(--srd-bg)', color: 'var(--srd-ink-m)', border: '1px solid var(--srd-bdr)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={14} /></button>
+          </div>
+        ) : (
+          <span onClick={startEditVision} style={{ fontWeight: 500, color: 'var(--srd-ink-2)', flex: 1, cursor: 'pointer', ...F(6) }} title="Click to edit">
+            {visionTitle}
+            <Pencil size={12} style={{ color: 'var(--srd-ink-m)', opacity: 0.4 }} />
+          </span>
+        )}
+        <span style={{ ...M(11), color: 'var(--srd-blue)', background: 'rgba(37,99,235,.08)', padding: '2px 8px', borderRadius: 'var(--srd-pill)', flexShrink: 0 }}>Target {visionYear}</span>
       </div>
 
       {/* ═══ INTELLIGENCE BANNER — #7 tighter, #26 hover, #34 reduced gap ═══ */}
