@@ -29716,6 +29716,7 @@ export type Database = {
           computed_at: string
           created_at: string | null
           data: Json
+          data_fingerprint: string | null
           data_hash: string | null
           expires_at: string | null
           id: string
@@ -29734,6 +29735,7 @@ export type Database = {
           computed_at?: string
           created_at?: string | null
           data: Json
+          data_fingerprint?: string | null
           data_hash?: string | null
           expires_at?: string | null
           id?: string
@@ -29752,6 +29754,7 @@ export type Database = {
           computed_at?: string
           created_at?: string | null
           data?: Json
+          data_fingerprint?: string | null
           data_hash?: string | null
           expires_at?: string | null
           id?: string
