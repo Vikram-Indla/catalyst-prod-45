@@ -1,19 +1,21 @@
 /**
  * WorkItemTree — Main tree view for Work Item Hierarchy
- * Stage D: Full DB wiring, drag-and-drop hierarchy moves
+ * Stage E: Full keyboard nav, empty children, focus ring, design compliance
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { ChevronRight, ChevronDown, GripVertical, MoreHorizontal, Trash2 } from 'lucide-react';
 import type { WorkItem } from '@/types/hierarchy';
-import { canBeParentOf } from '@/types/hierarchy';
+import { canBeParentOf, HIERARCHY_LEVELS } from '@/types/hierarchy';
 
 interface WorkItemTreeProps {
   items: WorkItem[];
   selectedId: string | null;
   onSelect: (item: WorkItem) => void;
+  onDeselect?: () => void;
   onDelete?: (item: WorkItem) => void;
   onMove?: (itemId: string, newParentId: string) => void;
+  onAddChild?: (parent: WorkItem) => void;
   allExpanded: boolean;
 }
 
@@ -93,7 +95,7 @@ function AssigneeAvatar({ assignee }: { assignee?: WorkItem['assignee'] }) {
 
 /* ── Progress bar (parents only) ── */
 function ProgressBar({ stats }: { stats: WorkItem['stats'] }) {
-  if (stats.totalDescendants === 0) return <div style={{ width: 64 }} />;
+  if (stats.totalDescendants === 0) return null;
   const pct = Math.round((stats.completedCount / stats.totalDescendants) * 100);
   const isComplete = pct === 100;
   const fillColor = isComplete ? '#16A34A' : '#2563EB';
@@ -101,7 +103,7 @@ function ProgressBar({ stats }: { stats: WorkItem['stats'] }) {
   return (
     <div style={{ width: 64, display: 'flex', flexDirection: 'column', gap: 2, justifyContent: 'center' }}>
       <div style={{ height: 4, background: '#F1F5F9', borderRadius: 2, overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${pct}%`, background: fillColor, borderRadius: 2 }} />
+        <div style={{ height: '100%', width: `${pct}%`, background: fillColor, borderRadius: 2, transition: 'width 300ms ease' }} />
       </div>
       <span style={{ fontSize: 11, fontWeight: 500, color: textColor, fontFamily: "'Inter', sans-serif", fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>
         {pct}%
@@ -135,12 +137,10 @@ function ActionsMenu({ item, onDelete }: { item: WorkItem; onDelete?: (item: Wor
         <MoreHorizontal size={16} color="#64748B" />
       </button>
       {open && (
-        <div
-          style={{
-            position: 'absolute', top: '100%', right: 0, marginTop: 4, background: '#FFFFFF',
-            border: '1px solid #E2E8F0', borderRadius: 6, zIndex: 50, minWidth: 140, overflow: 'hidden',
-          }}
-        >
+        <div style={{
+          position: 'absolute', top: '100%', right: 0, marginTop: 4, background: '#FFFFFF',
+          border: '1px solid #E2E8F0', borderRadius: 6, zIndex: 50, minWidth: 140, overflow: 'hidden',
+        }}>
           <button
             onClick={(e) => { e.stopPropagation(); setOpen(false); onDelete?.(item); }}
             style={{
@@ -166,10 +166,36 @@ type DragState = {
   isValidDrop: boolean;
 };
 
+/* ── No children message ── */
+function NoChildrenMessage({ parentLevel, depth, onAdd, parent }: { parentLevel: number; depth: number; onAdd?: (parent: WorkItem) => void; parent: WorkItem }) {
+  const childLevel = HIERARCHY_LEVELS.find((l) => canBeParentOf(parentLevel, l.id));
+  if (!childLevel) return null;
+  return (
+    <div style={{
+      height: 36, display: 'flex', alignItems: 'center', gap: 8,
+      paddingLeft: (depth + 1) * 20 + 12, paddingRight: 12,
+      borderBottom: '1px solid #E2E8F0', fontFamily: "'Inter', sans-serif",
+    }}>
+      <span style={{ fontSize: 12, color: '#64748B', fontStyle: 'italic' }}>No child items</span>
+      {onAdd && (
+        <button
+          onClick={() => onAdd(parent)}
+          style={{
+            fontSize: 12, fontWeight: 600, color: '#2563EB', background: 'none', border: 'none',
+            cursor: 'pointer', fontFamily: "'Inter', sans-serif", padding: 0,
+          }}
+        >
+          + Add {childLevel.name}
+        </button>
+      )}
+    </div>
+  );
+}
+
 /* ── Single tree row ── */
 function TreeRow({
   item, depth, expanded, onToggle, selected, onSelect, onDelete,
-  dragState, onDragStart, onDragOver, onDragEnd, onDrop,
+  dragState, onDragStart, onDragOver, onDragEnd, onDrop, rowRef,
 }: {
   item: WorkItem; depth: number; expanded: boolean; onToggle: (id: string) => void;
   selected: boolean; onSelect: (item: WorkItem) => void; onDelete?: (item: WorkItem) => void;
@@ -178,6 +204,7 @@ function TreeRow({
   onDragOver: (e: React.DragEvent, targetItem: WorkItem) => void;
   onDragEnd: () => void;
   onDrop: (e: React.DragEvent, targetItem: WorkItem) => void;
+  rowRef?: (el: HTMLDivElement | null) => void;
 }) {
   const hasChildren = item.children.length > 0;
   const isDragged = dragState.draggedItem?.id === item.id;
@@ -191,8 +218,10 @@ function TreeRow({
 
   return (
     <div
+      ref={rowRef}
       role="treeitem" aria-expanded={hasChildren ? expanded : undefined}
-      aria-level={depth + 1} aria-selected={selected} tabIndex={0}
+      aria-level={depth + 1} aria-selected={selected} tabIndex={-1}
+      data-item-id={item.id}
       draggable
       onDragStart={(e) => {
         e.dataTransfer.effectAllowed = 'move';
@@ -203,20 +232,15 @@ function TreeRow({
       onDragEnd={onDragEnd}
       onDrop={(e) => onDrop(e, item)}
       onClick={() => onSelect(item)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(item); }
-        if (e.key === 'ArrowRight' && hasChildren && !expanded) { e.preventDefault(); onToggle(item.id); }
-        if (e.key === 'ArrowLeft' && hasChildren && expanded) { e.preventDefault(); onToggle(item.id); }
-      }}
       className="hi-tree-row"
       style={{
         height: 44, maxHeight: 44, display: 'flex', alignItems: 'center', gap: 8,
-        paddingLeft: depth * 20 + 12, paddingRight: 12, borderBottom: '1px solid #E2E8F0',
+        paddingLeft: Math.min(depth, 8) * 20 + 12, paddingRight: 12, borderBottom: '1px solid #E2E8F0',
         background: selected ? '#EFF6FF' : undefined, cursor: 'pointer', outline: 'none',
         fontFamily: "'Inter', sans-serif",
         opacity: isDragged ? 0.5 : 1,
         borderLeft,
-        transition: 'opacity 150ms ease, border-left 150ms ease',
+        transition: 'opacity 150ms ease, border-left 150ms ease, background 100ms ease',
       }}
     >
       <GripVertical size={14} className="hi-row-action" style={{ color: '#94A3B8', flexShrink: 0, cursor: 'grab' }} />
@@ -224,7 +248,7 @@ function TreeRow({
       {hasChildren ? (
         <button onClick={(e) => { e.stopPropagation(); onToggle(item.id); }}
           style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', flexShrink: 0 }}
-          aria-label={expanded ? 'Collapse' : 'Expand'}>
+          tabIndex={-1} aria-label={expanded ? 'Collapse' : 'Expand'}>
           {expanded ? <ChevronDown size={20} color="#64748B" /> : <ChevronRight size={20} color="#64748B" />}
         </button>
       ) : <div style={{ width: 20, flexShrink: 0 }} />}
@@ -257,31 +281,43 @@ function TreeRow({
 
 /* ── Recursive subtree ── */
 function TreeBranch({
-  items, depth, expandedIds, onToggle, selectedId, onSelect, onDelete,
-  dragState, onDragStart, onDragOver, onDragEnd, onDrop,
+  items, depth, expandedIds, onToggle, selectedId, onSelect, onDelete, onAddChild,
+  dragState, onDragStart, onDragOver, onDragEnd, onDrop, rowRefs,
 }: {
   items: WorkItem[]; depth: number; expandedIds: Set<string>; onToggle: (id: string) => void;
   selectedId: string | null; onSelect: (item: WorkItem) => void; onDelete?: (item: WorkItem) => void;
+  onAddChild?: (parent: WorkItem) => void;
   dragState: DragState;
   onDragStart: (item: WorkItem) => void;
   onDragOver: (e: React.DragEvent, targetItem: WorkItem) => void;
   onDragEnd: () => void;
   onDrop: (e: React.DragEvent, targetItem: WorkItem) => void;
+  rowRefs: React.MutableRefObject<Map<string, HTMLDivElement>>;
 }) {
   return (
     <>
-      {items.map((item) => (
-        <div key={item.id} role="group">
-          <TreeRow item={item} depth={Math.min(depth, 8)} expanded={expandedIds.has(item.id)} onToggle={onToggle}
-            selected={selectedId === item.id} onSelect={onSelect} onDelete={onDelete}
-            dragState={dragState} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd} onDrop={onDrop} />
-          {expandedIds.has(item.id) && item.children.length > 0 && (
-            <TreeBranch items={item.children} depth={depth + 1} expandedIds={expandedIds}
-              onToggle={onToggle} selectedId={selectedId} onSelect={onSelect} onDelete={onDelete}
-              dragState={dragState} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd} onDrop={onDrop} />
-          )}
-        </div>
-      ))}
+      {items.map((item) => {
+        const isExpanded = expandedIds.has(item.id);
+        const hasChildren = item.children.length > 0;
+        return (
+          <div key={item.id} role="group">
+            <TreeRow item={item} depth={Math.min(depth, 8)} expanded={isExpanded} onToggle={onToggle}
+              selected={selectedId === item.id} onSelect={onSelect} onDelete={onDelete}
+              dragState={dragState} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd} onDrop={onDrop}
+              rowRef={(el) => { if (el) rowRefs.current.set(item.id, el); else rowRefs.current.delete(item.id); }}
+            />
+            {isExpanded && hasChildren && (
+              <TreeBranch items={item.children} depth={depth + 1} expandedIds={expandedIds}
+                onToggle={onToggle} selectedId={selectedId} onSelect={onSelect} onDelete={onDelete} onAddChild={onAddChild}
+                dragState={dragState} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd} onDrop={onDrop}
+                rowRefs={rowRefs} />
+            )}
+            {isExpanded && !hasChildren && (
+              <NoChildrenMessage parentLevel={item.hierarchyLevel} depth={depth} onAdd={onAddChild} parent={item} />
+            )}
+          </div>
+        );
+      })}
     </>
   );
 }
@@ -300,6 +336,18 @@ function countAll(items: WorkItem[]): number {
   return c;
 }
 
+/** Flatten visible items for keyboard navigation */
+function flattenVisible(items: WorkItem[], expandedIds: Set<string>): WorkItem[] {
+  const result: WorkItem[] = [];
+  for (const item of items) {
+    result.push(item);
+    if (expandedIds.has(item.id) && item.children.length > 0) {
+      result.push(...flattenVisible(item.children, expandedIds));
+    }
+  }
+  return result;
+}
+
 /** Check if targetId is a descendant of itemId */
 function isDescendant(items: WorkItem[], itemId: string, targetId: string): boolean {
   function findAndCheck(nodes: WorkItem[], underItem: boolean): boolean {
@@ -313,10 +361,25 @@ function isDescendant(items: WorkItem[], itemId: string, targetId: string): bool
   return findAndCheck(items, false);
 }
 
-export function WorkItemTree({ items, selectedId, onSelect, onDelete, onMove, allExpanded }: WorkItemTreeProps) {
+/** Find an item's parent in the tree */
+function findParent(items: WorkItem[], targetId: string): WorkItem | null {
+  for (const item of items) {
+    for (const child of item.children) {
+      if (child.id === targetId) return item;
+    }
+    const found = findParent(item.children, targetId);
+    if (found) return found;
+  }
+  return null;
+}
+
+export function WorkItemTree({ items, selectedId, onSelect, onDeselect, onDelete, onMove, onAddChild, allExpanded }: WorkItemTreeProps) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const prevAllExpanded = useRef(allExpanded);
   const [dragState, setDragState] = useState<DragState>({ draggedItem: null, dragOverId: null, isValidDrop: false });
+  const [focusedId, setFocusedId] = useState<string | null>(null);
+  const rowRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const treeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (allExpanded !== prevAllExpanded.current) {
@@ -329,6 +392,73 @@ export function WorkItemTree({ items, selectedId, onSelect, onDelete, onMove, al
     setExpandedIds((prev) => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
   }, []);
 
+  // Focus management
+  useEffect(() => {
+    if (focusedId) {
+      const el = rowRefs.current.get(focusedId);
+      el?.focus();
+    }
+  }, [focusedId]);
+
+  // Keyboard navigation handler on tree container
+  const handleTreeKeyDown = useCallback((e: React.KeyboardEvent) => {
+    const visibleItems = flattenVisible(items, expandedIds);
+    if (visibleItems.length === 0) return;
+
+    const currentIndex = focusedId ? visibleItems.findIndex(i => i.id === focusedId) : -1;
+    const currentItem = currentIndex >= 0 ? visibleItems[currentIndex] : null;
+
+    switch (e.key) {
+      case 'ArrowDown': {
+        e.preventDefault();
+        const nextIdx = currentIndex < visibleItems.length - 1 ? currentIndex + 1 : 0;
+        setFocusedId(visibleItems[nextIdx].id);
+        break;
+      }
+      case 'ArrowUp': {
+        e.preventDefault();
+        const prevIdx = currentIndex > 0 ? currentIndex - 1 : visibleItems.length - 1;
+        setFocusedId(visibleItems[prevIdx].id);
+        break;
+      }
+      case 'ArrowRight': {
+        e.preventDefault();
+        if (!currentItem) break;
+        if (currentItem.children.length > 0 && !expandedIds.has(currentItem.id)) {
+          toggle(currentItem.id);
+        } else if (currentItem.children.length > 0 && expandedIds.has(currentItem.id)) {
+          // Move to first child
+          setFocusedId(currentItem.children[0].id);
+        }
+        break;
+      }
+      case 'ArrowLeft': {
+        e.preventDefault();
+        if (!currentItem) break;
+        if (currentItem.children.length > 0 && expandedIds.has(currentItem.id)) {
+          toggle(currentItem.id);
+        } else {
+          // Move to parent
+          const parent = findParent(items, currentItem.id);
+          if (parent) setFocusedId(parent.id);
+        }
+        break;
+      }
+      case 'Enter':
+      case ' ': {
+        e.preventDefault();
+        if (currentItem) onSelect(currentItem);
+        break;
+      }
+      case 'Escape': {
+        e.preventDefault();
+        onDeselect?.();
+        break;
+      }
+    }
+  }, [items, expandedIds, focusedId, toggle, onSelect, onDeselect]);
+
+  // DnD handlers
   const handleDragStart = useCallback((item: WorkItem) => {
     setDragState({ draggedItem: item, dragOverId: null, isValidDrop: false });
   }, []);
@@ -340,7 +470,6 @@ export function WorkItemTree({ items, selectedId, onSelect, onDelete, onMove, al
       setDragState(prev => ({ ...prev, dragOverId: null, isValidDrop: false }));
       return;
     }
-    // Can't drop on own descendant
     if (isDescendant(items, dragState.draggedItem.id, targetItem.id)) {
       setDragState(prev => ({ ...prev, dragOverId: targetItem.id, isValidDrop: false }));
       return;
@@ -380,17 +509,19 @@ export function WorkItemTree({ items, selectedId, onSelect, onDelete, onMove, al
           {total} items
         </span>
       </div>
-      <div role="tree" aria-label="Work Item Hierarchy">
+      <div ref={treeRef} role="tree" aria-label="Work Item Hierarchy" tabIndex={0} onKeyDown={handleTreeKeyDown}
+        style={{ outline: 'none' }}>
         <TreeBranch items={items} depth={0} expandedIds={expandedIds} onToggle={toggle}
-          selectedId={selectedId} onSelect={onSelect} onDelete={onDelete}
+          selectedId={selectedId} onSelect={onSelect} onDelete={onDelete} onAddChild={onAddChild}
           dragState={dragState} onDragStart={handleDragStart} onDragOver={handleDragOver}
-          onDragEnd={handleDragEnd} onDrop={handleDrop} />
+          onDragEnd={handleDragEnd} onDrop={handleDrop} rowRefs={rowRefs} />
       </div>
       <style>{`
         .hi-tree-row:hover { background: #F8FAFC !important; }
         .hi-tree-row[aria-selected="true"]:hover { background: #EFF6FF !important; }
         .hi-row-action { opacity: 0; transition: opacity 150ms ease; }
         .hi-tree-row:hover .hi-row-action { opacity: 1; }
+        .hi-tree-row:focus-visible { box-shadow: inset 0 0 0 2px #2563EB; }
       `}</style>
     </div>
   );
