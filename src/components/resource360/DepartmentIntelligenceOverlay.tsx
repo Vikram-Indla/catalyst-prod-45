@@ -270,18 +270,122 @@ function ProjectActivityTab({ projects }: { projects: ProjectActivity[] }) {
     </div>
   );
 
+  // Sort: by velocity transitions descending, stalled last
+  const sorted = [...projects].sort((a, b) => {
+    if (a.status === 'stalled' && b.status !== 'stalled') return 1;
+    if (b.status === 'stalled' && a.status !== 'stalled') return -1;
+    return (b.velocity?.transitions || 0) - (a.velocity?.transitions || 0);
+  });
+
   return (
     <div className="di-exec">
       <div className="di-exec-section" style={{ paddingTop: 0 }}>
-        {projects.map((prj, i) => (
-          <div className="di-prj-row" key={i}>
-            <span className="di-prj-name">{prj.name}</span>
-            <span className="di-prj-desc">{prj.desc}</span>
-            <span className={`di-prj-badge prj-${prj.status === 'risk' ? 'risk' : prj.status === 'stalled' ? 'stalled' : 'active'}`}>
-              {prj.status === 'risk' ? 'AT RISK' : prj.status === 'stalled' ? 'STALLED' : 'ACTIVE'}
-            </span>
+        {sorted.map((prj, i) => (
+          <ProjectCard key={i} prj={prj} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProjectCard({ prj }: { prj: ProjectActivity }) {
+  const statusClass = prj.status === 'risk' ? 'prj-s-risk' : prj.status === 'stalled' ? 'prj-s-stalled' : 'prj-s-active';
+  const statusLabel = prj.status === 'risk' ? 'AT RISK' : prj.status === 'stalled' ? 'STALLED' : 'ACTIVE';
+
+  // Legacy fallback: if no kpis, render old style
+  if (!prj.kpis || prj.kpis.length === 0) {
+    return (
+      <div className="di-prj-card">
+        <div className="di-prj-hdr">
+          {prj.keyPrefix && <span className="di-prj-key">{prj.keyPrefix}</span>}
+          <span className="di-prj-name">{prj.name}</span>
+          <span className={`di-prj-status ${statusClass}`}>{statusLabel}</span>
+        </div>
+        {prj.desc && (
+          <div className="di-prj-body">
+            <div className="di-prj-narrative">{prj.desc}</div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const barColorClass = `bar-f-${prj.barColor || 'primary'}`;
+
+  return (
+    <div className="di-prj-card">
+      {/* Header */}
+      <div className="di-prj-hdr">
+        <span className="di-prj-key">{prj.keyPrefix || prj.name.split(' ')[0]?.substring(0, 4).toUpperCase()}</span>
+        <span className="di-prj-name">{prj.name}</span>
+        <span className={`di-prj-status ${statusClass}`}>{statusLabel}</span>
+      </div>
+
+      {/* KPI Strip */}
+      <div className="di-prj-kpis">
+        {prj.kpis.map((kpi, k) => (
+          <div className="di-prj-kpi" key={k}>
+            <div className={`di-prj-kpi-v ${kpi.variant === 'danger' ? 'kpi-v-danger' : kpi.variant === 'warning' ? 'kpi-v-warning' : kpi.variant === 'success' ? 'kpi-v-success' : ''}`}>
+              {kpi.value}
+            </div>
+            <div className="di-prj-kpi-l">{kpi.label}</div>
           </div>
         ))}
+      </div>
+
+      {/* Body */}
+      <div className="di-prj-body">
+        {/* Progress Bar — omit for STALLED */}
+        {prj.status !== 'stalled' && prj.velocity && (
+          <div className="di-prj-progress">
+            <div className="di-prj-progress-hdr">
+              <span className="di-prj-progress-lbl">Weekly Velocity</span>
+              <span className="di-prj-progress-pct">{prj.velocity.transitions} transitions</span>
+            </div>
+            <div className="di-prj-bar">
+              <div className={`di-prj-bar-fill ${barColorClass}`} style={{ width: `${Math.min(prj.velocity.percentOfMax, 100)}%` }} />
+            </div>
+          </div>
+        )}
+
+        {/* Narrative */}
+        {prj.narrative && (
+          <div className="di-prj-narrative" dangerouslySetInnerHTML={{ __html: prj.narrative }} />
+        )}
+
+        {/* Contributors */}
+        {prj.contributors && prj.contributors.length > 0 && (
+          <div className="di-prj-contribs">
+            <span className="di-prj-contribs-lbl">Contributors</span>
+            {prj.contributors.map((c, ci) => (
+              <span className="di-prj-contrib" key={ci}>
+                <span className="di-prj-avatar" style={{ background: c.color || '#64748B' }}>
+                  {c.initials}
+                </span>
+                <span className="di-prj-contrib-name">{c.name}</span>
+                <span className="di-prj-contrib-stat">· {c.count}</span>
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Alert Callout */}
+        {prj.alert && prj.alert.type === 'blocker' && (
+          <div className="di-prj-blocker">
+            <svg className="di-prj-blocker-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+            </svg>
+            <span className="di-prj-blocker-txt" dangerouslySetInnerHTML={{ __html: prj.alert.text }} />
+          </div>
+        )}
+        {prj.alert && prj.alert.type === 'warning' && (
+          <div className="di-prj-warning">
+            <svg className="di-prj-warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <span className="di-prj-warning-txt" dangerouslySetInnerHTML={{ __html: prj.alert.text }} />
+          </div>
+        )}
       </div>
     </div>
   );
