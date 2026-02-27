@@ -60,6 +60,52 @@ export default function StrategyRoom() {
   const [briefOpen, setBriefOpen] = useState(false);
   const [printAfterOpen, setPrintAfterOpen] = useState(false);
 
+  const printBriefInNewWindow = useCallback(() => {
+    const briefRoot = document.querySelector('.sri-root-container') as HTMLElement | null;
+    if (!briefRoot) {
+      window.print();
+      return;
+    }
+
+    const printWindow = window.open('', '_blank', 'noopener,noreferrer,width=1280,height=900');
+    if (!printWindow) {
+      window.print();
+      return;
+    }
+
+    const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+      .map((node) => node.outerHTML)
+      .join('\n');
+
+    const printableRoot = briefRoot.cloneNode(true) as HTMLElement;
+    printableRoot.querySelectorAll('.sri-actions').forEach((el) => el.remove());
+
+    printWindow.document.open();
+    printWindow.document.write(`<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Executive Brief</title>
+    ${styles}
+    <style>
+      @page { size: auto; margin: 14mm; }
+      html, body { margin: 0; padding: 0; background: #fff; overflow: visible !important; height: auto !important; }
+      .sri-root-container, .sri-root-container * { position: static !important; overflow: visible !important; height: auto !important; max-height: none !important; }
+      .sri-root-container { inset: auto !important; z-index: auto !important; background: #fff !important; }
+      [data-sri] .sri-actions { display: none !important; }
+    </style>
+  </head>
+  <body>${printableRoot.outerHTML}</body>
+</html>`);
+    printWindow.document.close();
+
+    setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
+    }, 350);
+  }, []);
+
   const handleOpenBrief = useCallback(() => setBriefOpen(true), []);
   const handleCloseBrief = useCallback(() => setBriefOpen(false), []);
 
@@ -72,12 +118,12 @@ export default function StrategyRoom() {
   useEffect(() => {
     if (briefOpen && printAfterOpen) {
       const timer = setTimeout(() => {
-        window.print();
+        printBriefInNewWindow();
         setPrintAfterOpen(false);
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [briefOpen, printAfterOpen]);
+  }, [briefOpen, printAfterOpen, printBriefInNewWindow]);
 
   /* Escape key closes brief */
   useEffect(() => {
@@ -95,7 +141,9 @@ export default function StrategyRoom() {
     } else {
       document.body.style.overflow = '';
     }
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [briefOpen]);
 
   return (
@@ -112,10 +160,7 @@ export default function StrategyRoom() {
 
       {/* Dashboard (Chunk 1) */}
       <div id="dashboard-main" className="brief-controller-dashboard">
-        <StrategyRoomDashboard
-          onOpenBrief={handleOpenBrief}
-          onDownloadBrief={handleDownloadBrief}
-        />
+        <StrategyRoomDashboard onOpenBrief={handleOpenBrief} onDownloadBrief={handleDownloadBrief} />
       </div>
 
       {/* Brief Overlay (Chunk 2) */}
@@ -127,10 +172,7 @@ export default function StrategyRoom() {
             if (e.target === e.currentTarget) handleCloseBrief();
           }}
         >
-          <AIExecutiveBrief
-            open={briefOpen}
-            onClose={handleCloseBrief}
-          />
+          <AIExecutiveBrief open={briefOpen} onClose={handleCloseBrief} onDownload={printBriefInNewWindow} />
         </div>
       )}
     </StrategyRoleProvider>
