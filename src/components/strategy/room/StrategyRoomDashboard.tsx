@@ -167,7 +167,7 @@ export default function StrategyRoomDashboard({ onOpenBrief, onDownloadBrief }: 
       </header>
 
       {/* ═══ VISION STRIP ═══ */}
-      <div style={{ padding: '8px 32px', background: 'var(--srd-blue-bg)', borderBottom: '1px solid rgba(37,99,235,.08)', ...F(12), fontSize: 13 }}>
+      <div style={{ margin: '12px 32px 0', border: '1px solid var(--srd-blue-bdr)', borderRadius: 'var(--srd-r4)', padding: '10px 20px', background: 'var(--srd-blue-bg)', ...F(12), fontSize: 13 }}>
         <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--srd-blue)', textTransform: 'uppercase', letterSpacing: '.08em', background: 'rgba(37,99,235,.08)', padding: '3px 8px', borderRadius: 'var(--srd-r)', flexShrink: 0 }}>Vision {visionYear}</span>
         {editingVision ? (
           <div style={{ flex: 1, ...F(6) }}>
