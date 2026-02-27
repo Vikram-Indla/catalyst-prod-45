@@ -481,7 +481,7 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
           <span className="di-foot-d" />
           <span>{meta?.itemCount ?? '…'} items</span>
           <span className="di-foot-d" />
-          <span>{weekLabel} · {weekRange}</span>
+          <span>{weekOffset === 0 ? 'This Week' : weekOffset === -1 ? 'Last Week' : weekLabel} · {weekRange}</span>
         </div>
       </div>
 
