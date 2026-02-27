@@ -18,6 +18,8 @@ export interface WorkItemAssignee {
   avatarColor: string;
 }
 
+export type HubType = 'ProductHub' | 'ProjectHub' | 'ReleaseHub' | 'TestHub' | 'IncidentHub' | 'TaskHub' | 'StrategyHub' | 'PlanHub';
+
 export interface WorkItem {
   id: string;
   key: string;
@@ -25,6 +27,7 @@ export interface WorkItem {
   mode: WorkMode;
   level: string;
   project: string;
+  hub: HubType;
   updatedAt: string;
   assignee: WorkItemAssignee;
   reporter?: string;
@@ -126,18 +129,34 @@ function mapPlannerTaskToIssueRow(row: any) {
   };
 }
 
+// Infer which hub an item belongs to
+function inferHub(issueType: string, projectKey: string): HubType {
+  const type = (issueType || '').toLowerCase();
+  if (type.includes('incident') || type.includes('production')) return 'IncidentHub';
+  if (type === 'planner_task' || projectKey === 'TSK') return 'TaskHub';
+  if (type === 'test' || type === 'test case' || type === 'test execution') return 'TestHub';
+  if (type === 'epic') return 'ProjectHub';
+  if (type === 'story' || type === 'sub-task' || type === 'subtask') return 'ProjectHub';
+  if (type === 'bug' || type === 'defect') return 'ReleaseHub';
+  if (type === 'feature' || type === 'initiative' || type === 'business request') return 'ProductHub';
+  // Default to ProductHub for most work items
+  return 'ProductHub';
+}
+
 // Map ph_issues row to WorkItem
 function mapIssueToWorkItem(row: any, starredSet: Set<string>, projectNameMap: Map<string, string>): WorkItem {
   const assigneeName = row.assignee_display_name || 'Unassigned';
   const projectKey = row.project_key || '';
+  const issueType = row.issue_type || 'Task';
   return {
     id: row.issue_key,
     key: row.issue_key,
     summary: row.summary || '',
-    mode: inferMode(projectKey, row.issue_type),
-    level: row.issue_type || 'Task',
+    mode: inferMode(projectKey, issueType),
+    level: issueType,
     project: row.workstream_name || projectNameMap.get(projectKey) || projectKey,
-    issueType: row.issue_type || 'Task',
+    hub: inferHub(issueType, projectKey),
+    issueType,
     updatedAt: row.jira_updated_at ? formatRelativeTime(row.jira_updated_at) : '-',
     assignee: {
       id: row.assignee_account_id || 'none',
