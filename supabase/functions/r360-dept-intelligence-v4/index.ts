@@ -6,14 +6,50 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+/* ── Simple hash for data fingerprinting ── */
+async function computeFingerprint(data: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const hashBuffer = await crypto.subtle.digest("SHA-256", encoder.encode(data));
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16);
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { department, weekStart, weekEnd, weekNumber, weekRange, transitions, stats, resourceSummary, roleBreakdown } = await req.json();
+    const { department, weekStart, weekEnd, weekNumber, weekRange, transitions, stats, resourceSummary, roleBreakdown, forceRefresh } = await req.json();
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
+
+    // ── DATA FINGERPRINT CHECK ──
+    // Hash the transitions to detect if underlying data actually changed
+    const transitionFingerprint = await computeFingerprint(JSON.stringify(transitions));
+    
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const sb = createClient(supabaseUrl, supabaseKey);
+
+    // Check if we already have a cached result with the same data fingerprint
+    if (!forceRefresh) {
+      const { data: cached } = await sb
+        .from("r360_ai_cache")
+        .select("data, computed_at, data_fingerprint")
+        .eq("scope_type", "department")
+        .eq("scope_id", department)
+        .eq("section", "dept_intel_v4")
+        .eq("week_start", weekStart)
+        .maybeSingle();
+
+      if (cached?.data && (cached as any).data_fingerprint === transitionFingerprint) {
+        console.log(`[SKIP] Data unchanged for ${department} W${weekNumber} (fingerprint: ${transitionFingerprint}). Returning cached result — 0 AI tokens used.`);
+        return new Response(JSON.stringify({ ...cached.data as any, _cached: true, _fingerprint: transitionFingerprint }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    console.log(`[GENERATE] Data changed for ${department} W${weekNumber} (fingerprint: ${transitionFingerprint}). Calling AI...`);
 
     const roleBreakdownStr = roleBreakdown
       ? Object.entries(roleBreakdown).map(([group, members]) => `  ${group}: ${(members as string[]).join(', ')}`).join('\n')
@@ -184,17 +220,14 @@ Generate the full 3-section role-based STEERCOM briefing now.`;
       parsed = { digest: [], summaryV5: null, recommendations: [] };
     }
 
-    // Cache
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const sb = createClient(supabaseUrl, supabaseKey);
-
+    // Cache — include fingerprint so next call can skip if data unchanged
     await sb.from("r360_ai_cache").upsert({
       scope_type: "department",
       scope_id: department,
       section: "dept_intel_v4",
       week_start: weekStart,
       data: parsed,
+      data_fingerprint: transitionFingerprint,
       status: "fresh",
       computed_at: new Date().toISOString(),
       is_stale: false,
@@ -244,6 +277,7 @@ Generate the full 3-section role-based STEERCOM briefing now.`;
           section: "dept_intel_v4",
           week_start: weekStart,
           data: parsed,
+          data_fingerprint: transitionFingerprint,
           status: "fresh",
           computed_at: new Date().toISOString(),
           is_stale: false,
