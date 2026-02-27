@@ -8,6 +8,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { StrategyRoleProvider } from '@/contexts/strategy/RoleContext';
 import StrategyRoomDashboard from '@/components/strategy/room/StrategyRoomDashboard';
 import { AIExecutiveBrief } from '@/components/strategy/room/AIExecutiveBrief';
+import { useStrategyRoomData } from '@/hooks/strategy/useStrategyRoomData';
 
 const OVERLAY_STYLE: React.CSSProperties = {
   position: 'fixed',
@@ -60,10 +61,8 @@ export default function StrategyRoom() {
   const [briefOpen, setBriefOpen] = useState(false);
   const [printAfterOpen, setPrintAfterOpen] = useState(false);
 
-  /* ─── Dashboard data state — all null until wired to Supabase ─── */
-  // Future: fetch from Supabase tables and pass as props
-  // When data is null, dashboard shows Empty states per widget
-
+  /* ─── Live data from database ─── */
+  const { themes, budget, workforce, contracts, brief, fiscal, updatedAgo } = useStrategyRoomData();
   const printBriefInNewWindow = useCallback(() => {
     const briefRoot = document.querySelector('.sri-root-container') as HTMLElement | null;
     if (!briefRoot) {
@@ -157,20 +156,19 @@ export default function StrategyRoom() {
         Skip to dashboard content
       </a>
 
-      {/* Dashboard — all data props null (empty states shown) until wired to Supabase */}
       <div id="dashboard-main" className="brief-controller-dashboard">
         <StrategyRoomDashboard
           onOpenBrief={handleOpenBrief}
           onDownloadBrief={handleDownloadBrief}
-          themes={null}
-          budget={null}
-          workforce={null}
-          contracts={null}
+          themes={themes}
+          budget={budget}
+          workforce={workforce}
+          contracts={contracts}
           execution={null}
           alignment={null}
-          brief={null}
-          fiscal={null}
-          updatedAgo={null}
+          brief={brief}
+          fiscal={fiscal}
+          updatedAgo={updatedAgo}
         />
       </div>
 
