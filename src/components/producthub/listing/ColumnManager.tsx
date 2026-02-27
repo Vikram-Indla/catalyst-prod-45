@@ -30,7 +30,7 @@ export const DEFAULT_COLUMNS: ColumnConfig[] = [
   { id: 'type', label: 'Type', visible: true },
   { id: 'priority', label: 'Priority', visible: true },
   { id: 'score', label: 'Score', visible: true },
-  { id: 'assignee', label: 'Assignee', visible: true },
+  { id: 'reporter', label: 'Reported by', visible: true },
   { id: 'department', label: 'Department', visible: true },
   { id: 'quarter', label: 'Quarter', visible: true },
   { id: 'kickoff', label: 'Kickoff', visible: true },
