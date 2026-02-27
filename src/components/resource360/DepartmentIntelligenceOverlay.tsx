@@ -135,7 +135,9 @@ function ExecutiveSummaryV5({ data, avatarMap }: { data: ExecSummaryV5 | null; a
                   </div>
                 ))}
               </div>
-              {rc.resources.map((res, ri) => (
+              {rc.resources
+                .filter(res => !/no recorded transitions|zero activity|no contributions?|no tracked activity/i.test(res.desc))
+                .map((res, ri) => (
                 <div className="di-res-row" key={ri}>
                   <ResAvatar name={res.name} avatarMap={avatarMap} size={28} />
                   <span className="di-res-name">{res.name}</span>
