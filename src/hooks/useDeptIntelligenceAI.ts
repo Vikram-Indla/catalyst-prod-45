@@ -1,6 +1,6 @@
 /**
- * Hook for Department Intelligence V4 — 3-Tab STEERCOM Panel
- * Single AI call generates all 3 tabs: digest, summary, recommendations.
+ * Hook for Department Intelligence V5 — Role-Based Executive Briefing
+ * Single AI call generates all 3 tabs: summary (role-based), digest, recommendations.
  */
 import { useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -19,6 +19,38 @@ export interface DigestEvent {
   body: string;
 }
 
+export interface TopContributor {
+  name: string;
+  role: string;
+  roleGroup: string;
+  projects: string[];
+  consecutiveWeeks: number;
+  kpis: { value: number; label: string }[];
+}
+
+export interface RoleContribution {
+  role: string;
+  roleCss: string;
+  resourceCount: number;
+  projects: string[];
+  kpis: { value: number; label: string }[];
+  resources: { name: string; desc: string }[];
+}
+
+export interface ProjectActivity {
+  name: string;
+  desc: string;
+  status: 'active' | 'risk' | 'stalled';
+}
+
+export interface ExecSummaryV5 {
+  topContributor: TopContributor | null;
+  roleContributions: RoleContribution[];
+  projectActivity: ProjectActivity[];
+  requiresAttention: string[];
+}
+
+// Keep old ExecSummary for backward compat
 export interface ExecSummary {
   closureRate: number;
   closureNumerator: number;
@@ -35,11 +67,15 @@ export interface Recommendation {
   title: string;
   description: string;
   priority: 'high' | 'medium';
+  roleTag?: string;
+  roleTagCss?: string;
+  project?: string;
 }
 
 export interface DeptIntelData {
   digest: DigestEvent[];
   summary: ExecSummary | null;
+  summaryV5: ExecSummaryV5 | null;
   recommendations: Recommendation[];
 }
 
@@ -57,6 +93,19 @@ function getHubFromKey(key: string): { label: string; css: string } {
 /* ── Date helpers ── */
 function fmtYMD(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/* ── Role classification ── */
+export type RoleGroup = 'developer' | 'qa' | 'product_owner' | 'ux_designer' | 'delivery_mgmt' | 'devops';
+
+export function classifyRole(jobRole: string): RoleGroup {
+  const role = jobRole?.toLowerCase() || '';
+  if (role.includes('qa') || role.includes('test') || role.includes('quality')) return 'qa';
+  if (role.includes('product') || role.includes('po') || role.includes('business analyst')) return 'product_owner';
+  if (role.includes('ux') || role.includes('ui') || role.includes('design')) return 'ux_designer';
+  if (role.includes('manager') || role.includes('lead') || role.includes('delivery') || role.includes('scrum')) return 'delivery_mgmt';
+  if (role.includes('devops') || role.includes('infra') || role.includes('cloud') || role.includes('sre')) return 'devops';
+  return 'developer';
 }
 
 /* ── Fetch department resources ── */
@@ -78,6 +127,8 @@ async function getDeptResources(department: string) {
     resources: filtered as any[],
     jiraIds: filtered.map((r: any) => r.jira_account_id).filter(Boolean),
     nameMap: new Map(filtered.map((r: any) => [r.jira_account_id, r.name])),
+    roleMap: new Map(filtered.map((r: any) => [r.name, r.role_name || 'Team Member'])),
+    roleGroupMap: new Map(filtered.map((r: any) => [r.name, classifyRole(r.role_name || '')])),
   };
 }
 
@@ -129,7 +180,7 @@ async function computeStats(jiraIds: string[], ws: Date, we: Date) {
 async function extractTransitions(jiraIds: string[], nameMap: Map<string, string>, ws: Date, we: Date) {
   const { data: issues } = await supabase
     .from('ph_issues')
-    .select('issue_key, summary, status, assignee_account_id, assignee_display_name, changelog, jira_updated_at, priority')
+    .select('issue_key, summary, status, assignee_account_id, assignee_display_name, changelog, jira_updated_at, priority, project_name')
     .in('assignee_account_id', jiraIds)
     .gte('jira_updated_at', ws.toISOString())
     .lte('jira_updated_at', we.toISOString())
@@ -155,6 +206,7 @@ async function extractTransitions(jiraIds: string[], nameMap: Map<string, string
               from: item.fromString || '', to: item.toString || '',
               day: dayNames[d.getDay()] || '', dayIndex: d.getDay(),
               hub, priority: issue.priority || '',
+              projectName: issue.project_name || '',
             });
           }
         });
@@ -168,6 +220,7 @@ async function extractTransitions(jiraIds: string[], nameMap: Map<string, string
           from: '', to: issue.status || '',
           day: dayNames[d.getDay()] || '', dayIndex: d.getDay(),
           hub, priority: issue.priority || '',
+          projectName: issue.project_name || '',
         });
       }
     }
@@ -177,13 +230,14 @@ async function extractTransitions(jiraIds: string[], nameMap: Map<string, string
 }
 
 /* ── Resource summary for richer context ── */
-function buildResourceSummary(transitions: any[]): string {
-  const byActor: Record<string, { total: number; closed: number; inReview: number; hubs: Set<string>; tickets: string[] }> = {};
+function buildResourceSummary(transitions: any[], roleMap: Map<string, string>, roleGroupMap: Map<string, string>): string {
+  const byActor: Record<string, { total: number; closed: number; inReview: number; hubs: Set<string>; tickets: string[]; projects: Set<string>; role: string; roleGroup: string }> = {};
   transitions.forEach(t => {
-    if (!byActor[t.actor]) byActor[t.actor] = { total: 0, closed: 0, inReview: 0, hubs: new Set(), tickets: [] };
+    if (!byActor[t.actor]) byActor[t.actor] = { total: 0, closed: 0, inReview: 0, hubs: new Set(), tickets: [], projects: new Set(), role: roleMap.get(t.actor) || 'Team Member', roleGroup: roleGroupMap.get(t.actor) || 'developer' };
     const e = byActor[t.actor];
     e.total++;
     e.hubs.add(t.hub);
+    if (t.projectName) e.projects.add(t.projectName);
     if (e.tickets.length < 5) e.tickets.push(t.key);
     const toLower = (t.to || '').toLowerCase();
     if (['done', 'closed', 'resolved'].includes(toLower)) e.closed++;
@@ -192,7 +246,7 @@ function buildResourceSummary(transitions: any[]): string {
 
   return Object.entries(byActor)
     .sort((a, b) => b[1].total - a[1].total)
-    .map(([name, d]) => `- ${name}: ${d.total} transitions (${d.closed} closed, ${d.inReview} in review) across ${[...d.hubs].join(', ')}. Tickets: ${d.tickets.join(', ')}`)
+    .map(([name, d]) => `- ${name} [${d.role}] (${d.roleGroup}): ${d.total} transitions (${d.closed} closed, ${d.inReview} in review) across ${[...d.hubs].join(', ')}. Projects: ${[...d.projects].join(', ')}. Tickets: ${d.tickets.join(', ')}`)
     .join('\n');
 }
 
@@ -212,7 +266,7 @@ export function useDeptIntelligenceAI(department: string | null) {
   const weekRangeStr = formatWeekRange(weekStartDate);
   const weekStartStr = fmtYMD(weekStartDate);
 
-  // Cache query — loads all 3 tabs from single cache entry
+  // Cache query — loads all tabs from single cache entry
   const cacheQ = useQuery({
     queryKey: ['di-v4-cache', department, weekOffset],
     queryFn: async (): Promise<DeptIntelData> => {
@@ -227,9 +281,14 @@ export function useDeptIntelligenceAI(department: string | null) {
 
       if (cached?.data) {
         const d = cached.data as any;
-        return { digest: d.digest || [], summary: d.summary || null, recommendations: d.recommendations || [] };
+        return {
+          digest: d.digest || [],
+          summary: d.summary || null,
+          summaryV5: d.summaryV5 || null,
+          recommendations: d.recommendations || [],
+        };
       }
-      return { digest: [], summary: null, recommendations: [] };
+      return { digest: [], summary: null, summaryV5: null, recommendations: [] };
     },
     enabled: !!department,
     staleTime: 60_000,
@@ -287,15 +346,23 @@ export function useDeptIntelligenceAI(department: string | null) {
     staleTime: 30_000,
   });
 
-  // Generate — single AI call for all 3 tabs
+  // Generate — single AI call for all tabs
   const generateAll = useCallback(async () => {
     if (!department) return;
     setIsGenerating(true);
     try {
-      const { jiraIds, nameMap } = await getDeptResources(department);
+      const { jiraIds, nameMap, roleMap, roleGroupMap, resources } = await getDeptResources(department);
       const transitions = await extractTransitions(jiraIds, nameMap, weekStartDate, weekEndDate);
       const stats = await computeStats(jiraIds, weekStartDate, weekEndDate);
-      const resourceSummary = buildResourceSummary(transitions);
+      const resourceSummary = buildResourceSummary(transitions, roleMap, roleGroupMap);
+
+      // Build role breakdown for the AI
+      const roleBreakdown: Record<string, string[]> = {};
+      resources.forEach((r: any) => {
+        const rg = classifyRole(r.role_name || '');
+        if (!roleBreakdown[rg]) roleBreakdown[rg] = [];
+        roleBreakdown[rg].push(`${r.name} (${r.role_name || 'Team Member'})`);
+      });
 
       const { data, error } = await supabase.functions.invoke('r360-dept-intelligence-v4', {
         body: {
@@ -307,6 +374,7 @@ export function useDeptIntelligenceAI(department: string | null) {
           transitions,
           stats,
           resourceSummary,
+          roleBreakdown,
         },
       });
 
@@ -316,7 +384,7 @@ export function useDeptIntelligenceAI(department: string | null) {
       qc.invalidateQueries({ queryKey: ['di-v4-stats', department, weekOffset] });
       qc.invalidateQueries({ queryKey: ['di-v4-age', department, weekOffset] });
     } catch (e) {
-      console.error('Failed to generate dept intelligence v4:', e);
+      console.error('Failed to generate dept intelligence v5:', e);
     } finally {
       setIsGenerating(false);
     }
@@ -325,15 +393,16 @@ export function useDeptIntelligenceAI(department: string | null) {
   const prevWeek = useCallback(() => setWeekOffset(o => o + 1), []);
   const nextWeek = useCallback(() => setWeekOffset(o => Math.max(0, o - 1)), []);
 
-  const d = cacheQ.data || { digest: [], summary: null, recommendations: [] };
+  const d = cacheQ.data || { digest: [], summary: null, summaryV5: null, recommendations: [] };
 
   return {
     digest: d.digest,
     summary: d.summary,
+    summaryV5: d.summaryV5,
     recommendations: d.recommendations,
     stats: statsQ.data || { transitions: 0, closed: 0, inReview: 0, activeResources: 0 },
     isGenerating,
-    hasData: d.digest.length > 0,
+    hasData: d.digest.length > 0 || !!d.summaryV5,
     weekLabel: `W${weekNum}`,
     weekRange: weekRangeStr,
     weekStart: weekStartDate,

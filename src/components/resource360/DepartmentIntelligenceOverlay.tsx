@@ -1,10 +1,10 @@
 /**
- * Department Intelligence Panel V4 — 3-Tab STEERCOM Briefing
- * Pixel-perfect match to dept-intelligence-steercom-v4.html
+ * Department Intelligence Panel V5 — Role-Based Executive Briefing
+ * 3-Tab: Executive Summary (default) → Weekly Digest → Recommendations
  */
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Sparkles, X, FileText, RefreshCw } from 'lucide-react';
-import { useDeptIntelligenceAI, type DigestEvent, type ExecSummary, type Recommendation } from '@/hooks/useDeptIntelligenceAI';
+import { ChevronLeft, ChevronRight, Sparkles, X, FileText, RefreshCw, Trophy, Code, CheckSquare, BookOpen, PenTool, Users, Server } from 'lucide-react';
+import { useDeptIntelligenceAI, type DigestEvent, type ExecSummaryV5, type Recommendation, type RoleContribution, type ProjectActivity } from '@/hooks/useDeptIntelligenceAI';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import '@/styles/dept-intelligence.css';
 
@@ -17,6 +17,16 @@ interface Props {
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
 const DAY_SHORT = ['SUN', 'MON', 'TUE', 'WED', 'THU'];
 const DAY_CSS = ['day-sun', 'day-mon', 'day-tue', 'day-wed', 'day-thu'];
+
+/* ═══ Role icon map ═══ */
+const ROLE_ICONS: Record<string, React.ReactNode> = {
+  'role-dev': <Code size={16} />,
+  'role-qa': <CheckSquare size={16} />,
+  'role-po': <BookOpen size={16} />,
+  'role-ux': <PenTool size={16} />,
+  'role-mgmt': <Users size={16} />,
+  'role-devops': <Server size={16} />,
+};
 
 /* ═══ Skeleton ═══ */
 const DigestSkeleton = () => (
@@ -32,9 +42,106 @@ const DigestSkeleton = () => (
   </div>
 );
 
-/* ═══ Tab 1: Weekly Digest ═══ */
+/* ═══ Tab 1: Executive Summary V5 (Role-Based) ═══ */
+function ExecutiveSummaryV5({ data }: { data: ExecSummaryV5 | null }) {
+  if (!data) return (
+    <div className="di-empty">
+      <Sparkles size={24} />
+      <div className="di-empty-t">No executive summary yet</div>
+      <div className="di-empty-s">Click <strong>✦ Refresh AI</strong> to generate.</div>
+    </div>
+  );
+
+  const tc = data.topContributor;
+
+  return (
+    <div className="di-exec">
+      {/* Top Contributor Spotlight */}
+      {tc && (
+        <div className="di-spotlight">
+          <div className="di-trophy">
+            <Trophy size={24} color="white" />
+          </div>
+          <div className="di-spot-info">
+            <div className="di-spot-pre">W{tc.consecutiveWeeks > 1 ? '' : ''} TOP CONTRIBUTOR</div>
+            <div className="di-spot-name">{tc.name}</div>
+            <div className="di-spot-role">{tc.role} · {tc.projects.join(', ')}</div>
+            <div className="di-spot-stats">
+              {tc.kpis.map((kpi, i) => (
+                <div key={i} className="di-spot-stat">
+                  <div className="di-spot-stat-v">{kpi.value}</div>
+                  <div className="di-spot-stat-l">{kpi.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          {tc.consecutiveWeeks > 1 && (
+            <span className="di-spot-streak">🏆 {tc.consecutiveWeeks}{tc.consecutiveWeeks === 2 ? 'nd' : tc.consecutiveWeeks === 3 ? 'rd' : 'th'} consecutive week</span>
+          )}
+        </div>
+      )}
+
+      {/* Contribution by Role */}
+      {data.roleContributions.length > 0 && (
+        <div className="di-exec-section">
+          <div className="di-exec-label">CONTRIBUTION BY ROLE</div>
+          {data.roleContributions.map((rc, i) => (
+            <div className={`di-role-card ${rc.roleCss}`} key={i}>
+              <div className="di-role-hdr">
+                <div className="di-role-icon">{ROLE_ICONS[rc.roleCss] || <Code size={16} />}</div>
+                <span className="di-role-title">{rc.role}</span>
+                <span className="di-role-count">{rc.resourceCount} resources · {rc.projects.join(', ')}</span>
+              </div>
+              <div className="di-role-kpis">
+                {rc.kpis.map((kpi, ki) => (
+                  <div className="di-role-kpi" key={ki}>
+                    <span className="di-role-kpi-v">{kpi.value}</span>
+                    <span className="di-role-kpi-l">{kpi.label}</span>
+                  </div>
+                ))}
+              </div>
+              {rc.resources.map((res, ri) => (
+                <div className="di-res-row" key={ri}>
+                  <span className="di-res-name">{res.name}</span>
+                  <span className="di-res-desc" dangerouslySetInnerHTML={{ __html: res.desc }} />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Project Activity */}
+      {data.projectActivity.length > 0 && (
+        <div className="di-exec-section">
+          <div className="di-exec-label">PROJECT ACTIVITY</div>
+          {data.projectActivity.map((prj, i) => (
+            <div className="di-prj-row" key={i}>
+              <span className="di-prj-name">{prj.name}</span>
+              <span className="di-prj-desc">{prj.desc}</span>
+              <span className={`di-prj-badge prj-${prj.status === 'risk' ? 'risk' : prj.status === 'stalled' ? 'stalled' : 'active'}`}>
+                {prj.status === 'risk' ? 'AT RISK' : prj.status === 'stalled' ? 'STALLED' : 'ACTIVE'}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Requires Attention */}
+      {data.requiresAttention.length > 0 && (
+        <div className="di-exec-section">
+          <div className="di-exec-label">REQUIRES ATTENTION</div>
+          {data.requiresAttention.map((item, i) => (
+            <div key={i} className="di-attn-item" dangerouslySetInnerHTML={{ __html: item }} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ═══ Tab 2: Weekly Digest ═══ */
 function WeeklyDigest({ events, weekStart }: { events: DigestEvent[]; weekStart: Date }) {
-  // Group by dayIndex (0=SUN..4=THU)
   const days = [0, 1, 2, 3, 4].map(dayIdx => {
     const dayDate = new Date(weekStart);
     dayDate.setDate(dayDate.getDate() + dayIdx);
@@ -85,58 +192,6 @@ function WeeklyDigest({ events, weekStart }: { events: DigestEvent[]; weekStart:
   );
 }
 
-/* ═══ Tab 2: Executive Summary ═══ */
-function ExecutiveSummary({ data }: { data: ExecSummary | null }) {
-  if (!data) return (
-    <div className="di-empty">
-      <Sparkles size={24} />
-      <div className="di-empty-t">No executive summary yet</div>
-      <div className="di-empty-s">Click <strong>✦ Refresh AI</strong> to generate.</div>
-    </div>
-  );
-
-  return (
-    <div className="di-exec">
-      <div className="di-exec-hero">
-        <span className="di-exec-pct">{data.closureRate.toFixed(1)}%</span>
-        <span className="di-exec-pct-sub">
-          closure rate — {data.closureNumerator} of {data.closureDenominator} transitions · {data.topContributor} top contributor
-        </span>
-      </div>
-
-      <div className="di-exec-section">
-        <div className="di-exec-label">WHAT WENT WELL</div>
-        {data.wentWell.map((item, i) => (
-          <div key={i} className="di-exec-item" dangerouslySetInnerHTML={{ __html: item }} />
-        ))}
-      </div>
-
-      <div className="di-exec-section">
-        <div className="di-exec-label">WHAT REQUIRES ATTENTION</div>
-        {data.requiresAttention.map((item, i) => (
-          <div key={i} className="di-exec-item di-exec-risk" dangerouslySetInnerHTML={{ __html: item }} />
-        ))}
-      </div>
-
-      <div className="di-exec-section">
-        <div className="di-exec-label">HUB STATUS</div>
-        {data.hubStatus.map((h, i) => (
-          <div key={i} className="di-hub-row">
-            <span className="di-hub-name">
-              <span className={`di-rag-dot rag-${h.rag}`} />
-              {h.hub}
-            </span>
-            <span className="di-hub-stat">{h.stat}</span>
-            <span className={`di-hub-rag rag-${h.rag}-bg`}>
-              {h.rag === 'g' ? 'GREEN' : h.rag === 'a' ? 'AMBER' : 'RED'}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 /* ═══ Tab 3: Recommendations ═══ */
 function Recommendations({ items }: { items: Recommendation[] }) {
   if (items.length === 0) return (
@@ -154,6 +209,14 @@ function Recommendations({ items }: { items: Recommendation[] }) {
           <span className="di-rec-num">{rec.number}</span>
           <div className="di-rec-body">
             <div className="di-rec-title">{rec.title}</div>
+            {(rec.roleTag || rec.project) && (
+              <div className="di-rec-meta">
+                {rec.roleTag && (
+                  <span className="di-rec-role-tag" style={rec.roleTagCss ? parseCssStyle(rec.roleTagCss) : undefined}>{rec.roleTag}</span>
+                )}
+                {rec.project && <span>{rec.project}</span>}
+              </div>
+            )}
             <div className="di-rec-desc" dangerouslySetInnerHTML={{ __html: rec.description }} />
           </div>
           <span className={`di-rec-pri pri-${rec.priority}`}>
@@ -165,16 +228,30 @@ function Recommendations({ items }: { items: Recommendation[] }) {
   );
 }
 
+/** Parse inline CSS string like "background:#EDE9FE;color:#5B21B6" to React style */
+function parseCssStyle(css: string): React.CSSProperties {
+  const style: Record<string, string> = {};
+  css.split(';').forEach(pair => {
+    const [key, val] = pair.split(':').map(s => s.trim());
+    if (key && val) {
+      const camelKey = key.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+      style[camelKey] = val;
+    }
+  });
+  return style;
+}
+
 /* ═══ Main Component ═══ */
 export default function DepartmentIntelligenceOverlay({ departmentName, onClose }: Props) {
   const {
-    digest, summary, recommendations,
+    digest, summaryV5, recommendations,
     isGenerating, hasData,
     weekLabel, weekRange, weekStart, weekOffset, dataAge, meta,
     prevWeek, nextWeek, generateAll,
   } = useDeptIntelligenceAI(departmentName);
 
-  const [activeTab, setActiveTab] = useState<'digest' | 'summary' | 'recs'>('digest');
+  // Tab 1 = Executive Summary (default), Tab 2 = Weekly Digest, Tab 3 = Recommendations
+  const [activeTab, setActiveTab] = useState<'summary' | 'digest' | 'recs'>('summary');
 
   /* Auto-generate on first open if no data */
   const [autoTriggered, setAutoTriggered] = useState(false);
@@ -224,7 +301,7 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
         <div className="di-header">
           <div className="di-h-top">
             <div className="di-h-title">
-              <span className="di-h-t">This Week's Significant Events</span>
+              <span className="di-h-t">Department Intelligence</span>
               <span className="di-ai"><Sparkles size={10} /> AI</span>
             </div>
             <div className="di-wk-sel">
@@ -235,13 +312,13 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
             </div>
           </div>
 
-          {/* 3 TABS */}
+          {/* 3 TABS — Executive Summary first */}
           <div className="di-tabs">
-            <button className={`di-tab ${activeTab === 'digest' ? 'active' : ''}`} onClick={() => setActiveTab('digest')}>
-              Weekly Digest{digest.length > 0 && <span className="di-tab-count">{digest.length}</span>}
-            </button>
             <button className={`di-tab ${activeTab === 'summary' ? 'active' : ''}`} onClick={() => setActiveTab('summary')}>
               Executive Summary
+            </button>
+            <button className={`di-tab ${activeTab === 'digest' ? 'active' : ''}`} onClick={() => setActiveTab('digest')}>
+              Weekly Digest{digest.length > 0 && <span className="di-tab-count">{digest.length}</span>}
             </button>
             <button className={`di-tab ${activeTab === 'recs' ? 'active' : ''}`} onClick={() => setActiveTab('recs')}>
               Recommendations{recommendations.length > 0 && <span className="di-tab-count">{recommendations.length}</span>}
@@ -255,15 +332,15 @@ export default function DepartmentIntelligenceOverlay({ departmentName, onClose 
             <DigestSkeleton />
           ) : hasData ? (
             <>
+              {activeTab === 'summary' && <ExecutiveSummaryV5 data={summaryV5} />}
               {activeTab === 'digest' && <WeeklyDigest events={digest} weekStart={weekStart} />}
-              {activeTab === 'summary' && <ExecutiveSummary data={summary} />}
               {activeTab === 'recs' && <Recommendations items={recommendations} />}
             </>
           ) : (
             <div className="di-empty">
               <Sparkles size={24} />
               <div className="di-empty-t">No AI analysis yet</div>
-              <div className="di-empty-s">Click <strong>✦ Refresh AI</strong> to generate the STEERCOM briefing for {weekLabel}.</div>
+              <div className="di-empty-s">Click <strong>✦ Refresh AI</strong> to generate the briefing for {weekLabel}.</div>
               {(meta?.resourceCount ?? 0) > 0 && (
                 <div className="di-empty-h">{meta?.resourceCount} resources detected — ready for analysis.</div>
               )}
