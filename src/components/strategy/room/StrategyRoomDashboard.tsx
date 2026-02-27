@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 interface StrategyRoomDashboardProps {
   onOpenBrief: () => void;
-  onDownloadBrief: () => void;
+  onDownloadBrief?: () => void;
 }
 
 const TOKENS = `
@@ -114,7 +114,6 @@ export default function StrategyRoomDashboard({ onOpenBrief, onDownloadBrief }: 
           </div>
         </div>
         <div style={F(8)}>
-          <Btn onClick={onDownloadBrief}><Ico d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />Download Brief</Btn>
           <Btn primary onClick={onOpenBrief}><Ico d="M13 2L3 14h9l-1 8 10-12h-9l1-8" />AI Intelligence</Btn>
         </div>
       </header>
