@@ -11,7 +11,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { InitiativeTable } from '@/components/producthub/listing/InitiativeTable';
 import { Pagination } from '@/components/producthub/listing/Pagination';
-import { DetailPanel } from '@/components/initiatives/DetailPanel';
+import { InitiativeDetailPanel } from '@/components/producthub/timeline/InitiativeDetailPanel';
+import type { TimelineInitiative } from '@/types/producthub/initiative';
 import { ContextMenu } from '@/components/initiatives/ContextMenu';
 import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateInitiativeDrawer';
 import { PromoteToRoadmapDialog } from '@/components/producthub/shared/PromoteToRoadmapDialog';
@@ -25,6 +26,24 @@ import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { getPriorityLevel } from '@/types/initiative';
 import { Search, X, Plus, Download } from 'lucide-react';
 import '@/styles/product-backlog.css';
+
+function toTimelineInitiative(i: Initiative): TimelineInitiative {
+  return {
+    id: i.id, initiative_key: i.initiative_key, title: i.title, description: i.description,
+    status: i.status as any, assignee_id: i.assignee_id, assignee_name: i.assignee_name,
+    business_owner_id: i.business_owner_id, reporter_id: i.reporter_id, reporter_name: i.reporter_name,
+    department_id: i.department_id, department_name: i.department_name, department_code: null,
+    target_quarter: i.target_quarter, business_ask_date: i.business_ask_date, kickoff_date: i.kickoff_date,
+    target_complete: i.target_complete, progress: i.progress, sort_order: i.sort_order,
+    risk_count: i.risk_count, is_archived: i.is_archived, score_strategic_alignment: i.score_strategic_alignment,
+    score_business_impact: i.score_business_impact, score_time_urgency: i.score_time_urgency,
+    score_resource_feasibility: i.score_resource_feasibility, computed_score: i.computed_score,
+    created_at: i.created_at, updated_at: i.updated_at,
+    initiative_type_key: i.initiative_type_key ?? null, initiative_type_label: i.initiative_type_label ?? null,
+    initiative_type_color_hex: i.initiative_type_color_hex ?? null, health_status: i.health_status ?? null,
+    business_value: i.business_value ?? null, on_roadmap: i.on_roadmap ?? false,
+  };
+}
 
 const TERMINAL_STATUSES: InitiativeStatus[] = ['done', 'cancelled'];
 const COLUMN_STORAGE_KEY = 'ph-backlog-columns';
@@ -538,13 +557,13 @@ export default function InitiativeListingPage() {
         onPageSizeChange={setPageSize}
       />
 
-      <DetailPanel
-        initiative={detailInitiative}
-        isOpen={detailOpen}
-        onClose={() => setDetailOpen(false)}
-        onStatusChange={handleStatusChange}
-        onScoreSave={handleScoreSave}
-      />
+      {detailOpen && detailInitiative && (
+        <InitiativeDetailPanel
+          initiative={toTimelineInitiative(detailInitiative)}
+          initiatives={filtered.map(toTimelineInitiative)}
+          onClose={() => setDetailOpen(false)}
+        />
+      )}
 
       <ContextMenu
         position={contextMenu?.pos ?? null}
