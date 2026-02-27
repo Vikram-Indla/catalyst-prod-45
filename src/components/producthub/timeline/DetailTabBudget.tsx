@@ -7,6 +7,7 @@ import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logInitiativeAudit } from '@/lib/initiativeAudit';
 
 interface DetailTabBudgetProps {
   initiativeId: string;
@@ -114,6 +115,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
 
   const saveTotalBudget = useCallback(async () => {
     await (supabase as any).from('ph_initiatives').update({ budget_allocated: totalBudget, updated_at: new Date().toISOString() }).eq('id', initiativeId);
+    logInitiativeAudit({ initiative_id: initiativeId, action: 'updated', entity_type: 'budget', field_name: 'budget_allocated', new_value: `SAR ${totalBudget.toLocaleString('en-US')}` });
     toast.success('Budget saved', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
   }, [totalBudget, initiativeId]);
 
@@ -147,11 +149,13 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
     if (editingItem) {
       const { error } = await (supabase as any).from('ph_initiative_budget_items').update(payload).eq('id', editingItem.id);
       if (error) { toast.error('Failed to update'); return; }
+      logInitiativeAudit({ initiative_id: initiativeId, action: 'updated', entity_type: 'budget_item', new_value: form.description });
       toast.success('Item updated', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
     } else {
       payload.created_by = (await supabase.auth.getUser()).data.user?.id;
       const { error } = await (supabase as any).from('ph_initiative_budget_items').insert(payload);
       if (error) { toast.error('Failed to add'); return; }
+      logInitiativeAudit({ initiative_id: initiativeId, action: 'created', entity_type: 'budget_item', new_value: form.description });
       toast.success('Item added', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
     }
     setShowModal(false);
@@ -160,6 +164,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
 
   const handleDelete = async (id: string) => {
     await (supabase as any).from('ph_initiative_budget_items').delete().eq('id', id);
+    logInitiativeAudit({ initiative_id: initiativeId, action: 'deleted', entity_type: 'budget_item' });
     toast.success('Item deleted', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
     refetch();
   };

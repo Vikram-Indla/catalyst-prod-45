@@ -8,6 +8,7 @@ import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 import { toast } from 'sonner';
+import { logInitiativeAudit } from '@/lib/initiativeAudit';
 
 interface DetailTabScoreProps {
   initiative: TimelineInitiative;
@@ -135,7 +136,9 @@ export const DetailTabScore: React.FC<DetailTabScoreProps> = ({ initiative }) =>
         }, { onConflict: 'initiative_id' });
       if (error) throw error;
       toast.success('Score saved', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
+      logInitiativeAudit({ initiative_id: initiative.id, action: 'updated', entity_type: 'score', new_value: String(composite) });
       queryClient.invalidateQueries({ queryKey: ['idp-scores', initiative.id] });
+      queryClient.invalidateQueries({ queryKey: ['idp-activity', initiative.id] });
       queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
     } catch {
       toast.error('Failed to save score');
