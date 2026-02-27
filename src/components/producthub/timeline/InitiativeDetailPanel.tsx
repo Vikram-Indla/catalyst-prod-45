@@ -13,9 +13,9 @@ import { DetailTabDetails } from './DetailTabDetails';
 import { DetailTabScore } from './DetailTabScore';
 import { DetailTabBudget } from './DetailTabBudget';
 import { DetailTabRisks } from './DetailTabRisks';
-import { InitiativeMilestonesTab } from '@/components/producthub/InitiativeMilestonesTab';
-import { InitiativeLinksTab } from '@/components/producthub/InitiativeLinksTab';
-import { InitiativeAuditTab } from '@/components/initiatives/tabs/InitiativeAuditTab';
+import { DetailTabMilestones } from './DetailTabMilestones';
+import { DetailTabAttachments } from './DetailTabAttachments';
+import { DetailTabActivity } from './DetailTabActivity';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -317,9 +317,9 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
           {activeTab === 'score' && <DetailTabScore initiative={initiative} />}
           {activeTab === 'budget' && <DetailTabBudget initiativeId={initiative.id} />}
           {activeTab === 'risks' && <DetailTabRisks initiativeId={initiative.id} />}
-          {activeTab === 'milestones' && <InitiativeMilestonesTab initiativeId={initiative.id} />}
-          {activeTab === 'attachments' && <InitiativeLinksTab initiativeId={initiative.id} />}
-          {activeTab === 'activity' && <InitiativeAuditTab initiativeId={initiative.id} />}
+          {activeTab === 'milestones' && <DetailTabMilestones initiativeId={initiative.id} />}
+          {activeTab === 'attachments' && <DetailTabAttachments initiativeId={initiative.id} />}
+          {activeTab === 'activity' && <DetailTabActivity initiativeId={initiative.id} />}
         </div>
       </div>
 

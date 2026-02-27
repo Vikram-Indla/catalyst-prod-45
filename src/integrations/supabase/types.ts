@@ -20049,6 +20049,7 @@ export type Database = {
           file_size: number
           id: string
           initiative_id: string
+          is_pinned: boolean | null
           mime_type: string
           uploaded_by: string | null
         }
@@ -20061,6 +20062,7 @@ export type Database = {
           file_size: number
           id?: string
           initiative_id: string
+          is_pinned?: boolean | null
           mime_type: string
           uploaded_by?: string | null
         }
@@ -20073,6 +20075,7 @@ export type Database = {
           file_size?: number
           id?: string
           initiative_id?: string
+          is_pinned?: boolean | null
           mime_type?: string
           uploaded_by?: string | null
         }
