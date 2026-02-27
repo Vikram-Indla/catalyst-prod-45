@@ -485,28 +485,6 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
             className="idp-date-input"
           />
         </Cell>
-        <Cell label="Progress" odd last>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <input
-              type="range" min={0} max={100} step={5}
-              value={initiative.progress}
-              onChange={e => autoSave('progress', +e.target.value, 'Progress')}
-              className="idp-range-input"
-            />
-            <span className="idp-progress-value">{initiative.progress}%</span>
-          </div>
-        </Cell>
-        <Cell label="" last>
-          <div className="idp-progress-bar">
-            <div
-              className="idp-progress-fill"
-              style={{
-                width: `${initiative.progress}%`,
-                background: initiative.progress >= 80 ? 'var(--idp-success)' : 'var(--idp-primary)',
-              }}
-            />
-          </div>
-        </Cell>
       </div>
 
       {/* Description */}
