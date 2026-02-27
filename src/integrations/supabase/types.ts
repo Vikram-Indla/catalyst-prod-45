@@ -55593,6 +55593,21 @@ export type Database = {
           },
         ]
       }
+      mv_dept_intelligence_stats: {
+        Row: {
+          closure_rate: number | null
+          department_name: string | null
+          done_count: number | null
+          in_progress_count: number | null
+          jira_account_ids: string[] | null
+          refreshed_at: string | null
+          resource_count: number | null
+          resource_ids: string[] | null
+          todo_count: number | null
+          total_items: number | null
+        }
+        Relationships: []
+      }
       my_accessible_workstreams: {
         Row: {
           color: string | null
@@ -61525,6 +61540,7 @@ export type Database = {
         }
         Returns: Json
       }
+      refresh_dept_intelligence_stats: { Args: never; Returns: undefined }
       refresh_dynamic_test_set: { Args: { p_set_id: string }; Returns: Json }
       refresh_home_user_summary: {
         Args: { p_user_id: string }

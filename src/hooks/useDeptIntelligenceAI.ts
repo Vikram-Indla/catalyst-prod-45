@@ -108,28 +108,41 @@ export function classifyRole(jobRole: string): RoleGroup {
   return 'developer';
 }
 
-/* ── Fetch department resources ── */
+/* ── Fetch department resources (parallelized) ── */
+let _deptResourcesCache: Map<string, { data: any; ts: number }> = new Map();
+const DEPT_CACHE_TTL = 5 * 60 * 1000; // 5 min in-memory cache
+
 async function getDeptResources(department: string) {
-  const { data: resources } = await supabase
-    .from('resource_inventory')
-    .select('id, name, role_name, jira_account_id, department_name, department_id')
-    .eq('is_active', true);
+  // In-memory cache to avoid repeated DB calls within same session
+  const cached = _deptResourcesCache.get(department);
+  if (cached && Date.now() - cached.ts < DEPT_CACHE_TTL) return cached.data;
 
-  const { data: depts } = await supabase.from('capacity_departments').select('id, name');
-  const deptIdMap = new Map((depts || []).map((d: any) => [d.id, d.name]));
+  // Parallel fetch — both queries at once
+  const [resourcesRes, deptsRes] = await Promise.all([
+    supabase
+      .from('resource_inventory')
+      .select('id, name, role_name, jira_account_id, department_name, department_id')
+      .eq('is_active', true),
+    supabase.from('capacity_departments').select('id, name'),
+  ]);
 
-  const filtered = (resources || []).filter((r: any) => {
+  const deptIdMap = new Map((deptsRes.data || []).map((d: any) => [d.id, d.name]));
+
+  const filtered = (resourcesRes.data || []).filter((r: any) => {
     const resolved = r.department_name || deptIdMap.get(r.department_id) || null;
     return resolved === department;
   });
 
-  return {
+  const result = {
     resources: filtered as any[],
     jiraIds: filtered.map((r: any) => r.jira_account_id).filter(Boolean),
     nameMap: new Map(filtered.map((r: any) => [r.jira_account_id, r.name])),
     roleMap: new Map(filtered.map((r: any) => [r.name, r.role_name || 'Team Member'])),
     roleGroupMap: new Map(filtered.map((r: any) => [r.name, classifyRole(r.role_name || '')])),
   };
+
+  _deptResourcesCache.set(department, { data: result, ts: Date.now() });
+  return result;
 }
 
 /* ── Stats from DB ── */
@@ -267,6 +280,7 @@ export function useDeptIntelligenceAI(department: string | null) {
   const weekStartStr = fmtYMD(weekStartDate);
 
   // Cache query — loads all tabs from single cache entry
+  // GUARDRAIL: Aggressive caching to prevent re-fetches on mount/focus
   const cacheQ = useQuery({
     queryKey: ['di-v4-cache', department, weekOffset],
     queryFn: async (): Promise<DeptIntelData> => {
@@ -291,10 +305,14 @@ export function useDeptIntelligenceAI(department: string | null) {
       return { digest: [], summary: null, summaryV5: null, recommendations: [] };
     },
     enabled: !!department,
-    staleTime: 60_000,
+    staleTime: 5 * 60 * 1000,        // 5 minutes fresh
+    gcTime: 30 * 60 * 1000,           // 30 minutes in GC
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
-  // Stats (pure DB)
+  // Stats (pure DB) — aggressive caching
   const statsQ = useQuery({
     queryKey: ['di-v4-stats', department, weekOffset],
     queryFn: async () => {
@@ -302,13 +320,29 @@ export function useDeptIntelligenceAI(department: string | null) {
       return computeStats(jiraIds, weekStartDate, weekEndDate);
     },
     enabled: !!department,
-    staleTime: 60_000,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
-  // Meta
+  // Meta — use materialized view for instant counts
   const metaQ = useQuery({
     queryKey: ['di-v4-meta', department],
     queryFn: async () => {
+      // Try materialized view first (instant, <10ms)
+      const { data: mvData } = await supabase
+        .from('mv_dept_intelligence_stats' as any)
+        .select('resource_count, total_items')
+        .eq('department_name', department!)
+        .maybeSingle();
+
+      if (mvData) {
+        return { resourceCount: (mvData as any).resource_count || 0, itemCount: (mvData as any).total_items || 0 };
+      }
+
+      // Fallback to direct query
       const { resources, jiraIds } = await getDeptResources(department!);
       const { count } = await supabase
         .from('ph_issues')
@@ -317,10 +351,14 @@ export function useDeptIntelligenceAI(department: string | null) {
       return { resourceCount: resources.length, itemCount: count || 0 };
     },
     enabled: !!department,
-    staleTime: 120_000,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
-  // Cache age
+  // Cache age — derive from cacheQ instead of separate query
   const ageQ = useQuery({
     queryKey: ['di-v4-age', department, weekOffset],
     queryFn: async (): Promise<string | null> => {
@@ -343,7 +381,11 @@ export function useDeptIntelligenceAI(department: string | null) {
       return `${Math.floor(hrs / 24)}d ago`;
     },
     enabled: !!department,
-    staleTime: 30_000,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   // Generate — single AI call for all tabs
@@ -352,8 +394,11 @@ export function useDeptIntelligenceAI(department: string | null) {
     setIsGenerating(true);
     try {
       const { jiraIds, nameMap, roleMap, roleGroupMap, resources } = await getDeptResources(department);
-      const transitions = await extractTransitions(jiraIds, nameMap, weekStartDate, weekEndDate);
-      const stats = await computeStats(jiraIds, weekStartDate, weekEndDate);
+      // Parallel fetch — transitions and stats simultaneously
+      const [transitions, stats] = await Promise.all([
+        extractTransitions(jiraIds, nameMap, weekStartDate, weekEndDate),
+        computeStats(jiraIds, weekStartDate, weekEndDate),
+      ]);
       const resourceSummary = buildResourceSummary(transitions, roleMap, roleGroupMap);
 
       // Build role breakdown for the AI
