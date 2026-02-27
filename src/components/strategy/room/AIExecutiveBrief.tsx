@@ -126,9 +126,10 @@ const GRADING_DATA = [
 interface Props {
   open: boolean;
   onClose: () => void;
+  onDownload?: () => void;
 }
 
-export function AIExecutiveBrief({ open, onClose }: Props) {
+export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
   const { isAdmin, isSuperAdmin } = useUserRole();
   const isAdminUser = isAdmin || isSuperAdmin;
 
@@ -180,7 +181,7 @@ export function AIExecutiveBrief({ open, onClose }: Props) {
     });
   };
 
-  const handleDownload = useCallback(() => { window.print(); }, []);
+  const handleDownload = useCallback(() => { (onDownload ?? window.print)(); }, [onDownload]);
 
   const publishedDateStr = activeBriefRecord?.published_at
     ? new Date(activeBriefRecord.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })
