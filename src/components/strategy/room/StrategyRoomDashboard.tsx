@@ -136,7 +136,7 @@ export default function StrategyRoomDashboard({ onOpenBrief, onDownloadBrief }: 
           <span style={P('var(--srd-red-bg)', 'var(--srd-red-t)')}>2 decisions</span>
           <span style={P('var(--srd-ai-bg)', 'var(--srd-ai-d)')}>3 data issues</span>
         </div>
-        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--srd-blue)', whiteSpace: 'nowrap' }}>Open Full Brief →</span>
+        
       </div>
 
       {/* THEME HEALTH STRIP */}
