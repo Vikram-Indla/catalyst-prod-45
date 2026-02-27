@@ -1,35 +1,73 @@
+/**
+ * Initiative Detail Panel — V3.1 MARAM + Catalyst V11 Carbon Precision
+ * 62% width slide-out drawer with 7 tabs
+ * Uses idp- namespaced CSS from initiative-detail-panel.css
+ */
+
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Pencil, Paperclip, Copy, Link2, Star, Trash2, DollarSign, AlertTriangle, Flag, Link as LinkIcon, ClipboardList, ChevronLeft } from 'lucide-react';
-import { format } from 'date-fns';
+import { ChevronLeft } from 'lucide-react';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
-import { STATUS_CONFIG } from '@/types/producthub/initiative';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
 import { DetailTabDetails } from './DetailTabDetails';
 import { DetailTabScore } from './DetailTabScore';
-import { DetailTabPlaceholder } from './DetailTabPlaceholder';
 import { InitiativeMilestonesTab } from '@/components/producthub/InitiativeMilestonesTab';
 import { InitiativeLinksTab } from '@/components/producthub/InitiativeLinksTab';
 import { InitiativeRisksTab } from '@/components/initiatives/tabs/InitiativeRisksTab';
 import { InitiativeBudgetTab } from '@/components/initiatives/tabs/InitiativeBudgetTab';
 import { InitiativeAuditTab } from '@/components/initiatives/tabs/InitiativeAuditTab';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { getAvatarColor, getInitials } from '@/types/initiative';
+import '@/styles/initiative-detail-panel.css';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
+/* ── Status color map (MARAM V3.1 Dual Token) ── */
+const STATUS_PILL_COLORS: Record<string, { text: string; bg: string; bdr: string }> = {
+  new_demand:    { text: '#2563EB', bg: '#EFF6FF', bdr: 'rgba(37,99,235,0.2)' },
+  under_review:  { text: '#9A5402', bg: '#FFFBEB', bdr: 'rgba(217,119,6,0.2)' },
+  approved:      { text: '#0D7331', bg: '#F0FDF4', bdr: 'rgba(22,163,74,0.2)' },
+  in_progress:   { text: '#08736B', bg: '#F0FDFA', bdr: 'rgba(13,148,136,0.2)' },
+  on_hold:       { text: '#6F6F78', bg: '#F1F5F9', bdr: 'rgba(113,113,122,0.2)' },
+  delivered:     { text: '#7C3AED', bg: '#F5F3FF', bdr: 'rgba(124,58,237,0.2)' },
+  closed:        { text: '#0D7331', bg: '#F0FDF4', bdr: 'rgba(22,163,74,0.2)' },
+  cancelled:     { text: '#D92525', bg: '#FEF2F2', bdr: 'rgba(220,38,38,0.2)' },
+};
+
+/* UI status to DB status mapping */
+const UI_TO_DB: Record<string, string> = {
+  new: 'new_demand', portfolio_review: 'under_review', technical_validation: 'under_review',
+  estimate: 'under_review', demand_approved: 'approved', analysis: 'approved',
+  ready_for_development: 'approved', under_implementation: 'in_progress', on_hold: 'on_hold',
+  implementation_review: 'in_progress', in_support: 'delivered', done: 'closed', cancelled: 'cancelled',
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  new_demand: 'New', under_review: 'Under Review', approved: 'Approved',
+  in_progress: 'In Progress', on_hold: 'On Hold', delivered: 'Delivered',
+  closed: 'Done', cancelled: 'Cancelled',
+};
+
+const TYPE_MAP: Record<string, { icon: string; textColor: string; fillColor: string }> = {
+  project:             { icon: '🏗', textColor: '#08736B', fillColor: '#0D9488' },
+  enhancement:         { icon: '⚡', textColor: '#2563EB', fillColor: '#2563EB' },
+  improvement:         { icon: '🔧', textColor: '#9A5402', fillColor: '#D97706' },
+  entity_integration:  { icon: '🔗', textColor: '#7C3AED', fillColor: '#7C3AED' },
+};
+
+const PRIORITY_LEVELS: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
+
 const TABS = [
-  { key: 'details', label: 'Details' },
+  { key: 'overview', label: 'Overview' },
   { key: 'score', label: 'Score' },
   { key: 'budget', label: 'Budget' },
   { key: 'risks', label: 'Risks' },
   { key: 'milestones', label: 'Milestones' },
-  { key: 'links', label: 'Links' },
-  { key: 'audit', label: 'Audit' },
+  { key: 'attachments', label: 'Attachments' },
+  { key: 'activity', label: 'Activity' },
 ] as const;
 
 type TabKey = typeof TABS[number]['key'];
@@ -40,144 +78,50 @@ interface InitiativeDetailPanelProps {
   onClose: () => void;
 }
 
-/* ---- Comments Section ---- */
-function CommentsSection({ initiativeId }: { initiativeId: string }) {
-  const queryClient = useQueryClient();
-  const [newComment, setNewComment] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-
-  const { data: comments = [], isLoading } = useQuery({
-    queryKey: ['pk-comments', initiativeId],
-    queryFn: async () => {
-      const { data, error } = await (supabase as any).from('ph_comments')
-        .select('id, body, author_id, created_at, updated_at')
-        .eq('work_item_id', initiativeId)
-        .order('created_at', { ascending: true });
-      if (error) throw error;
-      const authorIds: string[] = (data || []).map((c: any) => c.author_id).filter(Boolean);
-      const uniqueAuthorIds = Array.from(new Set(authorIds));
-      let authorMap: Record<string, string> = {};
-      if (uniqueAuthorIds.length > 0) {
-        const { data: profiles } = await supabase.from('profiles').select('id, full_name').in('id', uniqueAuthorIds);
-        if (profiles) profiles.forEach((p: any) => { authorMap[p.id] = p.full_name; });
-      }
-      return (data || []).map((c: any) => ({ ...c, author_name: authorMap[c.author_id] || 'Unknown' }));
-    },
-  });
-
-  const handleSubmit = async () => {
-    if (!newComment.trim()) return;
-    setSubmitting(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      await (supabase as any).from('ph_comments').insert({
-        work_item_id: initiativeId,
-        work_item_type: 'initiative',
-        body: newComment.trim(),
-        author_id: user?.id || null,
-      });
-      queryClient.invalidateQueries({ queryKey: ['pk-comments', initiativeId] });
-      setNewComment('');
-      toast.success('Comment added');
-    } catch (err: any) {
-      toast.error('Failed: ' + err.message);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    await (supabase as any).from('ph_comments').delete().eq('id', id);
-    queryClient.invalidateQueries({ queryKey: ['pk-comments', initiativeId] });
-    toast.success('Comment deleted');
-  };
-
-  return (
-    <div style={{ marginTop: 24, paddingTop: 20, borderTop: '1px solid var(--pk-border, #E4E4E7)' }}>
-      <h3 className="pk-section-heading">Comments</h3>
-      {isLoading ? (
-        <p style={{ fontSize: 13, color: 'var(--pk-ink-muted)' }}>Loading…</p>
-      ) : comments.length === 0 ? (
-        <p style={{ fontSize: 13, color: 'var(--pk-ink-muted)', fontStyle: 'italic' }}>No comments yet.</p>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 16 }}>
-          {comments.map((c: any) => (
-            <div key={c.id} className="pk-comment">
-              <div className="pk-card-avatar" style={{ backgroundColor: getAvatarColor(c.author_name), width: 28, height: 28, fontSize: 10 }}>
-                {getInitials(c.author_name)}
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                  <span className="pk-comment-author">{c.author_name}</span>
-                  <span className="pk-comment-time">{format(new Date(c.created_at), 'MMM d, h:mm a')}</span>
-                </div>
-                <div className="pk-comment-body">{c.body}</div>
-              </div>
-              <button onClick={() => handleDelete(c.id)} style={{ color: 'var(--pk-ink-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 4, opacity: 0.5 }}>
-                <Trash2 size={12} />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-      <div style={{ display: 'flex', gap: 8 }}>
-        <input
-          type="text"
-          value={newComment}
-          onChange={e => setNewComment(e.target.value)}
-          placeholder="Write a comment…"
-          className="pk-comment-input"
-          disabled={submitting}
-          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
-        />
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={submitting || !newComment.trim()}
-          className="pk-comment-send"
-        >
-          {submitting ? 'Sending…' : 'Send'}
-        </button>
-      </div>
-    </div>
-  );
-}
-
 export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
   initiative,
   initiatives,
   onClose,
 }) => {
-  const [activeTab, setActiveTab] = useState<TabKey>('details');
+  const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const [isVisible, setIsVisible] = useState(false);
+  const [closing, setClosing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-const [budgetAllocated, setBudgetAllocated] = useState(0);
-  const handleBudgetChange = useCallback((value: string) => {
-    setBudgetAllocated(Number(value) || 0);
-  }, []);
+  const [budgetAllocated, setBudgetAllocated] = useState(0);
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [titleDraft, setTitleDraft] = useState(initiative.title);
+  const titleRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const { openDetail } = useTimelineState();
   const queryClient = useQueryClient();
 
-  const statusCfg = STATUS_CONFIG[initiative.status];
+  // Get DB status for the initiative
+  const dbStatus = UI_TO_DB[initiative.status] || initiative.status;
+  const pillColors = STATUS_PILL_COLORS[dbStatus] || STATUS_PILL_COLORS.new_demand;
+  const statusLabel = STATUS_LABELS[dbStatus] || initiative.status;
+  const typeInfo = TYPE_MAP[initiative.initiative_type_key || ''];
+  const priority = (initiative as any).priority || 'medium';
+  const priorityBars = PRIORITY_LEVELS[priority.toLowerCase()] || 2;
 
   useEffect(() => {
     requestAnimationFrame(() => setIsVisible(true));
   }, []);
 
+  useEffect(() => { setTitleDraft(initiative.title); }, [initiative.title]);
+
   const handleClose = useCallback(() => {
-    setIsVisible(false);
+    setClosing(true);
     setTimeout(onClose, 250);
   }, [onClose]);
 
+  // ESC key
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleClose();
-    };
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') handleClose(); };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, [handleClose]);
 
+  // Arrow key navigation
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
@@ -192,12 +136,21 @@ const [budgetAllocated, setBudgetAllocated] = useState(0);
     return () => document.removeEventListener('keydown', handler);
   }, [initiative.id, initiatives, openDetail]);
 
-  useEffect(() => {
-    if (panelRef.current) {
-      const firstFocusable = panelRef.current.querySelector<HTMLElement>('button, [tabindex]');
-      firstFocusable?.focus();
-    }
-  }, []);
+  // Title save
+  const saveTitle = useCallback(async () => {
+    setEditingTitle(false);
+    const trimmed = titleDraft.trim();
+    if (!trimmed || trimmed === initiative.title) return;
+    try {
+      const { error } = await (supabase as any).from('ph_initiatives')
+        .update({ title: trimmed, updated_at: new Date().toISOString() })
+        .eq('id', initiative.id);
+      if (error) throw error;
+      toast.success('Title saved');
+      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+      queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
+    } catch { toast.error('Failed to save title'); }
+  }, [titleDraft, initiative.title, initiative.id, queryClient]);
 
   // Delete mutation
   const deleteMutation = useMutation({
@@ -216,7 +169,7 @@ const [budgetAllocated, setBudgetAllocated] = useState(0);
     onError: () => toast.error('Failed to delete'),
   });
 
-  // Clone mutation
+  // Clone
   const handleClone = async () => {
     try {
       const { data: existing } = await (supabase as any).from('ph_initiatives')
@@ -242,108 +195,124 @@ const [budgetAllocated, setBudgetAllocated] = useState(0);
   };
 
   const portalContent = (
-    <div data-module="product-kanban">
+    <div data-module="initiative-detail-panel">
       {/* Backdrop */}
       <div
-        className="pk-panel-backdrop"
-        style={{
-          opacity: isVisible ? 1 : 0,
-          pointerEvents: isVisible ? 'auto' : 'none',
-          transition: 'opacity 0.25s',
-        }}
+        className={`idp-backdrop ${closing ? 'idp-backdrop-exit' : isVisible ? 'idp-backdrop-enter' : ''}`}
+        style={{ opacity: isVisible && !closing ? undefined : 0 }}
         onClick={handleClose}
       />
 
       {/* Panel */}
       <div
         ref={panelRef}
-        className="pk-panel"
-        style={{
-          transform: isVisible ? 'translateX(0)' : 'translateX(100%)',
-          transition: 'transform 0.25s ease-out',
-        }}
+        className={`idp-panel ${closing ? 'idp-panel-exit' : isVisible ? 'idp-panel-enter' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-label={`Details for ${initiative.initiative_key}`}
       >
-        {/* Top bar */}
-        <div className="pk-panel-top">
-          <button className="pk-panel-back" onClick={handleClose}>
-            <ChevronLeft size={14} /> Back to board
+        {/* Top Bar */}
+        <div className="idp-topbar">
+          <button className="idp-back-btn" onClick={handleClose}>
+            <span className="idp-back-arrow">←</span> Back to list
           </button>
-          <button className="pk-panel-delete-btn" onClick={() => setShowDeleteConfirm(true)}>
-            <Trash2 size={12} /> Delete
-          </button>
-          <button className="pk-panel-close" onClick={handleClose}>
-            <X size={14} />
-          </button>
-        </div>
-
-        {/* Identity */}
-        <div className="pk-panel-identity">
-          <span className="pk-panel-key">{initiative.initiative_key}</span>
-          <h2 className="pk-panel-title">{initiative.title}</h2>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span
-              className="pk-status"
-              style={{
-                color: statusCfg.color,
-                backgroundColor: statusCfg.bg,
-                border: `1px solid ${statusCfg.color}33`,
-              }}
-            >
-              <span className="pk-status-dot" style={{ backgroundColor: statusCfg.color }} />
-              {statusCfg.label}
-            </span>
+          <div className="idp-action-group">
+            <button className="idp-action-btn" onClick={handleClone}>Clone</button>
+            <button className="idp-action-btn idp-action-btn--delete" onClick={() => setShowDeleteConfirm(true)}>Delete</button>
+            <div className="idp-divider" />
+            <button className="idp-close-btn" onClick={handleClose}>✕</button>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="pk-panel-actions">
-          <button className="pk-panel-action-btn" onClick={() => setActiveTab('details')}>
-            <Pencil size={14} /> Edit
-          </button>
-          <button className="pk-panel-action-btn" onClick={() => toast.info('Attach coming soon')}>
-            <Paperclip size={14} /> Attach
-          </button>
-          <button className="pk-panel-action-btn" onClick={handleClone}>
-            <Copy size={14} /> Clone
-          </button>
-          <button className="pk-panel-action-btn" onClick={() => toast.info('Link coming soon')}>
-            <Link2 size={14} /> Link
-          </button>
-          <button className="pk-panel-action-btn" onClick={() => setActiveTab('score')}>
-            <Star size={14} /> Score
-          </button>
+        {/* Identity Block */}
+        <div className="idp-identity">
+          {initiative.is_archived && (
+            <div className="idp-archived-banner">
+              <span style={{ fontSize: 13 }}>📦</span>
+              <span>This initiative has been archived</span>
+            </div>
+          )}
+          {/* Key + Title on same line */}
+          <div className="idp-key-title-row">
+            <span className="idp-key-pill">{initiative.initiative_key}</span>
+            {editingTitle ? (
+              <input
+                ref={titleRef}
+                className="idp-title-editable"
+                value={titleDraft}
+                onChange={e => setTitleDraft(e.target.value)}
+                onBlur={saveTitle}
+                onKeyDown={e => { if (e.key === 'Enter') saveTitle(); if (e.key === 'Escape') setEditingTitle(false); }}
+                autoFocus
+              />
+            ) : (
+              <div
+                className="idp-title-editable"
+                onClick={() => { setTitleDraft(initiative.title); setEditingTitle(true); }}
+                role="button"
+                tabIndex={0}
+              >
+                {initiative.title}
+              </div>
+            )}
+          </div>
+          {/* Meta row: status pill + type badge + priority bars */}
+          <div className="idp-meta-row">
+            <div
+              className="idp-status-pill"
+              style={{ background: pillColors.bg, border: `1px solid ${pillColors.bdr}` }}
+            >
+              <div className="idp-status-dot" style={{ background: pillColors.text }} />
+              <span style={{ color: pillColors.text }}>{statusLabel}</span>
+            </div>
+            {typeInfo && (
+              <div className="idp-type-badge">
+                <span className="idp-type-icon">{typeInfo.icon}</span>
+                <span className="idp-type-label" style={{ color: typeInfo.textColor }}>
+                  {initiative.initiative_type_label || initiative.initiative_type_key}
+                </span>
+              </div>
+            )}
+            <div className="idp-priority-bars">
+              {[1, 2, 3, 4].map(i => (
+                <div
+                  key={i}
+                  className={`idp-priority-bar ${i <= priorityBars ? 'idp-priority-bar--filled' : 'idp-priority-bar--empty'}`}
+                />
+              ))}
+              <span className="idp-priority-label" style={{ textTransform: 'capitalize' }}>{priority}</span>
+            </div>
+          </div>
         </div>
 
-        {/* Tabs */}
-        <div className="pk-panel-tabs">
+        {/* Tab Bar */}
+        <div className="idp-tabs">
           {TABS.map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`pk-panel-tab${activeTab === tab.key ? ' pk-panel-tab--active' : ''}`}
+              className={`idp-tab${activeTab === tab.key ? ' idp-tab--active' : ''}`}
             >
               {tab.label}
             </button>
           ))}
         </div>
 
-        {/* Body */}
-        <div className="pk-panel-body">
-          {activeTab === 'details' && (
-            <>
-              <DetailTabDetails initiative={initiative} />
-              <CommentsSection initiativeId={initiative.id} />
-            </>
-          )}
+        {/* Content */}
+        <div className="idp-content">
+          {activeTab === 'overview' && <DetailTabDetails initiative={initiative} />}
           {activeTab === 'score' && <DetailTabScore initiative={initiative} />}
-          {activeTab === 'budget' && <InitiativeBudgetTab initiativeId={initiative.id} budgetAllocated={budgetAllocated} onBudgetAllocatedChange={(v: string) => setBudgetAllocated(Number(v) || 0)} />}
+          {activeTab === 'budget' && (
+            <InitiativeBudgetTab
+              initiativeId={initiative.id}
+              budgetAllocated={budgetAllocated}
+              onBudgetAllocatedChange={(v: string) => setBudgetAllocated(Number(v) || 0)}
+            />
+          )}
           {activeTab === 'risks' && <InitiativeRisksTab initiativeId={initiative.id} />}
           {activeTab === 'milestones' && <InitiativeMilestonesTab initiativeId={initiative.id} />}
-          {activeTab === 'links' && <InitiativeLinksTab initiativeId={initiative.id} />}
-          {activeTab === 'audit' && <InitiativeAuditTab initiativeId={initiative.id} />}
+          {activeTab === 'attachments' && <InitiativeLinksTab initiativeId={initiative.id} />}
+          {activeTab === 'activity' && <InitiativeAuditTab initiativeId={initiative.id} />}
         </div>
       </div>
 
@@ -358,7 +327,7 @@ const [budgetAllocated, setBudgetAllocated] = useState(0);
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => deleteMutation.mutate()} style={{ backgroundColor: 'var(--pk-danger, #DC2626)' }}>
+            <AlertDialogAction onClick={() => deleteMutation.mutate()} style={{ backgroundColor: '#DC2626' }}>
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
