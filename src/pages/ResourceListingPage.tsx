@@ -617,18 +617,20 @@ function ActionBtn({
             title={tooltip}
             style={{
               width: 34, height: 34, borderRadius: 7,
-              border: 'none', background: bg, color: '#ffffff',
+              border: `1.5px solid ${bg}`, background: 'transparent', color: bg,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', padding: 0,
-              transition: 'background 0.12s ease, box-shadow 0.12s ease, transform 0.12s ease',
+              transition: 'background 0.12s ease, box-shadow 0.12s ease, transform 0.12s ease, color 0.12s ease',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = bgHover;
+              e.currentTarget.style.background = bg;
+              e.currentTarget.style.color = '#ffffff';
               e.currentTarget.style.boxShadow = `0 2px 8px ${shadowColor || 'rgba(0,0,0,0.12)'}`;
               e.currentTarget.style.transform = 'translateY(-1px)';
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = bg;
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = bg;
               e.currentTarget.style.boxShadow = 'none';
               e.currentTarget.style.transform = 'translateY(0)';
             }}
