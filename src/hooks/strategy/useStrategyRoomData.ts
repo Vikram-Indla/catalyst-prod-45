@@ -374,6 +374,101 @@ function useBriefBanner() {
   });
 }
 
+/* ═══ Execution Snapshot ═══ */
+interface ExecutionItem {
+  label: string; value: string; valueColor?: string; target?: string;
+  deltaText?: string; deltaDir?: 'up' | 'down' | 'flat'; footerNote?: string;
+}
+
+function useExecution() {
+  return useQuery({
+    queryKey: ['strategy-room', 'execution'],
+    queryFn: async (): Promise<ExecutionItem[]> => {
+      const [goalsRes, krsRes] = await Promise.all([
+        supabase.from('es_goals').select('status, progress_pct'),
+        supabase.from('es_key_results').select('progress_pct, status'),
+      ]);
+      const goals = goalsRes.data || [];
+      const krs = krsRes.data || [];
+
+      const totalGoals = goals.length;
+      const onTrackGoals = goals.filter(g => g.status === 'active' || g.status === 'on_track').length;
+      const avgGoalProgress = totalGoals > 0 ? Math.round(goals.reduce((s, g) => s + (g.progress_pct || 0), 0) / totalGoals) : 0;
+
+      const totalKRs = krs.length;
+      const avgKRProgress = totalKRs > 0 ? Math.round(krs.reduce((s, k) => s + (k.progress_pct || 0), 0) / totalKRs) : 0;
+      const krsAbove80 = krs.filter(k => (k.progress_pct || 0) >= 80).length;
+      const krsBelow40 = krs.filter(k => (k.progress_pct || 0) < 40).length;
+
+      return [
+        {
+          label: 'Goals On Track',
+          value: `${onTrackGoals}/${totalGoals}`,
+          valueColor: onTrackGoals < totalGoals / 2 ? '#DC2626' : '#16A34A',
+          target: `${totalGoals} total`,
+          footerNote: `${totalKRs} Key Results tracked`,
+        },
+        {
+          label: 'Avg Goal Progress',
+          value: `${avgGoalProgress}%`,
+          valueColor: avgGoalProgress < 50 ? '#DC2626' : avgGoalProgress < 70 ? '#F59E0B' : '#16A34A',
+          target: '100%',
+        },
+        {
+          label: 'Avg KR Progress',
+          value: `${avgKRProgress}%`,
+          valueColor: avgKRProgress < 50 ? '#DC2626' : avgKRProgress < 70 ? '#F59E0B' : '#16A34A',
+          target: '100%',
+        },
+        {
+          label: 'KRs At Risk (< 40%)',
+          value: `${krsBelow40}`,
+          valueColor: krsBelow40 > 0 ? '#DC2626' : '#16A34A',
+          target: `${krsAbove80} above 80%`,
+        },
+      ];
+    },
+    staleTime: 60_000,
+  });
+}
+
+/* ═══ Alignment ═══ */
+interface AlignmentItem { name: string; pct: number; color: string; textColor: string }
+
+function useAlignment() {
+  return useQuery({
+    queryKey: ['strategy-room', 'alignment'],
+    queryFn: async (): Promise<AlignmentItem[]> => {
+      const { data: themes, error } = await supabase
+        .from('es_strategic_themes')
+        .select('id, title, sort_order')
+        .order('sort_order');
+      if (error || !themes || themes.length === 0) return [];
+
+      const { data: goals } = await supabase
+        .from('es_goals')
+        .select('theme_id, progress_pct');
+
+      const goalsByTheme = new Map<string, number[]>();
+      (goals || []).forEach(g => {
+        if (!g.theme_id) return;
+        const arr = goalsByTheme.get(g.theme_id) || [];
+        arr.push(g.progress_pct || 0);
+        goalsByTheme.set(g.theme_id, arr);
+      });
+
+      return themes.map(t => {
+        const progs = goalsByTheme.get(t.id) || [];
+        const avgProg = progs.length > 0 ? Math.round(progs.reduce((a, b) => a + b, 0) / progs.length) : 0;
+        const color = avgProg >= 70 ? '#16A34A' : avgProg >= 40 ? '#F59E0B' : '#DC2626';
+        const textColor = avgProg >= 70 ? '#11853D' : avgProg >= 40 ? '#B45309' : '#D92525';
+        return { name: t.title, pct: avgProg, color, textColor };
+      });
+    },
+    staleTime: 60_000,
+  });
+}
+
 /* ═══ Composite hook ═══ */
 export function useStrategyRoomData() {
   const themes = useThemes();
@@ -381,6 +476,8 @@ export function useStrategyRoomData() {
   const contracts = useContracts();
   const budget = useBudget();
   const brief = useBriefBanner();
+  const execution = useExecution();
+  const alignment = useAlignment();
 
   const isLoading = themes.isLoading || workforce.isLoading || contracts.isLoading || budget.isLoading;
 
@@ -390,6 +487,8 @@ export function useStrategyRoomData() {
     contracts: contracts.data ?? null,
     budget: budget.data ?? null,
     brief: brief.data ?? null,
+    execution: execution.data ?? null,
+    alignment: alignment.data ?? null,
     isLoading,
     fiscal: { year: '2026', quarter: 'Q1' } as const,
     updatedAgo: isLoading ? 'loading…' : 'just now',

@@ -62,7 +62,7 @@ export default function StrategyRoom() {
   const [printAfterOpen, setPrintAfterOpen] = useState(false);
 
   /* ─── Live data from database ─── */
-  const { themes, budget, workforce, contracts, brief, fiscal, updatedAgo } = useStrategyRoomData();
+  const { themes, budget, workforce, contracts, brief, execution, alignment, fiscal, updatedAgo } = useStrategyRoomData();
   const printBriefInNewWindow = useCallback(() => {
     const briefRoot = document.querySelector('.sri-root-container') as HTMLElement | null;
     if (!briefRoot) {
@@ -164,8 +164,8 @@ export default function StrategyRoom() {
           budget={budget}
           workforce={workforce}
           contracts={contracts}
-          execution={null}
-          alignment={null}
+          execution={execution}
+          alignment={alignment}
           brief={brief}
           fiscal={fiscal}
           updatedAgo={updatedAgo}
