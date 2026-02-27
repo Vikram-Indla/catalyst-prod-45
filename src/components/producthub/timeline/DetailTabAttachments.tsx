@@ -139,7 +139,7 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ init
   const handlePin = async (f: any) => {
     await (supabase as any).from('ph_initiative_attachments').update({ is_pinned: !f.is_pinned }).eq('id', f.id);
     logInitiativeAudit({ initiative_id: initiativeId, action: f.is_pinned ? 'unpinned' : 'pinned', entity_type: 'attachment', new_value: f.file_name });
-    toast.success(f.is_pinned ? 'Unpinned' : 'Pinned', TOAST_OPTS);
+    // Silent auto-save
     refetch();
   };
 

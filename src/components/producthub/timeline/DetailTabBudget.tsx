@@ -118,7 +118,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
   const saveTotalBudget = useCallback(async () => {
     await (supabase as any).from('ph_initiatives').update({ budget_allocated: totalBudget, updated_at: new Date().toISOString() }).eq('id', initiativeId);
     logInitiativeAudit({ initiative_id: initiativeId, action: 'updated', entity_type: 'budget', field_name: 'budget_allocated', new_value: `SAR ${totalBudget.toLocaleString('en-US')}` });
-    toast.success('Budget saved', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
+    // Silent auto-save
   }, [totalBudget, initiativeId]);
 
   const openAdd = () => {
@@ -152,7 +152,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ initiativeId }
       const { error } = await (supabase as any).from('ph_initiative_budget_items').update(payload).eq('id', editingItem.id);
       if (error) { toast.error('Failed to update'); return; }
       logInitiativeAudit({ initiative_id: initiativeId, action: 'updated', entity_type: 'budget_item', new_value: form.description });
-      toast.success('Item updated', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
+      // Silent auto-save
     } else {
       payload.created_by = (await supabase.auth.getUser()).data.user?.id;
       const { error } = await (supabase as any).from('ph_initiative_budget_items').insert(payload);
