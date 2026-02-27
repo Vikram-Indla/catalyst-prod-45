@@ -388,7 +388,6 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         .eq('id', initiative.id).select();
       if (error) throw error;
       if (!rows || rows.length === 0) { toast.error('Failed to persist type'); return; }
-      toast.success(`Type → ${typeKey}`, { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
       invalidateAll();
     } catch { toast.error('Failed to update type'); }
     finally { setUpdatingType(false); }
@@ -416,34 +415,6 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
 
   return (
     <div className="idp-overview">
-      {/* Type Selector Cards */}
-      <div>
-        <div className="idp-field-label" style={{ marginBottom: 8 }}>Initiative Type</div>
-        <div className="idp-type-grid">
-          {TYPE_OPTIONS.map(t => {
-            const isActive = initiative.initiative_type_key === t.key;
-            return (
-              <button
-                key={t.key}
-                disabled={updatingType}
-                onClick={() => handleTypeChange(t.key)}
-                className={`idp-type-card${isActive ? ' idp-type-card--active' : ''}`}
-                style={{
-                  borderColor: isActive ? t.color : undefined,
-                  background: isActive ? `${t.color}0D` : undefined,
-                  opacity: updatingType ? 0.6 : 1,
-                }}
-              >
-                <div className="idp-type-card-icon">{t.icon}</div>
-                <div className="idp-type-card-label" style={{ color: isActive ? t.textColor : undefined }}>
-                  {t.label}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       {/* Roadmap Toggle */}
       <div className="idp-roadmap-toggle">
         <div>
@@ -460,16 +431,19 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
 
       {/* 2-Column Field Grid */}
       <div className="idp-field-grid">
-        <Cell label="Status" odd>
+        <Cell label="Initiative Type" odd>
+          <DD value={initiative.initiative_type_key || 'project'} options={TYPE_OPTIONS.map(t => ({ value: t.key, label: t.label }))} onChange={(v: string) => handleTypeChange(v)} />
+        </Cell>
+        <Cell label="Status">
           <DD value={dbStatus} options={STATUS_OPTIONS} grouped onChange={handleStatusChange} />
         </Cell>
-        <Cell label="EA Review">
+        <Cell label="EA Review" odd>
           <DD value={(initiative as any).ea_review} options={EA_OPTS} onChange={(v: string) => autoSave('ea_review', v, 'EA Review')} />
         </Cell>
-        <Cell label="Business Value" odd>
+        <Cell label="Business Value">
           <DD value={(initiative as any).business_value} options={BV_OPTS} onChange={(v: string) => autoSave('business_value', v, 'Business Value')} />
         </Cell>
-        <Cell label="Priority">
+        <Cell label="Priority" odd>
           <DD value={(initiative as any).priority} options={PRIO_OPTS} onChange={(v: string) => autoSave('priority', v, 'Priority')} />
         </Cell>
         <Cell label="Target Quarter" odd>
