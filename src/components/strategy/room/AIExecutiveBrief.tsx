@@ -31,9 +31,19 @@ const TOKENS = `
 }
 @media print {
   [data-sri] .sri-actions { display:none !important; }
+  .sri-root-container {
+    position: static !important;
+    inset: auto !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    background: #fff !important;
+  }
   [data-sri] { background:white !important; }
-  .sri-root-container, .sri-root-container *, [data-sri], [data-sri] * { overflow:visible !important; position:static !important; height:auto !important; }
-  .sri-root-container { display:block !important; }
+  [data-sri], [data-sri] * {
+    overflow: visible !important;
+    max-height: none !important;
+  }
 }
 `;
 
@@ -189,7 +199,7 @@ export function AIExecutiveBrief({ open, onClose }: Props) {
   const grading = GRADING_DATA;
 
   return (
-    <div className="sri-root-container" style={{ position: 'fixed', inset: 0, background: '#FFFFFF', zIndex: 300, overflowY: 'auto' }}>
+    <div className="sri-root-container" style={{ position: 'relative', background: '#FFFFFF', zIndex: 300, overflowY: 'visible' }}>
       <div data-sri style={{ maxWidth: 1120, margin: "0 auto", padding: "24px 0 60px" }}>
         <style>{TOKENS}</style>
 
