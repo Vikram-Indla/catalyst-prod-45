@@ -1,4 +1,5 @@
 import React from 'react';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
@@ -98,7 +99,7 @@ export default function KanbanView({ project }: KanbanViewProps) {
                         {/* FOOTER */}
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1.5">
-                            <span className="text-sm">{item.type === 'feature' ? '📦' : '📗'}</span>
+                            <JiraIssueTypeIcon type={item.type} size={16} />
                             <a
                               href={`/browse/${item.key}`}
                               className="text-xs font-medium text-muted-foreground hover:text-primary"

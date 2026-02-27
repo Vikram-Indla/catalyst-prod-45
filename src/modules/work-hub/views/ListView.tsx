@@ -3,8 +3,9 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { 
   Search, ChevronRight, ChevronDown, 
   MessageSquare, Calendar, Minus, ArrowUp, ArrowDown, ChevronsUp, ChevronsDown,
-  Zap, Bug, Bookmark, CircleDot, Settings2, GripVertical, Plus, MoreHorizontal
+  Settings2, GripVertical, Plus, MoreHorizontal
 } from 'lucide-react';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -50,14 +51,7 @@ interface WorkItem {
 const mockItems: WorkItem[] = [];
 
 // Type icons
-const typeIcons: Record<string, { icon: React.ReactNode; color: string }> = {
-  Feature: { icon: <Zap className="h-4 w-4" />, color: 'text-amber-500' },
-  Story: { icon: <Bookmark className="h-4 w-4" />, color: 'text-green-600' },
-  Task: { icon: <CircleDot className="h-4 w-4" />, color: 'text-blue-500' },
-  Defect: { icon: <Bug className="h-4 w-4" />, color: 'text-red-500' },
-  Subtask: { icon: <CircleDot className="h-4 w-4" />, color: 'text-gray-500' },
-  Incident: { icon: <Settings2 className="h-4 w-4" />, color: 'text-amber-600' },
-};
+// Type icons now use canonical JiraIssueTypeIcon component
 
 // Status lozenge - NEUTRAL STYLING (no colors per status)
 const statusOptions = ['Backlog', 'To Do', 'In Progress', 'In Requirement', 'In Production', 'Done', 'Closed', 'Blocked'];
@@ -601,7 +595,7 @@ export function ListView() {
                               </tr>
                             )}
                             {groupItems.map((item, index) => {
-                              const typeInfo = typeIcons[item.type] || typeIcons['Task'];
+                              // Using canonical JiraIssueTypeIcon instead of typeIcons
                               const isHovered = hoveredRow === item.id;
                               const isSelected = selectedItems.has(item.id);
                               const isDetailOpen = selectedItem?.id === item.id;
@@ -663,9 +657,7 @@ export function ListView() {
                                             ) : (
                                               <span className="w-5" />
                                             )}
-                                            <span className={typeInfo.color} title={item.type}>
-                                              {typeInfo.icon}
-                                            </span>
+                                            <JiraIssueTypeIcon type={item.type} size={16} />
                                             {isHovered && item.hasChildren && (
                                               <button 
                                                 onClick={(e) => e.stopPropagation()}

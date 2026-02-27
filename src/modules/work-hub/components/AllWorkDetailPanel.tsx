@@ -1,9 +1,10 @@
 import React from 'react';
-import { X, ExternalLink, MoreHorizontal, Zap, Bug, Bookmark, CircleDot, CheckSquare, Link2, ChevronRight, MessageSquare, Paperclip, History, Eye, Share2 } from 'lucide-react';
+import { X, ExternalLink, MoreHorizontal, Link2, ChevronRight, MessageSquare, Paperclip, History, Eye, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 interface WorkItem {
   id: string;
@@ -27,13 +28,7 @@ interface AllWorkDetailPanelProps {
   onNavigateToParent?: (parentKey: string, parentType: 'Feature' | 'Epic') => void;
 }
 
-const typeIcons: Record<string, { icon: React.ReactNode; bgColor: string; textColor: string }> = {
-  Feature: { icon: <Zap className="h-4 w-4" />, bgColor: 'bg-amber-100', textColor: 'text-amber-600' },
-  Story: { icon: <Bookmark className="h-4 w-4" />, bgColor: 'bg-green-100', textColor: 'text-green-600' },
-  Task: { icon: <CheckSquare className="h-4 w-4" />, bgColor: 'bg-blue-100', textColor: 'text-blue-600' },
-  Defect: { icon: <Bug className="h-4 w-4" />, bgColor: 'bg-red-100', textColor: 'text-red-600' },
-  Subtask: { icon: <CircleDot className="h-4 w-4" />, bgColor: 'bg-gray-100', textColor: 'text-gray-600' },
-};
+// Type icons now use canonical JiraIssueTypeIcon component
 
 const statusStyles: Record<string, { bg: string; text: string; label: string }> = {
   'Backlog': { bg: 'bg-[#DFE1E6]', text: 'text-[#42526E]', label: 'BACKLOG' },
@@ -47,7 +42,7 @@ const statusStyles: Record<string, { bg: string; text: string; label: string }> 
 export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWorkDetailPanelProps) {
   if (!item) return null;
 
-  const typeInfo = typeIcons[item.type] || typeIcons['Task'];
+  // typeInfo no longer needed — using JiraIssueTypeIcon directly
   const statusStyle = statusStyles[item.status] || statusStyles['Backlog'];
 
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
@@ -61,9 +56,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#DFE1E6]">
         <div className="flex items-center gap-2">
-          <div className={cn('w-6 h-6 rounded flex items-center justify-center', typeInfo.bgColor)}>
-            <span className={typeInfo.textColor}>{typeInfo.icon}</span>
-          </div>
+          <JiraIssueTypeIcon type={item.type} size={20} />
           <span className="text-[14px] font-medium text-[#172B4D]">{item.key}</span>
         </div>
         <div className="flex items-center gap-1">
@@ -94,7 +87,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
               onClick={() => onNavigateToParent?.(item.parent!, item.parentType || 'Feature')}
               className="flex items-center gap-1 text-blue-600 hover:underline font-medium"
             >
-              <Zap className="h-3 w-3" />
+              <JiraIssueTypeIcon type={item.parentType || 'Epic'} size={12} />
               {item.parent}
               <ChevronRight className="h-3 w-3" />
             </button>
@@ -205,9 +198,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
                 <div>
                   <div className="text-[11px] text-slate-500 mb-1">Type</div>
                   <div className="flex items-center gap-2">
-                    <div className={cn('w-5 h-5 rounded flex items-center justify-center', typeInfo.bgColor)}>
-                      <span className={cn('scale-75', typeInfo.textColor)}>{typeInfo.icon}</span>
-                    </div>
+                    <JiraIssueTypeIcon type={item.type} size={16} />
                     <span className="text-[13px] text-[#172B4D]">{item.type}</span>
                   </div>
                 </div>
@@ -236,9 +227,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
                       onClick={() => onNavigateToParent?.(item.parent!, item.parentType || 'Feature')}
                       className="flex items-center gap-2 text-blue-600 hover:underline"
                     >
-                      <div className="w-4 h-4 rounded bg-purple-500 flex items-center justify-center">
-                        <Zap className="h-2.5 w-2.5 text-white" />
-                      </div>
+                      <JiraIssueTypeIcon type={item.parentType || 'Epic'} size={16} />
                       <span className="text-[13px] font-medium">{item.parent}</span>
                       <span className="text-[12px] text-slate-500">
                         {item.parentType === 'Epic' ? '(Epic)' : '(Feature)'}

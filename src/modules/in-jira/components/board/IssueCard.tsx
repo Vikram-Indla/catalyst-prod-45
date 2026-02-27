@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import type { BoardIssue } from '../../hooks/useBoardData';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 interface IssueCardProps {
   issue: BoardIssue;
@@ -22,13 +23,7 @@ const priorityColors: Record<string, string> = {
   lowest: 'bg-gray-400',
 };
 
-const typeIcons: Record<string, string> = {
-  story: '📗',
-  feature: '🎯',
-  subtask: '📌',
-  defect: '🐛',
-  incident: '🚨',
-};
+// Type icons now use canonical JiraIssueTypeIcon component
 
 export const IssueCard = memo(function IssueCard({
   issue,
@@ -48,7 +43,7 @@ export const IssueCard = memo(function IssueCard({
       {/* Issue key and type */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5">
-          <span className="text-sm">{typeIcons[issue.type] || '📄'}</span>
+          <JiraIssueTypeIcon type={issue.type} size={16} />
           <span className="text-xs font-mono text-muted-foreground">
             {issue.key}
           </span>

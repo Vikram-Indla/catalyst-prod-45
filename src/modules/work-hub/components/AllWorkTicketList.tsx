@@ -1,7 +1,8 @@
 import React from 'react';
-import { ChevronRight, Zap, Bug, Bookmark, CircleDot, CheckSquare } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 interface WorkItem {
   id: string;
@@ -24,14 +25,6 @@ interface AllWorkTicketListProps {
   onSelectItem: (item: WorkItem) => void;
   onNavigateToParent?: (parentKey: string, parentType: 'Feature' | 'Epic') => void;
 }
-
-const typeIcons: Record<string, { icon: React.ReactNode; bgColor: string }> = {
-  Feature: { icon: <Zap className="h-3 w-3 text-white" />, bgColor: 'bg-amber-500' },
-  Story: { icon: <Bookmark className="h-3 w-3 text-white" />, bgColor: 'bg-green-500' },
-  Task: { icon: <CheckSquare className="h-3 w-3 text-white" />, bgColor: 'bg-blue-500' },
-  Defect: { icon: <Bug className="h-3 w-3 text-white" />, bgColor: 'bg-red-500' },
-  Subtask: { icon: <CircleDot className="h-3 w-3 text-white" />, bgColor: 'bg-gray-500' },
-};
 
 // Status - NEUTRAL STYLING (no colors per status)
 const neutralStatusStyle = 'bg-muted/50 text-foreground border border-border';
@@ -71,7 +64,6 @@ export function AllWorkTicketList({
       {/* Ticket List */}
       <div className="flex-1 overflow-y-auto">
         {flatItems.map((item) => {
-          const typeInfo = typeIcons[item.type] || typeIcons['Task'];
           const isSelected = item.id === selectedItemId;
 
           return (
@@ -85,9 +77,9 @@ export function AllWorkTicketList({
                   : 'hover:bg-muted border-l-2 border-l-transparent'
               )}
             >
-              {/* Type Icon */}
-              <div className={cn('w-5 h-5 rounded flex-shrink-0 flex items-center justify-center mt-0.5', typeInfo.bgColor)}>
-                {typeInfo.icon}
+              {/* Type Icon — canonical Jira SVG */}
+              <div className="mt-0.5 flex-shrink-0">
+                <JiraIssueTypeIcon type={item.type} size={16} />
               </div>
 
               {/* Content */}
