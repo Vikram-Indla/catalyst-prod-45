@@ -37,10 +37,36 @@ export interface RoleContribution {
   resources: { name: string; desc: string }[];
 }
 
+export interface ProjectActivityContributor {
+  name: string;
+  initials: string;
+  color: string;
+  count: number;
+}
+
+export interface ProjectActivityKpi {
+  value: number;
+  label: string;
+  variant?: 'danger' | 'warning' | 'success' | null;
+}
+
+export interface ProjectActivityAlert {
+  type: 'blocker' | 'warning';
+  text: string;
+}
+
 export interface ProjectActivity {
   name: string;
-  desc: string;
+  keyPrefix: string;
   status: 'active' | 'risk' | 'stalled';
+  kpis: ProjectActivityKpi[];
+  velocity: { transitions: number; percentOfMax: number };
+  barColor: 'success' | 'warning' | 'danger' | 'primary';
+  narrative: string;
+  contributors: ProjectActivityContributor[];
+  alert?: ProjectActivityAlert | null;
+  // Legacy fallback
+  desc?: string;
 }
 
 export interface ExecSummaryV5 {

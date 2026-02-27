@@ -77,8 +77,21 @@ Each card:
   DevOps: "Deployments", "Rollbacks"
 - resources: array of {name, desc} — ONLY include resources who have at least 1 transition/contribution this week. Do NOT include resources with zero activity. desc is HTML with <strong>project names</strong> bolded. IMPORTANT: Wrap every numeric claim (like "Closed 25 defects", "5 items re-opened", "12 closures") in <span class="di-claim">25 defects closed</span> so it becomes a clickable drill-in link. Every number+action pair MUST be wrapped.
 
-2C. projectActivity: Array of projects.
-Each: { name, desc (1 sentence), status: "active"|"risk"|"stalled" }
+2C. projectActivity: Array of STRUCTURED project cards, sorted by total transitions descending (highest-velocity first). STALLED projects always last.
+Each project object:
+- name: string (full project name, e.g. "Senaei BAU")
+- keyPrefix: string (short key, e.g. "BAU", "MDT", "MWR")
+- status: "active"|"risk"|"stalled"
+- kpis: array of 3-5 metrics: { value: number, label: string, variant: null|"danger"|"warning"|"success" }
+  Use variant "danger" for Re-Opened or Blocked counts. Use variant "success" for high closure counts.
+  Example labels: "Moved to QA", "Closed", "Re-Opened", "UAT Ready", "Blocked", "In Review"
+- velocity: { transitions: number (total status transitions for this project), percentOfMax: number (0-100, this project's transitions ÷ highest project's transitions × 100) }
+- barColor: "success" if ACTIVE and velocity.percentOfMax ≥ 50, "primary" if ACTIVE and < 50, "warning" if AT RISK. Omit bar for STALLED (set to "primary").
+- narrative: string (2-3 sentences, HTML). Names in <strong>. Describe key activity, highlight top performer, note any concerns.
+- contributors: array of { name: string, initials: string (2 chars), color: string (hex from palette: #2563EB, #0D9488, #7C3AED, #D97706, #DC2626, #16A34A, #6366F1, #64748B), count: number (transitions by this person) }. Sort by count descending, max 5.
+- alert: null OR { type: "blocker"|"warning", text: string (HTML, use <strong> for emphasis) }
+  Use type "blocker" if project has Blocked items or is STALLED. Use type "warning" if project has Re-Opened items.
+  text should name the person and describe the issue concisely.
 
 2D. requiresAttention: string[] — each item MUST name the person, their role, the project, and the specific risk. Use HTML with <strong> for names.
 
@@ -107,7 +120,7 @@ OUTPUT: Return ONLY valid JSON (no markdown, no code fences):
   "summaryV5": {
     "topContributor": { "name": "...", "role": "...", "roleGroup": "developer", "projects": ["..."], "consecutiveWeeks": 1, "kpis": [{"value": 25, "label": "Defects Closed"}, ...] },
     "roleContributions": [ { "role": "Developers", "roleCss": "role-dev", "resourceCount": 7, "projects": ["..."], "kpis": [...], "resources": [{"name": "...", "desc": "..."}] } ],
-    "projectActivity": [ { "name": "...", "desc": "...", "status": "active" } ],
+    "projectActivity": [ { "name": "Senaei BAU", "keyPrefix": "BAU", "status": "active", "kpis": [{"value": 41, "label": "Moved to QA"}, {"value": 12, "label": "Closed"}, {"value": 5, "label": "Re-Opened", "variant": "danger"}], "velocity": {"transitions": 75, "percentOfMax": 100}, "barColor": "success", "narrative": "Highest-velocity project...", "contributors": [{"name": "Yazeed Daraz", "initials": "YD", "color": "#2563EB", "count": 53}], "alert": null } ],
     "requiresAttention": [ "<strong>Name (Role, Project):</strong> ..." ]
   },
   "recommendations": [ { "number": 1, "title": "...", "roleTag": "QA ENGINEERS", "roleTagCss": "background:#EDE9FE;color:#5B21B6", "project": "Senaei BA · Mobile FE", "description": "...", "priority": "high" } ]
