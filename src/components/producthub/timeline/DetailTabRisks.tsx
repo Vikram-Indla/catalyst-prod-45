@@ -3,11 +3,42 @@
  * Severity chips, 5×5 heat map, risk cards, add/edit modal
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { getInitialsFromName, hashColor } from '@/types/producthub/initiative';
+
+/* ── Custom Dropdown (no native <select>) ── */
+function CustomSelect({ value, options, onChange }: { value: string; options: string[]; onChange: (v: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const handler = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button type="button" onClick={() => setOpen(!open)} className="idp-form-input" style={{ width: '100%', textAlign: 'left', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span>{value}</span>
+        <span style={{ fontSize: 10, color: 'var(--idp-ink-muted)', marginLeft: 4 }}>▾</span>
+      </button>
+      {open && (
+        <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 20, background: 'var(--idp-surface)', border: '1px solid var(--idp-border)', borderRadius: 6, marginTop: 2, maxHeight: 200, overflowY: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+          {options.map(opt => (
+            <div key={opt} onClick={() => { onChange(opt); setOpen(false); }}
+              style={{ padding: '7px 12px', fontSize: 12, cursor: 'pointer', color: 'var(--idp-ink)', background: opt === value ? 'var(--idp-surface-secondary)' : undefined }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--idp-surface-secondary)')}
+              onMouseLeave={e => (e.currentTarget.style.background = opt === value ? 'var(--idp-surface-secondary)' : 'transparent')}>
+              {opt}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface DetailTabRisksProps {
   initiativeId: string;
@@ -260,17 +291,11 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div className="idp-form-field" style={{ marginBottom: 0 }}>
                   <label className="idp-form-label">Category</label>
-                  <select className="idp-form-input" value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-                    style={{ appearance: 'none', cursor: 'pointer' }}>
-                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
+                  <CustomSelect value={form.category} options={CATEGORIES} onChange={v => setForm(f => ({ ...f, category: v }))} />
                 </div>
                 <div className="idp-form-field" style={{ marginBottom: 0 }}>
                   <label className="idp-form-label">Status</label>
-                  <select className="idp-form-input" value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
-                    style={{ appearance: 'none', cursor: 'pointer' }}>
-                    {STATUS_OPTS.map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
+                  <CustomSelect value={form.status} options={STATUS_OPTS} onChange={v => setForm(f => ({ ...f, status: v }))} />
                 </div>
               </div>
               {/* Probability & Impact Sliders */}
