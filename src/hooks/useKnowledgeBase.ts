@@ -10,6 +10,10 @@ import {
   syncAllTables,
   getSyncStatus,
   syncCustomTable,
+  seedEvalSet,
+  runEvaluation,
+  getEvalSummary,
+  exportEvalData,
   type KBQueryRequest,
   type KBQueryResponse,
   type KBTrainStatus,
@@ -143,5 +147,10 @@ export function useKBAdmin() {
   const syncStatus = useCallback(async () => getSyncStatus(), []);
   const syncCustom = useCallback(async (config: Parameters<typeof syncCustomTable>[0]) => syncCustomTable(config), []);
 
-  return { status, isProcessing, embedProgress, fetchStatus, embedBatch, embedAll, cleanup, discover, syncOne, syncAll, syncStatus, syncCustom };
+  const seedEval = useCallback(async () => seedEvalSet(), []);
+  const runEval = useCallback(async (limit?: number) => runEvaluation(limit), []);
+  const evalSummary = useCallback(async () => getEvalSummary(), []);
+  const evalExport = useCallback(async () => exportEvalData(), []);
+
+  return { status, isProcessing, embedProgress, fetchStatus, embedBatch, embedAll, cleanup, discover, syncOne, syncAll, syncStatus, syncCustom, seedEval, runEval, evalSummary, evalExport };
 }
