@@ -9,10 +9,20 @@ import { ChevronRight, ChevronDown, Plus, Zap, Puzzle, BookOpen, ListChecks, Ref
 import { HIERARCHY_LEVELS } from '@/types/hierarchy';
 import type { WorkItem } from '@/types/hierarchy';
 import type { LucideProps } from 'lucide-react';
-import { useJiraHierarchyTree } from '@/hooks/useJiraHierarchy';
+import { useJiraHierarchyTree, useMoveJiraHierarchyItem } from '@/hooks/useJiraHierarchy';
 import { WorkItemTree, TreeSkeleton } from '@/components/hierarchy/WorkItemTree';
 import { DetailPanel } from '@/components/hierarchy/DetailPanel';
 import { toast } from 'sonner';
+
+/** Find an item by id in the tree */
+function findItem(items: WorkItem[], id: string): WorkItem | null {
+  for (const item of items) {
+    if (item.id === id) return item;
+    const found = findItem(item.children, id);
+    if (found) return found;
+  }
+  return null;
+}
 
 const ICON_MAP: Record<string, React.ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>>> = {
   zap: Zap, puzzle: Puzzle, 'book-open': BookOpen, 'list-checks': ListChecks,
@@ -33,6 +43,8 @@ export default function HierarchyPage() {
   const { key: projectKey } = useParams<{ key: string }>();
   const { data: treeItems = [], isLoading, isError, refetch } = useJiraHierarchyTree(projectKey);
 
+  const moveMutation = useMoveJiraHierarchyItem(projectKey);
+
   const [allExpanded, setAllExpanded] = useState(false);
   const [selectedItem, setSelectedItem] = useState<WorkItem | null>(null);
 
@@ -40,6 +52,20 @@ export default function HierarchyPage() {
   const completedItems = useMemo(() => countCompleted(treeItems), [treeItems]);
 
   const handleDeselect = useCallback(() => { setSelectedItem(null); }, []);
+
+  const handleMove = useCallback(async (itemId: string, newParentId: string) => {
+    const draggedItem = findItem(treeItems, itemId);
+    try {
+      await moveMutation.mutateAsync({
+        issueKey: itemId,
+        newParentKey: newParentId,
+        originalParentKey: draggedItem?.parentId || null,
+      });
+      toast.success('Hierarchy updated');
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to move item');
+    }
+  }, [moveMutation, treeItems]);
 
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#F8FAFC', fontFamily: "'Inter', sans-serif" }}>
@@ -99,6 +125,7 @@ export default function HierarchyPage() {
               selectedId={selectedItem?.id || null}
               onSelect={setSelectedItem}
               onDeselect={handleDeselect}
+              onMove={handleMove}
               allExpanded={allExpanded}
             />
           )}
