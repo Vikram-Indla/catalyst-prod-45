@@ -2,9 +2,10 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface TrainStatus {
-  training_questions: { total: number; embedded: number };
-  kb_embeddings: number;
-  sources: number;
+  total_questions: number;
+  embedded: number;
+  remaining: number;
+  percentage: number;
 }
 
 export default function KBAdminSetup() {
@@ -59,10 +60,10 @@ export default function KBAdminSetup() {
     }
   };
 
-  const total = status?.training_questions?.total ?? 0;
-  const embedded = status?.training_questions?.embedded ?? 0;
-  const remaining = total - embedded;
-  const pct = total > 0 ? Math.round((embedded / total) * 100) : 0;
+  const total = status?.total_questions ?? 0;
+  const embedded = status?.embedded ?? 0;
+  const remaining = status?.remaining ?? 0;
+  const pct = status?.percentage ?? 0;
 
   return (
     <div className="max-w-3xl mx-auto p-8 space-y-6">
@@ -90,7 +91,7 @@ export default function KBAdminSetup() {
                 <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
               </div>
             </div>
-            <div className="text-xs text-muted-foreground">Sources: {status.sources} | Embedding chunks: {status.kb_embeddings}</div>
+            <div className="text-xs text-muted-foreground">Remaining: {remaining}</div>
           </>
         ) : (
           <div className="text-sm text-muted-foreground">{loading ? "Loading…" : "No data"}</div>
@@ -100,7 +101,7 @@ export default function KBAdminSetup() {
       {/* Action Buttons */}
       <div className="flex gap-3 flex-wrap">
         <button
-          onClick={() => runAction("embed_training", "Embed Batch (50)")}
+          onClick={() => runAction("embed_batch", "Embed Batch (50)")}
           disabled={!!actionLoading}
           className="px-4 py-2 rounded bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 text-sm font-medium"
         >
