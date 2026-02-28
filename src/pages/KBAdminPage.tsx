@@ -55,7 +55,7 @@ function HealthTab() {
   const [loading, setLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
   const [generating, setGenerating] = useState(false);
-  const [genProgress, setGenProgress] = useState({ done: 0, total: 0, currentCategory: '' });
+  const [genProgress, setGenProgress] = useState<{ done: number; total: number; currentCategory: string; alreadyDone: number } | null>(null);
   const [warmingCache, setWarmingCache] = useState(false);
 
   const runChecks = useCallback(async () => {
@@ -90,14 +90,14 @@ function HealthTab() {
         detail: `${withAnswers.toLocaleString()} / ${totalQ.toLocaleString()} have answers (${totalQ > 0 ? Math.round((withAnswers / totalQ) * 100) : 0}%)`,
       });
 
-      // 2. KB Embeddings (RAG chunks)
+      // 2. KB Embeddings (RAG chunks) — separate from training question embeddings
       const { count: embCount } = await supabase.from('kb_embeddings').select('id', { count: 'exact', head: true });
       const embedTotal = embCount || 0;
       results.push({
         label: 'RAG Content Chunks Indexed',
-        description: 'Source documents chunked and vectorized for retrieval-augmented generation',
+        description: 'Source documents (PDFs, web pages, policies) chunked and vectorized for retrieval. This is separate from training question embeddings — requires ingesting documents via Sources tab.',
         status: embedTotal >= 50 ? 'pass' : embedTotal > 0 ? 'warn' : 'fail',
-        detail: `${embedTotal.toLocaleString()} chunks in vector store`,
+        detail: embedTotal > 0 ? `${embedTotal.toLocaleString()} chunks in vector store` : '0 chunks — No source documents ingested yet. Use the Sources tab to add and scrape content.',
       });
 
       // 3. Sources configured
@@ -164,7 +164,6 @@ function HealthTab() {
     let totalDone = 0;
 
     try {
-      // Get total count of ALL questions and count of those WITH answers
       const { count: totalCount } = await supabase
         .from('kb_training_questions')
         .select('*', { count: 'exact', head: true });
@@ -176,33 +175,35 @@ function HealthTab() {
 
       const total = totalCount || 0;
       const alreadyDone = withAnswersCount || 0;
-      const totalRemaining = total - alreadyDone;
+      const remaining = total - alreadyDone;
 
-      setGenProgress({ done: 0, total: totalRemaining, currentCategory: 'Starting...' });
+      setGenProgress({ done: 0, total: total, currentCategory: 'Starting...', alreadyDone });
 
-      if (totalRemaining === 0) {
+      if (remaining === 0) {
         toast.success('All questions already have answers!');
         setGenerating(false);
+        setGenProgress(null);
         return;
       }
 
-      // Process in batches — max 20 iterations as safety limit
-      for (let i = 0; i < 20 && totalDone < totalRemaining; i++) {
+      for (let i = 0; i < 20 && totalDone < remaining; i++) {
         const res = await supabase.functions.invoke('kb-generate-answers', {
           body: { action: 'generate_batch', batch_size: BATCH },
         });
 
         if (res.error) throw new Error(res.error.message);
-        const data = res.data;
-        const generated = data.generated || 0;
-
-        if (generated === 0) break; // No more to generate
+        const generated = res.data?.generated || 0;
+        if (generated === 0) break;
 
         totalDone += generated;
-        setGenProgress({ done: Math.min(totalDone, totalRemaining), total: totalRemaining, currentCategory: `Batch ${i + 1} complete — ${generated} answers generated` });
+        setGenProgress({
+          done: totalDone,
+          total: total,
+          currentCategory: `Batch ${i + 1} complete — ${generated} answers generated`,
+          alreadyDone,
+        });
 
-        // Small pause between batches
-        if (totalDone < totalRemaining) {
+        if (totalDone < remaining) {
           await new Promise(r => setTimeout(r, 500));
         }
       }
@@ -238,7 +239,8 @@ function HealthTab() {
   const warnCount = checks.filter(c => c.status === 'warn').length;
   const failCount = checks.filter(c => c.status === 'fail').length;
   const totalChecks = checks.length;
-  const overallScore = totalChecks > 0 ? Math.round((passCount / totalChecks) * 100) : 0;
+  // Weighted score: pass=100, warn=50, fail=0
+  const overallScore = totalChecks > 0 ? Math.round(((passCount * 100) + (warnCount * 50)) / totalChecks) : 0;
   const overallStatus = failCount > 0 ? 'fail' : warnCount > 0 ? 'warn' : 'pass';
 
   const statusIcon = (s: string) => {
@@ -286,7 +288,7 @@ function HealthTab() {
       </div>
 
       {/* Active generation progress */}
-      {generating && (
+      {generating && genProgress && (
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
           <div className="flex items-center gap-3 mb-3">
             <RefreshCw size={16} className="animate-spin text-blue-600" />
@@ -295,13 +297,18 @@ function HealthTab() {
           <div className="w-full bg-blue-100 rounded-full h-3 mb-2">
             <div
               className="bg-blue-600 h-3 rounded-full transition-all duration-500"
-              style={{ width: `${genProgress.total > 0 ? Math.round((genProgress.done / genProgress.total) * 100) : 0}%` }}
+              style={{ width: `${genProgress.total > 0 ? Math.round(((genProgress.alreadyDone + genProgress.done) / genProgress.total) * 100) : 0}%` }}
             />
           </div>
           <div className="flex justify-between text-xs text-blue-700">
             <span>{genProgress.currentCategory}</span>
-            <span className="font-mono font-semibold">{genProgress.done} / {genProgress.total} ({genProgress.total > 0 ? Math.round((genProgress.done / genProgress.total) * 100) : 0}%)</span>
+            <span className="font-mono font-semibold">
+              {(genProgress.alreadyDone + genProgress.done).toLocaleString()} / {genProgress.total.toLocaleString()} ({genProgress.total > 0 ? Math.round(((genProgress.alreadyDone + genProgress.done) / genProgress.total) * 100) : 0}%)
+            </span>
           </div>
+          {genProgress.alreadyDone > 0 && (
+            <p className="text-[11px] text-blue-500 mt-1">{genProgress.alreadyDone.toLocaleString()} previously generated · {genProgress.done.toLocaleString()} new this session</p>
+          )}
         </div>
       )}
 
