@@ -10,8 +10,9 @@ import { cn } from '@/lib/utils';
 import { useForYouData } from '@/hooks/useForYouData';
 import {
   ForYouHeader, ForYouSubTabs, ForYouToolbar, ForYouTable,
-  ForYouTableSkeleton, ForYouPagination, ForYouStatsBar, ForYouDetailPanel,
+  ForYouTableSkeleton, ForYouPagination, ForYouDetailPanel,
 } from '@/components/for-you';
+import { StatusSummaryBar } from '@/components/for-you/StatusSummaryBar';
 import { ForYouInlineFilters, type ForYouFilters } from '@/components/for-you/ForYouInlineFilters';
 import { BulkActionsBar } from '@/components/business-requests/table-view/BulkActionsBar';
 import { CatalystAIPanel } from '@/components/catalyst-ai';
@@ -122,12 +123,12 @@ export default function ForYouPage() {
           <ForYouSubTabs activeTab={activeTab} counts={tabCounts} onTabChange={setActiveTab} />
         </div>
 
-        {/* Stats Bar */}
-        <ForYouStatsBar
-          hubCounts={hubStats.hubCounts}
-          projectCount={hubStats.projectCount}
-          reporterCount={hubStats.reporterCount}
-        />
+        {/* Status Summary Bar — computed from filtered items */}
+        <StatusSummaryBar items={[
+          ...filteredGroupedItems.YESTERDAY,
+          ...filteredGroupedItems.THIS_WEEK,
+          ...filteredGroupedItems.EARLIER,
+        ]} />
 
         {/* Search + Filters */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
