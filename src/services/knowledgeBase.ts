@@ -201,6 +201,48 @@ export async function syncCustomTable(config: {
   return data;
 }
 
+// ═══ KB Eval Service ═══
+
+export async function seedEvalSet(): Promise<any> {
+  const { data, error } = await supabase.functions.invoke("kb-eval", {
+    body: { action: "seed_eval" },
+  });
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function runEvaluation(limit = 50): Promise<any> {
+  const { data, error } = await supabase.functions.invoke("kb-eval", {
+    body: { action: "run_eval", limit },
+  });
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function getEvalSummary(): Promise<{
+  total_evals: number;
+  avg_hit_rate: number;
+  avg_confidence: number;
+  avg_response_ms: number;
+  hallucination_rate: number;
+  by_method: Record<string, number>;
+  last_run: string;
+}> {
+  const { data, error } = await supabase.functions.invoke("kb-eval", {
+    body: { action: "summary" },
+  });
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function exportEvalData(): Promise<{ format: string; rows: any[] }> {
+  const { data, error } = await supabase.functions.invoke("kb-eval", {
+    body: { action: "export" },
+  });
+  if (error) throw new Error(error.message);
+  return data;
+}
+
 // ═══ Direct DB Queries (for admin panels) ═══
 
 export async function fetchSources(): Promise<KBSource[]> {
