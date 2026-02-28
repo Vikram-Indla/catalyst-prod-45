@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Star } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
+import { StatusBadge } from '@/components/for-you/StatusBadge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import type { WorkItem, WorkGroup } from '@/hooks/useForYouData';
 
@@ -40,31 +41,6 @@ const T = {
   primaryBg: '#EFF6FF',
 };
 
-const STATUS_STYLES: Record<string, { dot: string; text: string; bg: string }> = {
-  'In Progress': { dot: T.teal, text: T.tealText, bg: T.tealBg },
-  'In Development': { dot: T.teal, text: T.tealText, bg: T.tealBg },
-  'Ready for Development': { dot: T.teal, text: T.tealText, bg: T.tealBg },
-  'Ready for Dev': { dot: T.teal, text: T.tealText, bg: T.tealBg },
-  'To Do': { dot: T.primary, text: T.primary, bg: T.primaryBg },
-  'ToDo': { dot: T.primary, text: T.primary, bg: T.primaryBg },
-  'Planned': { dot: T.primary, text: T.primary, bg: T.primaryBg },
-  'Backlog': { dot: '#6F6F78', text: '#6F6F78', bg: T.surfaceTertiary },
-  'Done': { dot: T.success, text: T.successText, bg: T.successBg },
-  'In Production': { dot: T.success, text: T.successText, bg: T.successBg },
-  'In Review': { dot: T.warning, text: T.warningText, bg: T.warningBg },
-  'End to End Testing': { dot: T.warning, text: T.warningText, bg: T.warningBg },
-  'Ready for Review': { dot: T.warning, text: T.warningText, bg: T.warningBg },
-  'Blocked': { dot: T.danger, text: T.dangerText, bg: T.dangerBg },
-};
-
-// Abbreviate long status names for table display
-const STATUS_DISPLAY: Record<string, string> = {
-  'Ready for Development': 'Ready for Dev',
-  'End to End Testing': 'E2E Testing',
-  'In Development': 'In Dev',
-  'In Production': 'In Prod',
-  'Ready for Review': 'Ready Review',
-};
 
 const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
   Project:  { bg: T.primaryBg, color: T.primary, border: T.primary },
@@ -182,9 +158,7 @@ export function ForYouTable({
                 const currentRowIndex = rowIndex;
                 const isSelected = selectedIds.has(item.id);
                 const isFocused = focusedIndex === currentRowIndex;
-                const statusStyle = STATUS_STYLES[item.status] || STATUS_STYLES['In Progress'];
                 const hubCfg = HUB_CFG[item.hubLabel] || HUB_CFG.Task;
-                const displayStatus = STATUS_DISPLAY[item.status] || item.status;
 
                 return (
                   <tr
@@ -229,10 +203,7 @@ export function ForYouTable({
 
                     {/* Status */}
                     <td style={{ padding: '0 8px', width: 160, textAlign: 'center' }}>
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 22, padding: '0 10px', borderRadius: 9999, background: statusStyle.bg, fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>
-                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: statusStyle.dot, flexShrink: 0 }} />
-                        <span style={{ color: statusStyle.text }}>{displayStatus}</span>
-                      </span>
+                      <StatusBadge status={item.status} />
                     </td>
 
                     {/* Project */}

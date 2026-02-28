@@ -11,3 +11,4 @@ export { ForYouPagination } from './ForYouPagination';
 export { ForYouInlineFilters } from './ForYouInlineFilters';
 export { ForYouStatsBar } from './ForYouStatsBar';
 export { ForYouDetailPanel } from './ForYouDetailPanel';
+export { StatusBadge } from './StatusBadge';

@@ -114,6 +114,74 @@ export default function ForYouPage() {
 
   return (
     <div className="fy-page" style={{ fontFamily: "'Inter', system-ui", minHeight: '100vh' }}>
+      <nav style={{
+        display: 'flex',
+        alignItems: 'center',
+        height: '48px',
+        padding: '0 32px',
+        borderBottom: '1px solid #E4E4E7',
+        backgroundColor: '#FFFFFF',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+      }}>
+        <span style={{ fontFamily: "'Sora', system-ui", fontSize: '16px', fontWeight: 700, letterSpacing: '-0.025em', marginRight: '32px' }}>
+          <span style={{ color: '#2563EB' }}>C</span>atalyst
+          <sup style={{ fontSize: '8px', color: '#71717A' }}>™</sup>
+        </span>
+
+        <div style={{ display: 'flex', flex: 1 }}>
+          {['Home','StrategyHub','ProductHub','ProjectHub','ReleaseHub','TestHub','IncidentHub','TaskHub','PlanHub'].map(link => (
+            <a
+              key={link}
+              href="#"
+              style={{
+                fontSize: '13px',
+                fontWeight: link === 'Home' ? 600 : 500,
+                color: link === 'Home' ? '#2563EB' : '#3F3F46',
+                padding: '0 12px',
+                height: '48px',
+                display: 'flex',
+                alignItems: 'center',
+                borderBottom: link === 'Home' ? '2px solid #2563EB' : '2px solid transparent',
+                textDecoration: 'none',
+              }}
+              onClick={(e) => e.preventDefault()}
+            >
+              {link}
+            </a>
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button style={{
+            display: 'flex', alignItems: 'center', gap: '6px',
+            height: '32px', padding: '0 16px',
+            backgroundColor: '#2563EB', color: '#fff',
+            border: 'none', borderRadius: '6px',
+            fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+          }}>
+            + Create
+          </button>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '8px',
+            height: '32px', padding: '0 12px',
+            border: '1px solid #E4E4E7', borderRadius: '6px',
+            color: '#71717A', fontSize: '13px', minWidth: '180px',
+          }}>
+            🔍 Search… <kbd style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', background: '#F4F4F5', padding: '1px 5px', borderRadius: '3px', marginLeft: 'auto' }}>⌘K</kbd>
+          </div>
+          <div style={{
+            width: '28px', height: '28px', borderRadius: '50%',
+            backgroundColor: '#2563EB', color: '#fff',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '11px', fontWeight: 700,
+          }}>
+            V
+          </div>
+        </div>
+      </nav>
+
       <main style={{ width: '100%', padding: '24px 32px 48px' }}>
         <ForYouHeader />
 
