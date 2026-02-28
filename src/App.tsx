@@ -1,5 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import KBAdminSetup from "./pages/KBAdminSetup";
+const KBAdminPage = lazy(() => import("./pages/KBAdminPage"));
 import { Resource360Redirect } from './components/workhub/resource360/Resource360Redirect';
 const Resource360PageNew = lazy(() => import("./components/resource360/Resource360PageNew"));
 const Resource360MemberDetail = lazy(() => import("./pages/Resource360MemberDetail"));
@@ -494,6 +495,7 @@ const App = () => (
               {/* Jira test routes removed */}
               <Route path="/submit-request" element={<SubmitDemandRequest />} />
               <Route path="/kb-admin-setup" element={<KBAdminSetup />} />
+              <Route path="/kb-admin" element={<Suspense fallback={<div className="p-8">Loading...</div>}><KBAdminPage /></Suspense>} />
               
               {/* Work Hub Test Route */}
               <Route path="/work-hub-test" element={<WorkHubLayout />}>
