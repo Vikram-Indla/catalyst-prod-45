@@ -57,6 +57,8 @@ function HealthTab() {
   const [generating, setGenerating] = useState(false);
   const [genProgress, setGenProgress] = useState<{ done: number; total: number; currentCategory: string; alreadyDone: number } | null>(null);
   const [warmingCache, setWarmingCache] = useState(false);
+  const [ingesting, setIngesting] = useState(false);
+  const [ingestProgress, setIngestProgress] = useState<{ done: number; total: number } | null>(null);
 
   const runChecks = useCallback(async () => {
     setLoading(true);
@@ -235,6 +237,47 @@ function HealthTab() {
     }
   }, [runChecks]);
 
+  // Build RAG index from training Q&A
+  const handleBuildRAGIndex = useCallback(async () => {
+    setIngesting(true);
+    let totalIngested = 0;
+
+    try {
+      // First get count of training questions with answers
+      const { count: qaCount } = await supabase
+        .from('kb_training_questions')
+        .select('*', { count: 'exact', head: true })
+        .not('expected_answer', 'is', null)
+        .neq('expected_answer', '');
+
+      const total = qaCount || 0;
+      setIngestProgress({ done: 0, total });
+
+      // Process in batches
+      for (let i = 0; i < 30; i++) {
+        const res = await supabase.functions.invoke('kb-ingest', {
+          body: { action: 'ingest_training', batch_size: 100 },
+        });
+
+        if (res.error) throw new Error(res.error.message);
+        const ingested = res.data?.ingested || 0;
+        if (ingested === 0) break;
+
+        totalIngested += ingested;
+        setIngestProgress({ done: Math.min(totalIngested, total), total });
+
+        await new Promise(r => setTimeout(r, 500));
+      }
+
+      toast.success(`RAG index built — ${totalIngested} chunks ingested!`);
+      runChecks();
+    } catch (err: any) {
+      toast.error(`RAG ingest failed: ${err.message}`);
+    } finally {
+      setIngesting(false);
+      setIngestProgress(null);
+    }
+  }, [runChecks]);
   const passCount = checks.filter(c => c.status === 'pass').length;
   const warnCount = checks.filter(c => c.status === 'warn').length;
   const failCount = checks.filter(c => c.status === 'fail').length;
@@ -259,8 +302,10 @@ function HealthTab() {
   // Determine which actions are needed
   const answersCheck = checks.find(c => c.label.includes('Answers'));
   const cacheCheck = checks.find(c => c.label === 'Response Cache');
+  const ragCheck = checks.find(c => c.label.includes('RAG'));
   const needsAnswers = answersCheck && answersCheck.status !== 'pass';
   const needsCache = cacheCheck && cacheCheck.status !== 'pass';
+  const needsRAG = ragCheck && ragCheck.status !== 'pass';
 
   return (
     <div className="space-y-5">
@@ -312,7 +357,28 @@ function HealthTab() {
         </div>
       )}
 
-      {/* Pipeline readiness visual */}
+      {/* RAG Index build progress */}
+      {ingesting && ingestProgress && (
+        <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <RefreshCw size={16} className="animate-spin text-indigo-600" />
+            <span className="text-sm font-bold text-indigo-800">Building RAG Index...</span>
+          </div>
+          <div className="w-full bg-indigo-100 rounded-full h-3 mb-2">
+            <div
+              className="bg-indigo-600 h-3 rounded-full transition-all duration-500"
+              style={{ width: `${ingestProgress.total > 0 ? Math.round((ingestProgress.done / ingestProgress.total) * 100) : 0}%` }}
+            />
+          </div>
+          <div className="flex justify-between text-xs text-indigo-700">
+            <span>Chunking & embedding training Q&A into vector store</span>
+            <span className="font-mono font-semibold">
+              {ingestProgress.done.toLocaleString()} / {ingestProgress.total.toLocaleString()} chunks
+            </span>
+          </div>
+        </div>
+      )}
+
       <div className={card}>
         <h3 className="text-sm font-bold text-zinc-800 mb-1">Pipeline Readiness</h3>
         <p className="text-xs text-zinc-500 mb-4">The 4-layer RAG pipeline requires all components to be operational for full KB functionality</p>
@@ -410,6 +476,23 @@ function HealthTab() {
                 >
                   {warmingCache ? <RefreshCw size={13} className="animate-spin" /> : <Zap size={13} />}
                   {warmingCache ? 'Warming...' : 'Warm Cache'}
+                </button>
+              </div>
+            )}
+
+            {needsRAG && !needsAnswers && (
+              <div className="flex items-center justify-between p-3 bg-indigo-50 border border-indigo-100 rounded-lg">
+                <div>
+                  <p className="text-sm font-semibold text-zinc-800">Build RAG Index</p>
+                  <p className="text-xs text-zinc-500 mt-0.5">Convert your {checks.find(c => c.label.includes('Answers'))?.detail?.match(/[\d,]+/)?.[0] || ''} training Q&A pairs into vector chunks for semantic retrieval (Layer 3).</p>
+                </div>
+                <button
+                  onClick={handleBuildRAGIndex}
+                  disabled={ingesting}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 whitespace-nowrap"
+                >
+                  {ingesting ? <RefreshCw size={13} className="animate-spin" /> : <Brain size={13} />}
+                  {ingesting ? 'Building...' : 'Build RAG Index'}
                 </button>
               </div>
             )}
