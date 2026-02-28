@@ -56,6 +56,8 @@ export interface WorkItem {
   labels: string[];
   createdAt: string;
   updatedAt: string;
+  /** Raw Jira issue_type for icon resolution */
+  issueType?: string;
 }
 
 // Hierarchy Configuration (single source of truth)

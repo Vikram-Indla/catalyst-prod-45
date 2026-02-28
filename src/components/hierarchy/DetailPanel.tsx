@@ -6,6 +6,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import type { WorkItem } from '@/types/hierarchy';
 import { HIERARCHY_LEVELS, canBeParentOf } from '@/types/hierarchy';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 interface DetailPanelProps {
   item: WorkItem | null;
@@ -109,7 +110,11 @@ export function DetailPanel({ item, onAddChild }: DetailPanelProps) {
       >
         {/* Header */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.hierarchyColor, flexShrink: 0 }} />
+          {item.issueType ? (
+            <JiraIssueTypeIcon type={item.issueType} size={16} />
+          ) : (
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.hierarchyColor, flexShrink: 0 }} />
+          )}
           <span style={{ fontSize: 12, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
           <span style={{ fontSize: 12, fontWeight: 600, color: item.hierarchyColorText }}>{item.hierarchyName}</span>
         </div>

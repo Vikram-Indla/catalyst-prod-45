@@ -63,7 +63,7 @@ function transformJiraIssue(row: any): WorkItem {
   }
 
   return {
-    id: row.issue_key, // Use issue_key as ID since ph_issues has no UUID id
+    id: row.issue_key,
     key: row.issue_key,
     title: row.summary,
     hierarchyLevel: typeInfo.level,
@@ -91,6 +91,7 @@ function transformJiraIssue(row: any): WorkItem {
     labels: Array.isArray(row.labels) ? row.labels : [],
     createdAt: row.jira_created_at,
     updatedAt: row.jira_updated_at,
+    issueType: row.issue_type,
   };
 }
 
