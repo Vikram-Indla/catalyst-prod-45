@@ -18,55 +18,57 @@ async function getEmbedding(text: string): Promise<number[]> {
       Authorization: `Bearer ${OPENAI_API_KEY}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ model: "text-embedding-3-small", input: text }),
+    body: JSON.stringify({ model: "text-embedding-3-small", input: text.trim() }),
   });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`OpenAI embedding error: ${err}`);
+  const data = await res.json();
+  if (!data.data?.[0]?.embedding) {
+    throw new Error(`Embedding failed: ${JSON.stringify(data)}`);
   }
-  const json = await res.json();
-  return json.data[0].embedding;
+  return data.data[0].embedding;
 }
 
-function hashQuery(q: string): string {
-  const normalized = q.trim().toLowerCase().replace(/\s+/g, " ");
-  // Simple hash using Web Crypto not available sync, use a basic approach
-  let hash = 0;
-  for (let i = 0; i < normalized.length; i++) {
-    const chr = normalized.charCodeAt(i);
-    hash = ((hash << 5) - hash) + chr;
-    hash |= 0;
-  }
-  return `qh_${Math.abs(hash).toString(36)}`;
+function normalizeQuery(q: string): string {
+  return q.toLowerCase().trim().replace(/[^\w\s]/g, "").replace(/\s+/g, " ");
+}
+
+async function sha256(text: string): Promise<string> {
+  const data = new TextEncoder().encode(text);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response("ok", { headers: corsHeaders });
   }
 
-  const startTime = Date.now();
+  const startTime = performance.now();
 
   try {
-    const { query, language = "en", user_id, user_name, user_role, input_method = "keyboard" } = await req.json();
+    const { query, language = "en", input_method = "keyboard", user_id, user_name, user_role } = await req.json();
 
-    if (!query || typeof query !== "string") {
-      return new Response(JSON.stringify({ error: "query is required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (!query || query.trim().length === 0) {
+      return new Response(
+        JSON.stringify({ error: "Query is required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-    // Step 1: Check cache
-    const queryHash = hashQuery(query);
-    const { data: cacheHit } = await supabase.rpc("kb_cache_hit", { p_query_hash: queryHash });
+    // ═══ LAYER 1: CACHE CHECK (target: <50ms) ═══
+    const normalized = normalizeQuery(query);
+    const queryHash = await sha256(normalized);
 
-    if (cacheHit) {
-      const responseTimeMs = Date.now() - startTime;
-      // Log the query
-      await supabase.rpc("kb_log_query", {
+    const { data: cachedResponse } = await supabase.rpc("kb_cache_hit", {
+      p_query_hash: queryHash,
+    });
+
+    if (cachedResponse) {
+      const responseTime = Math.round(performance.now() - startTime);
+      supabase.rpc("kb_log_query", {
         p_user_id: user_id || null,
         p_user_name: user_name || null,
         p_user_role: user_role || null,
@@ -74,70 +76,53 @@ serve(async (req) => {
         p_language: language,
         p_input_method: input_method,
         p_was_answered: true,
-        p_response_time_ms: responseTimeMs,
+        p_response_time_ms: responseTime,
         p_cache_hit: true,
-        p_matched_category: cacheHit.category || null,
-        p_confidence_score: cacheHit.confidence || null,
+        p_matched_category: cachedResponse.category || null,
+        p_confidence_score: 1.0,
       });
 
-      return new Response(JSON.stringify({ ...cacheHit, cache_hit: true, response_time_ms: responseTimeMs }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({
+          ...cachedResponse,
+          _meta: { source: "cache", response_time_ms: responseTime, cache_hit: true },
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    // Step 2: Get embedding for query
-    const embedding = await getEmbedding(query);
+    // ═══ LAYER 2: TRAINING MATCH (pre-trained Q&A) ═══
+    const queryEmbedding = await getEmbedding(query);
 
-    // Step 3: Check training questions for a close match
     const { data: trainingMatches } = await supabase.rpc("kb_match_training", {
-      query_embedding: JSON.stringify(embedding),
+      query_embedding: queryEmbedding,
       match_threshold: 0.85,
       match_count: 3,
     });
 
-    // Step 4: Search knowledge base embeddings
-    const { data: kbMatches } = await supabase.rpc("kb_match_embeddings", {
-      query_embedding: JSON.stringify(embedding),
-      match_threshold: 0.78,
-      match_count: 10,
-    });
+    if (trainingMatches && trainingMatches.length > 0 && trainingMatches[0].expected_answer) {
+      const bestMatch = trainingMatches[0];
+      const responseTime = Math.round(performance.now() - startTime);
 
-    // Step 5: Build context for AI
-    const trainingContext = (trainingMatches || [])
-      .map((m: any) => `[Training Q${m.question_number} - ${m.category}]: ${m.question}\nAnswer: ${m.expected_answer || "No cached answer"}`)
-      .join("\n\n");
-
-    const kbContext = (kbMatches || [])
-      .map((m: any) => `[${m.source_type}] (similarity: ${m.similarity?.toFixed(3)}): ${m.content}`)
-      .join("\n\n");
-
-    const topCategory = trainingMatches?.[0]?.category || null;
-    const topConfidence = trainingMatches?.[0]?.similarity || kbMatches?.[0]?.similarity || 0;
-
-    // Step 6: If we have a high-confidence training match with a cached answer, use it directly
-    if (trainingMatches?.[0]?.expected_answer && trainingMatches[0].similarity > 0.92) {
-      const directAnswer = {
-        answer: trainingMatches[0].expected_answer,
-        category: trainingMatches[0].category,
-        confidence: trainingMatches[0].similarity,
-        sources: [{
-          type: "training",
-          question_number: trainingMatches[0].question_number,
-          similarity: trainingMatches[0].similarity,
-        }],
-        context_used: kbMatches?.length || 0,
+      const response = {
+        type: "editorial",
+        title: bestMatch.category,
+        answer: bestMatch.expected_answer,
+        matched_question: bestMatch.question,
+        category: bestMatch.category,
+        confidence: bestMatch.similarity,
+        references: [],
       };
 
-      // Cache it
-      await supabase.from("kb_cache").upsert({
+      // Fire-and-forget: cache + log + increment
+      supabase.from("kb_cache").upsert({
         query_hash: queryHash,
         query_text: query,
-        response_json: directAnswer,
+        response_json: response,
         language,
-      }, { onConflict: "query_hash" });
+      }, { onConflict: "query_hash" }).then(() => {});
 
-      const responseTimeMs = Date.now() - startTime;
-      await supabase.rpc("kb_log_query", {
+      supabase.rpc("kb_log_query", {
         p_user_id: user_id || null,
         p_user_name: user_name || null,
         p_user_role: user_role || null,
@@ -145,123 +130,172 @@ serve(async (req) => {
         p_language: language,
         p_input_method: input_method,
         p_was_answered: true,
-        p_response_time_ms: responseTimeMs,
+        p_response_time_ms: responseTime,
         p_cache_hit: false,
-        p_matched_category: topCategory,
-        p_confidence_score: topConfidence,
+        p_matched_category: bestMatch.category,
+        p_confidence_score: bestMatch.similarity,
       });
 
-      return new Response(JSON.stringify({ ...directAnswer, cache_hit: false, response_time_ms: responseTimeMs }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      supabase
+        .from("kb_training_questions")
+        .update({
+          cache_hits: (bestMatch.cache_hits || 0) + 1,
+          last_served_at: new Date().toISOString(),
+        })
+        .eq("id", bestMatch.id)
+        .then(() => {});
+
+      return new Response(
+        JSON.stringify({
+          ...response,
+          _meta: { source: "training", response_time_ms: responseTime, cache_hit: false, similarity: bestMatch.similarity },
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    // Step 7: Call AI for generation using Lovable AI Gateway
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
-
-    const systemPrompt = `You are Catalyst KB Assistant — the knowledge engine for the Saudi Ministry of Industry and Mineral Resources (MIM) digital platform.
-
-Your role:
-- Answer questions about industrial licensing, chemical permits, SIDF financial solutions, 4IR programs, environmental compliance, and Catalyst platform features.
-- Always cite your sources when possible.
-- If unsure, say so honestly.
-- Respond in ${language === "ar" ? "Arabic" : "English"}.
-
-Context from training questions:
-${trainingContext || "No close training matches found."}
-
-Context from knowledge base:
-${kbContext || "No relevant knowledge base entries found."}`;
-
-    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: query },
-        ],
-        max_tokens: 1500,
-        temperature: 0.3,
-      }),
+    // ═══ LAYER 3: VECTOR SEARCH (semantic RAG via Lovable AI) ═══
+    const { data: vectorMatches } = await supabase.rpc("kb_match_embeddings", {
+      query_embedding: queryEmbedding,
+      match_threshold: 0.78,
+      match_count: 10,
     });
 
-    if (!aiResponse.ok) {
-      const status = aiResponse.status;
-      if (status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded, please try again later." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+    if (vectorMatches && vectorMatches.length > 0) {
+      const context = vectorMatches
+        .map((m: any) => `[${m.source_type}] ${m.content}`)
+        .join("\n\n");
+      const references = vectorMatches.map((m: any) => ({
+        source_type: m.source_type,
+        source_url: m.source_url,
+        similarity: m.similarity,
+        metadata: m.metadata,
+      }));
+
+      const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+      if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+      const chatRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-3-flash-preview",
+          temperature: 0.3,
+          max_tokens: 2000,
+          messages: [
+            {
+              role: "system",
+              content: `You are the Catalyst Knowledge Base for the Ministry of Industry & Mineral Resources, Saudi Arabia. Respond in structured editorial format with sections: Background, Investor Use (bulleted), The Storyline (narrative), Current Status, Good News (bulleted), Issues & Risks (bulleted), Who's Working. Use **name** for people and \`TICKET-123\` for tickets. Bloomberg editorial style. Language: ${language === "ar" ? "Arabic" : "English"}. Only include sections with relevant data. Do not hallucinate.`,
+            },
+            {
+              role: "user",
+              content: `Question: ${query}\n\nContext from knowledge base:\n${context}`,
+            },
+          ],
+        }),
+      });
+
+      if (!chatRes.ok) {
+        const status = chatRes.status;
+        if (status === 429) {
+          return new Response(JSON.stringify({ error: "Rate limit exceeded, please try again later." }), {
+            status: 429,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        if (status === 402) {
+          return new Response(JSON.stringify({ error: "AI credits exhausted. Please add funds." }), {
+            status: 402,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const errText = await chatRes.text();
+        throw new Error(`AI gateway error ${status}: ${errText}`);
       }
-      if (status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add funds." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const errText = await aiResponse.text();
-      throw new Error(`AI gateway error ${status}: ${errText}`);
+
+      const chatData = await chatRes.json();
+      const answer = chatData.choices?.[0]?.message?.content || "I couldn't generate a response.";
+      const responseTime = Math.round(performance.now() - startTime);
+
+      const response = {
+        type: "editorial",
+        title: query,
+        answer,
+        category: vectorMatches[0]?.metadata?.category || "General",
+        confidence: vectorMatches[0]?.similarity || 0,
+        references,
+      };
+
+      supabase.from("kb_cache").upsert({
+        query_hash: queryHash,
+        query_text: query,
+        response_json: response,
+        language,
+      }, { onConflict: "query_hash" }).then(() => {});
+
+      supabase.rpc("kb_log_query", {
+        p_user_id: user_id || null,
+        p_user_name: user_name || null,
+        p_user_role: user_role || null,
+        p_query_text: query,
+        p_language: language,
+        p_input_method: input_method,
+        p_was_answered: true,
+        p_response_time_ms: responseTime,
+        p_cache_hit: false,
+        p_matched_category: vectorMatches[0]?.metadata?.category || null,
+        p_confidence_score: vectorMatches[0]?.similarity || 0,
+      });
+
+      return new Response(
+        JSON.stringify({
+          ...response,
+          _meta: { source: "vector_search", response_time_ms: responseTime, cache_hit: false, chunks_matched: vectorMatches.length },
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    const aiJson = await aiResponse.json();
-    const answer = aiJson.choices?.[0]?.message?.content || "I couldn't generate an answer.";
+    // ═══ LAYER 4: FALLBACK ═══
+    const responseTime = Math.round(performance.now() - startTime);
 
-    const result = {
-      answer,
-      category: topCategory,
-      confidence: topConfidence,
-      sources: [
-        ...(trainingMatches || []).map((m: any) => ({
-          type: "training",
-          question_number: m.question_number,
-          similarity: m.similarity,
-        })),
-        ...(kbMatches || []).slice(0, 5).map((m: any) => ({
-          type: m.source_type,
-          url: m.source_url,
-          similarity: m.similarity,
-        })),
-      ],
-      context_used: (kbMatches?.length || 0) + (trainingMatches?.length || 0),
-    };
-
-    // Cache the response
-    await supabase.from("kb_cache").upsert({
-      query_hash: queryHash,
-      query_text: query,
-      response_json: result,
-      language,
-    }, { onConflict: "query_hash" });
-
-    const responseTimeMs = Date.now() - startTime;
-
-    // Log the query
-    await supabase.rpc("kb_log_query", {
+    supabase.rpc("kb_log_query", {
       p_user_id: user_id || null,
       p_user_name: user_name || null,
       p_user_role: user_role || null,
       p_query_text: query,
       p_language: language,
       p_input_method: input_method,
-      p_was_answered: true,
-      p_response_time_ms: responseTimeMs,
+      p_was_answered: false,
+      p_response_time_ms: responseTime,
       p_cache_hit: false,
-      p_matched_category: topCategory,
-      p_confidence_score: topConfidence,
+      p_matched_category: null,
+      p_confidence_score: 0,
     });
 
-    return new Response(JSON.stringify({ ...result, cache_hit: false, response_time_ms: responseTimeMs }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({
+        type: "fallback",
+        title: "No Match Found",
+        answer:
+          language === "ar"
+            ? "لم أتمكن من العثور على معلومات محددة حول هذا الموضوع في قاعدة المعرفة. يمكنك إعادة صياغة سؤالك أو تجربة موضوع مختلف."
+            : "I couldn't find specific information about this topic in the knowledge base. This query has been logged for review. You can try rephrasing your question or exploring a related topic.",
+        category: null,
+        confidence: 0,
+        references: [],
+        _meta: { source: "fallback", response_time_ms: responseTime, cache_hit: false },
+      }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   } catch (error: any) {
-    console.error("kb-query error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    console.error("KB Query Error:", error);
+    return new Response(
+      JSON.stringify({ error: error.message || "Internal server error" }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
   }
 });
