@@ -15718,6 +15718,7 @@ export type Database = {
       kb_embeddings: {
         Row: {
           chunk_index: number | null
+          chunk_type: string | null
           content: string
           content_hash: string
           created_at: string | null
@@ -15725,12 +15726,17 @@ export type Database = {
           id: string
           language: string | null
           metadata: Json | null
+          parent_chunk_id: string | null
+          section_title: string | null
           source_type: string
           source_url: string | null
+          tags: string[] | null
+          token_count: number | null
           updated_at: string | null
         }
         Insert: {
           chunk_index?: number | null
+          chunk_type?: string | null
           content: string
           content_hash: string
           created_at?: string | null
@@ -15738,12 +15744,17 @@ export type Database = {
           id?: string
           language?: string | null
           metadata?: Json | null
+          parent_chunk_id?: string | null
+          section_title?: string | null
           source_type: string
           source_url?: string | null
+          tags?: string[] | null
+          token_count?: number | null
           updated_at?: string | null
         }
         Update: {
           chunk_index?: number | null
+          chunk_type?: string | null
           content?: string
           content_hash?: string
           created_at?: string | null
@@ -15751,9 +15762,102 @@ export type Database = {
           id?: string
           language?: string | null
           metadata?: Json | null
+          parent_chunk_id?: string | null
+          section_title?: string | null
           source_type?: string
           source_url?: string | null
+          tags?: string[] | null
+          token_count?: number | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      kb_eval_results: {
+        Row: {
+          actual_answer: string | null
+          chunks_retrieved: number | null
+          confidence: number | null
+          eval_id: string | null
+          hallucination_detected: boolean | null
+          hit_rate: number | null
+          id: string
+          key_points_hit: number | null
+          key_points_total: number | null
+          notes: string | null
+          response_time_ms: number | null
+          retrieval_method: string | null
+          run_date: string | null
+        }
+        Insert: {
+          actual_answer?: string | null
+          chunks_retrieved?: number | null
+          confidence?: number | null
+          eval_id?: string | null
+          hallucination_detected?: boolean | null
+          hit_rate?: number | null
+          id?: string
+          key_points_hit?: number | null
+          key_points_total?: number | null
+          notes?: string | null
+          response_time_ms?: number | null
+          retrieval_method?: string | null
+          run_date?: string | null
+        }
+        Update: {
+          actual_answer?: string | null
+          chunks_retrieved?: number | null
+          confidence?: number | null
+          eval_id?: string | null
+          hallucination_detected?: boolean | null
+          hit_rate?: number | null
+          id?: string
+          key_points_hit?: number | null
+          key_points_total?: number | null
+          notes?: string | null
+          response_time_ms?: number | null
+          retrieval_method?: string | null
+          run_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_eval_results_eval_id_fkey"
+            columns: ["eval_id"]
+            isOneToOne: false
+            referencedRelation: "kb_eval_set"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_eval_set: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          difficulty: string | null
+          expected_key_points: string[]
+          expected_sources: string[] | null
+          id: string
+          language: string | null
+          question: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          difficulty?: string | null
+          expected_key_points: string[]
+          expected_sources?: string[] | null
+          id?: string
+          language?: string | null
+          question: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          difficulty?: string | null
+          expected_key_points?: string[]
+          expected_sources?: string[] | null
+          id?: string
+          language?: string | null
+          question?: string
         }
         Relationships: []
       }
@@ -15789,12 +15893,21 @@ export type Database = {
           cache_hit: boolean | null
           confidence_score: number | null
           created_at: string | null
+          evidence_pack: string | null
+          generation_model: string | null
+          hallucination_flag: boolean | null
           id: string
           input_method: string | null
           language: string | null
           matched_category: string | null
+          query_rewrites: string[] | null
           query_text: string
+          reranked_chunk_ids: string[] | null
+          reranked_scores: number[] | null
           response_time_ms: number | null
+          retrieval_method: string | null
+          retrieved_chunk_ids: string[] | null
+          retrieved_scores: number[] | null
           user_id: string | null
           user_name: string | null
           user_role: string | null
@@ -15805,12 +15918,21 @@ export type Database = {
           cache_hit?: boolean | null
           confidence_score?: number | null
           created_at?: string | null
+          evidence_pack?: string | null
+          generation_model?: string | null
+          hallucination_flag?: boolean | null
           id?: string
           input_method?: string | null
           language?: string | null
           matched_category?: string | null
+          query_rewrites?: string[] | null
           query_text: string
+          reranked_chunk_ids?: string[] | null
+          reranked_scores?: number[] | null
           response_time_ms?: number | null
+          retrieval_method?: string | null
+          retrieved_chunk_ids?: string[] | null
+          retrieved_scores?: number[] | null
           user_id?: string | null
           user_name?: string | null
           user_role?: string | null
@@ -15821,12 +15943,21 @@ export type Database = {
           cache_hit?: boolean | null
           confidence_score?: number | null
           created_at?: string | null
+          evidence_pack?: string | null
+          generation_model?: string | null
+          hallucination_flag?: boolean | null
           id?: string
           input_method?: string | null
           language?: string | null
           matched_category?: string | null
+          query_rewrites?: string[] | null
           query_text?: string
+          reranked_chunk_ids?: string[] | null
+          reranked_scores?: number[] | null
           response_time_ms?: number | null
+          retrieval_method?: string | null
+          retrieved_chunk_ids?: string[] | null
+          retrieved_scores?: number[] | null
           user_id?: string | null
           user_name?: string | null
           user_role?: string | null
@@ -65839,6 +65970,31 @@ export type Database = {
       kb_has_product_role: {
         Args: { required_codes: string[] }
         Returns: boolean
+      }
+      kb_hybrid_search: {
+        Args: {
+          filter_source?: string
+          filter_tags?: string[]
+          keyword_weight?: number
+          match_count?: number
+          query_embedding: string
+          query_text: string
+          rrf_k?: number
+          vector_weight?: number
+        }
+        Returns: {
+          content: string
+          id: string
+          keyword_rank: number
+          metadata: Json
+          rrf_score: number
+          section_title: string
+          source_type: string
+          source_url: string
+          tags: string[]
+          vector_rank: number
+          vector_similarity: number
+        }[]
       }
       kb_is_admin: { Args: never; Returns: boolean }
       kb_is_lead_or_above: { Args: never; Returns: boolean }
