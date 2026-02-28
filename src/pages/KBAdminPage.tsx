@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useKBAdmin } from '@/hooks/useKnowledgeBase';
 import { fetchQueryLogs, fetchSources, fetchAccessMatrix, type KBQueryLogEntry, type KBSource } from '@/services/knowledgeBase';
 import { supabase } from '@/integrations/supabase/client';
-import { Shield, FileText, Lock, RefreshCw, Zap, FolderOpen, Globe, Brain, ThumbsUp, ThumbsDown, Keyboard, Mic, Check, X as XIcon } from 'lucide-react';
+import { Shield, FileText, Lock, RefreshCw, Zap, FolderOpen, Globe, Brain, ThumbsUp, ThumbsDown, Keyboard, Mic, Check, X as XIcon, Activity, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -13,6 +13,7 @@ import { formatDistanceToNow } from 'date-fns';
    ═══════════════════════════════════════════ */
 
 const TABS = [
+  { key: 'health', label: 'Health', icon: '💚' },
   { key: 'logs', label: 'Query Log', icon: '📝' },
   { key: 'access', label: 'Access Matrix', icon: '🔐' },
   { key: 'sync', label: 'Sync Config', icon: '🔄' },
@@ -36,6 +37,261 @@ function ConfidenceBadge({ v }: { v: number | null }) {
   const pct = Math.round(v * 100);
   const color = pct >= 85 ? 'text-emerald-600' : pct >= 70 ? 'text-amber-600' : 'text-red-600';
   return <span className={`text-xs font-semibold ${color}`}>{pct}%</span>;
+}
+
+/* ═══════════════════════════════════════════
+   TAB 0: HEALTH — KB Readiness Dashboard
+   ═══════════════════════════════════════════ */
+
+interface HealthCheck {
+  label: string;
+  description: string;
+  status: 'pass' | 'warn' | 'fail' | 'loading';
+  detail: string;
+}
+
+function HealthTab() {
+  const [checks, setChecks] = useState<HealthCheck[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+
+  const runChecks = useCallback(async () => {
+    setLoading(true);
+    const results: HealthCheck[] = [];
+
+    try {
+      // 1. Training Questions
+      const { data: tq } = await supabase.from('kb_training_questions').select('id, is_embedded, expected_answer');
+      const totalQ = tq?.length || 0;
+      const embeddedQ = tq?.filter((q: any) => q.is_embedded).length || 0;
+      const withAnswers = tq?.filter((q: any) => q.expected_answer && q.expected_answer.trim() !== '').length || 0;
+
+      results.push({
+        label: 'Training Questions Loaded',
+        description: 'Total Q&A pairs ingested into the training set',
+        status: totalQ >= 100 ? 'pass' : totalQ > 0 ? 'warn' : 'fail',
+        detail: `${totalQ.toLocaleString()} questions loaded`,
+      });
+
+      results.push({
+        label: 'Questions Vectorized',
+        description: 'Training questions with embeddings generated for semantic search',
+        status: embeddedQ === totalQ && totalQ > 0 ? 'pass' : embeddedQ > 0 ? 'warn' : 'fail',
+        detail: `${embeddedQ.toLocaleString()} / ${totalQ.toLocaleString()} embedded (${totalQ > 0 ? Math.round((embeddedQ / totalQ) * 100) : 0}%)`,
+      });
+
+      results.push({
+        label: 'Expected Answers Populated',
+        description: 'Questions that have expected answers for direct response matching',
+        status: withAnswers === totalQ && totalQ > 0 ? 'pass' : withAnswers > 0 ? 'warn' : 'fail',
+        detail: `${withAnswers.toLocaleString()} / ${totalQ.toLocaleString()} have answers (${totalQ > 0 ? Math.round((withAnswers / totalQ) * 100) : 0}%)`,
+      });
+
+      // 2. KB Embeddings (RAG chunks)
+      const { count: embCount } = await supabase.from('kb_embeddings').select('id', { count: 'exact', head: true });
+      const embedTotal = embCount || 0;
+      results.push({
+        label: 'RAG Content Chunks Indexed',
+        description: 'Source documents chunked and vectorized for retrieval-augmented generation',
+        status: embedTotal >= 50 ? 'pass' : embedTotal > 0 ? 'warn' : 'fail',
+        detail: `${embedTotal.toLocaleString()} chunks in vector store`,
+      });
+
+      // 3. Sources configured
+      const { data: sources } = await supabase.from('kb_sources').select('id, is_active, source_type');
+      const totalSources = sources?.length || 0;
+      const activeSources = sources?.filter((s: any) => s.is_active).length || 0;
+      results.push({
+        label: 'Knowledge Sources Active',
+        description: 'External and internal data sources feeding the knowledge base',
+        status: activeSources >= 3 ? 'pass' : activeSources > 0 ? 'warn' : 'fail',
+        detail: `${activeSources} active / ${totalSources} total sources`,
+      });
+
+      // 4. Cache layer
+      const { count: cacheCount } = await supabase.from('kb_cache').select('id', { count: 'exact', head: true });
+      const cacheTotal = cacheCount || 0;
+      results.push({
+        label: 'Response Cache',
+        description: 'Cached query-response pairs for faster repeated lookups',
+        status: cacheTotal > 0 ? 'pass' : 'warn',
+        detail: cacheTotal > 0 ? `${cacheTotal.toLocaleString()} cached responses` : 'Empty — will populate as users query',
+      });
+
+      // 5. Access matrix
+      const { count: matrixCount } = await supabase.from('kb_access_matrix').select('id', { count: 'exact', head: true });
+      const matrixTotal = matrixCount || 0;
+      results.push({
+        label: 'Access Matrix Configured',
+        description: 'Role-based access rules governing knowledge module visibility',
+        status: matrixTotal >= 10 ? 'pass' : matrixTotal > 0 ? 'warn' : 'fail',
+        detail: `${matrixTotal} access rules defined`,
+      });
+
+      // 6. Query log (usage indicator)
+      const { count: logCount } = await supabase.from('kb_query_log').select('id', { count: 'exact', head: true });
+      const logTotal = logCount || 0;
+      results.push({
+        label: 'Query Activity',
+        description: 'Historical queries logged — indicates the KB is being used',
+        status: logTotal > 0 ? 'pass' : 'warn',
+        detail: logTotal > 0 ? `${logTotal.toLocaleString()} queries logged` : 'No queries yet — KB has not been used',
+      });
+
+    } catch (err: any) {
+      results.push({
+        label: 'System Error',
+        description: 'Failed to complete health checks',
+        status: 'fail',
+        detail: err.message || 'Unknown error',
+      });
+    }
+
+    setChecks(results);
+    setLoading(false);
+    setLastRefresh(new Date());
+  }, []);
+
+  useEffect(() => { runChecks(); }, [runChecks]);
+
+  const passCount = checks.filter(c => c.status === 'pass').length;
+  const warnCount = checks.filter(c => c.status === 'warn').length;
+  const failCount = checks.filter(c => c.status === 'fail').length;
+  const totalChecks = checks.length;
+  const overallScore = totalChecks > 0 ? Math.round((passCount / totalChecks) * 100) : 0;
+  const overallStatus = failCount > 0 ? 'fail' : warnCount > 0 ? 'warn' : 'pass';
+
+  const statusIcon = (s: string) => {
+    switch (s) {
+      case 'pass': return <CheckCircle2 size={18} className="text-emerald-500 flex-shrink-0" />;
+      case 'warn': return <AlertTriangle size={18} className="text-amber-500 flex-shrink-0" />;
+      case 'fail': return <XCircle size={18} className="text-red-500 flex-shrink-0" />;
+      default: return <RefreshCw size={18} className="animate-spin text-zinc-400 flex-shrink-0" />;
+    }
+  };
+
+  const overallColor = overallStatus === 'pass' ? 'text-emerald-600' : overallStatus === 'warn' ? 'text-amber-600' : 'text-red-600';
+  const overallBg = overallStatus === 'pass' ? 'bg-emerald-50 border-emerald-200' : overallStatus === 'warn' ? 'bg-amber-50 border-amber-200' : 'bg-red-50 border-red-200';
+  const overallLabel = overallStatus === 'pass' ? 'All Systems Operational' : overallStatus === 'warn' ? 'Partially Ready — Action Needed' : 'Not Ready — Critical Issues';
+
+  return (
+    <div className="space-y-5">
+      {/* Overall score banner */}
+      <div className={`${overallBg} border rounded-xl p-6 flex items-center justify-between`}>
+        <div className="flex items-center gap-4">
+          <div className={`text-4xl font-bold font-mono ${overallColor}`}>
+            {loading ? '...' : `${overallScore}%`}
+          </div>
+          <div>
+            <h2 className={`text-base font-bold ${overallColor}`}>{loading ? 'Checking...' : overallLabel}</h2>
+            <p className="text-xs text-zinc-500 mt-0.5">
+              {passCount} passed · {warnCount} warnings · {failCount} failed — Last checked {lastRefresh.toLocaleTimeString()}
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={runChecks}
+          disabled={loading}
+          className="flex items-center gap-1.5 px-4 py-2 bg-white border border-zinc-200 rounded-lg text-xs font-semibold text-zinc-700 hover:bg-zinc-50 transition-colors disabled:opacity-50"
+        >
+          <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
+          Re-check
+        </button>
+      </div>
+
+      {/* Pipeline readiness visual */}
+      <div className={card}>
+        <h3 className="text-sm font-bold text-zinc-800 mb-1">Pipeline Readiness</h3>
+        <p className="text-xs text-zinc-500 mb-4">The 4-layer RAG pipeline requires all components to be operational for full KB functionality</p>
+        <div className="flex items-center gap-2 mb-4">
+          {['Training Data', 'Vectorization', 'RAG Index', 'Response Layer'].map((stage, i) => {
+            const stageStatus = !loading && checks.length > 0
+              ? (i === 0 ? (checks[0]?.status) 
+                 : i === 1 ? (checks[1]?.status)
+                 : i === 2 ? (checks[3]?.status)
+                 : (checks[4]?.status)) || 'loading'
+              : 'loading';
+            const colors = {
+              pass: 'bg-emerald-500 text-white',
+              warn: 'bg-amber-400 text-white',
+              fail: 'bg-red-400 text-white',
+              loading: 'bg-zinc-200 text-zinc-500',
+            };
+            return (
+              <React.Fragment key={stage}>
+                {i > 0 && <div className={`h-0.5 w-8 ${stageStatus === 'pass' ? 'bg-emerald-400' : 'bg-zinc-200'}`} />}
+                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold ${colors[stageStatus]}`}>
+                  {stageStatus === 'pass' ? <Check size={12} /> : stageStatus === 'fail' ? <XIcon size={12} /> : null}
+                  {stage}
+                </div>
+              </React.Fragment>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Individual checks */}
+      <div className={card}>
+        <h3 className="text-sm font-bold text-zinc-800 mb-4">Detailed Health Checks</h3>
+        <div className="space-y-0">
+          {checks.map((check, i) => (
+            <div key={i} className={`flex items-start gap-3 py-3 ${i < checks.length - 1 ? 'border-b border-zinc-100' : ''}`}>
+              {statusIcon(check.status)}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-zinc-800">{check.label}</span>
+                  <span className={badge(
+                    check.status === 'pass' ? 'bg-emerald-50 text-emerald-700' :
+                    check.status === 'warn' ? 'bg-amber-50 text-amber-700' :
+                    'bg-red-50 text-red-700'
+                  )}>
+                    {check.status === 'pass' ? 'PASS' : check.status === 'warn' ? 'WARNING' : 'FAIL'}
+                  </span>
+                </div>
+                <p className="text-xs text-zinc-500 mt-0.5">{check.description}</p>
+                <p className="text-xs font-mono text-zinc-600 mt-1 bg-zinc-50 rounded px-2 py-1 inline-block">{check.detail}</p>
+              </div>
+            </div>
+          ))}
+          {loading && checks.length === 0 && (
+            <div className="flex items-center justify-center py-12">
+              <RefreshCw className="animate-spin text-zinc-400 mr-2" size={16} />
+              <span className="text-sm text-zinc-500">Running health checks...</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Action items */}
+      {!loading && failCount + warnCount > 0 && (
+        <div className={card}>
+          <h3 className="text-sm font-bold text-zinc-800 mb-3">🔧 Recommended Actions</h3>
+          <div className="space-y-2">
+            {checks.filter(c => c.status === 'fail' || c.status === 'warn').map((c, i) => (
+              <div key={i} className="flex items-start gap-2 text-xs">
+                <span className={c.status === 'fail' ? 'text-red-500' : 'text-amber-500'}>
+                  {c.status === 'fail' ? '🔴' : '🟡'}
+                </span>
+                <div>
+                  <span className="font-semibold text-zinc-700">{c.label}:</span>{' '}
+                  <span className="text-zinc-600">
+                    {c.label.includes('Answers') && 'Populate expected_answer fields on training questions so the KB can return direct matches.'}
+                    {c.label.includes('RAG') && 'Ingest source documents into kb_embeddings via the Sources or Pipeline tab.'}
+                    {c.label.includes('Vectorized') && 'Run "Embed All" from the Training tab to generate embeddings for remaining questions.'}
+                    {c.label.includes('Training') && c.status === 'fail' && 'Import training questions from the Training tab.'}
+                    {c.label.includes('Sources') && 'Add and activate more knowledge sources from the Sources tab.'}
+                    {c.label.includes('Cache') && 'Cache is empty — it will auto-populate as users query the KB.'}
+                    {c.label.includes('Access') && 'Configure role-based access rules in the Access Matrix tab.'}
+                    {c.label.includes('Query') && 'No queries logged yet. The KB needs to be used to generate activity.'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 /* ═══════════════════════════════════════════
@@ -556,7 +812,7 @@ function TrainingTab() {
    ═══════════════════════════════════════════ */
 export default function KBAdminPage() {
   const { isAdmin, isProgramManager, isLoading: roleLoading } = useUserRole();
-  const [activeTab, setActiveTab] = useState<TabKey>('logs');
+  const [activeTab, setActiveTab] = useState<TabKey>('health');
 
   if (roleLoading) {
     return (
@@ -580,6 +836,7 @@ export default function KBAdminPage() {
 
   const renderTab = () => {
     switch (activeTab) {
+      case 'health': return <HealthTab />;
       case 'logs': return <QueryLogTab />;
       case 'access': return <AccessMatrixTab />;
       case 'sync': return <SyncConfigTab />;

@@ -169,7 +169,8 @@ const adminPockets = [
     icon: BookOpen,
     path: '/admin/kb',
     children: [
-      { label: 'Query Log', path: '/admin/kb' },
+      { label: 'Health', path: '/admin/kb' },
+      { label: 'Query Log', path: '/admin/kb/logs' },
       { label: 'Access Matrix', path: '/admin/kb/access' },
       { label: 'Sync Config', path: '/admin/kb/sync' },
       { label: 'Pipeline', path: '/admin/kb/pipeline' },
