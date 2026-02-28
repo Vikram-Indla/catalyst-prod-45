@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { X, BookOpen, Send, Mic, ThumbsUp, ThumbsDown, AlertCircle, RefreshCw } from 'lucide-react';
+import { X, AlertCircle, RefreshCw } from 'lucide-react';
 import { useKBQuery } from '@/hooks/useKnowledgeBase';
 import { useAuth } from '@/hooks/useAuth';
 import { KBResponseRenderer } from './KBResponseRenderer';
+import { KBInputArea } from './KBInputArea';
 import type { KBQueryResponse } from '@/services/knowledgeBase';
 
 type Lang = 'en' | 'ar';
@@ -16,13 +17,22 @@ interface ChatMessage {
   feedbackGiven?: boolean;
 }
 
-const QUICK_CHIPS = ['Gold Licenses', 'Chemical Permits', 'FAMS Integration', 'Sprint status'];
+const BRIEFING_MESSAGES = [
+  'Your queries are matched against multiple sources — Jira data, ministry regulations, and project documentation — with answers traced back to their origin for full accountability.',
+  'Answers include source citations so you can trace every fact back to its origin document.',
+  'Available in English and Arabic with full right-to-left support for Arabic queries.',
+  '25 knowledge domains are indexed and searchable. Ask about licensing, permits, compliance, sprints, or any Catalyst module.',
+];
 
 function getGreeting(): string {
   const h = new Date().getHours();
   if (h < 12) return 'Good morning';
   if (h < 17) return 'Good afternoon';
   return 'Good evening';
+}
+
+function getFirstName(fullName: string): string {
+  return fullName.split(' ')[0] || fullName;
 }
 
 export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -35,470 +45,275 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
   const [isListening, setIsListening] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
   const pendingRef = useRef(false);
   const recognitionRef = useRef<any>(null);
+  const [briefingIndex] = useState(() => Math.floor(Math.random() * BRIEFING_MESSAGES.length));
+
+  const fullName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'there';
+  const firstName = getFirstName(fullName);
+  const isRTL = lang === 'ar';
 
   // Speech recognition
   const toggleListening = useCallback(() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert('Speech recognition is not supported in this browser. Please use Chrome or Edge.');
-      return;
-    }
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) { alert('Speech recognition is not supported. Please use Chrome or Edge.'); return; }
+    if (isListening && recognitionRef.current) { recognitionRef.current.stop(); setIsListening(false); return; }
 
-    if (isListening && recognitionRef.current) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
+    const recognition = new SR();
     recognition.lang = lang === 'ar' ? 'ar-SA' : 'en-US';
     recognition.interimResults = true;
     recognition.continuous = false;
     recognitionRef.current = recognition;
-
     recognition.onstart = () => setIsListening(true);
     recognition.onend = () => setIsListening(false);
     recognition.onerror = () => setIsListening(false);
-
     recognition.onresult = (event: any) => {
-      const transcript = Array.from(event.results)
-        .map((result: any) => result[0].transcript)
-        .join('');
+      const transcript = Array.from(event.results).map((r: any) => r[0].transcript).join('');
       setInput(transcript);
       setIsVoice(true);
-      // If final result, auto-submit
-      if (event.results[event.results.length - 1].isFinal) {
-        setIsListening(false);
-      }
+      if (event.results[event.results.length - 1].isFinal) setIsListening(false);
     };
-
     recognition.start();
   }, [isListening, lang]);
 
-  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'there';
-
-  // Scroll to bottom on new messages
+  // Scroll on new messages
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, isLoading]);
 
-  // Handle response from hook
+  // Handle response
   useEffect(() => {
     if (response && pendingRef.current) {
       pendingRef.current = false;
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: crypto.randomUUID(),
-          role: 'assistant',
-          response,
-          logId: undefined, // log ID would come from server if available
-        },
-      ]);
+      setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: 'assistant', response }]);
     }
   }, [response]);
 
-  const handleSend = useCallback(
-    async (text?: string) => {
-      const q = (text || input).trim();
-      if (!q || isLoading) return;
+  const handleSend = useCallback(async (text?: string) => {
+    const q = (text || input).trim();
+    if (!q || isLoading) return;
+    setInput('');
+    setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: 'user', content: q }]);
+    pendingRef.current = true;
+    await askQuestion({ query: q, language: lang, input_method: isVoice ? 'voice' : 'keyboard', user_name: fullName });
+  }, [input, isLoading, lang, isVoice, fullName, askQuestion]);
 
-      setInput('');
-      setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: 'user', content: q }]);
-      pendingRef.current = true;
-
-      await askQuestion({
-        query: q,
-        language: lang,
-        input_method: isVoice ? 'voice' : 'keyboard',
-        user_name: userName,
-      });
-    },
-    [input, isLoading, lang, isVoice, userName, askQuestion]
-  );
-
-  const handleFeedback = useCallback(
-    (msgId: string, logId: string | undefined, helpful: boolean) => {
-      if (logId) sendFeedback(logId, helpful);
-      setMessages((prev) =>
-        prev.map((m) => (m.id === msgId ? { ...m, feedbackGiven: true } : m))
-      );
-    },
-    [sendFeedback]
-  );
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
+  const handleFeedback = useCallback((msgId: string, logId: string | undefined, helpful: boolean) => {
+    if (logId) sendFeedback(logId, helpful);
+    setMessages((prev) => prev.map((m) => (m.id === msgId ? { ...m, feedbackGiven: true } : m)));
+  }, [sendFeedback]);
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 48,
-        right: 0,
-        bottom: 0,
-        width: '50vw',
-        minWidth: 480,
-        background: '#FFFFFF',
-        borderLeft: '1px solid #E4E4E7',
-        boxShadow: '-8px 0 30px rgba(0,0,0,0.08)',
-        zIndex: 45,
-        display: 'flex',
-        flexDirection: 'column',
-        transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
-        transition: 'transform 300ms cubic-bezier(0.16,1,0.3,1)',
-        fontFamily: "system-ui, -apple-system, 'DM Sans', sans-serif",
-      }}
-    >
-      {/* ── Header ── */}
+    <>
+      {/* Overlay */}
+      {isOpen && (
+        <div
+          onClick={onClose}
+          style={{
+            position: 'fixed', inset: 0, top: 48,
+            background: 'rgba(0,0,0,0.15)',
+            zIndex: 49,
+            animation: 'kb-overlay-in 200ms ease',
+          }}
+        />
+      )}
+
+      {/* Panel */}
       <div
         style={{
-          padding: '16px 20px 12px',
-          borderBottom: '1px solid #E4E4E7',
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'space-between',
-          flexShrink: 0,
-        }}
-      >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <BookOpen size={18} color="#2563EB" />
-            <span style={{ fontSize: 16, fontWeight: 700, color: '#09090B' }}>Knowledge Base</span>
-          </div>
-          <p style={{ fontSize: 11, color: '#71717A', margin: '4px 0 0' }}>
-            Trained on 1,500 questions · 25 categories
-          </p>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {/* Lang toggle */}
-          <div style={{ display: 'flex', borderRadius: 6, overflow: 'hidden', border: '1px solid #E4E4E7' }}>
-            {(['en', 'ar'] as Lang[]).map((l) => (
-              <button
-                key={l}
-                onClick={() => setLang(l)}
-                style={{
-                  padding: '3px 10px',
-                  fontSize: 11,
-                  fontWeight: lang === l ? 700 : 400,
-                  background: lang === l ? '#2563EB' : '#FAFAFA',
-                  color: lang === l ? '#FFF' : '#71717A',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                {l === 'en' ? 'EN' : 'عربي'}
-              </button>
-            ))}
-          </div>
-          <button
-            onClick={onClose}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}
-          >
-            <X size={18} color="#71717A" />
-          </button>
-        </div>
-      </div>
-
-      {/* ── Chat area ── */}
-      <div
-        ref={scrollRef}
-        style={{
-          flex: 1,
-          overflowY: 'auto',
-          padding: '20px 20px 8px',
+          position: 'fixed',
+          top: 48, right: 0, bottom: 0,
+          width: 520,
+          background: '#FFFFFF',
+          borderLeft: '1px solid #E4E4E7',
+          boxShadow: '-8px 0 32px rgba(0,0,0,0.08), -2px 0 8px rgba(0,0,0,0.04)',
+          zIndex: 50,
           display: 'flex',
           flexDirection: 'column',
-          gap: 16,
+          transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
+          transition: 'transform 300ms cubic-bezier(0.32, 0.72, 0, 1)',
+          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
         }}
-        dir={lang === 'ar' ? 'rtl' : 'ltr'}
       >
-        {/* Error banner */}
-        {error && (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '8px 12px',
-              background: '#FEF2F2',
-              border: '1px solid #FECACA',
-              borderRadius: 8,
-              fontSize: 12,
-              color: '#DC2626',
-            }}
-          >
-            <AlertCircle size={14} />
-            <span style={{ flex: 1 }}>{error}</span>
-            <button
-              onClick={() => reset()}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
-            >
-              <RefreshCw size={13} color="#DC2626" />
-            </button>
+        {/* ── Header (64px) ── */}
+        <div style={{
+          height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '0 24px', borderBottom: '1px solid #F4F4F5', background: '#FAFAFA', flexShrink: 0,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2563EB', animation: 'kb-status-pulse 3s infinite' }} />
+            <span style={{ fontSize: 15, fontWeight: 700, color: '#18181B', letterSpacing: '-0.3px' }}>Intelligence</span>
           </div>
-        )}
-
-        {/* Greeting */}
-        {messages.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '24px 0 8px' }}>
-            <p style={{ fontSize: 18, fontWeight: 600, color: '#09090B', margin: 0 }}>
-              {getGreeting()}, {userName} 👋
-            </p>
-            <p style={{ fontSize: 13, color: '#71717A', marginTop: 6 }}>
-              Ask me anything about Catalyst — processes, features, or status updates.
-            </p>
-            {/* DYK card */}
-            <div
-              style={{
-                marginTop: 16,
-                padding: '14px 16px',
-                background: '#EFF6FF',
-                borderRadius: 10,
-                border: '1px solid #DBEAFE',
-                textAlign: lang === 'ar' ? 'right' : 'left',
-              }}
-            >
-              <p style={{ fontSize: 11, fontWeight: 700, color: '#2563EB', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                💡 Did You Know?
-              </p>
-              <p style={{ fontSize: 13, color: '#18181B', marginTop: 6, lineHeight: 1.6 }}>
-                The Knowledge Base is trained on 1,500 curated questions across 25 categories, covering
-                licensing, permits, integrations, and project operations.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Messages */}
-        {messages.map((msg) => {
-          if (msg.role === 'user') {
-            return (
-              <div key={msg.id} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <div
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {/* Lang toggle */}
+            <div style={{ display: 'flex', gap: 4 }}>
+              {(['en', 'ar'] as Lang[]).map((l) => (
+                <button
+                  key={l}
+                  onClick={() => setLang(l)}
                   style={{
-                    maxWidth: '75%',
-                    padding: '10px 14px',
-                    borderRadius: '14px 14px 4px 14px',
-                    background: '#2563EB',
-                    color: '#FFF',
-                    fontSize: 13.5,
-                    lineHeight: 1.5,
+                    width: 32, height: 28, borderRadius: 6, fontSize: 11, fontWeight: lang === l ? 600 : 400,
+                    background: lang === l ? '#18181B' : 'transparent',
+                    color: lang === l ? '#FFFFFF' : '#71717A',
+                    border: lang === l ? 'none' : '1px solid #E4E4E7',
+                    cursor: 'pointer', transition: 'all 150ms',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}
-                >
-                  {msg.content}
-                </div>
-              </div>
-            );
-          }
-
-          // Assistant
-          return (
-            <div key={msg.id} style={{ display: 'flex', justifyContent: 'flex-start' }}>
-              <div
-                style={{
-                  maxWidth: '90%',
-                  padding: '14px 16px',
-                  borderRadius: '14px 14px 14px 4px',
-                  background: '#FAFAFA',
-                  border: '1px solid #E4E4E7',
-                }}
-              >
-                {msg.response && <KBResponseRenderer response={msg.response} language={lang} />}
-                {/* Feedback */}
-                {!msg.feedbackGiven && (
-                  <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
-                    <button
-                      onClick={() => handleFeedback(msg.id, msg.logId, true)}
-                      style={{
-                        background: 'none',
-                        border: '1px solid #E4E4E7',
-                        borderRadius: 6,
-                        padding: '3px 8px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 4,
-                        fontSize: 11,
-                        color: '#71717A',
-                      }}
-                    >
-                      <ThumbsUp size={12} /> Helpful
-                    </button>
-                    <button
-                      onClick={() => handleFeedback(msg.id, msg.logId, false)}
-                      style={{
-                        background: 'none',
-                        border: '1px solid #E4E4E7',
-                        borderRadius: 6,
-                        padding: '3px 8px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 4,
-                        fontSize: 11,
-                        color: '#71717A',
-                      }}
-                    >
-                      <ThumbsDown size={12} />
-                    </button>
-                  </div>
-                )}
-                {msg.feedbackGiven && (
-                  <p style={{ fontSize: 10, color: '#71717A', marginTop: 8 }}>✓ Feedback recorded</p>
-                )}
-              </div>
-            </div>
-          );
-        })}
-
-        {/* Loading dots */}
-        {isLoading && (
-          <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-            <div
-              style={{
-                padding: '12px 18px',
-                borderRadius: '14px 14px 14px 4px',
-                background: '#FAFAFA',
-                border: '1px solid #E4E4E7',
-                display: 'flex',
-                gap: 5,
-              }}
-            >
-              {[0, 1, 2].map((i) => (
-                <span
-                  key={i}
-                  style={{
-                    width: 7,
-                    height: 7,
-                    borderRadius: '50%',
-                    background: '#A1A1AA',
-                    animation: 'kb-dot-bounce 1.2s infinite',
-                    animationDelay: `${i * 0.15}s`,
-                  }}
-                />
+                >{l === 'en' ? 'EN' : 'عربي'}</button>
               ))}
             </div>
-          </div>
-        )}
-      </div>
-
-      {/* ── Input area ── */}
-      <div
-        style={{
-          flexShrink: 0,
-          padding: '10px 20px 14px',
-          borderTop: '1px solid #E4E4E7',
-          background: '#FAFAFA',
-        }}
-        dir={lang === 'ar' ? 'rtl' : 'ltr'}
-      >
-        {/* Quick chips */}
-        <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
-          {QUICK_CHIPS.map((chip) => (
             <button
-              key={chip}
-              onClick={() => handleSend(chip)}
+              onClick={onClose}
               style={{
-                padding: '4px 10px',
-                fontSize: 11,
-                borderRadius: 20,
-                border: '1px solid #DBEAFE',
-                background: '#EFF6FF',
-                color: '#2563EB',
-                cursor: 'pointer',
-                fontWeight: 500,
+                width: 32, height: 32, borderRadius: 8, border: 'none', background: 'transparent',
+                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'background 150ms',
               }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#F4F4F5'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
-              {chip}
+              <X size={16} color="#71717A" />
             </button>
-          ))}
+          </div>
         </div>
 
-        {/* Input row */}
+        {/* ── Chat area ── */}
         <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            background: '#FFF',
-            border: '1px solid #E4E4E7',
-            borderRadius: 10,
-            padding: '6px 10px',
-          }}
+          ref={scrollRef}
+          style={{ flex: 1, overflowY: 'auto', padding: '0 24px', display: 'flex', flexDirection: 'column' }}
+          dir={isRTL ? 'rtl' : 'ltr'}
         >
-          <button
-            onClick={toggleListening}
-            style={{
-              background: isListening ? '#DC2626' : 'none',
-              border: 'none',
-              cursor: 'pointer',
-              borderRadius: 6,
-              padding: 5,
-              display: 'flex',
-              transition: 'background 200ms',
-              animation: isListening ? 'pulse 1.5s infinite' : 'none',
-            }}
-            title={isListening ? 'Stop listening' : 'Start voice input'}
-          >
-            <Mic size={16} color={isListening ? '#FFF' : '#71717A'} />
-          </button>
-          <input
-            ref={inputRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={lang === 'ar' ? 'اسأل عن أي مفهوم أو عملية...' : 'Ask about any concept, process, or feature...'}
-            style={{
-              flex: 1,
-              border: 'none',
-              outline: 'none',
-              fontSize: 13,
-              background: 'transparent',
-              color: '#09090B',
-              direction: lang === 'ar' ? 'rtl' : 'ltr',
-            }}
-          />
-          <button
-            onClick={() => handleSend()}
-            disabled={!input.trim() || isLoading}
-            style={{
-              background: input.trim() ? '#2563EB' : '#E4E4E7',
-              border: 'none',
-              cursor: input.trim() ? 'pointer' : 'default',
-              borderRadius: 6,
-              padding: 5,
-              display: 'flex',
-              transition: 'background 200ms',
-            }}
-          >
-            <Send size={16} color={input.trim() ? '#FFF' : '#A1A1AA'} />
-          </button>
+          {/* Error banner */}
+          {error && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', marginTop: 16,
+              background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, fontSize: 12, color: '#DC2626',
+            }}>
+              <AlertCircle size={14} />
+              <span style={{ flex: 1 }}>{error}</span>
+              <button onClick={() => reset()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
+                <RefreshCw size={13} color="#DC2626" />
+              </button>
+            </div>
+          )}
+
+          {/* Welcome state */}
+          {messages.length === 0 && (
+            <div style={{ textAlign: 'center', paddingTop: 60, flex: 1 }}>
+              <p style={{ fontSize: 20, fontWeight: 700, color: '#18181B', margin: 0 }}>
+                {getGreeting()}, {firstName}
+              </p>
+              <p style={{ fontSize: 14, color: '#71717A', marginTop: 8, fontWeight: 400 }}>
+                How can I help?
+              </p>
+
+              {/* Intelligence Briefing Card */}
+              <div style={{
+                marginTop: 32, textAlign: isRTL ? 'right' : 'left',
+                background: 'linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%)',
+                border: '1px solid #DBEAFE', borderRadius: 12, padding: '20px 24px',
+              }}>
+                <p style={{
+                  fontSize: 10, fontWeight: 700, color: '#2563EB', letterSpacing: '1.5px',
+                  textTransform: 'uppercase', margin: 0,
+                }}>INTELLIGENCE BRIEFING</p>
+                <div style={{ width: 24, height: 1.5, background: '#2563EB', margin: '8px 0 12px', borderRadius: 1 }} />
+                <p style={{
+                  fontSize: 13.5, color: '#374151', lineHeight: 1.65, margin: 0,
+                  fontFamily: "Georgia, 'Times New Roman', serif",
+                }}>{BRIEFING_MESSAGES[briefingIndex]}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Messages */}
+          <div style={{ paddingTop: messages.length > 0 ? 16 : 0, paddingBottom: 16 }}>
+            {messages.map((msg) => {
+              if (msg.role === 'user') {
+                return (
+                  <div key={msg.id} style={{
+                    display: 'flex', justifyContent: isRTL ? 'flex-start' : 'flex-end',
+                    marginBottom: 8, animation: 'kb-msg-in 200ms ease',
+                  }}>
+                    <div style={{
+                      maxWidth: '85%', padding: '12px 18px',
+                      borderRadius: '16px 16px 4px 16px', background: '#2563EB',
+                      color: '#FFFFFF', fontSize: 14, fontWeight: 400, lineHeight: 1.5,
+                    }}>{msg.content}</div>
+                  </div>
+                );
+              }
+              return (
+                <div key={msg.id} style={{
+                  marginBottom: 16, animation: 'kb-msg-in 200ms ease',
+                }}
+                  onMouseEnter={(e) => {
+                    const meta = e.currentTarget.querySelector('.kb-response-meta') as HTMLElement;
+                    if (meta) meta.style.opacity = '1';
+                  }}
+                  onMouseLeave={(e) => {
+                    const meta = e.currentTarget.querySelector('.kb-response-meta') as HTMLElement;
+                    if (meta) meta.style.opacity = '0';
+                  }}
+                >
+                  {msg.response && (
+                    <KBResponseRenderer
+                      response={msg.response}
+                      language={lang}
+                      feedbackGiven={msg.feedbackGiven}
+                      onFeedback={(helpful) => handleFeedback(msg.id, msg.logId, helpful)}
+                    />
+                  )}
+                </div>
+              );
+            })}
+
+            {/* Loading dots */}
+            {isLoading && (
+              <div style={{ display: 'flex', gap: 5, padding: '12px 0', animation: 'kb-msg-in 200ms ease' }}>
+                {[0, 1, 2].map((i) => (
+                  <span key={i} style={{
+                    width: 6, height: 6, borderRadius: '50%', background: '#2563EB',
+                    animation: 'kb-dot-bounce 1.2s infinite', animationDelay: `${i * 150}ms`,
+                  }} />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
-        <p style={{ fontSize: 10, color: '#A1A1AA', textAlign: 'center', marginTop: 8 }}>
-          Trained on 1,500 questions · 25 categories · 34ms avg
-        </p>
-      </div>
+        {/* ── Input area ── */}
+        <KBInputArea
+          input={input}
+          onInputChange={setInput}
+          onSend={handleSend}
+          isLoading={isLoading}
+          lang={lang}
+          isListening={isListening}
+          onToggleListening={toggleListening}
+        />
 
-      {/* Keyframe for loading dots */}
-      <style>{`
-        @keyframes kb-dot-bounce {
-          0%, 80%, 100% { transform: translateY(0); }
-          40% { transform: translateY(-6px); }
-        }
-      `}</style>
-    </div>
+        {/* Keyframes */}
+        <style>{`
+          @keyframes kb-dot-bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-6px); }
+          }
+          @keyframes kb-msg-in {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          @keyframes kb-overlay-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+          @keyframes kb-status-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+          }
+        `}</style>
+      </div>
+    </>
   );
 }
 
