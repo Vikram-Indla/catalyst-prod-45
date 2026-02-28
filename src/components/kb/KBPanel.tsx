@@ -32,10 +32,51 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
   const [lang, setLang] = useState<Lang>('en');
   const [input, setInput] = useState('');
   const [isVoice, setIsVoice] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const pendingRef = useRef(false);
+  const recognitionRef = useRef<any>(null);
+
+  // Speech recognition
+  const toggleListening = useCallback(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('Speech recognition is not supported in this browser. Please use Chrome or Edge.');
+      return;
+    }
+
+    if (isListening && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = lang === 'ar' ? 'ar-SA' : 'en-US';
+    recognition.interimResults = true;
+    recognition.continuous = false;
+    recognitionRef.current = recognition;
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => setIsListening(false);
+
+    recognition.onresult = (event: any) => {
+      const transcript = Array.from(event.results)
+        .map((result: any) => result[0].transcript)
+        .join('');
+      setInput(transcript);
+      setIsVoice(true);
+      // If final result, auto-submit
+      if (event.results[event.results.length - 1].isFinal) {
+        setIsListening(false);
+      }
+    };
+
+    recognition.start();
+  }, [isListening, lang]);
 
   const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'there';
 
@@ -397,18 +438,20 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           }}
         >
           <button
-            onClick={() => setIsVoice((v) => !v)}
+            onClick={toggleListening}
             style={{
-              background: isVoice ? '#2563EB' : 'none',
+              background: isListening ? '#DC2626' : 'none',
               border: 'none',
               cursor: 'pointer',
               borderRadius: 6,
               padding: 5,
               display: 'flex',
               transition: 'background 200ms',
+              animation: isListening ? 'pulse 1.5s infinite' : 'none',
             }}
+            title={isListening ? 'Stop listening' : 'Start voice input'}
           >
-            <Mic size={16} color={isVoice ? '#FFF' : '#71717A'} />
+            <Mic size={16} color={isListening ? '#FFF' : '#71717A'} />
           </button>
           <input
             ref={inputRef}
