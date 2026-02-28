@@ -54,6 +54,9 @@ function HealthTab() {
   const [checks, setChecks] = useState<HealthCheck[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [generating, setGenerating] = useState(false);
+  const [genProgress, setGenProgress] = useState({ done: 0, total: 0, currentCategory: '' });
+  const [warmingCache, setWarmingCache] = useState(false);
 
   const runChecks = useCallback(async () => {
     setLoading(true);
@@ -154,6 +157,70 @@ function HealthTab() {
 
   useEffect(() => { runChecks(); }, [runChecks]);
 
+  // Generate answers for all training questions
+  const handleGenerateAnswers = useCallback(async () => {
+    setGenerating(true);
+    const BATCH = 50;
+    let totalDone = 0;
+
+    try {
+      // Get total remaining
+      const { data: remaining } = await supabase
+        .from('kb_training_questions')
+        .select('id')
+        .or('expected_answer.is.null,expected_answer.eq.');
+      const totalRemaining = remaining?.length || 0;
+      setGenProgress({ done: 0, total: totalRemaining, currentCategory: 'Starting...' });
+
+      if (totalRemaining === 0) {
+        toast.success('All questions already have answers!');
+        setGenerating(false);
+        return;
+      }
+
+      // Process in batches
+      while (totalDone < totalRemaining) {
+        const res = await supabase.functions.invoke('kb-generate-answers', {
+          body: { action: 'generate_batch', batch_size: BATCH },
+        });
+
+        if (res.error) throw new Error(res.error.message);
+        const data = res.data;
+        totalDone += data.generated || 0;
+        setGenProgress({ done: totalDone, total: totalRemaining, currentCategory: `Batch complete — ${data.generated} answers generated` });
+
+        if (data.generated === 0) break;
+
+        // Small pause between batches
+        await new Promise(r => setTimeout(r, 500));
+      }
+
+      toast.success(`Generated ${totalDone} answers successfully!`);
+      runChecks();
+    } catch (err: any) {
+      toast.error(`Error generating answers: ${err.message}`);
+    } finally {
+      setGenerating(false);
+    }
+  }, [runChecks]);
+
+  // Warm cache from training answers
+  const handleWarmCache = useCallback(async () => {
+    setWarmingCache(true);
+    try {
+      const res = await supabase.functions.invoke('kb-train', {
+        body: { action: 'warm_cache' },
+      });
+      if (res.error) throw new Error(res.error.message);
+      toast.success(res.data.message || 'Cache warmed successfully!');
+      runChecks();
+    } catch (err: any) {
+      toast.error(`Cache warm failed: ${err.message}`);
+    } finally {
+      setWarmingCache(false);
+    }
+  }, [runChecks]);
+
   const passCount = checks.filter(c => c.status === 'pass').length;
   const warnCount = checks.filter(c => c.status === 'warn').length;
   const failCount = checks.filter(c => c.status === 'fail').length;
@@ -173,6 +240,12 @@ function HealthTab() {
   const overallColor = overallStatus === 'pass' ? 'text-emerald-600' : overallStatus === 'warn' ? 'text-amber-600' : 'text-red-600';
   const overallBg = overallStatus === 'pass' ? 'bg-emerald-50 border-emerald-200' : overallStatus === 'warn' ? 'bg-amber-50 border-amber-200' : 'bg-red-50 border-red-200';
   const overallLabel = overallStatus === 'pass' ? 'All Systems Operational' : overallStatus === 'warn' ? 'Partially Ready — Action Needed' : 'Not Ready — Critical Issues';
+
+  // Determine which actions are needed
+  const answersCheck = checks.find(c => c.label.includes('Answers'));
+  const cacheCheck = checks.find(c => c.label === 'Response Cache');
+  const needsAnswers = answersCheck && answersCheck.status !== 'pass';
+  const needsCache = cacheCheck && cacheCheck.status !== 'pass';
 
   return (
     <div className="space-y-5">
@@ -198,6 +271,26 @@ function HealthTab() {
           Re-check
         </button>
       </div>
+
+      {/* Active generation progress */}
+      {generating && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-5">
+          <div className="flex items-center gap-3 mb-3">
+            <RefreshCw size={16} className="animate-spin text-blue-600" />
+            <span className="text-sm font-bold text-blue-800">Generating Expected Answers...</span>
+          </div>
+          <div className="w-full bg-blue-100 rounded-full h-3 mb-2">
+            <div
+              className="bg-blue-600 h-3 rounded-full transition-all duration-500"
+              style={{ width: `${genProgress.total > 0 ? Math.round((genProgress.done / genProgress.total) * 100) : 0}%` }}
+            />
+          </div>
+          <div className="flex justify-between text-xs text-blue-700">
+            <span>{genProgress.currentCategory}</span>
+            <span className="font-mono font-semibold">{genProgress.done} / {genProgress.total} ({genProgress.total > 0 ? Math.round((genProgress.done / genProgress.total) * 100) : 0}%)</span>
+          </div>
+        </div>
+      )}
 
       {/* Pipeline readiness visual */}
       <div className={card}>
@@ -262,25 +355,58 @@ function HealthTab() {
         </div>
       </div>
 
-      {/* Action items */}
-      {!loading && failCount + warnCount > 0 && (
+      {/* Action panel */}
+      {!loading && (failCount + warnCount > 0) && (
         <div className={card}>
-          <h3 className="text-sm font-bold text-zinc-800 mb-3">🔧 Recommended Actions</h3>
-          <div className="space-y-2">
-            {checks.filter(c => c.status === 'fail' || c.status === 'warn').map((c, i) => (
-              <div key={i} className="flex items-start gap-2 text-xs">
+          <h3 className="text-sm font-bold text-zinc-800 mb-4">🔧 Fix Issues</h3>
+          <div className="space-y-3">
+            {needsAnswers && (
+              <div className="flex items-center justify-between p-3 bg-red-50 border border-red-100 rounded-lg">
+                <div>
+                  <p className="text-sm font-semibold text-zinc-800">Generate Expected Answers</p>
+                  <p className="text-xs text-zinc-500 mt-0.5">Use AI to generate answers for all {checks[0]?.detail?.match(/[\d,]+/)?.[0] || ''} training questions. This enables Layer 2 (Training Match) of the RAG pipeline.</p>
+                </div>
+                <button
+                  onClick={handleGenerateAnswers}
+                  disabled={generating}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white text-xs font-semibold rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 whitespace-nowrap"
+                >
+                  {generating ? <RefreshCw size={13} className="animate-spin" /> : <Zap size={13} />}
+                  {generating ? 'Generating...' : 'Generate All Answers'}
+                </button>
+              </div>
+            )}
+
+            {needsCache && !needsAnswers && (
+              <div className="flex items-center justify-between p-3 bg-amber-50 border border-amber-100 rounded-lg">
+                <div>
+                  <p className="text-sm font-semibold text-zinc-800">Warm Response Cache</p>
+                  <p className="text-xs text-zinc-500 mt-0.5">Pre-populate the cache with top training question answers for faster query response.</p>
+                </div>
+                <button
+                  onClick={handleWarmCache}
+                  disabled={warmingCache}
+                  className="flex items-center gap-1.5 px-4 py-2 bg-amber-600 text-white text-xs font-semibold rounded-lg hover:bg-amber-700 transition-colors disabled:opacity-50 whitespace-nowrap"
+                >
+                  {warmingCache ? <RefreshCw size={13} className="animate-spin" /> : <Zap size={13} />}
+                  {warmingCache ? 'Warming...' : 'Warm Cache'}
+                </button>
+              </div>
+            )}
+
+            {/* Guidance items */}
+            {checks.filter(c => (c.status === 'fail' || c.status === 'warn') && !c.label.includes('Answers') && c.label !== 'Response Cache').map((c, i) => (
+              <div key={i} className="flex items-start gap-2 text-xs p-3 bg-zinc-50 rounded-lg">
                 <span className={c.status === 'fail' ? 'text-red-500' : 'text-amber-500'}>
                   {c.status === 'fail' ? '🔴' : '🟡'}
                 </span>
                 <div>
                   <span className="font-semibold text-zinc-700">{c.label}:</span>{' '}
                   <span className="text-zinc-600">
-                    {c.label.includes('Answers') && 'Populate expected_answer fields on training questions so the KB can return direct matches.'}
                     {c.label.includes('RAG') && 'Ingest source documents into kb_embeddings via the Sources or Pipeline tab.'}
                     {c.label.includes('Vectorized') && 'Run "Embed All" from the Training tab to generate embeddings for remaining questions.'}
                     {c.label.includes('Training') && c.status === 'fail' && 'Import training questions from the Training tab.'}
                     {c.label.includes('Sources') && 'Add and activate more knowledge sources from the Sources tab.'}
-                    {c.label.includes('Cache') && 'Cache is empty — it will auto-populate as users query the KB.'}
                     {c.label.includes('Access') && 'Configure role-based access rules in the Access Matrix tab.'}
                     {c.label.includes('Query') && 'No queries logged yet. The KB needs to be used to generate activity.'}
                   </span>
