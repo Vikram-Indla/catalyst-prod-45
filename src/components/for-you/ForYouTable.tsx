@@ -49,12 +49,12 @@ const STATUS_STYLES: Record<string, { dot: string; text: string; bg: string }> =
 };
 
 const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
-  Project: { bg: T.tealBg, color: T.tealText, border: T.teal },
-  Product: { bg: T.dangerBg, color: T.dangerText, border: T.danger },
-  Task: { bg: T.primaryBg, color: T.primary, border: T.primary },
-  Incident: { bg: T.warningBg, color: T.warningText, border: T.warning },
-  Release: { bg: T.successBg, color: T.successText, border: T.success },
-  Test: { bg: '#F5F3FF', color: '#7C3AED', border: '#7C3AED' },
+  Project:  { bg: T.primaryBg, color: T.primary, border: T.primary },
+  Product:  { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
+  Task:     { bg: T.surfaceTertiary, color: T.inkMuted, border: '#D4D4D8' },
+  Incident: { bg: T.dangerBg, color: T.dangerText, border: T.danger },
+  Release:  { bg: T.successBg, color: T.successText, border: T.success },
+  Test:     { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
 };
 
 const PRI_COLORS: Record<number, string> = {
@@ -142,14 +142,14 @@ export function ForYouTable({
             <th style={{ ...thStyle, width: 36 }}>
               <input type="checkbox" checked={isAllSelected} onChange={e => handleSelectAll(e.target.checked)} style={{ width: 16, height: 16, accentColor: T.primary, cursor: 'pointer' }} />
             </th>
-            <th style={{ ...thStyle, width: 130 }}>Key</th>
+            <th style={{ ...thStyle, width: 140 }}>Key</th>
             <th style={thStyle}>Summary</th>
-            <th style={{ ...thStyle, width: 105, textAlign: 'center' }}>Status</th>
-            <th style={{ ...thStyle, width: 120 }}>Project</th>
-            <th style={{ ...thStyle, width: 85 }}>Hub</th>
-            <th style={{ ...thStyle, width: 70 }}>Priority</th>
-            <th style={{ ...thStyle, width: 100 }}>Updated</th>
-            <th style={{ ...thStyle, width: 160 }}>Reported by</th>
+            <th style={{ ...thStyle, width: 120, textAlign: 'center' }}>Status</th>
+            <th style={{ ...thStyle, width: 140 }}>Project</th>
+            <th style={{ ...thStyle, width: 95 }}>Hub</th>
+            <th style={{ ...thStyle, width: 80 }}>Priority</th>
+            <th style={{ ...thStyle, width: 110 }}>Updated</th>
+            <th style={{ ...thStyle, width: 180 }}>Reported by</th>
           </tr>
         </thead>
         <tbody>
@@ -189,7 +189,7 @@ export function ForYouTable({
                     </td>
 
                     {/* Key */}
-                    <td style={{ padding: '0 12px', width: 130 }}>
+                    <td style={{ padding: '0 12px', width: 140 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <JiraIssueTypeIcon issueType={item.issueType} size={16} />
                         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: T.primary }}>{item.key}</span>
@@ -202,7 +202,7 @@ export function ForYouTable({
                     </td>
 
                     {/* Status */}
-                    <td style={{ padding: '0 8px', width: 105, textAlign: 'center' }}>
+                    <td style={{ padding: '0 8px', width: 120, textAlign: 'center' }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 22, padding: '0 10px', borderRadius: 9999, background: statusStyle.bg, fontSize: 11, fontWeight: 600 }}>
                         <span style={{ width: 6, height: 6, borderRadius: '50%', background: statusStyle.dot }} />
                         <span style={{ color: statusStyle.text }}>{item.status}</span>
@@ -210,19 +210,19 @@ export function ForYouTable({
                     </td>
 
                     {/* Project */}
-                    <td style={{ padding: '0 12px', fontSize: 13, fontWeight: 500, color: T.inkSecondary, width: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '0 12px', fontSize: 13, fontWeight: 500, color: T.inkSecondary, width: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {item.project}
                     </td>
 
                     {/* Hub */}
-                    <td style={{ padding: '0 12px', width: 85 }}>
+                    <td style={{ padding: '0 12px', width: 95 }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', height: 22, padding: '0 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, letterSpacing: '0.02em', background: hubCfg.bg, color: hubCfg.color, borderLeft: `3px solid ${hubCfg.border}` }}>
                         {item.hubLabel}
                       </span>
                     </td>
 
                     {/* Priority */}
-                    <td style={{ padding: '0 12px', width: 70 }}>
+                    <td style={{ padding: '0 12px', width: 80 }}>
                       <div style={{ display: 'flex', gap: 2 }}>
                         {[1,2,3,4].map(i => (
                           <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: i <= item.priorityLevel ? priColor : T.border }} />
@@ -231,12 +231,12 @@ export function ForYouTable({
                     </td>
 
                     {/* Updated */}
-                    <td style={{ padding: '0 12px', fontSize: 12, fontWeight: 500, color: T.inkTertiary, width: 100 }}>
+                    <td style={{ padding: '0 12px', fontSize: 12, fontWeight: 500, color: T.inkTertiary, width: 110 }}>
                       {item.updatedAt}
                     </td>
 
                     {/* Reported by */}
-                    <td style={{ padding: '0 12px', width: 160 }}>
+                    <td style={{ padding: '0 12px', width: 180 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         {(() => {
                           const reporterName = item.reporter || item.assignee.name;

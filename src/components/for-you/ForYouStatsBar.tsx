@@ -6,12 +6,12 @@
 import React from 'react';
 
 const HUB_DOT_COLORS: Record<string, string> = {
-  Project: '#0D9488',
-  Product: '#DC2626',
-  Task: '#2563EB',
-  Incident: '#D97706',
+  Project: '#2563EB',
+  Product: '#3F3F46',
+  Task: '#D4D4D8',
+  Incident: '#DC2626',
   Release: '#16A34A',
-  Test: '#7C3AED',
+  Test: '#3F3F46',
   Strategy: '#0891B2',
   Plan: '#6366F1',
 };
