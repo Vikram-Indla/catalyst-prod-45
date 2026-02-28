@@ -96,12 +96,16 @@ serve(async (req) => {
 
     for (const projectKey of projectsToSync) {
       const pConfig = projectConfigs[projectKey] || { lookback_months: 3, status_categories: [], issue_types: [], fix_versions: [] }
-      const lookbackDays = pConfig.lookback_months * 30
+      const lookbackMonths = pConfig.lookback_months ?? 3
 
       // Build JQL for this project
       const jqlParts: string[] = []
       jqlParts.push(`project = "${projectKey}"`)
-      jqlParts.push(`updated >= -${lookbackDays}d`)
+      // Lifetime sync (0) skips the date filter entirely
+      if (lookbackMonths > 0) {
+        const lookbackDays = lookbackMonths * 30
+        jqlParts.push(`updated >= -${lookbackDays}d`)
+      }
 
       // Status category filter
       const statusCategories = pConfig.status_categories || []
