@@ -25,7 +25,7 @@ export function KBIntelligenceButton({ isOpen, onClick }: KBIntelligenceButtonPr
           border: 'none',
           cursor: 'pointer',
           transition: 'all 200ms ease',
-          background: isOpen ? '#2563EB' : 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)',
+          background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)',
           color: '#FFFFFF',
           boxShadow: isOpen ? 'none' : undefined,
           animation: isOpen ? 'none' : 'intelligence-pulse 3s infinite',
