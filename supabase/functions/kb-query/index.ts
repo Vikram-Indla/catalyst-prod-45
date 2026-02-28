@@ -176,8 +176,8 @@ async function generate(query: string, ev: any, lang: string) {
   if (ev.tokens < 30) {
     return {
       answer: lang === "ar"
-        ? "لم أجد معلومات كافية حول هذا الموضوع. تم تسجيل الاستعلام للمراجعة."
-        : "I found limited evidence about this topic. This query has been logged for KB team review.",
+        ? "لا أملك معلومات كافية للإجابة على هذا السؤال بدقة. تم تسجيل استفسارك وسيقوم الفريق بمراجعته."
+        : "I don't have sufficient information on this topic to provide an accurate answer. Your query has been recorded for the team to review.",
       confidence: 0.1, level: "insufficient", used: [],
     };
   }
@@ -277,8 +277,8 @@ serve(async (req) => {
         p_was_answered: false, p_response_time_ms: ms, p_cache_hit: false,
         p_matched_category: null, p_confidence_score: 0 }).then(() => {});
       return new Response(JSON.stringify({ type: "fallback", title: "No Evidence Found",
-        answer: language === "ar" ? "لم أتمكن من العثور على معلومات. تم تسجيل الاستعلام."
-          : "I couldn't find relevant information. This query has been logged for KB team review.",
+        answer: language === "ar" ? "لا أملك معلومات كافية للإجابة على هذا السؤال بدقة. تم تسجيل استفسارك وسيقوم الفريق بمراجعته."
+          : "I don't have enough information to answer this question accurately. Your query has been logged and the team will review it.",
         category: null, confidence: 0, confidence_level: "insufficient",
         evidence_used: [], has_conflicts: false, has_stale_data: false, references: [],
         _meta: { source: "fallback", response_time_ms: ms, cache_hit: false,
