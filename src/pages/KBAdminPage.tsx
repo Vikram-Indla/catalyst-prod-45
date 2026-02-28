@@ -164,12 +164,20 @@ function HealthTab() {
     let totalDone = 0;
 
     try {
-      // Get total remaining
-      const { data: remaining } = await supabase
+      // Get total count of ALL questions and count of those WITH answers
+      const { count: totalCount } = await supabase
         .from('kb_training_questions')
-        .select('id')
-        .or('expected_answer.is.null,expected_answer.eq.');
-      const totalRemaining = remaining?.length || 0;
+        .select('*', { count: 'exact', head: true });
+      const { count: withAnswersCount } = await supabase
+        .from('kb_training_questions')
+        .select('*', { count: 'exact', head: true })
+        .not('expected_answer', 'is', null)
+        .neq('expected_answer', '');
+
+      const total = totalCount || 0;
+      const alreadyDone = withAnswersCount || 0;
+      const totalRemaining = total - alreadyDone;
+
       setGenProgress({ done: 0, total: totalRemaining, currentCategory: 'Starting...' });
 
       if (totalRemaining === 0) {
@@ -178,21 +186,25 @@ function HealthTab() {
         return;
       }
 
-      // Process in batches
-      while (totalDone < totalRemaining) {
+      // Process in batches — max 20 iterations as safety limit
+      for (let i = 0; i < 20 && totalDone < totalRemaining; i++) {
         const res = await supabase.functions.invoke('kb-generate-answers', {
           body: { action: 'generate_batch', batch_size: BATCH },
         });
 
         if (res.error) throw new Error(res.error.message);
         const data = res.data;
-        totalDone += data.generated || 0;
-        setGenProgress({ done: totalDone, total: totalRemaining, currentCategory: `Batch complete — ${data.generated} answers generated` });
+        const generated = data.generated || 0;
 
-        if (data.generated === 0) break;
+        if (generated === 0) break; // No more to generate
+
+        totalDone += generated;
+        setGenProgress({ done: Math.min(totalDone, totalRemaining), total: totalRemaining, currentCategory: `Batch ${i + 1} complete — ${generated} answers generated` });
 
         // Small pause between batches
-        await new Promise(r => setTimeout(r, 500));
+        if (totalDone < totalRemaining) {
+          await new Promise(r => setTimeout(r, 500));
+        }
       }
 
       toast.success(`Generated ${totalDone} answers successfully!`);
@@ -201,6 +213,7 @@ function HealthTab() {
       toast.error(`Error generating answers: ${err.message}`);
     } finally {
       setGenerating(false);
+      setGenProgress(null);
     }
   }, [runChecks]);
 
