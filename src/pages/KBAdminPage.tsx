@@ -842,65 +842,127 @@ function SourcesTab() {
 function TrainingTab() {
   const { status, isProcessing, embedProgress, fetchStatus, embedBatch, embedAll, cleanup } = useKBAdmin();
   const [categories, setCategories] = useState<{ category: string; count: number }[]>([]);
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [filteredQuestions, setFilteredQuestions] = useState<any[]>([]);
+  const [search, setSearch] = useState('');
+  const [catFilter, setCatFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'answered' | 'unanswered' | 'embedded'>('all');
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 50;
 
+  const loadQuestions = useCallback(async () => {
+    const { data } = await supabase.from('kb_training_questions').select('id, question, category, expected_answer, is_embedded, language, cache_hits, created_at').order('category').order('question');
+    if (data) {
+      setQuestions(data);
+      const counts: Record<string, number> = {};
+      data.forEach((d: any) => { counts[d.category || 'Uncategorized'] = (counts[d.category || 'Uncategorized'] || 0) + 1; });
+      setCategories(Object.entries(counts).map(([category, count]) => ({ category, count })).sort((a, b) => b.count - a.count));
+    }
+  }, []);
+
+  useEffect(() => { fetchStatus(); loadQuestions(); }, [fetchStatus, loadQuestions]);
+
+  // Filter logic
   useEffect(() => {
-    fetchStatus();
-    // Fetch category breakdown
-    supabase
-      .from('kb_training_questions')
-      .select('category')
-      .then(({ data }) => {
-        if (!data) return;
-        const counts: Record<string, number> = {};
-        data.forEach((d: any) => { counts[d.category || 'Uncategorized'] = (counts[d.category || 'Uncategorized'] || 0) + 1; });
-        setCategories(Object.entries(counts).map(([category, count]) => ({ category, count })).sort((a, b) => b.count - a.count));
-      });
-  }, [fetchStatus]);
+    let filtered = questions;
+    if (search.trim()) {
+      const s = search.toLowerCase();
+      filtered = filtered.filter((q: any) => q.question?.toLowerCase().includes(s) || q.expected_answer?.toLowerCase().includes(s));
+    }
+    if (catFilter !== 'all') {
+      filtered = filtered.filter((q: any) => (q.category || 'Uncategorized') === catFilter);
+    }
+    if (statusFilter === 'answered') filtered = filtered.filter((q: any) => q.expected_answer?.trim());
+    if (statusFilter === 'unanswered') filtered = filtered.filter((q: any) => !q.expected_answer?.trim());
+    if (statusFilter === 'embedded') filtered = filtered.filter((q: any) => q.is_embedded);
+    setFilteredQuestions(filtered);
+    setPage(0);
+  }, [questions, search, catFilter, statusFilter]);
 
-  const total = status?.training_questions.total ?? 0;
+  const paged = filteredQuestions.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  const totalPages = Math.ceil(filteredQuestions.length / PAGE_SIZE);
+
+  const toggleSelect = (id: string) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAll = () => {
+    if (selected.size === paged.length) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(paged.map((q: any) => q.id)));
+    }
+  };
+
+  const handleDelete = async () => {
+    if (selected.size === 0) return;
+    const confirm = window.confirm(`Delete ${selected.size} training question(s)? This cannot be undone.`);
+    if (!confirm) return;
+
+    setIsDeleting(true);
+    try {
+      const ids = Array.from(selected);
+      // Delete in batches of 100
+      for (let i = 0; i < ids.length; i += 100) {
+        const batch = ids.slice(i, i + 100);
+        const { error } = await supabase.from('kb_training_questions').delete().in('id', batch);
+        if (error) throw error;
+      }
+      toast.success(`Deleted ${ids.length} question(s)`);
+      setSelected(new Set());
+      await loadQuestions();
+      fetchStatus();
+    } catch (err: any) {
+      toast.error(err.message || 'Delete failed');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const total = status?.training_questions.total ?? questions.length;
   const embedded = status?.training_questions.embedded ?? 0;
   const pct = total > 0 ? Math.round((embedded / total) * 100) : 0;
-
-  const phases = [
-    { name: 'Phase 1: Baseline Training', desc: 'Load & embed 1,500 questions', done: true },
-    { name: 'Phase 2: Live Refinement', desc: 'Monitor real queries, fill gaps', done: false },
-    { name: 'Phase 3: Continuous Learning', desc: 'Weekly retrain on new data', done: false },
-  ];
+  const answeredCount = questions.filter((q: any) => q.expected_answer?.trim()).length;
 
   return (
-    <div className="space-y-6">
-      {/* Status card */}
+    <div className="space-y-5">
+      {/* Summary bar */}
       <div className={card}>
-        <h3 className="text-sm font-bold text-zinc-800 mb-3">Training Status</h3>
-        <div className="flex items-center gap-4 mb-2">
-          <span className="text-2xl font-bold text-zinc-800">{embedded.toLocaleString()}</span>
-          <span className="text-xs text-zinc-500">of {total.toLocaleString()} embedded</span>
-          <span className="text-xs font-semibold text-blue-600">{pct}%</span>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-bold text-zinc-800">Training Status</h3>
+          <div className="flex gap-4 text-xs text-zinc-500">
+            <span>Total: <span className="font-mono font-semibold text-zinc-800">{total.toLocaleString()}</span></span>
+            <span>Answered: <span className="font-mono font-semibold text-emerald-600">{answeredCount.toLocaleString()}</span></span>
+            <span>Embedded: <span className="font-mono font-semibold text-blue-600">{embedded.toLocaleString()}</span> ({pct}%)</span>
+          </div>
         </div>
         <div className="w-full h-2 bg-zinc-100 rounded-full overflow-hidden">
           <div className="h-full bg-blue-600 rounded-full transition-all" style={{ width: `${pct}%` }} />
         </div>
-        {status && (
-          <div className="mt-3 flex gap-4 text-xs text-zinc-500">
-            <span>KB Embeddings: <span className="font-mono font-semibold">{status.kb_embeddings}</span></span>
-            <span>Sources: <span className="font-mono font-semibold">{status.sources}</span></span>
-          </div>
-        )}
       </div>
 
-      {/* Actions */}
-      <div className="flex gap-3">
-        <button onClick={() => embedBatch(50)} disabled={isProcessing} className="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded hover:bg-blue-700 disabled:opacity-50 transition-colors">
+      {/* Actions row */}
+      <div className="flex flex-wrap items-center gap-3">
+        <button onClick={() => embedBatch(50)} disabled={isProcessing} className="px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded hover:bg-blue-700 disabled:opacity-50 transition-colors">
           {isProcessing ? <RefreshCw className="animate-spin inline mr-1" size={12} /> : null}
           Embed Batch (50)
         </button>
-        <button onClick={() => embedAll(50)} disabled={isProcessing} className="px-4 py-2 bg-blue-800 text-white text-xs font-semibold rounded hover:bg-blue-900 disabled:opacity-50 transition-colors">
-          {isProcessing ? <RefreshCw className="animate-spin inline mr-1" size={12} /> : null}
+        <button onClick={() => embedAll(50)} disabled={isProcessing} className="px-3 py-1.5 bg-blue-800 text-white text-xs font-semibold rounded hover:bg-blue-900 disabled:opacity-50 transition-colors">
           Embed All
         </button>
-        <button onClick={() => cleanup('clear_cache')} disabled={isProcessing} className="px-4 py-2 bg-zinc-100 text-zinc-700 text-xs font-semibold rounded hover:bg-zinc-200 disabled:opacity-50 transition-colors">
-          Warm Cache
-        </button>
+        {selected.size > 0 && (
+          <button onClick={handleDelete} disabled={isDeleting} className="px-3 py-1.5 bg-red-600 text-white text-xs font-semibold rounded hover:bg-red-700 disabled:opacity-50 transition-colors ml-auto">
+            {isDeleting ? <RefreshCw className="animate-spin inline mr-1" size={12} /> : <XIcon className="inline mr-1" size={12} />}
+            Delete Selected ({selected.size})
+          </button>
+        )}
       </div>
 
       {embedProgress && (
@@ -909,38 +971,109 @@ function TrainingTab() {
         </div>
       )}
 
-      {/* Category breakdown */}
+      {/* Filters */}
       <div className={card}>
-        <h3 className="text-sm font-bold text-zinc-800 mb-3">Category Breakdown</h3>
-        <div className="space-y-1.5">
-          {categories.map((c) => (
-            <div key={c.category} className="flex items-center gap-2">
-              <span className="text-xs text-zinc-700 flex-1 truncate">{c.category}</span>
-              <span className="text-xs font-mono text-zinc-500">{c.count}</span>
-              <div className="w-24 h-1.5 bg-zinc-100 rounded-full overflow-hidden">
-                <div className="h-full bg-blue-500 rounded-full" style={{ width: `${Math.min(100, (c.count / (total || 1)) * 100 * 5)}%` }} />
-              </div>
-            </div>
-          ))}
+        <div className="flex flex-wrap items-center gap-3 mb-4">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search questions or answers..."
+            className="flex-1 min-w-[200px] px-3 py-1.5 text-xs border border-zinc-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-blue-400"
+          />
+          <select value={catFilter} onChange={(e) => setCatFilter(e.target.value)} className="px-3 py-1.5 text-xs border border-zinc-200 rounded bg-white">
+            <option value="all">All Categories ({questions.length})</option>
+            {categories.map(c => (
+              <option key={c.category} value={c.category}>{c.category} ({c.count})</option>
+            ))}
+          </select>
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as any)} className="px-3 py-1.5 text-xs border border-zinc-200 rounded bg-white">
+            <option value="all">All Status</option>
+            <option value="answered">Has Answer</option>
+            <option value="unanswered">No Answer</option>
+            <option value="embedded">Embedded</option>
+          </select>
         </div>
-      </div>
 
-      {/* Training phases */}
-      <div className={card}>
-        <h3 className="text-sm font-bold text-zinc-800 mb-3">Training Phase Plan</h3>
-        <div className="space-y-3">
-          {phases.map((p, i) => (
-            <div key={i} className="flex items-start gap-3">
-              <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] mt-0.5 ${p.done ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-100 text-zinc-400'}`}>
-                {p.done ? '✓' : i + 1}
+        <div className="text-xs text-zinc-500 mb-3">
+          Showing {paged.length} of {filteredQuestions.length} questions {filteredQuestions.length !== questions.length && `(filtered from ${questions.length} total)`}
+        </div>
+
+        {/* Table header */}
+        <div className="grid grid-cols-[32px_1fr_160px_80px_60px] gap-2 items-center py-2 px-2 bg-zinc-50 rounded-t text-[11px] font-semibold text-zinc-500 uppercase tracking-wide">
+          <label className="flex items-center justify-center">
+            <input type="checkbox" checked={paged.length > 0 && selected.size === paged.length} onChange={toggleAll} className="rounded" />
+          </label>
+          <span>Question</span>
+          <span>Category</span>
+          <span className="text-center">Answer</span>
+          <span className="text-center">Lang</span>
+        </div>
+
+        {/* Questions list */}
+        <div className="divide-y divide-zinc-100 max-h-[500px] overflow-y-auto">
+          {paged.map((q: any) => (
+            <div key={q.id}>
+              <div
+                className={`grid grid-cols-[32px_1fr_160px_80px_60px] gap-2 items-center py-2 px-2 hover:bg-zinc-50 cursor-pointer transition-colors ${selected.has(q.id) ? 'bg-blue-50' : ''}`}
+                onClick={() => setExpandedId(expandedId === q.id ? null : q.id)}
+              >
+                <label className="flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+                  <input type="checkbox" checked={selected.has(q.id)} onChange={() => toggleSelect(q.id)} className="rounded" />
+                </label>
+                <span className="text-xs text-zinc-800 truncate">{q.question}</span>
+                <span className="text-[11px] text-zinc-500 truncate">{q.category || 'Uncategorized'}</span>
+                <span className="text-center">
+                  {q.expected_answer?.trim() ? (
+                    <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                      <Check size={10} /> Yes
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">
+                      <XIcon size={10} /> No
+                    </span>
+                  )}
+                </span>
+                <span className="text-center text-[11px] text-zinc-400">{q.language || 'en'}</span>
               </div>
-              <div>
-                <p className="text-xs font-semibold text-zinc-700">{p.name}</p>
-                <p className="text-[11px] text-zinc-500">{p.desc}</p>
-              </div>
+              {expandedId === q.id && (
+                <div className="px-10 py-3 bg-zinc-50 border-t border-zinc-100">
+                  <p className="text-xs font-semibold text-zinc-600 mb-1">Question:</p>
+                  <p className="text-xs text-zinc-800 mb-3">{q.question}</p>
+                  {q.expected_answer?.trim() ? (
+                    <>
+                      <p className="text-xs font-semibold text-zinc-600 mb-1">Expected Answer:</p>
+                      <p className="text-xs text-zinc-700 whitespace-pre-wrap leading-relaxed">{q.expected_answer}</p>
+                    </>
+                  ) : (
+                    <p className="text-xs text-amber-600 italic">No answer generated yet.</p>
+                  )}
+                  <div className="flex gap-4 mt-3 text-[11px] text-zinc-400">
+                    <span>Embedded: {q.is_embedded ? '✅' : '❌'}</span>
+                    <span>Cache Hits: {q.cache_hits ?? 0}</span>
+                    <span>Created: {q.created_at ? formatDistanceToNow(new Date(q.created_at), { addSuffix: true }) : '—'}</span>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
+          {paged.length === 0 && (
+            <div className="py-8 text-center text-xs text-zinc-400">No questions found matching your filters.</div>
+          )}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between pt-3 mt-3 border-t border-zinc-100">
+            <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0} className="px-3 py-1 text-xs text-zinc-600 bg-zinc-100 rounded hover:bg-zinc-200 disabled:opacity-40">
+              ← Previous
+            </button>
+            <span className="text-xs text-zinc-500">Page {page + 1} of {totalPages}</span>
+            <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1} className="px-3 py-1 text-xs text-zinc-600 bg-zinc-100 rounded hover:bg-zinc-200 disabled:opacity-40">
+              Next →
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
