@@ -65704,6 +65704,12 @@ export type Database = {
         Returns: boolean
       }
       kb_cache_hit: { Args: { p_query_hash: string }; Returns: Json }
+      kb_has_product_role: {
+        Args: { required_codes: string[] }
+        Returns: boolean
+      }
+      kb_is_admin: { Args: never; Returns: boolean }
+      kb_is_lead_or_above: { Args: never; Returns: boolean }
       kb_log_query: {
         Args: {
           p_cache_hit?: boolean
