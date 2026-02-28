@@ -156,6 +156,7 @@ export function ForYouTable({
             <th style={{ ...thStyle, width: 36 }}>
               <input type="checkbox" checked={isAllSelected} onChange={e => handleSelectAll(e.target.checked)} style={{ width: 16, height: 16, accentColor: T.primary, cursor: 'pointer' }} />
             </th>
+            <th style={{ ...thStyle, width: 32 }} />
             <th style={{ ...thStyle, width: 140 }}>Key</th>
             <th style={thStyle}>Summary</th>
             <th style={{ ...thStyle, width: 160, textAlign: 'center' }}>Status</th>
@@ -171,7 +172,7 @@ export function ForYouTable({
             <React.Fragment key={group}>
               {/* Group row */}
               <tr>
-                <td colSpan={9} style={{ height: 28, padding: '0 12px', background: T.surfaceTertiary, borderBottom: `1px solid ${T.border}`, fontSize: 11, fontWeight: 700, color: T.inkTertiary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <td colSpan={10} style={{ height: 28, padding: '0 12px', background: T.surfaceTertiary, borderBottom: `1px solid ${T.border}`, fontSize: 11, fontWeight: 700, color: T.inkTertiary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                   {GROUP_LABELS[group]}
                 </td>
               </tr>
@@ -200,6 +201,17 @@ export function ForYouTable({
                     {/* Checkbox */}
                     <td style={{ padding: '0 12px', width: 36 }}>
                       <input type="checkbox" checked={isSelected} onClick={e => e.stopPropagation()} onChange={e => handleSelectItem(item.id, e.target.checked)} style={{ width: 16, height: 16, accentColor: T.primary, cursor: 'pointer' }} />
+                    </td>
+
+                    {/* Star */}
+                    <td style={{ padding: '0 4px', width: 32 }}>
+                      <button
+                        onClick={e => { e.stopPropagation(); onStarToggle?.(item.id); }}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4 }}
+                        title={item.starred ? 'Unstar' : 'Star'}
+                      >
+                        <Star size={14} fill={item.starred ? '#FACC15' : 'none'} stroke={item.starred ? '#FACC15' : T.border} strokeWidth={2} />
+                      </button>
                     </td>
 
                     {/* Key */}
