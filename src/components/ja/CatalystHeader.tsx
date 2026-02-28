@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Search, ChevronDown, LogOut, Settings, Bell, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,6 +23,7 @@ import { catalystToast } from "@/lib/catalystToast";
 import { CreateEntityDialog } from "@/components/dialogs/CreateEntityDialog";
 import { useCatalystContext } from "@/contexts/CatalystContext";
 import { getActiveNavItem } from "@/lib/workspaceContext";
+import { KBPanel } from "@/components/kb/KBPanel";
 import {
   Tooltip,
   TooltipContent,
@@ -47,6 +48,7 @@ export function CatalystHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [kbPanelOpen, setKbPanelOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLElement | null>(null);
   const { isAdmin, isSuperAdmin, isProgramManager, canAccessEnterprise, isProductOwnerOnly } = useUserRole();
@@ -156,7 +158,7 @@ export function CatalystHeader() {
     { label: "IncidentHub", hasDropdown: true, path: "/release", moduleKey: "operations", visibleToProductOwner: false },
     { label: "TaskHub", path: "/taskhub/boards", moduleKey: "planner", visibleToProductOwner: true },
     { label: "PlanHub", path: "/planhub", moduleKey: "planhub", visibleToProductOwner: true },
-    { label: "KB", path: "/kb-admin", moduleKey: "kb", visibleToProductOwner: false },
+    { label: "KB", path: "__kb_panel__", moduleKey: "kb", visibleToProductOwner: true },
   ];
 
   // Get all nav items with their enabled status based on role-based module access
@@ -492,6 +494,15 @@ export function CatalystHeader() {
                     >
                       {item.label}
                     </span>
+                  ) : item.label === "KB" ? (
+                    <button
+                      style={navButtonStyle}
+                      onMouseEnter={(e) => handleHover(e, true)}
+                      onMouseLeave={(e) => handleHover(e, false)}
+                      onClick={() => setKbPanelOpen(true)}
+                    >
+                      {item.label}
+                    </button>
                   ) : (
                     <button
                       style={navButtonStyle}
@@ -754,6 +765,9 @@ export function CatalystHeader() {
           onSuccess={handleCreateSuccess}
         />
       )}
+
+      {/* KB User Panel */}
+      <KBPanel isOpen={kbPanelOpen} onClose={() => setKbPanelOpen(false)} />
     </>
   );
 }

@@ -495,7 +495,9 @@ const App = () => (
               {/* Jira test routes removed */}
               <Route path="/submit-request" element={<SubmitDemandRequest />} />
               <Route path="/kb-admin-setup" element={<KBAdminSetup />} />
-              <Route path="/kb-admin" element={<Suspense fallback={<div className="p-8">Loading...</div>}><KBAdminPage /></Suspense>} />
+              <Route path="/kb-admin" element={<Navigate to="/admin/kb" replace />} />
+              <Route path="/admin/kb" element={<Suspense fallback={<div className="p-8">Loading...</div>}><KBAdminPage /></Suspense>} />
+              <Route path="/admin/kb/*" element={<Suspense fallback={<div className="p-8">Loading...</div>}><KBAdminPage /></Suspense>} />
               
               {/* Work Hub Test Route */}
               <Route path="/work-hub-test" element={<WorkHubLayout />}>

@@ -16,7 +16,8 @@ import {
   Bell,
   Wallet,
   Calendar,
-  Cable
+  Cable,
+  BookOpen
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -160,6 +161,20 @@ const adminPockets = [
       { label: 'Translation', path: '/admin/requirement-assist/translation' },
       { label: 'Analytics', path: '/admin/requirement-assist/analytics' },
       { label: 'Permissions', path: '/admin/requirement-assist/permissions' },
+    ],
+  },
+  {
+    id: 'knowledge-base',
+    label: 'Knowledge Base',
+    icon: BookOpen,
+    path: '/admin/kb',
+    children: [
+      { label: 'Query Log', path: '/admin/kb' },
+      { label: 'Access Matrix', path: '/admin/kb/access' },
+      { label: 'Sync Config', path: '/admin/kb/sync' },
+      { label: 'Pipeline', path: '/admin/kb/pipeline' },
+      { label: 'Sources', path: '/admin/kb/sources' },
+      { label: 'Training', path: '/admin/kb/training' },
     ],
   },
 ];
