@@ -107,7 +107,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default' }
           className="fy-dropdown-panel"
           style={{
             position: 'absolute', top: 'calc(100% + 6px)', left: 0,
-            minWidth: 220, maxHeight: 280, overflowY: 'auto',
+            minWidth: 240, maxHeight: 300, overflowY: 'auto',
             background: T.surface, border: `1px solid ${T.border}`,
             borderRadius: 8, boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
             zIndex: 50, padding: 4,

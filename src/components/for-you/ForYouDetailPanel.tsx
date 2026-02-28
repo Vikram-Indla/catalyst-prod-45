@@ -7,6 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, ArrowLeft, ExternalLink, Copy, Layers, MessageSquare, Clock, Link2, Zap, Target, Tag, Calendar, GitBranch, User, CornerDownLeft, Paperclip, FileText, Image, Download, File } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
+import { StatusBadge } from '@/components/for-you/StatusBadge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { supabase } from '@/integrations/supabase/client';
 import type { WorkItem } from '@/hooks/useForYouData';
@@ -24,25 +25,6 @@ const T = {
   danger: '#DC2626', dangerText: '#D92525', dangerBg: '#FEF2F2',
 };
 
-const STATUS_STYLES: Record<string, { dot: string; text: string; bg: string }> = {
-  'In Progress':           { dot: T.teal, text: T.tealText, bg: T.tealBg },
-  'In Development':        { dot: T.teal, text: T.tealText, bg: T.tealBg },
-  'Ready for Development': { dot: T.teal, text: T.tealText, bg: T.tealBg },
-  'Ready for Dev':         { dot: T.teal, text: T.tealText, bg: T.tealBg },
-  'In Dev':                { dot: T.teal, text: T.tealText, bg: T.tealBg },
-  'To Do':     { dot: T.primary, text: T.primary, bg: T.primaryBg },
-  'ToDo':      { dot: T.primary, text: T.primary, bg: T.primaryBg },
-  'Planned':   { dot: T.primary, text: T.primary, bg: T.primaryBg },
-  'Backlog':   { dot: T.inkMutedStrong, text: T.inkMutedStrong, bg: T.surfaceTertiary },
-  'Done':          { dot: T.success, text: T.successText, bg: T.successBg },
-  'In Production': { dot: T.success, text: T.successText, bg: T.successBg },
-  'In Prod':       { dot: T.success, text: T.successText, bg: T.successBg },
-  'In Review':          { dot: T.warning, text: T.warningText, bg: T.warningBg },
-  'End to End Testing': { dot: T.warning, text: T.warningText, bg: T.warningBg },
-  'E2E Testing':        { dot: T.warning, text: T.warningText, bg: T.warningBg },
-  'Ready for Review':   { dot: T.warning, text: T.warningText, bg: T.warningBg },
-  'Blocked': { dot: T.danger, text: T.dangerText, bg: T.dangerBg },
-};
 
 const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
   Project:  { bg: T.primaryBg, color: T.primary, border: T.primary },
@@ -105,13 +87,7 @@ function Linkify({ text }: { text: string }) {
 }
 
 function StatusPill({ status }: { status: string }) {
-  const s = STATUS_STYLES[status] || STATUS_STYLES['In Progress'];
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 22, padding: '0 10px', borderRadius: 9999, background: s.bg, fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>
-      <span style={{ width: 6, height: 6, borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
-      <span style={{ color: s.text }}>{status}</span>
-    </span>
-  );
+  return <StatusBadge status={status} />;
 }
 
 function HubBadge({ hub }: { hub: string }) {
