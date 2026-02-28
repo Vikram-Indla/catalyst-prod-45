@@ -143,3 +143,6 @@ verify_jwt = false
 
 [functions.r360-dept-intelligence-v4]
 verify_jwt = false
+
+[functions.kb-cleanup]
+verify_jwt = false
