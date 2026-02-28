@@ -31,9 +31,6 @@ function issueTypeToLevel(type: string): { level: number; name: string; color: s
   }
 }
 
-/**
- * Map Jira status_category to status colors
- */
 function statusCategoryToColors(category: string): { color: string; colorText: string; isTerminal: boolean } {
   switch (category) {
     case 'Done':
@@ -55,7 +52,6 @@ function transformJiraIssue(row: any): WorkItem {
   const typeInfo = issueTypeToLevel(row.issue_type);
   const statusColors = statusCategoryToColors(row.status_category);
 
-  // Extract fix version from JSONB array
   let fixVersion: WorkItem['fixVersion'] | undefined;
   if (row.fix_versions && Array.isArray(row.fix_versions) && row.fix_versions.length > 0) {
     const v = row.fix_versions[0];
@@ -95,7 +91,6 @@ function transformJiraIssue(row: any): WorkItem {
   };
 }
 
-/** Compute stats recursively after tree is built */
 function computeStats(item: WorkItem): { total: number; completed: number } {
   let total = 0;
   let completed = 0;
@@ -110,7 +105,6 @@ function computeStats(item: WorkItem): { total: number; completed: number } {
   return { total, completed };
 }
 
-/** Build tree from flat list using parent_key → issue_key */
 function buildJiraTree(items: WorkItem[]): WorkItem[] {
   const map = new Map<string, WorkItem>();
   const roots: WorkItem[] = [];
@@ -120,27 +114,80 @@ function buildJiraTree(items: WorkItem[]): WorkItem[] {
       map.get(item.parentId)!.children.push(item);
     } else if (!item.parentId) {
       roots.push(item);
-    }
-    // If parent_key exists but not in our data set, treat as root
-    else if (item.parentId && !map.has(item.parentId)) {
+    } else if (item.parentId && !map.has(item.parentId)) {
       roots.push(item);
     }
   });
-  // Compute stats after tree structure
   roots.forEach(computeStats);
   return roots;
 }
 
-export async function fetchJiraHierarchyTree(projectKey: string): Promise<WorkItem[]> {
+/** Fetch overrides and apply them on top of Jira parent_key */
+async function fetchOverrides(projectKey: string): Promise<Map<string, string | null>> {
   const { data, error } = await supabase
-    .from('ph_issues')
-    .select('issue_key, project_key, issue_type, summary, status, status_category, priority, assignee_account_id, assignee_display_name, parent_key, fix_versions, due_date, labels, jira_created_at, jira_updated_at')
-    .eq('project_key', projectKey.toUpperCase())
-    .is('jira_removed_at', null)
-    .order('jira_created_at', { ascending: true })
-    .limit(2000);
+    .from('ph_hierarchy_overrides')
+    .select('issue_key, new_parent_key')
+    .eq('project_key', projectKey.toUpperCase());
+
+  if (error) {
+    console.warn('Failed to fetch hierarchy overrides:', error.message);
+    return new Map();
+  }
+
+  const overrides = new Map<string, string | null>();
+  for (const row of data || []) {
+    overrides.set(row.issue_key, row.new_parent_key);
+  }
+  return overrides;
+}
+
+export async function fetchJiraHierarchyTree(projectKey: string): Promise<WorkItem[]> {
+  // Fetch Jira issues and local overrides in parallel
+  const [issuesResult, overrides] = await Promise.all([
+    supabase
+      .from('ph_issues')
+      .select('issue_key, project_key, issue_type, summary, status, status_category, priority, assignee_account_id, assignee_display_name, parent_key, fix_versions, due_date, labels, jira_created_at, jira_updated_at')
+      .eq('project_key', projectKey.toUpperCase())
+      .is('jira_removed_at', null)
+      .order('jira_created_at', { ascending: true })
+      .limit(2000),
+    fetchOverrides(projectKey),
+  ]);
+
+  if (issuesResult.error) throw issuesResult.error;
+
+  const items = (issuesResult.data || []).map(transformJiraIssue);
+
+  // Apply overrides: replace parentId where a local override exists
+  for (const item of items) {
+    if (overrides.has(item.id)) {
+      item.parentId = overrides.get(item.id) ?? null;
+    }
+  }
+
+  return buildJiraTree(items);
+}
+
+/** Save a hierarchy override (upsert) */
+export async function saveHierarchyOverride(
+  projectKey: string,
+  issueKey: string,
+  newParentKey: string | null,
+  originalParentKey: string | null,
+): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Not authenticated');
+
+  const { error } = await supabase
+    .from('ph_hierarchy_overrides')
+    .upsert({
+      project_key: projectKey.toUpperCase(),
+      issue_key: issueKey,
+      new_parent_key: newParentKey,
+      original_parent_key: originalParentKey,
+      moved_by: user.id,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'project_key,issue_key' });
 
   if (error) throw error;
-  const items = (data || []).map(transformJiraIssue);
-  return buildJiraTree(items);
 }

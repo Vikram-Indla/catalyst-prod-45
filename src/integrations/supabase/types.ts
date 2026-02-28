@@ -19188,6 +19188,39 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_hierarchy_overrides: {
+        Row: {
+          created_at: string
+          id: string
+          issue_key: string
+          moved_by: string | null
+          new_parent_key: string | null
+          original_parent_key: string | null
+          project_key: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          issue_key: string
+          moved_by?: string | null
+          new_parent_key?: string | null
+          original_parent_key?: string | null
+          project_key: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          issue_key?: string
+          moved_by?: string | null
+          new_parent_key?: string | null
+          original_parent_key?: string | null
+          project_key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ph_idea_audit_log: {
         Row: {
           action: string
