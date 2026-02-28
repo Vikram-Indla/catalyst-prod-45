@@ -4,7 +4,7 @@ import { useKBQuery } from '@/hooks/useKnowledgeBase';
 import { useAuth } from '@/hooks/useAuth';
 import { KBResponseRenderer } from './KBResponseRenderer';
 import { KBInputArea } from './KBInputArea';
-import { useKBChips } from './useKBChips';
+
 import type { KBQueryResponse } from '@/services/knowledgeBase';
 
 type Lang = 'en' | 'ar';
@@ -53,7 +53,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
   const fullName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'there';
   const firstName = getFirstName(fullName);
   const isRTL = lang === 'ar';
-  const dynamicChips = useKBChips(lang);
+  
 
   // Speech recognition
   const toggleListening = useCallback(() => {
@@ -293,7 +293,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           lang={lang}
           isListening={isListening}
           onToggleListening={toggleListening}
-          chips={dynamicChips}
+          chips={[]}
         />
 
         {/* Keyframes */}
