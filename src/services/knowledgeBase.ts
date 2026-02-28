@@ -150,6 +150,57 @@ export async function runCleanup(action: "all" | "purge_logs" | "clear_cache" = 
   return data;
 }
 
+// ═══ KB Sync Service ═══
+
+export async function discoverDataSources(): Promise<{ tables: Record<string, number>; configured: string[] }> {
+  const { data, error } = await supabase.functions.invoke("kb-sync", {
+    body: { action: "discover" },
+  });
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function syncTable(tableName: string): Promise<any> {
+  const { data, error } = await supabase.functions.invoke("kb-sync", {
+    body: { action: "sync_table", table_name: tableName },
+  });
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function syncAllTables(): Promise<any> {
+  const { data, error } = await supabase.functions.invoke("kb-sync", {
+    body: { action: "sync_all" },
+  });
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function getSyncStatus(): Promise<{ total_chunks: number; by_source: Record<string, number> }> {
+  const { data, error } = await supabase.functions.invoke("kb-sync", {
+    body: { action: "status" },
+  });
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function syncCustomTable(config: {
+  table: string;
+  sourceType: string;
+  urlField: string;
+  titleField: string;
+  bodyFields: string[];
+  tagFields?: string[];
+  selectFields: string;
+  maxRows: number;
+}): Promise<any> {
+  const { data, error } = await supabase.functions.invoke("kb-sync", {
+    body: { action: "add_config", custom_config: config },
+  });
+  if (error) throw new Error(error.message);
+  return data;
+}
+
 // ═══ Direct DB Queries (for admin panels) ═══
 
 export async function fetchSources(): Promise<KBSource[]> {

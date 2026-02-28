@@ -5,6 +5,11 @@ import {
   getTrainingStatus,
   embedTrainingBatch,
   runCleanup,
+  discoverDataSources,
+  syncTable,
+  syncAllTables,
+  getSyncStatus,
+  syncCustomTable,
   type KBQueryRequest,
   type KBQueryResponse,
   type KBTrainStatus,
@@ -132,5 +137,11 @@ export function useKBAdmin() {
     }
   }, []);
 
-  return { status, isProcessing, embedProgress, fetchStatus, embedBatch, embedAll, cleanup };
+  const discover = useCallback(async () => discoverDataSources(), []);
+  const syncOne = useCallback(async (table: string) => syncTable(table), []);
+  const syncAll = useCallback(async () => syncAllTables(), []);
+  const syncStatus = useCallback(async () => getSyncStatus(), []);
+  const syncCustom = useCallback(async (config: Parameters<typeof syncCustomTable>[0]) => syncCustomTable(config), []);
+
+  return { status, isProcessing, embedProgress, fetchStatus, embedBatch, embedAll, cleanup, discover, syncOne, syncAll, syncStatus, syncCustom };
 }
