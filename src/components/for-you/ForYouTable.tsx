@@ -42,23 +42,37 @@ const T = {
 
 const STATUS_STYLES: Record<string, { dot: string; text: string; bg: string }> = {
   'In Progress': { dot: T.teal, text: T.tealText, bg: T.tealBg },
+  'In Development': { dot: T.teal, text: T.tealText, bg: T.tealBg },
+  'Ready for Development': { dot: T.teal, text: T.tealText, bg: T.tealBg },
+  'Ready for Dev': { dot: T.teal, text: T.tealText, bg: T.tealBg },
   'To Do': { dot: T.primary, text: T.primary, bg: T.primaryBg },
+  'ToDo': { dot: T.primary, text: T.primary, bg: T.primaryBg },
+  'Planned': { dot: T.primary, text: T.primary, bg: T.primaryBg },
+  'Backlog': { dot: T.inkMuted, text: T.inkMuted, bg: T.surfaceTertiary },
   'Done': { dot: T.success, text: T.successText, bg: T.successBg },
+  'In Production': { dot: T.success, text: T.successText, bg: T.successBg },
   'In Review': { dot: T.warning, text: T.warningText, bg: T.warningBg },
+  'End to End Testing': { dot: T.warning, text: T.warningText, bg: T.warningBg },
+  'Ready for Review': { dot: T.warning, text: T.warningText, bg: T.warningBg },
   'Blocked': { dot: T.danger, text: T.dangerText, bg: T.dangerBg },
+};
+
+// Abbreviate long status names for table display
+const STATUS_DISPLAY: Record<string, string> = {
+  'Ready for Development': 'Ready for Dev',
+  'End to End Testing': 'E2E Testing',
+  'In Development': 'In Dev',
+  'In Production': 'In Prod',
+  'Ready for Review': 'Ready Review',
 };
 
 const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
   Project:  { bg: T.primaryBg, color: T.primary, border: T.primary },
   Product:  { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
-  Task:     { bg: T.surfaceTertiary, color: T.inkMuted, border: '#D4D4D8' },
+  Task:     { bg: T.surfaceTertiary, color: '#6F6F78', border: '#D4D4D8' },
   Incident: { bg: T.dangerBg, color: T.dangerText, border: T.danger },
   Release:  { bg: T.successBg, color: T.successText, border: T.success },
   Test:     { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
-};
-
-const PRI_COLORS: Record<number, string> = {
-  1: T.inkMuted, 2: T.inkMuted, 3: T.warning, 4: T.danger, 5: T.danger,
 };
 
 export function ForYouTable({ 
@@ -144,7 +158,7 @@ export function ForYouTable({
             </th>
             <th style={{ ...thStyle, width: 140 }}>Key</th>
             <th style={thStyle}>Summary</th>
-            <th style={{ ...thStyle, width: 120, textAlign: 'center' }}>Status</th>
+            <th style={{ ...thStyle, width: 160, textAlign: 'center' }}>Status</th>
             <th style={{ ...thStyle, width: 140 }}>Project</th>
             <th style={{ ...thStyle, width: 95 }}>Hub</th>
             <th style={{ ...thStyle, width: 80 }}>Priority</th>
@@ -169,7 +183,7 @@ export function ForYouTable({
                 const isFocused = focusedIndex === currentRowIndex;
                 const statusStyle = STATUS_STYLES[item.status] || STATUS_STYLES['In Progress'];
                 const hubCfg = HUB_CFG[item.hubLabel] || HUB_CFG.Task;
-                const priColor = PRI_COLORS[item.priorityLevel] || T.inkMuted;
+                const displayStatus = STATUS_DISPLAY[item.status] || item.status;
 
                 return (
                   <tr
@@ -202,10 +216,10 @@ export function ForYouTable({
                     </td>
 
                     {/* Status */}
-                    <td style={{ padding: '0 8px', width: 120, textAlign: 'center' }}>
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 22, padding: '0 10px', borderRadius: 9999, background: statusStyle.bg, fontSize: 11, fontWeight: 600 }}>
-                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: statusStyle.dot }} />
-                        <span style={{ color: statusStyle.text }}>{item.status}</span>
+                    <td style={{ padding: '0 8px', width: 160, textAlign: 'center' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 22, padding: '0 10px', borderRadius: 9999, background: statusStyle.bg, fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: statusStyle.dot, flexShrink: 0 }} />
+                        <span style={{ color: statusStyle.text }}>{displayStatus}</span>
                       </span>
                     </td>
 
@@ -225,7 +239,7 @@ export function ForYouTable({
                     <td style={{ padding: '0 12px', width: 80 }}>
                       <div style={{ display: 'flex', gap: 2 }}>
                         {[1,2,3,4].map(i => (
-                          <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: i <= item.priorityLevel ? priColor : T.border }} />
+                          <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: i <= item.priorityLevel ? T.inkMuted : T.border }} />
                         ))}
                       </div>
                     </td>
