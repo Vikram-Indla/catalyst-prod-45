@@ -42,7 +42,7 @@ export function KBIntelligenceButton({ isOpen, onClick }: KBIntelligenceButtonPr
         }}
       >
         <Sparkles size={13} />
-        Intelligence
+        KB
       </button>
       <style>{`
         @keyframes intelligence-pulse {
