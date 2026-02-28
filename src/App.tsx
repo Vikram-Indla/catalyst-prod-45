@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import KBAdminSetup from "./pages/KBAdminSetup";
 const KBAdminPage = lazy(() => import("./pages/KBAdminPage"));
+const KBDataAuditPage = lazy(() => import("./pages/KBDataAudit"));
 import { Resource360Redirect } from './components/workhub/resource360/Resource360Redirect';
 const Resource360PageNew = lazy(() => import("./components/resource360/Resource360PageNew"));
 const Resource360MemberDetail = lazy(() => import("./pages/Resource360MemberDetail"));
@@ -496,6 +497,7 @@ const App = () => (
               <Route path="/submit-request" element={<SubmitDemandRequest />} />
               <Route path="/kb-admin-setup" element={<KBAdminSetup />} />
               <Route path="/kb-admin" element={<Navigate to="/admin/kb" replace />} />
+              <Route path="/kb-data-audit" element={<Suspense fallback={<div className="p-8">Loading...</div>}><KBDataAuditPage /></Suspense>} />
               <Route path="/admin/kb" element={<Suspense fallback={<div className="p-8">Loading...</div>}><KBAdminPage /></Suspense>} />
               <Route path="/admin/kb/*" element={<Suspense fallback={<div className="p-8">Loading...</div>}><KBAdminPage /></Suspense>} />
               
