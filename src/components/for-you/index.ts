@@ -9,3 +9,5 @@ export { ForYouTable } from './ForYouTable';
 export { ForYouTableSkeleton } from './ForYouTableSkeleton';
 export { ForYouPagination } from './ForYouPagination';
 export { ForYouInlineFilters } from './ForYouInlineFilters';
+export { ForYouStatsBar } from './ForYouStatsBar';
+export { ForYouDetailPanel } from './ForYouDetailPanel';

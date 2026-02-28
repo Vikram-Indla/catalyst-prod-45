@@ -1,8 +1,9 @@
 /**
  * For You Page Data Hook - Real data from Jira sync (ph_issues)
+ * MARAM V3.1 — ring-fenced to For You page
  */
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -16,6 +17,7 @@ export interface WorkItemAssignee {
   name: string;
   initials: string;
   avatarColor: string;
+  avatarUrl?: string;
 }
 
 export type HubType = 'ProductHub' | 'ProjectHub' | 'ReleaseHub' | 'TestHub' | 'IncidentHub' | 'TaskHub' | 'StrategyHub' | 'PlanHub';
@@ -27,13 +29,31 @@ export interface WorkItem {
   mode: WorkMode;
   level: string;
   project: string;
+  projectKey: string;
   hub: HubType;
+  hubLabel: string;
   updatedAt: string;
+  createdAt: string;
   assignee: WorkItemAssignee;
   reporter?: string;
+  reporterAvatarUrl?: string;
   issueType: string;
   group: WorkGroup;
   starred?: boolean;
+  // New fields for detail panel
+  status: string;
+  priority: string;
+  priorityLevel: number;
+  sprint?: string;
+  storyPoints?: number;
+  labels?: string[];
+  fixVersion?: string;
+  component?: string;
+  jiraUrl?: string;
+  lastSyncedAt?: string;
+  description?: string;
+  parentKey?: string;
+  parentSummary?: string;
 }
 
 export type AIWorkItemType = 'feature' | 'epic' | 'story' | 'defect' | 'incident' | 'task' | 'business-request';
@@ -95,17 +115,14 @@ function formatRelativeTime(dateStr: string): string {
   return `${diffWeeks} weeks ago`;
 }
 
-// Helper: get initials from name
 function getInitials(name: string): string {
   return name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2);
 }
 
-// Helper: infer mode from project_key or issue_type
 function inferMode(projectKey: string, issueType: string): WorkMode {
   const type = issueType?.toLowerCase() || '';
   if (type.includes('incident') || type.includes('production')) return 'OPS';
   if (type === 'task' || type === 'planner_task') return 'TSK';
-  // Default to DEL (delivery) for stories, epics, sub-tasks, etc.
   return 'DEL';
 }
 
@@ -114,6 +131,7 @@ function mapPlannerTaskToIssueRow(row: any) {
   return {
     issue_key: row.task_key,
     project_key: row.task_key?.split('-')[0] || 'TSK',
+    project_name: null,
     issue_type: 'planner_task',
     summary: row.title || '',
     status: row.status_name || 'Backlog',
@@ -121,15 +139,22 @@ function mapPlannerTaskToIssueRow(row: any) {
     assignee_account_id: row.assignee_id,
     assignee_display_name: row.assignee_name || 'Unassigned',
     reporter_display_name: row.reporter_name || null,
-    priority: row.priority || 'medium',
+    priority: row.priority || 'Medium',
     jira_updated_at: row.updated_at,
+    jira_created_at: row.created_at || row.updated_at,
     parent_key: null,
     parent_summary: null,
     workstream_name: row.workstream_name || null,
+    sprint_name: null,
+    story_points: null,
+    labels: null,
+    fix_versions: null,
+    components: null,
+    description_text: null,
+    last_synced_at: null,
   };
 }
 
-// Infer which hub an item belongs to
 function inferHub(issueType: string, projectKey: string): HubType {
   const type = (issueType || '').toLowerCase();
   if (type.includes('incident') || type.includes('production')) return 'IncidentHub';
@@ -139,8 +164,29 @@ function inferHub(issueType: string, projectKey: string): HubType {
   if (type === 'story' || type === 'sub-task' || type === 'subtask') return 'ProjectHub';
   if (type === 'bug' || type === 'defect') return 'ReleaseHub';
   if (type === 'feature' || type === 'initiative' || type === 'business request') return 'ProductHub';
-  // Default to ProductHub for most work items
   return 'ProductHub';
+}
+
+const HUB_LABEL_MAP: Record<HubType, string> = {
+  ProductHub: 'Product',
+  ProjectHub: 'Project',
+  ReleaseHub: 'Release',
+  TestHub: 'Test',
+  IncidentHub: 'Incident',
+  TaskHub: 'Task',
+  StrategyHub: 'Strategy',
+  PlanHub: 'Plan',
+};
+
+// Map Jira priority string to numeric level (1-5)
+function priorityToLevel(priority: string): number {
+  const p = (priority || '').toLowerCase();
+  if (p === 'lowest') return 1;
+  if (p === 'low') return 2;
+  if (p === 'medium') return 3;
+  if (p === 'high') return 4;
+  if (p === 'highest') return 5;
+  return 3; // default medium
 }
 
 // Map ph_issues row to WorkItem
@@ -148,16 +194,58 @@ function mapIssueToWorkItem(row: any, starredSet: Set<string>, projectNameMap: M
   const assigneeName = row.assignee_display_name || 'Unassigned';
   const projectKey = row.project_key || '';
   const issueType = row.issue_type || 'Task';
+  const hub = inferHub(issueType, projectKey);
+  const priority = row.priority || 'Medium';
+
+  // Parse labels, fix_versions, components from JSON
+  let labels: string[] = [];
+  if (Array.isArray(row.labels)) labels = row.labels;
+  else if (typeof row.labels === 'string') {
+    try { labels = JSON.parse(row.labels); } catch { /* empty */ }
+  }
+
+  let fixVersion = '';
+  if (row.fix_versions) {
+    try {
+      const fv = typeof row.fix_versions === 'string' ? JSON.parse(row.fix_versions) : row.fix_versions;
+      if (Array.isArray(fv) && fv.length > 0) fixVersion = fv[0]?.name || fv[0] || '';
+    } catch { /* empty */ }
+  }
+
+  let component = '';
+  if (row.components) {
+    try {
+      const cs = typeof row.components === 'string' ? JSON.parse(row.components) : row.components;
+      if (Array.isArray(cs) && cs.length > 0) component = cs[0]?.name || cs[0] || '';
+    } catch { /* empty */ }
+  }
+
   return {
     id: row.issue_key,
     key: row.issue_key,
     summary: row.summary || '',
     mode: inferMode(projectKey, issueType),
     level: issueType,
-    project: row.workstream_name || projectNameMap.get(projectKey) || projectKey,
-    hub: inferHub(issueType, projectKey),
+    project: row.workstream_name || row.project_name || projectNameMap.get(projectKey) || projectKey,
+    projectKey,
+    hub,
+    hubLabel: HUB_LABEL_MAP[hub],
     issueType,
+    status: row.status || 'To Do',
+    priority,
+    priorityLevel: priorityToLevel(priority),
+    sprint: row.sprint_name || undefined,
+    storyPoints: row.story_points ? Number(row.story_points) : undefined,
+    labels: labels.length > 0 ? labels : undefined,
+    fixVersion: fixVersion || undefined,
+    component: component || undefined,
+    description: row.description_text || undefined,
+    jiraUrl: row.issue_key ? `https://jira.example.com/browse/${row.issue_key}` : undefined,
+    lastSyncedAt: row.last_synced_at || undefined,
+    parentKey: row.parent_key || undefined,
+    parentSummary: row.parent_summary || undefined,
     updatedAt: row.jira_updated_at ? formatRelativeTime(row.jira_updated_at) : '-',
+    createdAt: row.jira_created_at ? new Date(row.jira_created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-',
     assignee: {
       id: row.assignee_account_id || 'none',
       name: assigneeName,
@@ -170,19 +258,17 @@ function mapIssueToWorkItem(row: any, starredSet: Set<string>, projectNameMap: M
   };
 }
 
+const SELECT_FIELDS = 'issue_key, project_key, project_name, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, jira_created_at, parent_key, parent_summary, sprint_name, story_points, labels, fix_versions, components, description_text, last_synced_at';
+
 export function useForYouData() {
-  // State
   const [activeMode, setActiveMode] = useState<ModeFilter>('all');
   const [activeTab, setActiveTab] = useState<TabType>('worked');
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortConfig, setSortConfig] = useState<{ field: string; order: 'asc' | 'desc' }>({ 
-    field: 'updated', 
-    order: 'desc' 
-  });
+  const [sortConfig, setSortConfig] = useState<{ field: string; order: 'asc' | 'desc' }>({ field: 'updated', order: 'desc' });
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
   const [starredItems, setStarredItems] = useState<Set<string>>(new Set());
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
 
-  // Data state
   const [workedOnItems, setWorkedOnItems] = useState<any[]>([]);
   const [assignedItems, setAssignedItems] = useState<any[]>([]);
   const [starredData, setStarredData] = useState<any[]>([]);
@@ -190,7 +276,6 @@ export function useForYouData() {
   const [jiraAccountIds, setJiraAccountIds] = useState<string[]>([]);
   const [projectNameMap, setProjectNameMap] = useState<Map<string, string>>(new Map());
 
-  // Fetch actual user profile
   const { user: authUser } = useAuth();
   const [userProfile, setUserProfile] = useState<{ firstName: string; lastName: string } | null>(null);
 
@@ -198,190 +283,87 @@ export function useForYouData() {
   useEffect(() => {
     async function fetchUserMapping() {
       if (!authUser?.id) return;
-
-      // Fetch profile name
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', authUser.id)
-        .single();
-
+      const { data: profileData } = await supabase.from('profiles').select('full_name').eq('id', authUser.id).single();
       if (profileData?.full_name) {
         const parts = profileData.full_name.split(' ');
-        setUserProfile({
-          firstName: parts[0] || 'there',
-          lastName: parts.slice(1).join(' ') || '',
-        });
+        setUserProfile({ firstName: parts[0] || 'there', lastName: parts.slice(1).join(' ') || '' });
       }
-
-      // Fetch user's Jira account IDs from mapping
-      const { data: mappings } = await supabase
-        .from('ph_user_mapping')
-        .select('jira_account_id')
-        .eq('catalyst_profile_id', authUser.id)
-        .eq('is_mapped', true);
-
+      const { data: mappings } = await supabase.from('ph_user_mapping').select('jira_account_id').eq('catalyst_profile_id', authUser.id).eq('is_mapped', true);
       if (mappings && mappings.length > 0) {
-        const ids = mappings.map(m => m.jira_account_id).filter(Boolean);
-        setJiraAccountIds(ids);
-      } else {
-        // No mapping found - try matching by name
-        if (profileData?.full_name) {
-          const { data: nameMatches } = await supabase
-            .from('ph_user_mapping')
-            .select('jira_account_id')
-            .ilike('jira_display_name', `%${profileData.full_name}%`)
-            .eq('is_mapped', true);
-          
-          if (nameMatches && nameMatches.length > 0) {
-            setJiraAccountIds(nameMatches.map(m => m.jira_account_id).filter(Boolean));
-          } else {
-            setJiraAccountIds([]);
-          }
+        setJiraAccountIds(mappings.map(m => m.jira_account_id).filter(Boolean));
+      } else if (profileData?.full_name) {
+        const { data: nameMatches } = await supabase.from('ph_user_mapping').select('jira_account_id').ilike('jira_display_name', `%${profileData.full_name}%`).eq('is_mapped', true);
+        if (nameMatches && nameMatches.length > 0) {
+          setJiraAccountIds(nameMatches.map(m => m.jira_account_id).filter(Boolean));
+        } else {
+          setJiraAccountIds([]);
         }
       }
     }
     fetchUserMapping();
   }, [authUser?.id]);
 
-  // 2. Fetch issues once we have Jira account IDs
+  // 2. Fetch issues
   useEffect(() => {
     async function fetchIssues() {
-      if (!authUser?.id) {
-        setIsLoading(false);
-        return;
-      }
-
+      if (!authUser?.id) { setIsLoading(false); return; }
       setIsLoading(true);
-
       try {
-        // Fetch Jira project names for display
-        const { data: jiraProjects } = await supabase
-          .from('ph_jira_projects')
-          .select('project_key, name');
+        const { data: jiraProjects } = await supabase.from('ph_jira_projects').select('project_key, name');
         if (jiraProjects) {
           const pMap = new Map<string, string>();
           jiraProjects.forEach(p => pMap.set(p.project_key, p.name));
           setProjectNameMap(pMap);
         }
 
-        // --- Fetch planner_tasks (TaskHub) assigned to this user ---
-        const { data: plannerAssigned } = await supabase
-          .from('planner_tasks')
-          .select('task_key, title, priority, assignee_id, updated_at, status_id, workstream_id, reporter_id')
-          .eq('assignee_id', authUser.id)
-          .is('deleted_at', null)
-          .order('updated_at', { ascending: false })
-          .limit(200);
-
-        // Fetch assignee/reporter names for planner tasks
+        // Planner tasks
+        const { data: plannerAssigned } = await supabase.from('planner_tasks').select('task_key, title, priority, assignee_id, updated_at, created_at, status_id, workstream_id, reporter_id').eq('assignee_id', authUser.id).is('deleted_at', null).order('updated_at', { ascending: false }).limit(200);
         const plannerRows = plannerAssigned || [];
         let plannerMapped: any[] = [];
         if (plannerRows.length > 0) {
-          // Fetch status names
           const statusIds = [...new Set(plannerRows.map(r => r.status_id).filter(Boolean))];
-          const { data: statuses } = statusIds.length > 0
-            ? await supabase.from('planner_statuses').select('id, name').in('id', statusIds)
-            : { data: [] };
+          const { data: statuses } = statusIds.length > 0 ? await supabase.from('planner_statuses').select('id, name').in('id', statusIds) : { data: [] };
           const statusMap = new Map((statuses || []).map(s => [s.id, s.name]));
-
-          // Fetch workstream names
           const wsIds = [...new Set(plannerRows.map(r => r.workstream_id).filter(Boolean))];
-          const { data: workstreams } = wsIds.length > 0
-            ? await supabase.from('planner_workstreams').select('id, name').in('id', wsIds)
-            : { data: [] };
+          const { data: workstreams } = wsIds.length > 0 ? await supabase.from('planner_workstreams').select('id, name').in('id', wsIds) : { data: [] };
           const wsMap = new Map((workstreams || []).map(w => [w.id, w.name]));
-
-          // Fetch assignee name
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('id, full_name')
-            .eq('id', authUser.id)
-            .single();
-
-          plannerMapped = plannerRows.map(row => mapPlannerTaskToIssueRow({
-            ...row,
-            assignee_name: profileData?.full_name || 'Unassigned',
-            status_name: statusMap.get(row.status_id) || 'Backlog',
-            workstream_name: wsMap.get(row.workstream_id) || null,
-          }));
+          const { data: profileData } = await supabase.from('profiles').select('id, full_name').eq('id', authUser.id).single();
+          plannerMapped = plannerRows.map(row => mapPlannerTaskToIssueRow({ ...row, assignee_name: profileData?.full_name || 'Unassigned', status_name: statusMap.get(row.status_id) || 'Backlog', workstream_name: wsMap.get(row.workstream_id) || null }));
         }
 
-        // --- Fetch Jira issues ---
+        // Jira issues
         let jiraAssigned: any[] = [];
         let jiraWorked: any[] = [];
-
         if (jiraAccountIds.length > 0) {
-          const { data: assigned } = await supabase
-            .from('ph_issues')
-            .select('issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, parent_key, parent_summary')
-            .in('assignee_account_id', jiraAccountIds)
-            .order('jira_updated_at', { ascending: false })
-            .limit(200);
+          const { data: assigned } = await supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).order('jira_updated_at', { ascending: false }).limit(200);
           jiraAssigned = assigned || [];
-
           const fourteenDaysAgo = new Date();
           fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
-          const { data: worked } = await supabase
-            .from('ph_issues')
-            .select('issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, parent_key, parent_summary')
-            .in('assignee_account_id', jiraAccountIds)
-            .gte('jira_updated_at', fourteenDaysAgo.toISOString())
-            .order('jira_updated_at', { ascending: false })
-            .limit(200);
+          const { data: worked } = await supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).gte('jira_updated_at', fourteenDaysAgo.toISOString()).order('jira_updated_at', { ascending: false }).limit(200);
           jiraWorked = worked || [];
         }
 
-        // Merge Jira + planner tasks
         setAssignedItems([...jiraAssigned, ...plannerMapped]);
-
-        // Worked on: Jira worked + recently updated planner tasks
         const fourteenDaysAgo2 = new Date();
         fourteenDaysAgo2.setDate(fourteenDaysAgo2.getDate() - 14);
-        const recentPlannerTasks = plannerMapped.filter(t => 
-          t.jira_updated_at && new Date(t.jira_updated_at) >= fourteenDaysAgo2
-        );
+        const recentPlannerTasks = plannerMapped.filter(t => t.jira_updated_at && new Date(t.jira_updated_at) >= fourteenDaysAgo2);
         setWorkedOnItems([...jiraWorked, ...recentPlannerTasks]);
 
-        // Starred: fetch from user_starred_items
-        const { data: stars } = await supabase
-          .from('user_starred_items')
-          .select('item_id, item_type')
-          .eq('user_id', authUser.id);
-
+        // Starred
+        const { data: stars } = await supabase.from('user_starred_items').select('item_id, item_type').eq('user_id', authUser.id);
         if (stars && stars.length > 0) {
           const starredKeys = new Set(stars.map(s => s.item_id));
           setStarredItems(starredKeys as any);
-
-          // Fetch the actual starred issue data
           const itemIds = stars.map(s => s.item_id);
-          const { data: starredIssues } = await supabase
-            .from('ph_issues')
-            .select('issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, reporter_display_name, priority, jira_updated_at, parent_key, parent_summary')
-            .in('issue_key', itemIds)
-            .order('jira_updated_at', { ascending: false });
-
-          // Also fetch starred planner tasks
-          const { data: starredPlannerTasks } = await supabase
-            .from('planner_tasks')
-            .select('task_key, title, priority, assignee_id, updated_at, status_id')
-            .in('task_key', itemIds)
-            .is('deleted_at', null);
-
+          const { data: starredIssues } = await supabase.from('ph_issues').select(SELECT_FIELDS).in('issue_key', itemIds).order('jira_updated_at', { ascending: false });
+          const { data: starredPlannerTasks } = await supabase.from('planner_tasks').select('task_key, title, priority, assignee_id, updated_at, created_at, status_id').in('task_key', itemIds).is('deleted_at', null);
           let starredPlannerMapped: any[] = [];
           if (starredPlannerTasks && starredPlannerTasks.length > 0) {
             const stIds = [...new Set(starredPlannerTasks.map(r => r.status_id).filter(Boolean))];
-            const { data: sts } = stIds.length > 0
-              ? await supabase.from('planner_statuses').select('id, name').in('id', stIds)
-              : { data: [] };
+            const { data: sts } = stIds.length > 0 ? await supabase.from('planner_statuses').select('id, name').in('id', stIds) : { data: [] };
             const stMap = new Map((sts || []).map(s => [s.id, s.name]));
-            starredPlannerMapped = starredPlannerTasks.map(row => mapPlannerTaskToIssueRow({
-              ...row,
-              assignee_name: 'Unassigned',
-              status_name: stMap.get(row.status_id) || 'Backlog',
-            }));
+            starredPlannerMapped = starredPlannerTasks.map(row => mapPlannerTaskToIssueRow({ ...row, assignee_name: 'Unassigned', status_name: stMap.get(row.status_id) || 'Backlog' }));
           }
-
           setStarredData([...(starredIssues || []), ...starredPlannerMapped]);
         }
       } catch (err) {
@@ -393,13 +375,8 @@ export function useForYouData() {
     fetchIssues();
   }, [authUser?.id, jiraAccountIds]);
 
-  const user = {
-    id: authUser?.id || 'current-user',
-    firstName: userProfile?.firstName || 'there',
-    lastName: userProfile?.lastName || '',
-  };
+  const user = { id: authUser?.id || 'current-user', firstName: userProfile?.firstName || 'there', lastName: userProfile?.lastName || '' };
 
-  // Pick source data based on active tab
   const sourceItems = useMemo(() => {
     switch (activeTab) {
       case 'assigned': return assignedItems;
@@ -409,176 +386,91 @@ export function useForYouData() {
     }
   }, [activeTab, workedOnItems, assignedItems, starredData]);
 
-  // Filtered and grouped work items
   const filteredItems = useMemo(() => {
     let items = sourceItems.map(row => mapIssueToWorkItem(row, starredItems, projectNameMap));
-
-    // Filter by mode
-    if (activeMode !== 'all') {
-      items = items.filter(item => item.mode.toLowerCase() === activeMode);
-    }
-
-    // Filter by search
+    if (activeMode !== 'all') items = items.filter(item => item.mode.toLowerCase() === activeMode);
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      items = items.filter(item => 
-        item.key.toLowerCase().includes(query) ||
-        item.summary.toLowerCase().includes(query)
-      );
+      items = items.filter(item => item.key.toLowerCase().includes(query) || item.summary.toLowerCase().includes(query));
     }
-
     return items;
   }, [sourceItems, activeMode, searchQuery, starredItems, projectNameMap]);
 
-  // Group items
   const groupedItems = useMemo(() => {
-    const groups: Record<WorkGroup, WorkItem[]> = {
-      YESTERDAY: [],
-      THIS_WEEK: [],
-      EARLIER: [],
-    };
-
-    filteredItems.forEach(item => {
-      groups[item.group].push(item);
-    });
-
+    const groups: Record<WorkGroup, WorkItem[]> = { YESTERDAY: [], THIS_WEEK: [], EARLIER: [] };
+    filteredItems.forEach(item => { groups[item.group].push(item); });
     return groups;
   }, [filteredItems]);
 
-  // Counts for tabs - respect active mode filter
   const tabCounts = useMemo(() => {
     const filterByMode = (items: any[]) => {
       if (activeMode === 'all') return items;
-      return items.filter(row => {
-        const mode = inferMode(row.project_key, row.issue_type);
-        return mode.toLowerCase() === activeMode;
-      });
+      return items.filter(row => inferMode(row.project_key, row.issue_type).toLowerCase() === activeMode);
     };
-    return {
-      worked: filterByMode(workedOnItems).length,
-      assigned: filterByMode(assignedItems).length,
-      starred: filterByMode(starredData).length,
-    };
+    return { worked: filterByMode(workedOnItems).length, assigned: filterByMode(assignedItems).length, starred: filterByMode(starredData).length };
   }, [workedOnItems, assignedItems, starredData, activeMode]);
 
-  // AI Data (empty for now)
-  const aiData = useMemo(() => ({
-    criticalCount: 0,
-    priorityItem: undefined,
-    nextItems: [] as AISuggestion[],
-    suggestions: [] as AISuggestion[],
-  }), []);
+  // Hub stats from current filtered items
+  const hubStats = useMemo(() => {
+    const stats: Record<string, number> = {};
+    filteredItems.forEach(item => {
+      stats[item.hubLabel] = (stats[item.hubLabel] || 0) + 1;
+    });
+    const projects = new Set(filteredItems.map(i => i.project));
+    const reporters = new Set(filteredItems.map(i => i.reporter || i.assignee.name));
+    return { hubCounts: stats, projectCount: projects.size, reporterCount: reporters.size };
+  }, [filteredItems]);
 
-  // Performance stats (empty for now)
-  const performanceStats: PerformanceStats = {
-    closed: 0, ops: 0, del: 0, pln: 0,
-    slaRate: 0, percentChange: 0, personalBest: 0,
-  };
+  const aiData = useMemo(() => ({ criticalCount: 0, priorityItem: undefined, nextItems: [] as AISuggestion[], suggestions: [] as AISuggestion[] }), []);
+  const performanceStats: PerformanceStats = { closed: 0, ops: 0, del: 0, pln: 0, slaRate: 0, percentChange: 0, personalBest: 0 };
 
-  // Handlers
-  const handleRowClick = (itemId: string) => {
-    console.log('Navigate to item:', itemId);
-  };
+  // Selected item for detail panel
+  const selectedItem = useMemo(() => {
+    if (!selectedItemId) return null;
+    return filteredItems.find(i => i.id === selectedItemId) || null;
+  }, [selectedItemId, filteredItems]);
 
-  const handleStartTask = (itemId: string) => {
-    console.log('Start task:', itemId);
-  };
+  const handleRowClick = useCallback((itemId: string) => {
+    setSelectedItemId(itemId);
+  }, []);
 
-  const generateStatusUpdate = () => {
-    console.log('Generate status update');
-  };
+  const closeDetailPanel = useCallback(() => {
+    setSelectedItemId(null);
+  }, []);
 
-  const generateImpactReport = () => {
-    console.log('Generate impact report');
-  };
-
-  const showDeprioritize = () => {
-    console.log('Show deprioritize options');
-  };
+  const handleStartTask = (itemId: string) => { console.log('Start task:', itemId); };
+  const generateStatusUpdate = () => { console.log('Generate status update'); };
+  const generateImpactReport = () => { console.log('Generate impact report'); };
+  const showDeprioritize = () => { console.log('Show deprioritize options'); };
 
   const toggleStar = async (itemId: string) => {
     if (!authUser?.id) return;
-    
     const isCurrentlyStarred = starredItems.has(itemId);
-    
-    // Optimistic update
-    setStarredItems(prev => {
-      const next = new Set(prev);
-      if (next.has(itemId)) {
-        next.delete(itemId);
-      } else {
-        next.add(itemId);
-      }
-      return next;
-    });
-
+    setStarredItems(prev => { const next = new Set(prev); if (next.has(itemId)) next.delete(itemId); else next.add(itemId); return next; });
     try {
       if (isCurrentlyStarred) {
-        const { error } = await supabase
-          .from('user_starred_items')
-          .delete()
-          .eq('user_id', authUser.id)
-          .eq('item_id', itemId);
+        const { error } = await supabase.from('user_starred_items').delete().eq('user_id', authUser.id).eq('item_id', itemId);
         if (error) throw error;
-        
-        // Remove from starredData
         setStarredData(prev => prev.filter(r => r.issue_key !== itemId));
       } else {
-        const { error } = await supabase
-          .from('user_starred_items')
-          .insert({
-            user_id: authUser.id,
-            item_id: itemId,
-            item_type: 'ph_issue',
-          });
+        const { error } = await supabase.from('user_starred_items').insert({ user_id: authUser.id, item_id: itemId, item_type: 'ph_issue' });
         if (error) throw error;
-        
-        // Add to starredData from assigned/worked items
         const issueRow = [...assignedItems, ...workedOnItems].find(r => r.issue_key === itemId);
-        if (issueRow) {
-          setStarredData(prev => [issueRow, ...prev]);
-        }
+        if (issueRow) setStarredData(prev => [issueRow, ...prev]);
       }
     } catch (err) {
       console.error('Error toggling star:', err);
-      // Revert optimistic update
-      setStarredItems(prev => {
-        const next = new Set(prev);
-        if (isCurrentlyStarred) next.add(itemId);
-        else next.delete(itemId);
-        return next;
-      });
+      setStarredItems(prev => { const next = new Set(prev); if (isCurrentlyStarred) next.add(itemId); else next.delete(itemId); return next; });
     }
   };
 
   return {
-    // State
-    activeMode,
-    setActiveMode,
-    activeTab,
-    setActiveTab,
-    searchQuery,
-    setSearchQuery,
-    sortConfig,
-    setSortConfig,
-    isAIPanelOpen,
-    setIsAIPanelOpen,
-
-    // Data
-    user,
-    workItems: filteredItems,
-    groupedItems,
-    tabCounts,
-    aiData,
-    performanceStats,
-    isLoading,
-
-    // Handlers
-    handleRowClick,
-    handleStartTask,
-    generateStatusUpdate,
-    generateImpactReport,
-    showDeprioritize,
-    toggleStar,
+    activeMode, setActiveMode, activeTab, setActiveTab,
+    searchQuery, setSearchQuery, sortConfig, setSortConfig,
+    isAIPanelOpen, setIsAIPanelOpen,
+    user, workItems: filteredItems, groupedItems, tabCounts, hubStats,
+    aiData, performanceStats, isLoading,
+    selectedItem, handleRowClick, closeDetailPanel,
+    handleStartTask, generateStatusUpdate, generateImpactReport, showDeprioritize, toggleStar,
   };
 }

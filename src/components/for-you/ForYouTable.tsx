@@ -1,6 +1,6 @@
 /**
- * For You Work Items Table - CATALYST10 v3 spec
- * Enterprise typography, muted mode badges, row hover with inline "Open →"
+ * For You Work Items Table - MARAM V3.1 spec
+ * Full columns: Key, Summary, Status, Project, Hub, Priority, Updated, Reported by
  */
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
@@ -26,27 +26,40 @@ const GROUP_LABELS: Record<WorkGroup, string> = {
   EARLIER: 'Earlier',
 };
 
-const PRIORITY_COLORS: Record<string, string> = {
-  Highest: 'hsl(0,72%,51%)',
-  High: 'hsl(21,90%,48%)',
-  Medium: 'hsl(217,91%,60%)',
-  Low: 'hsl(160,84%,39%)',
-  Lowest: 'hsl(160,84%,39%)',
+// Design tokens
+const T = {
+  ink: '#09090B', inkSecondary: '#18181B', inkTertiary: '#3F3F46',
+  inkMuted: '#71717A',
+  surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
+  border: '#E4E4E7',
+  primary: '#2563EB',
+  teal: '#0D9488', tealText: '#0A8277', tealBg: '#F0FDFA',
+  success: '#16A34A', successText: '#11853D', successBg: '#F0FDF4',
+  warning: '#D97706', warningText: '#AF6003', warningBg: '#FFFBEB',
+  danger: '#DC2626', dangerText: '#D92525', dangerBg: '#FEF2F2',
+  primaryBg: '#EFF6FF',
 };
 
-const HUB_COLORS: Record<string, { bg: string; text: string }> = {
-  ProductHub: { bg: 'hsl(270,60%,95%)', text: 'hsl(270,60%,40%)' },
-  ProjectHub: { bg: 'hsl(217,91%,95%)', text: 'hsl(217,91%,45%)' },
-  ReleaseHub: { bg: 'hsl(160,60%,93%)', text: 'hsl(160,60%,30%)' },
-  TestHub: { bg: 'hsl(45,80%,92%)', text: 'hsl(45,80%,30%)' },
-  IncidentHub: { bg: 'hsl(0,60%,95%)', text: 'hsl(0,60%,40%)' },
-  TaskHub: { bg: 'hsl(200,60%,93%)', text: 'hsl(200,60%,35%)' },
-  StrategyHub: { bg: 'hsl(300,40%,95%)', text: 'hsl(300,40%,35%)' },
-  PlanHub: { bg: 'hsl(180,50%,93%)', text: 'hsl(180,50%,30%)' },
+const STATUS_STYLES: Record<string, { dot: string; text: string; bg: string }> = {
+  'In Progress': { dot: T.teal, text: T.tealText, bg: T.tealBg },
+  'To Do': { dot: T.primary, text: T.primary, bg: T.primaryBg },
+  'Done': { dot: T.success, text: T.successText, bg: T.successBg },
+  'In Review': { dot: T.warning, text: T.warningText, bg: T.warningBg },
+  'Blocked': { dot: T.danger, text: T.dangerText, bg: T.dangerBg },
 };
 
-// Grid template with Hub column
-const GRID_COLS = 'grid-cols-[40px_120px_1fr_150px_100px_80px_160px]';
+const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
+  Project: { bg: T.tealBg, color: T.tealText, border: T.teal },
+  Product: { bg: T.dangerBg, color: T.dangerText, border: T.danger },
+  Task: { bg: T.primaryBg, color: T.primary, border: T.primary },
+  Incident: { bg: T.warningBg, color: T.warningText, border: T.warning },
+  Release: { bg: T.successBg, color: T.successText, border: T.success },
+  Test: { bg: '#F5F3FF', color: '#7C3AED', border: '#7C3AED' },
+};
+
+const PRI_COLORS: Record<number, string> = {
+  1: T.inkMuted, 2: T.inkMuted, 3: T.warning, 4: T.danger, 5: T.danger,
+};
 
 export function ForYouTable({ 
   groupedItems, 
@@ -67,9 +80,7 @@ export function ForYouTable({
     return items;
   }, [groupedItems]);
 
-  const groups = (['YESTERDAY', 'THIS_WEEK', 'EARLIER'] as const).filter(
-    group => groupedItems[group].length > 0
-  );
+  const groups = (['YESTERDAY', 'THIS_WEEK', 'EARLIER'] as const).filter(g => groupedItems[g].length > 0);
 
   const handleSelectAll = useCallback((checked: boolean) => {
     if (!onSelectionChange) return;
@@ -100,133 +111,154 @@ export function ForYouTable({
   }, [flatItems, focusedIndex, onRowClick, selectedIds, onSelectionChange, onStarToggle, handleSelectItem]);
 
   const isAllSelected = flatItems.length > 0 && flatItems.every(item => selectedIds.has(item.id));
-  const isPartiallySelected = flatItems.some(item => selectedIds.has(item.id)) && !isAllSelected;
 
   if (groups.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 border border-[hsl(214,32%,91%)] rounded-lg bg-white">
-        <div className="w-14 h-14 bg-[hsl(210,40%,96%)] rounded-xl flex items-center justify-center mb-4">
-          <span className="text-2xl">📋</span>
-        </div>
-        <p className="text-[13px] font-semibold text-[hsl(222,47%,11%)] mb-1">No work items found</p>
-        <p className="text-[11px] text-[hsl(215,16%,47%)]">Try adjusting your filters or search</p>
+      <div className="fy-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 0', border: `1px solid ${T.border}`, borderRadius: 8 }}>
+        <span style={{ fontSize: 24, marginBottom: 12 }}>📋</span>
+        <p style={{ fontSize: 13, fontWeight: 600, color: T.ink, marginBottom: 4 }}>No work items found</p>
+        <p style={{ fontSize: 11, color: T.inkMuted }}>Try adjusting your filters or search</p>
       </div>
     );
   }
 
   let rowIndex = -1;
 
+  // Table header style
+  const thStyle: React.CSSProperties = {
+    height: 32, padding: '0 12px',
+    background: T.surfaceSecondary, borderBottom: `1px solid ${T.border}`,
+    fontSize: 11, fontWeight: 600, color: T.inkMuted,
+    textTransform: 'uppercase', letterSpacing: '0.06em',
+    textAlign: 'left', whiteSpace: 'nowrap',
+    position: 'sticky', top: 48, zIndex: 10,
+  };
+
   return (
-    <div ref={tableRef} tabIndex={0} className={cn("border border-[hsl(214,32%,91%)] rounded-lg overflow-hidden outline-none", "focus-visible:ring-2 focus-visible:ring-[hsl(217,91%,60%)] focus-visible:ring-offset-2")}>
-      {/* Column Headers */}
-      <div className={cn("grid gap-4 px-4 py-3 bg-[hsl(210,40%,98%)] border-b border-[hsl(214,32%,91%)]", GRID_COLS)}>
-        <div className="flex items-center">
-          <Checkbox checked={isAllSelected} onCheckedChange={handleSelectAll} className={cn(isPartiallySelected && "data-[state=unchecked]:bg-[hsl(217,91%,60%)]/20")} aria-label="Select all items" />
-        </div>
-        <span className="text-[11px] font-semibold text-[hsl(215,16%,47%)] uppercase tracking-[0.06em] flex items-center">Key</span>
-        <span className="text-[11px] font-semibold text-[hsl(215,16%,47%)] uppercase tracking-[0.06em] flex items-center">Summary</span>
-        <span className="text-[11px] font-semibold text-[hsl(215,16%,47%)] uppercase tracking-[0.06em] flex items-center">Project</span>
-        <span className="text-[11px] font-semibold text-[hsl(215,16%,47%)] uppercase tracking-[0.06em] flex items-center">Hub</span>
-        <span className="text-[11px] font-semibold text-[hsl(215,16%,47%)] uppercase tracking-[0.06em] flex items-center">Updated</span>
-        <span className="text-[11px] font-semibold text-[hsl(215,16%,47%)] uppercase tracking-[0.06em] flex items-center">Reported by</span>
-      </div>
+    <div ref={tableRef} tabIndex={0} className="fy-table" style={{ outline: 'none' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+        <thead>
+          <tr>
+            <th style={{ ...thStyle, width: 36 }}>
+              <input type="checkbox" checked={isAllSelected} onChange={e => handleSelectAll(e.target.checked)} style={{ width: 16, height: 16, accentColor: T.primary, cursor: 'pointer' }} />
+            </th>
+            <th style={{ ...thStyle, width: 130 }}>Key</th>
+            <th style={thStyle}>Summary</th>
+            <th style={{ ...thStyle, width: 105, textAlign: 'center' }}>Status</th>
+            <th style={{ ...thStyle, width: 120 }}>Project</th>
+            <th style={{ ...thStyle, width: 85 }}>Hub</th>
+            <th style={{ ...thStyle, width: 70 }}>Priority</th>
+            <th style={{ ...thStyle, width: 100 }}>Updated</th>
+            <th style={{ ...thStyle, width: 160 }}>Reported by</th>
+          </tr>
+        </thead>
+        <tbody>
+          {groups.map(group => (
+            <React.Fragment key={group}>
+              {/* Group row */}
+              <tr>
+                <td colSpan={9} style={{ height: 28, padding: '0 12px', background: T.surfaceTertiary, borderBottom: `1px solid ${T.border}`, fontSize: 11, fontWeight: 700, color: T.inkTertiary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  {GROUP_LABELS[group]}
+                </td>
+              </tr>
 
-      {groups.map((group) => (
-        <div key={group}>
-          <div className="flex items-center px-4 py-2 bg-[hsl(210,40%,98%)] border-l-[3px] border-[hsl(217,91%,60%)]">
-            <span className="text-[11px] font-semibold text-[hsl(215,16%,47%)] uppercase tracking-[0.06em]">{GROUP_LABELS[group]}</span>
-          </div>
+              {groupedItems[group].map((item) => {
+                rowIndex++;
+                const currentRowIndex = rowIndex;
+                const isSelected = selectedIds.has(item.id);
+                const isFocused = focusedIndex === currentRowIndex;
+                const statusStyle = STATUS_STYLES[item.status] || STATUS_STYLES['In Progress'];
+                const hubCfg = HUB_CFG[item.hubLabel] || HUB_CFG.Task;
+                const priColor = PRI_COLORS[item.priorityLevel] || T.inkMuted;
 
-          {groupedItems[group].map((item, indexInGroup) => {
-            rowIndex++;
-            const currentRowIndex = rowIndex;
-            const isSelected = selectedIds.has(item.id);
-            const isFocused = focusedIndex === currentRowIndex;
-            const hubColor = HUB_COLORS[item.hub] || HUB_COLORS.ProductHub;
-
-            return (
-              <div
-                key={item.id}
-                data-index={currentRowIndex}
-                onClick={() => { setFocusedIndex(currentRowIndex); onRowClick(item.id); }}
-                className={cn(
-                  "relative grid gap-4 px-4 py-3 cursor-pointer transition-[background] duration-100 group",
-                  GRID_COLS,
-                  "border-b border-[hsl(210,40%,96%)]",
-                  indexInGroup === groupedItems[group].length - 1 && "border-b-0",
-                  isSelected && "bg-[hsl(217,91%,95%)]",
-                  isFocused && "ring-2 ring-inset ring-[hsl(217,91%,60%)]",
-                  !isSelected && "hover:bg-[hsl(210,40%,98%)]",
-                  isInitialLoad && "animate-fade-in",
-                )}
-                style={isInitialLoad ? { animationDelay: `${currentRowIndex * 50}ms` } : undefined}
-              >
-                {/* Checkbox */}
-                <div className="flex items-center" onClick={e => e.stopPropagation()}>
-                  <Checkbox checked={isSelected} onCheckedChange={checked => handleSelectItem(item.id, !!checked)} className={cn("w-[15px] h-[15px] rounded border-[1.5px] border-[hsl(214,32%,82%)] transition-opacity duration-100", !isSelected && "opacity-0 group-hover:opacity-100")} aria-label={`Select ${item.key}`} />
-                </div>
-
-                {/* Key */}
-                <div className="flex items-center gap-2">
-                  <JiraIssueTypeIcon issueType={item.issueType} size={14} />
-                  <a className="text-[13px] font-medium text-[hsl(215,25%,27%)] tabular-nums font-[Inter,monospace] hover:underline cursor-pointer" onClick={e => e.stopPropagation()}>
-                    {item.key}
-                  </a>
-                </div>
-
-                {/* Summary */}
-                <div className="text-[13px] font-semibold text-[hsl(222,47%,11%)] truncate flex items-center">{item.summary}</div>
-
-                {/* Project */}
-                <div className="flex items-center">
-                  <span className="text-[12px] font-medium text-[hsl(215,25%,27%)] truncate" title={item.project}>{item.project}</span>
-                </div>
-
-                {/* Hub */}
-                <div className="flex items-center">
-                  <span
-                    className="text-[10px] font-semibold px-2 py-[2px] rounded-[4px] truncate"
-                    style={{ background: hubColor.bg, color: hubColor.text }}
-                    title={item.hub}
+                return (
+                  <tr
+                    key={item.id}
+                    onClick={() => { setFocusedIndex(currentRowIndex); onRowClick(item.id); }}
+                    style={{
+                      height: 40, borderBottom: `1px solid ${T.border}`, cursor: 'pointer',
+                      background: isSelected ? '#EFF6FF' : isFocused ? T.surfaceSecondary : 'transparent',
+                      transition: 'background .1s',
+                    }}
+                    onMouseEnter={e => { if (!isSelected && !isFocused) e.currentTarget.style.background = T.surfaceSecondary; }}
+                    onMouseLeave={e => { if (!isSelected && !isFocused) e.currentTarget.style.background = 'transparent'; }}
                   >
-                    {item.hub.replace('Hub', '')}
-                  </span>
-                </div>
+                    {/* Checkbox */}
+                    <td style={{ padding: '0 12px', width: 36 }}>
+                      <input type="checkbox" checked={isSelected} onClick={e => e.stopPropagation()} onChange={e => handleSelectItem(item.id, e.target.checked)} style={{ width: 16, height: 16, accentColor: T.primary, cursor: 'pointer' }} />
+                    </td>
 
-                {/* Updated */}
-                <div className="flex items-center text-[13px] font-medium text-[hsl(215,25%,27%)] tabular-nums">{item.updatedAt}</div>
+                    {/* Key */}
+                    <td style={{ padding: '0 12px', width: 130 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <JiraIssueTypeIcon issueType={item.issueType} size={16} />
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: T.primary }}>{item.key}</span>
+                      </div>
+                    </td>
 
-                {/* Reported by */}
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    {(() => {
-                      const reporterName = item.reporter || item.assignee.name;
-                      const reporterInitials = reporterName.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
-                      const avatarUrl = nameAvatarMap.get(reporterName.toLowerCase());
-                      return avatarUrl ? (
-                        <img src={avatarUrl} alt={reporterName} className="w-7 h-7 rounded-xl object-cover shrink-0 border-2 border-[hsl(213,94%,83%)]" />
-                      ) : (
-                        <div className="w-7 h-7 rounded-xl flex items-center justify-center text-[10px] font-bold shrink-0 bg-[hsl(217,92%,95%)] text-[hsl(217,91%,60%)] border-2 border-[hsl(213,94%,83%)]">{reporterInitials}</div>
-                      );
-                    })()}
-                    <span className="text-[13px] font-medium text-[hsl(215,25%,27%)]">{item.reporter || item.assignee.name}</span>
-                  </div>
+                    {/* Summary */}
+                    <td style={{ padding: '0 12px', fontSize: 13, fontWeight: 500, color: T.ink, maxWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {item.summary}
+                    </td>
 
-                  {onStarToggle && (
-                    <button
-                      onClick={e => { e.stopPropagation(); onStarToggle(item.id); }}
-                      className={cn("shrink-0 p-1 rounded hover:bg-[hsl(210,40%,96%)] transition-colors", item.starred ? "opacity-100 text-[hsl(45,93%,47%)]" : "opacity-0 group-hover:opacity-100 text-[hsl(215,16%,47%)]")}
-                      aria-label={item.starred ? "Unstar item" : "Star item"}
-                    >
-                      <Star className={cn("w-3.5 h-3.5", item.starred && "fill-current")} />
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      ))}
+                    {/* Status */}
+                    <td style={{ padding: '0 8px', width: 105, textAlign: 'center' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 22, padding: '0 10px', borderRadius: 9999, background: statusStyle.bg, fontSize: 11, fontWeight: 600 }}>
+                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: statusStyle.dot }} />
+                        <span style={{ color: statusStyle.text }}>{item.status}</span>
+                      </span>
+                    </td>
+
+                    {/* Project */}
+                    <td style={{ padding: '0 12px', fontSize: 13, fontWeight: 500, color: T.inkSecondary, width: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {item.project}
+                    </td>
+
+                    {/* Hub */}
+                    <td style={{ padding: '0 12px', width: 85 }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', height: 22, padding: '0 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, letterSpacing: '0.02em', background: hubCfg.bg, color: hubCfg.color, borderLeft: `3px solid ${hubCfg.border}` }}>
+                        {item.hubLabel}
+                      </span>
+                    </td>
+
+                    {/* Priority */}
+                    <td style={{ padding: '0 12px', width: 70 }}>
+                      <div style={{ display: 'flex', gap: 2 }}>
+                        {[1,2,3,4].map(i => (
+                          <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: i <= item.priorityLevel ? priColor : T.border }} />
+                        ))}
+                      </div>
+                    </td>
+
+                    {/* Updated */}
+                    <td style={{ padding: '0 12px', fontSize: 12, fontWeight: 500, color: T.inkTertiary, width: 100 }}>
+                      {item.updatedAt}
+                    </td>
+
+                    {/* Reported by */}
+                    <td style={{ padding: '0 12px', width: 160 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        {(() => {
+                          const reporterName = item.reporter || item.assignee.name;
+                          const avatarUrl = nameAvatarMap.get(reporterName.toLowerCase());
+                          const ini = reporterName.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
+                          const clr = [T.primary, T.teal, T.warning, T.danger, '#7C3AED'][ini.charCodeAt(0) % 5];
+                          return avatarUrl ? (
+                            <img src={avatarUrl} alt={reporterName} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: `1px solid ${T.border}` }} />
+                          ) : (
+                            <div style={{ width: 24, height: 24, borderRadius: '50%', background: clr, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                          );
+                        })()}
+                        <span style={{ fontSize: 13, fontWeight: 500, color: T.inkSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.reporter || item.assignee.name}</span>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </React.Fragment>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
