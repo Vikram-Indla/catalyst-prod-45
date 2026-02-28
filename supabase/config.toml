@@ -155,3 +155,6 @@ verify_jwt = false
 
 [functions.kb-cleanup]
 verify_jwt = false
+
+[functions.kb-ingest]
+verify_jwt = false
