@@ -48,7 +48,7 @@ const STATUS_STYLES: Record<string, { dot: string; text: string; bg: string }> =
   'To Do': { dot: T.primary, text: T.primary, bg: T.primaryBg },
   'ToDo': { dot: T.primary, text: T.primary, bg: T.primaryBg },
   'Planned': { dot: T.primary, text: T.primary, bg: T.primaryBg },
-  'Backlog': { dot: T.inkMuted, text: T.inkMuted, bg: T.surfaceTertiary },
+  'Backlog': { dot: '#6F6F78', text: '#6F6F78', bg: T.surfaceTertiary },
   'Done': { dot: T.success, text: T.successText, bg: T.successBg },
   'In Production': { dot: T.success, text: T.successText, bg: T.successBg },
   'In Review': { dot: T.warning, text: T.warningText, bg: T.warningBg },
