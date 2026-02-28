@@ -14,7 +14,7 @@ import {
 } from '@/components/for-you';
 import { StatusSummaryBar } from '@/components/for-you/StatusSummaryBar';
 import { ForYouInlineFilters, type ForYouFilters } from '@/components/for-you/ForYouInlineFilters';
-import { BulkActionsBar } from '@/components/business-requests/table-view/BulkActionsBar';
+import { ForYouLightBulkBar } from '@/components/for-you/ForYouLightBulkBar';
 import { CatalystAIPanel } from '@/components/catalyst-ai';
 import { toast } from 'sonner';
 import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData } from '@/components/catalyst-ai/CatalystAIPanel';
@@ -133,6 +133,7 @@ export default function ForYouPage() {
         {/* Search + Filters */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
           <ForYouToolbar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+          <div style={{ width: 1, height: 20, backgroundColor: '#E4E4E7', margin: '0 4px' }} />
           <ForYouInlineFilters
             filters={inlineFilters}
             onFiltersChange={setInlineFilters}
@@ -168,7 +169,7 @@ export default function ForYouPage() {
       </main>
 
       {/* Bulk Actions */}
-      <BulkActionsBar
+      <ForYouLightBulkBar
         selectedCount={selectedIds.size}
         onClear={handleClearSelection}
         onAssignOwner={handleBulkAssign}
