@@ -1,4 +1,5 @@
 import React, { lazy, Suspense } from "react";
+import KBAdminSetup from "./pages/KBAdminSetup";
 import { Resource360Redirect } from './components/workhub/resource360/Resource360Redirect';
 const Resource360PageNew = lazy(() => import("./components/resource360/Resource360PageNew"));
 const Resource360MemberDetail = lazy(() => import("./pages/Resource360MemberDetail"));
@@ -492,6 +493,7 @@ const App = () => (
               <Route path="/auth/slack/callback" element={<SlackOAuthCallback />} />
               {/* Jira test routes removed */}
               <Route path="/submit-request" element={<SubmitDemandRequest />} />
+              <Route path="/kb-admin-setup" element={<KBAdminSetup />} />
               
               {/* Work Hub Test Route */}
               <Route path="/work-hub-test" element={<WorkHubLayout />}>
