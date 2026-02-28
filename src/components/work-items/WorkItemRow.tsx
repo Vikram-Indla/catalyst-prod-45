@@ -8,7 +8,7 @@ import { format, isValid, parseISO } from 'date-fns';
 import { MoreHorizontal } from 'lucide-react';
 import { WorkItemWithRelations, PRIORITY_CONFIG } from '@/types/work-items';
 import { WorkItemTypeIcon } from './WorkItemTypeIcon';
-import { WorkItemStatusPill } from './WorkItemStatusPill';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -118,9 +118,9 @@ export function WorkItemRow({
         </span>
       </div>
 
-      {/* Status Pill */}
+      {/* Status — StatusLozenge guardrail */}
       <div className="flex-shrink-0 mr-4">
-        <WorkItemStatusPill status={item.status} />
+        <StatusLozenge status={item.status} />
       </div>
 
       {/* Story Points */}

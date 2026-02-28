@@ -1,9 +1,9 @@
-// ═══════════════════════════════════════════════════════════════════════════════
-// COMPONENT: T10StatusBadge
-// Purpose: ACTIVE/INACTIVE status pill
-// ═══════════════════════════════════════════════════════════════════════════════
-
+/**
+ * T10StatusBadge — Task list status
+ * GUARDRAIL: Use StatusLozenge from @/components/ui/StatusLozenge for all status rendering.
+ */
 import React from 'react';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import type { T10ListStatus } from '../../types';
 
 interface T10StatusBadgeProps {
@@ -11,14 +11,7 @@ interface T10StatusBadgeProps {
 }
 
 export function T10StatusBadge({ status }: T10StatusBadgeProps) {
-  const isActive = status === 'active';
-  
-  return (
-    <span className={`t10-status-badge ${isActive ? 't10-status-badge-active' : 't10-status-badge-inactive'}`}>
-      {isActive && <span className="t10-status-badge-dot" />}
-      {status.toUpperCase()}
-    </span>
-  );
+  return <StatusLozenge status={status} />;
 }
 
 export default T10StatusBadge;

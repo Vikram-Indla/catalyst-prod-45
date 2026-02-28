@@ -1,6 +1,11 @@
+/**
+ * StatusBadge — Initiative status (editable dropdown)
+ * GUARDRAIL: Uses StatusLozenge from @/components/ui/StatusLozenge for rendering.
+ */
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { InitiativeStatus, STATUS_DISPLAY } from '@/types/initiative';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 
 interface StatusBadgeProps {
   status: InitiativeStatus;
@@ -30,19 +35,16 @@ export function StatusBadge({ status, size = 'sm', editable = false, onChange }:
     return () => document.removeEventListener('mousedown', close);
   }, [open]);
 
-  const heightClass = size === 'md' ? 'h-7 text-[13px]' : 'h-6 text-[12px]';
-
   return (
     <>
       <button
         ref={ref}
         type="button"
         onClick={() => editable && setOpen(!open)}
-        className={`inline-flex items-center gap-1.5 px-2.5 rounded-full border font-medium whitespace-nowrap transition-[filter] duration-100 ${heightClass} ${editable ? 'cursor-pointer hover:brightness-[0.96]' : 'cursor-default'}`}
-        style={{ backgroundColor: s.bg, borderColor: s.border, color: s.text }}
+        className={editable ? 'cursor-pointer' : 'cursor-default'}
+        style={{ background: 'none', border: 'none', padding: 0 }}
       >
-        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: s.dot }} />
-        {s.label}
+        <StatusLozenge status={s.label} />
       </button>
 
       {open && createPortal(
@@ -59,8 +61,7 @@ export function StatusBadge({ status, size = 'sm', editable = false, onChange }:
                 className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-zinc-700 hover:bg-zinc-50 transition-colors"
                 onClick={() => { onChange?.(st); setOpen(false); }}
               >
-                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: d.dot }} />
-                {d.label}
+                <StatusLozenge status={d.label} />
               </button>
             );
           })}

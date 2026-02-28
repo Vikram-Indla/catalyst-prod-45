@@ -1,9 +1,8 @@
 /**
- * StatusBadge — Test case workflow status badge
+ * StatusBadge — Test case status
+ * GUARDRAIL: Use StatusLozenge from @/components/ui/StatusLozenge for all status rendering.
  */
-
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 
 export type TestCaseStatus = 'draft' | 'ready' | 'approved' | 'deprecated';
 
@@ -13,28 +12,6 @@ interface StatusBadgeProps {
   className?: string;
 }
 
-const statusVariants: Record<TestCaseStatus, 'draft' | 'ready' | 'approved' | 'deprecated'> = {
-  draft: 'draft',
-  ready: 'ready',
-  approved: 'approved',
-  deprecated: 'deprecated',
-};
-
-const statusLabels: Record<TestCaseStatus, string> = {
-  draft: 'Draft',
-  ready: 'Ready',
-  approved: 'Approved',
-  deprecated: 'Deprecated',
-};
-
-export function StatusBadge({ status, size = 'default', className }: StatusBadgeProps) {
-  return (
-    <Badge 
-      variant={statusVariants[status]} 
-      size={size} 
-      className={className}
-    >
-      {statusLabels[status]}
-    </Badge>
-  );
+export function StatusBadge({ status, size, className }: StatusBadgeProps) {
+  return <StatusLozenge status={status} />;
 }

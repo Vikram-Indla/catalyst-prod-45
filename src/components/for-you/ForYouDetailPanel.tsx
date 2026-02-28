@@ -7,7 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, ArrowLeft, ExternalLink, Copy, Layers, MessageSquare, Clock, Link2, Zap, Target, Tag, Calendar, GitBranch, User, CornerDownLeft, Paperclip, FileText, Image, Download, File } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
-import { StatusBadge } from '@/components/for-you/StatusBadge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { supabase } from '@/integrations/supabase/client';
 import type { WorkItem } from '@/hooks/useForYouData';
@@ -87,7 +87,7 @@ function Linkify({ text }: { text: string }) {
 }
 
 function StatusPill({ status }: { status: string }) {
-  return <StatusBadge status={status} />;
+  return <StatusLozenge status={status} />;
 }
 
 function HubBadge({ hub }: { hub: string }) {

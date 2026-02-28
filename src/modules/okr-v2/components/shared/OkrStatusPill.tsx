@@ -1,78 +1,8 @@
-// ═══════════════════════════════════════════════════════════════════════════════
-// OKR Status Pill — Shared Presentational Component
-// Status pills using Catalyst semantic tokens (NO hardcoded hex values)
-// ═══════════════════════════════════════════════════════════════════════════════
-
-import { cn } from '@/lib/utils';
-
-// Status styles using ONLY Catalyst design system semantic tokens
-const STATUS_STYLES: Record<string, { 
-  bg: string; 
-  text: string; 
-  border: string;
-  variant: 'filled' | 'outline';
-}> = {
-  'pending': { 
-    bg: 'bg-muted', 
-    text: 'text-muted-foreground', 
-    border: 'border-border',
-    variant: 'filled'
-  },
-  'backlog': { 
-    bg: 'bg-muted', 
-    text: 'text-muted-foreground', 
-    border: 'border-border',
-    variant: 'filled'
-  },
-  'in-progress': { 
-    bg: 'bg-transparent',
-    text: 'text-brand-teal', 
-    border: 'border-brand-teal',
-    variant: 'outline'
-  },
-  'on-track': { 
-    bg: 'bg-success', 
-    text: 'text-success-foreground', 
-    border: 'border-success',
-    variant: 'filled'
-  },
-  'at-risk': { 
-    bg: 'bg-warning', 
-    text: 'text-warning-foreground', 
-    border: 'border-warning',
-    variant: 'filled'
-  },
-  'off-track': { 
-    bg: 'bg-danger', 
-    text: 'text-danger-foreground', 
-    border: 'border-danger',
-    variant: 'filled'
-  },
-  'blocked': { 
-    bg: 'bg-destructive', 
-    text: 'text-destructive-foreground', 
-    border: 'border-destructive',
-    variant: 'filled'
-  },
-  'completed': { 
-    bg: 'bg-success', 
-    text: 'text-success-foreground', 
-    border: 'border-success',
-    variant: 'filled'
-  },
-};
-
-// Display labels for statuses
-const STATUS_LABELS: Record<string, string> = {
-  'pending': 'Pending',
-  'backlog': 'Backlog',
-  'in-progress': 'In Progress',
-  'on-track': 'On track',
-  'at-risk': 'At risk',
-  'off-track': 'Off track',
-  'blocked': 'Blocked',
-  'completed': 'Completed',
-};
+/**
+ * OKR Status Pill — Now uses StatusLozenge guardrail
+ * GUARDRAIL: Use StatusLozenge from @/components/ui/StatusLozenge for all status rendering.
+ */
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 
 interface OkrStatusPillProps {
   status: string;
@@ -80,23 +10,5 @@ interface OkrStatusPillProps {
 }
 
 export function OkrStatusPill({ status, size = 'md' }: OkrStatusPillProps) {
-  // Normalize status: lowercase, replace spaces and underscores with hyphens
-  const normalizedStatus = status.toLowerCase().replace(/[\s_]+/g, '-');
-  const styles = STATUS_STYLES[normalizedStatus] || STATUS_STYLES['pending'];
-  const displayLabel = STATUS_LABELS[normalizedStatus] || status;
-
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center justify-center rounded-full font-medium border whitespace-nowrap text-center',
-        // Uniform width based on longest status "In Progress", flatter height
-        'min-w-[70px] px-2 py-[3px] text-[10px]',
-        styles.bg,
-        styles.text,
-        styles.border
-      )}
-    >
-      {displayLabel}
-    </span>
-  );
+  return <StatusLozenge status={status} />;
 }
