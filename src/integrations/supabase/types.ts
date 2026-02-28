@@ -14330,6 +14330,99 @@ export type Database = {
           },
         ]
       }
+      jira_sync_changelog: {
+        Row: {
+          author_account_id: string | null
+          author_avatar_url: string | null
+          author_display_name: string | null
+          created_at: string
+          field_name: string
+          field_type: string | null
+          from_string: string | null
+          from_value: string | null
+          id: string
+          issue_key: string
+          jira_created_at: string | null
+          jira_history_id: string | null
+          to_string: string | null
+          to_value: string | null
+        }
+        Insert: {
+          author_account_id?: string | null
+          author_avatar_url?: string | null
+          author_display_name?: string | null
+          created_at?: string
+          field_name: string
+          field_type?: string | null
+          from_string?: string | null
+          from_value?: string | null
+          id?: string
+          issue_key: string
+          jira_created_at?: string | null
+          jira_history_id?: string | null
+          to_string?: string | null
+          to_value?: string | null
+        }
+        Update: {
+          author_account_id?: string | null
+          author_avatar_url?: string | null
+          author_display_name?: string | null
+          created_at?: string
+          field_name?: string
+          field_type?: string | null
+          from_string?: string | null
+          from_value?: string | null
+          id?: string
+          issue_key?: string
+          jira_created_at?: string | null
+          jira_history_id?: string | null
+          to_string?: string | null
+          to_value?: string | null
+        }
+        Relationships: []
+      }
+      jira_sync_comments: {
+        Row: {
+          author_account_id: string | null
+          author_avatar_url: string | null
+          author_display_name: string | null
+          body: string | null
+          created_at: string
+          id: string
+          issue_key: string
+          jira_comment_id: string | null
+          jira_created_at: string | null
+          jira_updated_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          author_account_id?: string | null
+          author_avatar_url?: string | null
+          author_display_name?: string | null
+          body?: string | null
+          created_at?: string
+          id?: string
+          issue_key: string
+          jira_comment_id?: string | null
+          jira_created_at?: string | null
+          jira_updated_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          author_account_id?: string | null
+          author_avatar_url?: string | null
+          author_display_name?: string | null
+          body?: string | null
+          created_at?: string
+          id?: string
+          issue_key?: string
+          jira_comment_id?: string | null
+          jira_created_at?: string | null
+          jira_updated_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       jira_sync_history: {
         Row: {
           completed_at: string | null
@@ -14465,6 +14558,45 @@ export type Database = {
             referencedColumns: ["theme_owner_id"]
           },
         ]
+      }
+      jira_sync_issue_links: {
+        Row: {
+          created_at: string
+          direction: string
+          id: string
+          jira_link_id: string | null
+          link_type: string
+          source_key: string
+          target_key: string
+          target_status: string | null
+          target_summary: string | null
+          target_type: string | null
+        }
+        Insert: {
+          created_at?: string
+          direction?: string
+          id?: string
+          jira_link_id?: string | null
+          link_type: string
+          source_key: string
+          target_key: string
+          target_status?: string | null
+          target_summary?: string | null
+          target_type?: string | null
+        }
+        Update: {
+          created_at?: string
+          direction?: string
+          id?: string
+          jira_link_id?: string | null
+          link_type?: string
+          source_key?: string
+          target_key?: string
+          target_status?: string | null
+          target_summary?: string | null
+          target_type?: string | null
+        }
+        Relationships: []
       }
       jira_sync_logs: {
         Row: {
