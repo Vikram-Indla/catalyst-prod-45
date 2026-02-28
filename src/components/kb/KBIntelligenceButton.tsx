@@ -41,7 +41,6 @@ export function KBIntelligenceButton({ isOpen, onClick }: KBIntelligenceButtonPr
           e.currentTarget.style.boxShadow = '';
         }}
       >
-        <Sparkles size={13} />
         KB
       </button>
       <style>{`
