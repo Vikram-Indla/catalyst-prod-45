@@ -68,7 +68,7 @@ export default function KBDataAudit() {
   useEffect(() => {
     // 1. Training questions
     (async () => {
-      const { data, error } = await supabase.from("kb_training_questions").select("is_embedded, expected_answer");
+      const { data, error } = await supabase.from("kb_training_questions").select("is_embedded, expected_answer").limit(5000);
       if (error) return setTraining((s) => ({ ...s, loading: false, error: error.message }));
       const total = data.length;
       const embedded = data.filter((r) => r.is_embedded).length;

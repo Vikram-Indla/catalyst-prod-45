@@ -66,7 +66,7 @@ function HealthTab() {
 
     try {
       // 1. Training Questions
-      const { data: tq } = await supabase.from('kb_training_questions').select('id, is_embedded, expected_answer');
+      const { data: tq } = await supabase.from('kb_training_questions').select('id, is_embedded, expected_answer').limit(5000);
       const totalQ = tq?.length || 0;
       const embeddedQ = tq?.filter((q: any) => q.is_embedded).length || 0;
       const withAnswers = tq?.filter((q: any) => q.expected_answer && q.expected_answer.trim() !== '').length || 0;
@@ -944,7 +944,7 @@ function TrainingTab() {
   const PAGE_SIZE = 50;
 
   const loadQuestions = useCallback(async () => {
-    const { data } = await supabase.from('kb_training_questions').select('id, question, category, expected_answer, is_embedded, language, cache_hits, created_at').order('category').order('question');
+    const { data } = await supabase.from('kb_training_questions').select('id, question, category, expected_answer, is_embedded, language, cache_hits, created_at').order('category').order('question').limit(5000);
     if (data) {
       setQuestions(data);
       const counts: Record<string, number> = {};
