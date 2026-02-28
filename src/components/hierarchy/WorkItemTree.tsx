@@ -7,6 +7,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { ChevronRight, ChevronDown, GripVertical, MoreHorizontal, Trash2 } from 'lucide-react';
 import type { WorkItem } from '@/types/hierarchy';
 import { canBeParentOf, HIERARCHY_LEVELS } from '@/types/hierarchy';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 interface WorkItemTreeProps {
   items: WorkItem[];
@@ -253,7 +254,11 @@ function TreeRow({
         </button>
       ) : <div style={{ width: 20, flexShrink: 0 }} />}
 
-      <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.hierarchyColor, flexShrink: 0 }} />
+      {item.issueType ? (
+        <JiraIssueTypeIcon type={item.issueType} size={16} />
+      ) : (
+        <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.hierarchyColor, flexShrink: 0 }} />
+      )}
 
       <span style={{ fontSize: 12, fontWeight: 500, color: '#2563EB', fontVariantNumeric: 'tabular-nums', minWidth: 56, flexShrink: 0 }}>
         {item.key}
