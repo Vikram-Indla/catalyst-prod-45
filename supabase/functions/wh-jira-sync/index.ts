@@ -87,7 +87,7 @@ serve(async (req) => {
     // 4. Build per-project JQL queries and fetch issues
     let allIssues: any[] = []
     const maxResults = 100
-    const fields = ['summary','status','assignee','reporter','issuetype','parent','fixVersions','duedate','labels','components','priority','created','updated','resolution','customfield_10016','description','comment']
+    const fields = ['summary','status','assignee','reporter','issuetype','parent','fixVersions','duedate','labels','components','priority','created','updated','resolution','customfield_10016','description','comment','attachment']
     const searchUrl = `${base}/rest/api/3/search/jql`
     const postHeaders = { ...headers, 'Content-Type': 'application/json' }
 
@@ -254,6 +254,36 @@ serve(async (req) => {
         .upsert(chunk, { onConflict: 'issue_key' })
       if (error) throw error
       upsertedCount += chunk.length
+    }
+
+    // 7b. Extract and upsert attachments
+    const attachmentRows: any[] = []
+    for (const issue of allIssues) {
+      const attachments = issue.fields.attachment || []
+      for (const att of attachments) {
+        attachmentRows.push({
+          issue_key: issue.key,
+          jira_attachment_id: att.id,
+          filename: att.filename || 'unknown',
+          mime_type: att.mimeType || null,
+          file_size: att.size || null,
+          thumbnail_url: att.thumbnail || null,
+          content_url: att.content || '',
+          author_display_name: att.author?.displayName || null,
+          author_account_id: att.author?.accountId || null,
+          jira_created_at: att.created || null,
+          synced_at: new Date().toISOString(),
+        })
+      }
+    }
+    if (attachmentRows.length > 0) {
+      for (let i = 0; i < attachmentRows.length; i += 500) {
+        const chunk = attachmentRows.slice(i, i + 500)
+        await supabase
+          .from('ph_issue_attachments')
+          .upsert(chunk, { onConflict: 'issue_key,jira_attachment_id' })
+      }
+      console.log(`[sync] Upserted ${attachmentRows.length} attachments`)
     }
 
     // 8. HARD DELETE — Remove issues not in the fetched set for synced projects
