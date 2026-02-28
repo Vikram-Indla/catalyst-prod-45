@@ -85,13 +85,14 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
         onClick={() => setOpen(v => !v)}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
-          height: 34, padding: '0 14px', borderRadius: 8,
+          height: 34, padding: '0 14px', borderRadius: 7,
           fontSize: 13, fontWeight: value ? 600 : 500,
           transition: 'all 0.15s',
-          border: `1px solid ${value ? T.primary : T.border}`,
-          background: value ? T.primaryBg : T.surface,
-          color: value ? T.primary : T.inkSecondary,
+          border: value ? '1px solid #2563EB' : '1px solid hsl(214,32%,91%)',
+          background: value ? '#EFF6FF' : '#FFFFFF',
+          color: value ? '#2563EB' : T.inkSecondary,
           cursor: 'pointer',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
         }}
       >
         {value || label}
