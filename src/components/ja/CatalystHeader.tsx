@@ -24,6 +24,7 @@ import { CreateEntityDialog } from "@/components/dialogs/CreateEntityDialog";
 import { useCatalystContext } from "@/contexts/CatalystContext";
 import { getActiveNavItem } from "@/lib/workspaceContext";
 import { KBPanel } from "@/components/kb/KBPanel";
+import { KBIntelligenceButton } from "@/components/kb/KBIntelligenceButton";
 import {
   Tooltip,
   TooltipContent,
@@ -495,14 +496,10 @@ export function CatalystHeader() {
                       {item.label}
                     </span>
                   ) : item.label === "KB" ? (
-                    <button
-                      style={navButtonStyle}
-                      onMouseEnter={(e) => handleHover(e, true)}
-                      onMouseLeave={(e) => handleHover(e, false)}
+                    <KBIntelligenceButton
+                      isOpen={kbPanelOpen}
                       onClick={() => setKbPanelOpen(true)}
-                    >
-                      {item.label}
-                    </button>
+                    />
                   ) : (
                     <button
                       style={navButtonStyle}
