@@ -498,8 +498,7 @@ const App = () => (
               <Route path="/kb-admin-setup" element={<KBAdminSetup />} />
               <Route path="/kb-admin" element={<Navigate to="/admin/kb" replace />} />
               <Route path="/kb-data-audit" element={<Suspense fallback={<div className="p-8">Loading...</div>}><KBDataAuditPage /></Suspense>} />
-              <Route path="/admin/kb" element={<Suspense fallback={<div className="p-8">Loading...</div>}><KBAdminPage /></Suspense>} />
-              <Route path="/admin/kb/*" element={<Suspense fallback={<div className="p-8">Loading...</div>}><KBAdminPage /></Suspense>} />
+              {/* KB Admin routes moved inside CatalystShell > AdminLayout */}
               
               {/* Work Hub Test Route */}
               <Route path="/work-hub-test" element={<WorkHubLayout />}>
@@ -1143,6 +1142,9 @@ const App = () => (
                 <Route path="workhub/data-scope" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubDataScopePage /></Suspense>} />
                 <Route path="workhub/sync-logs" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WorkHubSyncLogs /></Suspense>} />
                 <Route path="workhub/*" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
+                {/* Knowledge Base Admin */}
+                <Route path="kb" element={<Suspense fallback={<div className="p-8">Loading...</div>}><KBAdminPage /></Suspense>} />
+                <Route path="kb/*" element={<Suspense fallback={<div className="p-8">Loading...</div>}><KBAdminPage /></Suspense>} />
               </Route>
 
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
