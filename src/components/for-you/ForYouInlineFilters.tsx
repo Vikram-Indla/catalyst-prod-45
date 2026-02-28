@@ -129,24 +129,24 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
           }}
         >
           {/* Search */}
-          <div style={{ padding: '8px 8px 10px', borderBottom: `1px solid ${T.border}`, marginBottom: 4 }}>
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 8, height: 36,
-              padding: '0 12px', background: T.surfaceTertiary, borderRadius: 8,
-            }}>
-              <Search size={14} style={{ color: T.inkMuted, flexShrink: 0 }} />
-              <input
-                type="text"
-                placeholder={`Filter ${label.toLowerCase()}…`}
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                autoFocus
-                style={{
-                  flex: 1, border: 'none', background: 'transparent', outline: 'none',
-                  fontSize: 13, color: T.ink, fontFamily: "'Inter', system-ui",
-                }}
-              />
-            </div>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '10px 12px',
+            borderBottom: `1px solid ${T.border}`,
+            marginBottom: 4,
+          }}>
+            <Search size={14} style={{ color: T.inkMuted, flexShrink: 0 }} />
+            <input
+              type="text"
+              placeholder={`Filter ${label.toLowerCase()}…`}
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              autoFocus
+              style={{
+                flex: 1, border: 'none', background: 'transparent', outline: 'none',
+                fontSize: 13, color: T.ink, fontFamily: "'Inter', system-ui",
+              }}
+            />
           </div>
 
           {/* All option */}
