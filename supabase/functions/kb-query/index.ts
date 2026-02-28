@@ -69,6 +69,218 @@ async function llm(sys: string, usr: string, max = 500, temp = 0.3) {
 }
 
 // ══════════════════════════════════════════════════════════════════
+// STAGE 1.5 — Live Data Detection & Direct Query
+// Detects people/ticket/assignment questions and queries live tables
+// ══════════════════════════════════════════════════════════════════
+
+interface LiveResult {
+  found: boolean;
+  answer: string;
+  confidence: number;
+  sources: string[];
+}
+
+async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveResult> {
+  const qLower = query.toLowerCase();
+
+  // Detect person-related queries
+  const personPatterns = [
+    /(?:what|who).*(?:is|are)\s+(\w+)\s+(?:busy|working|doing|assigned|responsible)/i,
+    /(?:what|who).*(?:is|are)\s+(\w+)\s+(?:current|recent|latest)/i,
+    /(\w+)['']?s?\s+(?:tasks?|work|assignments?|tickets?|issues?|workload)/i,
+    /(?:assigned to|owned by|responsible)\s+(\w+)/i,
+    /(?:who is|tell me about)\s+(\w+)/i,
+  ];
+
+  let personName: string | null = null;
+  for (const pattern of personPatterns) {
+    const match = qLower.match(pattern);
+    if (match && match[1] && match[1].length > 2) {
+      // Skip common stop words
+      const stops = new Set(["the","this","that","what","who","how","does","been","being","have","has","are","was","were","will"]);
+      if (!stops.has(match[1])) { personName = match[1]; break; }
+    }
+  }
+
+  if (personName) {
+    // Search profiles for this person
+    const { data: profiles } = await sb
+      .from('profiles')
+      .select('id, full_name, role, avatar_url')
+      .or(`full_name.ilike.%${personName}%`)
+      .limit(3);
+
+    if (profiles && profiles.length > 0) {
+      const person = profiles[0];
+      const parts: string[] = [];
+      parts.push(`**${person.full_name}** — ${person.role || 'Team Member'}`);
+
+      // Get their assigned issues/tickets from ph_issues
+      const { data: issues } = await sb
+        .from('ph_issues')
+        .select('issue_key, summary, status, priority, issue_type, jira_updated_at')
+        .or(`assignee_display_name.ilike.%${personName}%`)
+        .order('jira_updated_at', { ascending: false })
+        .limit(10);
+
+      if (issues && issues.length > 0) {
+        const active = issues.filter((i: any) => !['Done', 'Closed', 'Resolved'].includes(i.status));
+        const completed = issues.filter((i: any) => ['Done', 'Closed', 'Resolved'].includes(i.status));
+
+        if (active.length > 0) {
+          parts.push('\n**Current Work**');
+          for (const i of active.slice(0, 5)) {
+            parts.push(`- \`${i.issue_key}\` ${i.summary} — *${i.status}* (${i.priority || 'Normal'})`);
+          }
+          if (active.length > 5) parts.push(`- ...and ${active.length - 5} more active items`);
+        }
+
+        if (completed.length > 0) {
+          parts.push(`\n**Recently Completed:** ${completed.length} items`);
+          for (const i of completed.slice(0, 3)) {
+            parts.push(`- \`${i.issue_key}\` ${i.summary}`);
+          }
+        }
+
+        parts.push(`\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}*`);
+      } else {
+        parts.push('\nNo active tickets found assigned to this person.');
+      }
+
+      // Also check resource_inventory
+      try {
+        const { data: resources } = await sb
+          .from('resource_inventory')
+          .select('name, department_name, default_capacity_percent, role_name, vendor_name')
+          .or(`name.ilike.%${personName}%`)
+          .limit(1);
+        if (resources && resources.length > 0) {
+          const r = resources[0];
+          if (r.department_name) parts.push(`\n**Department:** ${r.department_name}`);
+          if (r.role_name) parts.push(`**Role:** ${r.role_name}`);
+          if (r.default_capacity_percent != null) parts.push(`**Capacity:** ${r.default_capacity_percent}%`);
+          if (r.vendor_name) parts.push(`**Vendor:** ${r.vendor_name}`);
+        }
+      } catch { /* table might not be accessible */ }
+
+      return {
+        found: true,
+        answer: parts.join('\n'),
+        confidence: 0.85,
+        sources: ['profiles', 'ph_issues', 'resource_inventory'],
+      };
+    }
+  }
+
+  // Detect ticket-specific queries (e.g. MDT-123, CP-456)
+  const ticketPattern = /\b([A-Z]{2,10}-\d{1,6})\b/;
+  const ticketMatch = query.match(ticketPattern);
+  if (ticketMatch) {
+    const ticketKey = ticketMatch[1];
+    const { data: ticket } = await sb
+      .from('ph_issues')
+      .select('issue_key, summary, description_text, status, priority, issue_type, assignee_display_name, reporter_display_name, jira_created_at, jira_updated_at, project_name, sprint_name, story_points')
+      .eq('issue_key', ticketKey)
+      .single();
+
+    if (ticket) {
+      const parts = [
+        `**\`${ticket.issue_key}\`** — ${ticket.summary}`,
+        '',
+        `**Status:** ${ticket.status}`,
+        `**Priority:** ${ticket.priority || 'Normal'}`,
+        `**Type:** ${ticket.issue_type}`,
+        `**Project:** ${ticket.project_name || 'N/A'}`,
+        `**Assignee:** ${ticket.assignee_display_name || 'Unassigned'}`,
+        `**Reporter:** ${ticket.reporter_display_name || 'Unknown'}`,
+        ticket.sprint_name ? `**Sprint:** ${ticket.sprint_name}` : '',
+        ticket.story_points != null ? `**Story Points:** ${ticket.story_points}` : '',
+        `**Created:** ${new Date(ticket.jira_created_at).toLocaleDateString()}`,
+        `**Updated:** ${new Date(ticket.jira_updated_at).toLocaleDateString()}`,
+      ].filter(Boolean);
+      if (ticket.description_text) {
+        const desc = ticket.description_text.length > 500
+          ? ticket.description_text.substring(0, 497) + '...'
+          : ticket.description_text;
+        parts.push('', '**Description:**', desc);
+      }
+
+      return {
+        found: true,
+        answer: parts.join('\n'),
+        confidence: 0.95,
+        sources: ['ph_issues'],
+      };
+    }
+
+    // Also check epics table
+    const { data: epic } = await sb
+      .from('epics')
+      .select('epic_key, name, description, status, owner_name, health, start_date, end_date')
+      .eq('epic_key', ticketKey)
+      .single();
+
+    if (epic) {
+      const parts = [
+        `**\`${epic.epic_key}\`** — ${epic.name}`,
+        '',
+        `**Status:** ${epic.status || 'N/A'}`,
+        `**Owner:** ${epic.owner_name || 'Unassigned'}`,
+        `**Health:** ${epic.health || 'N/A'}`,
+        epic.start_date ? `**Start:** ${new Date(epic.start_date).toLocaleDateString()}` : '',
+        epic.end_date ? `**Target End:** ${new Date(epic.end_date).toLocaleDateString()}` : '',
+      ].filter(Boolean);
+      if (epic.description) {
+        const desc = epic.description.length > 500 ? epic.description.substring(0, 497) + '...' : epic.description;
+        parts.push('', '**Description:**', desc);
+      }
+      return { found: true, answer: parts.join('\n'), confidence: 0.95, sources: ['epics'] };
+    }
+  }
+
+  // Detect general status queries (latest epics, recent stories, etc.)
+  const statusPatterns = [
+    { pattern: /(?:latest|recent|new|newest)\s+(?:epic|epics)/i, type: 'epics' },
+    { pattern: /(?:latest|recent|new|newest)\s+(?:story|stories)/i, type: 'stories' },
+    { pattern: /(?:which|what)\s+(?:story|stories)\s+(?:has|have)\s+been\s+(?:closed|completed|done|resolved)/i, type: 'closed_stories' },
+    { pattern: /(?:which|what)\s+(?:epic|epics)\s+(?:is|are)\s+(?:being|currently)\s+(?:logged|worked|active)/i, type: 'active_epics' },
+  ];
+
+  for (const sp of statusPatterns) {
+    if (sp.pattern.test(query)) {
+      if (sp.type === 'epics' || sp.type === 'active_epics') {
+        const { data: epics } = await sb.from('epics')
+          .select('epic_key, name, status, owner_name, health, created_at')
+          .order('created_at', { ascending: false })
+          .limit(10);
+        if (epics && epics.length > 0) {
+          const parts = ['**Latest Epics**\n'];
+          for (const e of epics) {
+            parts.push(`- \`${e.epic_key || 'N/A'}\` **${e.name}** — ${e.status || 'N/A'} | Owner: ${e.owner_name || 'Unassigned'} | Health: ${e.health || 'N/A'}`);
+          }
+          return { found: true, answer: parts.join('\n'), confidence: 0.8, sources: ['epics'] };
+        }
+      }
+      if (sp.type === 'stories' || sp.type === 'closed_stories') {
+        const q = sb.from('stories').select('story_key, title, name, status, priority, created_at').order('created_at', { ascending: false }).limit(10);
+        if (sp.type === 'closed_stories') q.in('status', ['Done', 'Closed', 'Resolved', 'Accepted']);
+        const { data: stories } = await q;
+        if (stories && stories.length > 0) {
+          const label = sp.type === 'closed_stories' ? 'Recently Closed Stories' : 'Latest Stories';
+          const parts = [`**${label}**\n`];
+          for (const s of stories) {
+            parts.push(`- \`${s.story_key || 'N/A'}\` **${s.title || s.name}** — ${s.status || 'N/A'} (${s.priority || 'Normal'})`);
+          }
+          return { found: true, answer: parts.join('\n'), confidence: 0.8, sources: ['stories'] };
+        }
+      }
+    }
+  }
+
+  return { found: false, answer: '', confidence: 0, sources: [] };
+}
+
+// ══════════════════════════════════════════════════════════════════
 // STAGE 2 — Multi-Query Expansion
 // ══════════════════════════════════════════════════════════════════
 async function expand(query: string): Promise<string[]> {
@@ -240,6 +452,30 @@ serve(async (req) => {
         p_was_answered: true, p_response_time_ms: ms, p_cache_hit: true,
         p_matched_category: cached.category, p_confidence_score: cached.confidence || 1 }).then(() => {});
       return new Response(JSON.stringify({ ...cached, _meta: { source: "cache", response_time_ms: ms, cache_hit: true } }),
+        { headers: { ...cors, "Content-Type": "application/json" } });
+    }
+
+    // S1.5: Live data detection (people, tickets, status queries)
+    const live = await tryLiveQuery(sb, query, language);
+    if (live.found) {
+      const ms = Math.round(performance.now() - t0);
+      const resp = {
+        type: "editorial", title: query, answer: live.answer,
+        category: "live_data", confidence: live.confidence,
+        confidence_level: live.confidence >= 0.8 ? "high" : "medium",
+        evidence_used: live.sources, has_conflicts: false, has_stale_data: false,
+        references: live.sources.map(s => ({ source_type: s, source_url: "live_query", relevance_score: live.confidence })),
+      };
+      // Cache for only 1 hour (live data changes frequently)
+      sb.from("kb_cache").upsert({ query_hash: qh, query_text: query,
+        response_json: resp, language, ttl_hours: 1 }).then(() => {});
+      sb.rpc("kb_log_query", { p_user_id: user_id, p_user_name: user_name, p_user_role: user_role,
+        p_query_text: query, p_language: language, p_input_method: input_method,
+        p_was_answered: true, p_response_time_ms: ms, p_cache_hit: false,
+        p_matched_category: "live_data", p_confidence_score: live.confidence }).then(() => {});
+      return new Response(JSON.stringify({ ...resp, _meta: {
+        source: "live_query", response_time_ms: ms, cache_hit: false,
+        query_rewrites: [], candidates_retrieved: 0, candidates_reranked: 0 } }),
         { headers: { ...cors, "Content-Type": "application/json" } });
     }
 
