@@ -96,8 +96,8 @@ function HealthTab() {
       results.push({
         label: 'RAG Content Chunks Indexed',
         description: 'Source documents (PDFs, web pages, policies) chunked and vectorized for retrieval. This is separate from training question embeddings — requires ingesting documents via Sources tab.',
-        status: embedTotal >= 50 ? 'pass' : embedTotal > 0 ? 'warn' : 'fail',
-        detail: embedTotal > 0 ? `${embedTotal.toLocaleString()} chunks in vector store` : '0 chunks — No source documents ingested yet. Use the Sources tab to add and scrape content.',
+        status: embedTotal >= 50 ? 'pass' : 'warn',
+        detail: embedTotal > 0 ? `${embedTotal.toLocaleString()} chunks in vector store` : 'Optional — No source documents ingested. Training questions provide primary coverage. Use Sources tab to add supplementary documents.',
       });
 
       // 3. Sources configured
