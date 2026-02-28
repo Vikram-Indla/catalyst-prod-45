@@ -1,10 +1,10 @@
 /**
  * ForYouDetailPanel — Enterprise right-drawer detail panel
- * MARAM V3.1 · fy- ring-fenced · 4 tabs · Jira metadata grid
+ * FINAL spec · fy- ring-fenced · 4 tabs · No Sprint/Story Points · Parent banner · Linkify
  */
 
 import React, { useState, useEffect } from 'react';
-import { X, ArrowLeft, ExternalLink, Copy, Layers, MessageSquare, Clock, Link2, Zap, Target, Tag, Calendar, GitBranch, User } from 'lucide-react';
+import { X, ArrowLeft, ExternalLink, Copy, Layers, MessageSquare, Clock, Link2, Zap, Target, Tag, Calendar, GitBranch, User, CornerDownLeft } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import type { WorkItem } from '@/hooks/useForYouData';
@@ -12,10 +12,10 @@ import type { WorkItem } from '@/hooks/useForYouData';
 // Design tokens (ring-fenced)
 const T = {
   ink: '#09090B', inkSecondary: '#18181B', inkTertiary: '#3F3F46',
-  inkMuted: '#71717A',
+  inkMuted: '#71717A', inkMutedStrong: '#6F6F78',
   surface: '#FFFFFF', surfaceSecondary: '#FAFAFA', surfaceTertiary: '#F4F4F5',
   border: '#E4E4E7', borderStrong: '#D4D4D8',
-  primary: '#2563EB', primaryBg: '#EFF6FF',
+  primary: '#2563EB', primaryHover: '#1D4ED8', primaryBg: '#EFF6FF',
   teal: '#0D9488', tealText: '#0A8277', tealBg: '#F0FDFA',
   success: '#16A34A', successText: '#11853D', successBg: '#F0FDF4',
   warning: '#D97706', warningText: '#AF6003', warningBg: '#FFFBEB',
@@ -23,18 +23,33 @@ const T = {
 };
 
 const STATUS_STYLES: Record<string, { dot: string; text: string; bg: string }> = {
-  'In Progress': { dot: T.teal, text: T.tealText, bg: T.tealBg },
-  'To Do': { dot: T.primary, text: T.primary, bg: T.primaryBg },
-  'Done': { dot: T.success, text: T.successText, bg: T.successBg },
-  'In Review': { dot: T.warning, text: T.warningText, bg: T.warningBg },
+  'In Progress':           { dot: T.teal, text: T.tealText, bg: T.tealBg },
+  'In Development':        { dot: T.teal, text: T.tealText, bg: T.tealBg },
+  'Ready for Development': { dot: T.teal, text: T.tealText, bg: T.tealBg },
+  'Ready for Dev':         { dot: T.teal, text: T.tealText, bg: T.tealBg },
+  'In Dev':                { dot: T.teal, text: T.tealText, bg: T.tealBg },
+  'To Do':     { dot: T.primary, text: T.primary, bg: T.primaryBg },
+  'ToDo':      { dot: T.primary, text: T.primary, bg: T.primaryBg },
+  'Planned':   { dot: T.primary, text: T.primary, bg: T.primaryBg },
+  'Backlog':   { dot: T.inkMutedStrong, text: T.inkMutedStrong, bg: T.surfaceTertiary },
+  'Done':          { dot: T.success, text: T.successText, bg: T.successBg },
+  'In Production': { dot: T.success, text: T.successText, bg: T.successBg },
+  'In Prod':       { dot: T.success, text: T.successText, bg: T.successBg },
+  'In Review':          { dot: T.warning, text: T.warningText, bg: T.warningBg },
+  'End to End Testing': { dot: T.warning, text: T.warningText, bg: T.warningBg },
+  'E2E Testing':        { dot: T.warning, text: T.warningText, bg: T.warningBg },
+  'Ready for Review':   { dot: T.warning, text: T.warningText, bg: T.warningBg },
   'Blocked': { dot: T.danger, text: T.dangerText, bg: T.dangerBg },
 };
 
+// Hub badge config — matches table exactly
 const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
-  Project: { bg: T.tealBg, color: T.tealText, border: T.teal },
-  Product: { bg: T.dangerBg, color: T.dangerText, border: T.danger },
-  Task: { bg: T.primaryBg, color: T.primary, border: T.primary },
-  Incident: { bg: T.warningBg, color: T.warningText, border: T.warning },
+  Project:  { bg: T.primaryBg, color: T.primary, border: T.primary },
+  Product:  { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
+  Task:     { bg: T.surfaceTertiary, color: T.inkMutedStrong, border: T.borderStrong },
+  Incident: { bg: T.dangerBg, color: T.dangerText, border: T.danger },
+  Release:  { bg: T.successBg, color: T.successText, border: T.success },
+  Test:     { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
 };
 
 const PRI: Record<number, { label: string; color: string }> = {
@@ -45,11 +60,54 @@ const PRI: Record<number, { label: string; color: string }> = {
   5: { label: 'Highest', color: T.danger },
 };
 
+// --- Linkify utility: detect URLs, special-case Figma ---
+function Linkify({ text }: { text: string }) {
+  if (!text) return null;
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (part.match(urlRegex)) {
+          const isFigma = part.includes('figma.com');
+          return (
+            <a
+              key={i}
+              href={part}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: T.primary, fontWeight: 500,
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                wordBreak: 'break-all',
+              }}
+            >
+              {isFigma && (
+                <svg width="14" height="14" viewBox="0 0 38 57" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19 28.5C19 23.2533 23.2533 19 28.5 19C33.7467 19 38 23.2533 38 28.5C38 33.7467 33.7467 38 28.5 38C23.2533 38 19 33.7467 19 28.5Z" fill="#1ABCFE"/>
+                  <path d="M0 47.5C0 42.2533 4.25329 38 9.5 38H19V47.5C19 52.7467 14.7467 57 9.5 57C4.25329 57 0 52.7467 0 47.5Z" fill="#0ACF83"/>
+                  <path d="M19 0V19H28.5C33.7467 19 38 14.7467 38 9.5C38 4.25329 33.7467 0 28.5 0H19Z" fill="#FF7262"/>
+                  <path d="M0 9.5C0 14.7467 4.25329 19 9.5 19H19V0H9.5C4.25329 0 0 4.25329 0 9.5Z" fill="#F24E1E"/>
+                  <path d="M0 28.5C0 33.7467 4.25329 38 9.5 38H19V19H9.5C4.25329 19 0 23.2533 0 28.5Z" fill="#A259FF"/>
+                </svg>
+              )}
+              {isFigma ? 'Open Figma Design' : (part.length > 60 ? part.slice(0, 60) + '…' : part)}
+              <ExternalLink size={11} style={{ flexShrink: 0 }} />
+            </a>
+          );
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </>
+  );
+}
+
 function StatusPill({ status }: { status: string }) {
   const s = STATUS_STYLES[status] || STATUS_STYLES['In Progress'];
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 22, padding: '0 10px', borderRadius: 9999, background: s.bg, fontSize: 11, fontWeight: 600 }}>
-      <span style={{ width: 6, height: 6, borderRadius: '50%', background: s.dot }} />
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 22, padding: '0 10px', borderRadius: 9999, background: s.bg, fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>
+      <span style={{ width: 6, height: 6, borderRadius: '50%', background: s.dot, flexShrink: 0 }} />
       <span style={{ color: s.text }}>{status}</span>
     </span>
   );
@@ -69,7 +127,7 @@ function PriorityBars({ level = 3, showLabel = false }: { level?: number; showLa
     <div style={{ display: 'flex', alignItems: 'center', gap: showLabel ? 8 : 2 }}>
       <div style={{ display: 'flex', gap: 2 }}>
         {[1,2,3,4].map(i => (
-          <div key={i} style={{ width: showLabel ? 5 : 4, height: showLabel ? 16 : 14, borderRadius: 1, background: i <= level ? (PRI[level]?.color || T.inkMuted) : T.border }} />
+          <div key={i} style={{ width: showLabel ? 5 : 4, height: showLabel ? 16 : 14, borderRadius: 1, background: i <= level ? (showLabel ? (PRI[level]?.color || T.inkMuted) : T.inkMuted) : T.border }} />
         ))}
       </div>
       {showLabel && <span style={{ fontSize: 13, fontWeight: 500, color: T.ink }}>{PRI[level]?.label || 'Medium'}</span>}
@@ -223,21 +281,30 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
         <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
           {tab === 'details' && (
             <>
-              {/* Field Grid */}
+              {/* Parent Info Banner */}
+              {item.parentKey && (
+                <div className="fy-parent-banner" style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '10px 14px', marginBottom: 16,
+                  background: T.surfaceTertiary, borderRadius: 8,
+                  border: `1px solid ${T.border}`,
+                }}>
+                  <CornerDownLeft size={14} style={{ color: T.inkMuted, flexShrink: 0 }} />
+                  <span style={{ fontSize: 11, fontWeight: 600, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>PARENT</span>
+                  <JiraIssueTypeIcon issueType="epic" size={14} />
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: T.primary }}>{item.parentKey}</span>
+                  {item.parentSummary && (
+                    <span style={{ fontSize: 13, fontWeight: 500, color: T.inkSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parentSummary}</span>
+                  )}
+                </div>
+              )}
+
+              {/* Field Grid — NO Sprint, NO Story Points */}
               <div style={{ border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
                 <FieldRow icon={<Zap size={13} />} label="Status"><StatusPill status={item.status} /></FieldRow>
                 <FieldRow icon={<Target size={13} />} label="Priority"><PriorityBars level={item.priorityLevel} showLabel /></FieldRow>
                 <FieldRow icon={<Layers size={13} />} label="Project"><span style={{ fontWeight: 600 }}>{item.project}</span></FieldRow>
                 <FieldRow icon={<Tag size={13} />} label="Hub"><HubBadge hub={item.hubLabel} /></FieldRow>
-                <FieldRow icon={<Calendar size={13} />} label="Sprint"><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}>{item.sprint || '—'}</span></FieldRow>
-                <FieldRow icon={<Target size={13} />} label="Story Points">
-                  {item.storyPoints != null ? (
-                    <>
-                      <span style={{ fontFamily: "'Sora', system-ui", fontSize: 15, fontWeight: 700, color: T.ink }}>{item.storyPoints}</span>
-                      <span style={{ fontSize: 12, color: T.inkMuted }}>pts</span>
-                    </>
-                  ) : <span style={{ color: T.inkMuted }}>—</span>}
-                </FieldRow>
                 <FieldRow icon={<Tag size={13} />} label="Labels">
                   {item.labels && item.labels.length > 0 ? (
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
@@ -267,25 +334,25 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
               </div>
 
               {/* Jira Sync bar */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 16, padding: '10px 14px', background: T.primaryBg, borderRadius: 8, border: `1px solid ${T.border}` }}>
+              <div className="fy-jira-sync" style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 16, padding: '10px 14px', background: T.primaryBg, borderRadius: 8, border: `1px solid ${T.border}` }}>
                 <ExternalLink size={13} style={{ color: T.primary }} />
                 <span style={{ fontSize: 12, fontWeight: 700, color: T.primary, fontFamily: "'JetBrains Mono', monospace" }}>JIRA SYNC</span>
                 <span style={{ fontSize: 12, color: T.inkTertiary }}>· Last synced {item.lastSyncedAt ? new Date(item.lastSyncedAt).toLocaleDateString() : item.updatedAt} · Source of truth: Jira</span>
               </div>
 
-              {/* Description */}
+              {/* Description — with Linkify */}
               <div style={{ marginTop: 24 }}>
                 <h3 style={{ fontFamily: "'Sora', system-ui", fontSize: 14, fontWeight: 600, color: T.ink, paddingBottom: 8, borderBottom: `1px solid ${T.border}`, marginBottom: 12 }}>Description</h3>
-                <p style={{ fontSize: 13, color: T.inkSecondary, lineHeight: 1.7 }}>
-                  {item.description || (item.issueType?.toLowerCase().includes('bug')
+                <div style={{ fontSize: 13, color: T.inkSecondary, lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
+                  <Linkify text={item.description || (item.issueType?.toLowerCase().includes('bug')
                     ? `Steps to reproduce: Navigate to the relevant screen → perform the action described → observe the inconsistency. Expected: Match the approved Figma design specifications.`
-                    : `Implement the feature as described. Ensure alignment with approved Figma designs and UX specifications. All acceptance criteria must be verified before moving to Done.`)}
-                </p>
+                    : `Implement the feature as described. Ensure alignment with approved Figma designs and UX specifications. All acceptance criteria must be verified before moving to Done.`)} />
+                </div>
               </div>
 
-              {/* Activity */}
-              <div style={{ marginTop: 24 }}>
-                <h3 style={{ fontFamily: "'Sora', system-ui", fontSize: 14, fontWeight: 600, color: T.ink, paddingBottom: 8, borderBottom: `1px solid ${T.border}`, marginBottom: 16 }}>Activity</h3>
+              {/* Recent Activity */}
+              <div className="fy-activity" style={{ marginTop: 24 }}>
+                <h3 style={{ fontFamily: "'Sora', system-ui", fontSize: 14, fontWeight: 600, color: T.ink, paddingBottom: 8, borderBottom: `1px solid ${T.border}`, marginBottom: 16 }}>Recent Activity</h3>
                 {activity.map((a, i) => (
                   <div key={i} style={{ display: 'flex', gap: 12, padding: '10px 0', borderBottom: i < activity.length - 1 ? `1px solid ${T.surfaceTertiary}` : 'none' }}>
                     <Avatar name={a.user} size={28} />
@@ -317,9 +384,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
             <div style={{ padding: '16px 0' }}>
               {activity.map((a, i) => (
                 <div key={i} style={{ display: 'flex', gap: 12, padding: '10px 0', borderBottom: i < activity.length - 1 ? `1px solid ${T.surfaceTertiary}` : 'none' }}>
-                  <div style={{ width: 28, display: 'flex', justifyContent: 'center', paddingTop: 4 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: T.borderStrong }} />
-                  </div>
+                  <Avatar name={a.user} size={28} />
                   <div>
                     <span style={{ fontSize: 13, fontWeight: 600, color: T.ink }}>{a.user}</span>
                     <span style={{ fontSize: 13, color: T.inkTertiary }}> {a.action}</span>
@@ -334,10 +399,10 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
           {tab === 'links' && (
             <div style={{ padding: '16px 0' }}>
               {item.parentKey ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', border: `1px solid ${T.border}`, borderRadius: 8 }}>
+                <div className="fy-link-card" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', border: `1px solid ${T.border}`, borderRadius: 8 }}>
                   <Link2 size={13} style={{ color: T.inkMuted }} />
                   <div>
-                    <div style={{ fontSize: 11, fontWeight: 600, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>parent of</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>IS CHILD OF</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
                       <JiraIssueTypeIcon issueType="epic" size={14} />
                       <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: T.primary }}>{item.parentKey}</span>
