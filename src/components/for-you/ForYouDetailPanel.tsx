@@ -4,9 +4,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { X, ArrowLeft, ExternalLink, Copy, Layers, MessageSquare, Clock, Link2, Zap, Target, Tag, Calendar, GitBranch, User, CornerDownLeft } from 'lucide-react';
+import { X, ArrowLeft, ExternalLink, Copy, Layers, MessageSquare, Clock, Link2, Zap, Target, Tag, Calendar, GitBranch, User, CornerDownLeft, Paperclip, FileText, Image, Download, File } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
+import { supabase } from '@/integrations/supabase/client';
 import type { WorkItem } from '@/hooks/useForYouData';
 
 // Design tokens (ring-fenced)
@@ -172,6 +173,29 @@ interface ForYouDetailPanelProps {
 
 export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
   const [tab, setTab] = useState('details');
+  const [attachments, setAttachments] = useState<any[]>([]);
+  const [attachmentsLoading, setAttachmentsLoading] = useState(false);
+
+  // Fetch attachments for this issue
+  useEffect(() => {
+    async function fetchAttachments() {
+      if (!item.key) return;
+      setAttachmentsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('ph_issue_attachments')
+          .select('*')
+          .eq('issue_key', item.key)
+          .order('jira_created_at', { ascending: false });
+        if (!error && data) setAttachments(data);
+      } catch (e) {
+        console.error('Error fetching attachments:', e);
+      } finally {
+        setAttachmentsLoading(false);
+      }
+    }
+    fetchAttachments();
+  }, [item.key]);
 
   // Close on Escape
   useEffect(() => {
@@ -188,6 +212,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
 
   const tabs = [
     { id: 'details', label: 'Details', icon: <Layers size={13} /> },
+    { id: 'attachments', label: 'Attachments', icon: <Paperclip size={13} />, count: attachments.length },
     { id: 'comments', label: 'Comments', icon: <MessageSquare size={13} />, count: 0 },
     { id: 'history', label: 'History', icon: <Clock size={13} />, count: activity.length },
     { id: 'links', label: 'Links', icon: <Link2 size={13} />, count: item.parentKey ? 1 : 0 },
@@ -369,6 +394,83 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
                 ))}
               </div>
             </>
+          )}
+
+          {tab === 'attachments' && (
+            <div style={{ padding: '16px 0' }}>
+              {attachmentsLoading ? (
+                <div style={{ textAlign: 'center', padding: 24, color: T.inkMuted, fontSize: 13 }}>Loading attachments…</div>
+              ) : attachments.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: 24, color: T.inkMuted, fontSize: 13 }}>
+                  <Paperclip size={24} style={{ margin: '0 auto 8px', display: 'block', color: T.border }} />
+                  No attachments found for this issue.
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {attachments.map((att: any) => {
+                    const isImage = att.mime_type?.startsWith('image/');
+                    const isPdf = att.mime_type === 'application/pdf';
+                    const fileIcon = isImage ? <Image size={16} style={{ color: T.teal }} /> : isPdf ? <FileText size={16} style={{ color: T.danger }} /> : <File size={16} style={{ color: T.inkMuted }} />;
+                    const sizeStr = att.file_size ? (att.file_size > 1048576 ? `${(att.file_size / 1048576).toFixed(1)} MB` : `${Math.round(att.file_size / 1024)} KB`) : '';
+                    const createdStr = att.jira_created_at ? new Date(att.jira_created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+
+                    return (
+                      <div key={att.id} style={{
+                        display: 'flex', alignItems: 'center', gap: 12,
+                        padding: '10px 14px', border: `1px solid ${T.border}`, borderRadius: 8,
+                        background: T.surface, transition: 'background .15s',
+                        cursor: 'pointer',
+                      }}
+                        onMouseEnter={e => (e.currentTarget.style.background = T.surfaceSecondary)}
+                        onMouseLeave={e => (e.currentTarget.style.background = T.surface)}
+                      >
+                        {/* Thumbnail or icon */}
+                        {isImage && att.thumbnail_url ? (
+                          <img src={att.thumbnail_url} alt={att.filename} style={{ width: 40, height: 40, borderRadius: 4, objectFit: 'cover', border: `1px solid ${T.border}` }} />
+                        ) : (
+                          <div style={{ width: 40, height: 40, borderRadius: 4, background: T.surfaceTertiary, display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${T.border}`, flexShrink: 0 }}>
+                            {fileIcon}
+                          </div>
+                        )}
+
+                        {/* Info */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 13, fontWeight: 600, color: T.ink, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{att.filename}</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
+                            {sizeStr && <span style={{ fontSize: 11, color: T.inkMuted }}>{sizeStr}</span>}
+                            {createdStr && <span style={{ fontSize: 11, color: T.inkMuted }}>· {createdStr}</span>}
+                            {att.author_display_name && <span style={{ fontSize: 11, color: T.inkMuted }}>· {att.author_display_name}</span>}
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+                          <a
+                            href={att.content_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={e => e.stopPropagation()}
+                            title="Open in Jira"
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 4, border: `1px solid ${T.border}`, background: T.surface, color: T.primary, cursor: 'pointer', textDecoration: 'none' }}
+                          >
+                            <ExternalLink size={13} />
+                          </a>
+                          <a
+                            href={att.content_url}
+                            download={att.filename}
+                            onClick={e => e.stopPropagation()}
+                            title="Download"
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 4, border: `1px solid ${T.border}`, background: T.surface, color: T.inkTertiary, cursor: 'pointer', textDecoration: 'none' }}
+                          >
+                            <Download size={13} />
+                          </a>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           )}
 
           {tab === 'comments' && (

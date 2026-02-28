@@ -21649,6 +21649,60 @@ export type Database = {
           },
         ]
       }
+      ph_issue_attachments: {
+        Row: {
+          author_account_id: string | null
+          author_display_name: string | null
+          content_url: string
+          created_at: string
+          file_size: number | null
+          filename: string
+          id: string
+          issue_key: string
+          jira_attachment_id: string
+          jira_created_at: string | null
+          local_public_url: string | null
+          local_storage_path: string | null
+          mime_type: string | null
+          synced_at: string
+          thumbnail_url: string | null
+        }
+        Insert: {
+          author_account_id?: string | null
+          author_display_name?: string | null
+          content_url: string
+          created_at?: string
+          file_size?: number | null
+          filename: string
+          id?: string
+          issue_key: string
+          jira_attachment_id: string
+          jira_created_at?: string | null
+          local_public_url?: string | null
+          local_storage_path?: string | null
+          mime_type?: string | null
+          synced_at?: string
+          thumbnail_url?: string | null
+        }
+        Update: {
+          author_account_id?: string | null
+          author_display_name?: string | null
+          content_url?: string
+          created_at?: string
+          file_size?: number | null
+          filename?: string
+          id?: string
+          issue_key?: string
+          jira_attachment_id?: string
+          jira_created_at?: string | null
+          local_public_url?: string | null
+          local_storage_path?: string | null
+          mime_type?: string | null
+          synced_at?: string
+          thumbnail_url?: string | null
+        }
+        Relationships: []
+      }
       ph_issue_initiative_type_overrides: {
         Row: {
           created_at: string
