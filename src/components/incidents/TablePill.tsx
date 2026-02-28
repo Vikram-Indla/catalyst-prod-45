@@ -1,13 +1,12 @@
 /**
  * TablePill — Incident table status/severity/SLA visuals (Catalyst-compliant)
- *
- * CATALYST V5 DESIGN SYSTEM — Using CSS Variable Tokens
- * All colors reference design system tokens for theme consistency
+ * GUARDRAIL: StatusPill uses StatusLozenge from @/components/ui/StatusLozenge
  */
 
 import { cn } from '@/lib/utils';
 import { ReactNode } from 'react';
 import { AlertTriangle, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 
 export interface TablePillProps {
   children: ReactNode;
@@ -99,98 +98,7 @@ export function SeverityPill({ severity }: { severity: string }) {
  * - Closed = Gray (Muted - archived)
  */
 export function StatusPill({ status }: { status: string }) {
-  const normalized = status?.toLowerCase().replace(/[\s-]/g, '_');
-
-  const styles: Record<
-    string,
-    { label: string; bg: string; border: string; text: string; dot: string }
-  > = {
-    open: {
-      label: 'Open',
-      bg: catalyst.warningBg,
-      border: catalyst.warningBorder,
-      text: catalyst.warning,
-      dot: catalyst.warning,
-    },
-    triage: {
-      label: 'Triaging',
-      bg: catalyst.infoBg,
-      border: catalyst.infoBorder,
-      text: catalyst.info,
-      dot: catalyst.info,
-    },
-    triaging: {
-      label: 'Triaging',
-      bg: catalyst.infoBg,
-      border: catalyst.infoBorder,
-      text: catalyst.info,
-      dot: catalyst.info,
-    },
-    to_committee: {
-      label: 'Committee',
-      bg: catalyst.mutedBg,
-      border: catalyst.mutedBorder,
-      text: catalyst.muted,
-      dot: catalyst.muted,
-    },
-    committee: {
-      label: 'Committee',
-      bg: catalyst.mutedBg,
-      border: catalyst.mutedBorder,
-      text: catalyst.muted,
-      dot: catalyst.muted,
-    },
-    in_progress: {
-      label: 'In Progress',
-      bg: catalyst.goldBg,
-      border: catalyst.goldBorder,
-      text: catalyst.gold,
-      dot: catalyst.gold,
-    },
-    resolved: {
-      label: 'Resolved',
-      bg: catalyst.successBg,
-      border: catalyst.successBorder,
-      text: catalyst.success,
-      dot: catalyst.success,
-    },
-    converted: {
-      label: 'Converted',
-      bg: catalyst.mutedBg,
-      border: catalyst.mutedBorder,
-      text: catalyst.muted,
-      dot: catalyst.muted,
-    },
-    closed: {
-      label: 'Closed',
-      bg: catalyst.mutedBg,
-      border: catalyst.mutedBorder,
-      text: catalyst.muted,
-      dot: catalyst.muted,
-    },
-  };
-
-  const cfg = styles[normalized] || {
-    label: status || '—',
-    bg: catalyst.mutedBg,
-    border: catalyst.mutedBorder,
-    text: catalyst.muted,
-    dot: catalyst.muted,
-  };
-
-  return (
-    <span
-      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold h-5"
-      style={{
-        backgroundColor: cfg.bg,
-        border: `1px solid ${cfg.border}`,
-        color: cfg.text,
-      }}
-    >
-      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: cfg.dot }} />
-      <span className="truncate">{cfg.label}</span>
-    </span>
-  );
+  return <StatusLozenge status={status} />;
 }
 
 /**

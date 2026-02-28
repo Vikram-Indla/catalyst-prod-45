@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Star } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
-import { StatusBadge } from '@/components/for-you/StatusBadge';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import type { WorkItem, WorkGroup } from '@/hooks/useForYouData';
 
@@ -203,7 +203,7 @@ export function ForYouTable({
 
                     {/* Status */}
                     <td style={{ padding: '0 8px', width: 160, textAlign: 'center' }}>
-                      <StatusBadge status={item.status} />
+                      <StatusLozenge status={item.status} />
                     </td>
 
                     {/* Project */}

@@ -1,13 +1,12 @@
 /**
  * WorkItemRow — Single table row for a Jira issue from wh_issues
- * Supports hierarchy indent, Lucide type icons with tooltips, mapped profile avatars, and theme display
+ * GUARDRAIL: Uses StatusLozenge from @/components/ui/StatusLozenge for all status rendering.
  */
 
 import { useState } from 'react';
-import {
-  ChevronRight, ChevronDown,
-} from 'lucide-react';
+import { ChevronRight, ChevronDown } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import type { JiraIssue } from '@/hooks/workhub/useWorkItems';
 import { format } from 'date-fns';
 
@@ -25,23 +24,6 @@ interface WorkItemRowProps {
   onOpenDrawer: () => void;
 }
 
-const STATUS_COLORS: Record<string, { bg: string; fg: string }> = {
-  'To Do': { bg: '#f1f5f9', fg: '#475569' },
-  'ToDo': { bg: '#f1f5f9', fg: '#475569' },
-  'In Progress': { bg: '#dbeafe', fg: '#2563eb' },
-  'In Development': { bg: '#dbeafe', fg: '#2563eb' },
-  'In BETA': { bg: '#e0f2fe', fg: '#0284c7' },
-  'In Review': { bg: '#fef3c7', fg: '#d97706' },
-  'Technical validation': { bg: '#fef3c7', fg: '#d97706' },
-  Done: { bg: '#dcfce7', fg: '#16a34a' },
-  Closed: { bg: '#f0fdf4', fg: '#15803d' },
-  Blocked: { bg: '#fef2f2', fg: '#dc2626' },
-  'Ready for QA': { bg: '#fdf4ff', fg: '#a21caf' },
-  'Ready for UAT': { bg: '#fdf4ff', fg: '#7c3aed' },
-  Cancelled: { bg: '#f3f4f6', fg: '#6b7280' },
-  Backlog: { bg: '#f1f5f9', fg: '#64748b' },
-};
-
 const PRIORITY_COLORS: Record<string, string> = {
   Highest: '#dc2626',
   High: '#ea580c',
@@ -49,8 +31,6 @@ const PRIORITY_COLORS: Record<string, string> = {
   Low: '#2563eb',
   Lowest: '#64748b',
 };
-
-// Icon rendering now delegated to canonical guardrail
 
 function formatDate(d: string | null) {
   if (!d) return '—';
@@ -62,10 +42,8 @@ export function WorkItemRow({
   avatarUrl, themeName, themeColor,
   onToggleExpand, onToggleSelect, onOpenDrawer,
 }: WorkItemRowProps) {
-  const statusStyle = STATUS_COLORS[item.status] || { bg: '#f1f5f9', fg: '#475569' };
   const priorityColor = PRIORITY_COLORS[item.priority] || '#64748b';
   const indentPx = depth * 24;
-  // Type icon now uses canonical guardrail
   const [imgError, setImgError] = useState(false);
 
   return (
@@ -102,10 +80,7 @@ export function WorkItemRow({
       </div>
 
       {/* 3. Issue Key + Expand */}
-      <div
-        className="flex items-center gap-1.5 min-w-0"
-        style={{ paddingLeft: `${indentPx}px` }}
-      >
+      <div className="flex items-center gap-1.5 min-w-0" style={{ paddingLeft: `${indentPx}px` }}>
         {hasChildren ? (
           <button
             onClick={e => { e.stopPropagation(); onToggleExpand(); }}
@@ -119,34 +94,19 @@ export function WorkItemRow({
         ) : (
           <span className="w-4 shrink-0" />
         )}
-
-        <span
-          className="text-[12px] font-semibold truncate"
-          style={{ fontFamily: 'var(--wh-font-mono, monospace)', color: 'var(--wh-primary, #2563eb)' }}
-        >
+        <span className="text-[12px] font-semibold truncate" style={{ fontFamily: 'var(--wh-font-mono, monospace)', color: 'var(--wh-primary, #2563eb)' }}>
           {item.issue_key}
         </span>
       </div>
 
       {/* 4. Summary */}
-      <span
-        className="text-[13px] truncate pr-2"
-        style={{
-          fontWeight: depth === 0 ? 700 : depth === 1 ? 500 : 400,
-          color: 'var(--wh-text-primary, #0f172a)',
-        }}
-      >
+      <span className="text-[13px] truncate pr-2" style={{ fontWeight: depth === 0 ? 700 : depth === 1 ? 500 : 400, color: 'var(--wh-text-primary, #0f172a)' }}>
         {item.summary}
       </span>
 
-      {/* 5. Status */}
+      {/* 5. Status — StatusLozenge guardrail */}
       <div>
-        <span
-          className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold"
-          style={{ backgroundColor: statusStyle.bg, color: statusStyle.fg }}
-        >
-          {item.status}
-        </span>
+        <StatusLozenge status={item.status} />
       </div>
 
       {/* 5b. Fix Version */}
@@ -170,9 +130,7 @@ export function WorkItemRow({
         {themeName ? (
           <>
             <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: themeColor || '#94a3b8' }} />
-            <span className="text-[11px] truncate" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>
-              {themeName}
-            </span>
+            <span className="text-[11px] truncate" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>{themeName}</span>
           </>
         ) : (
           <span className="text-[10.5px] italic" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>—</span>
@@ -184,17 +142,9 @@ export function WorkItemRow({
         {item.assignee_display_name ? (
           <>
             {avatarUrl && !imgError ? (
-              <img
-                src={avatarUrl}
-                alt={item.assignee_display_name}
-                className="w-5 h-5 rounded-full shrink-0 object-cover"
-                onError={() => setImgError(true)}
-              />
+              <img src={avatarUrl} alt={item.assignee_display_name} className="w-5 h-5 rounded-full shrink-0 object-cover" onError={() => setImgError(true)} />
             ) : (
-              <span
-                className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0"
-                style={{ backgroundColor: '#6366f1' }}
-              >
+              <span className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0" style={{ backgroundColor: '#6366f1' }}>
                 {item.assignee_display_name[0]?.toUpperCase()}
               </span>
             )}
@@ -210,20 +160,14 @@ export function WorkItemRow({
       {/* 8. Priority */}
       <div className="flex items-center gap-1">
         <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: priorityColor }} />
-        <span className="text-[11px] font-medium" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>
-          {item.priority}
-        </span>
+        <span className="text-[11px] font-medium" style={{ color: 'var(--wh-text-secondary, #64748b)' }}>{item.priority}</span>
       </div>
 
       {/* 9. Updated */}
-      <span className="text-[10.5px] truncate" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
-        {formatDate(item.jira_updated_at)}
-      </span>
+      <span className="text-[10.5px] truncate" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>{formatDate(item.jira_updated_at)}</span>
 
       {/* 10. Created */}
-      <span className="text-[10.5px] truncate" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>
-        {formatDate(item.jira_created_at)}
-      </span>
+      <span className="text-[10.5px] truncate" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>{formatDate(item.jira_created_at)}</span>
     </div>
   );
 }
