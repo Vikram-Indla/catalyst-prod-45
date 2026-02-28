@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Zap } from 'lucide-react';
 
 export type R360View = 'ring' | 'chronology' | 'list';
 export type RoleFilter = 'all' | 'assigned' | 'reported';
@@ -214,14 +215,18 @@ const Toolbar: React.FC<ToolbarProps> = ({
         onClick={onAiClick}
         aria-label="Open AI Intelligence overlay"
         style={{
-          background: '#2563EB', color: '#FFFFFF',
-          border: 'none', borderRadius: 8,
-          padding: '7px 16px', fontSize: 12, fontWeight: 600,
-          cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6,
-          height: 28,
+          background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)',
+          color: '#FFFFFF', border: 'none', borderRadius: 20,
+          padding: '0 16px', height: 32, fontSize: 12, fontWeight: 600,
+          letterSpacing: '0.3px', cursor: 'pointer',
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          transition: 'all 200ms ease',
+          fontFamily: "'Inter', system-ui, sans-serif",
         }}
+        onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 0 6px rgba(37,99,235,0.15)'; }}
+        onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = ''; }}
       >
-        <span style={{ fontSize: 11, fontWeight: 800 }}>✦</span>
+        <Zap size={13} strokeWidth={2.2} />
         Intelligence
       </button>
     </div>

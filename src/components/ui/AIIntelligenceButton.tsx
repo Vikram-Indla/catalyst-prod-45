@@ -1,8 +1,9 @@
 /**
- * AIIntelligenceButton — Solid blue AI button
- * Per platform standard: #2563EB bg, white text, 8px border-radius
+ * AIIntelligenceButton — Blue-to-purple gradient pill
+ * Platform standard: gradient bg, white text, pill shape, Zap icon
  */
 import React from 'react';
+import { Zap } from 'lucide-react';
 
 export interface AIIntelligenceButtonProps {
   label: string;
@@ -25,25 +26,37 @@ export function AIIntelligenceButton({
       className={className}
       disabled={disabled}
       style={{
-        background: disabled ? '#94A3B8' : isActive ? '#1D4ED8' : '#2563EB',
+        background: disabled
+          ? '#94A3B8'
+          : isActive
+            ? '#2563EB'
+            : 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)',
         color: '#FFFFFF',
         border: 'none',
-        borderRadius: '8px',
-        padding: '7px 14px',
-        fontSize: '12px',
+        borderRadius: 20,
+        padding: '0 16px',
+        height: 32,
+        fontSize: 12,
         fontWeight: 600,
+        letterSpacing: '0.3px',
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.6 : 1,
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '5px',
-        transition: 'background 150ms',
-        boxShadow: '0 1px 2px rgba(37,99,235,0.2)',
+        gap: 6,
+        transition: 'all 200ms ease',
+        fontFamily: "'Inter', system-ui, sans-serif",
       }}
-      onMouseEnter={e => { e.currentTarget.style.background = '#1D4ED8'; }}
-      onMouseLeave={e => { e.currentTarget.style.background = isActive ? '#1D4ED8' : '#2563EB'; }}
+      onMouseEnter={e => {
+        e.currentTarget.style.transform = 'scale(1.03)';
+        e.currentTarget.style.boxShadow = '0 0 0 6px rgba(37,99,235,0.15)';
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.transform = 'scale(1)';
+        e.currentTarget.style.boxShadow = '';
+      }}
     >
-      <span style={{ fontSize: '11px', fontWeight: 800 }}>✦</span>
+      <Zap size={13} strokeWidth={2.2} />
       {label}
     </button>
   );

@@ -59,17 +59,19 @@ export function ForYouHeader() {
             onClick={() => setShowDeptPicker(v => !v)}
             className="fy-intelligence-btn"
             style={{
-              background: '#2563EB', color: '#FFFFFF', border: 'none',
-              borderRadius: 6, padding: '0 16px', height: 32,
-              fontSize: 13, fontWeight: 600, cursor: 'pointer',
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              fontFamily: "'Inter', system-ui",
-              transition: 'background 150ms',
+              background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)',
+              color: '#FFFFFF', border: 'none',
+              borderRadius: 20, padding: '0 16px', height: 32,
+              fontSize: 12, fontWeight: 600, letterSpacing: '0.3px',
+              cursor: 'pointer',
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              fontFamily: "'Inter', system-ui, sans-serif",
+              transition: 'all 200ms ease',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#1D4ED8'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#2563EB'; }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 0 6px rgba(37,99,235,0.15)'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = ''; }}
           >
-            <Zap size={14} strokeWidth={2.2} />
+            <Zap size={13} strokeWidth={2.2} />
             Intelligence
           </button>
 
