@@ -15046,6 +15046,30 @@ export type Database = {
           },
         ]
       }
+      kb_access_matrix: {
+        Row: {
+          has_access: boolean
+          id: string
+          module_name: string
+          role_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          has_access?: boolean
+          id?: string
+          module_name: string
+          role_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          has_access?: boolean
+          id?: string
+          module_name?: string
+          role_name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       kb_audit_log: {
         Row: {
           action: string
@@ -15079,6 +15103,45 @@ export type Database = {
           resource_type?: string
           user_agent?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      kb_cache: {
+        Row: {
+          created_at: string | null
+          hit_count: number | null
+          id: string
+          language: string | null
+          last_hit_at: string | null
+          query_hash: string
+          query_text: string
+          response_json: Json
+          ttl_hours: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          hit_count?: number | null
+          id?: string
+          language?: string | null
+          last_hit_at?: string | null
+          query_hash: string
+          query_text: string
+          response_json: Json
+          ttl_hours?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          hit_count?: number | null
+          id?: string
+          language?: string | null
+          last_hit_at?: string | null
+          query_hash?: string
+          query_text?: string
+          response_json?: Json
+          ttl_hours?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -15520,6 +15583,48 @@ export type Database = {
           },
         ]
       }
+      kb_embeddings: {
+        Row: {
+          chunk_index: number | null
+          content: string
+          content_hash: string
+          created_at: string | null
+          embedding: string | null
+          id: string
+          language: string | null
+          metadata: Json | null
+          source_type: string
+          source_url: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          chunk_index?: number | null
+          content: string
+          content_hash: string
+          created_at?: string | null
+          embedding?: string | null
+          id?: string
+          language?: string | null
+          metadata?: Json | null
+          source_type: string
+          source_url?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          chunk_index?: number | null
+          content?: string
+          content_hash?: string
+          created_at?: string | null
+          embedding?: string | null
+          id?: string
+          language?: string | null
+          metadata?: Json | null
+          source_type?: string
+          source_url?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       kb_projects: {
         Row: {
           created_at: string
@@ -15544,6 +15649,150 @@ export type Database = {
           key?: string
           name?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      kb_query_log: {
+        Row: {
+          cache_hit: boolean | null
+          confidence_score: number | null
+          created_at: string | null
+          id: string
+          input_method: string | null
+          language: string | null
+          matched_category: string | null
+          query_text: string
+          response_time_ms: number | null
+          user_id: string | null
+          user_name: string | null
+          user_role: string | null
+          was_answered: boolean | null
+          was_helpful: boolean | null
+        }
+        Insert: {
+          cache_hit?: boolean | null
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          input_method?: string | null
+          language?: string | null
+          matched_category?: string | null
+          query_text: string
+          response_time_ms?: number | null
+          user_id?: string | null
+          user_name?: string | null
+          user_role?: string | null
+          was_answered?: boolean | null
+          was_helpful?: boolean | null
+        }
+        Update: {
+          cache_hit?: boolean | null
+          confidence_score?: number | null
+          created_at?: string | null
+          id?: string
+          input_method?: string | null
+          language?: string | null
+          matched_category?: string | null
+          query_text?: string
+          response_time_ms?: number | null
+          user_id?: string | null
+          user_name?: string | null
+          user_role?: string | null
+          was_answered?: boolean | null
+          was_helpful?: boolean | null
+        }
+        Relationships: []
+      }
+      kb_sources: {
+        Row: {
+          content_size_bytes: number | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          label: string
+          last_scraped_at: string | null
+          pages_indexed: number | null
+          priority: number
+          scrape_depth: number | null
+          scrape_frequency: string | null
+          source_type: string
+          updated_at: string | null
+          url: string
+        }
+        Insert: {
+          content_size_bytes?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          label: string
+          last_scraped_at?: string | null
+          pages_indexed?: number | null
+          priority?: number
+          scrape_depth?: number | null
+          scrape_frequency?: string | null
+          source_type?: string
+          updated_at?: string | null
+          url: string
+        }
+        Update: {
+          content_size_bytes?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          label?: string
+          last_scraped_at?: string | null
+          pages_indexed?: number | null
+          priority?: number
+          scrape_depth?: number | null
+          scrape_frequency?: string | null
+          source_type?: string
+          updated_at?: string | null
+          url?: string
+        }
+        Relationships: []
+      }
+      kb_training_questions: {
+        Row: {
+          cache_hits: number | null
+          category: string
+          created_at: string | null
+          embedding: string | null
+          expected_answer: string | null
+          id: string
+          is_embedded: boolean | null
+          language: string
+          last_served_at: string | null
+          question: string
+          question_number: number
+        }
+        Insert: {
+          cache_hits?: number | null
+          category: string
+          created_at?: string | null
+          embedding?: string | null
+          expected_answer?: string | null
+          id?: string
+          is_embedded?: boolean | null
+          language?: string
+          last_served_at?: string | null
+          question: string
+          question_number: number
+        }
+        Update: {
+          cache_hits?: number | null
+          category?: string
+          created_at?: string | null
+          embedding?: string | null
+          expected_answer?: string | null
+          id?: string
+          is_embedded?: boolean | null
+          language?: string
+          last_served_at?: string | null
+          question?: string
+          question_number?: number
         }
         Relationships: []
       }
@@ -65453,6 +65702,58 @@ export type Database = {
       is_workstream_member: {
         Args: { _user_id: string; _workstream_id: string }
         Returns: boolean
+      }
+      kb_cache_hit: { Args: { p_query_hash: string }; Returns: Json }
+      kb_log_query: {
+        Args: {
+          p_cache_hit?: boolean
+          p_confidence_score?: number
+          p_input_method?: string
+          p_language?: string
+          p_matched_category?: string
+          p_query_text: string
+          p_response_time_ms?: number
+          p_user_id: string
+          p_user_name: string
+          p_user_role: string
+          p_was_answered?: boolean
+        }
+        Returns: string
+      }
+      kb_match_embeddings: {
+        Args: {
+          filter_source?: string
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+        }
+        Returns: {
+          content: string
+          id: string
+          metadata: Json
+          similarity: number
+          source_type: string
+          source_url: string
+        }[]
+      }
+      kb_match_training: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+        }
+        Returns: {
+          category: string
+          expected_answer: string
+          id: string
+          question: string
+          question_number: number
+          similarity: number
+        }[]
+      }
+      kb_update_helpful: {
+        Args: { p_log_id: string; p_was_helpful: boolean }
+        Returns: undefined
       }
       link_defect_to_step_v2: {
         Args: {
