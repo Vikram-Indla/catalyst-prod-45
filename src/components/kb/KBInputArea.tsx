@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Mic, ArrowUp } from 'lucide-react';
 
 type Lang = 'en' | 'ar';
@@ -11,20 +11,9 @@ interface KBInputAreaProps {
   lang: Lang;
   isListening: boolean;
   onToggleListening: () => void;
+  chips?: string[];
 }
 
-const QUICK_CHIPS_EN = [
-  'Gold License requirements',
-  'Chemical permit process',
-  'Sprint velocity',
-  'Defect SLA policy',
-];
-const QUICK_CHIPS_AR = [
-  'متطلبات الترخيص الذهبي',
-  'إجراءات التصاريح الكيميائية',
-  'سرعة السبرنت',
-  'سياسة SLA للعيوب',
-];
 
 export function KBInputArea({
   input,
@@ -34,11 +23,11 @@ export function KBInputArea({
   lang,
   isListening,
   onToggleListening,
+  chips = [],
 }: KBInputAreaProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputFocused, setInputFocused] = useState(false);
   const hasText = input.trim().length > 0;
-  const chips = lang === 'ar' ? QUICK_CHIPS_AR : QUICK_CHIPS_EN;
   const isRTL = lang === 'ar';
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
