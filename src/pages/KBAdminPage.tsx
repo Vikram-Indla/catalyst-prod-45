@@ -253,20 +253,25 @@ function HealthTab() {
       const total = qaCount || 0;
       setIngestProgress({ done: 0, total });
 
-      // Process in batches
-      for (let i = 0; i < 30; i++) {
+      // Process in pages of training questions (not by newly ingested chunks)
+      let offset = 0;
+      let processed = 0;
+      for (let i = 0; i < 100; i++) {
         const res = await supabase.functions.invoke('kb-ingest', {
-          body: { action: 'ingest_training', batch_size: 100 },
+          body: { action: 'ingest_training', batch_size: 100, offset },
         });
 
         if (res.error) throw new Error(res.error.message);
         const ingested = res.data?.ingested || 0;
-        if (ingested === 0) break;
+        const batchProcessed = res.data?.batch_processed || 0;
 
         totalIngested += ingested;
-        setIngestProgress({ done: Math.min(totalIngested, total), total });
+        processed += batchProcessed;
+        offset += batchProcessed;
+        setIngestProgress({ done: Math.min(processed, total), total });
 
-        await new Promise(r => setTimeout(r, 500));
+        if (batchProcessed === 0 || (res.data?.remaining ?? 0) === 0) break;
+        await new Promise(r => setTimeout(r, 350));
       }
 
       toast.success(`RAG index built — ${totalIngested} chunks ingested!`);

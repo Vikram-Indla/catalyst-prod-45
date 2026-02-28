@@ -84,18 +84,34 @@ serve(async (req) => {
 
     // ─── Action: ingest_training — Convert training Q&A into RAG chunks ───
     if (action === "ingest_training") {
-      // Get training questions that have answers but haven't been ingested as RAG chunks yet
+      const offset = Math.max(0, Number(body.offset || 0));
+
+      const { count: totalCandidates } = await supabase
+        .from("kb_training_questions")
+        .select("id", { count: "exact", head: true })
+        .not("expected_answer", "is", null)
+        .neq("expected_answer", "");
+
+      // Paginate deterministically so we don't keep re-processing the first page forever
       const { data: questions, error: fetchErr } = await supabase
         .from("kb_training_questions")
         .select("id, question, category, expected_answer, question_number")
         .not("expected_answer", "is", null)
+        .neq("expected_answer", "")
         .order("question_number", { ascending: true })
-        .limit(batchSize);
+        .range(offset, offset + batchSize - 1);
 
       if (fetchErr) throw fetchErr;
       if (!questions || questions.length === 0) {
         return new Response(
-          JSON.stringify({ message: "No questions to ingest", ingested: 0, skipped: 0 }),
+          JSON.stringify({
+            message: "No questions to ingest",
+            ingested: 0,
+            skipped: 0,
+            batch_processed: 0,
+            remaining: 0,
+            total_candidates: totalCandidates || 0,
+          }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
@@ -143,9 +159,9 @@ serve(async (req) => {
           const rows = newChunks.map((c, idx) => ({
             content: c.content,
             content_hash: c.hash,
-            source_type: "training_qa",
+            source_type: "internal",
             source_url: `training://${c.category}/${c.qId}`,
-            metadata: { category: c.category, question_id: c.qId },
+            metadata: { category: c.category, question_id: c.qId, ingest_type: "training_qa" },
             embedding: embeddings[idx],
             chunk_index: c.chunkIdx,
             language: "en",
@@ -167,11 +183,18 @@ serve(async (req) => {
         }
       }
 
+      const batchProcessed = questions.length;
+      const remaining = Math.max(0, (totalCandidates || 0) - (offset + batchProcessed));
+
       return new Response(
         JSON.stringify({
-          message: `Ingested ${ingested} chunks, skipped ${skipped} duplicates`,
+          message: `Processed ${batchProcessed} questions: ingested ${ingested} chunks, skipped ${skipped}`,
           ingested,
           skipped,
+          batch_processed: batchProcessed,
+          remaining,
+          total_candidates: totalCandidates || 0,
+          next_offset: offset + batchProcessed,
           errors: errors.length > 0 ? errors : undefined,
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
