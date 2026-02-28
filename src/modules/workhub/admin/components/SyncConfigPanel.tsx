@@ -16,6 +16,7 @@ const LOOKBACK_OPTIONS = [
   { value: 4, label: '4 months' },
   { value: 5, label: '5 months' },
   { value: 6, label: '6 months' },
+  { value: 0, label: 'Lifetime' },
 ];
 
 /** Jira status categories — from Jira API statusCategory.name */
@@ -36,9 +37,12 @@ export interface ProjectSyncConfig {
 /** Sync progress phases per project */
 interface SyncProjectProgress {
   key: string;
+  name: string;
   status: 'pending' | 'syncing' | 'done' | 'error';
   startedAt?: number;
   durationMs?: number;
+  issuesFetched?: number;
+  errorMessage?: string;
 }
 
 export function SyncConfigPanel() {
@@ -60,7 +64,7 @@ export function SyncConfigPanel() {
   // Progress tracking
   const [syncProgress, setSyncProgress] = useState<SyncProjectProgress[]>([]);
   const [syncOverallPhase, setSyncOverallPhase] = useState<'idle' | 'syncing' | 'done' | 'error'>('idle');
-  const progressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
 
   // Track whether we've loaded the initial config from DB
   const initialLoadDone = useRef(false);
@@ -171,54 +175,68 @@ export function SyncConfigPanel() {
     }
 
     const projectList = selectedProjects;
-    const initialProgress: SyncProjectProgress[] = projectList.map(key => ({ key, status: 'pending' }));
+    const initialProgress: SyncProjectProgress[] = projectList.map(key => ({
+      key,
+      name: availableProjects.find(p => p.key === key)?.name || key,
+      status: 'pending',
+    }));
     setSyncProgress(initialProgress);
     setSyncOverallPhase('syncing');
 
-    let currentIndex = 0;
-    progressTimerRef.current = setInterval(() => {
-      setSyncProgress(prev => {
-        const next = [...prev];
-        if (currentIndex > 0 && next[currentIndex - 1]?.status === 'syncing') {
-          next[currentIndex - 1] = {
-            ...next[currentIndex - 1], status: 'done',
-            durationMs: Date.now() - (next[currentIndex - 1].startedAt ?? Date.now()),
-          };
-        }
-        if (currentIndex < next.length) {
-          next[currentIndex] = { ...next[currentIndex], status: 'syncing', startedAt: Date.now() };
-          currentIndex++;
-        }
-        return next;
-      });
-      if (currentIndex >= projectList.length + 1) {
-        if (progressTimerRef.current) clearInterval(progressTimerRef.current);
-      }
-    }, 800);
-
     try {
+      // Save settings first
       await saveFilters.mutateAsync({
         sync_projects: selectedProjects,
         sync_project_config: projectConfigs,
       });
       setHasChanges(false);
 
-      await forceSync.mutateAsync({
-        sync_type: 'full',
-        projects: selectedProjects,
-        project_configs: projectConfigs,
-      });
+      // Sync projects one-by-one for real progress tracking
+      for (let i = 0; i < projectList.length; i++) {
+        const pk = projectList[i];
+        const startTime = Date.now();
 
-      if (progressTimerRef.current) clearInterval(progressTimerRef.current);
-      setSyncProgress(prev => prev.map(p => ({
-        ...p,
-        status: p.status === 'pending' ? 'done' : p.status === 'syncing' ? 'done' : p.status,
-        durationMs: p.durationMs ?? (Date.now() - (p.startedAt ?? Date.now())),
-      })));
-      setSyncOverallPhase('done');
-      toast.success('Sync completed successfully');
+        // Mark current project as syncing
+        setSyncProgress(prev => prev.map((p, idx) =>
+          idx === i ? { ...p, status: 'syncing', startedAt: startTime } : p
+        ));
+
+        try {
+          const result = await forceSync.mutateAsync({
+            sync_type: 'full',
+            projects: [pk],
+            project_configs: { [pk]: projectConfigs[pk] },
+          });
+
+          setSyncProgress(prev => prev.map((p, idx) =>
+            idx === i ? {
+              ...p,
+              status: 'done',
+              durationMs: Date.now() - startTime,
+              issuesFetched: result?.issues_fetched ?? result?.summary?.issues_fetched ?? 0,
+            } : p
+          ));
+        } catch (err: any) {
+          setSyncProgress(prev => prev.map((p, idx) =>
+            idx === i ? {
+              ...p,
+              status: 'error',
+              durationMs: Date.now() - startTime,
+              errorMessage: err?.message || 'Failed',
+            } : p
+          ));
+        }
+      }
+
+      // Check final state from progress
+      setSyncProgress(prev => {
+        const hasErrors = prev.some(p => p.status === 'error');
+        setSyncOverallPhase(hasErrors ? 'error' : 'done');
+        if (!hasErrors) toast.success('Sync completed successfully');
+        else toast.error('Some projects failed to sync');
+        return prev;
+      });
     } catch (err: any) {
-      if (progressTimerRef.current) clearInterval(progressTimerRef.current);
       setSyncProgress(prev => prev.map(p => ({
         ...p,
         status: p.status === 'syncing' || p.status === 'pending' ? 'error' : p.status,
@@ -228,9 +246,6 @@ export function SyncConfigPanel() {
     }
   };
 
-  useEffect(() => {
-    return () => { if (progressTimerRef.current) clearInterval(progressTimerRef.current); };
-  }, []);
 
   const isLoading = projectsLoading || configLoading;
   const isSyncing = forceSync.isPending || syncOverallPhase === 'syncing';
@@ -239,7 +254,7 @@ export function SyncConfigPanel() {
   /** Summary badge for a project config */
   const configSummary = (config: ProjectSyncConfig) => {
     const parts: string[] = [];
-    parts.push(`${config.lookback_months}mo`);
+    parts.push(config.lookback_months === 0 ? 'Lifetime' : `${config.lookback_months}mo`);
     parts.push(config.status_categories.length === 0 ? 'All categories' : `${config.status_categories.length} cat.`);
     parts.push(config.issue_types.length === 0 ? 'All types' : `${config.issue_types.length} types`);
     parts.push(config.fix_versions.length === 0 ? 'All releases' : `${config.fix_versions.length} rel.`);
@@ -500,8 +515,10 @@ function SyncProgressPanel({
   phase: 'idle' | 'syncing' | 'done' | 'error';
 }) {
   const completedCount = projects.filter(p => p.status === 'done').length;
+  const errorCount = projects.filter(p => p.status === 'error').length;
   const totalCount = projects.length;
-  const progressPct = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+  const progressPct = totalCount > 0 ? ((completedCount + errorCount) / totalCount) * 100 : 0;
+  const currentProject = projects.find(p => p.status === 'syncing');
 
   return (
     <div style={{
@@ -514,24 +531,27 @@ function SyncProgressPanel({
           {phase === 'done' && <CheckCircle2 size={14} style={{ color: '#10B981' }} />}
           {phase === 'error' && <AlertCircle size={14} style={{ color: '#EF4444' }} />}
           <span style={{ fontFamily: 'var(--wh-fh)', fontSize: 13, fontWeight: 600, color: 'var(--wh-tx)' }}>
-            {phase === 'syncing' ? 'Syncing in progress...' : phase === 'done' ? 'Sync complete' : 'Sync failed'}
+            {phase === 'syncing' && currentProject
+              ? `Syncing ${currentProject.name}...`
+              : phase === 'done' ? 'Sync complete' : phase === 'error' ? 'Sync completed with errors' : 'Syncing...'}
           </span>
         </div>
         <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)' }}>
-          {completedCount} / {totalCount} projects
+          {completedCount + errorCount} / {totalCount} projects · {Math.round(progressPct)}%
         </span>
       </div>
-      <div style={{ height: 6, borderRadius: 3, background: '#E2E8F0', overflow: 'hidden', marginBottom: 12 }}>
+      {/* Overall progress bar */}
+      <div style={{ height: 8, borderRadius: 4, background: '#E2E8F0', overflow: 'hidden', marginBottom: 14 }}>
         <div style={{
-          height: '100%', borderRadius: 3, transition: 'width 0.4s ease',
+          height: '100%', borderRadius: 4, transition: 'width 0.5s ease',
           width: `${progressPct}%`,
-          background: phase === 'error' ? '#EF4444' : phase === 'done' ? '#10B981' : '#2563EB',
+          background: errorCount > 0 && phase !== 'syncing' ? '#EF4444' : phase === 'done' ? '#10B981' : '#2563EB',
         }} />
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {projects.map(p => (
           <div key={p.key} style={{
-            display: 'flex', alignItems: 'center', gap: 10, padding: '5px 8px', borderRadius: 4,
+            display: 'flex', alignItems: 'center', gap: 10, padding: '6px 10px', borderRadius: 6,
             background: p.status === 'syncing' ? '#EFF6FF' : p.status === 'done' ? '#F0FDF4' : p.status === 'error' ? '#FEF2F2' : 'transparent',
             transition: 'background 0.2s',
           }}>
@@ -542,22 +562,27 @@ function SyncProgressPanel({
               {p.status === 'error' && <AlertCircle size={12} style={{ color: '#EF4444' }} />}
             </div>
             <span style={{
-              fontFamily: 'var(--wh-mo)', fontSize: 11, fontWeight: 600,
+              fontFamily: 'var(--wh-mo)', fontSize: 11, fontWeight: 700,
               color: p.status === 'syncing' ? '#2563EB' : p.status === 'done' ? '#059669' : p.status === 'error' ? '#DC2626' : 'var(--wh-tx3)',
               minWidth: 50,
             }}>
               {p.key}
             </span>
-            <div style={{ flex: 1, height: 3, borderRadius: 2, background: '#E2E8F0', overflow: 'hidden' }}>
+            <span style={{ fontSize: 11, color: 'var(--wh-tx3)', fontFamily: 'var(--wh-fn)', flex: 1 }}>
+              {p.name !== p.key ? p.name : ''}
+            </span>
+            <div style={{ flex: 1, maxWidth: 120, height: 4, borderRadius: 2, background: '#E2E8F0', overflow: 'hidden' }}>
               <div style={{
                 height: '100%', borderRadius: 2, transition: 'width 0.4s ease',
-                width: p.status === 'done' || p.status === 'error' ? '100%' : p.status === 'syncing' ? '60%' : '0%',
+                width: p.status === 'done' || p.status === 'error' ? '100%' : p.status === 'syncing' ? '50%' : '0%',
                 background: p.status === 'done' ? '#10B981' : p.status === 'syncing' ? '#2563EB' : p.status === 'error' ? '#EF4444' : '#CBD5E1',
               }} />
             </div>
-            <span style={{ fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', minWidth: 40, textAlign: 'right' as const }}>
-              {p.status === 'done' && p.durationMs != null ? `${(p.durationMs / 1000).toFixed(1)}s` : ''}
+            <span style={{ fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--wh-mo)', minWidth: 70, textAlign: 'right' as const }}>
+              {p.status === 'done' && p.issuesFetched != null ? `${p.issuesFetched} issues` : ''}
+              {p.status === 'done' && p.durationMs != null ? ` · ${(p.durationMs / 1000).toFixed(1)}s` : ''}
               {p.status === 'syncing' ? 'syncing...' : ''}
+              {p.status === 'error' ? 'failed' : ''}
             </span>
           </div>
         ))}
