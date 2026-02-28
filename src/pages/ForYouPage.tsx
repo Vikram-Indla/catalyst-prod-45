@@ -1,5 +1,6 @@
 /**
- * For You Page - Personalized work items with AI Assistant
+ * For You Page - MARAM V3.1 · Enterprise landing page
+ * Ring-fenced: all classes use fy- prefix
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -7,7 +8,10 @@ import { MessageSquare, AlertCircle, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useForYouData } from '@/hooks/useForYouData';
-import { ForYouHeader, ForYouSubTabs, ForYouToolbar, ForYouTable, ForYouTableSkeleton, ForYouPagination } from '@/components/for-you';
+import {
+  ForYouHeader, ForYouSubTabs, ForYouToolbar, ForYouTable,
+  ForYouTableSkeleton, ForYouPagination, ForYouStatsBar, ForYouDetailPanel,
+} from '@/components/for-you';
 import { ForYouInlineFilters, type ForYouFilters } from '@/components/for-you/ForYouInlineFilters';
 import { BulkActionsBar } from '@/components/business-requests/table-view/BulkActionsBar';
 import { CatalystAIPanel } from '@/components/catalyst-ai';
@@ -16,25 +20,14 @@ import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData } from '
 
 export default function ForYouPage() {
   const {
-    activeTab,
-    setActiveTab,
-    searchQuery,
-    setSearchQuery,
-    isAIPanelOpen,
-    setIsAIPanelOpen,
-    user,
-    groupedItems,
-    tabCounts,
-    aiData,
-    performanceStats,
-    isLoading,
-    workItems,
-    handleRowClick,
-    handleStartTask,
-    generateStatusUpdate,
-    generateImpactReport,
-    showDeprioritize,
-    toggleStar,
+    activeTab, setActiveTab,
+    searchQuery, setSearchQuery,
+    isAIPanelOpen, setIsAIPanelOpen,
+    user, groupedItems, tabCounts, hubStats,
+    aiData, performanceStats, isLoading, workItems,
+    selectedItem, handleRowClick, closeDetailPanel,
+    handleStartTask, generateStatusUpdate, generateImpactReport,
+    showDeprioritize, toggleStar,
   } = useForYouData();
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -50,30 +43,25 @@ export default function ForYouPage() {
     }
   }, [isLoading]);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [activeTab, searchQuery, inlineFilters]);
+  useEffect(() => { setCurrentPage(1); }, [activeTab, searchQuery, inlineFilters]);
 
   const totalItems = workItems.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
 
-  // Derive unique filter options from workItems
   const projectOptions = React.useMemo(() => [...new Set(workItems.map(i => i.project).filter(Boolean))].sort(), [workItems]);
-  const hubOptions = React.useMemo(() => [...new Set(workItems.map(i => i.hub).filter(Boolean))].sort(), [workItems]);
+  const hubOptions = React.useMemo(() => [...new Set(workItems.map(i => i.hubLabel).filter(Boolean))].sort(), [workItems]);
   const reportedByOptions = React.useMemo(() => [...new Set(workItems.map(i => i.reporter || i.assignee.name).filter(Boolean))].sort(), [workItems]);
 
-  // Apply inline filters to groupedItems
   const filteredGroupedItems = React.useMemo(() => {
     const filterItem = (item: typeof workItems[0]) => {
       if (inlineFilters.project && item.project !== inlineFilters.project) return false;
-      if (inlineFilters.hub && item.hub !== inlineFilters.hub) return false;
+      if (inlineFilters.hub && item.hubLabel !== inlineFilters.hub) return false;
       if (inlineFilters.reportedBy) {
         const reporter = item.reporter || item.assignee.name;
         if (reporter !== inlineFilters.reportedBy) return false;
       }
       return true;
     };
-
     return {
       YESTERDAY: groupedItems.YESTERDAY.filter(filterItem),
       THIS_WEEK: groupedItems.THIS_WEEK.filter(filterItem),
@@ -90,7 +78,6 @@ export default function ForYouPage() {
 
   const handleKeyClick = useCallback((key: string, type: string) => {
     setIsAIPanelOpen(false);
-    const prefix = key.split('-')[0];
     switch (type) {
       case 'incident': navigate(`/release/incidents?selected=${key}`); break;
       case 'feature': navigate(`/program/features?selected=${key}`); break;
@@ -126,57 +113,60 @@ export default function ForYouPage() {
   ];
 
   return (
-    <div className="flex min-h-screen bg-surface-0">
-      <main className={cn("flex-1 px-8 lg:px-12 py-8 transition-[margin] duration-300", isAIPanelOpen && "mr-[360px]")}>
+    <div className="fy-page" style={{ fontFamily: "'Inter', system-ui", minHeight: '100vh' }}>
+      <main style={{ maxWidth: 1440, margin: '0 auto', padding: '24px 24px 48px' }}>
         <ForYouHeader />
 
-        <section className="bg-surface-0">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-[14px] font-semibold text-[hsl(222,47%,11%)]">Your work</h2>
-          </div>
+        {/* Tabs */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+          <ForYouSubTabs activeTab={activeTab} counts={tabCounts} onTabChange={setActiveTab} />
+        </div>
 
-          {/* Controls Row */}
-          <div className="flex items-center gap-4 mb-4">
-            <ForYouSubTabs activeTab={activeTab} counts={tabCounts} onTabChange={setActiveTab} />
-            <ForYouToolbar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-          </div>
+        {/* Stats Bar */}
+        <ForYouStatsBar
+          hubCounts={hubStats.hubCounts}
+          projectCount={hubStats.projectCount}
+          reporterCount={hubStats.reporterCount}
+        />
 
-          {/* Inline Filters */}
-          <div className="mb-3">
-            <ForYouInlineFilters
-              filters={inlineFilters}
-              onFiltersChange={setInlineFilters}
-              projectOptions={projectOptions}
-              hubOptions={hubOptions}
-              reportedByOptions={reportedByOptions}
+        {/* Search + Filters */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+          <ForYouToolbar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+          <ForYouInlineFilters
+            filters={inlineFilters}
+            onFiltersChange={setInlineFilters}
+            projectOptions={projectOptions}
+            hubOptions={hubOptions}
+            reportedByOptions={reportedByOptions}
+          />
+        </div>
+
+        {/* Table */}
+        {isLoading ? (
+          <ForYouTableSkeleton rowCount={5} />
+        ) : (
+          <>
+            <ForYouTable
+              groupedItems={filteredGroupedItems}
+              onRowClick={handleRowClick}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
+              onStarToggle={toggleStar}
+              isInitialLoad={isInitialLoad}
             />
-          </div>
-
-          {isLoading ? (
-            <ForYouTableSkeleton rowCount={5} />
-          ) : (
-            <>
-              <ForYouTable
-                groupedItems={filteredGroupedItems}
-                onRowClick={handleRowClick}
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
-                onStarToggle={toggleStar}
-                isInitialLoad={isInitialLoad}
-              />
-              <ForYouPagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                totalItems={totalItems}
-                pageSize={pageSize}
-                onPageChange={setCurrentPage}
-                onPageSizeChange={setPageSize}
-              />
-            </>
-          )}
-        </section>
+            <ForYouPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              pageSize={pageSize}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={setPageSize}
+            />
+          </>
+        )}
       </main>
 
+      {/* Bulk Actions */}
       <BulkActionsBar
         selectedCount={selectedIds.size}
         onClear={handleClearSelection}
@@ -185,6 +175,12 @@ export default function ForYouPage() {
         onDelete={handleBulkDelete}
       />
 
+      {/* Detail Panel */}
+      {selectedItem && (
+        <ForYouDetailPanel item={selectedItem} onClose={closeDetailPanel} />
+      )}
+
+      {/* AI Panel */}
       <CatalystAIPanel
         isOpen={isAIPanelOpen}
         onClose={() => setIsAIPanelOpen(false)}
