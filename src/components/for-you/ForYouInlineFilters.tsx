@@ -29,6 +29,14 @@ const HUB_DOT_COLORS: Record<string, string> = {
   Plan: '#6366F1',
 };
 
+// Deterministic avatar color from name — matches platform guardrail palette
+const AVATAR_PALETTE = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", "#6b8b7a"];
+function getAvatarColor(name: string) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length];
+}
+
 export interface ForYouFilters {
   project: string | null;
   hub: string | null;
@@ -49,9 +57,10 @@ interface FilterDropdownProps {
   options: string[];
   onChange: (value: string | null) => void;
   variant?: 'default' | 'hub' | 'reporter';
+  alignRight?: boolean;
 }
 
-function FilterDropdown({ label, value, options, onChange, variant = 'default' }: FilterDropdownProps) {
+function FilterDropdown({ label, value, options, onChange, variant = 'default', alignRight = false }: FilterDropdownProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const ref = useRef<HTMLDivElement>(null);
@@ -71,13 +80,9 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default' }
   const filtered = options.filter(o => o.toLowerCase().includes(search.toLowerCase()));
 
   const getInitials = (name: string) => name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-  const getAvatarColor = (name: string) => {
-    const ini = getInitials(name);
-    return ['#2563EB', '#0D9488', '#D97706', '#DC2626', '#7C3AED'][ini.charCodeAt(0) % 5];
-  };
 
   return (
-    <div ref={ref} className="fy-dropdown" style={{ position: 'relative' }}>
+    <div ref={ref} style={{ position: 'relative' }}>
       <button
         onClick={() => setOpen(v => !v)}
         style={{
@@ -104,9 +109,10 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default' }
 
       {open && (
         <div
-          className="fy-dropdown-panel"
           style={{
-            position: 'absolute', top: 'calc(100% + 6px)', left: 0,
+            position: 'absolute',
+            top: 'calc(100% + 6px)',
+            ...(alignRight ? { right: 0, left: 'auto' } : { left: 0 }),
             minWidth: 240, maxHeight: 300, overflowY: 'auto',
             background: T.surface, border: `1px solid ${T.border}`,
             borderRadius: 8, boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
@@ -138,7 +144,6 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default' }
           {/* All option */}
           <button
             onClick={() => { onChange(null); setOpen(false); setSearch(''); }}
-            className="fy-dropdown-option"
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               width: '100%', textAlign: 'left', padding: '7px 10px',
@@ -162,7 +167,6 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default' }
               <button
                 key={option}
                 onClick={() => { onChange(option); setOpen(false); setSearch(''); }}
-                className="fy-dropdown-option"
                 style={{
                   display: 'flex', alignItems: 'center', gap: 8, width: '100%',
                   textAlign: 'left', padding: '7px 10px', borderRadius: 6,
@@ -212,7 +216,7 @@ export function ForYouInlineFilters({ filters, onFiltersChange, projectOptions, 
   const activeCount = [filters.project, filters.hub, filters.reportedBy].filter(Boolean).length;
 
   return (
-    <div className="fy-controls" style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+    <div className="fy-controls" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, position: 'relative' }}>
       {/* Filter icon label */}
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.04em', userSelect: 'none' }}>
         <Filter size={12} style={{ opacity: 0.6 }} />
@@ -245,6 +249,7 @@ export function ForYouInlineFilters({ filters, onFiltersChange, projectOptions, 
         options={reportedByOptions}
         onChange={v => onFiltersChange({ ...filters, reportedBy: v })}
         variant="reporter"
+        alignRight
       />
 
       {/* Clear all — danger-text color */}
