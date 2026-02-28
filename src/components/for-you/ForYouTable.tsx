@@ -5,7 +5,6 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Star } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
@@ -27,6 +26,10 @@ const GROUP_LABELS: Record<WorkGroup, string> = {
   EARLIER: 'Earlier',
 };
 
+const PRIORITY_LABELS: Record<number, string> = {
+  1: 'Lowest', 2: 'Low', 3: 'Medium', 4: 'High',
+};
+
 // Design tokens
 const T = {
   ink: '#09090B', inkSecondary: '#18181B', inkTertiary: '#3F3F46',
@@ -41,23 +44,19 @@ const T = {
   primaryBg: '#EFF6FF',
 };
 
-
+// Stronger hub colors — each hub has a DISTINCT color
 const HUB_CFG: Record<string, { bg: string; color: string; border: string }> = {
-  Project:  { bg: T.primaryBg, color: T.primary, border: T.primary },
-  Product:  { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
-  Task:     { bg: T.surfaceTertiary, color: '#6F6F78', border: '#D4D4D8' },
-  Incident: { bg: T.dangerBg, color: T.dangerText, border: T.danger },
+  Project:  { bg: '#EFF6FF', color: '#1D4ED8', border: '#2563EB' },
+  Product:  { bg: '#F5F3FF', color: '#6D28D9', border: '#7C3AED' },
+  Task:     { bg: '#FFF7ED', color: '#C2410C', border: '#EA580C' },
+  Incident: { bg: '#FEF2F2', color: '#B91C1C', border: '#DC2626' },
   Release:  { bg: T.successBg, color: T.successText, border: T.success },
   Test:     { bg: T.surfaceTertiary, color: T.inkTertiary, border: T.inkTertiary },
 };
 
 export function ForYouTable({ 
-  groupedItems, 
-  onRowClick,
-  selectedIds = new Set(),
-  onSelectionChange,
-  onStarToggle,
-  isInitialLoad = false,
+  groupedItems, onRowClick, selectedIds = new Set(),
+  onSelectionChange, onStarToggle, isInitialLoad = false,
 }: ForYouTableProps) {
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   const tableRef = useRef<HTMLDivElement>(null);
@@ -114,7 +113,6 @@ export function ForYouTable({
 
   let rowIndex = -1;
 
-  // Table header style
   const thStyle: React.CSSProperties = {
     height: 32, padding: '0 12px',
     background: T.surfaceSecondary, borderBottom: `1px solid ${T.border}`,
@@ -135,30 +133,40 @@ export function ForYouTable({
             <th style={{ ...thStyle, width: 32 }} />
             <th style={{ ...thStyle, width: 140 }}>Key</th>
             <th style={thStyle}>Summary</th>
-            <th style={{ ...thStyle, width: 160, textAlign: 'center' }}>Status</th>
-            <th style={{ ...thStyle, width: 140 }}>Project</th>
+            <th style={{ ...thStyle, width: 150, textAlign: 'center' }}>Status</th>
+            <th style={{ ...thStyle, width: 180 }}>Project</th>
             <th style={{ ...thStyle, width: 95 }}>Hub</th>
-            <th style={{ ...thStyle, width: 80 }}>Priority</th>
-            <th style={{ ...thStyle, width: 110 }}>Updated</th>
-            <th style={{ ...thStyle, width: 180 }}>Reported by</th>
+            <th style={{ ...thStyle, width: 75 }}>Priority</th>
+            <th style={{ ...thStyle, width: 100 }}>Updated</th>
+            <th style={{ ...thStyle, width: 170 }}>Reported by</th>
           </tr>
         </thead>
         <tbody>
           {groups.map(group => (
             <React.Fragment key={group}>
-              {/* Group row */}
+              {/* Group header — bolder */}
               <tr>
-                <td colSpan={10} style={{ height: 28, padding: '0 12px', background: T.surfaceTertiary, borderBottom: `1px solid ${T.border}`, fontSize: 11, fontWeight: 700, color: T.inkTertiary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <td colSpan={10} style={{
+                  height: 32, padding: '0 12px',
+                  background: '#F0F0F5',
+                  borderBottom: `1px solid ${T.border}`,
+                  borderTop: `1px solid ${T.border}`,
+                  fontSize: 11, fontWeight: 700, color: '#18181B',
+                  textTransform: 'uppercase', letterSpacing: '0.08em',
+                }}>
                   {GROUP_LABELS[group]}
                 </td>
               </tr>
 
-              {groupedItems[group].map((item) => {
+              {groupedItems[group].map((item, idx) => {
                 rowIndex++;
                 const currentRowIndex = rowIndex;
                 const isSelected = selectedIds.has(item.id);
                 const isFocused = focusedIndex === currentRowIndex;
                 const hubCfg = HUB_CFG[item.hubLabel] || HUB_CFG.Task;
+                const priorityLabel = PRIORITY_LABELS[item.priorityLevel] || `Priority ${item.priorityLevel}`;
+                // Zebra striping
+                const zebraBg = idx % 2 === 0 ? '#FFFFFF' : '#FAFAFA';
 
                 return (
                   <tr
@@ -166,11 +174,11 @@ export function ForYouTable({
                     onClick={() => { setFocusedIndex(currentRowIndex); onRowClick(item.id); }}
                     style={{
                       height: 40, borderBottom: `1px solid ${T.border}`, cursor: 'pointer',
-                      background: isSelected ? '#EFF6FF' : isFocused ? T.surfaceSecondary : 'transparent',
+                      background: isSelected ? '#EFF6FF' : isFocused ? T.surfaceSecondary : zebraBg,
                       transition: 'background .1s',
                     }}
                     onMouseEnter={e => { if (!isSelected && !isFocused) e.currentTarget.style.background = T.surfaceSecondary; }}
-                    onMouseLeave={e => { if (!isSelected && !isFocused) e.currentTarget.style.background = 'transparent'; }}
+                    onMouseLeave={e => { if (!isSelected && !isFocused) e.currentTarget.style.background = zebraBg; }}
                   >
                     {/* Checkbox */}
                     <td style={{ padding: '0 12px', width: 36 }}>
@@ -202,24 +210,24 @@ export function ForYouTable({
                     </td>
 
                     {/* Status */}
-                    <td style={{ padding: '0 8px', width: 160, textAlign: 'center' }}>
+                    <td style={{ padding: '0 8px', width: 150, textAlign: 'center' }}>
                       <StatusLozenge status={item.status} />
                     </td>
 
-                    {/* Project */}
-                    <td style={{ padding: '0 12px', fontSize: 13, fontWeight: 500, color: T.inkSecondary, width: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {item.project}
+                    {/* Project — wider, with title tooltip */}
+                    <td style={{ padding: '0 12px', fontSize: 13, fontWeight: 500, color: T.inkSecondary, width: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span title={item.project}>{item.project}</span>
                     </td>
 
-                    {/* Hub */}
+                    {/* Hub — distinct colors */}
                     <td style={{ padding: '0 12px', width: 95 }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', height: 22, padding: '0 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, letterSpacing: '0.02em', background: hubCfg.bg, color: hubCfg.color, borderLeft: `3px solid ${hubCfg.border}` }}>
                         {item.hubLabel}
                       </span>
                     </td>
 
-                    {/* Priority */}
-                    <td style={{ padding: '0 12px', width: 80 }}>
+                    {/* Priority — with tooltip */}
+                    <td style={{ padding: '0 12px', width: 75 }} title={priorityLabel}>
                       <div style={{ display: 'flex', gap: 2 }}>
                         {[1,2,3,4].map(i => (
                           <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: i <= item.priorityLevel ? T.inkMuted : T.border }} />
@@ -228,12 +236,12 @@ export function ForYouTable({
                     </td>
 
                     {/* Updated */}
-                    <td style={{ padding: '0 12px', fontSize: 12, fontWeight: 500, color: T.inkTertiary, width: 110 }}>
+                    <td style={{ padding: '0 12px', fontSize: 12, fontWeight: 500, color: T.inkTertiary, width: 100 }}>
                       {item.updatedAt}
                     </td>
 
                     {/* Reported by */}
-                    <td style={{ padding: '0 12px', width: 180 }}>
+                    <td style={{ padding: '0 12px', width: 170 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         {(() => {
                           const reporterName = item.reporter || item.assignee.name;

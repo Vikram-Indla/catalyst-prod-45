@@ -4,9 +4,8 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Filter, X, ChevronDown, Search, Check } from 'lucide-react';
+import { X, ChevronDown, Search, Check } from 'lucide-react';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
-import { cn } from '@/lib/utils';
 
 // Design tokens
 const T = {
@@ -20,8 +19,8 @@ const T = {
 
 const HUB_DOT_COLORS: Record<string, string> = {
   Project: '#2563EB',
-  Product: '#3F3F46',
-  Task: '#D4D4D8',
+  Product: '#7C3AED',
+  Task: '#EA580C',
   Incident: '#DC2626',
   Release: '#16A34A',
   Test: '#3F3F46',
@@ -29,7 +28,6 @@ const HUB_DOT_COLORS: Record<string, string> = {
   Plan: '#6366F1',
 };
 
-// Deterministic avatar color from name — matches platform guardrail palette
 const AVATAR_PALETTE = ["#6b7a8d", "#7a8b6b", "#8b7a6b", "#6b6b8b", "#6b8b8b", "#8b6b7a", "#7a6b8b", "#6b8b7a"];
 function getAvatarColor(name: string) {
   let hash = 0;
@@ -78,53 +76,63 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
   }, [open]);
 
   const filtered = options.filter(o => o.toLowerCase().includes(search.toLowerCase()));
-
   const getInitials = (name: string) => name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
+    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
+      {/* Trigger chip */}
       <button
         onClick={() => setOpen(v => !v)}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
-          padding: '5px 12px', borderRadius: 6, fontSize: 12, fontWeight: 500,
+          height: 34, padding: '0 14px', borderRadius: 8,
+          fontSize: 13, fontWeight: value ? 600 : 500,
           transition: 'all 0.15s',
           border: `1px solid ${value ? T.primary : T.border}`,
           background: value ? T.primaryBg : T.surface,
-          color: value ? T.primary : T.inkTertiary,
+          color: value ? T.primary : T.inkSecondary,
           cursor: 'pointer',
         }}
       >
         {value || label}
         {value ? (
-          <X
-            size={12}
-            style={{ opacity: 0.8, cursor: 'pointer' }}
+          <span
             onClick={(e) => { e.stopPropagation(); onChange(null); }}
-          />
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              width: 16, height: 16, borderRadius: '50%',
+              backgroundColor: 'rgba(37,99,235,0.15)', border: 'none',
+              cursor: 'pointer', color: T.primary, fontSize: 10, fontWeight: 700,
+              marginLeft: 2,
+            }}
+          >
+            ✕
+          </span>
         ) : (
-          <ChevronDown size={11} style={{ opacity: 0.5 }} />
+          <ChevronDown size={12} style={{ opacity: 0.5 }} />
         )}
       </button>
 
+      {/* Dropdown panel — ABSOLUTE positioned, floats over content */}
       {open && (
         <div
           style={{
             position: 'absolute',
-            top: 'calc(100% + 6px)',
+            top: 'calc(100% + 8px)',
             ...(alignRight ? { right: 0, left: 'auto' } : { left: 0 }),
-            minWidth: 240, maxHeight: 300, overflowY: 'auto',
+            minWidth: 260, maxHeight: 340, overflowY: 'auto',
             background: T.surface, border: `1px solid ${T.border}`,
-            borderRadius: 8, boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
-            zIndex: 50, padding: 4,
+            borderRadius: 10,
+            boxShadow: '0 12px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)',
+            zIndex: 50, padding: 6,
             animation: 'fy-dropIn 0.15s ease',
           }}
         >
           {/* Search */}
-          <div style={{ padding: '4px 4px 2px' }}>
+          <div style={{ padding: '8px 8px 10px', borderBottom: `1px solid ${T.border}`, marginBottom: 4 }}>
             <div style={{
-              display: 'flex', alignItems: 'center', gap: 6, height: 30,
-              padding: '0 8px', background: T.surfaceTertiary, borderRadius: 6,
+              display: 'flex', alignItems: 'center', gap: 8, height: 36,
+              padding: '0 12px', background: T.surfaceTertiary, borderRadius: 8,
             }}>
               <Search size={14} style={{ color: T.inkMuted, flexShrink: 0 }} />
               <input
@@ -135,7 +143,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
                 autoFocus
                 style={{
                   flex: 1, border: 'none', background: 'transparent', outline: 'none',
-                  fontSize: 12, color: T.ink,
+                  fontSize: 13, color: T.ink, fontFamily: "'Inter', system-ui",
                 }}
               />
             </div>
@@ -146,15 +154,15 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
             onClick={() => { onChange(null); setOpen(false); setSearch(''); }}
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              width: '100%', textAlign: 'left', padding: '7px 10px',
-              borderRadius: 6, fontSize: 12,
-              fontWeight: !value ? 600 : 400,
+              width: '100%', textAlign: 'left', padding: '10px 12px',
+              borderRadius: 8, fontSize: 13,
+              fontWeight: !value ? 600 : 500,
               color: !value ? T.primary : T.ink,
-              background: !value ? 'rgba(37,99,235,0.06)' : 'transparent',
+              background: !value ? 'rgba(37,99,235,0.08)' : 'transparent',
               border: 'none', cursor: 'pointer',
-              transition: 'background 0.1s',
+              transition: 'background 0.1s', lineHeight: '1.4',
             }}
-            onMouseEnter={e => { if (value) e.currentTarget.style.background = T.surfaceSecondary; }}
+            onMouseEnter={e => { if (value) e.currentTarget.style.background = T.surfaceTertiary; }}
             onMouseLeave={e => { if (value) e.currentTarget.style.background = 'transparent'; }}
           >
             All {label}
@@ -168,31 +176,31 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
                 key={option}
                 onClick={() => { onChange(option); setOpen(false); setSearch(''); }}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-                  textAlign: 'left', padding: '7px 10px', borderRadius: 6,
-                  fontSize: 12, fontWeight: isSelected ? 600 : 400,
+                  display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+                  textAlign: 'left', padding: '10px 12px', borderRadius: 8,
+                  fontSize: 13, fontWeight: isSelected ? 600 : 500,
                   color: isSelected ? T.primary : T.ink,
-                  background: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
+                  background: isSelected ? 'rgba(37,99,235,0.08)' : 'transparent',
                   border: 'none', cursor: 'pointer',
-                  transition: 'background 0.1s',
+                  transition: 'background 0.1s', lineHeight: '1.4',
                 }}
-                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = T.surfaceSecondary; }}
-                onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.06)' : 'transparent'; }}
+                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = T.surfaceTertiary; }}
+                onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.08)' : 'transparent'; }}
               >
-                {/* Hub dot */}
+                {/* Hub dot — 8px */}
                 {variant === 'hub' && (
-                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: HUB_DOT_COLORS[option] || T.inkMuted, flexShrink: 0 }} />
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: HUB_DOT_COLORS[option] || T.inkMuted, flexShrink: 0 }} />
                 )}
 
-                {/* Reporter avatar */}
+                {/* Reporter avatar — 28px */}
                 {variant === 'reporter' && (() => {
                   const avatarUrl = nameAvatarMap.get(option.toLowerCase());
                   const ini = getInitials(option);
                   const clr = getAvatarColor(option);
                   return avatarUrl ? (
-                    <img src={avatarUrl} alt={option} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                    <img src={avatarUrl} alt={option} style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                   ) : (
-                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: clr, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: clr, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
                   );
                 })()}
 
@@ -204,7 +212,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
           })}
 
           {filtered.length === 0 && (
-            <div style={{ padding: '12px 10px', fontSize: 11, color: T.inkMuted, textAlign: 'center' }}>No matches</div>
+            <div style={{ padding: '12px 10px', fontSize: 12, color: T.inkMuted, textAlign: 'center' }}>No matches</div>
           )}
         </div>
       )}
@@ -217,18 +225,7 @@ export function ForYouInlineFilters({ filters, onFiltersChange, projectOptions, 
 
   return (
     <div className="fy-controls" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, position: 'relative' }}>
-      {/* Filter icon label */}
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.04em', userSelect: 'none' }}>
-        <Filter size={12} style={{ opacity: 0.6 }} />
-        Filters
-        {activeCount > 0 && (
-          <span style={{ minWidth: 16, height: 16, padding: '0 4px', borderRadius: 9999, background: T.primary, color: '#fff', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {activeCount}
-          </span>
-        )}
-      </div>
-
-      <div style={{ width: 1, height: 16, background: T.border }} />
+      {/* No dead "FILTERS" label — chips ARE the filters */}
 
       <FilterDropdown
         label="Project"
@@ -252,12 +249,12 @@ export function ForYouInlineFilters({ filters, onFiltersChange, projectOptions, 
         alignRight
       />
 
-      {/* Clear all — danger-text color */}
+      {/* Clear all */}
       {activeCount > 0 && (
         <button
           onClick={() => onFiltersChange({ project: null, hub: null, reportedBy: null })}
           style={{
-            fontSize: 11, fontWeight: 600, color: T.dangerText,
+            fontSize: 12, fontWeight: 600, color: T.dangerText,
             background: 'none', border: 'none', cursor: 'pointer',
             marginLeft: 4, transition: 'opacity 0.15s',
           }}
@@ -268,7 +265,6 @@ export function ForYouInlineFilters({ filters, onFiltersChange, projectOptions, 
         </button>
       )}
 
-      {/* dropIn animation */}
       <style>{`
         @keyframes fy-dropIn {
           from { opacity: 0; transform: translateY(-4px); }
