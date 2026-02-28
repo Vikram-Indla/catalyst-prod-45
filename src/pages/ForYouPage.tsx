@@ -114,7 +114,7 @@ export default function ForYouPage() {
 
   return (
     <div className="fy-page" style={{ fontFamily: "'Inter', system-ui", minHeight: '100vh' }}>
-      <main style={{ maxWidth: 1440, margin: '0 auto', padding: '24px 24px 48px' }}>
+      <main style={{ width: '100%', padding: '24px 32px 48px' }}>
         <ForYouHeader />
 
         {/* Tabs */}
