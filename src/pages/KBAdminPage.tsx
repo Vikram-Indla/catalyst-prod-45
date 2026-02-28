@@ -1016,8 +1016,8 @@ function TrainingTab() {
     }
   };
 
-  const total = status?.training_questions.total ?? questions.length;
-  const embedded = status?.training_questions.embedded ?? 0;
+  const total = status?.training_questions?.total ?? (status as any)?.total_questions ?? questions.length;
+  const embedded = status?.training_questions?.embedded ?? (status as any)?.embedded ?? 0;
   const pct = total > 0 ? Math.round((embedded / total) * 100) : 0;
   const answeredCount = questions.filter((q: any) => q.expected_answer?.trim()).length;
 
