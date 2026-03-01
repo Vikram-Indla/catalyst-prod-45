@@ -87,6 +87,69 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
   const qLower = query.toLowerCase();
   const qNorm = qLower.replace(/business requests?/g, 'initiative').replace(/\brequest(s)?\b/g, 'initiative$1');
 
+  // ── PRIORITY 0: Initiative date/detail queries ──
+  // Detects: "dates of know your journey initiative", "know your journey timeline", etc.
+  const initiativePattern = /(?:dates?|timeline|schedule|when|kickoff|completion|start|end|details?|info|about)\b.*?\b(initiative|initiatives|business request)/i;
+  const initiativePattern2 = /\b(initiative|initiatives)\b.*(?:dates?|timeline|schedule|when|kickoff|completion|start|end)/i;
+  const hasInitiativeDateQ = initiativePattern.test(qLower) || initiativePattern2.test(qLower) || (qNorm.includes('initiative') && /date|when|timeline|schedule|kickoff|start|end|completion|quarter/i.test(qLower));
+
+  if (hasInitiativeDateQ) {
+    // Extract the initiative name: strip filler words and "initiative" keyword
+    // IMPORTANT: Do NOT strip common words that may be part of initiative names (e.g. "know")
+    const initFillerWords = new Set(['provide','give','show','tell','me','us','the','of','for','about','dates','date','timeline','schedule','when','is','are','what','details','detail','info','information','initiative','initiatives','business','request','please','can','you','a','an']);
+    const cleanQ = qLower.replace(/[?!.,;:'"]/g, '').split(/\s+/)
+      .filter(w => !initFillerWords.has(w) && w.length > 0)
+      .join(' ').trim();
+
+    if (cleanQ.length >= 3) {
+      const { data: initiatives } = await sb
+        .from('ph_initiatives')
+        .select('initiative_key, title, status, health_status, kickoff_date, target_complete, target_quarter, assignee_id, department_id, created_at, updated_at, on_roadmap, roadmap_start_date, roadmap_end_date, progress')
+        .or(`title.ilike.%${cleanQ}%,initiative_key.ilike.%${cleanQ}%`)
+        .eq('is_deleted', false)
+        .order('created_at', { ascending: true })
+        .limit(10);
+
+      if (initiatives && initiatives.length > 0) {
+        // Resolve assignee names
+        const assigneeIds = [...new Set(initiatives.map((i: any) => i.assignee_id).filter(Boolean))];
+        let assigneeMap: Record<string, string> = {};
+        if (assigneeIds.length > 0) {
+          const { data: profiles } = await sb.from('profiles').select('id, full_name').in('id', assigneeIds);
+          if (profiles) for (const p of profiles) assigneeMap[p.id] = p.full_name;
+        }
+
+        const fmtDate = (d: string | null) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Not set';
+
+        const parts: string[] = [];
+        if (initiatives.length === 1) {
+          const i = initiatives[0];
+          parts.push(`**${i.initiative_key} – ${i.title}**\n`);
+          parts.push(`| Field | Value |`);
+          parts.push(`| Kickoff Date | ${fmtDate(i.kickoff_date)} |`);
+          parts.push(`| Target Completion | ${fmtDate(i.target_complete)} |`);
+          parts.push(`| Target Quarter | ${i.target_quarter || 'Not set'} |`);
+          parts.push(`| Status | ${i.status?.replace(/_/g, ' ') || 'N/A'} |`);
+          parts.push(`| Health | ${i.health_status?.replace(/_/g, ' ') || 'N/A'} |`);
+          parts.push(`| Assignee | ${assigneeMap[i.assignee_id] || 'Unassigned'} |`);
+          parts.push(`| Progress | ${i.progress || 0}% |`);
+          if (i.on_roadmap) parts.push(`| On Roadmap | Yes |`);
+        } else {
+          parts.push(`**${cleanQ.toUpperCase()} Initiatives** — ${initiatives.length} found\n`);
+          // Table header
+          const headers = ['Initiative', 'Kickoff Date', 'Target Completion', 'Quarter', 'Status', 'Health', 'Assignee'];
+          parts.push(`| ${headers.join(' | ')} |`);
+          for (const i of initiatives) {
+            parts.push(`| \`${i.initiative_key}\` ${i.title} | ${fmtDate(i.kickoff_date)} | ${fmtDate(i.target_complete)} | ${i.target_quarter || '-'} | ${i.status?.replace(/_/g, ' ') || '-'} | ${i.health_status?.replace(/_/g, ' ') || '-'} | ${assigneeMap[i.assignee_id] || 'Unassigned'} |`);
+          }
+        }
+        parts.push(`\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}*`);
+
+        return { found: true, answer: parts.join('\n'), confidence: 0.95, sources: ['ph_initiatives'] };
+      }
+    }
+  }
+
   // ── PRIORITY 1: Work item type queries (must come BEFORE person detection) ──
   // Detects: "SBC stories", "who is working on industrial scan stories", "BAU epics", etc.
   const issueTypeWords = ['stories','story','epics','epic','tasks','task','bugs','bug','backend','incidents','incident','issues','issue','items','item'];
