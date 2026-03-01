@@ -136,9 +136,18 @@ export function KBInputArea({
           placeholder={isRTL ? '...اسأل أي شيء' : 'Ask anything...'}
           style={{
             flex: 1,
+            width: '100%',
+            minWidth: 0,
             border: 'none',
             outline: 'none',
+            boxShadow: 'none',
             background: 'transparent',
+            borderRadius: 0,
+            padding: 0,
+            margin: 0,
+            appearance: 'none',
+            WebkitAppearance: 'none',
+            MozAppearance: 'none',
             fontSize: 14,
             fontWeight: 400,
             color: '#18181B',
