@@ -65,11 +65,20 @@ function HealthTab() {
     const results: HealthCheck[] = [];
 
     try {
-      // 1. Training Questions
-      const { data: tq } = await supabase.from('kb_training_questions').select('id, is_embedded, expected_answer').range(0, 4999);
-      const totalQ = tq?.length || 0;
-      const embeddedQ = tq?.filter((q: any) => q.is_embedded).length || 0;
-      const withAnswers = tq?.filter((q: any) => q.expected_answer && q.expected_answer.trim() !== '').length || 0;
+      // 1. Training Questions — paginate to overcome 1000-row limit
+      let tq: any[] = [];
+      let from = 0;
+      const step = 999;
+      while (true) {
+        const { data } = await supabase.from('kb_training_questions').select('id, is_embedded, expected_answer').range(from, from + step);
+        if (!data || data.length === 0) break;
+        tq = tq.concat(data);
+        if (data.length < step + 1) break;
+        from += step + 1;
+      }
+      const totalQ = tq.length;
+      const embeddedQ = tq.filter((q: any) => q.is_embedded).length;
+      const withAnswers = tq.filter((q: any) => q.expected_answer && q.expected_answer.trim() !== '').length;
 
       results.push({
         label: 'Training Questions Loaded',
@@ -949,11 +958,21 @@ function TrainingTab() {
   const PAGE_SIZE = 50;
 
   const loadQuestions = useCallback(async () => {
-    const { data } = await supabase.from('kb_training_questions').select('id, question, category, expected_answer, is_embedded, language, cache_hits, created_at').order('category').order('question').range(0, 4999);
-    if (data) {
-      setQuestions(data);
+    // Paginate to overcome PostgREST max_rows limit (1000)
+    let allData: any[] = [];
+    let from = 0;
+    const step = 999;
+    while (true) {
+      const { data } = await supabase.from('kb_training_questions').select('id, question, category, expected_answer, is_embedded, language, cache_hits, created_at').order('category').order('question').range(from, from + step);
+      if (!data || data.length === 0) break;
+      allData = allData.concat(data);
+      if (data.length < step + 1) break;
+      from += step + 1;
+    }
+    if (allData.length > 0) {
+      setQuestions(allData);
       const counts: Record<string, number> = {};
-      data.forEach((d: any) => { counts[d.category || 'Uncategorized'] = (counts[d.category || 'Uncategorized'] || 0) + 1; });
+      allData.forEach((d: any) => { counts[d.category || 'Uncategorized'] = (counts[d.category || 'Uncategorized'] || 0) + 1; });
       setCategories(Object.entries(counts).map(([category, count]) => ({ category, count })).sort((a, b) => b.count - a.count));
     }
   }, []);

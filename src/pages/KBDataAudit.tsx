@@ -68,8 +68,19 @@ export default function KBDataAudit() {
   useEffect(() => {
     // 1. Training questions
     (async () => {
-      const { data, error } = await supabase.from("kb_training_questions").select("is_embedded, expected_answer").range(0, 4999);
-      if (error) return setTraining((s) => ({ ...s, loading: false, error: error.message }));
+      // Paginate to overcome 1000-row limit
+      let allData: any[] = [];
+      let from = 0;
+      const step = 999;
+      while (true) {
+        const { data: batch, error: bErr } = await supabase.from("kb_training_questions").select("is_embedded, expected_answer").range(from, from + step);
+        if (bErr) return setTraining((s) => ({ ...s, loading: false, error: bErr.message }));
+        if (!batch || batch.length === 0) break;
+        allData = allData.concat(batch);
+        if (batch.length < step + 1) break;
+        from += step + 1;
+      }
+      const data = allData;
       const total = data.length;
       const embedded = data.filter((r) => r.is_embedded).length;
       const hasAnswers = data.filter((r) => r.expected_answer !== null).length;
