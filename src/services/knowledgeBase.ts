@@ -125,6 +125,15 @@ export async function embedTrainingBatch(batchSize = 50, offset = 0): Promise<KB
   return data as KBTrainEmbedResult;
 }
 
+export async function generateAnswersBatch(): Promise<{ message: string; generated: number; remaining: number; errors?: string[] }> {
+  const { data, error } = await supabase.functions.invoke("kb-train", {
+    body: { action: "generate_answers" },
+  });
+  if (error) throw new Error(error.message || "Answer generation failed");
+  if (data?.error) throw new Error(data.error);
+  return data;
+}
+
 export async function addKBContent(
   content: string | string[],
   sourceType: string,

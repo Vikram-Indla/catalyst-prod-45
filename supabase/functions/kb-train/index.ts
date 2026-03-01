@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { callLovableAI } from "../_shared/lovable-ai.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -158,8 +159,77 @@ serve(async (req) => {
       );
     }
 
+    if (action === "generate_answers") {
+      const GEN_BATCH = 10;
+      const { data: unanswered, error: fetchErr } = await supabase
+        .from("kb_training_questions")
+        .select("id, question, category, question_number")
+        .is("expected_answer", null)
+        .order("question_number", { ascending: true })
+        .limit(GEN_BATCH);
+
+      if (fetchErr) throw fetchErr;
+      if (!unanswered || unanswered.length === 0) {
+        return new Response(
+          JSON.stringify({ message: "All questions already have answers", generated: 0, remaining: 0 }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const systemPrompt = `You are Catalyst, an enterprise portfolio management platform AI assistant. You answer questions about the platform's modules: Strategy Hub (OKRs, themes, goals, key results, initiatives), Product Hub (projects, epics, features, stories, tasks, bugs, releases, boards), Testing & QA (test cases, cycles, defects), Resource Management (capacity, budget, resource inventory), Knowledge Base, Demand Management (business requests), and Incident & Change management.
+
+Answer each question with a concise, authoritative 2-4 sentence response. Focus on what the entity/concept is, how it works in the platform, and any key relationships. If the question is about a lookup or navigation action, describe how a user would find that information in the platform.
+
+Return a JSON array where each element has "id" (the question UUID) and "answer" (your response string).`;
+
+      const questionsBlock = unanswered.map((q: any) => `- ID: ${q.id} | Category: ${q.category} | Question: ${q.question}`).join("\n");
+      
+      const aiResponse = await callLovableAI({
+        systemPrompt,
+        userPrompt: `Generate answers for these ${unanswered.length} training questions:\n\n${questionsBlock}`,
+        jsonMode: true,
+        maxTokens: 4096,
+        model: "google/gemini-2.5-flash",
+      });
+
+      let answers: { id: string; answer: string }[];
+      try {
+        const parsed = JSON.parse(aiResponse);
+        answers = Array.isArray(parsed) ? parsed : parsed.answers || parsed.results || [];
+      } catch {
+        throw new Error("Failed to parse AI response as JSON");
+      }
+
+      let generated = 0;
+      const errors: string[] = [];
+      for (const a of answers) {
+        if (!a.id || !a.answer) continue;
+        const { error: upErr } = await supabase
+          .from("kb_training_questions")
+          .update({ expected_answer: a.answer })
+          .eq("id", a.id);
+        if (upErr) errors.push(`${a.id}: ${upErr.message}`);
+        else generated++;
+      }
+
+      const { count: remainingCount } = await supabase
+        .from("kb_training_questions")
+        .select("*", { count: "exact", head: true })
+        .is("expected_answer", null);
+
+      return new Response(
+        JSON.stringify({
+          message: `Generated ${generated} answers`,
+          generated,
+          remaining: remainingCount || 0,
+          errors: errors.length > 0 ? errors : undefined,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     return new Response(
-      JSON.stringify({ error: "Invalid action. Use: status, embed_batch, embed_all, warm_cache" }),
+      JSON.stringify({ error: "Invalid action. Use: status, embed_batch, embed_all, warm_cache, generate_answers" }),
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error: any) {

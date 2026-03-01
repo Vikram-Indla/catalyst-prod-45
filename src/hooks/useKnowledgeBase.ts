@@ -4,6 +4,7 @@ import {
   submitFeedback,
   getTrainingStatus,
   embedTrainingBatch,
+  generateAnswersBatch,
   runCleanup,
   discoverDataSources,
   syncTable,
@@ -164,10 +165,33 @@ export function useKBAdmin() {
   const syncStatus = useCallback(async () => getSyncStatus(), []);
   const syncCustom = useCallback(async (config: Parameters<typeof syncCustomTable>[0]) => syncCustomTable(config), []);
 
+  const generateAnswers = useCallback(async () => {
+    setIsProcessing(true);
+    let totalGenerated = 0;
+    try {
+      while (true) {
+        const result = await generateAnswersBatch();
+        totalGenerated += result.generated || 0;
+        if ((result.remaining ?? 0) === 0 || (result.generated || 0) === 0) {
+          toast.success(`Done! ${totalGenerated} answers generated total.`);
+          break;
+        }
+        toast.info(`Progress: ${totalGenerated} generated, ${result.remaining} remaining...`);
+        await new Promise((r) => setTimeout(r, 1000));
+      }
+      await fetchStatus();
+    } catch (err: any) {
+      toast.error(`Stopped after ${totalGenerated}: ${err.message}`);
+      await fetchStatus();
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [fetchStatus]);
+
   const seedEval = useCallback(async () => seedEvalSet(), []);
   const runEval = useCallback(async (limit?: number) => runEvaluation(limit), []);
   const evalSummary = useCallback(async () => getEvalSummary(), []);
   const evalExport = useCallback(async () => exportEvalData(), []);
 
-  return { status, isProcessing, embedProgress, fetchStatus, embedBatch, embedAll, cleanup, discover, syncOne, syncAll, syncStatus, syncCustom, seedEval, runEval, evalSummary, evalExport };
+  return { status, isProcessing, embedProgress, fetchStatus, embedBatch, embedAll, generateAnswers, cleanup, discover, syncOne, syncAll, syncStatus, syncCustom, seedEval, runEval, evalSummary, evalExport };
 }

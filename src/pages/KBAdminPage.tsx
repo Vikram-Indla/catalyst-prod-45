@@ -944,7 +944,7 @@ function SourcesTab() {
    TAB 7: TRAINING
    ═══════════════════════════════════════════ */
 function TrainingTab() {
-  const { status, isProcessing, embedProgress, fetchStatus, embedBatch, embedAll, cleanup } = useKBAdmin();
+  const { status, isProcessing, embedProgress, fetchStatus, embedBatch, embedAll, generateAnswers, cleanup } = useKBAdmin();
   const [categories, setCategories] = useState<{ category: string; count: number }[]>([]);
   const [questions, setQuestions] = useState<any[]>([]);
   const [filteredQuestions, setFilteredQuestions] = useState<any[]>([]);
@@ -1070,6 +1070,10 @@ function TrainingTab() {
         </button>
         <button onClick={() => embedAll(50)} disabled={isProcessing} className="px-3 py-1.5 bg-blue-800 text-white text-xs font-semibold rounded hover:bg-blue-900 disabled:opacity-50 transition-colors">
           Embed All
+        </button>
+        <button onClick={generateAnswers} disabled={isProcessing} className="px-3 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded hover:bg-emerald-700 disabled:opacity-50 transition-colors">
+          {isProcessing ? <RefreshCw className="animate-spin inline mr-1" size={12} /> : <Brain className="inline mr-1" size={12} />}
+          Generate Answers
         </button>
         {selected.size > 0 && (
           <button onClick={handleDelete} disabled={isDeleting} className="px-3 py-1.5 bg-red-600 text-white text-xs font-semibold rounded hover:bg-red-700 disabled:opacity-50 transition-colors ml-auto">
