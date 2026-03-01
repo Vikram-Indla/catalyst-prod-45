@@ -72,9 +72,11 @@ export function WikiAdminSyncTab() {
   const steps = rawSteps ?? PIPELINE_STEPS.map((s) => ({ name: s.name, status: 'pending', result: '—', durationMs: 0 }));
 
   // Progress calculation
-  const doneCount = steps.filter((s: any) => s.status === 'done').length;
+  const completedCount = steps.filter((s: any) => s.status === 'done' || s.status === 'failed').length;
   const activeStep = steps.find((s: any) => s.status === 'active');
-  const progressPct = Math.round((doneCount / steps.length) * 100);
+  const activeStepIndex = steps.findIndex((s: any) => s.status === 'active');
+  const currentStepNumber = activeStepIndex >= 0 ? activeStepIndex + 1 : Math.min(completedCount + 1, steps.length);
+  const progressPct = Math.round((completedCount / steps.length) * 100);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -152,7 +154,7 @@ export function WikiAdminSyncTab() {
           {/* Active step info */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontFamily: 'Inter, sans-serif', fontSize: 12 }}>
             <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>
-              Step {doneCount + 1} of {steps.length}
+              Step {currentStepNumber} of {steps.length}
               {activeStep ? `: ${activeStep.name}` : rawSteps ? '' : ' — Initializing pipeline…'}
             </span>
             <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>·</span>
