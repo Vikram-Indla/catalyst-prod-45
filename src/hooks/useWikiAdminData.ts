@@ -266,10 +266,27 @@ export function useTriggerSync() {
         .single();
       if (insertErr) throw insertErr;
 
-      const { data: result, error: fnErr } = await supabase.functions.invoke('kb-sync', {
-        body: { action: 'sync_all', sync_run_id: (run as any).id },
-      });
-      if (fnErr) throw fnErr;
+      const runId = (run as any).id;
+      let result: any;
+      try {
+        const { data, error: fnErr } = await supabase.functions.invoke('kb-sync', {
+          body: { action: 'sync_all', sync_run_id: runId },
+        });
+        if (fnErr) throw fnErr;
+        // Check if the response itself contains an error
+        if (data?.error) throw new Error(data.error);
+        result = data;
+      } catch (fnError: any) {
+        // Mark the run as failed so it doesn't stay stuck in "running"
+        await fromAny('wiki_sync_runs')
+          .update({
+            status: 'failed',
+            completed_at: new Date().toISOString(),
+            error_message: fnError?.message || 'Edge function call failed',
+          })
+          .eq('id', runId);
+        throw fnError;
+      }
 
       await fromAny('wiki_sync_runs')
         .update({
@@ -280,7 +297,7 @@ export function useTriggerSync() {
           new_chunks: result?.new_chunks ?? 0,
           total_duration_ms: result?.duration_ms ?? 0,
         })
-        .eq('id', (run as any).id);
+        .eq('id', runId);
 
       return run;
     },
@@ -291,6 +308,7 @@ export function useTriggerSync() {
     },
     onError: (err: Error) => {
       toast.error(`Sync failed: ${err.message}`);
+      qc.invalidateQueries({ queryKey: ['wiki-sync-runs'] });
     },
   });
 }
