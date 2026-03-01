@@ -9,9 +9,9 @@ import { STATUS_DISPLAY, getPriorityLevel, getAvatarColor, getInitials } from '@
 /* ── Status Cell ── */
 export function StatusCell({ status }: { status: InitiativeStatus }) {
   const s = STATUS_DISPLAY[status];
+  const lozengeClass = `pb-lozenge pb-lozenge-${s.lozenge}`;
   return (
-    <span className="pb-status-badge" style={{ backgroundColor: s.bg, borderColor: s.border, color: s.text, border: `1px solid ${s.border}` }}>
-      <span className="pb-status-dot" style={{ backgroundColor: s.dot }} />
+    <span className={lozengeClass}>
       {s.label}
     </span>
   );
