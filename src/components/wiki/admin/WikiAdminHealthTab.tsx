@@ -1,15 +1,17 @@
 /**
  * WikiAdminHealthTab — Health check table with status indicators
+ * V12 compliant: 36px rows, 3-color lozenges, focus rings
  */
 import React from 'react';
 import { useWikiHealthChecks, useWikiAdminStats } from '@/hooks/useWikiAdminData';
 import { SkeletonBlock } from '@/components/wiki/WikiTokens';
+import { EmptyState } from './WikiAdminSyncTab';
+import { HeartPulse } from 'lucide-react';
 
 export function WikiAdminHealthTab() {
   const { data: checks, isLoading } = useWikiHealthChecks();
   const { data: stats } = useWikiAdminStats();
 
-  // Derive health metrics from stats if no explicit checks exist
   const derivedChecks = React.useMemo(() => {
     if (checks && checks.length > 0) return checks;
     if (!stats) return [];
@@ -27,7 +29,10 @@ export function WikiAdminHealthTab() {
 
   if (isLoading) return <div>{Array.from({ length: 6 }).map((_, i) => <SkeletonBlock key={i} height={36} style={{ marginBottom: 4 }} />)}</div>;
 
-  // Group by category
+  if (derivedChecks.length === 0) {
+    return <EmptyState icon={<HeartPulse style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, #64748B)' }} />} message="No health data" sub="Health checks will populate after the first sync run." />;
+  }
+
   const grouped = derivedChecks.reduce<Record<string, typeof derivedChecks>>((acc, c) => {
     (acc[c.category] ??= []).push(c);
     return acc;
@@ -49,8 +54,11 @@ export function WikiAdminHealthTab() {
               </thead>
               <tbody>
                 {items.map(c => (
-                  <tr key={c.id} style={{ borderTop: '1px solid var(--cp-border-default, rgba(15,23,42,0.08))', height: 36 }}>
-                    <td style={{ padding: '8px 12px' }}>{c.metric}</td>
+                  <tr key={c.id} style={{ borderTop: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.08))', height: 36 }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    <td style={{ padding: '8px 12px' }}>{c.metric ?? '—'}</td>
                     <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{c.value ?? '—'}</td>
                     <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{c.threshold ?? '—'}</td>
                     <td style={{ padding: '8px 12px' }}><HealthLoz status={c.status} /></td>
@@ -67,10 +75,10 @@ export function WikiAdminHealthTab() {
 
 function HealthLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
-    healthy: { bg: '#E3FCEF', color: '#006644' },
+    healthy: { bg: '#E3FCEF', color: '#0D7331' },
     warning: { bg: '#DFE1E6', color: '#44546F' },
     critical: { bg: '#DFE1E6', color: '#44546F' },
   };
   const s = map[status] ?? map.warning;
-  return <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 3, background: s.bg, color: s.color, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{status}</span>;
+  return <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 3, background: s.bg, color: s.color, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{status ?? '—'}</span>;
 }

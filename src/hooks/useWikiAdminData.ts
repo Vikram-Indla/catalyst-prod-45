@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 const fromAny = (table: string) => (supabase as any).from(table);
 
 /* ─── Types ─── */
-interface WikiAdminStats {
+export interface WikiAdminStats {
   total_pages: number;
   draft_pages: number;
   review_pages: number;
@@ -22,7 +22,7 @@ interface WikiAdminStats {
   last_sync: string | null;
 }
 
-interface WikiSyncRunRow {
+export interface WikiSyncRunRow {
   id: string;
   started_at: string;
   completed_at: string | null;
@@ -38,7 +38,7 @@ interface WikiSyncRunRow {
   created_by: string | null;
 }
 
-interface WikiPageAdminRow {
+export interface WikiPageAdminRow {
   id: string;
   slug: string;
   title: string;
@@ -54,7 +54,7 @@ interface WikiPageAdminRow {
   read_count: number;
 }
 
-interface WikiHealthRow {
+export interface WikiHealthRow {
   id: string;
   category: string;
   metric: string;
@@ -95,28 +95,51 @@ export function useWikiSyncRuns(limit = 20) {
   });
 }
 
+/* ─── Sync Runs — live polling variant ─── */
+export function useWikiSyncRunsPolling(enabled: boolean) {
+  return useQuery({
+    queryKey: ['wiki-sync-runs', 1],
+    queryFn: async () => {
+      const { data, error } = await fromAny('wiki_sync_runs')
+        .select('*')
+        .order('started_at', { ascending: false })
+        .limit(5);
+      if (error) throw error;
+      return (data ?? []) as WikiSyncRunRow[];
+    },
+    refetchInterval: enabled ? 3000 : false,
+    staleTime: 0,
+  });
+}
+
 /* ─── Page Admin List ─── */
-interface PageAdminFilters {
+export interface PageAdminFilters {
   domainCode?: string;
   status?: string;
   search?: string;
+  page?: number;
+  pageSize?: number;
 }
 
 export function useWikiPageAdminList(filters?: PageAdminFilters) {
+  const page = filters?.page ?? 0;
+  const pageSize = filters?.pageSize ?? 50;
+
   return useQuery({
     queryKey: ['wiki-page-admin-list', filters],
     queryFn: async () => {
       let q = fromAny('wiki_page_admin_list')
-        .select('*')
-        .order('updated_at', { ascending: false });
+        .select('*', { count: 'exact' })
+        .order('updated_at', { ascending: false })
+        .range(page * pageSize, (page + 1) * pageSize - 1);
 
       if (filters?.domainCode) q = q.eq('domain_code', filters.domainCode);
       if (filters?.status) q = q.eq('status', filters.status);
       if (filters?.search) q = q.ilike('title', `%${filters.search}%`);
 
-      const { data, error } = await q.limit(200);
+      const { data, error, count } = await q;
       if (error) throw error;
-      return (data ?? []) as WikiPageAdminRow[];
+      return { rows: (data ?? []) as WikiPageAdminRow[], total: count ?? 0 };
     },
     staleTime: 60_000,
   });
@@ -138,7 +161,7 @@ export function useWikiHealthChecks() {
 }
 
 /* ─── Query Log ─── */
-interface QueryLogFilters {
+export interface QueryLogFilters {
   page?: number;
   pageSize?: number;
   search?: string;
@@ -167,7 +190,7 @@ export function useWikiQueryLog(filters?: QueryLogFilters) {
 }
 
 /* ─── Training Questions ─── */
-interface TrainingFilters {
+export interface TrainingFilters {
   page?: number;
   pageSize?: number;
   search?: string;
@@ -248,7 +271,6 @@ export function useTriggerSync() {
       });
       if (fnErr) throw fnErr;
 
-      // Update sync run with results
       await fromAny('wiki_sync_runs')
         .update({
           status: result?.errors?.length ? 'partial' : 'complete',
@@ -263,7 +285,7 @@ export function useTriggerSync() {
       return run;
     },
     onSuccess: () => {
-      toast.success('Wiki sync triggered');
+      toast.success('Wiki sync completed');
       qc.invalidateQueries({ queryKey: ['wiki-sync-runs'] });
       qc.invalidateQueries({ queryKey: ['wiki-admin-stats'] });
     },
@@ -303,8 +325,8 @@ export function useUpdatePageStatus() {
         .eq('id', pageId);
       if (error) throw error;
     },
-    onSuccess: () => {
-      toast.success('Page status updated');
+    onSuccess: (_data, variables) => {
+      toast.success(`Page status → ${variables.status}`);
       qc.invalidateQueries({ queryKey: ['wiki-page-admin-list'] });
       qc.invalidateQueries({ queryKey: ['wiki-admin-stats'] });
     },
@@ -339,13 +361,11 @@ export function useDeleteDocument() {
 
   return useMutation({
     mutationFn: async (documentId: string) => {
-      // Soft-delete the document
       const { error: docErr } = await fromAny('wiki_documents')
         .update({ deleted_at: new Date().toISOString(), status: 'deleted' })
         .eq('id', documentId);
       if (docErr) throw docErr;
 
-      // Remove associated embeddings
       const { error: embErr } = await fromAny('kb_embeddings')
         .delete()
         .eq('source_id', documentId)
