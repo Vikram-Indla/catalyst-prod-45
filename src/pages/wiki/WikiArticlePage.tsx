@@ -61,7 +61,7 @@ export default function WikiArticlePage() {
 
   return (
     <div style={{ fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary)', background: 'var(--cp-bg-page)', minHeight: '100%' }}>
-      <div style={{ maxWidth: 1080, marginInline: 'auto', padding: '16px 24px 48px' }}>
+      <div style={{ padding: '16px 28px 48px' }}>
         {/* Breadcrumb */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20, flexWrap: 'wrap' }}>
           {breadcrumbs.map((b, i) => (

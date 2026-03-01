@@ -19,7 +19,7 @@ export default function WikiWhatsNewPage() {
 
   return (
     <div style={{ fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary)', background: 'var(--cp-bg-page)', minHeight: '100%' }}>
-      <div style={{ maxWidth: 720, marginInline: 'auto', padding: '16px 24px 48px' }}>
+      <div style={{ maxWidth: 840, marginInline: 'auto', padding: '16px 28px 48px' }}>
         {/* Breadcrumb */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
           <span onClick={() => navigate('/wiki')} style={{ fontSize: 12, color: 'var(--cp-text-link)', cursor: 'pointer' }}>Wiki</span>
