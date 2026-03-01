@@ -15,6 +15,7 @@ function getStatusCategory(status: string): StatusCategory {
     'done', 'closed', 'resolved', 'complete', 'completed',
     'inproduction', 'inprod', 'released', 'shipped', 'deployed',
     'verified', 'accepted', 'approved', 'productionready', 'betaready',
+    'fixed',
   ];
   if (donePatterns.some(p => normalized.includes(p))) return 'done';
 
@@ -24,12 +25,13 @@ function getStatusCategory(status: string): StatusCategory {
     'readyforqa', 'readyforreview', 'readyfortest', 'development',
     'review', 'implementing', 'active', 'started', 'reopened',
     'codereview', 'uat', 'staging', 'regression', 'qavalidation',
-    'inbeta', 'technicalvalidation', 'ready', 'triaging', 'triage',
-    'open', 'inqa', 'inuat', 'inentityintegration', 'fixed',
+    'inbeta', 'technicalvalidation', 'triaging', 'triage',
+    'inqa', 'inuat', 'inentityintegration',
     'committee', 'tocommittee', 'converted', 'onhold',
   ];
   if (progressPatterns.some(p => normalized.includes(p))) return 'inprogress';
 
+  // Everything else: Backlog, To Do, Open, New, Ready, etc.
   return 'todo';
 }
 
