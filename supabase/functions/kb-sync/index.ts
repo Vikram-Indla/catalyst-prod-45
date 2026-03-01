@@ -238,6 +238,16 @@ const TABLE_CONFIGS: TableConfig[] = [
     selectFields: "id, request_key, title, description, business_justification, proposed_solution, process_step, health, priority_tier, urgency, assignee, business_owner, department, delivery_model, estimated_cost_sar, approved_budget_sar, planned_quarter, progress, created_at, updated_at",
     maxRows: 500,
   },
+  {
+    table: "incidents",
+    sourceType: "incident",
+    urlField: "incident_key",
+    titleField: "title",
+    bodyFields: ["description", "resolution_summary", "root_cause"],
+    tagFields: ["status", "severity", "priority", "incident_type", "service_component"],
+    selectFields: "id, incident_key, title, description, status, severity, priority, incident_type, is_major_incident, reporter_name, service_component, resolution_summary, root_cause, target_date, created_at, updated_at",
+    maxRows: 500,
+  },
 ];
 
 // ══════════════════════════════════════════════════════════════════

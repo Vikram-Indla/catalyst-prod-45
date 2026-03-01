@@ -320,6 +320,101 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
     }
   }
 
+  // ── Incident queries ──
+  const incidentPatterns = [
+    /(?:latest|recent|new|newest|open|active|current|pending)\s+(?:production\s+)?incidents?/i,
+    /(?:production\s+)?incidents?\s+(?:logged|raised|reported|created|opened)/i,
+    /(?:how many|count|number of)\s+(?:open|active|production)?\s*incidents?/i,
+    /(?:show|list|display|what)\s+(?:are\s+)?(?:the\s+)?(?:latest|recent|open|active|current|all)?\s*(?:production\s+)?incidents?/i,
+    /(?:incident)\s+(?:status|summary|overview|report|list|board)/i,
+    /(?:what|which)\s+incidents?\s+(?:are|is|were)\s+(?:open|active|pending|unresolved|critical|major)/i,
+    /(?:sev|severity)\s*[- ]?\s*[1234]\s+incidents?/i,
+    /(?:p1|p2|critical|major)\s+incidents?/i,
+  ];
+
+  const isIncidentQuery = incidentPatterns.some(p => p.test(query)) || incidentPatterns.some(p => p.test(qLower));
+
+  if (isIncidentQuery) {
+    try {
+      const { data: incidents } = await sb
+        .from('incidents')
+        .select('incident_key, title, status, severity, priority, assignee_id, reporter_name, incident_type, is_major_incident, created_at, updated_at, target_date, service_component')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (incidents && incidents.length > 0) {
+        const parts: string[] = [];
+        const open = incidents.filter((i: any) => !['resolved', 'closed', 'converted'].includes(i.status));
+        const resolved = incidents.filter((i: any) => ['resolved', 'closed', 'converted'].includes(i.status));
+
+        parts.push(`**Production Incidents** — ${incidents.length} total (${open.length} open, ${resolved.length} resolved)\n`);
+
+        // Severity breakdown
+        const bySev: Record<string, number> = {};
+        for (const i of open) { bySev[i.severity || 'Unknown'] = (bySev[i.severity || 'Unknown'] || 0) + 1; }
+        if (Object.keys(bySev).length > 0) {
+          parts.push('**Open by Severity:**');
+          for (const [sev, count] of Object.entries(bySev).sort()) {
+            parts.push(`- ${sev}: **${count}**`);
+          }
+        }
+
+        // Status breakdown
+        const byStatus: Record<string, number> = {};
+        for (const i of incidents) { byStatus[i.status || 'Unknown'] = (byStatus[i.status || 'Unknown'] || 0) + 1; }
+        parts.push('\n**By Status:**');
+        for (const [st, count] of Object.entries(byStatus).sort((a, b) => b[1] - a[1])) {
+          parts.push(`- ${st}: **${count}**`);
+        }
+
+        // Major incidents
+        const majors = open.filter((i: any) => i.is_major_incident);
+        if (majors.length > 0) {
+          parts.push(`\n🔴 **Major Incidents:** ${majors.length}`);
+          for (const i of majors) {
+            parts.push(`- \`${i.incident_key}\` **${i.title}** — *${i.severity}* | ${i.status}`);
+          }
+        }
+
+        // Latest open incidents table
+        if (open.length > 0) {
+          parts.push('\n---\n#### OPEN INCIDENTS');
+          const calcAge = (d: string): string => {
+            const diffMs = Date.now() - new Date(d).getTime();
+            const hours = Math.floor(diffMs / 3600000);
+            if (hours < 1) return '<1h';
+            if (hours < 24) return `${hours}h`;
+            const days = Math.floor(hours / 24);
+            return `${days}d ${hours % 24}h`;
+          };
+          for (const i of open.slice(0, 15)) {
+            const age = calcAge(i.created_at);
+            parts.push(`| \`${i.incident_key}\` | ${i.title} | *${i.severity || 'N/A'}* | ${i.status} | ⏱ ${age} |`);
+          }
+          if (open.length > 15) parts.push(`\n...and ${open.length - 15} more open incidents`);
+        }
+
+        // Recently resolved
+        if (resolved.length > 0) {
+          parts.push('\n---\n#### RECENTLY RESOLVED');
+          for (const i of resolved.slice(0, 5)) {
+            parts.push(`| \`${i.incident_key}\` | ${i.title} | ✅ ${i.status} |`);
+          }
+        }
+
+        parts.push(`\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}*`);
+
+        return {
+          found: true,
+          answer: parts.join('\n'),
+          confidence: 0.92,
+          sources: ['incidents'],
+        };
+      }
+    } catch { /* table might not exist */ }
+  }
+
   // ── Initiative / Business Request aggregate queries ──
   const initiativePatterns = [
     /(?:how many|count|number of)\s+(?:initiative|business request)s?\s+(?:are|is)\s+(?:pending|open|active)/i,
@@ -356,19 +451,16 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
 
         parts.push(`**Initiatives Overview** — ${total} total\n`);
 
-        // Process step breakdown
         parts.push('**By Process Step:**');
         for (const [step, count] of Object.entries(byStep).sort((a, b) => b[1] - a[1])) {
           parts.push(`- ${step}: **${count}**`);
         }
 
-        // Health breakdown
         parts.push('\n**By Health:**');
         for (const [h, count] of Object.entries(byHealth).sort((a, b) => b[1] - a[1])) {
           parts.push(`- ${h}: **${count}**`);
         }
 
-        // Budget summary
         const totalBudget = requests.reduce((s: number, r: any) => s + (r.approved_budget_sar || 0), 0);
         const totalEstimated = requests.reduce((s: number, r: any) => s + (r.estimated_cost_sar || 0), 0);
         if (totalBudget > 0 || totalEstimated > 0) {
@@ -377,7 +469,6 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
           if (totalBudget > 0) parts.push(`- Approved: **${(totalBudget / 1000000).toFixed(1)}M SAR**`);
         }
 
-        // High urgency
         const highUrgency = requests.filter((r: any) => r.urgency === 'High' || r.priority_tier === 'P1');
         if (highUrgency.length > 0) {
           parts.push(`\n**High Urgency:** ${highUrgency.length} items`);
@@ -386,7 +477,6 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
           }
         }
 
-        // On-hold
         const onHold = requests.filter((r: any) => r.process_step?.toLowerCase().includes('hold'));
         if (onHold.length > 0) {
           parts.push(`\n**On Hold:** ${onHold.length} items`);
