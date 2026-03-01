@@ -60,21 +60,19 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
       }}
     >
       {/* Search */}
-      <div className="p-2 border-b" style={{ borderColor: '#E2E8F0' }}>
-        <div
-          className="flex items-center gap-2 rounded-md px-2"
-          style={{ height: 30, background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: 6 }}
-        >
-          <Search size={13} color="#94A3B8" />
-          <input
-            autoFocus
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search projects..."
-            className="flex-1 bg-transparent outline-none"
-            style={{ fontSize: 12, color: '#0F172A' }}
-          />
-        </div>
+      <div
+        className="flex items-center gap-2 px-3 py-2 border-b transition-colors"
+        style={{ borderColor: '#E2E8F0' }}
+      >
+        <Search size={13} color="#94A3B8" className="flex-shrink-0" />
+        <input
+          autoFocus
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search projects..."
+          className="flex-1 bg-transparent outline-none border-none"
+          style={{ fontSize: 12, color: '#0F172A' }}
+        />
       </div>
 
       <div className="max-h-[320px] overflow-y-auto py-1">

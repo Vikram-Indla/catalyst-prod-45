@@ -8,7 +8,6 @@
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Plus, Settings, LayoutGrid, Lock } from 'lucide-react';
-import { Input } from '@/components/ui/input';
 import { useWorkspaceAccess } from '@/hooks/useWorkspaceAccess';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import { cn } from '@/lib/utils';
@@ -72,15 +71,15 @@ export const ProjectSelectorDropdown = React.memo(function ProjectSelectorDropdo
       {/* Header */}
       <div className="px-3 py-2 border-b border-border">
         <p className="text-sm font-medium text-foreground mb-2">Projects</p>
-        <div className="relative">
-          <Input
+        <div className="flex items-center gap-2 px-2 border-b border-[#E4E4E7] pb-2 -mb-2 focus-within:border-brand-primary transition-colors">
+          <Search className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+          <input
             placeholder="Search projects..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-8 text-sm pr-8"
+            className="flex-1 h-8 text-sm bg-transparent border-none outline-none placeholder:text-muted-foreground text-foreground"
             autoFocus
           />
-          <Search className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
         </div>
       </div>
 
