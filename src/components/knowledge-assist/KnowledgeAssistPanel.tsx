@@ -356,31 +356,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 Your knowledge briefing is ready.
               </p>
 
-              {/* AI Insight Banner */}
-              <div style={{
-                marginTop: 24,
-                background: 'linear-gradient(135deg, rgba(124,58,237,0.05), rgba(37,99,235,0.05))',
-                border: '1px solid rgba(124,58,237,0.12)', borderRadius: 6,
-                padding: '16px 20px',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                  <Sparkles size={14} strokeWidth={2} color="#7C3AED" aria-hidden="true" style={{
-                    animation: 'ka-sparkle 3s ease-in-out infinite',
-                  }} />
-                  <span style={{
-                    fontSize: 11, fontWeight: 650, color: '#7C3AED',
-                    textTransform: 'uppercase', letterSpacing: '0.06em',
-                    fontFamily: "'Inter', sans-serif",
-                  }}>AI INSIGHT</span>
-                </div>
-                <p style={{
-                  fontSize: 13, lineHeight: 1.6, color: '#334155', margin: 0,
-                  fontFamily: "'Inter', sans-serif",
-                }}>
-                  <strong style={{ color: '#0F172A', fontWeight: 650 }}>3 items at risk of breaching SLA</strong>
-                  {' — BAU-5074 (15h, deferred), SIMP-3245 (5d, blocked on Figma mismatch). Consider reassigning or escalating before Sunday standup.'}
-                </p>
-              </div>
 
               {/* Stats Grid */}
               <div style={{
