@@ -197,6 +197,38 @@ export function useWikiTrainingQuestions(filters?: TrainingFilters) {
   });
 }
 
+/* ─── Documents ─── */
+export function useWikiDocuments() {
+  return useQuery({
+    queryKey: ['wiki-admin-documents'],
+    queryFn: async () => {
+      const { data, error } = await fromAny('wiki_documents')
+        .select('*')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .limit(200);
+      if (error) throw error;
+      return (data ?? []) as any[];
+    },
+    staleTime: 60_000,
+  });
+}
+
+/* ─── Access Matrix ─── */
+export function useWikiAccessMatrix() {
+  return useQuery({
+    queryKey: ['wiki-access-matrix'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('kb_access_matrix')
+        .select('*');
+      if (error) throw error;
+      return (data ?? []) as Array<{ id: string; role_name: string; module_name: string; has_access: boolean }>;
+    },
+    staleTime: 5 * 60_000,
+  });
+}
+
 /* ─── Mutations ─── */
 
 export function useTriggerSync() {
@@ -204,16 +236,29 @@ export function useTriggerSync() {
 
   return useMutation({
     mutationFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       const { data: run, error: insertErr } = await fromAny('wiki_sync_runs')
-        .insert({ triggered_by: 'manual', status: 'running' })
+        .insert({ triggered_by: 'manual', status: 'running', created_by: session?.user?.id ?? null })
         .select()
         .single();
       if (insertErr) throw insertErr;
 
-      const { error: fnErr } = await supabase.functions.invoke('kb-sync', {
+      const { data: result, error: fnErr } = await supabase.functions.invoke('kb-sync', {
         body: { action: 'full_sync', sourceType: 'wiki', sync_run_id: (run as any).id },
       });
       if (fnErr) throw fnErr;
+
+      // Update sync run with results
+      await fromAny('wiki_sync_runs')
+        .update({
+          status: result?.errors?.length ? 'partial' : 'complete',
+          completed_at: new Date().toISOString(),
+          steps: result?.steps || [],
+          total_items_processed: result?.rows_processed ?? 0,
+          new_chunks: result?.new_chunks ?? 0,
+          total_duration_ms: result?.duration_ms ?? 0,
+        })
+        .eq('id', (run as any).id);
 
       return run;
     },
@@ -265,6 +310,75 @@ export function useUpdatePageStatus() {
     },
     onError: (err: Error) => {
       toast.error(`Status update failed: ${err.message}`);
+    },
+  });
+}
+
+export function useReembedDocument() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (documentId: string) => {
+      const { error } = await supabase.functions.invoke('kb-sync', {
+        body: { action: 'sync_document', document_id: documentId, sourceType: 'wiki' },
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success('Re-embedding started');
+      qc.invalidateQueries({ queryKey: ['wiki-admin-documents'] });
+    },
+    onError: (err: Error) => {
+      toast.error(`Re-embed failed: ${err.message}`);
+    },
+  });
+}
+
+export function useDeleteDocument() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (documentId: string) => {
+      // Soft-delete the document
+      const { error: docErr } = await fromAny('wiki_documents')
+        .update({ deleted_at: new Date().toISOString(), status: 'deleted' })
+        .eq('id', documentId);
+      if (docErr) throw docErr;
+
+      // Remove associated embeddings
+      const { error: embErr } = await fromAny('kb_embeddings')
+        .delete()
+        .eq('source_id', documentId)
+        .eq('source_table', 'wiki_documents');
+      if (embErr) console.warn('Embedding cleanup warning:', embErr.message);
+    },
+    onSuccess: () => {
+      toast.success('Document deleted');
+      qc.invalidateQueries({ queryKey: ['wiki-admin-documents'] });
+      qc.invalidateQueries({ queryKey: ['wiki-admin-stats'] });
+    },
+    onError: (err: Error) => {
+      toast.error(`Delete failed: ${err.message}`);
+    },
+  });
+}
+
+export function useUpdateAccess() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, has_access }: { id: string; has_access: boolean }) => {
+      const { error } = await supabase
+        .from('kb_access_matrix')
+        .update({ has_access, updated_at: new Date().toISOString() })
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['wiki-access-matrix'] });
+    },
+    onError: (err: Error) => {
+      toast.error(`Access update failed: ${err.message}`);
     },
   });
 }
