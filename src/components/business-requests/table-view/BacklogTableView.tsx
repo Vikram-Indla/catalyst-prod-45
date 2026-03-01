@@ -2,6 +2,8 @@
  * BacklogTableView - Industry Backlog Table
  * Enhanced data table with drag-and-drop, bulk actions, and keyboard navigation
  * Real-time updates for cross-view synchronization
+ * 
+ * V12 HYBRID PRECISION — styling tokens applied
  */
 
 import { useMemo, useCallback, useState, useEffect } from 'react';
@@ -343,15 +345,15 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
       .filter(Boolean);
   }, [visibleColumns, columnOrder]);
 
-  const renderSortIcon = (column: TableColumn) => {
+  /* V12 */ const renderSortIcon = (column: TableColumn) => {
     if (!column.sortable) return null;
     const isActive = sortConfig.column === column.key;
     return (
-      <span className={cn("ml-1", isActive ? "text-[var(--brand-gold)]" : "text-muted-foreground/40")}>
+      <span className={cn("inline-flex ml-1", isActive ? "text-[#2563EB]" : "text-[#94A3B8]")}>
         {isActive && sortConfig.direction === 'asc' ? (
-          <ChevronUp className="h-3.5 w-3.5" />
+          <ChevronUp className="h-3 w-3" />
         ) : (
-          <ChevronDown className="h-3.5 w-3.5" />
+          <ChevronDown className="h-3 w-3" />
         )}
       </span>
     );
@@ -364,14 +366,15 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
           <Checkbox
             checked={selectedIds.has(row.id)}
             onCheckedChange={() => toggleSelection(row.id)}
-            className="data-[state=checked]:bg-[var(--brand-gold)] data-[state=checked]:border-[var(--brand-gold)]"
+            className="data-[state=checked]:bg-[#2563EB] data-[state=checked]:border-[#2563EB]" /* V12 */
+            style={{ width: 16, height: 16, borderRadius: 3 }} /* V12 */
           />
         );
       case 'type':
         return <TypeCell type="Business Request" />;
       case 'rank':
         return (
-          <span className="text-sm font-medium text-foreground">
+          <span style={{ fontFamily: "'JetBrains Mono', 'SF Mono', monospace", fontSize: 12, fontWeight: 500, color: '#0F172A' }}> {/* V12 */}
             {row.rank ?? '—'}
           </span>
         );
@@ -438,23 +441,28 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
 
   return (
     <div className="flex flex-col h-full">
-      {/* Table Container */}
+      {/* V12 Table Container */}
       <div 
-        className={cn(
-          "flex flex-col flex-1 rounded-[14px] border overflow-hidden",
-          "bg-card border-border",
-          "shadow-sm"
-        )}
+        style={{
+          border: '1px solid rgba(15, 23, 42, 0.12)', /* V12 */
+          borderRadius: 4, /* V12 */
+          overflow: 'hidden', /* V12 */
+          boxShadow: 'none', /* V12 — remove shadow */
+        }}
+        className="flex flex-col flex-1 bg-card"
       >
-        {/* Header Bar - improved light mode visibility */}
-        <div className={cn(
-          "flex items-center justify-between px-4 py-2.5 border-b",
-          "border-border bg-muted/50",
-          "dark:bg-[#0f0f0f]"
-        )}>
+        {/* V12 Header Bar */}
+        <div
+          className="flex items-center justify-between px-3"
+          style={{
+            background: '#F1F5F9', /* V12 */
+            borderBottom: '1.5px solid rgba(15, 23, 42, 0.12)', /* V12 */
+            padding: '8px 12px', /* V12 */
+          }}
+        >
           <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">
-              <strong className="font-semibold text-foreground">{totalItems}</strong> {totalItems === 1 ? 'request' : 'requests'}
+            <span style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: 13, fontWeight: 500, color: '#64748B' }}>
+              <strong style={{ fontWeight: 650, color: '#0F172A' }}>{totalItems}</strong> {totalItems === 1 ? 'request' : 'requests'}
               {totalItems > pageSize && (
                 <span className="ml-1">
                   (showing {(currentPage - 1) * pageSize + 1}-{Math.min(currentPage * pageSize, totalItems)})
@@ -475,65 +483,77 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
         {/* Table */}
         <div className="flex-1 overflow-auto">
           <DragDropContext onDragEnd={handleDragEnd}>
-            <table className="w-full min-w-[1000px] border-collapse text-[13px]">
-              {/* Column width definitions to prevent ID wrapping */}
+            <table
+              className="w-full min-w-[1000px]"
+              style={{ borderCollapse: 'collapse', fontSize: 13 }} /* V12 */
+            >
+              {/* Column width definitions */}
               <colgroup>
-                <col style={{ width: '32px' }} />      {/* Drag handle */}
-                <col style={{ width: '48px' }} />      {/* Checkbox */}
-                <col style={{ width: '100px' }} />     {/* ID - prevent wrapping */}
-                {/* Dynamic columns */}
+                <col style={{ width: 32 }} />
+                <col style={{ width: 48 }} />
+                <col style={{ width: 100 }} />
               </colgroup>
-              <thead className={cn(
-                "sticky top-0 z-10",
-                "bg-card dark:bg-[#0f0f0f]"
-              )}>
-                <tr>
-                  <th className={cn(
-                    "w-8 px-2 py-3.5 text-left border-b",
-                    "border-border"
-                  )} />
-                  {displayColumns.map(column => {
+              {/* V12 Table Header */}
+              <thead
+                style={{
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 10,
+                  background: '#F1F5F9', /* V12 */
+                }}
+              >
+                <tr style={{ borderBottom: '1.5px solid rgba(15, 23, 42, 0.12)' /* V12 */ }}>
+                  {/* V12 Drag handle header */}
+                  <th
+                    style={{
+                      width: 32,
+                      padding: '10px 4px', /* V12 */
+                      borderBottom: 'none',
+                    }}
+                  />
+                  {displayColumns.map((column, colIdx) => {
                     const isActive = sortConfig.column === column.key;
+                    const isCheckbox = column.key === 'checkbox';
                     return (
                       <th
                         key={column.key}
-                        className={cn(
-                          "text-left border-b whitespace-nowrap px-4 py-3.5",
-                          "text-[11px] uppercase font-semibold tracking-[0.5px]",
-                          "border-border",
-                          isActive 
-                            ? "text-brand-primary" 
-                            : "text-muted-foreground",
-                          column.sortable && "cursor-pointer hover:text-foreground"
-                        )}
-                        style={{ width: column.width, minWidth: column.minWidth }}
+                        style={{
+                          padding: isCheckbox ? '10px 4px' : '10px 12px', /* V12 */
+                          fontFamily: "'Inter', -apple-system, system-ui, sans-serif", /* V12 */
+                          fontSize: 11, /* V12 */
+                          fontWeight: 650, /* V12 */
+                          textTransform: 'uppercase' as const, /* V12 */
+                          letterSpacing: '0.06em', /* V12 */
+                          color: isActive ? '#2563EB' : '#64748B', /* V12 */
+                          whiteSpace: 'nowrap' as const, /* V12 */
+                          userSelect: 'none' as const, /* V12 */
+                          lineHeight: 1.2, /* V12 */
+                          textAlign: isCheckbox ? 'center' as const : 'start' as const, /* V12 RTL-safe */
+                          borderInlineStart: colIdx > 0 ? '0.75px solid rgba(15, 23, 42, 0.06)' : 'none', /* V12 */
+                          width: isCheckbox ? 44 : column.width,
+                          minWidth: column.minWidth,
+                          cursor: column.sortable ? 'pointer' : 'default',
+                        }}
                         onClick={() => column.sortable && handleSort(column.key)}
                       >
-                        {column.key === 'checkbox' ? (
+                        {isCheckbox ? (
                           <Checkbox
                             checked={isAllSelected || (isIndeterminate ? 'indeterminate' : false)}
                             onCheckedChange={() => toggleAll()}
-                            className={cn(
-                              "data-[state=checked]:bg-[var(--brand-gold)] data-[state=checked]:border-[var(--brand-gold)]",
-                              "border-border/50 dark:border-border/30 dark:bg-[#262626]"
-                            )}
+                            className="data-[state=checked]:bg-[#2563EB] data-[state=checked]:border-[#2563EB]" /* V12 */
+                            style={{ width: 16, height: 16, borderRadius: 3 }} /* V12 */
                           />
                         ) : (
                           <div className="flex items-center">
-                            <span className={cn(isActive && "border-b-2 border-[var(--brand-gold)] dark:border-[#d4a855] pb-0.5")}>
-                              {column.label}
-                            </span>
+                            <span>{column.label}</span>
                             {renderSortIcon(column)}
                           </div>
                         )}
                       </th>
                     );
                   })}
-                  {/* Actions column header */}
-                  <th className={cn(
-                    "w-[100px] text-right px-4 py-3.5 border-b",
-                    "border-border"
-                  )} />
+                  {/* V12 Actions column header */}
+                  <th style={{ width: 100, padding: '10px 12px', textAlign: 'end' as const }} />
                 </tr>
               </thead>
               <Droppable droppableId="backlog-table">
@@ -541,18 +561,17 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                   <tbody 
                     ref={provided.innerRef} 
                     {...provided.droppableProps}
-                    className="divide-y divide-border"
                   >
                     {isLoading ? (
                       Array.from({ length: 6 }).map((_, i) => (
-                        <tr key={i} className="border-b border-[var(--industry-border-subtle)] dark:border-[#404040]">
-                          <td className="px-2 py-3.5" />
+                        <tr key={i} style={{ height: 36, borderBottom: '0.75px solid rgba(15, 23, 42, 0.06)' /* V12 */ }}>
+                          <td style={{ padding: '8px 4px' }} />
                           {displayColumns.map(col => (
-                            <td key={col.key} className="px-4 py-3.5">
-                              <Skeleton className="h-5 w-full" />
+                            <td key={col.key} style={{ padding: '8px 12px' }}>
+                              <Skeleton className="h-4 w-full" />
                             </td>
                           ))}
-                          <td className="px-4 py-3.5" />
+                          <td style={{ padding: '8px 12px' }} />
                         </tr>
                       ))
                     ) : paginatedData.length === 0 ? (
@@ -564,67 +583,112 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                     ) : (
                       paginatedData.map((row, index) => (
                         <Draggable key={row.id} draggableId={row.id} index={index}>
-                          {(provided, snapshot) => (
-                            <tr
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              data-row-index={index}
-                              className={cn(
-                                "transition-colors cursor-pointer",
-                                "hover:bg-muted/50 dark:hover:bg-[#262626]/50",
-                                selectedIds.has(row.id) && "bg-brand-primary/[0.08] dark:bg-brand-primary/[0.15]",
-                                focusedIndex === index && "ring-2 ring-inset ring-brand-primary/50 bg-brand-primary/[0.04]",
-                                snapshot.isDragging && "bg-muted dark:bg-[#333333] shadow-lg"
-                              )}
-                              onMouseEnter={() => setHoveredRowId(row.id)}
-                              onMouseLeave={() => setHoveredRowId(null)}
-                              onClick={() => setFocusedIndex(index)}
-                            >
-                              {/* Drag handle - visible on hover */}
-                              <td
-                                {...provided.dragHandleProps}
-                                className="px-2 py-3.5 cursor-grab active:cursor-grabbing"
-                                onClick={(e) => e.stopPropagation()}
+                          {(provided, snapshot) => {
+                            const isSelected = selectedIds.has(row.id);
+                            const isFocused = focusedIndex === index;
+                            return (
+                              <tr
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                data-row-index={index}
+                                aria-selected={isSelected || undefined} /* V12 WCAG */
+                                style={{
+                                  ...provided.draggableProps.style,
+                                  height: 36, /* V12 */
+                                  borderBottom: '0.75px solid rgba(15, 23, 42, 0.06)', /* V12 */
+                                  transition: 'background 80ms cubic-bezier(0.4, 0, 0.2, 1)', /* V12 */
+                                  background: snapshot.isDragging
+                                    ? 'rgba(15, 23, 42, 0.08)' /* V12 pressed */
+                                    : isSelected
+                                      ? 'rgba(37, 99, 235, 0.08)' /* V12 selected */
+                                      : 'transparent', /* V12 rest */
+                                  cursor: 'pointer',
+                                  ...(isFocused ? {
+                                    outline: '2px solid #2563EB', /* V12 focus */
+                                    outlineOffset: -2,
+                                    zIndex: 1,
+                                    position: 'relative' as const,
+                                  } : {}),
+                                }}
+                                onMouseEnter={(e) => {
+                                  setHoveredRowId(row.id);
+                                  /* V12 hover state */
+                                  if (!isSelected) {
+                                    e.currentTarget.style.background = 'rgba(15, 23, 42, 0.04)';
+                                  } else {
+                                    e.currentTarget.style.background = 'rgba(37, 99, 235, 0.12)';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  setHoveredRowId(null);
+                                  /* V12 restore rest/selected */
+                                  e.currentTarget.style.background = isSelected
+                                    ? 'rgba(37, 99, 235, 0.08)'
+                                    : 'transparent';
+                                }}
+                                onClick={() => setFocusedIndex(index)}
                               >
-                                <GripVertical 
-                                  className={cn(
-                                    "h-4 w-4 transition-opacity",
-                                    (hoveredRowId === row.id || focusedIndex === index) ? "opacity-50 hover:opacity-100" : "opacity-0"
-                                  )} 
-                                />
-                              </td>
-                              
-                              {displayColumns.map(column => (
+                                {/* Drag handle */}
                                 <td
-                                  key={column.key}
-                                  className="px-4 py-3.5"
-                                  onClick={column.key === 'checkbox' ? (e) => e.stopPropagation() : undefined}
+                                  {...provided.dragHandleProps}
+                                  style={{ padding: '8px 4px', cursor: 'grab' }} /* V12 */
+                                  onClick={(e) => e.stopPropagation()}
                                 >
-                                  {renderCellContent(column, row, index)}
+                                  <GripVertical 
+                                    className={cn(
+                                      "h-4 w-4 transition-opacity",
+                                      (hoveredRowId === row.id || isFocused) ? "opacity-50 hover:opacity-100" : "opacity-0"
+                                    )} 
+                                    style={{ color: '#64748B' }} /* V12 */
+                                  />
                                 </td>
-                              ))}
-                              
-                              {/* Row actions - visible on hover or focus */}
-                              <td 
-                                className="px-4 py-3.5 text-right" 
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <div className={cn(
-                                  "flex items-center justify-end gap-1 transition-opacity",
-                                  (hoveredRowId === row.id || focusedIndex === index) ? "opacity-100" : "opacity-0"
-                                )}>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7 rounded-md hover:bg-muted"
-                                    onClick={(e) => { e.stopPropagation(); onRowClick(row.id); }}
+                                
+                                {displayColumns.map((column, colIdx) => (
+                                  <td
+                                    key={column.key}
+                                    style={{
+                                      padding: column.key === 'checkbox' ? '8px 4px' : '8px 12px', /* V12 */
+                                      fontFamily: "'Inter', -apple-system, system-ui, sans-serif", /* V12 */
+                                      fontSize: 13, /* V12 */
+                                      fontWeight: 400, /* V12 */
+                                      color: '#0F172A', /* V12 */
+                                      whiteSpace: 'nowrap' as const, /* V12 */
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      lineHeight: 1.2, /* V12 */
+                                      borderInlineStart: colIdx > 0 ? '0.75px solid rgba(15, 23, 42, 0.06)' : 'none', /* V12 */
+                                      textAlign: column.key === 'checkbox' ? 'center' as const : 'start' as const, /* V12 */
+                                      width: column.key === 'checkbox' ? 44 : undefined,
+                                    }}
+                                    onClick={column.key === 'checkbox' ? (e) => e.stopPropagation() : undefined}
                                   >
-                                    <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
-                                  </Button>
-                                </div>
-                              </td>
-                            </tr>
-                          )}
+                                    {renderCellContent(column, row, index)}
+                                  </td>
+                                ))}
+                                
+                                {/* Row actions */}
+                                <td 
+                                  style={{ padding: '8px 12px', textAlign: 'end' as const }} /* V12 */
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <div className={cn(
+                                    "flex items-center justify-end gap-1 transition-opacity",
+                                    (hoveredRowId === row.id || isFocused) ? "opacity-100" : "opacity-0"
+                                  )}>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-7 w-7 rounded-md"
+                                      style={{ background: 'none' }}
+                                      onClick={(e) => { e.stopPropagation(); onRowClick(row.id); }}
+                                    >
+                                      <Pencil className="h-3.5 w-3.5" style={{ color: '#64748B' }} /* V12 */ />
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          }}
                         </Draggable>
                       ))
                     )}

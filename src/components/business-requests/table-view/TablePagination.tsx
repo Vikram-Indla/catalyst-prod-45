@@ -1,3 +1,4 @@
+/* V12 — TablePagination: #F1F5F9 bg, JetBrains Mono for numeric text */
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -25,33 +26,37 @@ export function TablePagination({
   const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const endItem = Math.min(currentPage * pageSize, totalItems);
 
+  /* V12 monospace style for numeric text */
+  const monoStyle: React.CSSProperties = {
+    fontFamily: "'JetBrains Mono', 'SF Mono', monospace",
+    fontSize: 12,
+    fontVariantNumeric: 'tabular-nums',
+  };
+
   return (
-    <div className={cn(
-      "flex items-center justify-between px-4 py-2.5 border-t",
-      "bg-muted/30 border-border",
-      "dark:bg-[#0f0f0f]"
-    )}>
+    <div
+      className="flex items-center justify-between"
+      style={{
+        padding: '8px 12px', /* V12 */
+        borderTop: '0.75px solid rgba(15, 23, 42, 0.06)', /* V12 */
+        background: '#F1F5F9', /* V12 */
+      }}
+    >
       {/* Left: Items info */}
-      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <span>
-          Showing <strong className="text-foreground">{startItem}</strong> to{' '}
-          <strong className="text-foreground">{endItem}</strong> of{' '}
-          <strong className="text-foreground">{totalItems}</strong> results
-        </span>
+      <div style={{ ...monoStyle, color: '#64748B' }}> {/* V12 */}
+        Showing <strong style={{ color: '#0F172A' }}>{startItem}</strong> to{' '}
+        <strong style={{ color: '#0F172A' }}>{endItem}</strong> of{' '}
+        <strong style={{ color: '#0F172A' }}>{totalItems}</strong>
       </div>
 
       {/* Center: Page size selector */}
       <div className="flex items-center gap-2">
-        <span className="text-xs text-muted-foreground">Rows per page:</span>
+        <span style={{ fontSize: 12, color: '#64748B' }}>Rows per page:</span>
         <Select
           value={String(pageSize)}
           onValueChange={(val) => onPageSizeChange(Number(val))}
         >
-          <SelectTrigger className={cn(
-            "h-8 w-[70px] text-xs",
-            "bg-card border-border",
-            "dark:bg-[#1a1a1a] dark:border-[#404040]"
-          )}>
+          <SelectTrigger className="h-8 w-[70px] text-xs bg-card border-border">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -66,45 +71,21 @@ export function TablePagination({
 
       {/* Right: Pagination controls */}
       <div className="flex items-center gap-1">
-        <span className="text-xs text-muted-foreground mr-2">
-          Page <strong className="text-foreground">{currentPage}</strong> of{' '}
-          <strong className="text-foreground">{totalPages}</strong>
+        <span style={{ ...monoStyle, color: '#64748B', marginInlineEnd: 8 }}>
+          Page <strong style={{ color: '#0F172A' }}>{currentPage}</strong> of{' '}
+          <strong style={{ color: '#0F172A' }}>{totalPages}</strong>
         </span>
         
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => onPageChange(1)}
-          disabled={currentPage === 1}
-        >
+        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onPageChange(1)} disabled={currentPage === 1}>
           <ChevronsLeft className="h-4 w-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
+        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1}>
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        >
+        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages}>
           <ChevronRight className="h-4 w-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => onPageChange(totalPages)}
-          disabled={currentPage === totalPages}
-        >
+        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onPageChange(totalPages)} disabled={currentPage === totalPages}>
           <ChevronsRight className="h-4 w-4" />
         </Button>
       </div>

@@ -1,9 +1,8 @@
 /**
- * TypeCell — Displays the work item type with icon
- * Shows Business Request icon (blue cube)
+ * TypeCell — V12 Type badge
+ * 20x20px, 4px radius, inline-flex centered
  */
 
-import { cn } from '@/lib/utils';
 import { Box } from 'lucide-react';
 import {
   Tooltip,
@@ -22,11 +21,19 @@ export function TypeCell({ type = 'Business Request' }: TypeCellProps) {
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="flex items-center justify-center">
-            <div className={cn(
-              "flex items-center justify-center w-7 h-7 rounded-md",
-              "bg-blue-500/15 dark:bg-blue-500/20"
-            )}>
-              <Box className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            {/* V12 — 20x20, 4px radius */}
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 20, /* V12 */
+                height: 20, /* V12 */
+                borderRadius: 4, /* V12 */
+                background: 'rgba(37, 99, 235, 0.12)', /* V12 */
+              }}
+            >
+              <Box style={{ width: 12, height: 12, color: '#2563EB' }} /* V12 */ />
             </div>
           </div>
         </TooltipTrigger>
