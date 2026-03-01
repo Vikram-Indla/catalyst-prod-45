@@ -41,39 +41,39 @@ export function KBInputArea({
     <div
       style={{
         flexShrink: 0,
-        background: '#FFFFFF',
-        borderTop: '1px solid #F4F4F5',
-        padding: '16px 24px 20px',
+        background: 'var(--cp-bg-page, #FFFFFF)',
+        borderTop: '0.75px solid var(--cp-border-subtle, rgba(15,23,42,0.06))',
+        padding: '12px 24px 16px',
       }}
       dir={isRTL ? 'rtl' : 'ltr'}
     >
       {/* Quick chips */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 14, overflowX: 'auto', paddingBottom: 2 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12, overflowX: 'auto', paddingBottom: 2, flexWrap: 'wrap' }}>
         {chips.map((chip) => (
           <button
             key={chip}
             onClick={() => onSend(chip)}
             style={{
-              padding: '8px 16px',
-              fontSize: 13,
+              padding: '6px 14px',
+              fontSize: 'var(--cp-type-body-sm, 13px)',
               fontWeight: 500,
-              borderRadius: 20,
-              border: '1px solid #E4E4E7',
+              borderRadius: 16,
+              border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
               background: 'transparent',
-              color: '#374151',
+              color: 'var(--cp-text-secondary, #334155)',
               cursor: 'pointer',
               whiteSpace: 'nowrap',
               transition: 'all 150ms ease',
               flexShrink: 0,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = '#2563EB';
-              e.currentTarget.style.color = '#2563EB';
-              e.currentTarget.style.background = '#EFF6FF';
+              e.currentTarget.style.borderColor = 'var(--cp-primary-60, #2563EB)';
+              e.currentTarget.style.color = 'var(--cp-primary-60, #2563EB)';
+              e.currentTarget.style.background = 'var(--cp-primary-5, #EFF6FF)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = '#E4E4E7';
-              e.currentTarget.style.color = '#374151';
+              e.currentTarget.style.borderColor = 'var(--cp-border-default, rgba(15,23,42,0.12))';
+              e.currentTarget.style.color = 'var(--cp-text-secondary, #334155)';
               e.currentTarget.style.background = 'transparent';
             }}
           >
@@ -88,13 +88,13 @@ export function KBInputArea({
           display: 'flex',
           alignItems: 'center',
           gap: 10,
-          background: '#FAFAFA',
-          border: `1.5px solid ${inputFocused ? '#2563EB' : '#E4E4E7'}`,
-          borderRadius: 14,
+          background: 'var(--cp-input-bg, #FFFFFF)',
+          border: `1.5px solid ${inputFocused ? 'var(--cp-input-border-focus, #2563EB)' : 'var(--cp-input-border, rgba(15,23,42,0.14))'}`,
+          borderRadius: 12,
           padding: '6px 12px',
-          minHeight: 52,
+          minHeight: 48,
           transition: 'border-color 200ms ease, box-shadow 200ms ease',
-          boxShadow: inputFocused ? '0 0 0 3px rgba(37,99,235,0.08)' : 'none',
+          boxShadow: inputFocused ? 'var(--cp-shadow-focus, 0 0 0 2px rgba(37,99,235,0.18))' : 'none',
         }}
       >
         {/* Mic */}
@@ -110,19 +110,19 @@ export function KBInputArea({
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
-            background: isListening ? '#DC2626' : 'transparent',
+            background: isListening ? 'var(--cp-danger-60, #DC2626)' : 'transparent',
             transition: 'all 200ms ease',
             animation: isListening ? 'kb-mic-pulse 1.5s infinite' : 'none',
           }}
           onMouseEnter={(e) => {
-            if (!isListening) e.currentTarget.style.color = '#2563EB';
+            if (!isListening) e.currentTarget.style.color = 'var(--cp-primary-60, #2563EB)';
           }}
           onMouseLeave={(e) => {
-            if (!isListening) e.currentTarget.style.color = '#71717A';
+            if (!isListening) e.currentTarget.style.color = 'var(--cp-text-tertiary, #64748B)';
           }}
           title={isListening ? 'Stop listening' : 'Voice input'}
         >
-          <Mic size={18} color={isListening ? '#FFFFFF' : '#71717A'} />
+          <Mic size={18} color={isListening ? 'var(--cp-text-inverse, #FFFFFF)' : 'var(--cp-text-tertiary, #64748B)'} />
         </button>
 
         {/* Text input */}
@@ -139,11 +139,11 @@ export function KBInputArea({
             flex: 1,
             width: '100%',
             minWidth: 0,
-            fontSize: 14,
+            fontSize: 'var(--cp-type-body, 14px)',
             fontWeight: 400,
-            color: '#18181B',
+            color: 'var(--cp-text-primary, #0F172A)',
             direction: isRTL ? 'rtl' : 'ltr',
-            fontFamily: "'Inter', system-ui, sans-serif",
+            fontFamily: "var(--cp-font-body, 'Inter', system-ui, sans-serif)",
           }}
         />
 
@@ -161,23 +161,23 @@ export function KBInputArea({
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
-            background: hasText ? '#2563EB' : 'transparent',
+            background: hasText ? 'var(--cp-primary-60, #2563EB)' : 'transparent',
             transition: 'all 200ms ease',
           }}
           onMouseEnter={(e) => {
-            if (hasText) e.currentTarget.style.background = '#1D4ED8';
+            if (hasText) e.currentTarget.style.background = 'var(--cp-primary-70, #1D4ED8)';
           }}
           onMouseLeave={(e) => {
-            if (hasText) e.currentTarget.style.background = '#2563EB';
+            if (hasText) e.currentTarget.style.background = 'var(--cp-primary-60, #2563EB)';
             else e.currentTarget.style.background = 'transparent';
           }}
         >
-          <ArrowUp size={18} color={hasText ? '#FFFFFF' : '#A1A1AA'} />
+          <ArrowUp size={18} color={hasText ? 'var(--cp-text-inverse, #FFFFFF)' : 'var(--cp-text-muted, #94A3B8)'} />
         </button>
       </div>
 
       {/* Footer text */}
-      <p style={{ fontSize: 11, color: '#A1A1AA', textAlign: 'center', marginTop: 10, margin: '10px 0 0' }}>
+      <p style={{ fontSize: 'var(--cp-type-caption, 11px)', color: 'var(--cp-text-muted, #94A3B8)', textAlign: 'center', marginTop: 8, margin: '8px 0 0' }}>
         Verified against indexed sources · Cited responses
       </p>
 
@@ -198,7 +198,7 @@ export function KBInputArea({
           appearance: none !important;
         }
         .kb-input-field::placeholder {
-          color: #71717A;
+          color: var(--cp-text-tertiary, #64748B);
         }
         @keyframes kb-mic-pulse {
           0% { box-shadow: 0 0 0 0 rgba(220,38,38,0.4); }
