@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Upload, FileText, ChevronRight } from 'lucide-react';
 import { useWikiDomains, useWikiCategories, useWikiCategoryPages } from '@/hooks/useWikiData';
-import { sectionHeaderStyle, DomainBadge, ConfidenceBadge } from '@/components/wiki/WikiTokens';
+import { sectionHeaderStyle, DomainBadge, ConfidenceBadge, SkeletonArticleRow, SkeletonBlock, truncateStyle } from '@/components/wiki/WikiTokens';
 import { WikiUploadWizard } from '@/components/wiki/WikiUploadWizard';
 
 const SLUG_TO_CODE: Record<string, string> = {
@@ -32,8 +32,8 @@ export default function WikiCategoryPage() {
     <div style={{ fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary)', background: 'var(--cp-bg-page)', minHeight: '100%' }}>
       <div style={{ padding: '16px 28px 48px' }}>
         {/* Breadcrumb */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
-          <span onClick={() => navigate('/wiki')} style={{ fontSize: 12, color: 'var(--cp-text-link)', cursor: 'pointer' }}>Wiki</span>
+        <nav role="navigation" aria-label="Breadcrumb" style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
+          <span onClick={() => navigate('/wiki')} tabIndex={0} onKeyDown={e => { if (e.key === 'Enter') navigate('/wiki'); }} style={{ fontSize: 12, color: 'var(--cp-text-link)', cursor: 'pointer' }}>Wiki</span>
           <ChevronRight size={12} style={{ color: 'var(--cp-text-muted)' }} />
           <span style={{ fontSize: 12, color: 'var(--cp-text-secondary)', fontWeight: 600 }}>{domainCode} {name}</span>
         </nav>
@@ -54,9 +54,9 @@ export default function WikiCategoryPage() {
         )}
 
         {/* Filter chips */}
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 24 }}>
+        <div role="tablist" aria-label="Category filters" style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 24 }}>
           {filterItems.map(cat => (
-            <button key={cat.id} onClick={() => setActiveFilter(cat.id)} style={{
+            <button key={cat.id} role="tab" aria-selected={activeFilter === cat.id} onClick={() => setActiveFilter(cat.id)} style={{
               fontSize: 11, fontWeight: activeFilter === cat.id ? 650 : 500, padding: '5px 12px',
               borderRadius: 4, cursor: 'pointer',
               border: activeFilter === cat.id ? '1.5px solid var(--cp-primary-60)' : '1px solid var(--cp-border-default)',
@@ -69,22 +69,29 @@ export default function WikiCategoryPage() {
         {/* Articles section */}
         <div style={sectionHeaderStyle}>Articles</div>
         {pagesLoading ? (
-          <div style={{ padding: 40, textAlign: 'center', color: 'var(--cp-text-muted)', fontSize: 12 }}>Loading articles...</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {Array.from({ length: 5 }).map((_, i) => <SkeletonArticleRow key={i} />)}
+          </div>
         ) : (pages || []).length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {(pages || []).map((p: any) => (
               <div key={p.id}
                 onClick={() => navigate(`/wiki/${p.slug}`)}
+                tabIndex={0}
+                onKeyDown={e => { if (e.key === 'Enter') navigate(`/wiki/${p.slug}`); }}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px',
                   borderRadius: 4, cursor: 'pointer', transition: 'background 80ms',
+                  outline: 'none',
                 }}
+                onFocus={e => { e.currentTarget.style.outline = '2px solid var(--cp-primary-60)'; e.currentTarget.style.outlineOffset = '2px'; }}
+                onBlur={e => { e.currentTarget.style.outline = 'none'; }}
                 onMouseEnter={e => e.currentTarget.style.background = 'var(--cp-interact-hover)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
               >
                 <FileText size={14} style={{ color: 'var(--cp-text-muted)', flexShrink: 0 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--cp-text-primary)' }}>{p.title}</div>
+                  <div style={{ fontSize: 13.5, fontWeight: 600, color: 'var(--cp-text-primary)', ...truncateStyle(2) }}>{p.title}</div>
                   <div style={{ fontSize: 11, color: 'var(--cp-text-muted)', marginTop: 1 }}>
                     Updated {new Date(p.updated_at).toLocaleDateString()}
                   </div>
@@ -95,7 +102,7 @@ export default function WikiCategoryPage() {
           </div>
         ) : (
           <div style={{ color: 'var(--cp-text-muted)', fontSize: 12, textAlign: 'center', padding: 40 }}>
-            No published articles in this domain yet. Upload documents to auto-generate wiki content.
+            No articles yet in {name}. Content will appear after the next sync.
           </div>
         )}
 
@@ -105,11 +112,11 @@ export default function WikiCategoryPage() {
           display: 'flex', justifyContent: 'center', gap: 32,
         }}>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700 }}>{domain?.article_count ?? 0}</div>
+            <div dir="ltr" style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700 }}>{domain?.article_count ?? 0}</div>
             <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: 'var(--cp-text-muted)' }}>Articles</div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700 }}>{domain?.document_count ?? 0}</div>
+            <div dir="ltr" style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700 }}>{domain?.document_count ?? 0}</div>
             <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: 'var(--cp-text-muted)' }}>Documents</div>
           </div>
         </div>

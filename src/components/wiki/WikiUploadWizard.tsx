@@ -286,7 +286,7 @@ export function WikiUploadWizard({ open, onClose }: Props) {
                 <div style={{ padding: 16, borderRadius: 6, background: 'var(--cp-lozenge-green-bg)', textAlign: 'center' }}>
                   <div style={{ fontSize: 14, fontWeight: 650, color: 'var(--cp-lozenge-green-text)', marginBottom: 8 }}>✓ All documents uploaded</div>
                   <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-                    <button onClick={onClose} style={{ fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: 'none', background: 'var(--cp-primary-60)', color: '#fff', cursor: 'pointer' }}>View in Wiki</button>
+                    <button onClick={onClose} style={{ fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: 'none', background: 'var(--cp-primary-60)', color: 'var(--cp-on-primary)', cursor: 'pointer' }}>View in Wiki</button>
                     <button onClick={handleReset} style={{ fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: '1px solid var(--cp-border-default)', background: 'transparent', color: 'var(--cp-text-secondary)', cursor: 'pointer' }}>Upload More</button>
                   </div>
                 </div>
@@ -304,7 +304,7 @@ export function WikiUploadWizard({ open, onClose }: Props) {
               onClick={() => { if (step === 3) { setStep(4); handleProcess(); } else setStep(s => s + 1); }}
               style={{
                 fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: 'none', cursor: 'pointer',
-                background: files.length === 0 && step === 1 ? 'var(--cp-border-default)' : 'var(--cp-primary-60)', color: '#fff',
+                background: files.length === 0 && step === 1 ? 'var(--cp-border-default)' : 'var(--cp-primary-60)', color: 'var(--cp-on-primary)',
                 display: 'flex', alignItems: 'center', gap: 4, opacity: files.length === 0 && step === 1 ? 0.5 : 1,
               }}>
               {step === 3 ? 'Start Processing' : 'Next'} <ChevronRight size={14} />
