@@ -67,7 +67,10 @@ function DD({ value, options, grouped, onChange, ph = 'Select...' }: {
     const f = options.find(o => o.db === value);
     if (f) label = f.label;
   } else {
-    const f = options.find(o => o === value || o.value === value);
+    const f = options.find(o => {
+      const ov = typeof o === 'string' ? o : o.value;
+      return ov === value || (typeof ov === 'string' && typeof value === 'string' && ov.toLowerCase() === value.toLowerCase());
+    });
     if (f) label = typeof f === 'string' ? f : f.label;
     else if (value) label = value;
   }
@@ -100,8 +103,8 @@ function DD({ value, options, grouped, onChange, ph = 'Select...' }: {
             const l = typeof o === 'string' ? o : o.label;
             return (
               <button key={v} onClick={() => { onChange(v); setOpen(false); }}
-                className={`idp-dd-option${v === value ? ' idp-dd-option--selected' : ''}`}>
-                {v === value && <span className="idp-dd-check">✓</span>}
+                className={`idp-dd-option${(typeof v === 'string' && typeof value === 'string' ? v.toLowerCase() === value.toLowerCase() : v === value) ? ' idp-dd-option--selected' : ''}`}>
+                {(typeof v === 'string' && typeof value === 'string' ? v.toLowerCase() === value.toLowerCase() : v === value) && <span className="idp-dd-check">✓</span>}
                 <span>{l}</span>
               </button>
             );
@@ -441,7 +444,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
           <DD value={(initiative as any).ea_review} options={EA_OPTS} onChange={(v: string) => autoSave('ea_review', v, 'EA Review')} />
         </Cell>
         <Cell label="Business Value">
-          <DD value={(initiative as any).business_value} options={BV_OPTS} onChange={(v: string) => autoSave('business_value', v, 'Business Value')} />
+          <DD value={(initiative as any).business_value} options={BV_OPTS} onChange={(v: string) => autoSave('business_value', v.toLowerCase(), 'Business Value')} />
         </Cell>
         <Cell label="Priority" odd>
           <DD value={(initiative as any).priority} options={PRIO_OPTS} onChange={(v: string) => autoSave('priority', v, 'Priority')} />
