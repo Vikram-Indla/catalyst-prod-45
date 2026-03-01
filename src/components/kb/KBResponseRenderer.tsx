@@ -73,9 +73,55 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
   let idx = 0;
   let lastHeaderDanger = false;
 
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed) { idx++; continue; }
+  // Detect table rows (pipe-delimited)
+  const isTableRow = (l: string) => l.trim().startsWith('|') && l.trim().endsWith('|');
+
+  // Group consecutive table rows
+  let i = 0;
+  while (i < lines.length) {
+    const trimmed = lines[i].trim();
+    if (!trimmed) { i++; continue; }
+
+    // Table block
+    if (isTableRow(trimmed)) {
+      const tableRows: string[][] = [];
+      while (i < lines.length && isTableRow(lines[i].trim())) {
+        const cells = lines[i].trim().split('|').filter(Boolean).map(c => c.trim());
+        tableRows.push(cells);
+        i++;
+      }
+      elements.push(
+        <div key={idx} style={{ overflowX: 'auto', margin: '8px 0' }}>
+          <table style={{
+            width: '100%', borderCollapse: 'collapse', fontSize: 12.5,
+            fontFamily: "'Inter', system-ui, sans-serif",
+          }}>
+            <tbody>
+              {tableRows.map((row, ri) => (
+                <tr key={ri} style={{
+                  borderBottom: '1px solid #F4F4F5',
+                  background: ri % 2 === 0 ? '#FAFAFA' : '#FFFFFF',
+                }}>
+                  {row.map((cell, ci) => (
+                    <td key={ci} style={{
+                      padding: '6px 10px', verticalAlign: 'top',
+                      whiteSpace: ci === 0 ? 'nowrap' : 'normal',
+                      color: ci === 0 ? '#2563EB' : '#374151',
+                      fontFamily: ci === 0 ? "'JetBrains Mono', monospace" : 'inherit',
+                      fontWeight: ci === 0 ? 600 : 400,
+                      fontSize: ci === 0 ? 11.5 : 12.5,
+                      lineHeight: 1.6,
+                    }}>{renderInline(cell)}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+      idx++;
+      continue;
+    }
 
     if (isHeader(trimmed)) {
       const label = headerLabel(trimmed);
@@ -91,7 +137,25 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
           }}>{label}</h4>
         </div>
       );
-      idx++; continue;
+      i++; idx++; continue;
+    }
+
+    // Horizontal rule
+    if (trimmed === '---') { i++; continue; }
+
+    // Subheading (#### TITLE)
+    if (trimmed.startsWith('####')) {
+      const label = trimmed.replace(/^#{1,4}\s*/, '').trim();
+      elements.push(
+        <div key={idx} style={{ marginTop: 16, marginBottom: 6 }}>
+          <div style={{ width: 24, height: 2, background: '#2563EB', borderRadius: 1, marginBottom: 8 }} />
+          <h4 style={{
+            fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px',
+            color: '#2563EB', margin: 0, fontFamily: "system-ui, -apple-system, sans-serif",
+          }}>{label}</h4>
+        </div>
+      );
+      i++; idx++; continue;
     }
 
     if (trimmed.startsWith('- ')) {
@@ -102,7 +166,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
           <span style={{ color: '#374151' }}>{renderInline(content)}</span>
         </div>
       );
-      idx++; continue;
+      i++; idx++; continue;
     }
 
     elements.push(
@@ -111,7 +175,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
         color: '#1F2937', margin: '6px 0', letterSpacing: '0.01em',
       }}>{renderInline(trimmed)}</p>
     );
-    idx++;
+    i++; idx++;
   }
 
   // Confidence
@@ -119,11 +183,13 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
     response.confidence >= 0.8 ? 'high' : response.confidence >= 0.5 ? 'medium' : 'low'
   );
   const confConfig = {
-    high: { color: '#16A34A', label: 'High confidence' },
+    high: { color: '#0D7331', label: 'High confidence' },
     medium: { color: '#D97706', label: 'Medium confidence' },
     low: { color: '#DC2626', label: 'Low confidence — verify with sources' },
     insufficient: { color: '#DC2626', label: 'Insufficient data' },
   }[confidence] || { color: '#71717A', label: '' };
+
+  const isLiveData = response.category === 'live_data' || response._meta?.source === 'live_query';
 
   const handleFeedbackClick = (helpful: boolean) => {
     setFeedbackState(helpful ? 'up' : 'down');
@@ -161,8 +227,8 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
         </div>
       )}
 
-      {/* Sources toggle */}
-      {response.references && response.references.length > 0 && (
+      {/* Sources toggle — hidden for live data */}
+      {!isLiveData && response.references && response.references.length > 0 && (
         <div style={{ marginTop: 8 }}>
           <button
             onClick={() => setSourcesOpen(!sourcesOpen)}

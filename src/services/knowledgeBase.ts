@@ -20,7 +20,7 @@ export interface KBQueryResponse {
   confidence: number;
   references: KBReference[];
   _meta: {
-    source: "cache" | "training" | "vector_search" | "fallback";
+    source: "cache" | "training" | "vector_search" | "fallback" | "live_query";
     response_time_ms: number;
     cache_hit: boolean;
     similarity?: number;
