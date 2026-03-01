@@ -1,13 +1,15 @@
-import { X, UserPlus, Calendar, Check, Trash2 } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { X, UserPlus, Calendar, RefreshCw, Trash2, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { DRAWER_PROCESS_STEPS } from '../drawer/StatusDropdown';
 
 interface BulkActionsBarProps {
   selectedCount: number;
   onClear: () => void;
   onAssignOwner?: () => void;
   onSetQuarter?: () => void;
-  onApprove?: () => void;
+  onStatusUpdate?: (status: string) => void;
   onDelete?: () => void;
 }
 
@@ -16,9 +18,23 @@ export function BulkActionsBar({
   onClear,
   onAssignOwner,
   onSetQuarter,
-  onApprove,
+  onStatusUpdate,
   onDelete
 }: BulkActionsBarProps) {
+  const [statusOpen, setStatusOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!statusOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setStatusOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [statusOpen]);
+
   if (selectedCount === 0) return null;
 
   return (
@@ -63,15 +79,41 @@ export function BulkActionsBar({
           </Button>
         )}
         
-        {onApprove && (
-          <Button
-            size="sm"
-            onClick={onApprove}
-            className="bg-[var(--brand-gold)] hover:bg-[var(--brand-gold)]/90 text-white"
-          >
-            <Check className="h-4 w-4 mr-2" />
-            Approve
-          </Button>
+        {onStatusUpdate && (
+          <div className="relative" ref={menuRef}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setStatusOpen(!statusOpen)}
+              className="text-white/80 hover:text-white hover:bg-white/10"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Update Status
+              <ChevronDown className="h-3 w-3 ml-1" />
+            </Button>
+
+            {statusOpen && (
+              <div
+                className="absolute bottom-full mb-2 left-0 w-52 bg-popover border border-border rounded-lg shadow-xl overflow-hidden"
+                style={{ animation: 'fy-dropIn 0.12s ease' }}
+              >
+                <div className="py-1">
+                  {DRAWER_PROCESS_STEPS.map((step) => (
+                    <button
+                      key={step.value}
+                      onClick={() => {
+                        onStatusUpdate(step.value);
+                        setStatusOpen(false);
+                      }}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors text-left"
+                    >
+                      {step.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         )}
 
         {onDelete && (
