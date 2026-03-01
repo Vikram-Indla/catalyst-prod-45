@@ -1,3 +1,4 @@
+/* V12 — StatusLozenge guardrail: 3-color system (grey/blue/green) */
 import { cn } from '@/lib/utils';
 
 interface IdCellProps {
@@ -5,21 +6,25 @@ interface IdCellProps {
   onClick: (e: React.MouseEvent) => void;
 }
 
-/**
- * ID Cell with dark mode support (9.5 grade compliance)
- * Uses brighter blue (#60a5fa) in dark mode for visibility
- * whitespace-nowrap prevents ID from breaking into multiple lines
- */
+/* V12 — ID column: JetBrains Mono, #2563EB, underline on hover */
 export function IdCell({ requestKey, onClick }: IdCellProps) {
   return (
     <button
       onClick={onClick}
-      className={cn(
-        "font-mono text-sm font-medium px-2 py-1 rounded whitespace-nowrap",
-        "text-[#2563eb] hover:bg-[rgba(37,99,235,0.1)]",
-        "dark:text-[#60a5fa] dark:hover:bg-[rgba(96,165,250,0.1)]",
-        "transition-colors cursor-pointer"
-      )}
+      className="transition-colors cursor-pointer whitespace-nowrap"
+      style={{
+        fontFamily: "'JetBrains Mono', 'SF Mono', monospace", /* V12 */
+        fontSize: 12, /* V12 */
+        fontWeight: 500, /* V12 */
+        fontVariantNumeric: 'tabular-nums', /* V12 */
+        color: '#2563EB', /* V12 */
+        background: 'none',
+        border: 'none',
+        padding: '2px 4px',
+        borderRadius: 3,
+      }}
+      onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; }} /* V12 */
+      onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; }}
     >
       {requestKey}
     </button>

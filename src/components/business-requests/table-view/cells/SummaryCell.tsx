@@ -1,12 +1,22 @@
+/* V12 — Summary/Title column: default td styles, min-width 200px */
 interface SummaryCellProps {
   title: string;
 }
 
 export function SummaryCell({ title }: SummaryCellProps) {
   return (
-    <div className="min-w-0 max-w-full overflow-hidden">
+    <div style={{ minWidth: 200, overflow: 'hidden' }}> {/* V12 */}
       <span 
-        className="text-[14px] font-medium text-[var(--industry-text-primary)] truncate block"
+        style={{
+          fontFamily: "'Inter', -apple-system, system-ui, sans-serif", /* V12 */
+          fontSize: 13, /* V12 */
+          fontWeight: 400, /* V12 */
+          color: '#0F172A', /* V12 */
+          display: 'block',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
         title={title || '—'}
       >
         {title || '—'}
