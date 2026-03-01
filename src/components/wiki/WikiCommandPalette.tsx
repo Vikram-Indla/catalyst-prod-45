@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, FileText, Folder, ArrowRight } from 'lucide-react';
-import { useWikiDomains } from '@/hooks/useWikiData';
+import { useWikiDomains, useWikiTitleSearch } from '@/hooks/useWikiData';
 
 interface Props { open: boolean; onClose: () => void; }
 
@@ -16,6 +16,7 @@ export function WikiCommandPalette({ open, onClose }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { data: domains } = useWikiDomains();
+  const { data: titleResults } = useWikiTitleSearch(query);
 
   useEffect(() => {
     if (open) { setQuery(''); setSelectedIdx(0); setTimeout(() => inputRef.current?.focus(), 50); }
@@ -32,9 +33,23 @@ export function WikiCommandPalette({ open, onClose }: Props) {
 
   const items = React.useMemo(() => {
     const result: { type: string; label: string; path: string; meta?: string }[] = [];
+
+    // If searching, show title matches first
+    if (query.length >= 2 && titleResults) {
+      for (const p of titleResults) {
+        result.push({
+          type: 'page',
+          label: p.title,
+          path: `/wiki/${p.slug}`,
+          meta: p.domain_code,
+        });
+      }
+    }
+
     // Static pages
     result.push({ type: 'page', label: 'Wiki Home', path: '/wiki', meta: 'Home' });
     result.push({ type: 'page', label: "What's New", path: '/wiki/whats-new', meta: 'Changelog' });
+
     // Domains
     (domains || []).forEach((d: any) => {
       result.push({
@@ -44,10 +59,23 @@ export function WikiCommandPalette({ open, onClose }: Props) {
         meta: `${d.article_count ?? 0} articles`,
       });
     });
+
     if (!query) return result;
     const q = query.toLowerCase();
+
+    // If we have title results, show them + filtered static items
+    if (titleResults && titleResults.length > 0) {
+      // Filter out duplicates and non-matching static items
+      const titleSlugs = new Set(titleResults.map(p => p.slug));
+      return result.filter(i =>
+        titleSlugs.has(i.path.replace('/wiki/', '')) ||
+        i.label.toLowerCase().includes(q) ||
+        (i.meta || '').toLowerCase().includes(q)
+      );
+    }
+
     return result.filter(i => i.label.toLowerCase().includes(q) || (i.meta || '').toLowerCase().includes(q));
-  }, [query, domains]);
+  }, [query, domains, titleResults]);
 
   const handleSelect = useCallback((path: string) => {
     navigate(path); onClose();
@@ -56,7 +84,14 @@ export function WikiCommandPalette({ open, onClose }: Props) {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') { e.preventDefault(); setSelectedIdx(i => Math.min(i + 1, items.length - 1)); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); setSelectedIdx(i => Math.max(i - 1, 0)); }
-    else if (e.key === 'Enter' && items[selectedIdx]) { handleSelect(items[selectedIdx].path); }
+    else if (e.key === 'Enter') {
+      if (items[selectedIdx]) {
+        handleSelect(items[selectedIdx].path);
+      } else if (query.length >= 2) {
+        navigate(`/wiki/search?q=${encodeURIComponent(query)}`);
+        onClose();
+      }
+    }
   };
 
   if (!open) return null;
@@ -94,12 +129,14 @@ export function WikiCommandPalette({ open, onClose }: Props) {
         <div style={{ flex: 1, overflowY: 'auto', padding: 8 }}>
           {items.length === 0 && (
             <div style={{ padding: 24, textAlign: 'center', color: 'var(--cp-text-muted)', fontSize: 13 }}>
-              No results found
+              {query.length >= 2 ? (
+                <span>No results. <span onClick={() => { navigate(`/wiki/search?q=${encodeURIComponent(query)}`); onClose(); }} style={{ color: 'var(--cp-text-link)', cursor: 'pointer' }}>Search full wiki →</span></span>
+              ) : 'Type to search...'}
             </div>
           )}
           {items.map((item, idx) => (
             <div
-              key={item.path}
+              key={`${item.path}-${idx}`}
               onClick={() => handleSelect(item.path)}
               onMouseEnter={() => setSelectedIdx(idx)}
               style={{
