@@ -463,7 +463,7 @@ function QAAssistantRouteGuard() {
 // Knowledge Assist FAB — shown only on home route
 function KAFabRouteGuard() {
   const location = useLocation();
-  if (location.pathname !== '/') return null;
+  if (location.pathname !== '/for-you') return null;
   return <KAFab />;
 }
 
