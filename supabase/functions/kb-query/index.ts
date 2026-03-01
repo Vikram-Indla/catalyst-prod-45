@@ -944,12 +944,13 @@ serve(async (req) => {
         references: live.sources.map(s => ({ source_type: s, source_url: "live_query", relevance_score: live.confidence })),
       };
       // Cache for only 1 hour (live data changes frequently)
-      sb.from("kb_cache").upsert({ query_hash: qh, query_text: query,
-        response_json: resp, language, ttl_hours: 1 }).then(() => {});
-      sb.rpc("kb_log_query", { p_user_id: user_id, p_user_name: user_name, p_user_role: user_role,
+      await sb.from("kb_cache").upsert({ query_hash: qh, query_text: query,
+        response_json: resp, language, ttl_hours: 1 });
+      const liveLog = await sb.rpc("kb_log_query", { p_user_id: user_id, p_user_name: user_name, p_user_role: user_role,
         p_query_text: query, p_language: language, p_input_method: input_method,
         p_was_answered: true, p_response_time_ms: ms, p_cache_hit: false,
-        p_matched_category: "live_data", p_confidence_score: live.confidence }).then(() => {});
+        p_matched_category: "live_data", p_confidence_score: live.confidence });
+      if (liveLog.error) console.error("kb_log_query (live) error:", liveLog.error);
       return new Response(JSON.stringify({ ...resp, _meta: {
         source: "live_query", response_time_ms: ms, cache_hit: false,
         query_rewrites: [], candidates_retrieved: 0, candidates_reranked: 0 } }),
@@ -971,12 +972,13 @@ serve(async (req) => {
         matched_question: best.question, category: best.category,
         confidence: best.similarity, confidence_level: "high", evidence_used: ["training"],
         has_conflicts: false, has_stale_data: false, references: [] };
-      sb.from("kb_cache").upsert({ query_hash: qh, query_text: query,
-        response_json: resp, language, ttl_hours: 168 }).then(() => {});
-      sb.rpc("kb_log_query", { p_user_id: user_id, p_user_name: user_name, p_user_role: user_role,
+      await sb.from("kb_cache").upsert({ query_hash: qh, query_text: query,
+        response_json: resp, language, ttl_hours: 168 });
+      const trainLog = await sb.rpc("kb_log_query", { p_user_id: user_id, p_user_name: user_name, p_user_role: user_role,
         p_query_text: query, p_language: language, p_input_method: input_method,
         p_was_answered: true, p_response_time_ms: ms, p_cache_hit: false,
-        p_matched_category: best.category, p_confidence_score: best.similarity }).then(() => {});
+        p_matched_category: best.category, p_confidence_score: best.similarity });
+      if (trainLog.error) console.error("kb_log_query (train) error:", trainLog.error);
       return new Response(JSON.stringify({ ...resp, _meta: { source: "training", response_time_ms: ms,
         cache_hit: false, similarity: best.similarity, query_rewrites: rewrites } }),
         { headers: { ...cors, "Content-Type": "application/json" } });
@@ -985,10 +987,11 @@ serve(async (req) => {
     // No chunks = fallback
     if (!chunks.length) {
       const ms = Math.round(performance.now() - t0);
-      sb.rpc("kb_log_query", { p_user_id: user_id, p_user_name: user_name, p_user_role: user_role,
+      const fbLog = await sb.rpc("kb_log_query", { p_user_id: user_id, p_user_name: user_name, p_user_role: user_role,
         p_query_text: query, p_language: language, p_input_method: input_method,
         p_was_answered: false, p_response_time_ms: ms, p_cache_hit: false,
-        p_matched_category: null, p_confidence_score: 0 }).then(() => {});
+        p_matched_category: null, p_confidence_score: 0 });
+      if (fbLog.error) console.error("kb_log_query (fallback) error:", fbLog.error);
       return new Response(JSON.stringify({ type: "fallback", title: "No Evidence Found",
         answer: language === "ar" ? "لا أملك معلومات كافية للإجابة على هذا السؤال بدقة. تم تسجيل استفسارك وسيقوم الفريق بمراجعته."
           : "I don't have enough information to answer this question accurately. Your query has been logged and the team will review it.",

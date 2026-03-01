@@ -547,18 +547,26 @@ function HealthTab() {
 }
 
 /* ═══════════════════════════════════════════
-   TAB 1: QUERY LOG
+   TAB 1: QUERY LOG — with Training Capture
    ═══════════════════════════════════════════ */
 function QueryLogTab() {
   const [logs, setLogs] = useState<KBQueryLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<{ lang: string; method: string; helpful: string }>({
-    lang: 'all', method: 'all', helpful: 'all',
+  const [filter, setFilter] = useState<{ lang: string; method: string; helpful: string; answered: string }>({
+    lang: 'all', method: 'all', helpful: 'all', answered: 'all',
   });
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [draftAnswer, setDraftAnswer] = useState('');
+  const [draftCategory, setDraftCategory] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [trainedIds, setTrainedIds] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
+  const loadLogs = useCallback(() => {
+    setLoading(true);
     fetchQueryLogs(200).then(setLogs).catch(() => toast.error('Failed to load logs')).finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => { loadLogs(); }, [loadLogs]);
 
   const filtered = logs.filter((l) => {
     if (filter.lang !== 'all' && l.language !== filter.lang) return false;
@@ -566,15 +574,83 @@ function QueryLogTab() {
     if (filter.helpful === 'yes' && l.was_helpful !== true) return false;
     if (filter.helpful === 'no' && l.was_helpful !== false) return false;
     if (filter.helpful === 'none' && l.was_helpful !== null) return false;
+    if (filter.answered === 'unanswered' && l.was_answered !== false) return false;
+    if (filter.answered === 'low' && (l.confidence_score == null || l.confidence_score >= 0.7)) return false;
+    if (filter.answered === 'answered' && l.was_answered !== true) return false;
     return true;
   });
+
+  const needsTraining = (log: KBQueryLogEntry) =>
+    !log.was_answered || (log.confidence_score != null && log.confidence_score < 0.5);
+
+  const handleExpand = (log: KBQueryLogEntry) => {
+    if (expandedId === log.id) {
+      setExpandedId(null);
+      setDraftAnswer('');
+      setDraftCategory('');
+    } else {
+      setExpandedId(log.id);
+      setDraftAnswer('');
+      setDraftCategory(log.matched_category || '');
+    }
+  };
+
+  const handleSubmitTraining = async (log: KBQueryLogEntry) => {
+    if (!draftAnswer.trim()) { toast.error('Please provide an answer'); return; }
+    setSubmitting(true);
+    try {
+      const { data: maxQ } = await supabase.from('kb_training_questions')
+        .select('question_number').order('question_number', { ascending: false }).limit(1).single();
+      const nextNum = (maxQ?.question_number || 0) + 1;
+
+      const { error: insertErr } = await supabase.from('kb_training_questions').insert({
+        question_number: nextNum,
+        question: log.query_text,
+        expected_answer: draftAnswer.trim(),
+        category: draftCategory.trim() || 'User Query',
+        language: log.language || 'en',
+        is_embedded: false,
+      });
+      if (insertErr) throw insertErr;
+
+      await supabase.from('kb_cache').delete().eq('query_text', log.query_text);
+
+      toast.success(`Training question #${nextNum} created! Run "Embed All" from Health tab to vectorize.`);
+      setTrainedIds((prev) => new Set(prev).add(log.id));
+      setExpandedId(null);
+      setDraftAnswer('');
+      setDraftCategory('');
+    } catch (err: any) {
+      toast.error(`Failed to create training entry: ${err.message}`);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const unansweredCount = logs.filter(l => !l.was_answered).length;
+  const lowConfCount = logs.filter(l => l.was_answered && l.confidence_score != null && l.confidence_score < 0.5).length;
 
   if (loading) return <div className="flex justify-center py-16"><RefreshCw className="animate-spin text-zinc-400" size={24} /></div>;
 
   return (
-    <div>
+    <div className="space-y-4">
+      {/* Training opportunity banner */}
+      {(unansweredCount > 0 || lowConfCount > 0) && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+          <AlertTriangle size={18} className="text-amber-500 mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="text-sm font-semibold text-amber-800">Training Opportunities Detected</p>
+            <p className="text-xs text-amber-700 mt-1">
+              {unansweredCount > 0 && <><strong>{unansweredCount}</strong> unanswered queries. </>}
+              {lowConfCount > 0 && <><strong>{lowConfCount}</strong> low-confidence responses. </>}
+              Expand a row to provide an answer and push it to the training pipeline.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Filters */}
-      <div className="flex items-center gap-3 mb-4 flex-wrap">
+      <div className="flex items-center gap-3 flex-wrap">
         <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">Filters</span>
         <select value={filter.lang} onChange={(e) => setFilter((f) => ({ ...f, lang: e.target.value }))} className="text-xs border border-zinc-200 rounded px-2 py-1">
           <option value="all">All Languages</option><option value="en">EN</option>
@@ -585,6 +661,15 @@ function QueryLogTab() {
         <select value={filter.helpful} onChange={(e) => setFilter((f) => ({ ...f, helpful: e.target.value }))} className="text-xs border border-zinc-200 rounded px-2 py-1">
           <option value="all">All Feedback</option><option value="yes">Helpful</option><option value="no">Not Helpful</option><option value="none">No Feedback</option>
         </select>
+        <select value={filter.answered} onChange={(e) => setFilter((f) => ({ ...f, answered: e.target.value }))} className="text-xs border border-zinc-200 rounded px-2 py-1">
+          <option value="all">All Status</option>
+          <option value="unanswered">❌ Unanswered</option>
+          <option value="low">⚠️ Low Confidence (&lt;50%)</option>
+          <option value="answered">✅ Answered</option>
+        </select>
+        <button onClick={loadLogs} className="text-xs px-2 py-1 border border-zinc-200 rounded hover:bg-zinc-50 flex items-center gap-1">
+          <RefreshCw size={11} /> Refresh
+        </button>
         <span className="ml-auto text-xs text-zinc-400">{filtered.length} of {logs.length} entries</span>
       </div>
 
@@ -593,36 +678,131 @@ function QueryLogTab() {
         <table className="min-w-full text-xs">
           <thead className="bg-zinc-50">
             <tr>
-              {['Time', 'User', 'Query', 'Lang', 'Method', 'Category', 'Confidence', 'Speed', 'Cache', 'Helpful'].map((h) => (
+              {['', 'Time', 'User', 'Query', 'Lang', 'Method', 'Category', 'Confidence', 'Speed', 'Cache', 'Helpful', 'Action'].map((h) => (
                 <th key={h} className="px-3 py-2 text-left font-semibold text-zinc-500 uppercase tracking-wide whitespace-nowrap">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100">
-            {filtered.map((log) => (
-              <tr key={log.id} className="hover:bg-zinc-50/50">
-                <td className="px-3 py-2 text-zinc-500 whitespace-nowrap">{log.created_at ? formatDistanceToNow(new Date(log.created_at), { addSuffix: true }) : '—'}</td>
-                <td className="px-3 py-2 whitespace-nowrap">
-                  <span className="font-medium text-zinc-700">{log.user_name || '—'}</span>
-                  {log.user_role && <span className={badge('bg-zinc-100 text-zinc-600 ml-1')}>{log.user_role}</span>}
-                </td>
-                <td className="px-3 py-2 max-w-[260px] truncate text-zinc-700">{log.query_text}</td>
-                <td className="px-3 py-2"><span className={badge('bg-blue-50 text-blue-700')}>{log.language || 'en'}</span></td>
-                <td className="px-3 py-2">{log.input_method === 'voice' ? <Mic size={13} className="text-violet-500" /> : <Keyboard size={13} className="text-zinc-400" />}</td>
-                <td className="px-3 py-2">{log.matched_category ? <span className={badge('bg-blue-50 text-blue-700')}>{log.matched_category}</span> : <span className="text-zinc-300">—</span>}</td>
-                <td className="px-3 py-2"><ConfidenceBadge v={log.confidence_score} /></td>
-                <td className="px-3 py-2 text-zinc-500 whitespace-nowrap">{log.response_time_ms ?? '—'}ms</td>
-                <td className="px-3 py-2">{log.cache_hit ? <Check size={13} className="text-emerald-500" /> : <XIcon size={13} className="text-zinc-300" />}</td>
-                <td className="px-3 py-2">
-                  {log.was_helpful === true && <ThumbsUp size={13} className="text-emerald-500" />}
-                  {log.was_helpful === false && <ThumbsDown size={13} className="text-red-500" />}
-                  {log.was_helpful == null && <span className="text-zinc-300">—</span>}
-                </td>
-              </tr>
-            ))}
+            {filtered.map((log) => {
+              const isNeedsTrain = needsTraining(log);
+              const isTrained = trainedIds.has(log.id);
+              const isExpanded = expandedId === log.id;
+
+              return (
+                <React.Fragment key={log.id}>
+                  <tr className={`hover:bg-zinc-50/50 ${isNeedsTrain && !isTrained ? 'bg-amber-50/30' : ''}`}>
+                    <td className="px-2 py-2 w-6">
+                      {isNeedsTrain && !isTrained && <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" title="Needs training" />}
+                      {isTrained && <CheckCircle2 size={13} className="text-emerald-500" />}
+                    </td>
+                    <td className="px-3 py-2 text-zinc-500 whitespace-nowrap">{log.created_at ? formatDistanceToNow(new Date(log.created_at), { addSuffix: true }) : '—'}</td>
+                    <td className="px-3 py-2 whitespace-nowrap">
+                      <span className="font-medium text-zinc-700">{log.user_name || '—'}</span>
+                      {log.user_role && <span className={badge('bg-zinc-100 text-zinc-600 ml-1')}>{log.user_role}</span>}
+                    </td>
+                    <td className="px-3 py-2 max-w-[260px] truncate text-zinc-700">{log.query_text}</td>
+                    <td className="px-3 py-2"><span className={badge('bg-blue-50 text-blue-700')}>{log.language || 'en'}</span></td>
+                    <td className="px-3 py-2">{log.input_method === 'voice' ? <Mic size={13} className="text-violet-500" /> : <Keyboard size={13} className="text-zinc-400" />}</td>
+                    <td className="px-3 py-2">{log.matched_category ? <span className={badge('bg-blue-50 text-blue-700')}>{log.matched_category}</span> : <span className="text-zinc-300">—</span>}</td>
+                    <td className="px-3 py-2"><ConfidenceBadge v={log.confidence_score} /></td>
+                    <td className="px-3 py-2 text-zinc-500 whitespace-nowrap">{log.response_time_ms ?? '—'}ms</td>
+                    <td className="px-3 py-2">{log.cache_hit ? <Check size={13} className="text-emerald-500" /> : <XIcon size={13} className="text-zinc-300" />}</td>
+                    <td className="px-3 py-2">
+                      {log.was_helpful === true && <ThumbsUp size={13} className="text-emerald-500" />}
+                      {log.was_helpful === false && <ThumbsDown size={13} className="text-red-500" />}
+                      {log.was_helpful == null && <span className="text-zinc-300">—</span>}
+                    </td>
+                    <td className="px-3 py-2">
+                      {isTrained ? (
+                        <span className={badge('bg-emerald-50 text-emerald-700')}>Trained</span>
+                      ) : isNeedsTrain ? (
+                        <button
+                          onClick={() => handleExpand(log)}
+                          className="px-2 py-1 text-[10px] font-semibold rounded bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors"
+                        >
+                          {isExpanded ? 'Close' : '📝 Capture'}
+                        </button>
+                      ) : (
+                        <span className="text-zinc-300 text-[10px]">—</span>
+                      )}
+                    </td>
+                  </tr>
+
+                  {isExpanded && (
+                    <tr>
+                      <td colSpan={12} className="px-0 py-0">
+                        <div className="bg-blue-50/60 border-t border-b border-blue-100 px-6 py-4 space-y-3">
+                          <div className="flex items-start gap-3">
+                            <Brain size={16} className="text-blue-600 mt-0.5 flex-shrink-0" />
+                            <div className="flex-1">
+                              <h4 className="text-sm font-bold text-zinc-800">Train KB on this query</h4>
+                              <p className="text-xs text-zinc-500 mt-0.5">
+                                Provide the correct answer below. Once confirmed, it will be added to the training set and available after the next embedding run.
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="bg-white rounded-lg border border-zinc-200 p-3">
+                            <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide mb-1">User Question</p>
+                            <p className="text-sm text-zinc-800 font-medium">{log.query_text}</p>
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wide block mb-1">Category</label>
+                            <input
+                              type="text"
+                              value={draftCategory}
+                              onChange={(e) => setDraftCategory(e.target.value)}
+                              placeholder="e.g. Person & Resource, Work Item Status..."
+                              className="w-full text-xs border border-zinc-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wide block mb-1">Expected Answer</label>
+                            <textarea
+                              value={draftAnswer}
+                              onChange={(e) => setDraftAnswer(e.target.value)}
+                              rows={4}
+                              placeholder="Type the correct, concise answer for this question. 2-4 sentences recommended."
+                              className="w-full text-xs border border-zinc-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none resize-y"
+                            />
+                            <p className="text-[10px] text-zinc-400 mt-1">{draftAnswer.trim().split(/\s+/).filter(Boolean).length} words</p>
+                          </div>
+
+                          <div className="flex items-center gap-2 pt-1">
+                            <button
+                              onClick={() => handleSubmitTraining(log)}
+                              disabled={submitting || !draftAnswer.trim()}
+                              className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                            >
+                              {submitting ? <RefreshCw size={12} className="animate-spin" /> : <Check size={12} />}
+                              {submitting ? 'Saving...' : 'Confirm & Add to Training'}
+                            </button>
+                            <button
+                              onClick={() => { setExpandedId(null); setDraftAnswer(''); setDraftCategory(''); }}
+                              className="px-3 py-2 text-xs font-semibold text-zinc-600 hover:text-zinc-800 transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              );
+            })}
           </tbody>
         </table>
       </div>
+
+      {filtered.length === 0 && (
+        <div className="text-center py-12 text-zinc-400 text-sm">
+          {logs.length === 0 ? 'No query logs yet. Queries will appear here after users interact with the KB.' : 'No logs match the current filters.'}
+        </div>
+      )}
     </div>
   );
 }
