@@ -77,6 +77,17 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
   const fullName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Vikram';
   const name = firstName(fullName);
 
+  // Reset panel state every time it opens
+  useEffect(() => {
+    if (isOpen) {
+      setView('land');
+      setInput('');
+      setMessages([]);
+      reset();
+      pendingRef.current = false;
+    }
+  }, [isOpen]);
+
   // Animate risk bars on mount
   useEffect(() => {
     if (isOpen && view === 'land') {
