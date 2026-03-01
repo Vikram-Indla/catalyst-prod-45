@@ -178,6 +178,12 @@ const adminPockets = [
       { label: 'Training', path: '/admin/kb/training' },
     ],
   },
+  {
+    id: 'wiki-admin',
+    label: 'Wiki Admin',
+    icon: Settings,
+    path: '/admin/wiki',
+  },
 ];
 
 // Flatten all paths for search
