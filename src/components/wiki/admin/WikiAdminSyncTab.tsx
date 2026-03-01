@@ -1,34 +1,58 @@
 /**
- * WikiAdminSyncTab — Sync pipeline 8-step visualization
- * Cycle 1: edge cases (empty, failed, concurrent prevention, polling)
- * Cycle 2: V12 token compliance
+ * WikiAdminSyncTab — Sync pipeline with real-time progress visibility
  */
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useWikiSyncRuns, useWikiAdminStats, useTriggerSync, useWikiSyncRunsPolling } from '@/hooks/useWikiAdminData';
 import { SkeletonBlock } from '@/components/wiki/WikiTokens';
-import { Play, Check, Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Play, Check, Loader2, AlertTriangle, RefreshCw, Clock, Activity } from 'lucide-react';
 import { format } from 'date-fns';
 
 const PIPELINE_STEPS = [
-  'Jira Fetch', 'Delta Detection', 'Chunking', 'Embedding',
-  'Topic Extraction', 'Page Generation', 'Page Update', 'Cache Warm',
+  { name: 'Jira Fetch', desc: 'Fetching records from connected sources' },
+  { name: 'Delta Detection', desc: 'Identifying new and updated records' },
+  { name: 'Chunking', desc: 'Splitting content into semantic chunks' },
+  { name: 'Embedding', desc: 'Generating vector embeddings via OpenAI' },
+  { name: 'Topic Extraction', desc: 'Classifying chunks by domain' },
+  { name: 'Page Generation', desc: 'Generating wiki article content' },
+  { name: 'Page Update', desc: 'Updating existing wiki pages' },
+  { name: 'Cache Warm', desc: 'Pre-warming the query cache' },
 ];
+
+function ElapsedTimer({ startedAt }: { startedAt: string }) {
+  const [elapsed, setElapsed] = useState(0);
+  const ref = useRef<ReturnType<typeof setInterval>>();
+
+  useEffect(() => {
+    const start = new Date(startedAt).getTime();
+    const tick = () => setElapsed(Math.floor((Date.now() - start) / 1000));
+    tick();
+    ref.current = setInterval(tick, 1000);
+    return () => clearInterval(ref.current);
+  }, [startedAt]);
+
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
+  return (
+    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, fontWeight: 600 }}>
+      {mins > 0 ? `${mins}m ${secs}s` : `${secs}s`}
+    </span>
+  );
+}
 
 export function WikiAdminSyncTab() {
   const { data: stats } = useWikiAdminStats();
   const triggerSync = useTriggerSync();
 
-  // Detect if any run is currently running for concurrent prevention + polling
   const latestRuns = useWikiSyncRuns(5);
   const isRunning = useMemo(() => (latestRuns.data ?? []).some(r => r.status === 'running'), [latestRuns.data]);
 
-  // Poll every 3s while a sync is running
   const polled = useWikiSyncRunsPolling(isRunning);
   const runs = isRunning ? (polled.data ?? latestRuns.data ?? []) : (latestRuns.data ?? []);
   const isLoading = latestRuns.isLoading;
 
   const latestRun = runs[0] ?? null;
   const isFailed = latestRun?.status === 'failed';
+  const isLatestRunning = latestRun?.status === 'running';
 
   if (isLoading) {
     return (
@@ -41,10 +65,16 @@ export function WikiAdminSyncTab() {
     );
   }
 
-  const steps: Array<{ name: string; status: string; result: string; durationMs: number }> =
-    latestRun?.steps && Array.isArray(latestRun.steps) && latestRun.steps.length > 0
-      ? (latestRun.steps as any[])
-      : PIPELINE_STEPS.map((name) => ({ name, status: 'pending', result: '—', durationMs: 0 }));
+  const rawSteps = latestRun?.steps && Array.isArray(latestRun.steps) && latestRun.steps.length > 0
+    ? (latestRun.steps as any[])
+    : null;
+
+  const steps = rawSteps ?? PIPELINE_STEPS.map((s) => ({ name: s.name, status: 'pending', result: '—', durationMs: 0 }));
+
+  // Progress calculation
+  const doneCount = steps.filter((s: any) => s.status === 'done').length;
+  const activeStep = steps.find((s: any) => s.status === 'active');
+  const progressPct = Math.round((doneCount / steps.length) * 100);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -88,6 +118,59 @@ export function WikiAdminSyncTab() {
         </button>
       </div>
 
+      {/* Running sync progress banner */}
+      {isLatestRunning && latestRun && (
+        <div style={{
+          padding: '14px 18px', borderRadius: 6,
+          background: 'linear-gradient(135deg, rgba(37,99,235,0.06), rgba(37,99,235,0.02))',
+          border: '1px solid rgba(37,99,235,0.2)',
+        }}>
+          {/* Progress bar */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
+            <Activity style={{ width: 16, height: 16, color: '#2563EB', flexShrink: 0 }} />
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>
+              Sync in progress
+            </span>
+            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#2563EB', fontWeight: 700 }}>
+              {progressPct}%
+            </span>
+            <div style={{ flex: 1 }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--cp-text-tertiary, #64748B)' }}>
+              <Clock style={{ width: 13, height: 13 }} />
+              <ElapsedTimer startedAt={latestRun.started_at} />
+            </div>
+          </div>
+          {/* Progress bar visual */}
+          <div style={{ height: 6, borderRadius: 3, background: 'rgba(37,99,235,0.1)', marginBottom: 8, overflow: 'hidden' }}>
+            <div style={{
+              height: '100%', borderRadius: 3,
+              background: 'var(--cp-primary-60, #2563EB)',
+              width: `${progressPct}%`,
+              transition: 'width 300ms ease',
+            }} />
+          </div>
+          {/* Active step info */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontFamily: 'Inter, sans-serif', fontSize: 12 }}>
+            <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>
+              Step {doneCount + 1} of {steps.length}
+              {activeStep ? `: ${activeStep.name}` : rawSteps ? '' : ' — Initializing pipeline…'}
+            </span>
+            <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>·</span>
+            <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>
+              {latestRun.total_items_processed ?? 0} items processed
+            </span>
+            {(latestRun.new_chunks ?? 0) > 0 && (
+              <>
+                <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>·</span>
+                <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>
+                  {latestRun.new_chunks} new chunks
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Failed sync error banner */}
       {isFailed && (
         <div style={{
@@ -98,7 +181,7 @@ export function WikiAdminSyncTab() {
         }}>
           <AlertTriangle style={{ width: 16, height: 16, flexShrink: 0 }} />
           <span style={{ flex: 1 }}>
-            Sync failed{latestRun.error_message ? `: ${latestRun.error_message}` : ''}
+            Sync failed{latestRun?.error_message ? `: ${latestRun.error_message}` : ''}
           </span>
           <button
             onClick={() => triggerSync.mutate()}
@@ -130,16 +213,33 @@ export function WikiAdminSyncTab() {
           border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
           borderRadius: 4, overflow: 'hidden',
         }}>
-          {steps.map((step, i) => {
+          {/* Column headers */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 12, padding: '6px 16px',
+            background: 'var(--cp-bg-sunken, #F8FAFC)',
+            borderBottom: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.12))',
+            fontFamily: 'Inter, sans-serif', fontSize: 10, fontWeight: 700,
+            textTransform: 'uppercase', letterSpacing: '0.05em',
+            color: 'var(--cp-text-tertiary, #64748B)',
+          }}>
+            <span style={{ width: 28 }}>#</span>
+            <span style={{ flex: 1 }}>Step</span>
+            <span style={{ minWidth: 140 }}>Status</span>
+            <span style={{ minWidth: 120 }}>Result</span>
+            <span style={{ minWidth: 60, textAlign: 'end' }}>Duration</span>
+          </div>
+          {steps.map((step: any, i: number) => {
             const isDone = step.status === 'done';
             const isActive = step.status === 'active';
             const isStepFailed = step.status === 'failed';
+            const stepMeta = PIPELINE_STEPS[i];
             return (
               <div key={i} style={{
                 display: 'flex', alignItems: 'center', gap: 12,
-                padding: '10px 16px', height: 36, boxSizing: 'content-box',
+                padding: '10px 16px', minHeight: 44, boxSizing: 'border-box',
                 borderBottom: i < steps.length - 1 ? '0.75px solid var(--cp-border-default, rgba(15,23,42,0.08))' : undefined,
                 background: isActive ? 'rgba(37,99,235,0.04)' : 'transparent',
+                transition: 'background 200ms ease',
               }}>
                 <div style={{
                   width: 28, height: 28, borderRadius: '50%',
@@ -150,14 +250,61 @@ export function WikiAdminSyncTab() {
                   color: isDone ? '#0D7331' : isStepFailed ? '#DC2626' : isActive ? '#0747A6' : 'var(--cp-text-tertiary, #64748B)',
                   ...(isActive ? { boxShadow: '0 0 0 3px rgba(37,99,235,0.2)' } : {}),
                 }}>
-                  {isDone ? <Check style={{ width: 14, height: 14 }} /> : (i + 1)}
+                  {isDone
+                    ? <Check style={{ width: 14, height: 14 }} />
+                    : isActive
+                      ? <Loader2 style={{ width: 14, height: 14, animation: 'spin 1s linear infinite' }} />
+                      : (i + 1)
+                  }
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{
+                    fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
+                    color: 'var(--cp-text-primary, #0F172A)',
+                  }}>{step.name}</span>
+                  {isActive && stepMeta && (
+                    <div style={{
+                      fontFamily: 'Inter, sans-serif', fontSize: 11,
+                      color: 'var(--cp-text-tertiary, #64748B)', marginTop: 1,
+                    }}>
+                      {stepMeta.desc}
+                    </div>
+                  )}
                 </div>
                 <span style={{
-                  fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
-                  color: 'var(--cp-text-primary, #0F172A)', flex: 1,
-                }}>{step.name}</span>
+                  minWidth: 140, fontFamily: 'Inter, sans-serif', fontSize: 11,
+                }}>
+                  {isActive && (
+                    <span style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 4,
+                      padding: '2px 8px', borderRadius: 3,
+                      background: '#DEEBFF', color: '#0747A6',
+                      fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
+                    }}>
+                      <Loader2 style={{ width: 10, height: 10, animation: 'spin 1s linear infinite' }} />
+                      Processing
+                    </span>
+                  )}
+                  {isDone && (
+                    <span style={{
+                      padding: '2px 8px', borderRadius: 3,
+                      background: '#E3FCEF', color: '#0D7331',
+                      fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em',
+                    }}>Complete</span>
+                  )}
+                  {isStepFailed && (
+                    <span style={{
+                      padding: '2px 8px', borderRadius: 3,
+                      background: 'rgba(220,38,38,0.08)', color: '#DC2626',
+                      fontWeight: 700, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em',
+                    }}>Failed</span>
+                  )}
+                  {!isActive && !isDone && !isStepFailed && (
+                    <span style={{ color: 'var(--cp-text-tertiary, #94A3B8)', fontSize: 11 }}>Waiting</span>
+                  )}
+                </span>
                 <span style={{
-                  fontFamily: 'Inter, sans-serif', fontSize: 12,
+                  fontFamily: 'JetBrains Mono, monospace', fontSize: 11,
                   color: 'var(--cp-text-tertiary, #64748B)', minWidth: 120,
                 }}>{step.result ?? '—'}</span>
                 <span style={{
@@ -170,7 +317,7 @@ export function WikiAdminSyncTab() {
         </div>
       )}
 
-      {/* Summary banner */}
+      {/* Completed summary banner */}
       {latestRun?.status === 'complete' && (
         <div style={{
           padding: '10px 16px', borderRadius: 6,
@@ -239,7 +386,7 @@ export function StatusLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
     complete: { bg: '#E3FCEF', color: '#0D7331' },
     running: { bg: '#DEEBFF', color: '#0747A6' },
-    failed: { bg: '#DFE1E6', color: '#44546F' },
+    failed: { bg: 'rgba(220,38,38,0.08)', color: '#DC2626' },
     partial: { bg: '#DFE1E6', color: '#44546F' },
   };
   const s = map[status] ?? map.failed;
