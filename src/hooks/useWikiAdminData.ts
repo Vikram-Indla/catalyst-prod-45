@@ -288,14 +288,19 @@ export function useTriggerSync() {
         throw fnError;
       }
 
+      const summary = result?.summary ?? {};
+      const failedTables = summary?.failed_tables ?? 0;
+      const totalTables = summary?.total_tables ?? 0;
+
       await fromAny('wiki_sync_runs')
         .update({
-          status: result?.errors?.length ? 'partial' : 'complete',
+          status: failedTables === 0 ? 'complete' : (failedTables === totalTables && totalTables > 0 ? 'failed' : 'partial'),
           completed_at: new Date().toISOString(),
           steps: result?.steps || [],
-          total_items_processed: result?.rows_processed ?? 0,
-          new_chunks: result?.new_chunks ?? 0,
-          total_duration_ms: result?.duration_ms ?? 0,
+          total_items_processed: summary?.rows_processed ?? result?.rows_processed ?? 0,
+          new_chunks: summary?.new_chunks ?? result?.new_chunks ?? 0,
+          total_duration_ms: summary?.duration_ms ?? result?.duration_ms ?? 0,
+          error_message: failedTables > 0 ? `${failedTables} table(s) failed` : null,
         })
         .eq('id', runId);
 

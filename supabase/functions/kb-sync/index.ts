@@ -20,6 +20,11 @@ const BATCH_SIZE = 20;
 const CHUNK_MAX_TOKENS = 500;
 const CHUNK_OVERLAP_TOKENS = 50;
 
+async function updateSyncRun(sb: any, runId: string | undefined, patch: Record<string, any>) {
+  if (!runId) return;
+  await sb.from("wiki_sync_runs").update(patch).eq("id", runId);
+}
+
 // ── Helpers ──
 function estimateTokens(s: string): number { return Math.ceil(s.length / 4); }
 
@@ -258,7 +263,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
   try {
-    const { action = "status", table_name, custom_config } = await req.json().catch(() => ({ action: "status" }));
+    const { action = "status", table_name, custom_config, sync_run_id } = await req.json().catch(() => ({ action: "status" }));
     const sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
     if (action === "discover") {
@@ -383,8 +388,43 @@ serve(async (req) => {
     }
 
     if (action === "sync_all") {
+      const startedAt = Date.now();
+      let rowsProcessed = 0;
+      let newChunks = 0;
+      let failedTables = 0;
+
+      const steps = TABLE_CONFIGS.map((config, idx) => ({
+        name: config.table,
+        status: "pending",
+        result: "—",
+        durationMs: 0,
+        rowsProcessed: 0,
+        newChunks: 0,
+        synced: 0,
+        order: idx + 1,
+      }));
+
+      await updateSyncRun(sb, sync_run_id, {
+        status: "running",
+        steps,
+        total_items_processed: 0,
+        new_chunks: 0,
+        error_message: null,
+      });
+
       const results: any[] = [];
-      for (const config of TABLE_CONFIGS) {
+
+      for (let i = 0; i < TABLE_CONFIGS.length; i++) {
+        const config = TABLE_CONFIGS[i];
+        const stepStart = Date.now();
+
+        steps[i] = {
+          ...steps[i],
+          status: "active",
+          result: "Syncing…",
+        };
+        await updateSyncRun(sb, sync_run_id, { steps });
+
         try {
           const res = await fetch(`${SUPABASE_URL}/functions/v1/kb-sync`, {
             method: "POST",
@@ -394,12 +434,89 @@ serve(async (req) => {
             },
             body: JSON.stringify({ action: "sync_table", table_name: config.table }),
           });
-          results.push({ table: config.table, ...(await res.json()) });
+
+          const payload = await res.json();
+          const stepDuration = Date.now() - stepStart;
+          const stepRows = payload?.rows_processed ?? 0;
+          const stepNewChunks = payload?.new_chunks ?? 0;
+          const stepSynced = payload?.synced ?? 0;
+
+          rowsProcessed += stepRows;
+          newChunks += stepNewChunks;
+
+          if (!res.ok || payload?.error) {
+            failedTables += 1;
+            steps[i] = {
+              ...steps[i],
+              status: "failed",
+              durationMs: stepDuration,
+              rowsProcessed: stepRows,
+              newChunks: stepNewChunks,
+              synced: stepSynced,
+              result: payload?.error || `HTTP ${res.status}`,
+            };
+          } else {
+            steps[i] = {
+              ...steps[i],
+              status: "done",
+              durationMs: stepDuration,
+              rowsProcessed: stepRows,
+              newChunks: stepNewChunks,
+              synced: stepSynced,
+              result: `${stepSynced} synced`,
+            };
+          }
+
+          results.push({ table: config.table, ...payload });
+
+          await updateSyncRun(sb, sync_run_id, {
+            steps,
+            total_items_processed: rowsProcessed,
+            new_chunks: newChunks,
+            error_message: failedTables > 0 ? `${failedTables} table(s) failed` : null,
+          });
         } catch (e: any) {
+          failedTables += 1;
+          const stepDuration = Date.now() - stepStart;
+          steps[i] = {
+            ...steps[i],
+            status: "failed",
+            durationMs: stepDuration,
+            result: e.message,
+          };
           results.push({ table: config.table, error: e.message });
+
+          await updateSyncRun(sb, sync_run_id, {
+            steps,
+            error_message: `${failedTables} table(s) failed`,
+          });
         }
       }
-      return new Response(JSON.stringify({ results }),
+
+      const durationMs = Date.now() - startedAt;
+      const finalStatus = failedTables === 0 ? "complete" : (failedTables === TABLE_CONFIGS.length ? "failed" : "partial");
+
+      await updateSyncRun(sb, sync_run_id, {
+        status: finalStatus,
+        completed_at: new Date().toISOString(),
+        total_duration_ms: durationMs,
+        total_items_processed: rowsProcessed,
+        new_chunks: newChunks,
+        steps,
+        error_message: failedTables > 0 ? `${failedTables} table(s) failed` : null,
+      });
+
+      return new Response(JSON.stringify({
+        results,
+        steps,
+        summary: {
+          total_tables: TABLE_CONFIGS.length,
+          failed_tables: failedTables,
+          rows_processed: rowsProcessed,
+          new_chunks: newChunks,
+          duration_ms: durationMs,
+        },
+      }),
         { headers: { ...cors, "Content-Type": "application/json" } });
     }
 
