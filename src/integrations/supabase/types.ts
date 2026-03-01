@@ -57925,6 +57925,13 @@ export type Database = {
             foreignKeyName: "wiki_bookmarks_page_id_fkey"
             columns: ["page_id"]
             isOneToOne: false
+            referencedRelation: "wiki_page_admin_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_bookmarks_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
             referencedRelation: "wiki_pages"
             referencedColumns: ["id"]
           },
@@ -58024,7 +58031,21 @@ export type Database = {
             foreignKeyName: "wiki_cross_references_source_page_id_fkey"
             columns: ["source_page_id"]
             isOneToOne: false
+            referencedRelation: "wiki_page_admin_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_cross_references_source_page_id_fkey"
+            columns: ["source_page_id"]
+            isOneToOne: false
             referencedRelation: "wiki_pages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_cross_references_target_page_id_fkey"
+            columns: ["target_page_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_page_admin_list"
             referencedColumns: ["id"]
           },
           {
@@ -58158,6 +58179,36 @@ export type Database = {
         }
         Relationships: []
       }
+      wiki_health_checks: {
+        Row: {
+          category: string
+          checked_at: string | null
+          id: string
+          metric: string
+          status: string | null
+          threshold: number | null
+          value: number | null
+        }
+        Insert: {
+          category: string
+          checked_at?: string | null
+          id?: string
+          metric: string
+          status?: string | null
+          threshold?: number | null
+          value?: number | null
+        }
+        Update: {
+          category?: string
+          checked_at?: string | null
+          id?: string
+          metric?: string
+          status?: string | null
+          threshold?: number | null
+          value?: number | null
+        }
+        Relationships: []
+      }
       wiki_pages: {
         Row: {
           ai_confidence: number | null
@@ -58256,6 +58307,13 @@ export type Database = {
             foreignKeyName: "wiki_read_log_page_id_fkey"
             columns: ["page_id"]
             isOneToOne: false
+            referencedRelation: "wiki_page_admin_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_read_log_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
             referencedRelation: "wiki_pages"
             referencedColumns: ["id"]
           },
@@ -58293,6 +58351,13 @@ export type Database = {
           url?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "wiki_references_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_page_admin_list"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "wiki_references_page_id_fkey"
             columns: ["page_id"]
@@ -58347,10 +58412,65 @@ export type Database = {
             foreignKeyName: "wiki_sections_page_id_fkey"
             columns: ["page_id"]
             isOneToOne: false
+            referencedRelation: "wiki_page_admin_list"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_sections_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
             referencedRelation: "wiki_pages"
             referencedColumns: ["id"]
           },
         ]
+      }
+      wiki_sync_runs: {
+        Row: {
+          completed_at: string | null
+          created_by: string | null
+          error_message: string | null
+          id: string
+          new_chunks: number | null
+          new_pages: number | null
+          started_at: string | null
+          status: string | null
+          steps: Json | null
+          total_duration_ms: number | null
+          total_items_processed: number | null
+          triggered_by: string | null
+          updated_pages: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_by?: string | null
+          error_message?: string | null
+          id?: string
+          new_chunks?: number | null
+          new_pages?: number | null
+          started_at?: string | null
+          status?: string | null
+          steps?: Json | null
+          total_duration_ms?: number | null
+          total_items_processed?: number | null
+          triggered_by?: string | null
+          updated_pages?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_by?: string | null
+          error_message?: string | null
+          id?: string
+          new_chunks?: number | null
+          new_pages?: number | null
+          started_at?: string | null
+          status?: string | null
+          steps?: Json | null
+          total_duration_ms?: number | null
+          total_items_processed?: number | null
+          triggered_by?: string | null
+          updated_pages?: number | null
+        }
+        Relationships: []
       }
       work_item_activity: {
         Row: {
@@ -65228,6 +65348,21 @@ export type Database = {
           },
         ]
       }
+      wiki_admin_stats: {
+        Row: {
+          avg_confidence: number | null
+          cache_entries: number | null
+          draft_pages: number | null
+          failed_documents: number | null
+          last_sync: string | null
+          queries_today: number | null
+          review_pages: number | null
+          total_chunks: number | null
+          total_documents: number | null
+          total_pages: number | null
+        }
+        Relationships: []
+      }
       wiki_domain_stats: {
         Row: {
           article_count: number | null
@@ -65241,6 +65376,24 @@ export type Database = {
           name: string | null
           name_ar: string | null
           sort_order: number | null
+        }
+        Relationships: []
+      }
+      wiki_page_admin_list: {
+        Row: {
+          ai_confidence: number | null
+          days_since_update: number | null
+          domain_code: string | null
+          id: string | null
+          last_generated: string | null
+          read_count: number | null
+          reference_count: number | null
+          slug: string | null
+          source_coverage: number | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          version: number | null
         }
         Relationships: []
       }
