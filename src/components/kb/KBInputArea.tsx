@@ -134,20 +134,11 @@ export function KBInputArea({
           onFocus={() => setInputFocused(true)}
           onBlur={() => setInputFocused(false)}
           placeholder={isRTL ? '...اسأل أي شيء' : 'Ask anything...'}
+          className="kb-input-field"
           style={{
             flex: 1,
             width: '100%',
             minWidth: 0,
-            border: 'none',
-            outline: 'none',
-            boxShadow: 'none',
-            background: 'transparent',
-            borderRadius: 0,
-            padding: 0,
-            margin: 0,
-            appearance: 'none',
-            WebkitAppearance: 'none',
-            MozAppearance: 'none',
             fontSize: 14,
             fontWeight: 400,
             color: '#18181B',
@@ -191,6 +182,24 @@ export function KBInputArea({
       </p>
 
       <style>{`
+        .kb-input-field,
+        .kb-input-field:focus,
+        .kb-input-field:active,
+        .kb-input-field:hover {
+          border: none !important;
+          outline: none !important;
+          box-shadow: none !important;
+          background: transparent !important;
+          border-radius: 0 !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          -webkit-appearance: none !important;
+          -moz-appearance: none !important;
+          appearance: none !important;
+        }
+        .kb-input-field::placeholder {
+          color: #71717A;
+        }
         @keyframes kb-mic-pulse {
           0% { box-shadow: 0 0 0 0 rgba(220,38,38,0.4); }
           70% { box-shadow: 0 0 0 8px rgba(220,38,38,0); }
