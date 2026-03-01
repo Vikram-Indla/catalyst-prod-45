@@ -1,7 +1,7 @@
 /**
  * WikiAdminSyncTab — Sync pipeline with real-time progress visibility
  */
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useWikiSyncRuns, useWikiAdminStats, useTriggerSync, useWikiSyncRunsPolling } from '@/hooks/useWikiAdminData';
 import { SkeletonBlock } from '@/components/wiki/WikiTokens';
 import { Play, Check, Loader2, AlertTriangle, RefreshCw, Clock, Activity } from 'lucide-react';
@@ -44,15 +44,17 @@ export function WikiAdminSyncTab() {
   const triggerSync = useTriggerSync();
 
   const latestRuns = useWikiSyncRuns(5);
-  const isRunning = useMemo(() => (latestRuns.data ?? []).some(r => r.status === 'running'), [latestRuns.data]);
+  const initialLatestRun = latestRuns.data?.[0] ?? null;
+  const shouldPoll = initialLatestRun?.status === 'running';
 
-  const polled = useWikiSyncRunsPolling(isRunning);
-  const runs = isRunning ? (polled.data ?? latestRuns.data ?? []) : (latestRuns.data ?? []);
+  const polled = useWikiSyncRunsPolling(shouldPoll);
+  const runs = shouldPoll ? (polled.data ?? latestRuns.data ?? []) : (latestRuns.data ?? []);
   const isLoading = latestRuns.isLoading;
 
   const latestRun = runs[0] ?? null;
+  const isRunning = latestRun?.status === 'running';
   const isFailed = latestRun?.status === 'failed';
-  const isLatestRunning = latestRun?.status === 'running';
+  const isLatestRunning = isRunning;
 
   if (isLoading) {
     return (
