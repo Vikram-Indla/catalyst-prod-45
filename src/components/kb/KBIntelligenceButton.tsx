@@ -11,6 +11,9 @@ export function KBIntelligenceButton({ isOpen, onClick }: KBIntelligenceButtonPr
     <>
       <button
         onClick={onClick}
+        aria-label="Open Knowledge Assist"
+        aria-expanded={isOpen}
+        className="ka-trigger-btn"
         style={{
           position: 'relative',
           display: 'inline-flex',
@@ -20,26 +23,26 @@ export function KBIntelligenceButton({ isOpen, onClick }: KBIntelligenceButtonPr
           padding: '0 14px 0 12px',
           borderRadius: 20,
           fontSize: 12,
-          fontWeight: 600,
+          fontWeight: 650,
           letterSpacing: '0.02em',
           border: 'none',
           cursor: 'pointer',
-          transition: 'all 200ms ease',
           background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)',
           color: '#FFFFFF',
-          transform: 'scale(1)',
           fontFamily: "'Inter', system-ui, sans-serif",
+          overflow: 'hidden',
+          transition: 'transform 80ms, box-shadow 80ms',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'scale(1.03)';
-          e.currentTarget.style.boxShadow = '0 0 0 6px rgba(37,99,235,0.15)';
+          e.currentTarget.style.transform = 'translateY(-1px)';
+          e.currentTarget.style.boxShadow = '0 4px 16px rgba(37,99,235,0.25)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'scale(1)';
+          e.currentTarget.style.transform = 'translateY(0)';
           e.currentTarget.style.boxShadow = '';
         }}
       >
-        <Sparkles size={14} strokeWidth={2} />
+        <Sparkles size={14} strokeWidth={2} aria-hidden="true" />
         <span>KA</span>
         {/* Green pulse dot */}
         {!isOpen && (
@@ -51,15 +54,31 @@ export function KBIntelligenceButton({ isOpen, onClick }: KBIntelligenceButtonPr
             height: 6,
             borderRadius: '50%',
             background: '#16A34A',
-            animation: 'ka-btn-pulse 2s infinite',
+            animation: 'ka-btn-pulse 2s ease-in-out infinite',
           }} />
         )}
       </button>
       <style>{`
+        .ka-trigger-btn::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background: conic-gradient(from 0deg, transparent, rgba(255,255,255,0.1), transparent, rgba(255,255,255,0.15), transparent);
+          animation: ka-btn-conic 4s linear infinite;
+          pointer-events: none;
+        }
+        @keyframes ka-btn-conic {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
         @keyframes ka-btn-pulse {
-          0% { box-shadow: 0 0 0 0 rgba(22,163,74,0.5); }
-          70% { box-shadow: 0 0 0 6px rgba(22,163,74,0); }
-          100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); }
+          0%,100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.3); }
+        }
+        .ka-trigger-btn:focus-visible {
+          outline: 2px solid #2563EB;
+          outline-offset: 2px;
         }
       `}</style>
     </>
