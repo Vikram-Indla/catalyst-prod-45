@@ -102,26 +102,43 @@ export function useKBAdmin() {
   const embedAll = useCallback(async (batchSize = 50) => {
     setIsProcessing(true);
     let totalEmbedded = 0;
+    let retries = 0;
+    const MAX_RETRIES = 2;
 
     try {
       while (true) {
-        const result = await embedTrainingBatch(batchSize);
-        totalEmbedded += result.embedded;
+        let result: KBTrainEmbedResult;
+        try {
+          result = await embedTrainingBatch(batchSize);
+        } catch (batchErr: any) {
+          if (retries < MAX_RETRIES) {
+            retries++;
+            toast.info(`Retrying batch (attempt ${retries})...`);
+            await new Promise((r) => setTimeout(r, 3000));
+            continue;
+          }
+          throw batchErr;
+        }
+        retries = 0; // reset on success
+        const batchEmbedded = result.embedded || 0;
+        totalEmbedded += batchEmbedded;
         setEmbedProgress(result);
 
-        if (result.remaining === 0 || result.embedded === 0) {
+        if ((result.remaining ?? 0) === 0 || batchEmbedded === 0) {
           toast.success(`All done! ${totalEmbedded} questions embedded.`);
           break;
         }
 
         toast.info(`Progress: ${totalEmbedded} embedded, ${result.remaining} remaining...`);
         // Brief pause to avoid rate limits
-        await new Promise((r) => setTimeout(r, 1000));
+        await new Promise((r) => setTimeout(r, 1500));
       }
 
       await fetchStatus();
     } catch (err: any) {
-      toast.error(`Embedding stopped after ${totalEmbedded}: ${err.message}`);
+      toast.error(`Embedding stopped after ${totalEmbedded || 0}: ${err.message}`);
+      // Still refresh status to show partial progress
+      await fetchStatus();
     } finally {
       setIsProcessing(false);
     }
