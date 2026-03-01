@@ -23,7 +23,7 @@ import { catalystToast } from "@/lib/catalystToast";
 import { CreateEntityDialog } from "@/components/dialogs/CreateEntityDialog";
 import { useCatalystContext } from "@/contexts/CatalystContext";
 import { getActiveNavItem } from "@/lib/workspaceContext";
-import { KBPanel } from "@/components/kb/KBPanel";
+import { KnowledgeAssistPanel } from "@/components/knowledge-assist/KnowledgeAssistPanel";
 import { KBIntelligenceButton } from "@/components/kb/KBIntelligenceButton";
 import {
   Tooltip,
@@ -764,8 +764,8 @@ export function CatalystHeader() {
         />
       )}
 
-      {/* KB User Panel */}
-      <KBPanel isOpen={kbPanelOpen} onClose={() => setKbPanelOpen(false)} />
+      {/* Knowledge Assist Panel */}
+      <KnowledgeAssistPanel isOpen={kbPanelOpen} onClose={() => setKbPanelOpen(false)} />
     </>
   );
 }
