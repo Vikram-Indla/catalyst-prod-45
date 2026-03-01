@@ -213,53 +213,54 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
         style={{
           position: 'fixed',
           top: 48, right: 0, bottom: 0,
-          width: 520,
-          background: '#FFFFFF',
-          borderLeft: '1px solid #E4E4E7',
-          boxShadow: '-8px 0 32px rgba(0,0,0,0.08), -2px 0 8px rgba(0,0,0,0.04)',
+          width: 624,
+          background: 'var(--cp-bg-page, #FFFFFF)',
+          borderLeft: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
+          boxShadow: 'var(--cp-shadow-overlay, 0px 8px 12px rgba(30,31,33,0.15), 0px 0px 1px rgba(30,31,33,0.31))',
           zIndex: 50,
           display: 'flex',
           flexDirection: 'column',
           transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 300ms cubic-bezier(0.32, 0.72, 0, 1)',
-          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+          fontFamily: "var(--cp-font-body, 'Inter', system-ui, sans-serif)",
         }}
       >
         {/* ── Header (64px) ── */}
         <div style={{
-          height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '0 24px', borderBottom: '1px solid #F4F4F5', background: '#FAFAFA', flexShrink: 0,
+          height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '0 var(--cp-space-3, 24px)', borderBottom: '0.75px solid var(--cp-border-subtle, rgba(15,23,42,0.06))',
+          background: 'var(--cp-bg-surface, #F8FAFC)', flexShrink: 0,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2563EB', animation: 'kb-status-pulse 3s infinite' }} />
-            <span style={{ fontSize: 15, fontWeight: 700, color: '#18181B', letterSpacing: '-0.3px' }}>Intelligence</span>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--cp-primary-60, #2563EB)', animation: 'kb-status-pulse 3s infinite' }} />
+            <span style={{ fontSize: 'var(--cp-type-body, 14px)', fontWeight: 'var(--cp-weight-bold, 650)', color: 'var(--cp-text-primary, #0F172A)', letterSpacing: 'var(--cp-tracking-tight, -0.02em)', fontFamily: 'var(--cp-font-heading, Sora, sans-serif)' }}>Intelligence</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <button
               onClick={handleClearChat}
               title="New conversation"
               style={{
-                width: 32, height: 32, borderRadius: 8, border: 'none', background: 'transparent',
+                width: 32, height: 32, borderRadius: 'var(--cp-radius-md, 4px)', border: 'none', background: 'transparent',
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'background 150ms',
                 opacity: messages.length > 0 ? 1 : 0.4,
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#F4F4F5'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <MessageSquarePlus size={16} color="#71717A" />
+              <MessageSquarePlus size={16} color="var(--cp-text-tertiary, #64748B)" />
             </button>
             <button
               onClick={onClose}
               style={{
-                width: 32, height: 32, borderRadius: 8, border: 'none', background: 'transparent',
+                width: 32, height: 32, borderRadius: 'var(--cp-radius-md, 4px)', border: 'none', background: 'transparent',
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'background 150ms',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#F4F4F5'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--cp-interact-hover, rgba(15,23,42,0.04))'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <X size={16} color="#71717A" />
+              <X size={16} color="var(--cp-text-tertiary, #64748B)" />
             </button>
           </div>
         </div>
@@ -267,46 +268,46 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
         {/* ── Chat area ── */}
         <div
           ref={scrollRef}
-          style={{ flex: 1, overflowY: 'auto', padding: '0 24px', display: 'flex', flexDirection: 'column' }}
+          style={{ flex: 1, overflowY: 'auto', padding: '0 var(--cp-space-3, 24px)', display: 'flex', flexDirection: 'column' }}
           dir={isRTL ? 'rtl' : 'ltr'}
         >
           {/* Error banner */}
           {error && (
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', marginTop: 16,
-              background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 8, fontSize: 12, color: '#DC2626',
+              background: 'var(--cp-danger-5, #FEF2F2)', border: '1px solid var(--cp-danger-20, #FECACA)', borderRadius: 'var(--cp-radius-md, 4px)', fontSize: 'var(--cp-type-caption-md, 12px)', color: 'var(--cp-danger-60, #DC2626)',
             }}>
               <AlertCircle size={14} />
               <span style={{ flex: 1 }}>{error}</span>
               <button onClick={() => reset()} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
-                <RefreshCw size={13} color="#DC2626" />
+                <RefreshCw size={13} color="var(--cp-danger-60, #DC2626)" />
               </button>
             </div>
           )}
 
           {/* Welcome state */}
           {messages.length === 0 && (
-            <div style={{ textAlign: 'center', paddingTop: 60, flex: 1 }}>
-              <p style={{ fontSize: 20, fontWeight: 700, color: '#18181B', margin: 0 }}>
+            <div style={{ textAlign: 'center', paddingTop: 48, flex: 1 }}>
+              <p style={{ fontSize: 'var(--cp-type-heading-sm, 20px)', fontWeight: 'var(--cp-weight-bold, 650)', color: 'var(--cp-text-primary, #0F172A)', margin: 0, fontFamily: 'var(--cp-font-heading, Sora, sans-serif)' }}>
                 {getGreeting()}, {firstName}
               </p>
-              <p style={{ fontSize: 14, color: '#71717A', marginTop: 8, fontWeight: 400 }}>
+              <p style={{ fontSize: 'var(--cp-type-body, 14px)', color: 'var(--cp-text-tertiary, #64748B)', marginTop: 8, fontWeight: 'var(--cp-weight-regular, 400)' }}>
                 How can I help?
               </p>
 
               {/* Intelligence Briefing Card */}
               <div style={{
-                marginTop: 32, textAlign: isRTL ? 'right' : 'left',
-                background: 'linear-gradient(135deg, #F8FAFC 0%, #EFF6FF 100%)',
-                border: '1px solid #DBEAFE', borderRadius: 12, padding: '20px 24px',
+                marginTop: 28, textAlign: isRTL ? 'right' : 'left',
+                background: 'linear-gradient(135deg, var(--cp-bg-surface, #F8FAFC) 0%, var(--cp-primary-5, #EFF6FF) 100%)',
+                border: '1px solid var(--cp-primary-10, #DBEAFE)', borderRadius: 'var(--cp-radius-lg, 6px)', padding: '20px 24px',
               }}>
                 <p style={{
-                  fontSize: 10, fontWeight: 700, color: '#2563EB', letterSpacing: '1.5px',
-                  textTransform: 'uppercase', margin: 0,
+                  fontSize: 'var(--cp-type-caption, 11px)', fontWeight: 'var(--cp-weight-bold, 650)', color: 'var(--cp-primary-60, #2563EB)', letterSpacing: '1.5px',
+                  textTransform: 'uppercase', margin: 0, fontFamily: 'var(--cp-font-heading, Sora, sans-serif)',
                 }}>INTELLIGENCE BRIEFING</p>
-                <div style={{ width: 24, height: 1.5, background: '#2563EB', margin: '8px 0 12px', borderRadius: 1 }} />
+                <div style={{ width: 24, height: 1.5, background: 'var(--cp-primary-60, #2563EB)', margin: '8px 0 12px', borderRadius: 1 }} />
                 <p style={{
-                  fontSize: 13.5, color: '#374151', lineHeight: 1.65, margin: 0,
+                  fontSize: 'var(--cp-type-body-sm, 13px)', color: 'var(--cp-text-secondary, #334155)', lineHeight: 'var(--cp-leading-relaxed, 1.6)', margin: 0,
                   fontFamily: "Georgia, 'Times New Roman', serif",
                 }}>{BRIEFING_MESSAGES[briefingIndex]}</p>
               </div>
@@ -323,9 +324,9 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
                     marginBottom: 8, animation: 'kb-msg-in 200ms ease',
                   }}>
                     <div style={{
-                      maxWidth: '85%', padding: '12px 18px',
-                      borderRadius: '16px 16px 4px 16px', background: '#2563EB',
-                      color: '#FFFFFF', fontSize: 14, fontWeight: 400, lineHeight: 1.5,
+                      maxWidth: '85%', padding: '10px 16px',
+                      borderRadius: '14px 14px 4px 14px', background: 'var(--cp-primary-60, #2563EB)',
+                      color: 'var(--cp-text-inverse, #FFFFFF)', fontSize: 'var(--cp-type-body, 14px)', fontWeight: 'var(--cp-weight-regular, 400)', lineHeight: 'var(--cp-leading-normal, 1.5)',
                     }}>{msg.content}</div>
                   </div>
                 );
@@ -360,7 +361,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               <div style={{ display: 'flex', gap: 5, padding: '12px 0', animation: 'kb-msg-in 200ms ease' }}>
                 {[0, 1, 2].map((i) => (
                   <span key={i} style={{
-                    width: 6, height: 6, borderRadius: '50%', background: '#2563EB',
+                    width: 6, height: 6, borderRadius: '50%', background: 'var(--cp-primary-60, #2563EB)',
                     animation: 'kb-dot-bounce 1.2s infinite', animationDelay: `${i * 150}ms`,
                   }} />
                 ))}
