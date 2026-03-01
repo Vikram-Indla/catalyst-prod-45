@@ -118,7 +118,7 @@ export async function getTrainingStatus(): Promise<KBTrainStatus> {
 
 export async function embedTrainingBatch(batchSize = 50, offset = 0): Promise<KBTrainEmbedResult> {
   const { data, error } = await supabase.functions.invoke("kb-train", {
-    body: { action: "embed_training", batch_size: batchSize, offset },
+    body: { action: "embed_batch", offset },
   });
 
   if (error) throw new Error(error.message || "Embedding batch failed");
