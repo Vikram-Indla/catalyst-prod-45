@@ -4,7 +4,7 @@ import type { KBQueryResponse } from '@/services/knowledgeBase';
 
 interface KBResponseRendererProps {
   response: KBQueryResponse;
-  language: 'en' | 'ar';
+  language: 'en';
   onFeedback?: (helpful: boolean) => void;
   feedbackGiven?: boolean;
 }
@@ -63,7 +63,7 @@ function renderInline(text: string): React.ReactNode[] {
 export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
   response, language, onFeedback, feedbackGiven,
 }) => {
-  const dir = language === 'ar' ? 'rtl' : 'ltr';
+  const dir = 'ltr';
   const lines = (response.answer || '').split('\n');
   const [sourcesOpen, setSourcesOpen] = useState(false);
   const [feedbackState, setFeedbackState] = useState<'none' | 'up' | 'down'>('none');
