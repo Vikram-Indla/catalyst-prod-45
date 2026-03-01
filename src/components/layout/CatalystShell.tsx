@@ -22,6 +22,7 @@ import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanne
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
 import { useEnabledModules } from '@/hooks/useModules';
 import { useRecentPlaceTracker } from '@/hooks/useRecentPlaceTracker';
+import { WikiSidebar } from './WikiSidebar';
 
 function CatalystShellContent() {
   // Dev-only instrumentation: prove shell doesn't remount on program navigation
@@ -99,6 +100,9 @@ function CatalystShellContent() {
   // Check if on WorkHub/ProjectHub route (v4.5)
   const isWorkHubRoute = location.pathname.startsWith('/workhub') || location.pathname.startsWith('/projecthub');
 
+  // Check if on Wiki route
+  const isWikiRoute = location.pathname.startsWith('/wiki');
+
   // Prevent full document reloads caused by accidental <a href="/..."> navigation.
   // IMPORTANT: In Preview, the URL contains special query params (e.g. __lovable_token).
   // If we drop them during navigation, the iframe may force a hard reload.
@@ -142,6 +146,16 @@ function CatalystShellContent() {
     // No sidebar for Home or Admin routes
     if (location.pathname === '/for-you' || location.pathname.startsWith('/admin')) {
       return null;
+    }
+
+    // Wiki sidebar
+    if (isWikiRoute) {
+      return (
+        <WikiSidebar
+          expanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+      );
     }
 
     // ProjectHub V5 sidebar (/project-hub/*)

@@ -41,6 +41,50 @@
   --violet-50: #F5F3FF;
   --warning-50: #FFFBEB;
 
+  /* ═══ CATALYST V12 HYBRID PRECISION — Wiki Design Tokens ═══ */
+  --cp-bg-page: #FFFFFF;
+  --cp-bg-surface: #F8FAFC;
+  --cp-bg-sunken: #F1F5F9;
+  --cp-bg-elevated: #FFFFFF;
+  --cp-text-primary: #0F172A;
+  --cp-text-secondary: #334155;
+  --cp-text-tertiary: #64748B;
+  --cp-text-muted: #94A3B8;
+  --cp-text-link: #2563EB;
+  --cp-border-subtle: rgba(15,23,42,0.06);
+  --cp-border-default: rgba(15,23,42,0.12);
+  --cp-border-strong: rgba(15,23,42,0.20);
+  --cp-interact-hover: rgba(15,23,42,0.04);
+  --cp-interact-press: rgba(15,23,42,0.08);
+  --cp-interact-selected: rgba(37,99,235,0.08);
+  --cp-primary-60: #2563EB;
+  --cp-primary-70: #1D4ED8;
+  --cp-primary-5: #EFF6FF;
+  --cp-purple-60: #7C3AED;
+  --cp-purple-5: #F5F3FF;
+  --cp-success-60: #16A34A;
+  --cp-warning-60: #D97706;
+  --cp-danger-60: #DC2626;
+  --cp-teal-60: #0D9488;
+  --cp-lozenge-grey-bg: #DFE1E6;
+  --cp-lozenge-grey-text: #253858;
+  --cp-lozenge-blue-bg: #DEEBFF;
+  --cp-lozenge-blue-text: #0747A6;
+  --cp-lozenge-green-bg: #E3FCEF;
+  --cp-lozenge-green-text: #006644;
+  --cp-font-heading: 'Sora', sans-serif;
+  --cp-font-body: 'Inter', sans-serif;
+  --cp-font-mono: 'JetBrains Mono', monospace;
+  --cp-size-table-row: 36px;
+  --cp-layout-sidebar: 232px;
+  --cp-layout-topnav: 48px;
+  --cp-radius-sm: 3px;
+  --cp-radius-md: 4px;
+  --cp-radius-default: 6px;
+  --cp-radius-lg: 8px;
+  --cp-shadow-xs: 0 1px 2px 0 rgba(0,0,0,0.04);
+  --cp-shadow-overlay: 0px 8px 12px rgba(30,31,33,0.15), 0px 0px 1px rgba(30,31,33,0.31);
+
   /* ═══ CATALYST10 Typography Tokens ═══ */
   /* UI Scale */
   --c10-text-ui-2xs: 10px;
@@ -93,6 +137,39 @@
   --c10-input-height-sm: 28px;
   /* Header */
   --c10-header-height: 56px;
+}
+
+/* ═══ V12 Dark Mode Tokens ═══ */
+[data-theme="dark"] {
+  --cp-bg-page: #0A0A0A;
+  --cp-bg-surface: #141414;
+  --cp-bg-sunken: #0A0A0A;
+  --cp-bg-elevated: #1A1A1A;
+  --cp-text-primary: #FAFAFA;
+  --cp-text-secondary: #D4D4D4;
+  --cp-text-tertiary: #A3A3A3;
+  --cp-text-muted: #737373;
+  --cp-text-link: #60A5FA;
+  --cp-border-subtle: rgba(255,255,255,0.06);
+  --cp-border-default: rgba(255,255,255,0.10);
+  --cp-border-strong: rgba(255,255,255,0.18);
+  --cp-interact-hover: rgba(255,255,255,0.04);
+  --cp-interact-press: rgba(255,255,255,0.08);
+  --cp-interact-selected: rgba(37,99,235,0.15);
+  --cp-lozenge-grey-bg: #3B3D42;
+  --cp-lozenge-grey-text: #D4D4D4;
+  --cp-lozenge-blue-bg: #1E3A5F;
+  --cp-lozenge-blue-text: #93C5FD;
+  --cp-lozenge-green-bg: #14532D;
+  --cp-lozenge-green-text: #86EFAC;
+  --cp-shadow-xs: 0 1px 2px 0 rgba(0,0,0,0.3);
+  --cp-shadow-overlay: 0px 8px 12px rgba(0,0,0,0.5), 0px 0px 1px rgba(0,0,0,0.6);
+}
+
+/* ═══ Wiki Pulse Animation ═══ */
+@keyframes wiki-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
