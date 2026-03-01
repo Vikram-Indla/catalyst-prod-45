@@ -5,6 +5,7 @@ import { useKBAdmin } from '@/hooks/useKnowledgeBase';
 import { fetchQueryLogs, fetchSources, fetchAccessMatrix, type KBQueryLogEntry, type KBSource } from '@/services/knowledgeBase';
 import { supabase } from '@/integrations/supabase/client';
 import { Shield, FileText, Lock, RefreshCw, Zap, FolderOpen, Globe, Brain, ThumbsUp, ThumbsDown, Keyboard, Mic, Check, X as XIcon, Activity, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
+import { AutoSyncCard } from '@/components/shared/AutoSyncCard';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -726,6 +727,14 @@ function SyncConfigTab() {
           ))}
         </div>
       </div>
+
+      {/* Automated Sync Section */}
+      <AutoSyncCard
+        scheduleKeys={['kb-daily-sync', 'kb-weekly-cleanup']}
+        lastSyncTable="kb_embeddings"
+        lastSyncColumn="updated_at"
+        title="Automated KB Sync"
+      />
 
       <div className="grid grid-cols-2 gap-4">
         <div className={card}>

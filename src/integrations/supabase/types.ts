@@ -36438,6 +36438,48 @@ export type Database = {
           },
         ]
       }
+      sync_schedules: {
+        Row: {
+          created_at: string
+          cron_expression: string
+          id: string
+          is_enabled: boolean
+          last_triggered_at: string | null
+          schedule_key: string
+          schedule_label: string
+          target_body: Json
+          target_function: string
+          timezone_label: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          cron_expression?: string
+          id?: string
+          is_enabled?: boolean
+          last_triggered_at?: string | null
+          schedule_key: string
+          schedule_label: string
+          target_body?: Json
+          target_function: string
+          timezone_label?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          cron_expression?: string
+          id?: string
+          is_enabled?: boolean
+          last_triggered_at?: string | null
+          schedule_key?: string
+          schedule_label?: string
+          target_body?: Json
+          target_function?: string
+          timezone_label?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       t10_activity: {
         Row: {
           activity_type: string
