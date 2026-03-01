@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, FileText, Folder, ArrowRight } from 'lucide-react';
-import { useWikiDomains, useWikiTitleSearch } from '@/hooks/useWikiData';
+import { useWikiDomains, useWikiTitleSearch, useDebouncedValue } from '@/hooks/useWikiData';
 
 interface Props { open: boolean; onClose: () => void; }
 
@@ -12,11 +12,12 @@ const DOMAIN_SLUGS: Record<string, string> = {
 
 export function WikiCommandPalette({ open, onClose }: Props) {
   const [query, setQuery] = useState('');
+  const debouncedQuery = useDebouncedValue(query, 300);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { data: domains } = useWikiDomains();
-  const { data: titleResults } = useWikiTitleSearch(query);
+  const { data: titleResults } = useWikiTitleSearch(debouncedQuery);
 
   useEffect(() => {
     if (open) { setQuery(''); setSelectedIdx(0); setTimeout(() => inputRef.current?.focus(), 50); }
@@ -24,7 +25,6 @@ export function WikiCommandPalette({ open, onClose }: Props) {
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); if (!open) return; }
       if (e.key === 'Escape' && open) onClose();
     };
     window.addEventListener('keydown', handler);
@@ -34,8 +34,7 @@ export function WikiCommandPalette({ open, onClose }: Props) {
   const items = React.useMemo(() => {
     const result: { type: string; label: string; path: string; meta?: string }[] = [];
 
-    // If searching, show title matches first
-    if (query.length >= 2 && titleResults) {
+    if (debouncedQuery.length >= 2 && titleResults) {
       for (const p of titleResults) {
         result.push({
           type: 'page',
@@ -46,11 +45,9 @@ export function WikiCommandPalette({ open, onClose }: Props) {
       }
     }
 
-    // Static pages
     result.push({ type: 'page', label: 'Wiki Home', path: '/wiki', meta: 'Home' });
     result.push({ type: 'page', label: "What's New", path: '/wiki/whats-new', meta: 'Changelog' });
 
-    // Domains
     (domains || []).forEach((d: any) => {
       result.push({
         type: 'category',
@@ -63,9 +60,7 @@ export function WikiCommandPalette({ open, onClose }: Props) {
     if (!query) return result;
     const q = query.toLowerCase();
 
-    // If we have title results, show them + filtered static items
     if (titleResults && titleResults.length > 0) {
-      // Filter out duplicates and non-matching static items
       const titleSlugs = new Set(titleResults.map(p => p.slug));
       return result.filter(i =>
         titleSlugs.has(i.path.replace('/wiki/', '')) ||
@@ -75,7 +70,7 @@ export function WikiCommandPalette({ open, onClose }: Props) {
     }
 
     return result.filter(i => i.label.toLowerCase().includes(q) || (i.meta || '').toLowerCase().includes(q));
-  }, [query, domains, titleResults]);
+  }, [query, debouncedQuery, domains, titleResults]);
 
   const handleSelect = useCallback((path: string) => {
     navigate(path); onClose();
@@ -97,16 +92,19 @@ export function WikiCommandPalette({ open, onClose }: Props) {
   if (!open) return null;
 
   return (
-    <div onClick={onClose} style={{
+    <div onClick={onClose} role="dialog" aria-modal="true" aria-label="Wiki search" style={{
       position: 'fixed', inset: 0, zIndex: 9999,
       background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)',
       display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 120,
+      opacity: 1, transition: 'opacity 150ms ease',
     }}>
       <div onClick={e => e.stopPropagation()} style={{
         width: 560, maxHeight: 420, background: 'var(--cp-bg-elevated)',
         borderRadius: 12, boxShadow: 'var(--cp-shadow-overlay)',
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
         border: '1px solid var(--cp-border-default)',
+        transform: 'translateY(0)', opacity: 1,
+        transition: 'transform 150ms ease, opacity 150ms ease',
       }}>
         {/* Search input */}
         <div style={{
@@ -118,6 +116,7 @@ export function WikiCommandPalette({ open, onClose }: Props) {
             ref={inputRef} value={query} onChange={e => { setQuery(e.target.value); setSelectedIdx(0); }}
             onKeyDown={handleKeyDown}
             placeholder="Search wiki pages, categories, documents..."
+            aria-label="Search wiki"
             style={{
               flex: 1, fontSize: 15, fontFamily: 'var(--cp-font-body)',
               background: 'transparent', border: 'none', outline: 'none',
@@ -126,17 +125,19 @@ export function WikiCommandPalette({ open, onClose }: Props) {
           />
         </div>
         {/* Results */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: 8 }}>
+        <div role="listbox" style={{ flex: 1, overflowY: 'auto', padding: 8 }}>
           {items.length === 0 && (
             <div style={{ padding: 24, textAlign: 'center', color: 'var(--cp-text-muted)', fontSize: 13 }}>
               {query.length >= 2 ? (
-                <span>No results. <span onClick={() => { navigate(`/wiki/search?q=${encodeURIComponent(query)}`); onClose(); }} style={{ color: 'var(--cp-text-link)', cursor: 'pointer' }}>Search full wiki →</span></span>
+                <span>No results for &lsquo;{query}&rsquo;. <span onClick={() => { navigate(`/wiki/search?q=${encodeURIComponent(query)}`); onClose(); }} style={{ color: 'var(--cp-text-link)', cursor: 'pointer' }}>Search full wiki →</span></span>
               ) : 'Type to search...'}
             </div>
           )}
           {items.map((item, idx) => (
             <div
               key={`${item.path}-${idx}`}
+              role="option"
+              aria-selected={idx === selectedIdx}
               onClick={() => handleSelect(item.path)}
               onMouseEnter={() => setSelectedIdx(idx)}
               style={{
@@ -148,7 +149,7 @@ export function WikiCommandPalette({ open, onClose }: Props) {
             >
               {item.type === 'category' ? <Folder size={14} style={{ color: 'var(--cp-text-muted)' }} /> : <FileText size={14} style={{ color: 'var(--cp-text-muted)' }} />}
               <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: 'var(--cp-text-primary)' }}>{item.label}</span>
-              <span style={{ fontSize: 11, color: 'var(--cp-text-muted)' }}>{item.meta}</span>
+              <span dir="ltr" style={{ fontSize: 11, color: 'var(--cp-text-muted)' }}>{item.meta}</span>
               {idx === selectedIdx && <ArrowRight size={12} style={{ color: 'var(--cp-text-muted)' }} />}
             </div>
           ))}

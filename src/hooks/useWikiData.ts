@@ -1,5 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
+
+// ── Debounce hook ───────────────────────────────────────────
+export const useDebouncedValue = <T>(value: T, delay = 300): T => {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return debounced;
+};
 
 // ── useWikiDomains ──────────────────────────────────────────
 export const useWikiDomains = () => {
@@ -13,6 +25,7 @@ export const useWikiDomains = () => {
       if (error) throw error;
       return data;
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
 
@@ -46,6 +59,7 @@ export const useWikiStats = () => {
         avgConfidence: Math.round(avgConfidence * 100),
       };
     },
+    staleTime: 5 * 60 * 1000,
   });
 };
 
@@ -71,6 +85,7 @@ export const useWikiCategories = (domainCode?: string) => {
       return data;
     },
     enabled: !!domainCode,
+    staleTime: 5 * 60 * 1000,
   });
 };
 
@@ -95,6 +110,7 @@ export const useWikiCategoryPages = (domainCode?: string, categoryId?: string) =
       return data;
     },
     enabled: !!domainCode,
+    staleTime: 60 * 1000, // 1 minute
   });
 };
 
@@ -135,6 +151,7 @@ export const useWikiPage = (slug?: string) => {
       };
     },
     enabled: !!slug,
+    staleTime: 60 * 1000,
   });
 };
 
@@ -152,6 +169,7 @@ export const useWikiRecentPages = (limit = 20) => {
       if (error) throw error;
       return data;
     },
+    staleTime: 60 * 1000,
   });
 };
 
@@ -179,7 +197,6 @@ export const useWikiWhatsNew = (days = 7) => {
           .limit(50),
       ]);
 
-      // Merge and sort by date
       const items: Array<{
         type: 'page' | 'document';
         badge: 'NEW' | 'UPDATED' | 'DOC' | 'ARCHIVED';
@@ -217,7 +234,6 @@ export const useWikiWhatsNew = (days = 7) => {
 
       items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-      // Group by relative date
       const now = new Date();
       const groups: Record<string, typeof items> = {};
       for (const item of items) {
@@ -230,6 +246,7 @@ export const useWikiWhatsNew = (days = 7) => {
 
       return Object.entries(groups).map(([date, items]) => ({ date, items }));
     },
+    staleTime: 60 * 1000,
   });
 };
 
@@ -241,10 +258,14 @@ export const useWikiSearch = (query: string) => {
       const { data, error } = await supabase.functions.invoke('kb-query', {
         body: { query, language: 'en' },
       });
-      if (error) throw error;
+      if (error) {
+        toast.error('Search failed. Please try again.');
+        throw error;
+      }
       return data;
     },
     enabled: query.length >= 2,
+    staleTime: 0,
   });
 };
 
@@ -263,6 +284,7 @@ export const useWikiTitleSearch = (query: string) => {
       return data;
     },
     enabled: query.length >= 2,
+    staleTime: 0,
   });
 };
 
@@ -281,6 +303,7 @@ export const useWikiBookmarks = () => {
       if (error) throw error;
       return data;
     },
+    staleTime: 60 * 1000,
   });
 };
 
@@ -304,7 +327,14 @@ export const useToggleWikiBookmark = () => {
         return { pinned: true };
       }
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['wiki-bookmarks'] }),
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['wiki-bookmarks'] });
+      qc.invalidateQueries({ queryKey: ['wiki-bookmark-check'] });
+      toast.success(data.pinned ? 'Article pinned' : 'Article unpinned');
+    },
+    onError: () => {
+      toast.error('Failed to update bookmark. Please try again.');
+    },
   });
 };
 
@@ -324,6 +354,7 @@ export const useIsBookmarked = (pageId?: string) => {
       return !!data;
     },
     enabled: !!pageId,
+    staleTime: 60 * 1000,
   });
 };
 
@@ -341,6 +372,7 @@ export const useWikiDocuments = (domainCode?: string) => {
       if (error) throw error;
       return data;
     },
+    staleTime: 60 * 1000,
   });
 };
 
@@ -362,13 +394,11 @@ export const useWikiDocumentUpload = () => {
       const sanitized = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
       const filePath = `${domain_code}/${Date.now()}_${sanitized}`;
 
-      // Step 1: Upload to storage
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('wiki-docs')
         .upload(filePath, file);
       if (uploadError) throw uploadError;
 
-      // Step 2: Insert metadata
       const { data: doc, error: insertError } = await supabase
         .from('wiki_documents')
         .insert({
@@ -390,7 +420,6 @@ export const useWikiDocumentUpload = () => {
         .single();
       if (insertError) throw insertError;
 
-      // Step 3: Trigger kb-sync for parsing/chunking/embedding
       try {
         await supabase.functions.invoke('kb-sync', {
           body: {
@@ -401,7 +430,6 @@ export const useWikiDocumentUpload = () => {
           },
         });
       } catch (e) {
-        // kb-sync may not exist yet, doc status stays 'uploaded'
         console.warn('kb-sync invocation failed:', e);
       }
 
@@ -411,6 +439,9 @@ export const useWikiDocumentUpload = () => {
       qc.invalidateQueries({ queryKey: ['wiki-documents'] });
       qc.invalidateQueries({ queryKey: ['wiki-stats'] });
       qc.invalidateQueries({ queryKey: ['wiki-domains'] });
+    },
+    onError: (err: any) => {
+      toast.error(`Upload failed: ${err.message || 'Unknown error'}`);
     },
   });
 };
@@ -458,7 +489,6 @@ export const useSubmitFeedback = () => {
       comment?: string;
     }) => {
       const { data: { user } } = await supabase.auth.getUser();
-      // Try kb_feedback if it exists, otherwise silently fail
       try {
         await supabase.from('kb_feedback' as any).insert({
           entity_id: entityId,
@@ -470,6 +500,9 @@ export const useSubmitFeedback = () => {
       } catch {
         console.warn('kb_feedback table not available');
       }
+    },
+    onSuccess: () => {
+      toast.success('Thank you for your feedback');
     },
   });
 };
