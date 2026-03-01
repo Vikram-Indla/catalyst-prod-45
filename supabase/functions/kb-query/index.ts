@@ -277,19 +277,25 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
 
   // ── PRIORITY 2: Person-related queries ──
   const personPatterns = [
+    /^(\w+)\s+(?:busy|working|doing|assigned|responsible)(?:\s+(?:with|on))?/i,
+    /^(\w+)\s+(?:open\s+items?|tasks?|tickets?|issues?|workload)/i,
     /(?:what|who).*(?:is|are)\s+(\w+)\s+(?:busy|working|doing|assigned|responsible)/i,
     /(?:what|who).*(?:is|are)\s+(\w+)\s+(?:current|recent|latest)/i,
-    /(\w+)[''\u2019]?s?\s+(?:tasks?|work|assignments?|tickets?|issues?|items?|workload|open\s+items?)/i,
+    /(?:what is|what's)\s+(\w+)\s+(?:working|doing|on)/i,
     /(?:assigned to|owned by|responsible)\s+(\w+)/i,
     /(?:who is|tell me about)\s+(\w+)/i,
-    /(?:what is|what's)\s+(\w+)\s+(?:working|doing|on)/i,
+    /(\w+)[''\u2019]?s?\s+(?:tasks?|work|assignments?|tickets?|issues?|items?|workload|open\s+items?)/i,
   ];
 
   let personName: string | null = null;
   for (const pattern of personPatterns) {
     const match = qLower.match(pattern);
     if (match && match[1] && match[1].length > 2) {
-      const stops = new Set(["the","this","that","what","who","how","does","been","being","have","has","are","was","were","will"]);
+      const stops = new Set([
+        "the","this","that","what","who","how","does","been","being","have","has","are","was","were","will",
+        "reported","assigned","items","item","issues","issue","tickets","ticket","tasks","task","work","workload",
+        "open","last","weeks","week","busy","working","doing","recent","latest","current"
+      ]);
       if (!stops.has(match[1])) { personName = match[1]; break; }
     }
   }
@@ -325,9 +331,7 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
       const vendor = resourceInfo?.vendor_name;
 
       const parts: string[] = [];
-      // Header: Name — Role
       parts.push(`**${displayName}** — ${roleName}`);
-      // Department right after name
       if (department) parts.push(`📁 ${department}${capacity != null ? ` · Capacity: ${capacity}%` : ''}${vendor ? ` · Vendor: ${vendor}` : ''}`);
 
       // Get items updated in last 2 weeks; fetch more when "show all" is requested
@@ -335,17 +339,25 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
       const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 3600000).toISOString();
       const { data: issues } = await sb
         .from('ph_issues')
-        .select('issue_key, summary, status, priority, issue_type, jira_updated_at, project_name, project_key')
-        .or(`assignee_display_name.ilike.%${personName}%`)
+        .select('issue_key, summary, status, priority, issue_type, jira_updated_at, project_name, project_key, assignee_display_name, reporter_display_name')
+        .or(`assignee_display_name.ilike.%${personName}%,reporter_display_name.ilike.%${personName}%`)
         .gte('jira_updated_at', twoWeeksAgo)
         .order('jira_updated_at', { ascending: false })
         .limit(fetchLimit);
 
       if (issues && issues.length > 0) {
+        const isAssignedToPerson = (i: any) => (i.assignee_display_name || '').toLowerCase().includes(personName!);
+        const isReportedByPerson = (i: any) => (i.reporter_display_name || '').toLowerCase().includes(personName!);
+
         const active = issues.filter((i: any) => !['Done', 'Closed', 'Resolved'].includes(i.status));
         const completed = issues.filter((i: any) => ['Done', 'Closed', 'Resolved'].includes(i.status));
+
+        const assignedCount = issues.filter(isAssignedToPerson).length;
+        const reportedCount = issues.filter(isReportedByPerson).length;
         const totalActive = active.length;
         const totalCompleted = completed.length;
+
+        parts.push(`\nAssigned: **${assignedCount}** · Reported: **${reportedCount}** · Total: **${issues.length}**`);
 
         // Helper: calculate hours sitting with person
         const calcHours = (updatedAt: string): string => {
@@ -361,11 +373,14 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
         if (active.length > 0) {
           const activeLimit = showAllIntent ? active.length : 5;
           const shown = active.slice(0, activeLimit);
-          parts.push('\n---\n#### CURRENT WORK (Latest)');
+          parts.push('\n---\n#### CURRENT WORK (Last 2 Weeks)');
 
           for (const i of shown) {
             const sitting = calcHours(i.jira_updated_at);
-            parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.status}* | ⏱ ${sitting} |`);
+            const relation: string[] = [];
+            if (isAssignedToPerson(i)) relation.push('Assigned');
+            if (isReportedByPerson(i)) relation.push('Reported');
+            parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.status}* | ${relation.join('/')} | ⏱ ${sitting} |`);
           }
 
           if (!showAllIntent && totalActive > 5) {
@@ -379,16 +394,19 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
           const shown = completed.slice(0, completedLimit);
           parts.push('\n---\n#### RECENTLY COMPLETED');
           for (const i of shown) {
-            parts.push(`| \`${i.issue_key}\` | ${i.summary} | ✅ ${i.status} |`);
+            const relation: string[] = [];
+            if (isAssignedToPerson(i)) relation.push('Assigned');
+            if (isReportedByPerson(i)) relation.push('Reported');
+            parts.push(`| \`${i.issue_key}\` | ${i.summary} | ✅ ${i.status} | ${relation.join('/')} |`);
           }
           if (!showAllIntent && totalCompleted > 3) {
             parts.push(`\n*${totalCompleted - 3} more completed items — ask for details.*`);
           }
         }
 
-        parts.push(`\n*Last 2 weeks · ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}*`);
+        parts.push(`\n*Last 2 weeks · Includes assigned and reported activity · ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}*`);
       } else {
-        parts.push('\nNo recent activity in the last 2 weeks.');
+        parts.push('\nNo assigned or reported activity found in the last 2 weeks.');
       }
 
       return {
