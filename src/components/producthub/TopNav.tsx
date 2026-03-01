@@ -13,6 +13,7 @@ const HUB_TABS = [
   { label: 'IncidentHub', path: '/incident' },
   { label: 'TaskHub', path: '/planner' },
   { label: 'PlanHub', path: '/planhub' },
+  { label: 'Wiki', path: '/wiki' },
 ];
 
 export function TopNav() {
@@ -25,6 +26,7 @@ export function TopNav() {
     if (path === '/planhub') return location.pathname.startsWith('/planhub');
     if (path === '/strategyhub') return location.pathname.startsWith('/strategyhub') || location.pathname.startsWith('/strategy');
     if (path === '/projecthub') return location.pathname.startsWith('/projecthub') || location.pathname.startsWith('/project-hub');
+    if (path === '/wiki') return location.pathname.startsWith('/wiki');
     return location.pathname.startsWith(path);
   };
 
@@ -75,7 +77,7 @@ export function TopNav() {
                   height: '100%', display: 'flex', alignItems: 'center',
                   padding: '0 10px', fontSize: 12,
                   fontWeight: active ? 600 : 400,
-                  color: active ? '#60A5FA' : 'rgba(255,255,255,0.55)',
+                  color: active ? (tab.label === 'Wiki' ? '#7C3AED' : '#60A5FA') : 'rgba(255,255,255,0.55)',
                   background: 'none', border: 'none', cursor: 'pointer',
                   fontFamily: "'Inter', sans-serif",
                   transition: 'color 100ms',
@@ -84,7 +86,17 @@ export function TopNav() {
                 onMouseEnter={e => { if (!active) e.currentTarget.style.color = 'rgba(255,255,255,0.9)'; }}
                 onMouseLeave={e => { if (!active) e.currentTarget.style.color = 'rgba(255,255,255,0.55)'; }}
               >
-                {tab.label}
+                {tab.label === 'Wiki' && (
+                  <span style={{
+                    width: 6, height: 6, borderRadius: '50%',
+                    background: '#7C3AED',
+                    marginInlineEnd: 4, flexShrink: 0,
+                    animation: 'wiki-pulse 2s ease-in-out infinite',
+                  }} />
+                )}
+                <span style={{ color: tab.label === 'Wiki' && active ? '#7C3AED' : undefined }}>
+                  {tab.label}
+                </span>
               </button>
             );
           })}

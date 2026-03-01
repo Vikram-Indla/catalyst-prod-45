@@ -50,6 +50,13 @@ const RequirementAssistCategories = lazy(() => import("./pages/producthub/requir
 const RequirementAssistOutput = lazy(() => import("./pages/producthub/requirement-assist/output"));
 const ProductCardsPage = lazy(() => import("./pages/producthub/CardsPage"));
 const IdeationPage = lazy(() => import("./pages/producthub/IdeationPage"));
+
+// Wiki Module lazy imports
+const WikiHomePage = lazy(() => import("./pages/wiki/WikiHomePage"));
+const WikiSearchPage = lazy(() => import("./pages/wiki/WikiSearchPage"));
+const WikiCategoryPage = lazy(() => import("./pages/wiki/WikiCategoryPage"));
+const WikiArticlePage = lazy(() => import("./pages/wiki/WikiArticlePage"));
+const WikiWhatsNewPage = lazy(() => import("./pages/wiki/WikiWhatsNewPage"));
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { Toaster as HotToaster } from 'react-hot-toast';
@@ -686,6 +693,13 @@ const App = () => (
               <Route path="/planhub/capacity" element={<Suspense fallback={<div className="p-8">Loading...</div>}><CapacityPlannerPage /></Suspense>} />
               <Route path="/planhub/budget-planner" element={<Suspense fallback={<div className="p-8">Loading...</div>}><BudgetPlannerPage /></Suspense>} />
               
+              {/* Wiki Module */}
+              <Route path="/wiki" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiHomePage /></Suspense>} />
+              <Route path="/wiki/search" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiSearchPage /></Suspense>} />
+              <Route path="/wiki/whats-new" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiWhatsNewPage /></Suspense>} />
+              <Route path="/wiki/category/:slug" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiCategoryPage /></Suspense>} />
+              <Route path="/wiki/:pageSlug" element={<Suspense fallback={<div className="p-8">Loading...</div>}><WikiArticlePage /></Suspense>} />
+
               {/* Mining */}
               <Route path="/mining" element={<MiningComingSoon />} />
               
