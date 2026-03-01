@@ -1,10 +1,12 @@
 /**
  * WikiAdminSyncTab — Sync pipeline 8-step visualization
+ * Cycle 1: edge cases (empty, failed, concurrent prevention, polling)
+ * Cycle 2: V12 token compliance
  */
-import React from 'react';
-import { useWikiSyncRuns, useWikiAdminStats, useTriggerSync } from '@/hooks/useWikiAdminData';
+import React, { useMemo } from 'react';
+import { useWikiSyncRuns, useWikiAdminStats, useTriggerSync, useWikiSyncRunsPolling } from '@/hooks/useWikiAdminData';
 import { SkeletonBlock } from '@/components/wiki/WikiTokens';
-import { Play, Check, Loader2 } from 'lucide-react';
+import { Play, Check, Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 
 const PIPELINE_STEPS = [
@@ -13,22 +15,36 @@ const PIPELINE_STEPS = [
 ];
 
 export function WikiAdminSyncTab() {
-  const { data: runs, isLoading } = useWikiSyncRuns(5);
   const { data: stats } = useWikiAdminStats();
   const triggerSync = useTriggerSync();
-  const latestRun = runs?.[0];
+
+  // Detect if any run is currently running for concurrent prevention + polling
+  const latestRuns = useWikiSyncRuns(5);
+  const isRunning = useMemo(() => (latestRuns.data ?? []).some(r => r.status === 'running'), [latestRuns.data]);
+
+  // Poll every 3s while a sync is running
+  const polled = useWikiSyncRunsPolling(isRunning);
+  const runs = isRunning ? (polled.data ?? latestRuns.data ?? []) : (latestRuns.data ?? []);
+  const isLoading = latestRuns.isLoading;
+
+  const latestRun = runs[0] ?? null;
+  const isFailed = latestRun?.status === 'failed';
 
   if (isLoading) {
-    return <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <SkeletonBlock height={48} />
-      <SkeletonBlock height={200} />
-    </div>;
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <SkeletonBlock height={48} />
+        {Array.from({ length: 8 }).map((_, i) => (
+          <SkeletonBlock key={i} height={40} />
+        ))}
+      </div>
+    );
   }
 
   const steps: Array<{ name: string; status: string; result: string; durationMs: number }> =
-    latestRun?.steps && Array.isArray(latestRun.steps)
+    latestRun?.steps && Array.isArray(latestRun.steps) && latestRun.steps.length > 0
       ? (latestRun.steps as any[])
-      : PIPELINE_STEPS.map((name, i) => ({ name, status: 'pending', result: '—', durationMs: 0 }));
+      : PIPELINE_STEPS.map((name) => ({ name, status: 'pending', result: '—', durationMs: 0 }));
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -50,90 +66,124 @@ export function WikiAdminSyncTab() {
         </div>
         <button
           onClick={() => triggerSync.mutate()}
-          disabled={triggerSync.isPending}
+          disabled={triggerSync.isPending || isRunning}
+          aria-label="Run sync now"
           style={{
             display: 'flex', alignItems: 'center', gap: 6,
             padding: '6px 14px', borderRadius: 4,
             background: 'var(--cp-primary-60, #2563EB)',
-            color: '#fff', border: 'none', cursor: 'pointer',
+            color: '#fff', border: 'none', cursor: (triggerSync.isPending || isRunning) ? 'not-allowed' : 'pointer',
             fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 600,
-            opacity: triggerSync.isPending ? 0.6 : 1,
+            opacity: (triggerSync.isPending || isRunning) ? 0.5 : 1,
+            outline: 'none',
           }}
+          onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
+          onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
         >
-          {triggerSync.isPending ? <Loader2 style={{ width: 14, height: 14, animation: 'spin 1s linear infinite' }} /> : <Play style={{ width: 14, height: 14 }} />}
-          Run Sync Now
+          {(triggerSync.isPending || isRunning)
+            ? <Loader2 style={{ width: 14, height: 14, animation: 'spin 1s linear infinite' }} />
+            : <Play style={{ width: 14, height: 14 }} />
+          }
+          {isRunning ? 'Sync Running…' : 'Run Sync Now'}
         </button>
       </div>
 
+      {/* Failed sync error banner */}
+      {isFailed && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '10px 16px', borderRadius: 6,
+          background: 'rgba(220,38,38,0.06)', border: '1px solid rgba(220,38,38,0.2)',
+          fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#DC2626',
+        }}>
+          <AlertTriangle style={{ width: 16, height: 16, flexShrink: 0 }} />
+          <span style={{ flex: 1 }}>
+            Sync failed{latestRun.error_message ? `: ${latestRun.error_message}` : ''}
+          </span>
+          <button
+            onClick={() => triggerSync.mutate()}
+            disabled={triggerSync.isPending}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 4,
+              padding: '4px 10px', borderRadius: 4,
+              background: '#DC2626', color: '#fff', border: 'none', cursor: 'pointer',
+              fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 600,
+            }}
+          >
+            <RefreshCw style={{ width: 12, height: 12 }} /> Retry
+          </button>
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!latestRun && (
+        <EmptyState
+          icon={<RefreshCw style={{ width: 28, height: 28, color: 'var(--cp-text-tertiary, #64748B)' }} />}
+          message="No sync runs yet"
+          sub="Click 'Run Sync Now' to start the first sync."
+        />
+      )}
+
       {/* Pipeline steps */}
-      <div style={{
-        border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
-        borderRadius: 6, overflow: 'hidden',
-      }}>
-        {steps.map((step, i) => {
-          const isDone = step.status === 'done';
-          const isActive = step.status === 'active';
-          const isFailed = step.status === 'failed';
-          return (
-            <div key={i} style={{
-              display: 'flex', alignItems: 'center', gap: 12,
-              padding: '10px 16px',
-              borderBottom: i < steps.length - 1 ? '1px solid var(--cp-border-default, rgba(15,23,42,0.08))' : undefined,
-              background: isActive ? 'rgba(37,99,235,0.04)' : 'transparent',
-            }}>
-              {/* Step circle */}
-              <div style={{
-                width: 28, height: 28, borderRadius: '50%',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                flexShrink: 0, fontSize: 11, fontWeight: 700,
-                fontFamily: 'JetBrains Mono, monospace',
-                background: isDone ? '#E3FCEF' : isFailed ? '#FEE2E2' : isActive ? '#DEEBFF' : '#F1F5F9',
-                color: isDone ? '#006644' : isFailed ? '#DC2626' : isActive ? '#0747A6' : '#64748B',
-                ...(isActive ? { boxShadow: '0 0 0 3px rgba(37,99,235,0.2)' } : {}),
+      {latestRun && (
+        <div style={{
+          border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))',
+          borderRadius: 4, overflow: 'hidden',
+        }}>
+          {steps.map((step, i) => {
+            const isDone = step.status === 'done';
+            const isActive = step.status === 'active';
+            const isStepFailed = step.status === 'failed';
+            return (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', gap: 12,
+                padding: '10px 16px', height: 36, boxSizing: 'content-box',
+                borderBottom: i < steps.length - 1 ? '0.75px solid var(--cp-border-default, rgba(15,23,42,0.08))' : undefined,
+                background: isActive ? 'rgba(37,99,235,0.04)' : 'transparent',
               }}>
-                {isDone ? <Check style={{ width: 14, height: 14 }} /> : (i + 1)}
+                <div style={{
+                  width: 28, height: 28, borderRadius: '50%',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0, fontSize: 11, fontWeight: 700,
+                  fontFamily: 'JetBrains Mono, monospace',
+                  background: isDone ? '#E3FCEF' : isStepFailed ? 'rgba(220,38,38,0.08)' : isActive ? '#DEEBFF' : 'var(--cp-bg-sunken, #F1F5F9)',
+                  color: isDone ? '#0D7331' : isStepFailed ? '#DC2626' : isActive ? '#0747A6' : 'var(--cp-text-tertiary, #64748B)',
+                  ...(isActive ? { boxShadow: '0 0 0 3px rgba(37,99,235,0.2)' } : {}),
+                }}>
+                  {isDone ? <Check style={{ width: 14, height: 14 }} /> : (i + 1)}
+                </div>
+                <span style={{
+                  fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
+                  color: 'var(--cp-text-primary, #0F172A)', flex: 1,
+                }}>{step.name}</span>
+                <span style={{
+                  fontFamily: 'Inter, sans-serif', fontSize: 12,
+                  color: 'var(--cp-text-tertiary, #64748B)', minWidth: 120,
+                }}>{step.result ?? '—'}</span>
+                <span style={{
+                  fontFamily: 'JetBrains Mono, monospace', fontSize: 11,
+                  color: 'var(--cp-text-tertiary, #64748B)', minWidth: 60, textAlign: 'end',
+                }}>{step.durationMs > 0 ? `${(step.durationMs / 1000).toFixed(1)}s` : '—'}</span>
               </div>
-              {/* Label */}
-              <span style={{
-                fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
-                color: 'var(--cp-text-primary, #0F172A)', flex: 1,
-              }}>
-                {step.name}
-              </span>
-              {/* Result */}
-              <span style={{
-                fontFamily: 'Inter, sans-serif', fontSize: 12,
-                color: 'var(--cp-text-tertiary, #64748B)',
-                minWidth: 120,
-              }}>
-                {step.result}
-              </span>
-              {/* Duration */}
-              <span style={{
-                fontFamily: 'JetBrains Mono, monospace', fontSize: 11,
-                color: 'var(--cp-text-tertiary, #64748B)', minWidth: 60, textAlign: 'end',
-              }}>
-                {step.durationMs > 0 ? `${(step.durationMs / 1000).toFixed(1)}s` : '—'}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Summary banner */}
       {latestRun?.status === 'complete' && (
         <div style={{
           padding: '10px 16px', borderRadius: 6,
-          background: '#E3FCEF', border: '1px solid rgba(0,102,68,0.15)',
+          background: '#E3FCEF', border: '1px solid rgba(13,115,49,0.15)',
           fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
-          color: '#006644',
+          color: '#0D7331',
         }}>
-          ✓ Sync completed · {latestRun.total_duration_ms ? `${(latestRun.total_duration_ms / 1000).toFixed(0)}s` : '—'} · {latestRun.total_items_processed} items · {latestRun.new_pages} new · {latestRun.updated_pages} updated
+          ✓ Sync completed · {latestRun.total_duration_ms ? `${(latestRun.total_duration_ms / 1000).toFixed(0)}s` : '—'} · {latestRun.total_items_processed ?? 0} items · {latestRun.new_pages ?? 0} new · {latestRun.updated_pages ?? 0} updated
         </div>
       )}
 
       {/* Recent runs table */}
-      {runs && runs.length > 1 && (
+      {runs.length > 1 && (
         <div>
           <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 8 }}>
             Recent Runs
@@ -149,14 +199,14 @@ export function WikiAdminSyncTab() {
               </thead>
               <tbody>
                 {runs.slice(1).map(r => (
-                  <tr key={r.id} style={{ borderTop: '1px solid var(--cp-border-default, rgba(15,23,42,0.08))' }}>
+                  <tr key={r.id} style={{ borderTop: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.08))', height: 36 }}>
                     <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{format(new Date(r.started_at), 'MMM d HH:mm')}</td>
                     <td style={{ padding: '8px 12px' }}><StatusLoz status={r.status} /></td>
                     <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{r.total_duration_ms ? `${(r.total_duration_ms / 1000).toFixed(0)}s` : '—'}</td>
-                    <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{r.total_items_processed}</td>
-                    <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{r.new_pages}</td>
-                    <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{r.updated_pages}</td>
-                    <td style={{ padding: '8px 12px', fontSize: 11 }}>{r.triggered_by}</td>
+                    <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{r.total_items_processed ?? 0}</td>
+                    <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{r.new_pages ?? 0}</td>
+                    <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{r.updated_pages ?? 0}</td>
+                    <td style={{ padding: '8px 12px', fontSize: 11 }}>{r.triggered_by ?? '—'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -168,9 +218,26 @@ export function WikiAdminSyncTab() {
   );
 }
 
-function StatusLoz({ status }: { status: string }) {
+/* ─── Shared sub-components ─── */
+
+export function EmptyState({ icon, message, sub }: { icon: React.ReactNode; message: string; sub: string }) {
+  return (
+    <div style={{
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      padding: '48px 24px', gap: 8,
+      border: '1px dashed var(--cp-border-default, rgba(15,23,42,0.15))',
+      borderRadius: 6, background: 'var(--cp-bg-sunken, #F8FAFC)',
+    }}>
+      {icon}
+      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)' }}>{message}</span>
+      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)', textAlign: 'center', maxWidth: 320 }}>{sub}</span>
+    </div>
+  );
+}
+
+export function StatusLoz({ status }: { status: string }) {
   const map: Record<string, { bg: string; color: string }> = {
-    complete: { bg: '#E3FCEF', color: '#006644' },
+    complete: { bg: '#E3FCEF', color: '#0D7331' },
     running: { bg: '#DEEBFF', color: '#0747A6' },
     failed: { bg: '#DFE1E6', color: '#44546F' },
     partial: { bg: '#DFE1E6', color: '#44546F' },
@@ -182,7 +249,7 @@ function StatusLoz({ status }: { status: string }) {
       background: s.bg, color: s.color,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
     }}>
-      {status}
+      {status ?? '—'}
     </span>
   );
 }
