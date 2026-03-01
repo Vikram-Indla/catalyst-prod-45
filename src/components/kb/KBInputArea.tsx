@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Mic, ArrowUp } from 'lucide-react';
 
-type Lang = 'en' | 'ar';
+type Lang = 'en';
 
 interface KBInputAreaProps {
   input: string;
@@ -28,7 +28,7 @@ export function KBInputArea({
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputFocused, setInputFocused] = useState(false);
   const hasText = input.trim().length > 0;
-  const isRTL = lang === 'ar';
+  const isRTL = false;
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {

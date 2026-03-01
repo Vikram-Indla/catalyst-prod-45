@@ -568,7 +568,7 @@ function QueryLogTab() {
       <div className="flex items-center gap-3 mb-4 flex-wrap">
         <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">Filters</span>
         <select value={filter.lang} onChange={(e) => setFilter((f) => ({ ...f, lang: e.target.value }))} className="text-xs border border-zinc-200 rounded px-2 py-1">
-          <option value="all">All Languages</option><option value="en">EN</option><option value="ar">AR</option>
+          <option value="all">All Languages</option><option value="en">EN</option>
         </select>
         <select value={filter.method} onChange={(e) => setFilter((f) => ({ ...f, method: e.target.value }))} className="text-xs border border-zinc-200 rounded px-2 py-1">
           <option value="all">All Methods</option><option value="keyboard">Keyboard</option><option value="voice">Voice</option>
@@ -598,7 +598,7 @@ function QueryLogTab() {
                   {log.user_role && <span className={badge('bg-zinc-100 text-zinc-600 ml-1')}>{log.user_role}</span>}
                 </td>
                 <td className="px-3 py-2 max-w-[260px] truncate text-zinc-700">{log.query_text}</td>
-                <td className="px-3 py-2"><span className={badge(log.language === 'ar' ? 'bg-amber-50 text-amber-700' : 'bg-blue-50 text-blue-700')}>{log.language || 'en'}</span></td>
+                <td className="px-3 py-2"><span className={badge('bg-blue-50 text-blue-700')}>{log.language || 'en'}</span></td>
                 <td className="px-3 py-2">{log.input_method === 'voice' ? <Mic size={13} className="text-violet-500" /> : <Keyboard size={13} className="text-zinc-400" />}</td>
                 <td className="px-3 py-2">{log.matched_category ? <span className={badge('bg-blue-50 text-blue-700')}>{log.matched_category}</span> : <span className="text-zinc-300">—</span>}</td>
                 <td className="px-3 py-2"><ConfidenceBadge v={log.confidence_score} /></td>

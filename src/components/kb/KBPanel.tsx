@@ -7,7 +7,7 @@ import { KBInputArea } from './KBInputArea';
 
 import type { KBQueryResponse } from '@/services/knowledgeBase';
 
-type Lang = 'en' | 'ar';
+type Lang = 'en';
 
 interface ChatMessage {
   id: string;
@@ -21,7 +21,7 @@ interface ChatMessage {
 const BRIEFING_MESSAGES = [
   'Your queries are matched against multiple sources — Jira data, ministry regulations, and project documentation — with answers traced back to their origin for full accountability.',
   'Answers include source citations so you can trace every fact back to its origin document.',
-  'Available in English and Arabic with full right-to-left support for Arabic queries.',
+  'Answers include source citations so you can trace every fact back to its origin document.',
   '25 knowledge domains are indexed and searchable. Ask about licensing, permits, compliance, sprints, or any Catalyst module.',
 ];
 
@@ -52,7 +52,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
 
   const fullName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'there';
   const firstName = getFirstName(fullName);
-  const isRTL = lang === 'ar';
+  const isRTL = false;
   
 
   // Speech recognition
@@ -62,7 +62,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
     if (isListening && recognitionRef.current) { recognitionRef.current.stop(); setIsListening(false); return; }
 
     const recognition = new SR();
-    recognition.lang = lang === 'ar' ? 'ar-SA' : 'en-US';
+    recognition.lang = 'en-US';
     recognition.interimResults = true;
     recognition.continuous = false;
     recognitionRef.current = recognition;
@@ -147,23 +147,6 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
             <span style={{ fontSize: 15, fontWeight: 700, color: '#18181B', letterSpacing: '-0.3px' }}>Intelligence</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            {/* Lang toggle */}
-            <div style={{ display: 'flex', gap: 4 }}>
-              {(['en', 'ar'] as Lang[]).map((l) => (
-                <button
-                  key={l}
-                  onClick={() => setLang(l)}
-                  style={{
-                    width: 32, height: 28, borderRadius: 6, fontSize: 11, fontWeight: lang === l ? 600 : 400,
-                    background: lang === l ? '#18181B' : 'transparent',
-                    color: lang === l ? '#FFFFFF' : '#71717A',
-                    border: lang === l ? 'none' : '1px solid #E4E4E7',
-                    cursor: 'pointer', transition: 'all 150ms',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}
-                >{l === 'en' ? 'EN' : 'عربي'}</button>
-              ))}
-            </div>
             <button
               onClick={onClose}
               style={{
