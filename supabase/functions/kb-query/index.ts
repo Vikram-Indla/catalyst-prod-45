@@ -403,6 +403,104 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
     }
   }
 
+  // ── PRIORITY 2.5: Aggregation pattern queries ──
+  const aggregationPatterns: Array<{
+    pattern: RegExp;
+    query: (sb: any) => Promise<string>;
+  }> = [
+    {
+      pattern: /(?:total|how many)\s+(?:headcount|people|resources|team members|employees|staff)/i,
+      query: async (sb) => {
+        const { count: totalProfiles } = await sb.from('profiles').select('*', { count: 'exact', head: true });
+        const { count: activeProfiles } = await sb.from('profiles').select('*', { count: 'exact', head: true }).eq('status', 'active');
+        const { data: depts } = await sb.from('profiles').select('department_id').not('department_id', 'is', null);
+        const uniqueDepts = new Set(depts?.map((d: any) => d.department_id) || []);
+        return `**Total Headcount: ${totalProfiles || 0}**\n\n- Active: ${activeProfiles || 0}\n- Departments: ${uniqueDepts.size}\n\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}*`;
+      }
+    },
+    {
+      pattern: /(?:how many|total|count)\s+(?:open\s+)?(?:items?|issues?|tickets?|stories|bugs?|epics?|tasks?)/i,
+      query: async (sb) => {
+        const { data: counts } = await sb.from('ph_issues').select('issue_type, status_category');
+        if (!counts) return 'No data available.';
+        const total = counts.length;
+        const open = counts.filter((c: any) => c.status_category !== 'Done').length;
+        const done = counts.filter((c: any) => c.status_category === 'Done').length;
+        const byType: Record<string, number> = {};
+        for (const c of counts) { const t = c.issue_type || 'Unknown'; byType[t] = (byType[t] || 0) + 1; }
+        const typeBreakdown = Object.entries(byType).sort((a, b) => b[1] - a[1]).map(([type, count]) => `- ${type}: ${count}`).join('\n');
+        return `**Total Items: ${total}**\n\n- Open: ${open}\n- Done: ${done}\n\n**By Type:**\n${typeBreakdown}\n\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}*`;
+      }
+    },
+    {
+      pattern: /(?:how many|total|count)\s+(?:open\s+)?(?:bugs?|defects?)/i,
+      query: async (sb) => {
+        const { data: bugs } = await sb.from('ph_issues').select('issue_key, summary, status, priority, assignee_display_name').in('issue_type', ['Bug', 'QA Bug']).neq('status_category', 'Done').order('priority').limit(10);
+        if (!bugs || bugs.length === 0) return 'No open bugs found.';
+        const lines = bugs.map((b: any) => `- \`${b.issue_key}\` ${b.summary} — *${b.status}* (${b.priority || 'Normal'}) — ${b.assignee_display_name || 'Unassigned'}`);
+        return `**Open Bugs: ${bugs.length}${bugs.length === 10 ? '+' : ''}**\n\n${lines.join('\n')}\n\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}*`;
+      }
+    },
+    {
+      pattern: /(?:how many|total|count)\s+(?:open\s+)?(?:epics?)/i,
+      query: async (sb) => {
+        const { data: epics } = await sb.from('ph_issues').select('issue_key, summary, status, assignee_display_name').eq('issue_type', 'Epic').neq('status_category', 'Done').order('jira_updated_at', { ascending: false }).limit(15);
+        if (!epics || epics.length === 0) return 'No open epics found.';
+        const lines = epics.map((e: any) => `- \`${e.issue_key}\` ${e.summary} — *${e.status}* — ${e.assignee_display_name || 'Unassigned'}`);
+        return `**Open Epics: ${epics.length}${epics.length === 15 ? '+' : ''}**\n\n${lines.join('\n')}\n\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}*`;
+      }
+    },
+    {
+      pattern: /(?:how many|total|count)\s+(?:projects?)/i,
+      query: async (sb) => {
+        const { data: projects } = await sb.from('ph_projects').select('key, name, status, department').order('name').limit(20);
+        if (!projects || projects.length === 0) return 'No projects found.';
+        const lines = projects.map((p: any) => `- **${p.name}** (${p.key}) — ${p.status || 'Active'}${p.department ? ` — ${p.department}` : ''}`);
+        return `**Projects: ${projects.length}${projects.length === 20 ? '+' : ''}**\n\n${lines.join('\n')}`;
+      }
+    },
+    {
+      pattern: /(?:what|which|show|list)\s+(?:items?|issues?|tickets?|stories?)\s+(?:are\s+)?(?:blocked|stuck)/i,
+      query: async (sb) => {
+        const { data: blocked } = await sb.from('ph_issues').select('issue_key, summary, status, priority, assignee_display_name').or('status.ilike.%blocked%,status.ilike.%impediment%').neq('status_category', 'Done').limit(10);
+        if (!blocked || blocked.length === 0) return 'No blocked items found.';
+        const lines = blocked.map((b: any) => `- \`${b.issue_key}\` ${b.summary} — *${b.status}* — ${b.assignee_display_name || 'Unassigned'}`);
+        return `**Blocked Items: ${blocked.length}**\n\n${lines.join('\n')}`;
+      }
+    },
+    {
+      pattern: /(?:what|which|show|list)\s+(?:items?|issues?|tickets?|stories?)\s+(?:are\s+)?(?:overdue|past\s*due|late)/i,
+      query: async (sb) => {
+        const today = new Date().toISOString().split('T')[0];
+        const { data: overdue } = await sb.from('ph_issues').select('issue_key, summary, status, due_date, assignee_display_name').lt('due_date', today).neq('status_category', 'Done').order('due_date').limit(10);
+        if (!overdue || overdue.length === 0) return 'No overdue items found.';
+        const lines = overdue.map((o: any) => `- \`${o.issue_key}\` ${o.summary} — due ${o.due_date} — ${o.assignee_display_name || 'Unassigned'}`);
+        return `**Overdue Items: ${overdue.length}${overdue.length === 10 ? '+' : ''}**\n\n${lines.join('\n')}`;
+      }
+    },
+    {
+      pattern: /(?:who|which\s+(?:person|people|team\s*member))\s+(?:has|have)\s+(?:the\s+)?(?:most|highest|biggest)/i,
+      query: async (sb) => {
+        const { data: items } = await sb.from('ph_issues').select('assignee_display_name').neq('status_category', 'Done').not('assignee_display_name', 'is', null);
+        if (!items || items.length === 0) return 'No data available.';
+        const counts: Record<string, number> = {};
+        for (const i of items) { counts[i.assignee_display_name] = (counts[i.assignee_display_name] || 0) + 1; }
+        const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+        const lines = sorted.map(([name, count], idx) => `${idx + 1}. **${name}** — ${count} open items`);
+        return `**Top Assignees by Open Items:**\n\n${lines.join('\n')}\n\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}*`;
+      }
+    },
+  ];
+
+  for (const agg of aggregationPatterns) {
+    if (agg.pattern.test(query) || agg.pattern.test(qLower)) {
+      try {
+        const answer = await agg.query(sb);
+        return { found: true, answer, confidence: 0.90, sources: ['ph_issues', 'profiles', 'ph_projects'] };
+      } catch { /* fall through to ticket detection */ }
+    }
+  }
+
   // Detect ticket-specific queries (e.g. MDT-123, CP-456)
   const ticketPattern = /\b([A-Z]{2,10}-\d{1,6})\b/;
   const ticketMatch = query.match(ticketPattern);
