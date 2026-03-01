@@ -354,6 +354,8 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
     return r;
   }, []);
 
+  const isUuid = useCallback((val: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(val), []);
+
   const invalidateAll = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
     queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
@@ -369,26 +371,29 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
       const fkFields = ['department_id', 'assignee_id', 'reporter_id', 'business_owner_id', 'product_id'];
       const sanitized = fkFields.includes(field) && value === '' ? null : value;
 
-      const { data: rows, error } = await supabase
+      let query = supabase
         .from('ph_initiatives')
-        .update({ [field]: sanitized, updated_at: new Date().toISOString() } as any)
-        .eq('id', initiative.id)
-        .select();
-      if (error) throw error;
-      if (!rows || rows.length === 0) {
-        toast.error(`Failed to persist ${label.toLowerCase()}`);
-        // Revert optimistic update
-        setLocalFields(prev => { const n = { ...prev }; delete n[field]; return n; });
-        return;
+        .update({ [field]: sanitized, updated_at: new Date().toISOString() } as any);
+
+      if (isUuid(initiative.id)) {
+        query = query.eq('id', initiative.id);
+      } else if (initiative.initiative_key) {
+        query = query.eq('initiative_key', initiative.initiative_key);
+      } else {
+        throw new Error('Missing valid persistence identifier');
       }
+
+      const { error } = await query;
+      if (error) throw error;
+
       // Silent auto-save — no toast for routine field updates
       invalidateAll();
     } catch (err: any) {
-      toast.error(`Failed to update ${label.toLowerCase()}`);
+      toast.error(`Failed to update ${label.toLowerCase()}: ${err?.message || 'unknown error'}`);
       // Revert optimistic update
       setLocalFields(prev => { const n = { ...prev }; delete n[field]; return n; });
     }
-  }, [initiative.id, invalidateAll]);
+  }, [initiative.id, initiative.initiative_key, invalidateAll, isUuid]);
 
   const handleStatusChange = useCallback(async (opt: any) => {
     await autoSave('status', opt.db, 'Status');
@@ -402,16 +407,24 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         .from('initiative_types').select('id').eq('key', typeKey).single();
       if (lookupErr || !typeRow) throw lookupErr || new Error('Type not found');
 
-      const { data: rows, error } = await supabase
+      let query = supabase
         .from('ph_initiatives')
-        .update({ initiative_type_id: typeRow.id, updated_at: new Date().toISOString() } as any)
-        .eq('id', initiative.id).select();
+        .update({ initiative_type_id: typeRow.id, updated_at: new Date().toISOString() } as any);
+
+      if (isUuid(initiative.id)) {
+        query = query.eq('id', initiative.id);
+      } else if (initiative.initiative_key) {
+        query = query.eq('initiative_key', initiative.initiative_key);
+      } else {
+        throw new Error('Missing valid persistence identifier');
+      }
+
+      const { error } = await query;
       if (error) throw error;
-      if (!rows || rows.length === 0) { toast.error('Failed to persist type'); return; }
       invalidateAll();
-    } catch { toast.error('Failed to update type'); }
+    } catch (err: any) { toast.error(`Failed to update type: ${err?.message || 'unknown error'}`); }
     finally { setUpdatingType(false); }
-  }, [initiative.id, initiative.initiative_type_key, invalidateAll]);
+  }, [initiative.id, initiative.initiative_key, initiative.initiative_type_key, invalidateAll, isUuid]);
 
   const handleRoadmapToggle = useCallback(async () => {
     if (initiative.on_roadmap) {

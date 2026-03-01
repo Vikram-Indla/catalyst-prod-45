@@ -41,7 +41,8 @@ function toTimelineInitiative(i: Initiative): TimelineInitiative {
     created_at: i.created_at, updated_at: i.updated_at,
     initiative_type_key: i.initiative_type_key ?? null, initiative_type_label: i.initiative_type_label ?? null,
     initiative_type_color_hex: i.initiative_type_color_hex ?? null, health_status: i.health_status ?? null,
-    business_value: i.business_value ?? null, on_roadmap: i.on_roadmap ?? false,
+    business_value: i.business_value ?? null, ea_review: (i as any).ea_review ?? null,
+    priority: (i as any).priority ?? null, on_roadmap: i.on_roadmap ?? false,
   };
 }
 
