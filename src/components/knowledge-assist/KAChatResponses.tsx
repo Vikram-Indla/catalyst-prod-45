@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  BookOpen, User, Link, Sparkles, ShieldAlert,
+  BookOpen, User, Users, Link, Sparkles, ShieldAlert, ClipboardList, Clock,
   ThumbsUp, ThumbsDown,
 } from 'lucide-react';
 
@@ -16,11 +16,17 @@ const F = {
 
 /* ── Status Lozenge (3-color guardrail) ── */
 const LOZENGE_MAP: Record<string, { bg: string; color: string }> = {
-  'RE-OPEN':      { bg: '#DEEBFF', color: '#0747A6' },
-  'IN PROGRESS':  { bg: '#DEEBFF', color: '#0747A6' },
-  'TO DO':        { bg: '#E3FCEF', color: '#006644' },
-  'DEFERRED':     { bg: '#DFE1E6', color: '#253858' },
-  'DONE':         { bg: '#E3FCEF', color: '#006644' },
+  'RE-OPEN':       { bg: '#DEEBFF', color: '#0747A6' },
+  'IN PROGRESS':   { bg: '#DEEBFF', color: '#0747A6' },
+  'TO DO':         { bg: '#E3FCEF', color: '#006644' },
+  'DEFERRED':      { bg: '#DFE1E6', color: '#253858' },
+  'DONE':          { bg: '#E3FCEF', color: '#006644' },
+  'AT CAPACITY':   { bg: '#DFE1E6', color: '#253858' },
+  'AVAILABLE':     { bg: '#E3FCEF', color: '#006644' },
+  'BLOCKED':       { bg: '#DEEBFF', color: '#0747A6' },
+  'CRITICAL':      { bg: '#DFE1E6', color: '#253858' },
+  'HIGH':          { bg: '#DFE1E6', color: '#253858' },
+  'MEDIUM':        { bg: '#DFE1E6', color: '#253858' },
 };
 
 function StatusLozenge({ status }: { status: string }) {
@@ -54,12 +60,14 @@ function TypeBadge({ type }: { type: string }) {
 
 /* ── Ageing dot ── */
 function Ageing({ text }: { text: string }) {
-  // Parse to determine color: green ≤12h, amber ≤24h, red >24h
   const num = parseFloat(text);
   const unit = text.replace(/[\d.]/g, '').trim();
-  let color = '#16A34A'; // green
-  if (unit === 'd' || (unit === 'h' && num > 24)) color = '#DC2626';
-  else if (unit === 'h' && num > 12) color = '#D97706';
+  let color = '#16A34A'; // green ≤12h
+  if (unit === 'd') {
+    color = num > 3 ? '#DC2626' : '#D97706';
+  } else if (unit === 'h' && num > 12) {
+    color = '#D97706';
+  }
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
       <span style={{ width: 6, height: 6, borderRadius: '50%', background: color, flexShrink: 0 }} />
@@ -111,7 +119,23 @@ function ResponseHeader({ tag }: { tag?: string }) {
   );
 }
 
-/* ── Table header cell ── */
+/* ── AI badge (purple pill) ── */
+function AIBadge() {
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 3,
+      fontSize: 9, fontWeight: 700, color: '#7C3AED',
+      background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.15)',
+      borderRadius: 9999, padding: '1px 6px', lineHeight: '14px',
+      fontFamily: F.inter,
+    }}>
+      <Sparkles size={8} strokeWidth={2} color="#7C3AED" />
+      AI
+    </span>
+  );
+}
+
+/* ── Table header & cell styles ── */
 const TH: React.CSSProperties = {
   padding: '10px 12px', fontSize: 11, fontWeight: 650,
   textTransform: 'uppercase', letterSpacing: '0.06em',
@@ -123,8 +147,16 @@ const TH: React.CSSProperties = {
 const TD: React.CSSProperties = {
   padding: '8px 12px', fontSize: 13, color: '#0F172A',
   fontFamily: F.inter, borderBottom: '0.75px solid rgba(15,23,42,0.06)',
-  maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
 };
+
+// Column widths
+const W_KEY = { width: 100, minWidth: 100 };
+const W_TYPE = { width: 50, minWidth: 50 };
+const W_STATUS = { width: 110, minWidth: 110 };
+const W_REPORTER = { width: 110, minWidth: 110 };
+const W_AGE = { width: 70, minWidth: 70, textAlign: 'right' as const };
+const W_TITLE = { maxWidth: 999 }; // flex — no max constraint
 
 /* ── AI Prediction / Analysis Row ── */
 function AIPredictionRow({ label, text }: { label: string; text: string }) {
@@ -156,7 +188,7 @@ function CardFooter({ meta, confidence }: { meta: string; confidence?: string })
         {confidence && (
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
             <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#16A34A' }} />
-            <span style={{ fontSize: 11, fontWeight: 500, color: '#16A34A', fontFamily: F.inter }}>{confidence}</span>
+            <span style={{ fontSize: 11, fontWeight: 500, color: '#0D7331', fontFamily: F.inter }}>{confidence}</span>
           </span>
         )}
         <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex' }}
@@ -209,9 +241,7 @@ export function WahidResponse() {
     <div style={{ animation: 'ka-msg-in 200ms ease' }}>
       <ResponseHeader tag="LIVE DATA" />
 
-      {/* Person Card */}
       <div style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, overflow: 'hidden' }}>
-        {/* Person header */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '12px 16px', borderBottom: '0.75px solid rgba(15,23,42,0.06)',
@@ -224,10 +254,17 @@ export function WahidResponse() {
           <span style={{ fontSize: 11, color: '#64748B', fontFamily: F.mono }}>📁 Delivery · 100%</span>
         </div>
 
-        {/* Table */}
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
             <caption className="ka-sr-only">Wahid Nasri's work items</caption>
+            <colgroup>
+              <col style={{ width: 100 }} />
+              <col style={{ width: 50 }} />
+              <col />
+              <col style={{ width: 110 }} />
+              <col style={{ width: 110 }} />
+              <col style={{ width: 70 }} />
+            </colgroup>
             <thead>
               <tr>
                 <th style={TH}>Key</th>
@@ -243,7 +280,7 @@ export function WahidResponse() {
                 <HoverRow key={r.key}>
                   <td style={TD}><KeyLink k={r.key} /></td>
                   <td style={TD}><TypeBadge type={r.type} /></td>
-                  <td style={TD}>{r.title}</td>
+                  <td style={{ ...TD, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.title}</td>
                   <td style={TD}><StatusLozenge status={r.status} /></td>
                   <td style={TD}>{r.reporter}</td>
                   <td style={{ ...TD, textAlign: 'right' }}><Ageing text={r.age} /></td>
@@ -253,17 +290,14 @@ export function WahidResponse() {
           </table>
         </div>
 
-        {/* AI Prediction */}
         <AIPredictionRow
           label="AI Prediction"
           text="BAU-5074 (15h deferred) at risk of SLA breach. BAU-5027 ageing past 17h — consider re-prioritizing in next sprint."
         />
-
-        {/* Footer */}
         <CardFooter meta="Showing 5 of 20 · Last 2 weeks · Mar 1, 2026" confidence="High confidence" />
       </div>
 
-      {/* Associated Items Card */}
+      {/* Associated Items */}
       <div style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, overflow: 'hidden', marginTop: 4 }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: 8,
@@ -275,12 +309,18 @@ export function WahidResponse() {
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             minWidth: 18, height: 18, borderRadius: 9999,
             background: '#2563EB', color: '#FFFFFF',
-            fontSize: 11, fontWeight: 700, fontFamily: F.inter,
-            padding: '0 5px',
+            fontSize: 11, fontWeight: 700, fontFamily: F.inter, padding: '0 5px',
           }}>2</span>
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
           <caption className="ka-sr-only">Associated items under same parent</caption>
+          <colgroup>
+            <col style={{ width: 100 }} />
+            <col />
+            <col style={{ width: 110 }} />
+            <col style={{ width: 110 }} />
+            <col style={{ width: 70 }} />
+          </colgroup>
           <thead>
             <tr>
               <th style={TH}>Key</th>
@@ -294,7 +334,7 @@ export function WahidResponse() {
             {WAHID_ASSOCIATED.map(r => (
               <HoverRow key={r.key}>
                 <td style={TD}><KeyLink k={r.key} /></td>
-                <td style={TD}>{r.title}</td>
+                <td style={{ ...TD, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.title}</td>
                 <td style={TD}>{r.assignee}</td>
                 <td style={TD}><StatusLozenge status={r.status} /></td>
                 <td style={{ ...TD, textAlign: 'right' }}><Ageing text={r.age} /></td>
@@ -326,7 +366,6 @@ export function BlockedResponse() {
       <ResponseHeader tag="LIVE DATA" />
 
       <div style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, overflow: 'hidden' }}>
-        {/* Header */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '12px 16px', borderBottom: '0.75px solid rgba(15,23,42,0.06)',
@@ -336,9 +375,15 @@ export function BlockedResponse() {
           <span style={{ fontSize: 12, color: '#64748B', fontFamily: F.mono }}>10 total</span>
         </div>
 
-        {/* Table */}
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
           <caption className="ka-sr-only">Blocked work items</caption>
+          <colgroup>
+            <col style={{ width: 100 }} />
+            <col />
+            <col style={{ width: 120 }} />
+            <col style={{ width: 110 }} />
+            <col style={{ width: 70 }} />
+          </colgroup>
           <thead>
             <tr>
               <th style={TH}>Key</th>
@@ -352,7 +397,7 @@ export function BlockedResponse() {
             {BLOCKED_ROWS.map(r => (
               <HoverRow key={r.key}>
                 <td style={TD}><KeyLink k={r.key} /></td>
-                <td style={TD}>{r.title}</td>
+                <td style={{ ...TD, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.title}</td>
                 <td style={{ ...TD, fontSize: 11, color: '#64748B' }}>{r.reason}</td>
                 <td style={TD}>{r.assignee}</td>
                 <td style={{ ...TD, textAlign: 'right' }}><Ageing text={r.age} /></td>
@@ -361,13 +406,10 @@ export function BlockedResponse() {
           </tbody>
         </table>
 
-        {/* AI Analysis */}
         <AIPredictionRow
           label="AI Analysis"
           text="70% of blocked items share the same root cause (Accessibility score <100) assigned to Nada. Recommend batch resolution — single accessibility audit pass could unblock 7 of 10 items."
         />
-
-        {/* Footer */}
         <CardFooter meta="5 of 10 · Ask 'Show all blocked' for full list" confidence="High confidence" />
       </div>
     </div>
@@ -376,7 +418,230 @@ export function BlockedResponse() {
 
 
 /* ═══════════════════════════════════════════════════════════════
-   RESPONSE 3 — "Status of BAU-5069"
+   RESPONSE 3 — "What are Vikram's open items?"
+   ═══════════════════════════════════════════════════════════════ */
+
+const VIKRAM_ROWS = [
+  { key: 'BAU-5054', type: 'FE', title: 'My Requests missing Search & Filter', status: 'RE-OPEN', project: 'Senaei BAU', age: '4h' },
+  { key: 'BAU-5073', type: 'FE', title: 'More Screen Issues', status: 'RE-OPEN', project: 'Senaei BAU', age: '5h' },
+  { key: 'BAU-5074', type: 'FE', title: 'Notification Screen Issues', status: 'DEFERRED', project: 'Senaei BAU', age: '15h' },
+  { key: 'SIMP-3245', type: 'FE', title: 'Landing Page — Program & Incentives', status: 'IN PROGRESS', project: 'SIMP', age: '1d' },
+  { key: 'MDT-533', type: 'BE', title: 'Request Query Optimization', status: 'IN PROGRESS', project: 'MDT', age: '1d' },
+];
+
+export function VikramResponse() {
+  return (
+    <div style={{ animation: 'ka-msg-in 200ms ease' }}>
+      <ResponseHeader tag="LIVE DATA" />
+
+      <div style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, overflow: 'hidden' }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '12px 16px', borderBottom: '0.75px solid rgba(15,23,42,0.06)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <ClipboardList size={16} strokeWidth={2} color="#2563EB" aria-hidden="true" />
+            <span style={{ fontSize: 14, fontWeight: 650, color: '#0F172A', fontFamily: F.sora }}>Vikram Indla</span>
+            <span style={{ fontSize: 12, color: '#64748B', fontFamily: F.inter }}>— Product Manager</span>
+          </div>
+          <span style={{ fontSize: 11, color: '#64748B', fontFamily: F.mono }}>📁 3 projects · 12 items</span>
+        </div>
+
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+            <caption className="ka-sr-only">Vikram Indla's open items</caption>
+            <colgroup>
+              <col style={{ width: 100 }} />
+              <col style={{ width: 50 }} />
+              <col />
+              <col style={{ width: 110 }} />
+              <col style={{ width: 90 }} />
+              <col style={{ width: 70 }} />
+            </colgroup>
+            <thead>
+              <tr>
+                <th style={TH}>Key</th>
+                <th style={TH}>Type</th>
+                <th style={TH}>Title</th>
+                <th style={TH}>Status</th>
+                <th style={TH}>Project</th>
+                <th style={{ ...TH, textAlign: 'right' }}>Ageing</th>
+              </tr>
+            </thead>
+            <tbody>
+              {VIKRAM_ROWS.map(r => (
+                <HoverRow key={r.key}>
+                  <td style={TD}><KeyLink k={r.key} /></td>
+                  <td style={TD}><TypeBadge type={r.type} /></td>
+                  <td style={{ ...TD, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.title}</td>
+                  <td style={TD}><StatusLozenge status={r.status} /></td>
+                  <td style={{ ...TD, fontSize: 12 }}>{r.project}</td>
+                  <td style={{ ...TD, textAlign: 'right' }}><Ageing text={r.age} /></td>
+                </HoverRow>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <AIPredictionRow
+          label="AI Prediction"
+          text="BAU-5074 (15h deferred) approaching SLA threshold. SIMP-3245 blocked 1d — requires Figma alignment. MDT-533 on track."
+        />
+        <CardFooter meta="Showing 5 of 12 · Mar 1, 2026" confidence="High confidence" />
+      </div>
+    </div>
+  );
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSE 4 — "SLA breach predictions"
+   ═══════════════════════════════════════════════════════════════ */
+
+const SLA_ROWS = [
+  { key: 'BAU-5074', title: 'Notification Screen Issues', assignee: 'Wahid Nasri', age: '15h', risk: 'HIGH' },
+  { key: 'SIMP-3245', title: 'Landing Page — Program & Incentives', assignee: 'Nada Alfassam', age: '5d', risk: 'CRITICAL' },
+  { key: 'BAU-5027', title: 'Entity Page Issues', assignee: 'Wahid Nasri', age: '17h', risk: 'MEDIUM' },
+];
+
+export function SLAResponse() {
+  return (
+    <div style={{ animation: 'ka-msg-in 200ms ease' }}>
+      <ResponseHeader tag="LIVE DATA" />
+
+      <div style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, overflow: 'hidden' }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '12px 16px', borderBottom: '0.75px solid rgba(15,23,42,0.06)',
+        }}>
+          <Clock size={16} strokeWidth={2} color="#D97706" aria-hidden="true" />
+          <span style={{ fontSize: 14, fontWeight: 650, color: '#0F172A', fontFamily: F.sora }}>SLA Risk Analysis</span>
+          <AIBadge />
+        </div>
+
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+            <caption className="ka-sr-only">SLA breach predictions</caption>
+            <colgroup>
+              <col style={{ width: 100 }} />
+              <col />
+              <col style={{ width: 110 }} />
+              <col style={{ width: 70 }} />
+              <col style={{ width: 90 }} />
+            </colgroup>
+            <thead>
+              <tr>
+                <th style={TH}>Key</th>
+                <th style={TH}>Title</th>
+                <th style={TH}>Assignee</th>
+                <th style={{ ...TH, textAlign: 'right' }}>Ageing</th>
+                <th style={TH}>Risk</th>
+              </tr>
+            </thead>
+            <tbody>
+              {SLA_ROWS.map(r => (
+                <HoverRow key={r.key}>
+                  <td style={TD}><KeyLink k={r.key} /></td>
+                  <td style={{ ...TD, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.title}</td>
+                  <td style={TD}>{r.assignee}</td>
+                  <td style={{ ...TD, textAlign: 'right' }}><Ageing text={r.age} /></td>
+                  <td style={TD}><StatusLozenge status={r.risk} /></td>
+                </HoverRow>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <AIPredictionRow
+          label="AI Prediction"
+          text="At current velocity, BAU-5074 will breach 24h SLA by tomorrow morning. SIMP-3245 has been blocked 5 days — escalation recommended. Reassigning BAU-5027 to available developer could prevent breach."
+        />
+        <CardFooter meta="3 items at risk · Analysis as of Mar 1, 2026" confidence="High confidence" />
+      </div>
+    </div>
+  );
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSE 5 — "Team capacity & workload"
+   ═══════════════════════════════════════════════════════════════ */
+
+const TEAM_ROWS = [
+  { member: 'Wahid Nasri', role: 'Mobile FE', active: 20, blocked: 0, capacity: 100, status: 'AT CAPACITY' },
+  { member: 'Nada Alfassam', role: 'QA', active: 15, blocked: 7, capacity: 100, status: 'BLOCKED' },
+  { member: 'Raza Bangi', role: 'Backend', active: 8, blocked: 0, capacity: 75, status: 'AVAILABLE' },
+  { member: 'Yousif Al-Harbi', role: 'Backend', active: 8, blocked: 0, capacity: 100, status: 'AT CAPACITY' },
+  { member: 'Sara Ahmad', role: 'BA', active: 4, blocked: 0, capacity: 40, status: 'AVAILABLE' },
+];
+
+export function TeamCapacityResponse() {
+  return (
+    <div style={{ animation: 'ka-msg-in 200ms ease' }}>
+      <ResponseHeader tag="LIVE DATA" />
+
+      <div style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, overflow: 'hidden' }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '12px 16px', borderBottom: '0.75px solid rgba(15,23,42,0.06)',
+        }}>
+          <Users size={16} strokeWidth={2} color="#7C3AED" aria-hidden="true" />
+          <span style={{ fontSize: 14, fontWeight: 650, color: '#0F172A', fontFamily: F.sora }}>Team Capacity</span>
+          <AIBadge />
+        </div>
+
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+            <caption className="ka-sr-only">Team capacity and workload</caption>
+            <colgroup>
+              <col style={{ width: 120 }} />
+              <col style={{ width: 80 }} />
+              <col style={{ width: 55 }} />
+              <col style={{ width: 55 }} />
+              <col style={{ width: 70 }} />
+              <col style={{ width: 100 }} />
+            </colgroup>
+            <thead>
+              <tr>
+                <th style={TH}>Member</th>
+                <th style={TH}>Role</th>
+                <th style={TH}>Active</th>
+                <th style={TH}>Blocked</th>
+                <th style={TH}>Capacity</th>
+                <th style={TH}>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {TEAM_ROWS.map(r => (
+                <HoverRow key={r.member}>
+                  <td style={{ ...TD, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.member}</td>
+                  <td style={{ ...TD, fontSize: 12, color: '#64748B' }}>{r.role}</td>
+                  <td style={{ ...TD, fontFamily: F.mono, fontSize: 12, fontVariantNumeric: 'tabular-nums' as any }}>{r.active}</td>
+                  <td style={{ ...TD, fontFamily: F.mono, fontSize: 12, fontVariantNumeric: 'tabular-nums' as any, color: r.blocked > 0 ? '#DC2626' : '#0F172A' }}>{r.blocked}</td>
+                  <td style={{
+                    ...TD, fontFamily: F.mono, fontSize: 12, fontVariantNumeric: 'tabular-nums' as any,
+                    color: r.capacity < 80 ? '#16A34A' : '#0F172A',
+                  }}>{r.capacity}%</td>
+                  <td style={TD}><StatusLozenge status={r.status} /></td>
+                </HoverRow>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <AIPredictionRow
+          label="AI Analysis"
+          text="Team is at 83% average capacity. Nada is the critical bottleneck — 7 blocked items on accessibility. Raza and Sara have bandwidth available. Consider redistributing Nada's non-blocked items to free her for the accessibility audit pass."
+        />
+        <CardFooter meta="5 team members · Live data · Mar 1, 2026" confidence="High confidence" />
+      </div>
+    </div>
+  );
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSE — "Status of BAU-5069"
    ═══════════════════════════════════════════════════════════════ */
 
 export function StatusResponse() {
@@ -396,9 +661,7 @@ export function StatusResponse() {
     <div style={{ animation: 'ka-msg-in 200ms ease' }}>
       <ResponseHeader tag="LIVE DATA" />
 
-      {/* Detail Card */}
       <div style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, overflow: 'hidden' }}>
-        {/* Header */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '12px 16px', borderBottom: '0.75px solid rgba(15,23,42,0.06)',
@@ -407,7 +670,6 @@ export function StatusResponse() {
           <span style={{ fontSize: 12, color: '#64748B', fontFamily: F.inter }}>— Iron & Cement Product License</span>
         </div>
 
-        {/* Detail Grid */}
         <div style={{
           display: 'grid', gridTemplateColumns: '100px 1fr',
           gap: '4px 16px', padding: 20,
@@ -420,11 +682,9 @@ export function StatusResponse() {
           ))}
         </div>
 
-        {/* Footer */}
         <CardFooter meta="Last synced: Mar 1, 2026" confidence="High confidence" />
       </div>
 
-      {/* Linked Items */}
       <div style={{ border: '1px solid rgba(15,23,42,0.12)', borderRadius: 6, overflow: 'hidden', marginTop: 4 }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: 8,
@@ -436,8 +696,7 @@ export function StatusResponse() {
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             minWidth: 18, height: 18, borderRadius: 9999,
             background: '#2563EB', color: '#FFFFFF',
-            fontSize: 11, fontWeight: 700, fontFamily: F.inter,
-            padding: '0 5px',
+            fontSize: 11, fontWeight: 700, fontFamily: F.inter, padding: '0 5px',
           }}>1</span>
         </div>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -471,6 +730,9 @@ export function matchMockResponse(question: string): React.ReactNode | null {
   const q = question.toLowerCase();
   if (q.includes('wahid')) return <WahidResponse />;
   if (q.includes('blocked')) return <BlockedResponse />;
+  if (q.includes('vikram') && (q.includes('item') || q.includes('open') || q.includes('work'))) return <VikramResponse />;
+  if (q.includes('sla') || q.includes('breach')) return <SLAResponse />;
+  if (q.includes('capacity') || q.includes('workload') || q.includes('team capacity')) return <TeamCapacityResponse />;
   if (q.includes('bau-5069') || q.includes('status of')) return <StatusResponse />;
   return null;
 }
