@@ -18,14 +18,8 @@ export function KAFab() {
         aria-label="Open Knowledge Assist"
         onClick={() => setIsOpen(true)}
       >
-        <div className="w-10 h-10 flex items-center justify-center">
-          <span style={{
-            fontSize: 15,
-            fontWeight: 700,
-            color: '#FFFFFF',
-            letterSpacing: '0.03em',
-            fontFamily: "'Inter', system-ui, sans-serif",
-          }}>KA</span>
+        <div className="w-10 h-10">
+          <HubIcon />
         </div>
       </button>
 

@@ -460,8 +460,10 @@ function QAAssistantRouteGuard() {
   return <QAAssistantFab />;
 }
 
-// Knowledge Assist FAB — shown globally
+// Knowledge Assist FAB — shown only on home route
 function KAFabRouteGuard() {
+  const location = useLocation();
+  if (location.pathname !== '/') return null;
   return <KAFab />;
 }
 
