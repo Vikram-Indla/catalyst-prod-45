@@ -40,7 +40,7 @@ export function KBIntelligenceButton({ isOpen, onClick }: KBIntelligenceButtonPr
         }}
       >
         <Sparkles size={14} strokeWidth={2} />
-        <span>Knowledge Assist</span>
+        <span>KA</span>
         {/* Green pulse dot */}
         {!isOpen && (
           <span style={{
