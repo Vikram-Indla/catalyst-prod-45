@@ -23,8 +23,6 @@ import { catalystToast } from "@/lib/catalystToast";
 import { CreateEntityDialog } from "@/components/dialogs/CreateEntityDialog";
 import { useCatalystContext } from "@/contexts/CatalystContext";
 import { getActiveNavItem } from "@/lib/workspaceContext";
-import { KnowledgeAssistPanel } from "@/components/knowledge-assist/KnowledgeAssistPanel";
-import { KBIntelligenceButton } from "@/components/kb/KBIntelligenceButton";
 import {
   Tooltip,
   TooltipContent,
@@ -49,7 +47,7 @@ export function CatalystHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [kbPanelOpen, setKbPanelOpen] = useState(false);
+  
   const userMenuRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLElement | null>(null);
   const { isAdmin, isSuperAdmin, isProgramManager, canAccessEnterprise, isProductOwnerOnly } = useUserRole();
@@ -160,7 +158,6 @@ export function CatalystHeader() {
     { label: "TaskHub", path: "/taskhub/boards", moduleKey: "planner", visibleToProductOwner: true },
     { label: "PlanHub", path: "/planhub", moduleKey: "planhub", visibleToProductOwner: true },
     { label: "Wiki", path: "/wiki", moduleKey: "wiki", visibleToProductOwner: true },
-    { label: "KB", path: "__kb_panel__", moduleKey: "kb", visibleToProductOwner: true },
   ];
 
   // Get all nav items with their enabled status based on role-based module access
@@ -496,11 +493,6 @@ export function CatalystHeader() {
                     >
                       {item.label}
                     </span>
-                  ) : item.label === "KB" ? (
-                    <KBIntelligenceButton
-                      isOpen={kbPanelOpen}
-                      onClick={() => setKbPanelOpen(true)}
-                    />
                   ) : (
                     <button
                       style={navButtonStyle}
@@ -764,8 +756,6 @@ export function CatalystHeader() {
         />
       )}
 
-      {/* Knowledge Assist Panel */}
-      <KnowledgeAssistPanel isOpen={kbPanelOpen} onClose={() => setKbPanelOpen(false)} />
     </>
   );
 }
