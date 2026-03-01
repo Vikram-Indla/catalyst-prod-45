@@ -6,6 +6,7 @@ import {
 import { useKBQuery } from '@/hooks/useKnowledgeBase';
 import { useAuth } from '@/hooks/useAuth';
 import { KBResponseRenderer } from '@/components/kb/KBResponseRenderer';
+import { matchMockResponse } from './KAChatResponses';
 import type { KBQueryResponse } from '@/services/knowledgeBase';
 
 /* ── Types ── */
@@ -14,6 +15,7 @@ interface ChatMessage {
   role: 'user' | 'assistant';
   content?: string;
   response?: KBQueryResponse;
+  mockResponse?: React.ReactNode;
   logId?: string;
   feedbackGiven?: boolean;
 }
@@ -102,6 +104,17 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     setInput('');
     if (view === 'land') setView('chat');
     setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'user', content: q }]);
+
+    // Check for mock response first
+    const mock = matchMockResponse(q);
+    if (mock) {
+      // Small delay for realism
+      setTimeout(() => {
+        setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'assistant', mockResponse: mock }]);
+      }, 600);
+      return;
+    }
+
     pendingRef.current = true;
     await askQuestion({ query: q, language: 'en', input_method: 'keyboard', user_name: fullName });
   }, [input, isLoading, view, fullName, askQuestion]);
@@ -436,21 +449,25 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                     }}>
                       <div style={{
                         maxWidth: '85%', padding: '10px 16px',
-                        borderRadius: '14px 14px 4px 14px', background: '#2563EB',
-                        color: '#FFFFFF', fontSize: 14, fontWeight: 400, lineHeight: 1.5,
+                        borderRadius: '8px 8px 3px 8px', background: '#2563EB',
+                        color: '#FFFFFF', fontSize: 13, fontWeight: 500, lineHeight: 1.5,
+                        fontFamily: "'Inter', sans-serif",
                       }}>{msg.content}</div>
                     </div>
                   );
                 }
+                // Assistant message — mock or real
                 return (
                   <div key={msg.id} style={{ marginBottom: 16, animation: 'ka-msg-in 200ms ease' }}>
-                    {msg.response && (
-                      <KBResponseRenderer
-                        response={msg.response}
-                        language="en"
-                        feedbackGiven={msg.feedbackGiven}
-                        onFeedback={(helpful) => handleFeedback(msg.id, msg.logId, helpful)}
-                      />
+                    {msg.mockResponse ? msg.mockResponse : (
+                      msg.response && (
+                        <KBResponseRenderer
+                          response={msg.response}
+                          language="en"
+                          feedbackGiven={msg.feedbackGiven}
+                          onFeedback={(helpful) => handleFeedback(msg.id, msg.logId, helpful)}
+                        />
+                      )
                     )}
                   </div>
                 );
