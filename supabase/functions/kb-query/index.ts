@@ -327,17 +327,21 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
       // Department right after name
       if (department) parts.push(`📁 ${department}${capacity != null ? ` · Capacity: ${capacity}%` : ''}${vendor ? ` · Vendor: ${vendor}` : ''}`);
 
-      // Get ALL assigned issues/tickets — no artificial limit
+      // Get items updated in last 2 weeks only, limit to latest 5
+      const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 3600000).toISOString();
       const { data: issues } = await sb
         .from('ph_issues')
         .select('issue_key, summary, status, priority, issue_type, jira_updated_at, project_name, project_key')
         .or(`assignee_display_name.ilike.%${personName}%`)
+        .gte('jira_updated_at', twoWeeksAgo)
         .order('jira_updated_at', { ascending: false })
-        .limit(50);
+        .limit(20);
 
       if (issues && issues.length > 0) {
         const active = issues.filter((i: any) => !['Done', 'Closed', 'Resolved'].includes(i.status));
         const completed = issues.filter((i: any) => ['Done', 'Closed', 'Resolved'].includes(i.status));
+        const totalActive = active.length;
+        const totalCompleted = completed.length;
 
         // Helper: calculate hours sitting with person
         const calcHours = (updatedAt: string): string => {
@@ -349,50 +353,36 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
           return `${days}d ${hours % 24}h`;
         };
 
-        // Group active items by project
+        // Show only top 5 active items
         if (active.length > 0) {
-          parts.push('\n---\n#### CURRENT WORK');
+          const shown = active.slice(0, 5);
+          parts.push('\n---\n#### CURRENT WORK (Latest)');
 
-          const byProject: Record<string, any[]> = {};
-          for (const i of active) {
-            const proj = i.project_name || i.project_key || 'Unknown Project';
-            if (!byProject[proj]) byProject[proj] = [];
-            byProject[proj].push(i);
+          for (const i of shown) {
+            const sitting = calcHours(i.jira_updated_at);
+            parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.status}* | ⏱ ${sitting} |`);
           }
 
-          for (const [projectName, items] of Object.entries(byProject)) {
-            parts.push(`\n**${projectName}**`);
-            for (const i of items) {
-              const sitting = calcHours(i.jira_updated_at);
-              parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.status}* | ⏱ ${sitting} |`);
-            }
+          if (totalActive > 5) {
+            parts.push(`\n*Showing 5 of ${totalActive} active items. Ask "Show all of ${displayName.split(' ')[0]}'s items" for the full list.*`);
           }
-          parts.push(`\n**Total Active:** ${active.length} items`);
         }
 
-        // Group completed items by project
+        // Show only top 3 completed items
         if (completed.length > 0) {
+          const shown = completed.slice(0, 3);
           parts.push('\n---\n#### RECENTLY COMPLETED');
-
-          const byProject: Record<string, any[]> = {};
-          for (const i of completed) {
-            const proj = i.project_name || i.project_key || 'Unknown Project';
-            if (!byProject[proj]) byProject[proj] = [];
-            byProject[proj].push(i);
+          for (const i of shown) {
+            parts.push(`| \`${i.issue_key}\` | ${i.summary} | ✅ ${i.status} |`);
           }
-
-          for (const [projectName, items] of Object.entries(byProject)) {
-            parts.push(`\n**${projectName}**`);
-            for (const i of items) {
-              parts.push(`| \`${i.issue_key}\` | ${i.summary} | ✅ ${i.status} |`);
-            }
+          if (totalCompleted > 3) {
+            parts.push(`\n*${totalCompleted - 3} more completed items — ask for details.*`);
           }
-          parts.push(`\n**Total Completed:** ${completed.length} items`);
         }
 
-        parts.push(`\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}*`);
+        parts.push(`\n*Last 2 weeks · ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}*`);
       } else {
-        parts.push('\nNo tickets found assigned to this person.');
+        parts.push('\nNo recent activity in the last 2 weeks.');
       }
 
       return {
@@ -436,19 +426,27 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
     {
       pattern: /(?:how many|total|count)\s+(?:open\s+)?(?:bugs?|defects?)/i,
       query: async (sb) => {
-        const { data: bugs } = await sb.from('ph_issues').select('issue_key, summary, status, priority, assignee_display_name').in('issue_type', ['Bug', 'QA Bug']).neq('status_category', 'Done').order('priority').limit(10);
+        const { data: bugs } = await sb.from('ph_issues').select('issue_key, summary, status, priority, assignee_display_name').in('issue_type', ['Bug', 'QA Bug']).neq('status_category', 'Done').order('jira_updated_at', { ascending: false }).limit(20);
         if (!bugs || bugs.length === 0) return 'No open bugs found.';
-        const lines = bugs.map((b: any) => `- \`${b.issue_key}\` ${b.summary} — *${b.status}* (${b.priority || 'Normal'}) — ${b.assignee_display_name || 'Unassigned'}`);
-        return `**Open Bugs: ${bugs.length}${bugs.length === 10 ? '+' : ''}**\n\n${lines.join('\n')}\n\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}*`;
+        const shown = bugs.slice(0, 5);
+        const lines = shown.map((b: any) => `- \`${b.issue_key}\` ${b.summary} — *${b.status}* (${b.priority || 'Normal'}) — ${b.assignee_display_name || 'Unassigned'}`);
+        let result = `**Open Bugs: ${bugs.length}**\n\n${lines.join('\n')}`;
+        if (bugs.length > 5) result += `\n\n*Showing 5 of ${bugs.length}. Ask "Show all open bugs" for the full list.*`;
+        result += `\n\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}*`;
+        return result;
       }
     },
     {
       pattern: /(?:how many|total|count)\s+(?:open\s+)?(?:epics?)/i,
       query: async (sb) => {
-        const { data: epics } = await sb.from('ph_issues').select('issue_key, summary, status, assignee_display_name').eq('issue_type', 'Epic').neq('status_category', 'Done').order('jira_updated_at', { ascending: false }).limit(15);
+        const { data: epics } = await sb.from('ph_issues').select('issue_key, summary, status, assignee_display_name').eq('issue_type', 'Epic').neq('status_category', 'Done').order('jira_updated_at', { ascending: false }).limit(20);
         if (!epics || epics.length === 0) return 'No open epics found.';
-        const lines = epics.map((e: any) => `- \`${e.issue_key}\` ${e.summary} — *${e.status}* — ${e.assignee_display_name || 'Unassigned'}`);
-        return `**Open Epics: ${epics.length}${epics.length === 15 ? '+' : ''}**\n\n${lines.join('\n')}\n\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}*`;
+        const shown = epics.slice(0, 5);
+        const lines = shown.map((e: any) => `- \`${e.issue_key}\` ${e.summary} — *${e.status}* — ${e.assignee_display_name || 'Unassigned'}`);
+        let result = `**Open Epics: ${epics.length}**\n\n${lines.join('\n')}`;
+        if (epics.length > 5) result += `\n\n*Showing 5 of ${epics.length}. Ask "Show all open epics" for the full list.*`;
+        result += `\n\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}*`;
+        return result;
       }
     },
     {
@@ -465,8 +463,11 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
       query: async (sb) => {
         const { data: blocked } = await sb.from('ph_issues').select('issue_key, summary, status, priority, assignee_display_name').or('status.ilike.%blocked%,status.ilike.%impediment%').neq('status_category', 'Done').limit(10);
         if (!blocked || blocked.length === 0) return 'No blocked items found.';
-        const lines = blocked.map((b: any) => `- \`${b.issue_key}\` ${b.summary} — *${b.status}* — ${b.assignee_display_name || 'Unassigned'}`);
-        return `**Blocked Items: ${blocked.length}**\n\n${lines.join('\n')}`;
+        const shown = blocked.slice(0, 5);
+        const lines = shown.map((b: any) => `- \`${b.issue_key}\` ${b.summary} — *${b.status}* — ${b.assignee_display_name || 'Unassigned'}`);
+        let result = `**Blocked Items: ${blocked.length}**\n\n${lines.join('\n')}`;
+        if (blocked.length > 5) result += `\n\n*Showing 5 of ${blocked.length}. Ask "Show all blocked items" for the full list.*`;
+        return result;
       }
     },
     {
@@ -475,8 +476,11 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
         const today = new Date().toISOString().split('T')[0];
         const { data: overdue } = await sb.from('ph_issues').select('issue_key, summary, status, due_date, assignee_display_name').lt('due_date', today).neq('status_category', 'Done').order('due_date').limit(10);
         if (!overdue || overdue.length === 0) return 'No overdue items found.';
-        const lines = overdue.map((o: any) => `- \`${o.issue_key}\` ${o.summary} — due ${o.due_date} — ${o.assignee_display_name || 'Unassigned'}`);
-        return `**Overdue Items: ${overdue.length}${overdue.length === 10 ? '+' : ''}**\n\n${lines.join('\n')}`;
+        const shown = overdue.slice(0, 5);
+        const lines = shown.map((o: any) => `- \`${o.issue_key}\` ${o.summary} — due ${o.due_date} — ${o.assignee_display_name || 'Unassigned'}`);
+        let result = `**Overdue Items: ${overdue.length}**\n\n${lines.join('\n')}`;
+        if (overdue.length > 5) result += `\n\n*Showing 5 of ${overdue.length}. Ask "Show all overdue items" for the full list.*`;
+        return result;
       }
     },
     {
@@ -875,6 +879,8 @@ ONLY use the evidence provided. Cite inline as [SOURCE-N].
 If insufficient: state what you CAN answer, flag what you cannot. Never guess.
 If conflicting: present both with sources.
 Format: Bloomberg editorial. **Names** bold. \`TICKET-ID\` in backticks.
+BREVITY RULE: Show only the 4-5 most recent/relevant items. If more data exists, end with: "Ask me for more details to see the full list."
+RECENCY RULE: Prioritize information from the last 1-2 weeks. Older data should only be included if directly relevant.
 Sections (only if evidence exists): Background, Current Status, Good News, Issues & Risks, Who's Working.
 ${warns}
 End response with:
