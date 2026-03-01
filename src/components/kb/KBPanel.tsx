@@ -55,43 +55,44 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
   const firstName = getFirstName(fullName);
   const isRTL = false;
   const [dynamicChips, setDynamicChips] = useState<string[]>([]);
+  const [usedChips, setUsedChips] = useState<Set<string>>(new Set());
+  const [chipGeneration, setChipGeneration] = useState(0);
 
   // Load smart data-driven chips using real names & ticket keys
-  useEffect(() => {
-    async function loadChips() {
-      try {
-        const chips: string[] = [];
+  const loadChips = useCallback(async () => {
+    try {
+      const chips: string[] = [];
 
-        // Get real people from profiles
-        const { data: people } = await supabase
-          .from('profiles')
-          .select('full_name')
-          .not('full_name', 'is', null)
-          .limit(20);
+      const { data: people } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .not('full_name', 'is', null)
+        .limit(20);
 
-        const shuffled = (people || []).sort(() => Math.random() - 0.5);
-        const person1 = shuffled[0]?.full_name?.split(' ')[0];
-        const person2 = shuffled[1]?.full_name?.split(' ')[0];
+      const shuffled = (people || []).sort(() => Math.random() - 0.5);
+      const person1 = shuffled[0]?.full_name?.split(' ')[0];
+      const person2 = shuffled[1]?.full_name?.split(' ')[0];
 
-        // Get 1 recent ticket key
-        const { data: recentTicket } = await supabase
-          .from('ph_issues')
-          .select('issue_key, summary')
-          .not('issue_key', 'is', null)
-          .order('jira_updated_at', { ascending: false })
-          .limit(1)
-          .single();
+      // Get a random recent ticket (offset by generation to vary)
+      const { data: recentTicket } = await supabase
+        .from('ph_issues')
+        .select('issue_key, summary')
+        .not('issue_key', 'is', null)
+        .order('jira_updated_at', { ascending: false })
+        .range(chipGeneration % 5, chipGeneration % 5)
+        .limit(1)
+        .single();
 
-        if (person1) chips.push(`What is ${person1} working on?`);
-        if (recentTicket) chips.push(`Status of ${recentTicket.issue_key}`);
-        if (person2) chips.push(`${person2}'s open items`);
-        chips.push('Who has the most items?');
+      if (person1) chips.push(`What is ${person1} working on?`);
+      if (recentTicket) chips.push(`Status of ${recentTicket.issue_key}`);
+      if (person2) chips.push(`${person2}'s open items`);
+      chips.push('Who has the most items?');
 
-        if (chips.length > 0) setDynamicChips(chips.slice(0, 4));
-      } catch { /* no chips on failure */ }
-    }
-    loadChips();
-  }, []);
+      if (chips.length > 0) setDynamicChips(chips.slice(0, 4));
+    } catch { /* no chips on failure */ }
+  }, [chipGeneration]);
+
+  useEffect(() => { loadChips(); }, [loadChips]);
 
   // Speech recognition
   const toggleListening = useCallback(() => {
@@ -135,8 +136,24 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
     setInput('');
     setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: 'user', content: q }]);
     pendingRef.current = true;
+
+    // Track used chips and refresh when all are consumed
+    if (dynamicChips.includes(q)) {
+      setUsedChips((prev) => {
+        const next = new Set(prev).add(q);
+        if (next.size >= dynamicChips.length) {
+          // All chips used — trigger refresh with new data
+          setTimeout(() => {
+            setUsedChips(new Set());
+            setChipGeneration((g) => g + 1);
+          }, 500);
+        }
+        return next;
+      });
+    }
+
     await askQuestion({ query: q, language: lang, input_method: isVoice ? 'voice' : 'keyboard', user_name: fullName });
-  }, [input, isLoading, lang, isVoice, fullName, askQuestion]);
+  }, [input, isLoading, lang, isVoice, fullName, askQuestion, dynamicChips]);
 
   const handleFeedback = useCallback((msgId: string, logId: string | undefined, helpful: boolean) => {
     if (logId) sendFeedback(logId, helpful);
@@ -334,7 +351,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           lang={lang}
           isListening={isListening}
           onToggleListening={toggleListening}
-          chips={dynamicChips}
+          chips={dynamicChips.filter(c => !usedChips.has(c))}
         />
 
         {/* Keyframes */}
