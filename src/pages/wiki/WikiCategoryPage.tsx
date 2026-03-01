@@ -1,3 +1,89 @@
+import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Upload, FileText, ChevronRight } from 'lucide-react';
+import { useWikiDomains } from '@/hooks/useWikiData';
+import { sectionHeaderStyle, DomainBadge, ConfidenceBadge, AiBadge } from '@/components/wiki/WikiTokens';
+import { WikiUploadWizard } from '@/components/wiki/WikiUploadWizard';
+
+const SLUG_TO_CODE: Record<string, string> = {
+  platform: 'D1', strategy: 'D2', products: 'D3', projects: 'D4',
+  quality: 'D5', ministry: 'D6', senaei: 'D7', analytics: 'D8',
+};
+
+const MOCK_CATEGORIES = ['All', 'Industrial Licensing', 'Chemical Permits', 'Environmental Compliance', 'Financial Solutions', '4IR'];
+
 export default function WikiCategoryPage() {
-  return <div style={{ padding: 32, fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary)' }}>Wiki Category</div>;
+  const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
+  const { data: domains } = useWikiDomains();
+  const [activeFilter, setActiveFilter] = useState('All');
+  const [uploadOpen, setUploadOpen] = useState(false);
+
+  const domainCode = SLUG_TO_CODE[slug || ''] || slug?.toUpperCase() || 'D1';
+  const domain = (domains || []).find((d: any) => d.domain_code === domainCode);
+  const name = domain?.name || slug || 'Domain';
+
+  return (
+    <div style={{ fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary)', background: 'var(--cp-bg-page)', minHeight: '100%' }}>
+      <div style={{ maxWidth: 960, marginInline: 'auto', padding: '16px 24px 48px' }}>
+        {/* Breadcrumb */}
+        <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
+          <span onClick={() => navigate('/wiki')} style={{ fontSize: 12, color: 'var(--cp-text-link)', cursor: 'pointer' }}>Wiki</span>
+          <ChevronRight size={12} style={{ color: 'var(--cp-text-muted)' }} />
+          <span style={{ fontSize: 12, color: 'var(--cp-text-secondary)', fontWeight: 600 }}>{domainCode} {name}</span>
+        </nav>
+
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+          <DomainBadge code={domainCode} size="md" />
+          <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 24, fontWeight: 700, margin: 0, color: 'var(--cp-text-primary)', flex: 1 }}>{name}</h1>
+          <button onClick={() => setUploadOpen(true)} style={{
+            fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 4, cursor: 'pointer',
+            border: '1px solid var(--cp-border-default)', background: 'transparent',
+            color: 'var(--cp-text-secondary)', display: 'flex', alignItems: 'center', gap: 5,
+          }}><Upload size={13} /> Add Document</button>
+        </div>
+
+        {domain?.description && (
+          <p style={{ fontSize: 13, color: 'var(--cp-text-tertiary)', marginBottom: 20, lineHeight: 1.6 }}>{domain.description}</p>
+        )}
+
+        {/* Filter chips */}
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 24 }}>
+          {MOCK_CATEGORIES.map(cat => (
+            <button key={cat} onClick={() => setActiveFilter(cat)} style={{
+              fontSize: 11, fontWeight: activeFilter === cat ? 650 : 500, padding: '5px 12px',
+              borderRadius: 4, cursor: 'pointer',
+              border: activeFilter === cat ? '1.5px solid var(--cp-primary-60)' : '1px solid var(--cp-border-default)',
+              background: activeFilter === cat ? 'var(--cp-primary-5)' : 'transparent',
+              color: activeFilter === cat ? 'var(--cp-primary-60)' : 'var(--cp-text-secondary)',
+            }}>{cat}</button>
+          ))}
+        </div>
+
+        {/* Articles section */}
+        <div style={sectionHeaderStyle}>Articles</div>
+        <div style={{ color: 'var(--cp-text-muted)', fontSize: 12, textAlign: 'center', padding: 40 }}>
+          No published articles in this domain yet. Upload documents to auto-generate wiki content.
+        </div>
+
+        {/* Stats */}
+        <div style={{
+          marginTop: 32, padding: 16, borderRadius: 6, background: 'var(--cp-bg-sunken)',
+          display: 'flex', justifyContent: 'center', gap: 32,
+        }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700 }}>{domain?.article_count ?? 0}</div>
+            <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: 'var(--cp-text-muted)' }}>Articles</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 20, fontWeight: 700 }}>{domain?.document_count ?? 0}</div>
+            <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', color: 'var(--cp-text-muted)' }}>Documents</div>
+          </div>
+        </div>
+      </div>
+
+      <WikiUploadWizard open={uploadOpen} onClose={() => setUploadOpen(false)} />
+    </div>
+  );
 }

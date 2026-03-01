@@ -1,15 +1,16 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Home, Zap, BookOpen, Target, Package, Wrench, CheckSquare, Landmark, Globe, BarChart3 } from 'lucide-react';
+import { useWikiDomains } from '@/hooks/useWikiData';
 
 const WIKI_DOMAINS = [
-  { code: 'D1', label: 'Platform Overview', slug: 'platform', icon: BookOpen, count: 0 },
-  { code: 'D2', label: 'Strategy & Governance', slug: 'strategy', icon: Target, count: 0 },
-  { code: 'D3', label: 'Product Management', slug: 'products', icon: Package, count: 0 },
-  { code: 'D4', label: 'Project Execution', slug: 'projects', icon: Wrench, count: 0 },
-  { code: 'D5', label: 'Quality & Testing', slug: 'quality', icon: CheckSquare, count: 0 },
-  { code: 'D6', label: 'Ministry Services', slug: 'ministry', icon: Landmark, count: 0 },
-  { code: 'D7', label: 'Senaei Platform', slug: 'senaei', icon: Globe, count: 0 },
-  { code: 'D8', label: 'Analytics & Reporting', slug: 'analytics', icon: BarChart3, count: 0 },
+  { code: 'D1', label: 'Platform Overview', slug: 'platform', icon: BookOpen },
+  { code: 'D2', label: 'Strategy & Governance', slug: 'strategy', icon: Target },
+  { code: 'D3', label: 'Product Management', slug: 'products', icon: Package },
+  { code: 'D4', label: 'Project Execution', slug: 'projects', icon: Wrench },
+  { code: 'D5', label: 'Quality & Testing', slug: 'quality', icon: CheckSquare },
+  { code: 'D6', label: 'Ministry Services', slug: 'ministry', icon: Landmark },
+  { code: 'D7', label: 'Senaei Platform', slug: 'senaei', icon: Globe },
+  { code: 'D8', label: 'Analytics & Reporting', slug: 'analytics', icon: BarChart3 },
 ];
 
 interface WikiSidebarProps {
@@ -20,10 +21,16 @@ interface WikiSidebarProps {
 export function WikiSidebar({ expanded, onToggle }: WikiSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { data: domains } = useWikiDomains();
 
   const isActive = (path: string) => location.pathname === path;
 
   const sidebarWidth = expanded ? 232 : 52;
+
+  const getCount = (code: string) => {
+    const d = (domains || []).find((dd: any) => dd.domain_code === code);
+    return d?.article_count ?? 0;
+  };
 
   const navItemStyle = (active: boolean): React.CSSProperties => ({
     display: 'flex',
@@ -91,41 +98,24 @@ export function WikiSidebar({ expanded, onToggle }: WikiSidebarProps) {
         {expanded && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{
-              width: 6,
-              height: 6,
-              borderRadius: '50%',
+              width: 6, height: 6, borderRadius: '50%',
               background: 'var(--cp-purple-60)',
               animation: 'wiki-pulse 2s ease-in-out infinite',
             }} />
+            <span style={{ fontSize: 13, fontWeight: 650, color: 'var(--cp-text-primary)', letterSpacing: '-0.01em' }}>Wiki</span>
             <span style={{
-              fontSize: 13,
-              fontWeight: 650,
-              color: 'var(--cp-text-primary)',
-              letterSpacing: '-0.01em',
-            }}>Wiki</span>
-            <span style={{
-              fontSize: 9,
-              fontWeight: 500,
-              color: 'var(--cp-purple-60)',
-              background: 'var(--cp-purple-5)',
-              padding: '1px 5px',
-              borderRadius: 'var(--cp-radius-sm)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
+              fontSize: 9, fontWeight: 500, color: 'var(--cp-purple-60)',
+              background: 'var(--cp-purple-5)', padding: '1px 5px',
+              borderRadius: 'var(--cp-radius-sm)', textTransform: 'uppercase', letterSpacing: '0.04em',
             }}>AI</span>
           </div>
         )}
         <button
           onClick={onToggle}
           style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: 4,
-            borderRadius: 'var(--cp-radius-sm)',
-            color: 'var(--cp-text-tertiary)',
-            display: 'flex',
-            alignItems: 'center',
+            background: 'none', border: 'none', cursor: 'pointer', padding: 4,
+            borderRadius: 'var(--cp-radius-sm)', color: 'var(--cp-text-tertiary)',
+            display: 'flex', alignItems: 'center',
           }}
         >
           {expanded ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
@@ -134,7 +124,6 @@ export function WikiSidebar({ expanded, onToggle }: WikiSidebarProps) {
 
       {/* Nav items */}
       <nav style={{ padding: 8, display: 'flex', flexDirection: 'column', gap: 2, flex: 1, overflowY: 'auto' }}>
-        {/* Home */}
         <button
           onClick={() => navigate('/wiki')}
           style={navItemStyle(isActive('/wiki'))}
@@ -145,7 +134,6 @@ export function WikiSidebar({ expanded, onToggle }: WikiSidebarProps) {
           {expanded && <span>Home</span>}
         </button>
 
-        {/* What's New */}
         <button
           onClick={() => navigate('/wiki/whats-new')}
           style={navItemStyle(isActive('/wiki/whats-new'))}
@@ -156,25 +144,16 @@ export function WikiSidebar({ expanded, onToggle }: WikiSidebarProps) {
           {expanded && <span>What's New</span>}
         </button>
 
-        {/* Domains section label */}
         {expanded && (
           <div style={{
-            fontSize: 10,
-            fontWeight: 650,
-            color: 'var(--cp-text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            padding: '12px 12px 4px',
-          }}>
-            Domains
-          </div>
+            fontSize: 10, fontWeight: 650, color: 'var(--cp-text-muted)',
+            textTransform: 'uppercase', letterSpacing: '0.06em', padding: '12px 12px 4px',
+          }}>Domains</div>
         )}
 
-        {/* Domain items */}
         {WIKI_DOMAINS.map(d => {
           const path = `/wiki/category/${d.slug}`;
           const active = location.pathname === path;
-          const Icon = d.icon;
           return (
             <button
               key={d.code}
@@ -187,7 +166,7 @@ export function WikiSidebar({ expanded, onToggle }: WikiSidebarProps) {
                 <>
                   <span style={domainBadgeStyle}>{d.code}</span>
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>{d.label}</span>
-                  <span style={countBadgeStyle}>{d.count}</span>
+                  <span style={countBadgeStyle}>{getCount(d.code)}</span>
                 </>
               ) : (
                 <span style={{ ...domainBadgeStyle, fontSize: 9 }}>{d.code}</span>
