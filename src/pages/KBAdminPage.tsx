@@ -534,6 +534,14 @@ function HealthTab() {
           </div>
         </div>
       )}
+
+      {/* Automated Sync */}
+      <AutoSyncCard
+        scheduleKeys={['kb-daily-sync', 'kb-weekly-cleanup']}
+        lastSyncTable="kb_embeddings"
+        lastSyncColumn="updated_at"
+        title="Automated KB Sync"
+      />
     </div>
   );
 }
@@ -727,14 +735,6 @@ function SyncConfigTab() {
           ))}
         </div>
       </div>
-
-      {/* Automated Sync Section */}
-      <AutoSyncCard
-        scheduleKeys={['kb-daily-sync', 'kb-weekly-cleanup']}
-        lastSyncTable="kb_embeddings"
-        lastSyncColumn="updated_at"
-        title="Automated KB Sync"
-      />
 
       <div className="grid grid-cols-2 gap-4">
         <div className={card}>
