@@ -6,8 +6,10 @@ import { sectionHeaderStyle, DomainBadge, ConfidenceBadge, SkeletonArticleRow, S
 import { WikiUploadWizard } from '@/components/wiki/WikiUploadWizard';
 
 const SLUG_TO_CODE: Record<string, string> = {
-  platform: 'D1', strategy: 'D2', products: 'D3', projects: 'D4',
-  quality: 'D5', ministry: 'D6', senaei: 'D7', analytics: 'D8',
+  'industrial-licensing': 'D1', 'customs-trade': 'D2', 'chemical-permits': 'D3',
+  'environmental-compliance': 'D4', 'industrial-incentives': 'D5',
+  'fourth-industrial-revolution': 'D6', 'workforce-support': 'D7',
+  'senaei-platform': 'D8', 'mining-minerals': 'D9',
 };
 
 export default function WikiCategoryPage() {

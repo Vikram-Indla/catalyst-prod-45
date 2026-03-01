@@ -7,8 +7,10 @@ import { WikiCommandPalette } from '@/components/wiki/WikiCommandPalette';
 import { WikiUploadWizard } from '@/components/wiki/WikiUploadWizard';
 
 const DOMAIN_SLUGS: Record<string, string> = {
-  D1: 'platform', D2: 'strategy', D3: 'products', D4: 'projects',
-  D5: 'quality', D6: 'ministry', D7: 'senaei', D8: 'analytics',
+  D1: 'industrial-licensing', D2: 'customs-trade', D3: 'chemical-permits',
+  D4: 'environmental-compliance', D5: 'industrial-incentives',
+  D6: 'fourth-industrial-revolution', D7: 'workforce-support',
+  D8: 'senaei-platform', D9: 'mining-minerals',
 };
 
 export default function WikiHomePage() {
@@ -30,7 +32,7 @@ export default function WikiHomePage() {
   const stats = [
     { label: 'Articles', value: wikiStats?.articles ?? 0 },
     { label: 'Documents', value: wikiStats?.documents ?? 0 },
-    { label: 'Domains', value: wikiStats?.domains ?? 8 },
+    { label: 'Domains', value: wikiStats?.domains ?? 9 },
     { label: 'Categories', value: wikiStats?.categories ?? 0 },
     { label: 'Knowledge Chunks', value: wikiStats?.chunks ? wikiStats.chunks.toLocaleString() : '0' },
     { label: 'Avg Confidence', value: wikiStats?.avgConfidence ? `${wikiStats.avgConfidence}%` : '—' },
@@ -44,7 +46,7 @@ export default function WikiHomePage() {
           Catalyst Wiki
         </h1>
         <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary)', margin: '0 0 24px', maxWidth: 480, marginInline: 'auto' }}>
-          AI-powered enterprise knowledge encyclopedia for the Catalyst platform
+          AI-powered knowledge base for the Ministry of Industry &amp; Mineral Resources
         </p>
 
         {/* Search bar */}
@@ -64,7 +66,7 @@ export default function WikiHomePage() {
           onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--cp-border-default)')}
         >
           <Search size={16} style={{ color: 'var(--cp-text-muted)' }} />
-          <span style={{ flex: 1, textAlign: 'start', fontSize: 13, color: 'var(--cp-text-muted)' }}>Search wiki articles, documents, Jira items...</span>
+          <span style={{ flex: 1, textAlign: 'start', fontSize: 13, color: 'var(--cp-text-muted)' }}>Search services, regulations, permits, programs...</span>
           <kbd style={{
             fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 600,
             padding: '2px 6px', borderRadius: 3, border: '1px solid var(--cp-border-default)',
@@ -116,7 +118,11 @@ export default function WikiHomePage() {
           {domainsLoading ? (
             Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
           ) : (
-            (domains || []).map((d: any) => (
+          ((domains || []).filter((d: any) => {
+            const hasContent = (d.article_count ?? 0) > 0 || (d.document_count ?? 0) > 0;
+            const showAll = (domains || []).every((dd: any) => (dd.article_count ?? 0) === 0 && (dd.document_count ?? 0) === 0);
+            return showAll || hasContent;
+          })).map((d: any) => (
               <div
                 key={d.domain_code}
                 role="link"
@@ -197,7 +203,7 @@ export default function WikiHomePage() {
         {/* Footer */}
         <div style={{ textAlign: 'center', marginTop: 48, padding: '24px 0', borderTop: '1px solid var(--cp-border-subtle)' }}>
           <div style={{ fontSize: 11, color: 'var(--cp-text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-            Catalyst Wiki · {wikiStats?.articles ?? 0} articles across {wikiStats?.domains ?? 8} domains
+            Catalyst Wiki · {wikiStats?.articles ?? 0} articles across {wikiStats?.domains ?? 9} domains
             <AiBadge small />
           </div>
         </div>

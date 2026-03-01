@@ -5,12 +5,10 @@
 
 export interface WikiDomain {
   id: string;
-  domainCode: string;        // "D1", "D2", ... "D8"
+  domainCode: string;        // "D1", "D2", ... "D9"
   name: string;
-  nameAr: string;
   icon: string;
   description: string;
-  descriptionAr: string;
   articleCount: number;
   documentCount: number;
   lastUpdated: string;
@@ -22,9 +20,7 @@ export interface WikiCategory {
   domainId: string;
   categoryCode: string;      // "D6.1", "D6.2"
   name: string;
-  nameAr: string;
   description: string;
-  descriptionAr: string;
   parentId: string | null;
   level: number;             // 1, 2, or 3
   articleCount: number;
@@ -36,12 +32,10 @@ export interface WikiPage {
   id: string;
   slug: string;
   title: string;
-  titleAr: string;
   domainCode: string;
   categoryId: string;
   status: 'published' | 'draft' | 'review' | 'archived';
   leadContent: string;
-  leadContentAr: string;
   sections: WikiSection[];
   infobox: WikiInfobox;
   references: WikiReference[];
@@ -60,9 +54,7 @@ export interface WikiSection {
   pageId: string;
   sectionNumber: number;
   title: string;
-  titleAr: string;
   content: string;
-  contentAr: string;
   sectionType: 'overview' | 'functionality' | 'delivery_status' | 'technical' | 'related' | 'references';
   isLiveData: boolean;
   sortOrder: number;
@@ -117,7 +109,7 @@ export interface WikiDocument {
   docType: 'brd' | 'architecture' | 'design' | 'api_doc' | 'user_guide' | 'meeting' | 'policy' | 'other';
   purpose: string;
   version: string;
-  language: 'en' | 'ar' | 'mixed';
+  language: 'en';
   linkedEpic: string | null;
   status: 'uploaded' | 'parsing' | 'chunking' | 'embedding' | 'complete' | 'failed';
   pagesExtracted: number;
