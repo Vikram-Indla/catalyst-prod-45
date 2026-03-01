@@ -88,14 +88,13 @@ export function KBInputArea({
           display: 'flex',
           alignItems: 'center',
           gap: 10,
-          background: 'transparent',
-          border: 'none',
-          borderBottom: `1.5px solid ${inputFocused ? '#2563EB' : '#E4E4E7'}`,
-          borderRadius: 0,
-          padding: '8px 0',
+          background: '#FAFAFA',
+          border: `1.5px solid ${inputFocused ? '#2563EB' : '#E4E4E7'}`,
+          borderRadius: 14,
+          padding: '6px 12px',
           minHeight: 52,
-          transition: 'border-color 200ms ease',
-          boxShadow: 'none',
+          transition: 'border-color 200ms ease, box-shadow 200ms ease',
+          boxShadow: inputFocused ? '0 0 0 3px rgba(37,99,235,0.08)' : 'none',
         }}
       >
         {/* Mic */}
