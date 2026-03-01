@@ -58149,7 +58149,7 @@ export type Database = {
           icon: string | null
           id: string
           name: string
-          name_ar: string
+          name_ar: string | null
           sort_order: number | null
           updated_at: string | null
         }
@@ -58161,7 +58161,7 @@ export type Database = {
           icon?: string | null
           id?: string
           name: string
-          name_ar: string
+          name_ar?: string | null
           sort_order?: number | null
           updated_at?: string | null
         }
@@ -58173,7 +58173,7 @@ export type Database = {
           icon?: string | null
           id?: string
           name?: string
-          name_ar?: string
+          name_ar?: string | null
           sort_order?: number | null
           updated_at?: string | null
         }

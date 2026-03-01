@@ -5,10 +5,11 @@ import { useWikiDocumentUpload, useWikiDocumentStatus } from '@/hooks/useWikiDat
 
 const DOC_TYPES = ['brd', 'architecture', 'design', 'api_doc', 'user_guide', 'meeting', 'policy', 'other'] as const;
 const DOMAINS = [
-  { code: 'D1', name: 'Platform Overview' }, { code: 'D2', name: 'Strategy & Governance' },
-  { code: 'D3', name: 'Product Management' }, { code: 'D4', name: 'Project Execution' },
-  { code: 'D5', name: 'Quality & Testing' }, { code: 'D6', name: 'Ministry Services' },
-  { code: 'D7', name: 'Senaei Platform' }, { code: 'D8', name: 'Analytics & Reporting' },
+  { code: 'D1', name: 'Industrial Licensing' }, { code: 'D2', name: 'Customs & Trade' },
+  { code: 'D3', name: 'Chemical Permits' }, { code: 'D4', name: 'Environmental Compliance' },
+  { code: 'D5', name: 'Industrial Incentives' }, { code: 'D6', name: 'Fourth Industrial Revolution' },
+  { code: 'D7', name: 'Workforce & Industrial Support' }, { code: 'D8', name: 'Senaei Platform' },
+  { code: 'D9', name: 'Mining & Mineral Resources' },
 ];
 const ACCEPT = '.pdf,.docx,.xlsx,.pptx,.md,.txt,.csv';
 
@@ -225,15 +226,12 @@ export function WikiUploadWizard({ open, onClose }: Props) {
                 <div style={{ flex: 1 }}>
                   <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-secondary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Language</label>
                   <div style={{ display: 'flex', gap: 4 }}>
-                    {['en', 'ar', 'mixed'].map(l => (
-                      <button key={l} onClick={() => updateFile(idx, 'language', l)}
-                        style={{
-                          flex: 1, fontSize: 11, fontWeight: 500, padding: '5px 0', borderRadius: 4, cursor: 'pointer', textTransform: 'capitalize',
-                          border: f.language === l ? '1.5px solid var(--cp-primary-60)' : '1px solid var(--cp-border-default)',
-                          background: f.language === l ? 'var(--cp-primary-5)' : 'transparent',
-                          color: f.language === l ? 'var(--cp-primary-60)' : 'var(--cp-text-secondary)',
-                        }}>{l}</button>
-                    ))}
+                    <div style={{
+                      flex: 1, fontSize: 11, fontWeight: 500, padding: '5px 8px', borderRadius: 4,
+                      border: '1.5px solid var(--cp-primary-60)',
+                      background: 'var(--cp-primary-5)',
+                      color: 'var(--cp-primary-60)', textAlign: 'center',
+                    }}>English</div>
                   </div>
                 </div>
               </div>

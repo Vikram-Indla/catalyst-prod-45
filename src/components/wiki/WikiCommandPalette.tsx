@@ -6,8 +6,10 @@ import { useWikiDomains, useWikiTitleSearch, useDebouncedValue } from '@/hooks/u
 interface Props { open: boolean; onClose: () => void; }
 
 const DOMAIN_SLUGS: Record<string, string> = {
-  D1: 'platform', D2: 'strategy', D3: 'products', D4: 'projects',
-  D5: 'quality', D6: 'ministry', D7: 'senaei', D8: 'analytics',
+  D1: 'industrial-licensing', D2: 'customs-trade', D3: 'chemical-permits',
+  D4: 'environmental-compliance', D5: 'industrial-incentives',
+  D6: 'fourth-industrial-revolution', D7: 'workforce-support',
+  D8: 'senaei-platform', D9: 'mining-minerals',
 };
 
 export function WikiCommandPalette({ open, onClose }: Props) {
