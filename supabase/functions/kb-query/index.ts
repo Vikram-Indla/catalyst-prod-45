@@ -86,7 +86,133 @@ interface LiveResult {
 async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveResult> {
   const qLower = query.toLowerCase();
   const qNorm = qLower.replace(/business requests?/g, 'initiative').replace(/\brequest(s)?\b/g, 'initiative$1');
-  // Detect person-related queries
+
+  // ── PRIORITY 1: Work item type queries (must come BEFORE person detection) ──
+  // Detects: "SBC stories", "who is working on industrial scan stories", "BAU epics", etc.
+  const issueTypeWords = ['stories','story','epics','epic','tasks','task','bugs','bug','backend','incidents','incident','issues','issue','items','item'];
+  const hasIssueType = issueTypeWords.some(w => qLower.includes(w));
+
+  if (hasIssueType) {
+    const issueTypeMap: Record<string, string[]> = {
+      story: ['Story'], stories: ['Story'],
+      epic: ['Epic'], epics: ['Epic'],
+      task: ['Task'], tasks: ['Task'],
+      bug: ['Bug'], bugs: ['Bug'],
+      backend: ['Backend'],
+      incident: ['Production Incident'], incidents: ['Production Incident'],
+      issue: ['Story', 'Task', 'Bug', 'Backend', 'Epic'], issues: ['Story', 'Task', 'Bug', 'Backend', 'Epic'],
+      item: ['Story', 'Task', 'Bug', 'Backend', 'Epic'], items: ['Story', 'Task', 'Bug', 'Backend', 'Epic'],
+      work: ['Story', 'Task', 'Bug', 'Backend', 'Epic'],
+    };
+
+    // Extract issue type word from query
+    const typeWordMatch = qLower.match(/\b(stories|story|epics?|tasks?|bugs?|backend|incidents?|issues?|items?)\b/);
+    const typeWord = typeWordMatch ? typeWordMatch[1].replace(/s$/, '').replace(/ies$/, 'y') : null;
+    const issueTypes = typeWord ? (issueTypeMap[typeWord] || issueTypeMap[typeWord + 's'] || null) : null;
+
+    // Extract keyword: everything before the type word, minus filler words
+    const fillerWords = new Set(['who','what','is','are','was','were','working','on','the','show','me','list','display',
+      'provide','give','get','details','detail','about','info','information','latest','recent','new','newest',
+      'open','active','all','closed','done','for','in','of','from','under','related','to','how','many','a','an',
+      'has','have','been','tell','us','my','our','current','pending']);
+
+    let keyword = '';
+    if (typeWordMatch) {
+      // Get text before the type word
+      const beforeType = qLower.substring(0, typeWordMatch.index!).trim();
+      // Get text after type word (for "stories for/in/about X" patterns)  
+      const afterType = qLower.substring(typeWordMatch.index! + typeWordMatch[0].length).trim();
+      const afterKeyword = afterType.replace(/^(for|in|of|about|from|under|related to)\s+/i, '').trim();
+      
+      // Clean filler words from before-text
+      const beforeWords = beforeType.split(/\s+/).filter(w => !fillerWords.has(w) && w.length > 1);
+      keyword = (beforeWords.join(' ') || afterKeyword).trim();
+    }
+
+    if (keyword && keyword.length >= 2) {
+      let q = sb.from('ph_issues')
+        .select('issue_key, summary, status, priority, issue_type, assignee_display_name, reporter_display_name, project_key, project_name, sprint_name, jira_created_at, jira_updated_at')
+        .or(`summary.ilike.%${keyword}%,project_key.ilike.%${keyword}%,project_name.ilike.%${keyword}%`)
+        .order('jira_updated_at', { ascending: false })
+        .limit(30);
+
+      if (issueTypes && issueTypes.length === 1) {
+        q = q.eq('issue_type', issueTypes[0]);
+      } else if (issueTypes && issueTypes.length > 1) {
+        q = q.in('issue_type', issueTypes);
+      }
+
+      const { data: items } = await q;
+
+      if (items && items.length > 0) {
+        const calcAge = (d: string): string => {
+          if (!d) return 'N/A';
+          const hours = Math.floor((Date.now() - new Date(d).getTime()) / 3600000);
+          if (hours < 1) return '<1h';
+          if (hours < 24) return `${hours}h`;
+          return `${Math.floor(hours / 24)}d ${hours % 24}h`;
+        };
+
+        const typeLabel = issueTypes ? issueTypes.join('/') : 'Work Items';
+        const parts: string[] = [];
+        parts.push(`**${keyword.toUpperCase()} ${typeLabel}** — ${items.length} items found\n`);
+
+        const byStatus: Record<string, number> = {};
+        for (const i of items) { byStatus[i.status || 'Unknown'] = (byStatus[i.status || 'Unknown'] || 0) + 1; }
+        parts.push('**By Status:**');
+        for (const [st, count] of Object.entries(byStatus).sort((a, b) => b[1] - a[1])) {
+          parts.push(`- ${st}: **${count}**`);
+        }
+
+        const byPriority: Record<string, number> = {};
+        for (const i of items) { byPriority[i.priority || 'None'] = (byPriority[i.priority || 'None'] || 0) + 1; }
+        parts.push('\n**By Priority:**');
+        for (const [p, count] of Object.entries(byPriority).sort((a, b) => b[1] - a[1])) {
+          parts.push(`- ${p}: **${count}**`);
+        }
+
+        const byProject: Record<string, typeof items> = {};
+        for (const i of items) {
+          const proj = i.project_name || i.project_key || 'Unknown';
+          if (!byProject[proj]) byProject[proj] = [];
+          byProject[proj].push(i);
+        }
+
+        parts.push('\n---\n#### ITEMS');
+        for (const [projName, projItems] of Object.entries(byProject)) {
+          if (Object.keys(byProject).length > 1) parts.push(`\n**${projName}**`);
+          for (const i of projItems) {
+            const age = calcAge(i.jira_updated_at);
+            parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.status}* | ${i.priority || '-'} | ${i.assignee_display_name || 'Unassigned'} | ⏱ ${age} |`);
+          }
+        }
+
+        parts.push(`\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}*`);
+
+        return { found: true, answer: parts.join('\n'), confidence: 0.90, sources: ['ph_issues'] };
+      }
+    }
+
+    // Fallback: no keyword but specific type (e.g. "latest stories", "recent epics")
+    if (!keyword && issueTypes) {
+      const { data: items } = await sb.from('ph_issues')
+        .select('issue_key, summary, status, priority, issue_type, assignee_display_name, project_key, project_name, jira_updated_at')
+        .in('issue_type', issueTypes)
+        .order('jira_updated_at', { ascending: false })
+        .limit(15);
+
+      if (items && items.length > 0) {
+        const typeLabel = issueTypes.join('/');
+        const parts = [`**Latest ${typeLabel}s**\n`];
+        for (const i of items) {
+          parts.push(`- \`${i.issue_key}\` **${i.summary}** — ${i.status || 'N/A'} | ${i.priority || '-'} | ${i.assignee_display_name || 'Unassigned'} | ${i.project_name || i.project_key || ''}`);
+        }
+        return { found: true, answer: parts.join('\n'), confidence: 0.80, sources: ['ph_issues'] };
+      }
+    }
+  }
+
+  // ── PRIORITY 2: Person-related queries ──
   const personPatterns = [
     /(?:what|who).*(?:is|are)\s+(\w+)\s+(?:busy|working|doing|assigned|responsible)/i,
     /(?:what|who).*(?:is|are)\s+(\w+)\s+(?:current|recent|latest)/i,
@@ -99,7 +225,6 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
   for (const pattern of personPatterns) {
     const match = qLower.match(pattern);
     if (match && match[1] && match[1].length > 2) {
-      // Skip common stop words
       const stops = new Set(["the","this","that","what","who","how","does","been","being","have","has","are","was","were","will"]);
       if (!stops.has(match[1])) { personName = match[1]; break; }
     }
@@ -281,125 +406,7 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
     }
   }
 
-  // ── Project/keyword + issue type queries (e.g. "SBC stories", "BAU epics", "ICP tasks") ──
-  const issueTypeMap: Record<string, string[]> = {
-    story: ['Story'], stories: ['Story'],
-    epic: ['Epic'], epics: ['Epic'],
-    task: ['Task'], tasks: ['Task'],
-    bug: ['Bug'], bugs: ['Bug'],
-    backend: ['Backend'],
-    incident: ['Production Incident'], incidents: ['Production Incident'],
-    issue: ['Story', 'Task', 'Bug', 'Backend', 'Epic'], issues: ['Story', 'Task', 'Bug', 'Backend', 'Epic'],
-    item: ['Story', 'Task', 'Bug', 'Backend', 'Epic'], items: ['Story', 'Task', 'Bug', 'Backend', 'Epic'],
-    work: ['Story', 'Task', 'Bug', 'Backend', 'Epic'],
-  };
-
-  // Pattern: [keyword/project] [issue_type] OR [issue_type] for [keyword/project]
-  const workItemQueryPattern = /(?:(?:details?|info|information|show|list|display|provide|give|get|what|latest|recent|new|open|active|all|closed|done)\s+(?:(?:me|us|about|on|of|for)\s+)?)?(?:(\w[\w\s/.-]*?)\s+)?(stories|story|epics?|tasks?|bugs?|backend|incidents?|issues?|items?|work)\b(?:\s+(?:for|in|of|about|from|under|related to)\s+(\w[\w\s/.-]*))?/i;
-  const workItemMatch = query.match(workItemQueryPattern);
-
-  // Also detect: "provide me details about X stories/epics/etc"
-  const detailsPattern = /(?:details?|info|information)\s+(?:about|on|of|for)\s+(\w[\w\s/.-]*?)\s+(stories|story|epics?|tasks?|bugs?|backend|incidents?|issues?|items?|work)\b/i;
-  const detailsMatch = query.match(detailsPattern);
-
-  const finalMatch = detailsMatch || workItemMatch;
-
-  if (finalMatch) {
-    const keyword = (finalMatch[1] || finalMatch[3] || '').trim();
-    const typeWord = (finalMatch[2] || '').toLowerCase().replace(/s$/, '').replace(/ies$/, 'y');
-    const issueTypes = issueTypeMap[typeWord] || issueTypeMap[typeWord + 's'] || null;
-
-    // Only proceed if we have a keyword or a specific type
-    if (keyword && keyword.length >= 2) {
-      let q = sb.from('ph_issues')
-        .select('issue_key, summary, status, priority, issue_type, assignee_display_name, reporter_display_name, project_key, project_name, sprint_name, jira_created_at, jira_updated_at')
-        .or(`summary.ilike.%${keyword}%,project_key.ilike.%${keyword}%,project_name.ilike.%${keyword}%`)
-        .order('jira_updated_at', { ascending: false })
-        .limit(30);
-
-      if (issueTypes && issueTypes.length === 1) {
-        q = q.eq('issue_type', issueTypes[0]);
-      } else if (issueTypes && issueTypes.length > 1) {
-        q = q.in('issue_type', issueTypes);
-      }
-
-      const { data: items } = await q;
-
-      if (items && items.length > 0) {
-        const calcAge = (d: string): string => {
-          if (!d) return 'N/A';
-          const hours = Math.floor((Date.now() - new Date(d).getTime()) / 3600000);
-          if (hours < 1) return '<1h';
-          if (hours < 24) return `${hours}h`;
-          return `${Math.floor(hours / 24)}d ${hours % 24}h`;
-        };
-
-        const typeLabel = issueTypes ? issueTypes.join('/') : 'Work Items';
-        const parts: string[] = [];
-        parts.push(`**${keyword.toUpperCase()} ${typeLabel}** — ${items.length} items found\n`);
-
-        // Status breakdown
-        const byStatus: Record<string, number> = {};
-        for (const i of items) { byStatus[i.status || 'Unknown'] = (byStatus[i.status || 'Unknown'] || 0) + 1; }
-        parts.push('**By Status:**');
-        for (const [st, count] of Object.entries(byStatus).sort((a, b) => b[1] - a[1])) {
-          parts.push(`- ${st}: **${count}**`);
-        }
-
-        // Priority breakdown
-        const byPriority: Record<string, number> = {};
-        for (const i of items) { byPriority[i.priority || 'None'] = (byPriority[i.priority || 'None'] || 0) + 1; }
-        parts.push('\n**By Priority:**');
-        for (const [p, count] of Object.entries(byPriority).sort((a, b) => b[1] - a[1])) {
-          parts.push(`- ${p}: **${count}**`);
-        }
-
-        // Group by project if multiple
-        const byProject: Record<string, typeof items> = {};
-        for (const i of items) {
-          const proj = i.project_name || i.project_key || 'Unknown';
-          if (!byProject[proj]) byProject[proj] = [];
-          byProject[proj].push(i);
-        }
-
-        parts.push('\n---\n#### ITEMS');
-        for (const [projName, projItems] of Object.entries(byProject)) {
-          if (Object.keys(byProject).length > 1) parts.push(`\n**${projName}**`);
-          for (const i of projItems) {
-            const age = calcAge(i.jira_updated_at);
-            parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.status}* | ${i.priority || '-'} | ${i.assignee_display_name || 'Unassigned'} | ⏱ ${age} |`);
-          }
-        }
-
-        parts.push(`\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}*`);
-
-        return {
-          found: true,
-          answer: parts.join('\n'),
-          confidence: 0.90,
-          sources: ['ph_issues'],
-        };
-      }
-    }
-
-    // Fallback: no keyword but specific type (e.g. "latest stories", "recent epics")
-    if (!keyword && issueTypes) {
-      const { data: items } = await sb.from('ph_issues')
-        .select('issue_key, summary, status, priority, issue_type, assignee_display_name, project_key, project_name, jira_updated_at')
-        .in('issue_type', issueTypes)
-        .order('jira_updated_at', { ascending: false })
-        .limit(15);
-
-      if (items && items.length > 0) {
-        const typeLabel = issueTypes.join('/');
-        const parts = [`**Latest ${typeLabel}s**\n`];
-        for (const i of items) {
-          parts.push(`- \`${i.issue_key}\` **${i.summary}** — ${i.status || 'N/A'} | ${i.priority || '-'} | ${i.assignee_display_name || 'Unassigned'} | ${i.project_name || i.project_key || ''}`);
-        }
-        return { found: true, answer: parts.join('\n'), confidence: 0.80, sources: ['ph_issues'] };
-      }
-    }
-  }
+  // (Work item detection moved to Priority 1 above)
 
   // ── Incident queries ──
   const incidentPatterns = [
