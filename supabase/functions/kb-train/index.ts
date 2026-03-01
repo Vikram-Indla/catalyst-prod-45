@@ -106,10 +106,19 @@ serve(async (req) => {
         }
       }
 
+      // Get remaining count for frontend
+      const { count: remainingCount } = await supabase
+        .from("kb_training_questions")
+        .select("*", { count: "exact", head: true })
+        .eq("is_embedded", false);
+
       return new Response(
         JSON.stringify({
           message: `Embedded ${totalEmbedded} questions`,
+          embedded: totalEmbedded,
           embedded_this_run: totalEmbedded,
+          batch_processed: totalEmbedded,
+          remaining: remainingCount || 0,
           errors: errors.length > 0 ? errors : undefined,
           next_offset: offset + questions.length,
         }),
