@@ -58,35 +58,62 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
   const [usedChips, setUsedChips] = useState<Set<string>>(new Set());
   const [chipGeneration, setChipGeneration] = useState(0);
 
-  // Load smart data-driven chips using real names & ticket keys
+  // Load smart data-driven chips — focused on THIS week's and LAST week's real activity
   const loadChips = useCallback(async () => {
     try {
       const chips: string[] = [];
 
-      const { data: people } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .not('full_name', 'is', null)
-        .limit(20);
+      // Saudi work week: Sun–Thu. Calculate this week's Sunday and last week's Sunday.
+      const now = new Date();
+      const dayOfWeek = now.getDay(); // 0=Sun
+      const thisSunday = new Date(now);
+      thisSunday.setDate(now.getDate() - dayOfWeek);
+      thisSunday.setHours(0, 0, 0, 0);
+      const lastSunday = new Date(thisSunday);
+      lastSunday.setDate(thisSunday.getDate() - 7);
+      const thisWeekISO = thisSunday.toISOString();
+      const lastWeekISO = lastSunday.toISOString();
 
-      const shuffled = (people || []).sort(() => Math.random() - 0.5);
-      const person1 = shuffled[0]?.full_name?.split(' ')[0];
-      const person2 = shuffled[1]?.full_name?.split(' ')[0];
-
-      // Get a random recent ticket (offset by generation to vary)
-      const { data: recentTicket } = await supabase
+      // 1) Person most active THIS week (most recently updated items)
+      const { data: weekItems } = await supabase
         .from('ph_issues')
-        .select('issue_key, summary')
+        .select('assignee_display_name')
+        .gte('jira_updated_at', thisWeekISO)
+        .not('assignee_display_name', 'is', null)
+        .limit(200);
+
+      if (weekItems && weekItems.length > 0) {
+        const counts: Record<string, number> = {};
+        for (const i of weekItems) counts[i.assignee_display_name] = (counts[i.assignee_display_name] || 0) + 1;
+        const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+        const topPerson = sorted[0]?.[0]?.split(' ')[0];
+        const secondPerson = sorted[1]?.[0]?.split(' ')[0];
+        if (topPerson) chips.push(`What is ${topPerson} working on?`);
+        if (secondPerson) chips.push(`${secondPerson}'s open items`);
+      }
+
+      // 2) Most recently updated ticket THIS week
+      const offset = chipGeneration % 3;
+      const { data: recentTickets } = await supabase
+        .from('ph_issues')
+        .select('issue_key')
+        .gte('jira_updated_at', thisWeekISO)
         .not('issue_key', 'is', null)
         .order('jira_updated_at', { ascending: false })
-        .range(chipGeneration % 5, chipGeneration % 5)
-        .limit(1)
-        .single();
+        .range(offset, offset);
 
-      if (person1) chips.push(`What is ${person1} working on?`);
-      if (recentTicket) chips.push(`Status of ${recentTicket.issue_key}`);
-      if (person2) chips.push(`${person2}'s open items`);
-      chips.push('Who has the most items?');
+      if (recentTickets && recentTickets[0]) {
+        chips.push(`Status of ${recentTickets[0].issue_key}`);
+      }
+
+      // 3) Time-contextual aggregation chip
+      const contextChips = [
+        'What items are blocked?',
+        'Who has the most items?',
+        'How many open bugs?',
+        'What items are overdue?',
+      ];
+      chips.push(contextChips[chipGeneration % contextChips.length]);
 
       if (chips.length > 0) setDynamicChips(chips.slice(0, 4));
     } catch { /* no chips on failure */ }
