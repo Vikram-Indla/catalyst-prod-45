@@ -294,6 +294,9 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
     }
   }
 
+  // Detect "show all" intent for person queries
+  const showAllIntent = /(?:show\s+all|full\s+list|all\s+items|every\s+item|complete\s+list|all\s+of)/i.test(qLower);
+
   if (personName) {
     // Search resource_inventory FIRST for professional role & department (source of truth)
     let resourceInfo: any = null;
@@ -327,7 +330,8 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
       // Department right after name
       if (department) parts.push(`📁 ${department}${capacity != null ? ` · Capacity: ${capacity}%` : ''}${vendor ? ` · Vendor: ${vendor}` : ''}`);
 
-      // Get items updated in last 2 weeks only, limit to latest 5
+      // Get items updated in last 2 weeks; fetch more when "show all" is requested
+      const fetchLimit = showAllIntent ? 100 : 20;
       const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 3600000).toISOString();
       const { data: issues } = await sb
         .from('ph_issues')
@@ -335,7 +339,7 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
         .or(`assignee_display_name.ilike.%${personName}%`)
         .gte('jira_updated_at', twoWeeksAgo)
         .order('jira_updated_at', { ascending: false })
-        .limit(20);
+        .limit(fetchLimit);
 
       if (issues && issues.length > 0) {
         const active = issues.filter((i: any) => !['Done', 'Closed', 'Resolved'].includes(i.status));
@@ -353,9 +357,10 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
           return `${days}d ${hours % 24}h`;
         };
 
-        // Show only top 5 active items
+        // Show active items — all when "show all" requested, otherwise top 5
         if (active.length > 0) {
-          const shown = active.slice(0, 5);
+          const activeLimit = showAllIntent ? active.length : 5;
+          const shown = active.slice(0, activeLimit);
           parts.push('\n---\n#### CURRENT WORK (Latest)');
 
           for (const i of shown) {
@@ -363,19 +368,20 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
             parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.status}* | ⏱ ${sitting} |`);
           }
 
-          if (totalActive > 5) {
+          if (!showAllIntent && totalActive > 5) {
             parts.push(`\n*Showing 5 of ${totalActive} active items. Ask "Show all of ${displayName.split(' ')[0]}'s items" for the full list.*`);
           }
         }
 
-        // Show only top 3 completed items
+        // Show completed items — all when "show all" requested, otherwise top 3
         if (completed.length > 0) {
-          const shown = completed.slice(0, 3);
+          const completedLimit = showAllIntent ? completed.length : 3;
+          const shown = completed.slice(0, completedLimit);
           parts.push('\n---\n#### RECENTLY COMPLETED');
           for (const i of shown) {
             parts.push(`| \`${i.issue_key}\` | ${i.summary} | ✅ ${i.status} |`);
           }
-          if (totalCompleted > 3) {
+          if (!showAllIntent && totalCompleted > 3) {
             parts.push(`\n*${totalCompleted - 3} more completed items — ask for details.*`);
           }
         }
