@@ -4,6 +4,7 @@ import { ReadOnlyBanner } from './ReadOnlyBanner';
 import { ConnectionStatusBadge } from './ConnectionStatusBadge';
 import { TestConnectionModal } from './TestConnectionModal';
 import { SyncConfigPanel } from './SyncConfigPanel';
+import { AutoSyncCard } from '@/components/shared/AutoSyncCard';
 
 import { useJiraConnection, useUpdateJiraConnection, useTestConnection } from '../hooks/useJiraConnection';
 
@@ -299,6 +300,16 @@ export function JiraConnection() {
 
         {/* Sync Configuration — shown when connected */}
         {status === 'connected' && <SyncConfigPanel />}
+
+        {/* Automated Jira Sync Schedule */}
+        {status === 'connected' && (
+          <AutoSyncCard
+            scheduleKeys={['jira-daily-sync']}
+            lastSyncTable="ph_sync_log"
+            lastSyncColumn="completed_at"
+            title="Automated Jira Sync"
+          />
+        )}
 
         {/* Credentials form */}
         {showForm && (
