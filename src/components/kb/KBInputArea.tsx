@@ -88,21 +88,22 @@ export function KBInputArea({
           display: 'flex',
           alignItems: 'center',
           gap: 10,
-          background: '#F9FAFB',
-          border: `1.5px solid ${inputFocused ? '#2563EB' : '#E4E4E7'}`,
-          borderRadius: 14,
-          padding: '8px 14px',
+          background: 'transparent',
+          border: 'none',
+          borderBottom: `1.5px solid ${inputFocused ? '#2563EB' : '#E4E4E7'}`,
+          borderRadius: 0,
+          padding: '8px 0',
           minHeight: 52,
-          transition: 'all 200ms ease',
-          boxShadow: inputFocused ? '0 0 0 3px rgba(37,99,235,0.1)' : 'none',
+          transition: 'border-color 200ms ease',
+          boxShadow: 'none',
         }}
       >
         {/* Mic */}
         <button
           onClick={onToggleListening}
           style={{
-            width: 40,
-            height: 40,
+            width: 36,
+            height: 36,
             borderRadius: '50%',
             border: 'none',
             cursor: 'pointer',
@@ -110,19 +111,15 @@ export function KBInputArea({
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
-            background: isListening ? '#DC2626' : '#F4F4F5',
+            background: isListening ? '#DC2626' : 'transparent',
             transition: 'all 200ms ease',
             animation: isListening ? 'kb-mic-pulse 1.5s infinite' : 'none',
           }}
           onMouseEnter={(e) => {
-            if (!isListening) {
-              e.currentTarget.style.background = '#EFF6FF';
-            }
+            if (!isListening) e.currentTarget.style.color = '#2563EB';
           }}
           onMouseLeave={(e) => {
-            if (!isListening) {
-              e.currentTarget.style.background = '#F4F4F5';
-            }
+            if (!isListening) e.currentTarget.style.color = '#71717A';
           }}
           title={isListening ? 'Stop listening' : 'Voice input'}
         >
@@ -156,8 +153,8 @@ export function KBInputArea({
           onClick={() => onSend()}
           disabled={!hasText || isLoading}
           style={{
-            width: 40,
-            height: 40,
+            width: 36,
+            height: 36,
             borderRadius: '50%',
             border: 'none',
             cursor: hasText ? 'pointer' : 'default',
@@ -165,7 +162,7 @@ export function KBInputArea({
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
-            background: hasText ? '#2563EB' : '#F4F4F5',
+            background: hasText ? '#2563EB' : 'transparent',
             transition: 'all 200ms ease',
           }}
           onMouseEnter={(e) => {
@@ -173,9 +170,10 @@ export function KBInputArea({
           }}
           onMouseLeave={(e) => {
             if (hasText) e.currentTarget.style.background = '#2563EB';
+            else e.currentTarget.style.background = 'transparent';
           }}
         >
-          <ArrowUp size={18} color={hasText ? '#FFFFFF' : '#D4D4D8'} />
+          <ArrowUp size={18} color={hasText ? '#FFFFFF' : '#A1A1AA'} />
         </button>
       </div>
 
