@@ -91,17 +91,21 @@ function ResponseHeader({ tag }: { tag?: string }) {
         background: 'linear-gradient(135deg, #2563EB, #7C3AED)',
         display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
       }}>
-        <BookOpen size={12} strokeWidth={2} color="#FFFFFF" />
+        <BookOpen size={12} strokeWidth={2} color="#FFFFFF" aria-hidden="true" />
       </div>
       <span style={{ fontSize: 12, fontWeight: 600, color: '#334155', fontFamily: F.inter }}>Knowledge Assist</span>
       {tag && (
-        <span style={{
-          fontSize: 11, fontWeight: 700, color: '#16A34A',
-          background: 'rgba(22,163,74,0.08)', borderRadius: 3,
-          padding: '0 6px', height: 20, lineHeight: '20px',
-          textTransform: 'uppercase', letterSpacing: '0.03em',
-          fontFamily: F.inter,
-        }}>{tag}</span>
+        <span
+          role="status"
+          aria-live="polite"
+          style={{
+            fontSize: 11, fontWeight: 700, color: '#16A34A',
+            background: 'rgba(22,163,74,0.08)', borderRadius: 3,
+            padding: '0 6px', height: 20, lineHeight: '20px',
+            textTransform: 'uppercase', letterSpacing: '0.03em',
+            fontFamily: F.inter,
+          }}
+        >{tag}</span>
       )}
     </div>
   );
@@ -131,7 +135,7 @@ function AIPredictionRow({ label, text }: { label: string; text: string }) {
       borderTop: '0.75px solid rgba(124,58,237,0.1)',
       display: 'flex', alignItems: 'flex-start', gap: 8,
     }}>
-      <Sparkles size={16} strokeWidth={2} color="#7C3AED" style={{ flexShrink: 0, marginTop: 1 }} />
+      <Sparkles size={16} strokeWidth={2} color="#7C3AED" aria-hidden="true" style={{ flexShrink: 0, marginTop: 1 }} />
       <p style={{ fontSize: 12, color: '#334155', margin: 0, lineHeight: 1.6, fontFamily: F.inter }}>
         <strong style={{ color: '#7C3AED', fontWeight: 650 }}>{label}:</strong>{' '}{text}
       </p>
@@ -176,7 +180,7 @@ function CardFooter({ meta, confidence }: { meta: string; confidence?: string })
 function HoverRow({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
   return (
     <tr
-      style={{ height: 36, transition: 'background 100ms', ...style }}
+      style={{ height: 36, transition: 'background 80ms', ...style }}
       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(15,23,42,0.04)'; }}
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
     >{children}</tr>
@@ -213,7 +217,7 @@ export function WahidResponse() {
           padding: '12px 16px', borderBottom: '0.75px solid rgba(15,23,42,0.06)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <User size={16} strokeWidth={2} color="#2563EB" />
+            <User size={16} strokeWidth={2} color="#2563EB" aria-hidden="true" />
             <span style={{ fontSize: 14, fontWeight: 650, color: '#0F172A', fontFamily: F.sora }}>Wahid Nasri</span>
             <span style={{ fontSize: 12, color: '#64748B', fontFamily: F.inter }}>— Mobile Developer</span>
           </div>
@@ -223,6 +227,7 @@ export function WahidResponse() {
         {/* Table */}
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <caption className="ka-sr-only">Wahid Nasri's work items</caption>
             <thead>
               <tr>
                 <th style={TH}>Key</th>
@@ -264,7 +269,7 @@ export function WahidResponse() {
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '10px 16px', borderBottom: '0.75px solid rgba(15,23,42,0.06)',
         }}>
-          <Link size={14} strokeWidth={2} color="#64748B" />
+          <Link size={14} strokeWidth={2} color="#64748B" aria-hidden="true" />
           <span style={{ fontSize: 12, fontWeight: 600, color: '#334155', fontFamily: F.inter }}>Associated Items (Same Parent)</span>
           <span style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -275,6 +280,7 @@ export function WahidResponse() {
           }}>2</span>
         </div>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <caption className="ka-sr-only">Associated items under same parent</caption>
           <thead>
             <tr>
               <th style={TH}>Key</th>
@@ -325,13 +331,14 @@ export function BlockedResponse() {
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '12px 16px', borderBottom: '0.75px solid rgba(15,23,42,0.06)',
         }}>
-          <ShieldAlert size={16} strokeWidth={2} color="#DC2626" />
+          <ShieldAlert size={16} strokeWidth={2} color="#DC2626" aria-hidden="true" />
           <span style={{ fontSize: 14, fontWeight: 650, color: '#DC2626', fontFamily: F.sora }}>Blocked Items</span>
           <span style={{ fontSize: 12, color: '#64748B', fontFamily: F.mono }}>10 total</span>
         </div>
 
         {/* Table */}
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <caption className="ka-sr-only">Blocked work items</caption>
           <thead>
             <tr>
               <th style={TH}>Key</th>

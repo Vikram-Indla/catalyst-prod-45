@@ -156,11 +156,12 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     return (
       <button
         onClick={() => handleSend(p.main)}
+        className="ka-icon-btn"
         style={{
           display: 'flex', alignItems: 'center', gap: 12, width: '100%',
           padding: '10px 16px', background: 'transparent',
           border: '0.75px solid rgba(15,23,42,0.12)', borderRadius: 6,
-          cursor: 'pointer', textAlign: 'left', transition: 'all 150ms',
+          cursor: 'pointer', textAlign: 'left', transition: 'background 80ms, border-color 80ms',
         }}
         onMouseEnter={e => {
           e.currentTarget.style.background = 'rgba(15,23,42,0.04)';
@@ -175,7 +176,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           width: 36, height: 36, borderRadius: 6, background: p.iconBg,
           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
         }}>
-          <Icon size={20} strokeWidth={2} color={p.iconColor} />
+          <Icon size={20} strokeWidth={2} color={p.iconColor} aria-hidden="true" />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -233,12 +234,13 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     </div>
   );
 
-  return (
+    return (
     <>
       {/* Overlay */}
       {isOpen && (
         <div
           onClick={onClose}
+          aria-hidden="true"
           style={{
             position: 'fixed', inset: 0, top: 48,
             background: 'rgba(15,23,42,0.30)', zIndex: 49,
@@ -250,6 +252,8 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
       {/* Panel */}
       <div
         data-v={view}
+        role="complementary"
+        aria-label="Knowledge Assist"
         style={{
           position: 'fixed', top: 48, right: 0, bottom: 0,
           width: 540, background: '#FFFFFF',
@@ -289,27 +293,31 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
             <button
               onClick={handleNewChat}
               title="New chat"
+              aria-label="New chat"
+              className="ka-icon-btn"
               style={{
                 width: 28, height: 28, borderRadius: 6, border: 'none', background: 'transparent',
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'background 150ms',
+                transition: 'background 80ms, color 80ms',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <Plus size={16} strokeWidth={2} color="#64748B" />
+              <Plus size={16} strokeWidth={2} color="#64748B" aria-hidden="true" />
             </button>
             <button
               onClick={onClose}
+              aria-label="Close Knowledge Assist"
+              className="ka-icon-btn"
               style={{
                 width: 28, height: 28, borderRadius: 6, border: 'none', background: 'transparent',
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'background 150ms',
+                transition: 'background 80ms, color 80ms',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <X size={16} strokeWidth={2} color="#64748B" />
+              <X size={16} strokeWidth={2} color="#64748B" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -317,6 +325,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
         {/* ── Scrollable body ── */}
         <div
           ref={scrollRef}
+          className="ka-scroll-area"
           style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}
         >
           {/* ═══ LANDING STATE ═══ */}
@@ -344,7 +353,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 padding: '16px 20px',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                  <Sparkles size={14} strokeWidth={2} color="#7C3AED" style={{
+                  <Sparkles size={14} strokeWidth={2} color="#7C3AED" aria-hidden="true" style={{
                     animation: 'ka-sparkle 3s ease-in-out infinite',
                   }} />
                   <span style={{
@@ -394,7 +403,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               {/* Risk Heatmap */}
               <div style={{ marginTop: 24 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
-                  <Sparkles size={12} strokeWidth={2} color="#94A3B8" />
+                  <Sparkles size={12} strokeWidth={2} color="#94A3B8" aria-hidden="true" />
                   <span style={{
                     fontSize: 11, fontWeight: 650, color: '#94A3B8',
                     textTransform: 'uppercase', letterSpacing: '0.06em',
@@ -508,16 +517,18 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           >
             <button
               onClick={toggleListening}
+              aria-label={isListening ? 'Stop listening' : 'Voice input'}
+              className="ka-icon-btn"
               style={{
                 width: 28, height: 28, margin: '0 4px', borderRadius: 4,
                 border: 'none', background: isListening ? 'rgba(220,38,38,0.10)' : 'transparent',
                 cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'background 150ms',
+                transition: 'background 80ms, color 80ms',
               }}
               onMouseEnter={e => { if (!isListening) e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
               onMouseLeave={e => { if (!isListening) e.currentTarget.style.background = 'transparent'; }}
             >
-              <Mic size={16} strokeWidth={2} color={isListening ? '#DC2626' : '#64748B'} />
+              <Mic size={16} strokeWidth={2} color={isListening ? '#DC2626' : '#64748B'} aria-hidden="true" />
             </button>
             <input
               ref={inputRef}
@@ -525,6 +536,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
               placeholder="Ask anything…"
+              aria-label="Ask a question"
               style={{
                 flex: 1, height: '100%', border: 'none', outline: 'none',
                 background: 'transparent', fontSize: 13, color: '#0F172A',
@@ -534,16 +546,18 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
             <button
               onClick={() => handleSend()}
               disabled={!input.trim() || isLoading}
+              aria-label="Send message"
+              className="ka-icon-btn"
               style={{
                 width: 28, height: 28, margin: '0 4px', borderRadius: 4,
                 border: 'none',
                 background: input.trim() ? 'rgba(37,99,235,0.60)' : 'rgba(15,23,42,0.06)',
                 cursor: input.trim() ? 'pointer' : 'default',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'background 150ms',
+                transition: 'background 80ms',
               }}
             >
-              <Send size={16} strokeWidth={2} color={input.trim() ? '#FFFFFF' : '#94A3B8'} />
+              <Send size={16} strokeWidth={2} color={input.trim() ? '#FFFFFF' : '#94A3B8'} aria-hidden="true" />
             </button>
           </div>
           <SourceLine />
@@ -560,8 +574,21 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           }
           @keyframes ka-sparkle {
             0%,100% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.15) rotate(15deg); }
+            25% { transform: scale(1.15) rotate(5deg); }
+            75% { transform: scale(1.1) rotate(-3deg); }
           }
+          /* Focus-visible for all interactive buttons */
+          .ka-icon-btn:focus-visible {
+            outline: 2px solid #2563EB;
+            outline-offset: 2px;
+          }
+          /* Scrollbar */
+          .ka-scroll-area::-webkit-scrollbar { width: 4px; }
+          .ka-scroll-area::-webkit-scrollbar-track { background: transparent; }
+          .ka-scroll-area::-webkit-scrollbar-thumb { background: rgba(15,23,42,0.18); border-radius: 4px; }
+          .ka-scroll-area::-webkit-scrollbar-thumb:hover { background: rgba(15,23,42,0.28); }
+          /* sr-only utility */
+          .ka-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border-width: 0; }
         `}</style>
       </div>
     </>
