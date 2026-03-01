@@ -357,50 +357,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               </p>
 
 
-              {/* Stats Grid */}
-              <div style={{
-                display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8,
-                marginTop: 20,
-              }}>
-                {[
-                  { value: '12', label: 'My items', color: '#0F172A' },
-                  { value: '3', label: 'Blocked', color: '#DC2626' },
-                  { value: '5', label: 'Re-opened', color: '#D97706' },
-                  { value: '97%', label: 'Capacity', color: '#16A34A' },
-                ].map((s, i) => (
-                  <div key={i} style={{
-                    background: '#F8FAFC',
-                    border: '0.75px solid rgba(15,23,42,0.12)', borderRadius: 6,
-                    padding: 12, textAlign: 'center',
-                  }}>
-                    <div style={{
-                      fontSize: 18, fontWeight: 500, color: s.color,
-                      fontFamily: "'JetBrains Mono', monospace",
-                      fontVariantNumeric: 'tabular-nums',
-                    }}>{s.value}</div>
-                    <div style={{
-                      fontSize: 11, color: '#64748B', marginTop: 2,
-                      fontFamily: "'Inter', sans-serif",
-                    }}>{s.label}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Risk Heatmap */}
-              <div style={{ marginTop: 24 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
-                  <Sparkles size={12} strokeWidth={2} color="#94A3B8" aria-hidden="true" />
-                  <span style={{
-                    fontSize: 11, fontWeight: 650, color: '#94A3B8',
-                    textTransform: 'uppercase', letterSpacing: '0.06em',
-                    fontFamily: "'Inter', sans-serif",
-                  }}>Team Risk Heatmap</span>
-                </div>
-                <RiskBar label="Accessibility" pct={78} gradient="linear-gradient(90deg, #DC2626, #F87171)" />
-                <RiskBar label="Mobile FE" pct={52} gradient="linear-gradient(90deg, #D97706, #FBBF24)" />
-                <RiskBar label="Integration" pct={25} gradient="linear-gradient(90deg, #16A34A, #4ADE80)" />
-              </div>
-
               {/* YOUR WORK */}
               <div style={{ marginTop: 28 }}>
                 <span style={{
