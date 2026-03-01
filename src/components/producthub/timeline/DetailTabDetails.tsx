@@ -332,6 +332,17 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
   const [editDesc, setEditDesc] = useState(false);
   const [desc, setDesc] = useState(initiative.description || '');
 
+  // Optimistic local state for all editable fields
+  const [localFields, setLocalFields] = useState<Record<string, any>>({});
+
+  // Reset local fields when initiative changes (e.g., navigating to different initiative)
+  useEffect(() => { setLocalFields({}); }, [initiative.id]);
+
+  // Helper to get the current value: local override or initiative prop
+  const getField = useCallback((field: string, propValue: any) => {
+    return field in localFields ? localFields[field] : propValue;
+  }, [localFields]);
+
   const promoteMutation = usePromoteToRoadmap();
   const removeMutation = useRemoveFromRoadmap();
 
@@ -352,6 +363,8 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
   }, [queryClient]);
 
   const autoSave = useCallback(async (field: string, value: any, label: string) => {
+    // Optimistically update local state immediately
+    setLocalFields(prev => ({ ...prev, [field]: value }));
     try {
       const fkFields = ['department_id', 'assignee_id', 'reporter_id', 'business_owner_id', 'product_id'];
       const sanitized = fkFields.includes(field) && value === '' ? null : value;
@@ -364,12 +377,16 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
       if (error) throw error;
       if (!rows || rows.length === 0) {
         toast.error(`Failed to persist ${label.toLowerCase()}`);
+        // Revert optimistic update
+        setLocalFields(prev => { const n = { ...prev }; delete n[field]; return n; });
         return;
       }
       // Silent auto-save — no toast for routine field updates
       invalidateAll();
     } catch (err: any) {
       toast.error(`Failed to update ${label.toLowerCase()}`);
+      // Revert optimistic update
+      setLocalFields(prev => { const n = { ...prev }; delete n[field]; return n; });
     }
   }, [initiative.id, invalidateAll]);
 
@@ -438,36 +455,36 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
           <DD value={initiative.initiative_type_key || 'project'} options={TYPE_OPTIONS.map(t => ({ value: t.key, label: t.label }))} onChange={(v: string) => handleTypeChange(v)} />
         </Cell>
         <Cell label="Status">
-          <DD value={dbStatus} options={STATUS_OPTIONS} grouped onChange={handleStatusChange} />
+          <DD value={getField('status', dbStatus)} options={STATUS_OPTIONS} grouped onChange={handleStatusChange} />
         </Cell>
         <Cell label="EA Review" odd>
-          <DD value={(initiative as any).ea_review} options={EA_OPTS} onChange={(v: string) => autoSave('ea_review', v, 'EA Review')} />
+          <DD value={getField('ea_review', (initiative as any).ea_review)} options={EA_OPTS} onChange={(v: string) => autoSave('ea_review', v, 'EA Review')} />
         </Cell>
         <Cell label="Business Value">
-          <DD value={(initiative as any).business_value} options={BV_OPTS} onChange={(v: string) => autoSave('business_value', v.toLowerCase(), 'Business Value')} />
+          <DD value={getField('business_value', (initiative as any).business_value)} options={BV_OPTS} onChange={(v: string) => autoSave('business_value', v.toLowerCase(), 'Business Value')} />
         </Cell>
         <Cell label="Priority" odd>
-          <DD value={(initiative as any).priority} options={PRIO_OPTS} onChange={(v: string) => autoSave('priority', v, 'Priority')} />
+          <DD value={getField('priority', (initiative as any).priority)} options={PRIO_OPTS} onChange={(v: string) => autoSave('priority', v, 'Priority')} />
         </Cell>
         <Cell label="Target Quarter" odd>
-          <DD value={initiative.target_quarter} options={quarters} onChange={(v: string) => autoSave('target_quarter', v, 'Target Quarter')} />
+          <DD value={getField('target_quarter', initiative.target_quarter)} options={quarters} onChange={(v: string) => autoSave('target_quarter', v, 'Target Quarter')} />
         </Cell>
         <Cell label="Reporter">
-          <PS value={initiative.reporter_id} onChange={(id) => autoSave('reporter_id', id, 'Reporter')} />
+          <PS value={getField('reporter_id', initiative.reporter_id)} onChange={(id) => autoSave('reporter_id', id, 'Reporter')} />
         </Cell>
         <Cell label="Assignee" odd>
-          <PS value={initiative.assignee_id} onChange={(id) => autoSave('assignee_id', id, 'Assignee')} />
+          <PS value={getField('assignee_id', initiative.assignee_id)} onChange={(id) => autoSave('assignee_id', id, 'Assignee')} />
         </Cell>
         <Cell label="Department">
-          <DeptSelect value={initiative.department_id} onChange={(id) => autoSave('department_id', id, 'Department')} />
+          <DeptSelect value={getField('department_id', initiative.department_id)} onChange={(id) => autoSave('department_id', id, 'Department')} />
         </Cell>
         <Cell label="Business Owner" odd>
-          <PS value={initiative.business_owner_id} onChange={(id) => autoSave('business_owner_id', id, 'Business Owner')} />
+          <PS value={getField('business_owner_id', initiative.business_owner_id)} onChange={(id) => autoSave('business_owner_id', id, 'Business Owner')} />
         </Cell>
         <Cell label="Business Ask Date">
           <input
             type="date"
-            value={initiative.business_ask_date || ''}
+            value={getField('business_ask_date', initiative.business_ask_date) || ''}
             onChange={e => autoSave('business_ask_date', e.target.value || null, 'Business Ask Date')}
             className="idp-date-input"
           />
@@ -475,7 +492,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         <Cell label="Kickoff Date" odd>
           <input
             type="date"
-            value={initiative.kickoff_date || ''}
+            value={getField('kickoff_date', initiative.kickoff_date) || ''}
             onChange={e => autoSave('kickoff_date', e.target.value || null, 'Kickoff Date')}
             className="idp-date-input"
           />
@@ -483,7 +500,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
         <Cell label="Target Complete">
           <input
             type="date"
-            value={initiative.target_complete || ''}
+            value={getField('target_complete', initiative.target_complete) || ''}
             onChange={e => autoSave('target_complete', e.target.value || null, 'Target Complete')}
             className="idp-date-input"
           />
