@@ -192,21 +192,20 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
             <span style={{ fontSize: 15, fontWeight: 700, color: '#18181B', letterSpacing: '-0.3px' }}>Intelligence</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            {messages.length > 0 && (
-              <button
-                onClick={handleClearChat}
-                title="New conversation"
-                style={{
-                  width: 32, height: 32, borderRadius: 8, border: 'none', background: 'transparent',
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'background 150ms',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = '#F4F4F5'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-              >
-                <MessageSquarePlus size={16} color="#71717A" />
-              </button>
-            )}
+            <button
+              onClick={handleClearChat}
+              title="New conversation"
+              style={{
+                width: 32, height: 32, borderRadius: 8, border: 'none', background: 'transparent',
+                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'background 150ms',
+                opacity: messages.length > 0 ? 1 : 0.4,
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = '#F4F4F5'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+            >
+              <MessageSquarePlus size={16} color="#71717A" />
+            </button>
             <button
               onClick={onClose}
               style={{
