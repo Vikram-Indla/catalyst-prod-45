@@ -76,6 +76,7 @@ import { CatalystLoginPage } from "./components/auth/login";
 import { CatyFabPlaceholder } from "./components/caty/CatyFabPlaceholder";
 // QA Assistant - TestHub AI FAB
 import { QAAssistantFab } from "./components/testhub-ai";
+import { KAFab } from "./components/kb/KAFab";
 // Jira test pages removed - AtlasKit migration complete
 import SlackOAuthCallback from "./pages/SlackOAuthCallback";
 import BrowsePage from "./pages/BrowsePage";
@@ -457,6 +458,11 @@ function QAAssistantRouteGuard() {
   const isTestHubRoute = location.pathname.startsWith('/testhub');
   if (!isTestHubRoute) return null;
   return <QAAssistantFab />;
+}
+
+// Knowledge Assist FAB — shown globally
+function KAFabRouteGuard() {
+  return <KAFab />;
 }
 
 const App = () => (
@@ -1211,6 +1217,7 @@ const App = () => (
             </Routes>
               <CatyWidgetRouteGuard />
               <QAAssistantRouteGuard />
+              <KAFabRouteGuard />
               
           </BrowserRouter>
         </TooltipProvider>
