@@ -4,6 +4,7 @@ import { useKBQuery } from '@/hooks/useKnowledgeBase';
 import { useAuth } from '@/hooks/useAuth';
 import { KBResponseRenderer } from './KBResponseRenderer';
 import { KBInputArea } from './KBInputArea';
+import { supabase } from '@/integrations/supabase/client';
 
 import type { KBQueryResponse } from '@/services/knowledgeBase';
 
@@ -53,7 +54,45 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
   const fullName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'there';
   const firstName = getFirstName(fullName);
   const isRTL = false;
-  
+  const [dynamicChips, setDynamicChips] = useState<string[]>([]);
+
+  // Load data-driven chips from training categories
+  useEffect(() => {
+    async function loadChips() {
+      try {
+        const { data: categories } = await (supabase as any)
+          .from('kb_training_questions')
+          .select('category')
+          .limit(200);
+        if (!categories) return;
+        const counts: Record<string, number> = {};
+        for (const c of categories) {
+          counts[c.category] = (counts[c.category] || 0) + 1;
+        }
+        const topCategories = Object.entries(counts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 4)
+          .map(([cat]) => cat);
+        const chips: string[] = [];
+        for (const cat of topCategories) {
+          const { data: sample } = await (supabase as any)
+            .from('kb_training_questions')
+            .select('question')
+            .eq('category', cat)
+            .limit(1)
+            .single();
+          if (sample) {
+            const q = sample.question.length > 35
+              ? sample.question.substring(0, 32) + '...'
+              : sample.question;
+            chips.push(q);
+          }
+        }
+        if (chips.length > 0) setDynamicChips(chips);
+      } catch { /* no chips on failure */ }
+    }
+    loadChips();
+  }, []);
 
   // Speech recognition
   const toggleListening = useCallback(() => {
@@ -276,7 +315,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           lang={lang}
           isListening={isListening}
           onToggleListening={toggleListening}
-          chips={[]}
+          chips={dynamicChips}
         />
 
         {/* Keyframes */}
