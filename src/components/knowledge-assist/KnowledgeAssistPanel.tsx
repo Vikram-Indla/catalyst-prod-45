@@ -388,10 +388,10 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 marginTop: 20,
               }}>
                 {[
-                  { value: '12', label: 'Open Items', color: '#0F172A' },
+                  { value: '12', label: 'My items', color: '#0F172A' },
                   { value: '3', label: 'Blocked', color: '#DC2626' },
-                  { value: '5', label: 'At Risk', color: '#D97706' },
-                  { value: '97%', label: 'SLA Met', color: '#16A34A' },
+                  { value: '5', label: 'Re-opened', color: '#D97706' },
+                  { value: '97%', label: 'Capacity', color: '#16A34A' },
                 ].map((s, i) => (
                   <div key={i} style={{
                     background: '#F8FAFC',
