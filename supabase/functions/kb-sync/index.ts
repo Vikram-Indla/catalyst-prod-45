@@ -228,6 +228,16 @@ const TABLE_CONFIGS: TableConfig[] = [
     selectFields: "id, story_key, title, name, description, status, priority, created_at",
     maxRows: 500,
   },
+  {
+    table: "business_requests",
+    sourceType: "initiative",
+    urlField: "request_key",
+    titleField: "title",
+    bodyFields: ["description", "business_justification", "proposed_solution"],
+    tagFields: ["process_step", "health", "priority_tier", "urgency", "department", "delivery_model"],
+    selectFields: "id, request_key, title, description, business_justification, proposed_solution, process_step, health, priority_tier, urgency, assignee, business_owner, department, delivery_model, estimated_cost_sar, approved_budget_sar, planned_quarter, progress, created_at, updated_at",
+    maxRows: 500,
+  },
 ];
 
 // ══════════════════════════════════════════════════════════════════

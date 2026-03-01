@@ -48,7 +48,10 @@ async function embed(text: string): Promise<number[]> {
 function tokens(s: string) { return Math.ceil(s.length / 4); }
 
 function norm(q: string) {
-  return q.toLowerCase().trim().replace(/[^\w\s\u0600-\u06FF]/g, "").replace(/\s+/g, " ");
+  // Normalize synonyms: "business request(s)" → "initiative(s)"
+  let n = q.toLowerCase().trim().replace(/[^\w\s\u0600-\u06FF]/g, "").replace(/\s+/g, " ");
+  n = n.replace(/business requests?/gi, "initiative").replace(/\brequest(s)?\b/gi, "initiative$1");
+  return n;
 }
 
 async function hash(t: string) {
@@ -82,7 +85,7 @@ interface LiveResult {
 
 async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveResult> {
   const qLower = query.toLowerCase();
-
+  const qNorm = qLower.replace(/business requests?/g, 'initiative').replace(/\brequest(s)?\b/g, 'initiative$1');
   // Detect person-related queries
   const personPatterns = [
     /(?:what|who).*(?:is|are)\s+(\w+)\s+(?:busy|working|doing|assigned|responsible)/i,
@@ -315,6 +318,93 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
         }
       }
     }
+  }
+
+  // ── Initiative / Business Request aggregate queries ──
+  const initiativePatterns = [
+    /(?:how many|count|number of)\s+(?:initiative|business request)s?\s+(?:are|is)\s+(?:pending|open|active)/i,
+    /(?:show|list|display)\s+(?:all\s+)?(?:open|active|pending|on.?hold)\s+(?:initiative|business request)s?/i,
+    /(?:initiative|business request)s?\s+(?:by|per|in each|grouped by)\s+(?:status|process.?step|department|delivery|health|quarter)/i,
+    /(?:how many|count)\s+(?:initiative|business request)s?\s+(?:are|were)\s+(?:high urgency|completed|on hold)/i,
+    /(?:how much|total|what)\s+budget\s+(?:is|are)\s+(?:allocated|approved)/i,
+    /(?:initiative|business request)s?\s+(?:are|is)\s+(?:in the|in)\s+(?:pipeline|approval|process)/i,
+  ];
+
+  const isInitiativeQuery = initiativePatterns.some(p => p.test(query)) || 
+    initiativePatterns.some(p => p.test(qNorm));
+
+  if (isInitiativeQuery) {
+    try {
+      const { data: requests } = await sb
+        .from('business_requests')
+        .select('request_key, title, process_step, health, priority_tier, urgency, assignee, business_owner, department, delivery_model, estimated_cost_sar, approved_budget_sar, planned_quarter, progress, updated_at')
+        .is('deleted_at', null)
+        .order('updated_at', { ascending: false })
+        .limit(200);
+
+      if (requests && requests.length > 0) {
+        const parts: string[] = [];
+        const total = requests.length;
+
+        // Status breakdown
+        const byStep: Record<string, number> = {};
+        for (const r of requests) { byStep[r.process_step] = (byStep[r.process_step] || 0) + 1; }
+
+        // Health breakdown
+        const byHealth: Record<string, number> = {};
+        for (const r of requests) { byHealth[r.health || 'Unknown'] = (byHealth[r.health || 'Unknown'] || 0) + 1; }
+
+        parts.push(`**Initiatives Overview** — ${total} total\n`);
+
+        // Process step breakdown
+        parts.push('**By Process Step:**');
+        for (const [step, count] of Object.entries(byStep).sort((a, b) => b[1] - a[1])) {
+          parts.push(`- ${step}: **${count}**`);
+        }
+
+        // Health breakdown
+        parts.push('\n**By Health:**');
+        for (const [h, count] of Object.entries(byHealth).sort((a, b) => b[1] - a[1])) {
+          parts.push(`- ${h}: **${count}**`);
+        }
+
+        // Budget summary
+        const totalBudget = requests.reduce((s: number, r: any) => s + (r.approved_budget_sar || 0), 0);
+        const totalEstimated = requests.reduce((s: number, r: any) => s + (r.estimated_cost_sar || 0), 0);
+        if (totalBudget > 0 || totalEstimated > 0) {
+          parts.push('\n**Budget Summary:**');
+          if (totalEstimated > 0) parts.push(`- Estimated: **${(totalEstimated / 1000000).toFixed(1)}M SAR**`);
+          if (totalBudget > 0) parts.push(`- Approved: **${(totalBudget / 1000000).toFixed(1)}M SAR**`);
+        }
+
+        // High urgency
+        const highUrgency = requests.filter((r: any) => r.urgency === 'High' || r.priority_tier === 'P1');
+        if (highUrgency.length > 0) {
+          parts.push(`\n**High Urgency:** ${highUrgency.length} items`);
+          for (const r of highUrgency.slice(0, 5)) {
+            parts.push(`- \`${r.request_key || 'N/A'}\` ${r.title} — *${r.process_step}*`);
+          }
+        }
+
+        // On-hold
+        const onHold = requests.filter((r: any) => r.process_step?.toLowerCase().includes('hold'));
+        if (onHold.length > 0) {
+          parts.push(`\n**On Hold:** ${onHold.length} items`);
+          for (const r of onHold.slice(0, 5)) {
+            parts.push(`- \`${r.request_key || 'N/A'}\` ${r.title}`);
+          }
+        }
+
+        parts.push(`\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}*`);
+
+        return {
+          found: true,
+          answer: parts.join('\n'),
+          confidence: 0.90,
+          sources: ['business_requests'],
+        };
+      }
+    } catch { /* table might not exist */ }
   }
 
   return { found: false, answer: '', confidence: 0, sources: [] };
