@@ -39,7 +39,7 @@ export function ForYouSubTabs({ activeTab, counts, onTabChange }: ForYouSubTabsP
               "transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)]",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(217,91%,60%)]",
               isActive
-                ? "font-semibold bg-[hsl(217,91%,60%)] text-white shadow-sm"
+                ? "font-semibold bg-[#2563EB] text-white shadow-sm"
                 : "font-medium text-[hsl(215,25%,27%)] border border-[hsl(214,32%,91%)] hover:bg-[hsl(210,40%,96%)]"
             )}
           >
