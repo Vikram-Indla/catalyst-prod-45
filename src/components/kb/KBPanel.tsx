@@ -56,39 +56,38 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
   const isRTL = false;
   const [dynamicChips, setDynamicChips] = useState<string[]>([]);
 
-  // Load data-driven chips from training categories
+  // Load smart data-driven chips using real names & ticket keys
   useEffect(() => {
     async function loadChips() {
       try {
-        const { data: categories } = await (supabase as any)
-          .from('kb_training_questions')
-          .select('category')
-          .limit(200);
-        if (!categories) return;
-        const counts: Record<string, number> = {};
-        for (const c of categories) {
-          counts[c.category] = (counts[c.category] || 0) + 1;
-        }
-        const topCategories = Object.entries(counts)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 4)
-          .map(([cat]) => cat);
         const chips: string[] = [];
-        for (const cat of topCategories) {
-          const { data: sample } = await (supabase as any)
-            .from('kb_training_questions')
-            .select('question')
-            .eq('category', cat)
-            .limit(1)
-            .single();
-          if (sample) {
-            const q = sample.question.length > 35
-              ? sample.question.substring(0, 32) + '...'
-              : sample.question;
-            chips.push(q);
-          }
-        }
-        if (chips.length > 0) setDynamicChips(chips);
+
+        // Get real people from profiles
+        const { data: people } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .not('full_name', 'is', null)
+          .limit(20);
+
+        const shuffled = (people || []).sort(() => Math.random() - 0.5);
+        const person1 = shuffled[0]?.full_name?.split(' ')[0];
+        const person2 = shuffled[1]?.full_name?.split(' ')[0];
+
+        // Get 1 recent ticket key
+        const { data: recentTicket } = await supabase
+          .from('ph_issues')
+          .select('issue_key, summary')
+          .not('issue_key', 'is', null)
+          .order('jira_updated_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (person1) chips.push(`What is ${person1} working on?`);
+        if (recentTicket) chips.push(`Status of ${recentTicket.issue_key}`);
+        if (person2) chips.push(`${person2}'s open items`);
+        chips.push('Who has the most items?');
+
+        if (chips.length > 0) setDynamicChips(chips.slice(0, 4));
       } catch { /* no chips on failure */ }
     }
     loadChips();
