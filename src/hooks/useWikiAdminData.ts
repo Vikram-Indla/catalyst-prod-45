@@ -267,7 +267,7 @@ export function useTriggerSync() {
       if (insertErr) throw insertErr;
 
       const { data: result, error: fnErr } = await supabase.functions.invoke('kb-sync', {
-        body: { action: 'full_sync', sourceType: 'wiki', sync_run_id: (run as any).id },
+        body: { action: 'sync_all', sync_run_id: (run as any).id },
       });
       if (fnErr) throw fnErr;
 
@@ -301,7 +301,7 @@ export function useRegeneratePage() {
   return useMutation({
     mutationFn: async (pageId: string) => {
       const { error } = await supabase.functions.invoke('kb-sync', {
-        body: { action: 'regenerate_page', page_id: pageId, sourceType: 'wiki' },
+        body: { action: 'sync_all', table_name: 'wiki_pages', source_id: pageId },
       });
       if (error) throw error;
     },
@@ -342,7 +342,7 @@ export function useReembedDocument() {
   return useMutation({
     mutationFn: async (documentId: string) => {
       const { error } = await supabase.functions.invoke('kb-sync', {
-        body: { action: 'sync_document', document_id: documentId, sourceType: 'wiki' },
+        body: { action: 'sync_table', table_name: 'wiki_documents', source_id: documentId },
       });
       if (error) throw error;
     },
