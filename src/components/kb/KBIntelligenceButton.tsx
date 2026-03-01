@@ -1,5 +1,4 @@
 import React from 'react';
-import { Sparkles } from 'lucide-react';
 
 interface KBIntelligenceButtonProps {
   isOpen: boolean;
@@ -42,7 +41,6 @@ export function KBIntelligenceButton({ isOpen, onClick }: KBIntelligenceButtonPr
           e.currentTarget.style.boxShadow = '';
         }}
       >
-        <Sparkles size={14} strokeWidth={2} aria-hidden="true" />
         <span>KA</span>
         {/* Green pulse dot */}
         {!isOpen && (
