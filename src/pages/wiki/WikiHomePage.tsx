@@ -85,7 +85,7 @@ export default function WikiHomePage() {
 
       {/* Stats Row */}
       <div style={{
-        display: 'flex', justifyContent: 'center', gap: 32, padding: '16px 24px 32px',
+        display: 'flex', justifyContent: 'center', gap: 32, padding: '16px 28px 32px',
         flexWrap: 'wrap',
       }}>
         {stats.map(s => (
@@ -97,9 +97,9 @@ export default function WikiHomePage() {
       </div>
 
       {/* Domain Grid */}
-      <div style={{ maxWidth: 960, marginInline: 'auto', padding: '0 24px' }}>
+      <div style={{ padding: '0 28px' }}>
         <div style={sectionHeaderStyle}>Browse by Domain</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
           {(domains || []).map((d: any) => (
             <div
               key={d.domain_code}
