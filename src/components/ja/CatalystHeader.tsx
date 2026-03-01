@@ -159,6 +159,7 @@ export function CatalystHeader() {
     { label: "IncidentHub", hasDropdown: true, path: "/release", moduleKey: "operations", visibleToProductOwner: false },
     { label: "TaskHub", path: "/taskhub/boards", moduleKey: "planner", visibleToProductOwner: true },
     { label: "PlanHub", path: "/planhub", moduleKey: "planhub", visibleToProductOwner: true },
+    { label: "Wiki", path: "/wiki", moduleKey: "wiki", visibleToProductOwner: true },
     { label: "KB", path: "__kb_panel__", moduleKey: "kb", visibleToProductOwner: true },
   ];
 
