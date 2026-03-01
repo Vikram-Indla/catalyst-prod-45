@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
-import { Upload, X, Check, FileText, ChevronRight } from 'lucide-react';
+import { Upload, X, Check, FileText, ChevronRight, AlertCircle } from 'lucide-react';
 import { DomainBadge } from './WikiTokens';
+import { useWikiDocumentUpload, useWikiDocumentStatus } from '@/hooks/useWikiData';
 
 const DOC_TYPES = ['brd', 'architecture', 'design', 'api_doc', 'user_guide', 'meeting', 'policy', 'other'] as const;
 const DOMAINS = [
@@ -18,11 +19,49 @@ interface FileEntry {
 
 interface Props { open: boolean; onClose: () => void; }
 
+function DocStatusPoller({ docId, fileName }: { docId: string; fileName: string }) {
+  const { data: status } = useWikiDocumentStatus(docId);
+  const isDone = status?.status === 'complete';
+  const isFailed = status?.status === 'failed';
+
+  const steps = [
+    { label: 'Parsing document', done: isDone || ['chunking', 'embedding', 'complete'].includes(status?.status || '') },
+    { label: 'Chunking content', done: isDone || ['embedding', 'complete'].includes(status?.status || '') },
+    { label: 'Generating embeddings', done: isDone },
+    { label: 'Indexing', done: isDone },
+  ];
+
+  return (
+    <div style={{ marginBottom: 16, padding: 12, borderRadius: 6, border: '1px solid var(--cp-border-default)' }}>
+      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-primary)', marginBottom: 8 }}>{fileName}</div>
+      {isFailed ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--cp-danger-60)' }}>
+          <AlertCircle size={12} /> Processing failed: {status?.error_message || 'Unknown error'}
+        </div>
+      ) : (
+        steps.map((s, si) => (
+          <div key={si} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '3px 0', fontSize: 11, color: s.done ? 'var(--cp-success-60)' : 'var(--cp-text-muted)' }}>
+            {s.done ? <Check size={12} /> : <span style={{ width: 8, height: 8, borderRadius: '50%', background: si === 0 && !isDone ? 'var(--cp-primary-60)' : 'var(--cp-border-default)', animation: si === 0 && !isDone ? 'wiki-pulse 1.5s ease-in-out infinite' : 'none' }} />}
+            {s.label}
+          </div>
+        ))
+      )}
+      {isDone && status && (
+        <div style={{ fontSize: 10, color: 'var(--cp-text-muted)', marginTop: 6, fontFamily: 'var(--cp-font-mono)' }}>
+          {status.pages_extracted ?? 0} pages · {status.words_extracted ?? 0} words · {status.chunks_generated ?? 0} chunks
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function WikiUploadWizard({ open, onClose }: Props) {
   const [step, setStep] = useState(1);
   const [files, setFiles] = useState<FileEntry[]>([]);
-  const [processing, setProcessing] = useState(false);
-  const [processedFiles, setProcessedFiles] = useState<number[]>([]);
+  const [uploadedDocs, setUploadedDocs] = useState<Array<{ id: string; name: string }>>([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const uploadMutation = useWikiDocumentUpload();
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -42,13 +81,38 @@ export function WikiUploadWizard({ open, onClose }: Props) {
 
   const removeFile = (idx: number) => setFiles(prev => prev.filter((_, i) => i !== idx));
 
-  const handleProcess = () => {
-    setProcessing(true);
-    // Simulate processing
-    files.forEach((_, idx) => {
-      setTimeout(() => setProcessedFiles(prev => [...prev, idx]), (idx + 1) * 1500);
-    });
-    setTimeout(() => setProcessing(false), files.length * 1500 + 500);
+  const handleProcess = async () => {
+    setUploading(true);
+    setUploadError(null);
+    const results: Array<{ id: string; name: string }> = [];
+
+    for (const f of files) {
+      try {
+        const doc = await uploadMutation.mutateAsync({
+          file: f.file,
+          domain_code: f.domain,
+          doc_type: f.docType,
+          purpose: f.purpose,
+          version: f.version,
+          language: f.language,
+          linked_epic: f.linkedEpic || undefined,
+        });
+        results.push({ id: doc.id, name: f.file.name });
+      } catch (err: any) {
+        setUploadError(`Failed to upload ${f.file.name}: ${err.message}`);
+        break;
+      }
+    }
+
+    setUploadedDocs(results);
+    setUploading(false);
+  };
+
+  const handleReset = () => {
+    setStep(1);
+    setFiles([]);
+    setUploadedDocs([]);
+    setUploadError(null);
   };
 
   if (!open) return null;
@@ -121,7 +185,6 @@ export function WikiUploadWizard({ open, onClose }: Props) {
           {step === 2 && files.map((f, idx) => (
             <div key={idx} style={{ marginBottom: 20, padding: 12, borderRadius: 6, border: '1px solid var(--cp-border-default)' }}>
               <div style={{ fontSize: 13, fontWeight: 650, color: 'var(--cp-text-primary)', marginBottom: 12 }}>{f.file.name}</div>
-              {/* Domain */}
               <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-secondary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Domain</label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 12 }}>
                 {DOMAINS.map(d => (
@@ -136,7 +199,6 @@ export function WikiUploadWizard({ open, onClose }: Props) {
                   </button>
                 ))}
               </div>
-              {/* Doc Type */}
               <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-secondary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Document Type</label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 12 }}>
                 {DOC_TYPES.map(t => (
@@ -150,12 +212,10 @@ export function WikiUploadWizard({ open, onClose }: Props) {
                     }}>{t.replace(/_/g, ' ')}</button>
                 ))}
               </div>
-              {/* Purpose */}
               <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-secondary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Purpose</label>
               <textarea value={f.purpose} onChange={e => updateFile(idx, 'purpose', e.target.value)} rows={2}
                 style={{ width: '100%', fontSize: 12, padding: 8, borderRadius: 4, border: '1px solid var(--cp-border-default)', background: 'transparent', color: 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-body)', resize: 'vertical', outline: 'none', marginBottom: 8 }}
                 placeholder="Brief description of this document's purpose..." />
-              {/* Version + Language */}
               <div style={{ display: 'flex', gap: 12 }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--cp-text-secondary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Version</label>
@@ -199,35 +259,35 @@ export function WikiUploadWizard({ open, onClose }: Props) {
                 ))}
               </div>
               <div style={{ marginTop: 16, padding: 12, borderRadius: 6, background: 'var(--cp-primary-5)', fontSize: 12, color: 'var(--cp-text-secondary)' }}>
-                <strong>What happens next:</strong> Each file will be parsed, chunked into semantic segments, and embedded into the knowledge base for AI-powered search and article generation.
+                <strong>What happens next:</strong> Each file will be uploaded to storage, parsed, chunked into semantic segments, and embedded into the knowledge base for AI-powered search and article generation.
               </div>
             </>
           )}
 
           {step === 4 && (
             <div>
-              {files.map((f, idx) => {
-                const done = processedFiles.includes(idx);
-                const active = processing && !done && processedFiles.length === idx;
-                const steps = ['Parsing document', 'Chunking content', 'Generating embeddings', 'Indexing'];
-                return (
-                  <div key={idx} style={{ marginBottom: 16, padding: 12, borderRadius: 6, border: '1px solid var(--cp-border-default)' }}>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--cp-text-primary)', marginBottom: 8 }}>{f.file.name}</div>
-                    {steps.map((s, si) => (
-                      <div key={si} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '3px 0', fontSize: 11, color: done ? 'var(--cp-success-60)' : active && si === 0 ? 'var(--cp-primary-60)' : 'var(--cp-text-muted)' }}>
-                        {done ? <Check size={12} /> : active && si === 0 ? <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--cp-primary-60)', animation: 'wiki-pulse 1.5s ease-in-out infinite' }} /> : <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--cp-border-default)' }} />}
-                        {s}
-                      </div>
-                    ))}
-                  </div>
-                );
-              })}
-              {processedFiles.length === files.length && !processing && (
+              {uploading && (
+                <div style={{ padding: 24, textAlign: 'center', color: 'var(--cp-text-muted)', fontSize: 12 }}>
+                  Uploading files to storage...
+                </div>
+              )}
+
+              {uploadError && (
+                <div style={{ padding: 12, borderRadius: 6, background: 'var(--cp-danger-5)', color: 'var(--cp-danger-60)', fontSize: 12, marginBottom: 16 }}>
+                  {uploadError}
+                </div>
+              )}
+
+              {uploadedDocs.map(doc => (
+                <DocStatusPoller key={doc.id} docId={doc.id} fileName={doc.name} />
+              ))}
+
+              {!uploading && uploadedDocs.length === files.length && uploadedDocs.length > 0 && (
                 <div style={{ padding: 16, borderRadius: 6, background: 'var(--cp-lozenge-green-bg)', textAlign: 'center' }}>
-                  <div style={{ fontSize: 14, fontWeight: 650, color: 'var(--cp-lozenge-green-text)', marginBottom: 8 }}>✓ All documents processed</div>
+                  <div style={{ fontSize: 14, fontWeight: 650, color: 'var(--cp-lozenge-green-text)', marginBottom: 8 }}>✓ All documents uploaded</div>
                   <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
                     <button onClick={onClose} style={{ fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: 'none', background: 'var(--cp-primary-60)', color: '#fff', cursor: 'pointer' }}>View in Wiki</button>
-                    <button onClick={() => { setStep(1); setFiles([]); setProcessedFiles([]); }} style={{ fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: '1px solid var(--cp-border-default)', background: 'transparent', color: 'var(--cp-text-secondary)', cursor: 'pointer' }}>Upload More</button>
+                    <button onClick={handleReset} style={{ fontSize: 12, fontWeight: 600, padding: '6px 16px', borderRadius: 4, border: '1px solid var(--cp-border-default)', background: 'transparent', color: 'var(--cp-text-secondary)', cursor: 'pointer' }}>Upload More</button>
                   </div>
                 </div>
               )}

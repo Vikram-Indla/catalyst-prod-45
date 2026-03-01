@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { DomainBadge, sectionHeaderStyle } from '@/components/wiki/WikiTokens';
+import { useWikiWhatsNew } from '@/hooks/useWikiData';
 
 type BadgeType = 'NEW' | 'UPDATED' | 'DOC' | 'ARCHIVED';
 
@@ -12,25 +13,9 @@ const BADGE_STYLES: Record<BadgeType, { bg: string; color: string }> = {
   ARCHIVED: { bg: 'var(--cp-lozenge-grey-bg)', color: 'var(--cp-lozenge-grey-text)' },
 };
 
-const MOCK_CHANGES = [
-  { date: 'Today', items: [
-    { badge: 'NEW' as BadgeType, title: 'Gold License Application Flow', desc: 'New article generated from BRD-GL-2.1 and 24 Jira stories', domain: 'D6' },
-    { badge: 'DOC' as BadgeType, title: 'API Specification v3.2 uploaded', desc: 'Parsed 42 pages, generated 128 chunks, 128 vectors', domain: 'D1' },
-    { badge: 'UPDATED' as BadgeType, title: 'Sprint Planning Module', desc: 'Updated delivery status section with Sprint 42 data', domain: 'D4' },
-  ]},
-  { date: 'Yesterday', items: [
-    { badge: 'NEW' as BadgeType, title: 'Chemical Permits Workflow', desc: 'AI-generated article with 91% confidence from 18 Jira stories', domain: 'D6' },
-    { badge: 'UPDATED' as BadgeType, title: 'OKR Dashboard Module', desc: 'Refreshed delivery metrics and added 2 new references', domain: 'D2' },
-    { badge: 'DOC' as BadgeType, title: 'User Guide - Senaei Portal v4.0', desc: 'Parsed 86 pages, generated 245 chunks', domain: 'D7' },
-  ]},
-  { date: '2 days ago', items: [
-    { badge: 'ARCHIVED' as BadgeType, title: 'Legacy Reporting Module', desc: 'Archived due to replacement by Analytics Dashboard v2', domain: 'D8' },
-    { badge: 'UPDATED' as BadgeType, title: 'Test Management Overview', desc: 'Added cross-references to Quality Dashboard and Defect Tracker', domain: 'D5' },
-  ]},
-];
-
 export default function WikiWhatsNewPage() {
   const navigate = useNavigate();
+  const { data: groups, isLoading } = useWikiWhatsNew(7);
 
   return (
     <div style={{ fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary)', background: 'var(--cp-bg-page)', minHeight: '100%' }}>
@@ -44,12 +29,22 @@ export default function WikiWhatsNewPage() {
 
         <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 24, fontWeight: 700, margin: '0 0 24px', color: 'var(--cp-text-primary)' }}>What's New</h1>
 
-        {MOCK_CHANGES.map(group => (
+        {isLoading && (
+          <div style={{ padding: 40, textAlign: 'center', color: 'var(--cp-text-muted)', fontSize: 12 }}>Loading recent changes...</div>
+        )}
+
+        {!isLoading && (!groups || groups.length === 0) && (
+          <div style={{ padding: 40, textAlign: 'center', color: 'var(--cp-text-muted)', fontSize: 12 }}>
+            No changes in the last 7 days.
+          </div>
+        )}
+
+        {(groups || []).map((group: any) => (
           <div key={group.date}>
             <div style={sectionHeaderStyle}>{group.date}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {group.items.map((item, i) => {
-                const bs = BADGE_STYLES[item.badge];
+              {group.items.map((item: any, i: number) => {
+                const bs = BADGE_STYLES[item.badge as BadgeType] || BADGE_STYLES.UPDATED;
                 return (
                   <div key={i} style={{
                     display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 12px',

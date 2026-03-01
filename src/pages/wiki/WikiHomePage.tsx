@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Upload, Zap, FileText } from 'lucide-react';
-import { useWikiDomains, useWikiRecentPages } from '@/hooks/useWikiData';
+import { useWikiDomains, useWikiRecentPages, useWikiStats } from '@/hooks/useWikiData';
 import { sectionHeaderStyle, AiBadge, DomainBadge, ConfidenceBadge } from '@/components/wiki/WikiTokens';
 import { WikiCommandPalette } from '@/components/wiki/WikiCommandPalette';
 import { WikiUploadWizard } from '@/components/wiki/WikiUploadWizard';
@@ -15,10 +15,10 @@ export default function WikiHomePage() {
   const navigate = useNavigate();
   const { data: domains, isLoading } = useWikiDomains();
   const { data: recentPages } = useWikiRecentPages(4);
+  const { data: wikiStats } = useWikiStats();
   const [cmdOpen, setCmdOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
 
-  // ⌘K listener
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); setCmdOpen(true); }
@@ -27,16 +27,13 @@ export default function WikiHomePage() {
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  const totalArticles = (domains || []).reduce((s: number, d: any) => s + (d.article_count ?? 0), 0);
-  const totalDocs = (domains || []).reduce((s: number, d: any) => s + (d.document_count ?? 0), 0);
-
   const stats = [
-    { label: 'Articles', value: totalArticles || 47 },
-    { label: 'Documents', value: totalDocs || 26 },
-    { label: 'Domains', value: 8 },
-    { label: 'Categories', value: 24 },
-    { label: 'Knowledge Chunks', value: '4,262' },
-    { label: 'Avg Confidence', value: '91%' },
+    { label: 'Articles', value: wikiStats?.articles ?? 0 },
+    { label: 'Documents', value: wikiStats?.documents ?? 0 },
+    { label: 'Domains', value: wikiStats?.domains ?? 8 },
+    { label: 'Categories', value: wikiStats?.categories ?? 0 },
+    { label: 'Knowledge Chunks', value: wikiStats?.chunks ? wikiStats.chunks.toLocaleString() : '0' },
+    { label: 'Avg Confidence', value: wikiStats?.avgConfidence ? `${wikiStats.avgConfidence}%` : '—' },
   ];
 
   return (
@@ -172,7 +169,7 @@ export default function WikiHomePage() {
         {/* Footer */}
         <div style={{ textAlign: 'center', marginTop: 48, padding: '24px 0', borderTop: '1px solid var(--cp-border-subtle)' }}>
           <div style={{ fontSize: 11, color: 'var(--cp-text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-            Catalyst Wiki · {totalArticles || 47} articles across 8 domains
+            Catalyst Wiki · {wikiStats?.articles ?? 0} articles across {wikiStats?.domains ?? 8} domains
             <AiBadge small />
           </div>
         </div>
