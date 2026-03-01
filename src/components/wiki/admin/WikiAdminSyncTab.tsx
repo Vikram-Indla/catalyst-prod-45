@@ -44,16 +44,25 @@ export function WikiAdminSyncTab() {
   const triggerSync = useTriggerSync();
 
   const latestRuns = useWikiSyncRuns(5);
+
+  // Client-side safety: treat runs older than 10 min as not running (orphan protection)
+  const isActuallyRunning = (run: any) => {
+    if (run?.status !== 'running') return false;
+    const started = new Date(run.started_at).getTime();
+    const tenMinAgo = Date.now() - 10 * 60 * 1000;
+    return started > tenMinAgo;
+  };
+
   const initialLatestRun = latestRuns.data?.[0] ?? null;
-  const shouldPoll = initialLatestRun?.status === 'running';
+  const shouldPoll = isActuallyRunning(initialLatestRun);
 
   const polled = useWikiSyncRunsPolling(shouldPoll);
   const runs = shouldPoll ? (polled.data ?? latestRuns.data ?? []) : (latestRuns.data ?? []);
   const isLoading = latestRuns.isLoading;
 
   const latestRun = runs[0] ?? null;
-  const isRunning = latestRun?.status === 'running';
-  const isFailed = latestRun?.status === 'failed';
+  const isRunning = isActuallyRunning(latestRun);
+  const isFailed = latestRun?.status === 'failed' || (latestRun?.status === 'running' && !isRunning);
   const isLatestRunning = isRunning;
 
   if (isLoading) {
