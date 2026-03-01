@@ -12,23 +12,21 @@ export function KBIntelligenceButton({ isOpen, onClick }: KBIntelligenceButtonPr
       <button
         onClick={onClick}
         style={{
+          position: 'relative',
           display: 'inline-flex',
           alignItems: 'center',
-          gap: 6,
+          gap: 7,
           height: 32,
-          padding: '0 14px',
+          padding: '0 14px 0 12px',
           borderRadius: 20,
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: 600,
-          letterSpacing: '0.5px',
-          textTransform: 'uppercase' as const,
+          letterSpacing: '0.02em',
           border: 'none',
           cursor: 'pointer',
           transition: 'all 200ms ease',
           background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)',
           color: '#FFFFFF',
-          boxShadow: isOpen ? 'none' : undefined,
-          animation: isOpen ? 'none' : 'intelligence-pulse 3s infinite',
           transform: 'scale(1)',
           fontFamily: "'Inter', system-ui, sans-serif",
         }}
@@ -41,13 +39,27 @@ export function KBIntelligenceButton({ isOpen, onClick }: KBIntelligenceButtonPr
           e.currentTarget.style.boxShadow = '';
         }}
       >
-        KB
+        <Sparkles size={14} strokeWidth={2} />
+        <span>Knowledge Assist</span>
+        {/* Green pulse dot */}
+        {!isOpen && (
+          <span style={{
+            position: 'absolute',
+            top: 4,
+            right: 4,
+            width: 6,
+            height: 6,
+            borderRadius: '50%',
+            background: '#16A34A',
+            animation: 'ka-btn-pulse 2s infinite',
+          }} />
+        )}
       </button>
       <style>{`
-        @keyframes intelligence-pulse {
-          0% { box-shadow: 0 0 0 0 rgba(37,99,235,0.4); }
-          70% { box-shadow: 0 0 0 8px rgba(37,99,235,0); }
-          100% { box-shadow: 0 0 0 0 rgba(37,99,235,0); }
+        @keyframes ka-btn-pulse {
+          0% { box-shadow: 0 0 0 0 rgba(22,163,74,0.5); }
+          70% { box-shadow: 0 0 0 6px rgba(22,163,74,0); }
+          100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); }
         }
       `}</style>
     </>
