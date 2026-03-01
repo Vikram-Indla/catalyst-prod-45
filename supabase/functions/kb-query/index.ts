@@ -279,9 +279,10 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
   const personPatterns = [
     /(?:what|who).*(?:is|are)\s+(\w+)\s+(?:busy|working|doing|assigned|responsible)/i,
     /(?:what|who).*(?:is|are)\s+(\w+)\s+(?:current|recent|latest)/i,
-    /(\w+)['']?s?\s+(?:tasks?|work|assignments?|tickets?|issues?|workload)/i,
+    /(\w+)[''\u2019]?s?\s+(?:tasks?|work|assignments?|tickets?|issues?|items?|workload|open\s+items?)/i,
     /(?:assigned to|owned by|responsible)\s+(\w+)/i,
     /(?:who is|tell me about)\s+(\w+)/i,
+    /(?:what is|what's)\s+(\w+)\s+(?:working|doing|on)/i,
   ];
 
   let personName: string | null = null;
