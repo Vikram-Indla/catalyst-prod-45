@@ -923,10 +923,11 @@ serve(async (req) => {
     const { data: cached } = await sb.rpc("kb_cache_hit", { p_query_hash: qh });
     if (cached) {
       const ms = Math.round(performance.now() - t0);
-      sb.rpc("kb_log_query", { p_user_id: user_id, p_user_name: user_name, p_user_role: user_role,
+      const logResult = await sb.rpc("kb_log_query", { p_user_id: user_id, p_user_name: user_name, p_user_role: user_role,
         p_query_text: query, p_language: language, p_input_method: input_method,
         p_was_answered: true, p_response_time_ms: ms, p_cache_hit: true,
-        p_matched_category: cached.category, p_confidence_score: cached.confidence || 1 }).then(() => {});
+        p_matched_category: cached.category, p_confidence_score: cached.confidence || 1 });
+      if (logResult.error) console.error("kb_log_query (cache) error:", logResult.error);
       return new Response(JSON.stringify({ ...cached, _meta: { source: "cache", response_time_ms: ms, cache_hit: true } }),
         { headers: { ...cors, "Content-Type": "application/json" } });
     }
@@ -1021,17 +1022,20 @@ serve(async (req) => {
       confidence: gen.confidence, confidence_level: gen.level,
       evidence_used: gen.used, has_conflicts: ev.conflicts, has_stale_data: ev.stale, references: refs };
 
-    // S8: Cache + Log
-    sb.from("kb_cache").upsert({ query_hash: qh, query_text: query,
-      response_json: resp, language, ttl_hours: 24 }).then(() => {});
+    // S8: Cache + Log — await to prevent premature runtime termination
+    const [cacheRes, logRes] = await Promise.allSettled([
+      sb.from("kb_cache").upsert({ query_hash: qh, query_text: query,
+        response_json: resp, language, ttl_hours: 24 }),
+      sb.rpc("kb_log_query", { p_user_id: user_id, p_user_name: user_name, p_user_role: user_role,
+        p_query_text: query, p_language: language, p_input_method: input_method,
+        p_was_answered: true, p_response_time_ms: ms, p_cache_hit: false,
+        p_matched_category: resp.category, p_confidence_score: gen.confidence }),
+    ]);
+    if (logRes.status === "rejected") console.error("kb_log_query failed:", logRes.reason);
+    else if (logRes.status === "fulfilled" && logRes.value?.error) console.error("kb_log_query error:", logRes.value.error);
 
-    sb.rpc("kb_log_query", { p_user_id: user_id, p_user_name: user_name, p_user_role: user_role,
-      p_query_text: query, p_language: language, p_input_method: input_method,
-      p_was_answered: true, p_response_time_ms: ms, p_cache_hit: false,
-      p_matched_category: resp.category, p_confidence_score: gen.confidence }).then(() => {});
-
-    // Extended trace (best-effort)
-    sb.from("kb_query_log").update({
+    // Extended trace (best-effort, awaited)
+    await sb.from("kb_query_log").update({
       query_rewrites: rewrites,
       retrieved_chunk_ids: chunks.slice(0, 30).map((c: any) => c.id),
       reranked_chunk_ids: ranked.map((c: any) => c.id),
@@ -1039,7 +1043,7 @@ serve(async (req) => {
       evidence_pack: ev.text.substring(0, 2000),
       retrieval_method: "hybrid_v2",
       hallucination_flag: gen.confidence < P.CONF_REFUSE,
-    }).eq("query_text", query).order("created_at", { ascending: false }).limit(1).then(() => {});
+    }).eq("query_text", query).order("created_at", { ascending: false }).limit(1);
 
     return new Response(JSON.stringify({ ...resp, _meta: {
       source: "hybrid_rag_v2", response_time_ms: ms, cache_hit: false,
