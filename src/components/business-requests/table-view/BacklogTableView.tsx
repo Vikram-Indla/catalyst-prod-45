@@ -656,7 +656,22 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
         onClear={clearSelection}
         onAssignOwner={() => toast.info('Assign Owner feature coming soon')}
         onSetQuarter={() => toast.info('Set Quarter feature coming soon')}
-        onApprove={() => toast.info('Approve feature coming soon')}
+        onStatusUpdate={async (status: string) => {
+          const ids = Array.from(selectedIds);
+          try {
+            const { error } = await (supabase as any)
+              .from('business_requests')
+              .update({ process_step: status, updated_at: new Date().toISOString() })
+              .in('id', ids);
+            if (error) throw error;
+            toast.success(`Updated ${ids.length} item${ids.length > 1 ? 's' : ''} to ${status.replace(/_/g, ' ')}`);
+            clearSelection();
+            queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+          } catch (err) {
+            console.error('Bulk status update failed:', err);
+            toast.error('Failed to update status');
+          }
+        }}
         onDelete={() => setDeleteDialogOpen(true)}
       />
 
