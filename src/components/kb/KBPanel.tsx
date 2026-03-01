@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { X, AlertCircle, RefreshCw } from 'lucide-react';
+import { X, AlertCircle, RefreshCw, MessageSquarePlus } from 'lucide-react';
 import { useKBQuery } from '@/hooks/useKnowledgeBase';
 import { useAuth } from '@/hooks/useAuth';
 import { KBResponseRenderer } from './KBResponseRenderer';
@@ -144,6 +144,12 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
     setMessages((prev) => prev.map((m) => (m.id === msgId ? { ...m, feedbackGiven: true } : m)));
   }, [sendFeedback]);
 
+  const handleClearChat = useCallback(() => {
+    setMessages([]);
+    setInput('');
+    reset();
+  }, [reset]);
+
   return (
     <>
       {/* Overlay */}
@@ -185,7 +191,22 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2563EB', animation: 'kb-status-pulse 3s infinite' }} />
             <span style={{ fontSize: 15, fontWeight: 700, color: '#18181B', letterSpacing: '-0.3px' }}>Intelligence</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            {messages.length > 0 && (
+              <button
+                onClick={handleClearChat}
+                title="New conversation"
+                style={{
+                  width: 32, height: 32, borderRadius: 8, border: 'none', background: 'transparent',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'background 150ms',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#F4F4F5'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+              >
+                <MessageSquarePlus size={16} color="#71717A" />
+              </button>
+            )}
             <button
               onClick={onClose}
               style={{
