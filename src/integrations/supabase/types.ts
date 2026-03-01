@@ -57901,6 +57901,457 @@ export type Database = {
           },
         ]
       }
+      wiki_bookmarks: {
+        Row: {
+          created_at: string | null
+          id: string
+          page_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          page_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          page_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wiki_bookmarks_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wiki_categories: {
+        Row: {
+          category_code: string
+          created_at: string | null
+          description: string | null
+          description_ar: string | null
+          domain_id: string | null
+          id: string
+          level: number | null
+          name: string
+          name_ar: string
+          parent_id: string | null
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          category_code: string
+          created_at?: string | null
+          description?: string | null
+          description_ar?: string | null
+          domain_id?: string | null
+          id?: string
+          level?: number | null
+          name: string
+          name_ar: string
+          parent_id?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          category_code?: string
+          created_at?: string | null
+          description?: string | null
+          description_ar?: string | null
+          domain_id?: string | null
+          id?: string
+          level?: number | null
+          name?: string
+          name_ar?: string
+          parent_id?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wiki_categories_domain_id_fkey"
+            columns: ["domain_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_domain_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_categories_domain_id_fkey"
+            columns: ["domain_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_domains"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wiki_cross_references: {
+        Row: {
+          created_at: string | null
+          id: string
+          link_type: string | null
+          source_page_id: string | null
+          target_page_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          link_type?: string | null
+          source_page_id?: string | null
+          target_page_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          link_type?: string | null
+          source_page_id?: string | null
+          target_page_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wiki_cross_references_source_page_id_fkey"
+            columns: ["source_page_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_pages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "wiki_cross_references_target_page_id_fkey"
+            columns: ["target_page_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wiki_documents: {
+        Row: {
+          category_id: string | null
+          chunks_generated: number | null
+          content_hash: string | null
+          created_at: string | null
+          doc_type: string
+          domain_code: string
+          error_message: string | null
+          file_path: string
+          file_size: number | null
+          filename: string
+          id: string
+          language: string | null
+          linked_epic: string | null
+          mime_type: string | null
+          original_filename: string
+          pages_extracted: number | null
+          purpose: string | null
+          status: string | null
+          updated_at: string | null
+          uploaded_by: string | null
+          version: string | null
+          words_extracted: number | null
+        }
+        Insert: {
+          category_id?: string | null
+          chunks_generated?: number | null
+          content_hash?: string | null
+          created_at?: string | null
+          doc_type: string
+          domain_code: string
+          error_message?: string | null
+          file_path: string
+          file_size?: number | null
+          filename: string
+          id?: string
+          language?: string | null
+          linked_epic?: string | null
+          mime_type?: string | null
+          original_filename: string
+          pages_extracted?: number | null
+          purpose?: string | null
+          status?: string | null
+          updated_at?: string | null
+          uploaded_by?: string | null
+          version?: string | null
+          words_extracted?: number | null
+        }
+        Update: {
+          category_id?: string | null
+          chunks_generated?: number | null
+          content_hash?: string | null
+          created_at?: string | null
+          doc_type?: string
+          domain_code?: string
+          error_message?: string | null
+          file_path?: string
+          file_size?: number | null
+          filename?: string
+          id?: string
+          language?: string | null
+          linked_epic?: string | null
+          mime_type?: string | null
+          original_filename?: string
+          pages_extracted?: number | null
+          purpose?: string | null
+          status?: string | null
+          updated_at?: string | null
+          uploaded_by?: string | null
+          version?: string | null
+          words_extracted?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wiki_documents_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wiki_domains: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          description_ar: string | null
+          domain_code: string
+          icon: string | null
+          id: string
+          name: string
+          name_ar: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          description_ar?: string | null
+          domain_code: string
+          icon?: string | null
+          id?: string
+          name: string
+          name_ar: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          description_ar?: string | null
+          domain_code?: string
+          icon?: string | null
+          id?: string
+          name?: string
+          name_ar?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      wiki_pages: {
+        Row: {
+          ai_confidence: number | null
+          category_id: string | null
+          created_at: string | null
+          created_by: string | null
+          domain_code: string
+          id: string
+          infobox: Json | null
+          last_generated: string | null
+          last_jira_sync: string | null
+          lead_content: string | null
+          lead_content_ar: string | null
+          slug: string
+          source_coverage: number | null
+          status: string | null
+          title: string
+          title_ar: string | null
+          updated_at: string | null
+          updated_by: string | null
+          version: number | null
+        }
+        Insert: {
+          ai_confidence?: number | null
+          category_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          domain_code: string
+          id?: string
+          infobox?: Json | null
+          last_generated?: string | null
+          last_jira_sync?: string | null
+          lead_content?: string | null
+          lead_content_ar?: string | null
+          slug: string
+          source_coverage?: number | null
+          status?: string | null
+          title: string
+          title_ar?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+          version?: number | null
+        }
+        Update: {
+          ai_confidence?: number | null
+          category_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          domain_code?: string
+          id?: string
+          infobox?: Json | null
+          last_generated?: string | null
+          last_jira_sync?: string | null
+          lead_content?: string | null
+          lead_content_ar?: string | null
+          slug?: string
+          source_coverage?: number | null
+          status?: string | null
+          title?: string
+          title_ar?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+          version?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wiki_pages_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wiki_read_log: {
+        Row: {
+          id: string
+          page_id: string | null
+          read_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          id?: string
+          page_id?: string | null
+          read_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          id?: string
+          page_id?: string | null
+          read_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wiki_read_log_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wiki_references: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          page_id: string | null
+          ref_number: number
+          source_key: string | null
+          source_type: string | null
+          url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          page_id?: string | null
+          ref_number: number
+          source_key?: string | null
+          source_type?: string | null
+          url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          page_id?: string | null
+          ref_number?: number
+          source_key?: string | null
+          source_type?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wiki_references_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wiki_sections: {
+        Row: {
+          content: string | null
+          content_ar: string | null
+          created_at: string | null
+          id: string
+          is_live_data: boolean | null
+          page_id: string | null
+          section_number: number
+          section_type: string | null
+          sort_order: number | null
+          title: string
+          title_ar: string | null
+        }
+        Insert: {
+          content?: string | null
+          content_ar?: string | null
+          created_at?: string | null
+          id?: string
+          is_live_data?: boolean | null
+          page_id?: string | null
+          section_number: number
+          section_type?: string | null
+          sort_order?: number | null
+          title: string
+          title_ar?: string | null
+        }
+        Update: {
+          content?: string | null
+          content_ar?: string | null
+          created_at?: string | null
+          id?: string
+          is_live_data?: boolean | null
+          page_id?: string | null
+          section_number?: number
+          section_type?: string | null
+          sort_order?: number | null
+          title?: string
+          title_ar?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wiki_sections_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "wiki_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       work_item_activity: {
         Row: {
           activity_type: string
@@ -64776,6 +65227,22 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      wiki_domain_stats: {
+        Row: {
+          article_count: number | null
+          description: string | null
+          description_ar: string | null
+          document_count: number | null
+          domain_code: string | null
+          icon: string | null
+          id: string | null
+          last_updated: string | null
+          name: string | null
+          name_ar: string | null
+          sort_order: number | null
+        }
+        Relationships: []
       }
     }
     Functions: {
