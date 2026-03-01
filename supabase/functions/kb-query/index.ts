@@ -103,71 +103,111 @@ async function tryLiveQuery(sb: any, query: string, lang: string): Promise<LiveR
   }
 
   if (personName) {
-    // Search profiles for this person
+    // Search resource_inventory FIRST for professional role & department (source of truth)
+    let resourceInfo: any = null;
+    try {
+      const { data: resources } = await sb
+        .from('resource_inventory')
+        .select('name, department_name, default_capacity_percent, role_name, vendor_name, profile_id')
+        .or(`name.ilike.%${personName}%`)
+        .limit(1);
+      if (resources && resources.length > 0) resourceInfo = resources[0];
+    } catch { /* table might not be accessible */ }
+
+    // Also search profiles for the person ID
     const { data: profiles } = await sb
       .from('profiles')
-      .select('id, full_name, role, avatar_url')
+      .select('id, full_name, avatar_url')
       .or(`full_name.ilike.%${personName}%`)
       .limit(3);
 
-    if (profiles && profiles.length > 0) {
-      const person = profiles[0];
-      const parts: string[] = [];
-      parts.push(`**${person.full_name}** — ${person.role || 'Team Member'}`);
+    if ((profiles && profiles.length > 0) || resourceInfo) {
+      const person = profiles?.[0];
+      const displayName = resourceInfo?.name || person?.full_name || personName;
+      const roleName = resourceInfo?.role_name || 'Team Member';
+      const department = resourceInfo?.department_name || '';
+      const capacity = resourceInfo?.default_capacity_percent;
+      const vendor = resourceInfo?.vendor_name;
 
-      // Get their assigned issues/tickets from ph_issues
+      const parts: string[] = [];
+      // Header: Name — Role
+      parts.push(`**${displayName}** — ${roleName}`);
+      // Department right after name
+      if (department) parts.push(`📁 ${department}${capacity != null ? ` · Capacity: ${capacity}%` : ''}${vendor ? ` · Vendor: ${vendor}` : ''}`);
+
+      // Get ALL assigned issues/tickets — no artificial limit
       const { data: issues } = await sb
         .from('ph_issues')
-        .select('issue_key, summary, status, priority, issue_type, jira_updated_at')
+        .select('issue_key, summary, status, priority, issue_type, jira_updated_at, project_name, project_key')
         .or(`assignee_display_name.ilike.%${personName}%`)
         .order('jira_updated_at', { ascending: false })
-        .limit(10);
+        .limit(50);
 
       if (issues && issues.length > 0) {
         const active = issues.filter((i: any) => !['Done', 'Closed', 'Resolved'].includes(i.status));
         const completed = issues.filter((i: any) => ['Done', 'Closed', 'Resolved'].includes(i.status));
 
+        // Helper: calculate hours sitting with person
+        const calcHours = (updatedAt: string): string => {
+          const diffMs = Date.now() - new Date(updatedAt).getTime();
+          const hours = Math.floor(diffMs / 3600000);
+          if (hours < 1) return '<1h';
+          if (hours < 24) return `${hours}h`;
+          const days = Math.floor(hours / 24);
+          return `${days}d ${hours % 24}h`;
+        };
+
+        // Group active items by project
         if (active.length > 0) {
-          parts.push('\n**Current Work**');
-          for (const i of active.slice(0, 5)) {
-            parts.push(`- \`${i.issue_key}\` ${i.summary} — *${i.status}* (${i.priority || 'Normal'})`);
+          parts.push('\n---\n#### CURRENT WORK');
+
+          const byProject: Record<string, any[]> = {};
+          for (const i of active) {
+            const proj = i.project_name || i.project_key || 'Unknown Project';
+            if (!byProject[proj]) byProject[proj] = [];
+            byProject[proj].push(i);
           }
-          if (active.length > 5) parts.push(`- ...and ${active.length - 5} more active items`);
+
+          for (const [projectName, items] of Object.entries(byProject)) {
+            parts.push(`\n**${projectName}**`);
+            for (const i of items) {
+              const sitting = calcHours(i.jira_updated_at);
+              parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.status}* | ⏱ ${sitting} |`);
+            }
+          }
+          parts.push(`\n**Total Active:** ${active.length} items`);
         }
 
+        // Group completed items by project
         if (completed.length > 0) {
-          parts.push(`\n**Recently Completed:** ${completed.length} items`);
-          for (const i of completed.slice(0, 3)) {
-            parts.push(`- \`${i.issue_key}\` ${i.summary}`);
+          parts.push('\n---\n#### RECENTLY COMPLETED');
+
+          const byProject: Record<string, any[]> = {};
+          for (const i of completed) {
+            const proj = i.project_name || i.project_key || 'Unknown Project';
+            if (!byProject[proj]) byProject[proj] = [];
+            byProject[proj].push(i);
           }
+
+          for (const [projectName, items] of Object.entries(byProject)) {
+            parts.push(`\n**${projectName}**`);
+            for (const i of items) {
+              parts.push(`| \`${i.issue_key}\` | ${i.summary} | ✅ ${i.status} |`);
+            }
+          }
+          parts.push(`\n**Total Completed:** ${completed.length} items`);
         }
 
-        parts.push(`\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}*`);
+        parts.push(`\n*Data as of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}*`);
       } else {
-        parts.push('\nNo active tickets found assigned to this person.');
+        parts.push('\nNo tickets found assigned to this person.');
       }
-
-      // Also check resource_inventory
-      try {
-        const { data: resources } = await sb
-          .from('resource_inventory')
-          .select('name, department_name, default_capacity_percent, role_name, vendor_name')
-          .or(`name.ilike.%${personName}%`)
-          .limit(1);
-        if (resources && resources.length > 0) {
-          const r = resources[0];
-          if (r.department_name) parts.push(`\n**Department:** ${r.department_name}`);
-          if (r.role_name) parts.push(`**Role:** ${r.role_name}`);
-          if (r.default_capacity_percent != null) parts.push(`**Capacity:** ${r.default_capacity_percent}%`);
-          if (r.vendor_name) parts.push(`**Vendor:** ${r.vendor_name}`);
-        }
-      } catch { /* table might not be accessible */ }
 
       return {
         found: true,
         answer: parts.join('\n'),
-        confidence: 0.85,
-        sources: ['profiles', 'ph_issues', 'resource_inventory'],
+        confidence: 0.90,
+        sources: ['resource_inventory', 'ph_issues'],
       };
     }
   }
