@@ -4,19 +4,16 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useWikiDocuments, useReembedDocument, useDeleteDocument } from '@/hooks/useWikiAdminData';
 import { SkeletonBlock } from '@/components/wiki/WikiTokens';
 import { Upload, Download, Trash2, RefreshCw, Eye } from 'lucide-react';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
-
-const fromAny = (t: string) => (supabase as any).from(t);
 
 export function WikiAdminSourcesTab() {
   const [subTab, setSubTab] = useState<'jira' | 'documents'>('documents');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      {/* Sub-tabs */}
       <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))' }}>
         {(['documents', 'jira'] as const).map(t => (
           <button key={t} onClick={() => setSubTab(t)} style={{
@@ -35,24 +32,9 @@ export function WikiAdminSourcesTab() {
 }
 
 function DocumentsTable() {
-  const { data: docs, isLoading } = useQuery({
-    queryKey: ['wiki-admin-documents'],
-    queryFn: async () => {
-      const { data, error } = await fromAny('wiki_documents')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(100);
-      if (error) throw error;
-      return data as any[];
-    },
-    staleTime: 60_000,
-  });
-
-  const handleDelete = async (id: string) => {
-    const { error } = await fromAny('wiki_documents').delete().eq('id', id);
-    if (error) toast.error('Delete failed');
-    else toast.success('Document deleted');
-  };
+  const { data: docs, isLoading } = useWikiDocuments();
+  const reembed = useReembedDocument();
+  const deleteMut = useDeleteDocument();
 
   if (isLoading) return <div>{Array.from({ length: 4 }).map((_, i) => <SkeletonBlock key={i} height={36} style={{ marginBottom: 4 }} />)}</div>;
 
@@ -80,9 +62,8 @@ function DocumentsTable() {
               <td style={{ padding: '8px 12px' }}><DocStatusLoz status={d.status} /></td>
               <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{d.created_at ? format(new Date(d.created_at), 'MMM d') : '—'}</td>
               <td style={{ padding: '8px 12px', display: 'flex', gap: 4 }}>
-                <SmBtn icon={<Eye />} title="View" onClick={() => {}} />
-                <SmBtn icon={<RefreshCw />} title="Re-embed" onClick={() => {}} />
-                <SmBtn icon={<Trash2 />} title="Delete" onClick={() => handleDelete(d.id)} />
+                <SmBtn icon={<RefreshCw />} title="Re-embed" onClick={() => reembed.mutate(d.id)} />
+                <SmBtn icon={<Trash2 />} title="Delete" onClick={() => deleteMut.mutate(d.id)} />
               </td>
             </tr>
           ))}
@@ -149,7 +130,11 @@ function DocStatusLoz({ status }: { status: string }) {
     complete: { bg: '#E3FCEF', color: '#006644' },
     uploaded: { bg: '#DEEBFF', color: '#0747A6' },
     processing: { bg: '#DEEBFF', color: '#0747A6' },
+    parsing: { bg: '#DEEBFF', color: '#0747A6' },
+    chunking: { bg: '#DEEBFF', color: '#0747A6' },
+    embedding: { bg: '#DEEBFF', color: '#0747A6' },
     failed: { bg: '#DFE1E6', color: '#44546F' },
+    deleted: { bg: '#DFE1E6', color: '#44546F' },
   };
   const s = map[status] ?? map.failed;
   return <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 3, background: s.bg, color: s.color, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{status}</span>;
