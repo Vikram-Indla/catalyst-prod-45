@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { FolderOpen, Loader2 } from 'lucide-react';
 import { CardHeader, V12Table, Row, KeyCell, Cell, Loz, ScopeBar, ExtendLink, F } from './KAResponseShared';
-import { useMostActiveProject, formatTimeAgo } from './useKAData';
+import { useMostActiveProject, useLoadAllItems, formatTimeAgo, type KAIssue } from './useKAData';
+import { supabase } from '@/integrations/supabase/client';
+
+const FIELDS = 'issue_key, summary, status, status_category, priority, issue_type, project_key, project_name, assignee_display_name, reporter_display_name, jira_created_at, jira_updated_at';
 
 function MiniStat({ value, label, color }: { value: string; label: string; color: string }) {
   return (
@@ -19,8 +22,28 @@ function MiniStat({ value, label, color }: { value: string; label: string; color
 export function MostActiveProjectResponse({ onItemClick }: { onItemClick?: (key: string) => void }) {
   const { data, stats, loading } = useMostActiveProject();
 
+  const fetchAll = useCallback(async () => {
+    if (!stats.projectKey) return [];
+    const weekStart = new Date();
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    weekStart.setHours(0, 0, 0, 0);
+    const { data: items } = await supabase
+      .from('ph_issues')
+      .select(FIELDS)
+      .is('jira_removed_at', null)
+      .eq('project_key', stats.projectKey)
+      .gte('jira_updated_at', weekStart.toISOString())
+      .order('jira_updated_at', { ascending: false })
+      .limit(100);
+    return (items as KAIssue[]) || [];
+  }, [stats.projectKey]);
+
+  const { data: allData, loading: loadingAll, loaded: allLoaded, loadAll } = useLoadAllItems(fetchAll);
+
   if (loading) return <div style={{ display: 'flex', justifyContent: 'center', padding: 32 }}><Loader2 size={20} className="animate-spin" color="#2563EB" /></div>;
   if (!data.length) return <div style={{ padding: 24, color: '#64748B', fontSize: 13, textAlign: 'center' }}>No project activity found this week.</div>;
+
+  const displayData = allLoaded ? allData : data;
 
   return (
     <div>
@@ -38,7 +61,7 @@ export function MostActiveProjectResponse({ onItemClick }: { onItemClick?: (key:
         headers={['KEY', 'TITLE', 'STATUS', 'ASSIGNEE', 'WHEN']}
         widths={['90px', 'auto', '120px', '120px', '80px']}
       >
-        {data.map(item => (
+        {displayData.map(item => (
           <Row key={item.issue_key} onClick={() => onItemClick?.(item.issue_key)}>
             <KeyCell value={item.issue_key} />
             <Cell>{item.summary}</Cell>
@@ -48,8 +71,16 @@ export function MostActiveProjectResponse({ onItemClick }: { onItemClick?: (key:
           </Row>
         ))}
       </V12Table>
-      <ScopeBar showing={data.length} total={stats.totalUpdated} label="Activity this week" />
-      <ExtendLink main={`Show all ${stats.totalUpdated} updates this week`} hint="" />
+      <ScopeBar showing={displayData.length} total={stats.totalUpdated} label="Activity this week" />
+      {!allLoaded && stats.totalUpdated > data.length && (
+        <ExtendLink main={`Show all ${stats.totalUpdated} updates this week`} hint="" onClick={loadAll} loading={loadingAll} />
+      )}
+      {loadingAll && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px' }}>
+          <Loader2 size={14} className="animate-spin" color="#2563EB" />
+          <span style={{ fontSize: 12, color: '#64748B', fontFamily: F.inter }}>Loading…</span>
+        </div>
+      )}
     </div>
   );
 }

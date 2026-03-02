@@ -456,3 +456,29 @@ export function useEarlierStories() {
 
   return { data, loading, loaded, loadEarlier };
 }
+
+/**
+ * Generic "load all / load more" hook.
+ * Accepts a fetcher function that returns items beyond initial view.
+ */
+export function useLoadAllItems(fetcher: () => Promise<KAIssue[]>) {
+  const [data, setData] = useState<KAIssue[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  const loadAll = useCallback(async () => {
+    if (loading || loaded) return;
+    setLoading(true);
+    try {
+      const items = await fetcher();
+      setData(items);
+      setLoaded(true);
+    } catch {
+      // silent
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, loaded, fetcher]);
+
+  return { data, loading, loaded, loadAll };
+}
