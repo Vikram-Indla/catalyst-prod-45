@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Search, Upload, Zap, Sparkles, MessageCircle, FileText, FileDown, Video,
-  ShieldCheck, ThumbsUp, GitBranch, HelpCircle, Plus, Bell, ArrowRight,
+  Search, Upload, Zap, Sparkles, FileText, FileDown, Video,
+  ShieldCheck, ThumbsUp, GitBranch, HelpCircle, Plus, ArrowRight,
   Share2, BookOpen, ChevronRight, CheckCircle2, Star, GraduationCap,
   Factory, Ship, FlaskConical, Leaf, Landmark, Bot, HardHat, Globe, Pickaxe,
 } from 'lucide-react';
@@ -139,7 +139,7 @@ export default function WikiHomePage() {
     { label: 'All Domains', icon: <Globe size={12} /> },
     { label: 'Articles', icon: <FileText size={12} /> },
     { label: 'PDFs', icon: <FileDown size={12} /> },
-    { label: 'Videos', icon: <Video size={12} /> },
+    
     { label: 'Verified Only', icon: <ShieldCheck size={12} /> },
   ];
 
@@ -255,11 +255,6 @@ export default function WikiHomePage() {
                 border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF', color: '#334155',
                 display: 'flex', alignItems: 'center', gap: 6,
               }}><Zap size={14} /> What's New</button>
-              <button onClick={() => toast.info('AI Assistant coming soon')} style={{
-                fontSize: 12, fontWeight: 650, padding: '8px 16px', borderRadius: 6, cursor: 'pointer',
-                border: '1px solid rgba(124,58,237,0.2)', background: '#F5F3FF', color: '#7C3AED',
-                display: 'flex', alignItems: 'center', gap: 6,
-              }}><Sparkles size={14} /> AI Assistant</button>
             </div>
           </div>
 
@@ -392,38 +387,6 @@ export default function WikiHomePage() {
           </div>
         )}
 
-        {/* ═══ SECTION 5: RECOMMENDED FOR YOU ═══ */}
-        <SectionHeader
-          title="Recommended for You"
-          icon={<Sparkles size={16} style={{ color: '#7C3AED' }} />}
-          iconColor="#7C3AED"
-          rightLabel="Refresh"
-          rightAction={() => {}}
-        />
-        <div style={{
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12, marginBottom: 40,
-        }}>
-          {/* TODO: Wire to AI recommendation engine */}
-          {RECOMMENDATIONS.map((r, i) => (
-            <div key={i} style={{
-              padding: 16, borderRadius: 6, background: '#FFFFFF',
-              border: '1px solid rgba(15,23,42,0.12)', borderLeft: '3px solid #7C3AED',
-              transition: 'box-shadow 120ms',
-            }}
-              onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 2px 8px rgba(124,58,237,0.08)'; }}
-              onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; }}
-            >
-              <span style={{
-                fontSize: 9, fontWeight: 700, padding: '2px 8px', borderRadius: 9999,
-                background: '#F5F3FF', color: '#7C3AED', display: 'inline-flex',
-                alignItems: 'center', gap: 3, marginBottom: 8,
-                textTransform: 'uppercase',
-              }}><Sparkles size={9} /> AI Suggestion</span>
-              <div style={{ fontSize: 13, fontWeight: 650, color: '#0F172A', marginBottom: 6 }}>{r.title}</div>
-              <div style={{ fontSize: 11, color: '#64748B' }}>{r.domain} · {r.readTime} min read · {r.reason}</div>
-            </div>
-          ))}
-        </div>
 
         {/* ═══ SECTION 6: KNOWLEDGE REQUEST CTA ═══ */}
         <div style={{
@@ -547,39 +510,8 @@ export default function WikiHomePage() {
         </div>
 
         {/* ═══ SECTION 9: SUBSCRIPTION FOOTER ═══ */}
-        <div style={{ textAlign: 'center', padding: '24px 0 8px' }}>
-          <p style={{ fontSize: 13, color: '#64748B', marginBottom: 12 }}>
-            Stay updated — subscribe to domains or tags for notifications.
-          </p>
-          <button style={{
-            fontSize: 12, fontWeight: 650, padding: '8px 20px', borderRadius: 6,
-            border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF', color: '#334155',
-            cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6,
-          }}><Bell size={14} /> Manage Subscriptions</button>
-        </div>
       </div>
 
-      {/* ═══ SECTION 10: CHAT FAB ═══ */}
-      <button
-        onClick={() => toast.info('AI Assistant coming soon')}
-        aria-label="AI Assistant"
-        style={{
-          position: 'fixed', bottom: 24, right: 24, width: 52, height: 52, borderRadius: '50%',
-          background: '#7C3AED', border: 'none', cursor: 'pointer', zIndex: 50,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 12px rgba(124,58,237,0.3)', transition: 'transform 200ms, box-shadow 200ms',
-        }}
-        onMouseEnter={e => {
-          e.currentTarget.style.transform = 'scale(1.08)';
-          e.currentTarget.style.boxShadow = '0 6px 20px rgba(124,58,237,0.4)';
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.transform = 'scale(1)';
-          e.currentTarget.style.boxShadow = '0 4px 12px rgba(124,58,237,0.3)';
-        }}
-      >
-        <MessageCircle size={22} style={{ color: '#FFFFFF' }} />
-      </button>
 
       <WikiCommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} />
       <WikiUploadWizard open={uploadOpen} onClose={() => setUploadOpen(false)} />
@@ -866,24 +798,3 @@ const ArticleRow = React.memo(({ a, navigate }: { a: any; navigate: any }) => {
 });
 ArticleRow.displayName = 'ArticleRow';
 
-/* ── Static recommendations (TODO: Wire to AI recommendation engine) ── */
-const RECOMMENDATIONS = [
-  {
-    title: 'Understanding the SIDF Loan Process',
-    domain: 'D5 · Industrial Incentives',
-    readTime: 8,
-    reason: 'Popular in your domain',
-  },
-  {
-    title: 'Chemical Import Permit Requirements 2026',
-    domain: 'D3 · Chemical Permits',
-    readTime: 5,
-    reason: 'Recently updated',
-  },
-  {
-    title: '4IR Factory Assessment Framework',
-    domain: 'D6 · Fourth Industrial Revolution',
-    readTime: 12,
-    reason: 'Trending this week',
-  },
-];
