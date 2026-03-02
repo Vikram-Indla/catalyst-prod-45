@@ -1,9 +1,12 @@
 /**
- * AllWorkEmptyState — Designed empty states for every scenario
+ * AllWorkEmptyState — Designed empty states for every scenario (CG-07: 10/10)
  */
-import { FileStack, Search, AlertCircle, Filter } from 'lucide-react';
+import { FileStack, Search, AlertCircle, Filter, MessageSquare, Clock, History, ListTree, Link2, Paperclip, Tag } from 'lucide-react';
 
-type EmptyType = 'no-items' | 'no-results' | 'error' | 'no-filters';
+type EmptyType =
+  | 'no-items' | 'no-results' | 'error' | 'no-filters'
+  | 'no-comments' | 'no-worklogs' | 'no-history'
+  | 'no-subtasks' | 'no-links' | 'no-attachments' | 'no-labels';
 
 interface Props {
   type: EmptyType;
@@ -14,80 +17,72 @@ interface Props {
   onRetry?: () => void;
 }
 
+const CONFIG: Record<EmptyType, { icon: typeof FileStack; title: string; subtitle: string; actionLabel?: string }> = {
+  'no-items': { icon: FileStack, title: 'No work items yet', subtitle: 'Create your first work item to get started', actionLabel: 'Create work item' },
+  'no-results': { icon: Search, title: 'No results found', subtitle: 'Try different keywords or remove filters', actionLabel: 'Clear all filters' },
+  'error': { icon: AlertCircle, title: 'Failed to load work items', subtitle: 'Something went wrong', actionLabel: 'Retry' },
+  'no-filters': { icon: Filter, title: 'No items match your filters', subtitle: 'Try adjusting your filter criteria', actionLabel: 'Clear all filters' },
+  'no-comments': { icon: MessageSquare, title: 'No comments yet', subtitle: 'Start the conversation' },
+  'no-worklogs': { icon: Clock, title: 'No time logged', subtitle: 'Log your first work entry' },
+  'no-history': { icon: History, title: 'No changes recorded yet', subtitle: 'Changes will appear here' },
+  'no-subtasks': { icon: ListTree, title: 'No sub-tasks', subtitle: 'Break this item into smaller tasks', actionLabel: 'Add a sub-task' },
+  'no-links': { icon: Link2, title: 'No linked work items', subtitle: 'Connect related work items', actionLabel: 'Link a work item' },
+  'no-attachments': { icon: Paperclip, title: 'No attachments', subtitle: 'Add files to this work item', actionLabel: 'Attach a file' },
+  'no-labels': { icon: Tag, title: 'No labels applied', subtitle: 'Categorize with labels' },
+};
+
 export function AllWorkEmptyState({ type, message, query, onAction, onClear, onRetry }: Props) {
+  const cfg = CONFIG[type];
+  const Icon = cfg.icon;
+  const isError = type === 'error';
+  const isSmall = ['no-comments', 'no-worklogs', 'no-history', 'no-subtasks', 'no-links', 'no-attachments', 'no-labels'].includes(type);
+
+  const title = type === 'no-results' && query ? `No results for "${query}"` : (message && isError ? cfg.title : cfg.title);
+  const subtitle = isError && message ? message : cfg.subtitle;
+
+  const actionHandler = onAction || onClear || onRetry;
+  const actionLabel = cfg.actionLabel;
+
   return (
     <div
-      className="flex flex-col items-center justify-center rounded-lg border py-16"
-      style={{ borderColor: 'rgba(11,18,14,0.14)', backgroundColor: '#fff' }}
+      className={`flex flex-col items-center justify-center rounded-lg border ${isSmall ? 'py-8' : 'py-16'}`}
+      style={{ borderColor: 'rgba(15,23,42,0.12)', backgroundColor: '#fff' }}
     >
-      {type === 'no-items' && (
-        <>
-          <FileStack className="w-10 h-10 mb-3" style={{ color: '#8c8f96' }} />
-          <p className="text-[14px] font-medium mb-1" style={{ color: '#1A1D23' }}>No work items yet</p>
-          <p className="text-[13px] mb-4" style={{ color: '#64748b' }}>Create your first work item to get started</p>
-          {onAction && (
-            <button
-              onClick={onAction}
-              className="px-4 py-2 text-[13px] font-medium rounded-md text-white"
-              style={{ backgroundColor: '#1868db' }}
-            >
-              Create work item
-            </button>
-          )}
-        </>
-      )}
-
-      {type === 'no-results' && (
-        <>
-          <Search className="w-10 h-10 mb-3" style={{ color: '#8c8f96' }} />
-          <p className="text-[14px] font-medium mb-1" style={{ color: '#1A1D23' }}>
-            No results for "{query}"
-          </p>
-          <p className="text-[13px] mb-4" style={{ color: '#64748b' }}>Try different keywords or remove filters</p>
-          {onClear && (
-            <button
-              onClick={onClear}
-              className="text-[13px] font-medium"
-              style={{ color: '#1868db' }}
-            >
-              Clear all filters
-            </button>
-          )}
-        </>
-      )}
-
-      {type === 'error' && (
-        <>
-          <AlertCircle className="w-10 h-10 mb-3" style={{ color: '#dc2626' }} />
-          <p className="text-[14px] font-medium mb-1" style={{ color: '#1A1D23' }}>Failed to load work items</p>
-          <p className="text-[13px] mb-4" style={{ color: '#64748b' }}>{message || 'Something went wrong'}</p>
-          {onRetry && (
-            <button
-              onClick={onRetry}
-              className="px-4 py-2 text-[13px] font-medium rounded-md text-white"
-              style={{ backgroundColor: '#1868db' }}
-            >
-              Retry
-            </button>
-          )}
-        </>
-      )}
-
-      {type === 'no-filters' && (
-        <>
-          <Filter className="w-10 h-10 mb-3" style={{ color: '#8c8f96' }} />
-          <p className="text-[14px] font-medium mb-1" style={{ color: '#1A1D23' }}>No items match your filters</p>
-          <p className="text-[13px] mb-4" style={{ color: '#64748b' }}>Try adjusting your filter criteria</p>
-          {onClear && (
-            <button
-              onClick={onClear}
-              className="text-[13px] font-medium"
-              style={{ color: '#1868db' }}
-            >
-              Clear all filters
-            </button>
-          )}
-        </>
+      <Icon
+        className={isSmall ? 'w-8 h-8 mb-2' : 'w-10 h-10 mb-3'}
+        style={{ color: isError ? '#DC2626' : '#71717A' }}
+        aria-hidden="true"
+      />
+      <p
+        className={`${isSmall ? 'text-[13px]' : 'text-[14px]'} font-medium mb-1`}
+        style={{ color: '#0F172A', fontFamily: 'Inter, sans-serif' }}
+      >
+        {title}
+      </p>
+      <p
+        className={`${isSmall ? 'text-[11px]' : 'text-[13px]'} ${actionHandler && actionLabel ? 'mb-4' : ''}`}
+        style={{ color: '#64748B', fontFamily: 'Inter, sans-serif' }}
+      >
+        {subtitle}
+      </p>
+      {actionHandler && actionLabel && (
+        isError || type === 'no-items' ? (
+          <button
+            onClick={actionHandler}
+            className="px-4 py-2 text-[13px] font-medium rounded-md text-white transition-colors duration-[80ms] hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
+            style={{ backgroundColor: isError ? '#DC2626' : '#2563EB' }}
+          >
+            {actionLabel}
+          </button>
+        ) : (
+          <button
+            onClick={actionHandler}
+            className="text-[13px] font-medium transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+            style={{ color: '#2563EB' }}
+          >
+            {actionLabel}
+          </button>
+        )
       )}
     </div>
   );
