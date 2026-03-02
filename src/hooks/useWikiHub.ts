@@ -204,3 +204,32 @@ export function useWikiRelatedArticles(domainCode?: string, excludeId?: string, 
     },
   });
 }
+
+/* ── Keyword Search (full-text on wiki_pages) ── */
+export function useWikiKeywordSearch(query: string, filters?: { format?: string; verifiedOnly?: boolean }) {
+  return useQuery({
+    queryKey: ['wiki-keyword-search', query, filters],
+    enabled: query.length >= 2,
+    staleTime: 15_000,
+    queryFn: async () => {
+      let q = supabase
+        .from('wiki_pages')
+        .select('id, slug, title, lead_content, domain_code, ai_confidence, read_time_minutes, verification_status, format, status, updated_at, tags, view_count')
+        .eq('status', 'published')
+        .or(`title.ilike.%${query}%,lead_content.ilike.%${query}%`)
+        .order('updated_at', { ascending: false })
+        .limit(50);
+
+      if (filters?.format && filters.format !== 'all') {
+        q = q.eq('format', filters.format);
+      }
+      if (filters?.verifiedOnly) {
+        q = q.eq('verification_status', 'verified');
+      }
+
+      const { data, error } = await q;
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+}
