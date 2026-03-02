@@ -1,11 +1,15 @@
 /**
  * WikiSidebar — /wiki sidebar using SidebarBase
- * Follows the same pattern as ProjectHubSidebar, ProductRoomSidebar, etc.
+ * Updated for Gate 4 spec with Analytics, Learning Paths, Knowledge Requests, Settings
  */
 
 import {
   Home,
   Zap,
+  BarChart3,
+  BookOpen,
+  GraduationCap,
+  HelpCircle,
   Factory,
   Ship,
   FlaskConical,
@@ -15,6 +19,8 @@ import {
   HardHat,
   Globe,
   Pickaxe,
+  Bell,
+  Settings,
 } from 'lucide-react';
 import { SidebarBase, SidebarConfig } from './SidebarBase';
 
@@ -33,6 +39,10 @@ const WIKI_SIDEBAR_CONFIG: SidebarConfig = {
       items: [
         { id: 'home', title: 'Home', path: '/wiki', icon: Home, exact: true },
         { id: 'whats-new', title: "What's New", path: '/wiki/whats-new', icon: Zap, exact: true },
+        { id: 'analytics', title: 'Analytics', path: '/wiki/analytics', icon: BarChart3, exact: true },
+        { id: 'reading-list', title: 'My Reading List', path: '/wiki/reading-list', icon: BookOpen, exact: true },
+        { id: 'learning-paths', title: 'Learning Paths', path: '/wiki/learning-paths', icon: GraduationCap, exact: true },
+        { id: 'knowledge-requests', title: 'Knowledge Requests', path: '/wiki/knowledge-requests', icon: HelpCircle, exact: true },
       ],
     },
     {
@@ -47,6 +57,13 @@ const WIKI_SIDEBAR_CONFIG: SidebarConfig = {
         { id: 'd7', title: 'Workforce & Industrial Support', path: '/wiki/category/workforce-support', icon: HardHat, exact: false },
         { id: 'd8', title: 'Senaei Platform', path: '/wiki/category/senaei-platform', icon: Globe, exact: false },
         { id: 'd9', title: 'Mining & Mineral Resources', path: '/wiki/category/mining-minerals', icon: Pickaxe, exact: false },
+      ],
+    },
+    {
+      title: 'Settings',
+      items: [
+        { id: 'subscriptions', title: 'Subscriptions', path: '/wiki/subscriptions', icon: Bell, exact: true },
+        { id: 'preferences', title: 'Preferences', path: '/wiki/preferences', icon: Settings, exact: true },
       ],
     },
   ],
