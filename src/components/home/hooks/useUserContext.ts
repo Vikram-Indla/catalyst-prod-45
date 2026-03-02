@@ -67,11 +67,12 @@ export function useUserContext() {
       // Resolve business role
       const role = await fetchBusinessRole(user.id, profile?.role || null);
 
-      // Derive project membership from ph_issues activity (last 14 days for sorting)
+      // Derive project membership from ph_issues activity — case-insensitive match
+      const nameLower = displayName.toLowerCase();
       const { data: projectData } = await supabase
         .from('ph_issues')
         .select('project_key, project_name')
-        .or(`assignee_display_name.eq.${displayName},reporter_display_name.eq.${displayName}`)
+        .or(`assignee_display_name.ilike.${nameLower},reporter_display_name.ilike.${nameLower}`)
         .is('jira_removed_at', null)
         .limit(500);
 

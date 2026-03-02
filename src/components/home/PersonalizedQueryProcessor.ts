@@ -330,7 +330,7 @@ async function fetchMyOpen(ctx: UserContext): Promise<QueryResult> {
     .from('ph_issues')
     .select(FIELDS)
     .is('jira_removed_at', null)
-    .eq('assignee_display_name', ctx.displayName)
+    .ilike('assignee_display_name', ctx.displayName)
     .not('status', 'ilike', '%done%')
     .not('status', 'ilike', '%closed%')
     .not('status', 'ilike', '%resolved%')
@@ -362,7 +362,7 @@ async function fetchMyClosed(ctx: UserContext): Promise<QueryResult> {
     .from('ph_issues')
     .select(FIELDS)
     .is('jira_removed_at', null)
-    .eq('assignee_display_name', ctx.displayName)
+    .ilike('assignee_display_name', ctx.displayName)
     .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.Done')
     .gte('jira_updated_at', weekStart)
     .order('jira_updated_at', { ascending: false })
@@ -391,7 +391,7 @@ async function fetchDueSoon(ctx: UserContext): Promise<QueryResult> {
     .from('ph_issues')
     .select(FIELDS)
     .is('jira_removed_at', null)
-    .eq('assignee_display_name', ctx.displayName)
+    .ilike('assignee_display_name', ctx.displayName)
     .not('status', 'ilike', '%done%')
     .not('status', 'ilike', '%closed%')
     .gte('due_date', today.toISOString().split('T')[0])
@@ -544,7 +544,7 @@ async function fetchProjectSummary(ctx: UserContext): Promise<QueryResult> {
       .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status_category.eq.Done')
       .gte('jira_updated_at', weekStart),
     supabase.from('ph_issues').select('*', { count: 'exact', head: true }).is('jira_removed_at', null)
-      .eq('assignee_display_name', ctx.displayName)
+      .ilike('assignee_display_name', ctx.displayName)
       .not('status', 'ilike', '%done%').not('status', 'ilike', '%closed%'),
   ]);
 

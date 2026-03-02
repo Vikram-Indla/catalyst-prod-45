@@ -34,7 +34,7 @@ export function useWeekSummary(userCtx: UserContext | undefined) {
         .from('ph_issues')
         .select('issue_type')
         .is('jira_removed_at', null)
-        .eq('assignee_display_name', userCtx.displayName)
+        .ilike('assignee_display_name', userCtx.displayName)
         .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.Done')
         .gte('jira_updated_at', weekStart);
 
@@ -78,7 +78,7 @@ export function useWeekSummary(userCtx: UserContext | undefined) {
         .from('ph_issues')
         .select('*', { count: 'exact', head: true })
         .is('jira_removed_at', null)
-        .eq('assignee_display_name', userCtx.displayName)
+        .ilike('assignee_display_name', userCtx.displayName)
         .not('status', 'ilike', '%done%')
         .not('status', 'ilike', '%closed%')
         .not('status', 'ilike', '%resolved%');

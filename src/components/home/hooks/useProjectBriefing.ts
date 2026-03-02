@@ -97,8 +97,8 @@ export function useProjectBriefing(userCtx: UserContext | undefined) {
         .map(item => {
           const cfg = getTierConfig(item.issue_type);
           const daysSince = Math.ceil((now - new Date(item.jira_updated_at || item.jira_created_at || now).getTime()) / 86400000);
-          const isAssignee = item.assignee_display_name === userCtx.displayName;
-          const isReporter = item.reporter_display_name === userCtx.displayName;
+          const isAssignee = (item.assignee_display_name || '').toLowerCase() === userCtx.displayName.toLowerCase();
+          const isReporter = (item.reporter_display_name || '').toLowerCase() === userCtx.displayName.toLowerCase();
 
           return {
             itemKey: item.issue_key,

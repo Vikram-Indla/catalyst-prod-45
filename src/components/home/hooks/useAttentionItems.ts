@@ -68,7 +68,7 @@ export function useAttentionItems(userCtx: UserContext | undefined) {
         .select(FIELDS)
         .in('project_key', userCtx.projectKeys)
         .is('jira_removed_at', null)
-        .eq('assignee_display_name', userCtx.displayName)
+        .ilike('assignee_display_name', userCtx.displayName)
         .lt('due_date', today)
         .not('status', 'ilike', '%done%')
         .not('status', 'ilike', '%closed%')
