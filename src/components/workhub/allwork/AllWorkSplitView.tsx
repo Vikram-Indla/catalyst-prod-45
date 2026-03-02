@@ -1,11 +1,13 @@
 /**
  * AllWorkSplitView — Left card list + right detail panel (V12 compliant)
+ * Now includes Sub-Tasks tab with navigation stack for nested drill-down.
  */
-import { useState, useMemo, memo } from 'react';
-import { ChevronLeft, ChevronRight, ChevronDown, MessageSquare, Clock, History, ListTree, Link2, Paperclip, Tag } from 'lucide-react';
+import { useState, useMemo, memo, Fragment } from 'react';
+import { ChevronLeft, ChevronRight, ChevronDown, MessageSquare, Clock, History, ListTree, Link2, Paperclip, Tag, ArrowLeft } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { AllWorkEmptyState } from './AllWorkEmptyState';
+import { SubTasksTab, useSubTasks } from './SubTasksTab';
 import type { AllWorkItem } from '@/types/allwork.types';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -21,6 +23,8 @@ const PRIORITY_COLORS: Record<string, string> = {
 
 const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1'];
 
+type DetailTab = 'details' | 'subtasks' | 'attachments' | 'comments' | 'history' | 'links';
+
 function formatRel(d: string | null): string {
   if (!d) return '—';
   try { return formatDistanceToNow(new Date(d), { addSuffix: true }); } catch { return '—'; }
@@ -32,16 +36,71 @@ function nameToHash(name: string): number {
 
 export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props) {
   const [sortBy, setSortBy] = useState('Created');
+  const [activeTab, setActiveTab] = useState<DetailTab>('details');
   const [activityTab, setActivityTab] = useState<'all' | 'comments' | 'history' | 'worklog'>('all');
 
-  const selectedItem = useMemo(() =>
+  // Navigation stack for nested drill-down
+  const [panelStack, setPanelStack] = useState<AllWorkItem[]>([]);
+
+  const listSelectedItem = useMemo(() =>
     items.find(i => i.issue_key === selectedItemKey) ?? items[0] ?? null
   , [items, selectedItemKey]);
 
-  const selectedIdx = items.findIndex(i => i.issue_key === (selectedItem?.issue_key));
+  // When the list selection changes, reset the stack
+  const prevListKey = useMemo(() => listSelectedItem?.issue_key, [listSelectedItem]);
 
-  const goPrev = () => { if (selectedIdx > 0) onSelectItem(items[selectedIdx - 1].issue_key); };
-  const goNext = () => { if (selectedIdx < items.length - 1) onSelectItem(items[selectedIdx + 1].issue_key); };
+  // Current item is top of stack, or the list-selected item
+  const currentItem = panelStack.length > 0 ? panelStack[panelStack.length - 1] : listSelectedItem;
+  const canGoBack = panelStack.length > 0;
+
+  // Sub-task count for the tab badge
+  const { subTasks: currentSubTasks } = useSubTasks(currentItem?.issue_key ?? null);
+  const subTaskCount = currentSubTasks.length;
+
+  const selectedIdx = items.findIndex(i => i.issue_key === listSelectedItem?.issue_key);
+
+  const goPrev = () => { if (selectedIdx > 0) { onSelectItem(items[selectedIdx - 1].issue_key); setPanelStack([]); setActiveTab('details'); } };
+  const goNext = () => { if (selectedIdx < items.length - 1) { onSelectItem(items[selectedIdx + 1].issue_key); setPanelStack([]); setActiveTab('details'); } };
+
+  const handleListSelect = (key: string) => {
+    onSelectItem(key);
+    setPanelStack([]);
+    setActiveTab('details');
+  };
+
+  const handleSubTaskClick = (subTask: AllWorkItem) => {
+    // Push onto stack — first push the list item if stack is empty
+    setPanelStack(prev => {
+      if (prev.length === 0 && listSelectedItem) {
+        return [listSelectedItem, subTask];
+      }
+      return [...prev, subTask];
+    });
+    setActiveTab('details');
+  };
+
+  const handleBack = () => {
+    setPanelStack(prev => {
+      if (prev.length <= 1) return [];
+      return prev.slice(0, -1);
+    });
+    setActiveTab('details');
+  };
+
+  const handleBreadcrumbNav = (index: number) => {
+    setPanelStack(prev => prev.slice(0, index + 1));
+    setActiveTab('details');
+  };
+
+  // Tab config
+  const TABS: { key: DetailTab; label: string; icon: React.ReactNode; count?: number }[] = [
+    { key: 'details', label: 'Details', icon: null },
+    { key: 'subtasks', label: 'Sub-Tasks', icon: <ListTree className="w-3.5 h-3.5" />, count: subTaskCount },
+    { key: 'attachments', label: 'Attachments', icon: <Paperclip className="w-3.5 h-3.5" /> },
+    { key: 'comments', label: 'Comments', icon: <MessageSquare className="w-3.5 h-3.5" /> },
+    { key: 'history', label: 'History', icon: <History className="w-3.5 h-3.5" /> },
+    { key: 'links', label: 'Links', icon: <Link2 className="w-3.5 h-3.5" /> },
+  ];
 
   return (
     <div className="flex h-full gap-0 rounded border overflow-hidden" style={{ borderColor: 'rgba(15,23,42,0.12)', borderRadius: 4 }}>
@@ -58,12 +117,12 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
 
         <div className="flex-1 overflow-y-auto">
           {items.map((item) => {
-            const isActive = item.issue_key === selectedItem?.issue_key;
+            const isActive = item.issue_key === listSelectedItem?.issue_key;
             const hash = nameToHash(item.assignee_display_name || '');
             return (
               <div
                 key={item.issue_key}
-                onClick={() => onSelectItem(item.issue_key)}
+                onClick={() => handleListSelect(item.issue_key)}
                 className="px-3 py-2.5 cursor-pointer transition-colors duration-[80ms]"
                 style={{
                   borderBottom: '1px solid rgba(15,23,42,0.06)',
@@ -104,204 +163,311 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
       </div>
 
       {/* Detail panel */}
-      {selectedItem ? (
+      {currentItem ? (
         <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: '#fff' }}>
           {/* Detail header */}
           <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: '1px solid rgba(15,23,42,0.08)' }}>
             <div className="flex items-center gap-2">
-              <JiraIssueTypeIcon type={selectedItem.issue_type} size={16} />
+              {/* Back button */}
+              {canGoBack && (
+                <button
+                  onClick={handleBack}
+                  className="flex items-center gap-1 px-2 py-1 rounded-md transition-colors duration-[80ms] hover:bg-[rgba(15,23,42,0.04)] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+                  style={{ color: '#3F3F46', fontSize: 13, fontWeight: 500, fontFamily: 'Inter, sans-serif', border: 'none', background: 'none', cursor: 'pointer' }}
+                  aria-label="Go back"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Back</span>
+                </button>
+              )}
+              <JiraIssueTypeIcon type={currentItem.issue_type} size={16} />
               <span className="text-[13px] font-semibold" style={{ fontFamily: "'JetBrains Mono', monospace", color: '#2563EB' }}>
-                {selectedItem.issue_key}
+                {currentItem.issue_key}
               </span>
-              {selectedItem.parent_key && (
+              {currentItem.parent_key && !canGoBack && (
                 <>
                   <span className="text-[12px]" style={{ color: '#71717A' }}>in</span>
-                  <span className="text-[12px]" style={{ color: '#2563EB' }}>{selectedItem.parent_key}</span>
+                  <span className="text-[12px]" style={{ color: '#2563EB' }}>{currentItem.parent_key}</span>
                 </>
               )}
             </div>
             <div className="flex items-center gap-1">
-              <button onClick={goPrev} disabled={selectedIdx <= 0} className="p-1 rounded hover:bg-[rgba(15,23,42,0.04)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Previous item">
-                <ChevronLeft className="w-4 h-4" style={{ color: '#6b6e76' }} />
-              </button>
-              <span className="text-[11px]" style={{ color: '#71717A', fontFamily: "'JetBrains Mono', monospace" }}>{selectedIdx + 1}/{items.length}</span>
-              <button onClick={goNext} disabled={selectedIdx >= items.length - 1} className="p-1 rounded hover:bg-[rgba(15,23,42,0.04)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Next item">
-                <ChevronRight className="w-4 h-4" style={{ color: '#6b6e76' }} />
-              </button>
+              {!canGoBack && (
+                <>
+                  <button onClick={goPrev} disabled={selectedIdx <= 0} className="p-1 rounded hover:bg-[rgba(15,23,42,0.04)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Previous item">
+                    <ChevronLeft className="w-4 h-4" style={{ color: '#6b6e76' }} />
+                  </button>
+                  <span className="text-[11px]" style={{ color: '#71717A', fontFamily: "'JetBrains Mono', monospace" }}>{selectedIdx + 1}/{items.length}</span>
+                  <button onClick={goNext} disabled={selectedIdx >= items.length - 1} className="p-1 rounded hover:bg-[rgba(15,23,42,0.04)] disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Next item">
+                    <ChevronRight className="w-4 h-4" style={{ color: '#6b6e76' }} />
+                  </button>
+                </>
+              )}
             </div>
+          </div>
+
+          {/* Breadcrumb when navigated into sub-task */}
+          {panelStack.length > 1 && (
+            <div
+              className="flex items-center gap-1.5 px-5 py-2"
+              style={{ fontSize: 12, color: '#71717A', borderBottom: '1px solid rgba(15,23,42,0.06)', backgroundColor: '#FAFBFC' }}
+            >
+              {panelStack.slice(0, -1).map((item, i) => (
+                <Fragment key={item.issue_key}>
+                  <button
+                    onClick={() => handleBreadcrumbNav(i)}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: '#2563EB', fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: 11, fontWeight: 650, padding: 0,
+                    }}
+                  >
+                    {item.issue_key}
+                  </button>
+                  <span style={{ color: '#D4D4D8' }}>/</span>
+                </Fragment>
+              ))}
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 650, color: '#09090B' }}>
+                {currentItem.issue_key}
+              </span>
+            </div>
+          )}
+
+          {/* Tabs */}
+          <div
+            className="flex items-center gap-0 px-5"
+            style={{ borderBottom: '1px solid rgba(15,23,42,0.08)' }}
+            role="tablist"
+          >
+            {TABS.map(tab => {
+              const isActive = tab.key === activeTab;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className="flex items-center gap-1.5 px-3 py-2.5 transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+                  style={{
+                    fontSize: 12, fontWeight: isActive ? 600 : 400,
+                    color: isActive ? '#1558bc' : '#6b6e76',
+                    borderBottom: isActive ? '2px solid #1558bc' : '2px solid transparent',
+                    marginBottom: -1, fontFamily: 'Inter, sans-serif',
+                    background: 'none', border: 'none', borderBottomStyle: 'solid',
+                    borderBottomWidth: 2, borderBottomColor: isActive ? '#1558bc' : 'transparent',
+                    cursor: 'pointer',
+                  }}
+                  role="tab"
+                  aria-selected={isActive}
+                >
+                  {tab.icon}
+                  {tab.label}
+                  {tab.count !== undefined && (
+                    <span
+                      style={{
+                        fontSize: 10, fontWeight: 700, minWidth: 18, textAlign: 'center',
+                        padding: '1px 5px', borderRadius: 10,
+                        backgroundColor: isActive ? 'rgba(21,88,188,0.10)' : 'rgba(15,23,42,0.06)',
+                        color: isActive ? '#1558bc' : '#71717A',
+                        fontFamily: "'JetBrains Mono', monospace",
+                      }}
+                    >
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           <div className="flex flex-1 overflow-hidden">
             {/* Main detail content */}
             <div className="flex-1 overflow-y-auto px-5 py-4">
-              <h2 className="text-[20px] font-semibold mb-4" style={{ color: '#0F172A', lineHeight: '28px', fontFamily: 'Inter, sans-serif' }}>
-                {selectedItem.summary}
-              </h2>
+              {/* ─── DETAILS TAB ─── */}
+              {activeTab === 'details' && (
+                <>
+                  <h2 className="text-[20px] font-semibold mb-4" style={{ color: '#0F172A', lineHeight: '28px', fontFamily: 'Inter, sans-serif' }}>
+                    {currentItem.summary}
+                  </h2>
 
-              {/* Key details */}
-              <div className="mb-6">
-                <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: '#6b6e76', letterSpacing: '0.05em', fontFamily: 'Inter, sans-serif' }}>
-                  Key Details
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <span className="text-[11px] block mb-1" style={{ color: '#71717A' }}>Priority</span>
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full" style={{ backgroundColor: PRIORITY_COLORS[selectedItem.priority] || '#3b82f6' }} />
-                      <span className="text-[13px]" style={{ color: '#0F172A' }}>{selectedItem.priority}</span>
+                  {/* Key details */}
+                  <div className="mb-6">
+                    <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: '#6b6e76', letterSpacing: '0.05em', fontFamily: 'Inter, sans-serif' }}>
+                      Key Details
+                    </h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <span className="text-[11px] block mb-1" style={{ color: '#71717A' }}>Priority</span>
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: PRIORITY_COLORS[currentItem.priority] || '#3b82f6' }} />
+                          <span className="text-[13px]" style={{ color: '#0F172A' }}>{currentItem.priority}</span>
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-[11px] block mb-1" style={{ color: '#71717A' }}>Status</span>
+                        <StatusLozenge status={currentItem.status} />
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <span className="text-[11px] block mb-1" style={{ color: '#71717A' }}>Status</span>
-                    <StatusLozenge status={selectedItem.status} />
+
+                  {/* Description */}
+                  <div className="mb-6">
+                    <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>
+                      Description
+                    </h3>
+                    {currentItem.description_text ? (
+                      <p className="text-[13px] leading-[20px]" style={{ color: '#44546f', fontFamily: 'Inter, sans-serif' }}>
+                        {currentItem.description_text}
+                      </p>
+                    ) : (
+                      <p className="text-[12px] italic" style={{ color: '#71717A' }}>No description provided</p>
+                    )}
                   </div>
-                </div>
-              </div>
 
-              {/* Description */}
-              <div className="mb-6">
-                <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>
-                  Description
-                </h3>
-                {selectedItem.description_text ? (
-                  <p className="text-[13px] leading-[20px]" style={{ color: '#44546f', fontFamily: 'Inter, sans-serif' }}>
-                    {selectedItem.description_text}
-                  </p>
-                ) : (
-                  <p className="text-[12px] italic" style={{ color: '#71717A' }}>No description provided</p>
-                )}
-              </div>
+                  {/* Activity section */}
+                  <div>
+                    <div className="flex items-center gap-4 mb-3" style={{ borderBottom: '1px solid rgba(15,23,42,0.08)', paddingBottom: 8 }}>
+                      {(['all', 'comments', 'history', 'worklog'] as const).map(tab => (
+                        <button
+                          key={tab}
+                          onClick={() => setActivityTab(tab)}
+                          className="text-[12px] pb-1 capitalize transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+                          style={{
+                            color: activityTab === tab ? '#1558bc' : '#6b6e76',
+                            fontWeight: activityTab === tab ? 600 : 400,
+                            borderBottom: activityTab === tab ? '2px solid #1558bc' : '2px solid transparent',
+                            fontFamily: 'Inter, sans-serif',
+                            background: 'none', border: 'none', borderBottomStyle: 'solid',
+                            borderBottomWidth: 2, borderBottomColor: activityTab === tab ? '#1558bc' : 'transparent',
+                            cursor: 'pointer',
+                          }}
+                          role="tab"
+                          aria-selected={activityTab === tab}
+                        >
+                          {tab === 'all' ? 'All' : tab === 'worklog' ? 'Work log' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+                        </button>
+                      ))}
+                    </div>
 
-              {/* Subtasks */}
-              <div className="mb-6">
-                <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>
-                  Sub-tasks
-                </h3>
-                <AllWorkEmptyState type="no-subtasks" onAction={() => {}} />
-              </div>
+                    {activityTab === 'comments' ? (
+                      <AllWorkEmptyState type="no-comments" />
+                    ) : activityTab === 'worklog' ? (
+                      <AllWorkEmptyState type="no-worklogs" />
+                    ) : activityTab === 'history' ? (
+                      <AllWorkEmptyState type="no-history" />
+                    ) : (
+                      <div className="text-center py-8">
+                        <MessageSquare className="w-8 h-8 mx-auto mb-2" style={{ color: '#71717A' }} />
+                        <p className="text-[13px]" style={{ color: '#6b6e76' }}>No activity yet</p>
+                      </div>
+                    )}
 
-              {/* Linked items */}
-              <div className="mb-6">
-                <h3 className="text-[11px] uppercase font-semibold mb-2" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>
-                  Linked Work Items
-                </h3>
+                    {/* Comment input */}
+                    <div className="flex items-start gap-2 mt-4">
+                      <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0" style={{ backgroundColor: '#4C6EF5' }}>
+                        U
+                      </div>
+                      <div className="flex-1 rounded-lg border px-3 py-2 focus-within:border-[#2563EB] transition-colors duration-[80ms]" style={{ borderColor: 'rgba(15,23,42,0.12)' }}>
+                        <input
+                          type="text"
+                          placeholder="Add a comment..."
+                          className="w-full text-[13px] border-none outline-none shadow-none bg-transparent"
+                          style={{ color: '#0F172A', fontFamily: 'Inter, sans-serif' }}
+                          aria-label="Add a comment"
+                        />
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[rgba(15,23,42,0.06)] transition-colors duration-[80ms]" style={{ backgroundColor: 'rgba(15,23,42,0.04)', color: '#6b6e76' }}>
+                            Status update...
+                          </span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[rgba(15,23,42,0.06)] transition-colors duration-[80ms]" style={{ backgroundColor: 'rgba(15,23,42,0.04)', color: '#6b6e76' }}>
+                            Thanks!
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-[10px] mt-2 ml-9" style={{ color: '#71717A' }}>
+                      <b>Pro tip:</b> press <kbd className="px-1 py-0.5 rounded text-[10px]" style={{ backgroundColor: 'rgba(15,23,42,0.04)', border: '1px solid rgba(15,23,42,0.08)' }}>M</kbd> to comment
+                    </p>
+                  </div>
+                </>
+              )}
+
+              {/* ─── SUB-TASKS TAB ─── */}
+              {activeTab === 'subtasks' && (
+                <SubTasksTab
+                  parentKey={currentItem.issue_key}
+                  onSubTaskClick={handleSubTaskClick}
+                />
+              )}
+
+              {/* ─── ATTACHMENTS TAB ─── */}
+              {activeTab === 'attachments' && (
+                <AllWorkEmptyState type="no-attachments" onAction={() => {}} />
+              )}
+
+              {/* ─── COMMENTS TAB ─── */}
+              {activeTab === 'comments' && (
+                <AllWorkEmptyState type="no-comments" />
+              )}
+
+              {/* ─── HISTORY TAB ─── */}
+              {activeTab === 'history' && (
+                <AllWorkEmptyState type="no-history" />
+              )}
+
+              {/* ─── LINKS TAB ─── */}
+              {activeTab === 'links' && (
                 <AllWorkEmptyState type="no-links" onAction={() => {}} />
-              </div>
-
-              {/* Activity section */}
-              <div>
-                <div className="flex items-center gap-4 mb-3" style={{ borderBottom: '1px solid rgba(15,23,42,0.08)', paddingBottom: 8 }}>
-                  {(['all', 'comments', 'history', 'worklog'] as const).map(tab => (
-                    <button
-                      key={tab}
-                      onClick={() => setActivityTab(tab)}
-                      className="text-[12px] pb-1 capitalize transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
-                      style={{
-                        color: activityTab === tab ? '#1558bc' : '#6b6e76',
-                        fontWeight: activityTab === tab ? 600 : 400,
-                        borderBottom: activityTab === tab ? '2px solid #1558bc' : '2px solid transparent',
-                        fontFamily: 'Inter, sans-serif',
-                      }}
-                      role="tab"
-                      aria-selected={activityTab === tab}
-                    >
-                      {tab === 'all' ? 'All' : tab === 'worklog' ? 'Work log' : tab.charAt(0).toUpperCase() + tab.slice(1)}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Activity empty states */}
-                {activityTab === 'comments' ? (
-                  <AllWorkEmptyState type="no-comments" />
-                ) : activityTab === 'worklog' ? (
-                  <AllWorkEmptyState type="no-worklogs" />
-                ) : activityTab === 'history' ? (
-                  <AllWorkEmptyState type="no-history" />
-                ) : (
-                  <div className="text-center py-8">
-                    <MessageSquare className="w-8 h-8 mx-auto mb-2" style={{ color: '#71717A' }} />
-                    <p className="text-[13px]" style={{ color: '#6b6e76' }}>No activity yet</p>
-                  </div>
-                )}
-
-                {/* Comment input */}
-                <div className="flex items-start gap-2 mt-4">
-                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold text-white shrink-0" style={{ backgroundColor: '#4C6EF5' }}>
-                    U
-                  </div>
-                  <div className="flex-1 rounded-lg border px-3 py-2 focus-within:border-[#2563EB] transition-colors duration-[80ms]" style={{ borderColor: 'rgba(15,23,42,0.12)' }}>
-                    <input
-                      type="text"
-                      placeholder="Add a comment..."
-                      className="w-full text-[13px] border-none outline-none shadow-none bg-transparent"
-                      style={{ color: '#0F172A', fontFamily: 'Inter, sans-serif' }}
-                      aria-label="Add a comment"
-                    />
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[rgba(15,23,42,0.06)] transition-colors duration-[80ms]" style={{ backgroundColor: 'rgba(15,23,42,0.04)', color: '#6b6e76' }}>
-                        Status update...
-                      </span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full cursor-pointer hover:bg-[rgba(15,23,42,0.06)] transition-colors duration-[80ms]" style={{ backgroundColor: 'rgba(15,23,42,0.04)', color: '#6b6e76' }}>
-                        Thanks!
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <p className="text-[10px] mt-2 ml-9" style={{ color: '#71717A' }}>
-                  <b>Pro tip:</b> press <kbd className="px-1 py-0.5 rounded text-[10px]" style={{ backgroundColor: 'rgba(15,23,42,0.04)', border: '1px solid rgba(15,23,42,0.08)' }}>M</kbd> to comment
-                </p>
-              </div>
+              )}
             </div>
 
             {/* Right detail sidebar — 260px */}
             <div className="overflow-y-auto py-4 px-4" style={{ width: 260, borderLeft: '1px solid rgba(15,23,42,0.08)' }}>
               <div className="mb-4">
                 <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>Status</span>
-                <StatusLozenge status={selectedItem.status} />
+                <StatusLozenge status={currentItem.status} />
               </div>
 
               <div className="mb-4">
                 <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>Assignee</span>
-                {selectedItem.assignee_display_name ? (
+                {currentItem.assignee_display_name ? (
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ backgroundColor: '#4C6EF5' }}>
-                      {selectedItem.assignee_display_name.charAt(0)}
+                      {currentItem.assignee_display_name.charAt(0)}
                     </div>
-                    <span className="text-[13px]" style={{ color: '#0F172A' }}>{selectedItem.assignee_display_name}</span>
+                    <span className="text-[13px]" style={{ color: '#0F172A' }}>{currentItem.assignee_display_name}</span>
                   </div>
                 ) : (
                   <span className="text-[13px] italic" style={{ color: '#71717A' }}>Unassigned</span>
                 )}
-                <button className="text-[11px] mt-1" style={{ color: '#2563EB' }}>Assign to me</button>
+                <button className="text-[11px] mt-1" style={{ color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer' }}>Assign to me</button>
               </div>
 
               <div className="mb-4">
                 <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>Priority</span>
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: PRIORITY_COLORS[selectedItem.priority] || '#3b82f6' }} />
-                  <span className="text-[13px]" style={{ color: '#0F172A' }}>{selectedItem.priority}</span>
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: PRIORITY_COLORS[currentItem.priority] || '#3b82f6' }} />
+                  <span className="text-[13px]" style={{ color: '#0F172A' }}>{currentItem.priority}</span>
                 </div>
               </div>
 
               <div className="mb-4">
                 <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>Fix Version</span>
-                <span className="text-[13px]" style={{ color: selectedItem.fix_version_name ? '#0F172A' : '#71717A' }}>
-                  {selectedItem.fix_version_name || '—'}
+                <span className="text-[13px]" style={{ color: currentItem.fix_version_name ? '#0F172A' : '#71717A' }}>
+                  {currentItem.fix_version_name || '—'}
                 </span>
               </div>
 
               <div className="mb-4">
                 <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>Reporter</span>
-                <span className="text-[13px]" style={{ color: selectedItem.reporter_name ? '#0F172A' : '#71717A' }}>
-                  {selectedItem.reporter_name || '—'}
+                <span className="text-[13px]" style={{ color: currentItem.reporter_name ? '#0F172A' : '#71717A' }}>
+                  {currentItem.reporter_name || '—'}
                 </span>
               </div>
 
               <div className="mb-4">
                 <span className="text-[11px] uppercase font-semibold block mb-1.5" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>Labels</span>
-                {selectedItem.labels?.length ? (
+                {currentItem.labels?.length ? (
                   <div className="flex flex-wrap gap-1">
-                    {selectedItem.labels.map(l => (
+                    {currentItem.labels.map(l => (
                       <span key={l} className="text-[11px] px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(15,23,42,0.04)', color: '#44546f' }}>{l}</span>
                     ))}
                   </div>
@@ -313,14 +479,14 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
               <div className="mt-6 pt-4" style={{ borderTop: '1px solid rgba(15,23,42,0.08)' }}>
                 <div className="mb-2">
                   <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>Created</span>
-                  <span className="text-[12px]" style={{ color: '#44546f', fontFamily: "'JetBrains Mono', monospace" }} title={selectedItem.jira_created_at || ''}>
-                    {formatRel(selectedItem.jira_created_at)}
+                  <span className="text-[12px]" style={{ color: '#44546f', fontFamily: "'JetBrains Mono', monospace" }} title={currentItem.jira_created_at || ''}>
+                    {formatRel(currentItem.jira_created_at)}
                   </span>
                 </div>
                 <div>
                   <span className="text-[11px] uppercase font-semibold block mb-0.5" style={{ color: '#6b6e76', letterSpacing: '0.05em' }}>Updated</span>
-                  <span className="text-[12px]" style={{ color: '#44546f', fontFamily: "'JetBrains Mono', monospace" }} title={selectedItem.jira_updated_at || ''}>
-                    {formatRel(selectedItem.jira_updated_at)}
+                  <span className="text-[12px]" style={{ color: '#44546f', fontFamily: "'JetBrains Mono', monospace" }} title={currentItem.jira_updated_at || ''}>
+                    {formatRel(currentItem.jira_updated_at)}
                   </span>
                 </div>
               </div>
