@@ -112,7 +112,7 @@ export default function WikiArticlePage() {
   const refs = page.references || [];
   const title = page.title || pageSlug?.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) || 'Article';
   const conf = Math.round((page.ai_confidence ?? 0) * 100);
-  const confColor = conf >= 90 ? '#16A34A' : conf >= 70 ? '#2563EB' : '#D97706';
+  const confColor = conf >= 90 ? '#006644' : conf >= 70 ? '#0747A6' : '#9A5402';
   const verStatus = (page as any).verification_status || 'unverified';
   const verBadge = verStatus === 'verified'
     ? { bg: '#E3FCEF', color: '#006644', label: 'Verified', icon: <ShieldCheck size={10} /> }
