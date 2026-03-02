@@ -1,8 +1,8 @@
 /**
  * useKAData — Live data hooks for Knowledge Assist responses.
- * Replaces all hardcoded mock data with real ph_issues queries.
+ * All queries use case-insensitive matching and proper error handling.
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface KAIssue {
@@ -37,6 +37,15 @@ function formatTimeAgo(dateStr: string | null): string {
 }
 export { formatTimeAgo };
 
+/** Saudi week start (Sunday) */
+function getSaudiWeekStart(): string {
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay()); // Sunday
+  weekStart.setHours(0, 0, 0, 0);
+  return weekStart.toISOString();
+}
+
 /** Recently updated items (changed since yesterday) */
 export function useChangedYesterday() {
   const [data, setData] = useState<KAIssue[]>([]);
@@ -64,7 +73,7 @@ export function useChangedYesterday() {
   return { data, total, loading };
 }
 
-/** New stories created in last 2 weeks */
+/** New stories created in last 2 weeks — case-insensitive type match */
 export function useNewStories() {
   const [data, setData] = useState<KAIssue[]>([]);
   const [total, setTotal] = useState(0);
@@ -77,7 +86,7 @@ export function useNewStories() {
         .from('ph_issues')
         .select(FIELDS, { count: 'exact' })
         .is('jira_removed_at', null)
-        .eq('issue_type', 'Story')
+        .ilike('issue_type', '%story%')
         .gte('jira_created_at', since)
         .order('jira_created_at', { ascending: false })
         .limit(8);
@@ -105,7 +114,7 @@ export function useNewDefects() {
         .from('ph_issues')
         .select(FIELDS, { count: 'exact' })
         .is('jira_removed_at', null)
-        .in('issue_type', ['Bug', 'QA Bug', 'Defect'])
+        .or('issue_type.ilike.%bug%,issue_type.ilike.%defect%')
         .gte('jira_created_at', since)
         .order('jira_created_at', { ascending: false })
         .limit(7);
@@ -120,7 +129,7 @@ export function useNewDefects() {
   return { data, total, loading };
 }
 
-/** Blocked items */
+/** Blocked items — case-insensitive */
 export function useBlockedItems() {
   const [data, setData] = useState<KAIssue[]>([]);
   const [total, setTotal] = useState(0);
@@ -132,7 +141,7 @@ export function useBlockedItems() {
         .from('ph_issues')
         .select(FIELDS, { count: 'exact' })
         .is('jira_removed_at', null)
-        .ilike('status', '%block%')
+        .or('status.ilike.%blocked%,status.ilike.%block%,status.ilike.%impediment%')
         .order('jira_updated_at', { ascending: false })
         .limit(7);
       if (!error && items) {
@@ -146,7 +155,7 @@ export function useBlockedItems() {
   return { data, total, loading };
 }
 
-/** Closed/Done items recently */
+/** Closed/Done items recently — case-insensitive */
 export function useClosedItems() {
   const [data, setData] = useState<KAIssue[]>([]);
   const [total, setTotal] = useState(0);
@@ -159,7 +168,7 @@ export function useClosedItems() {
         .from('ph_issues')
         .select(FIELDS, { count: 'exact' })
         .is('jira_removed_at', null)
-        .eq('status_category', 'Done')
+        .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.Done')
         .gte('jira_updated_at', since)
         .order('jira_updated_at', { ascending: false })
         .limit(7);
@@ -174,7 +183,7 @@ export function useClosedItems() {
   return { data, total, loading };
 }
 
-/** Re-opened items */
+/** Re-opened items — case-insensitive */
 export function useReopenedItems() {
   const [data, setData] = useState<KAIssue[]>([]);
   const [total, setTotal] = useState(0);
@@ -186,7 +195,7 @@ export function useReopenedItems() {
         .from('ph_issues')
         .select(FIELDS, { count: 'exact' })
         .is('jira_removed_at', null)
-        .ilike('status', '%Re-Open%')
+        .or('status.ilike.%re-open%,status.ilike.%reopen%,status.ilike.%re open%')
         .order('jira_updated_at', { ascending: false })
         .limit(7);
       if (!error && items) {
@@ -209,7 +218,6 @@ export function useMostActiveProject() {
   useEffect(() => {
     async function fetch() {
       const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-      // Get most active project by update count
       const { data: proj } = await supabase
         .from('ph_issues')
         .select('project_key, project_name')
@@ -218,7 +226,6 @@ export function useMostActiveProject() {
         .limit(999);
 
       if (proj && proj.length > 0) {
-        // Count per project
         const counts: Record<string, { count: number; name: string }> = {};
         for (const p of proj) {
           if (!counts[p.project_key]) counts[p.project_key] = { count: 0, name: p.project_name || p.project_key };
@@ -228,7 +235,6 @@ export function useMostActiveProject() {
         const pk = topKey[0];
         const pn = topKey[1].name;
 
-        // Get stats for that project
         const { data: allItems } = await supabase
           .from('ph_issues')
           .select(FIELDS)
@@ -240,8 +246,8 @@ export function useMostActiveProject() {
 
         if (allItems) {
           const newItems = allItems.filter(i => i.jira_created_at && new Date(i.jira_created_at) >= new Date(since)).length;
-          const closed = allItems.filter(i => i.status_category === 'Done').length;
-          const blocked = allItems.filter(i => (i.status || '').toLowerCase().includes('block')).length;
+          const closed = allItems.filter(i => i.status_category === 'Done' || /done|closed|resolved|completed/i.test(i.status || '')).length;
+          const blocked = allItems.filter(i => /block|impediment/i.test(i.status || '')).length;
           setStats({ newItems, closed, blocked, totalUpdated: allItems.length, projectName: pn, projectKey: pk });
           setData(allItems.slice(0, 7) as KAIssue[]);
         }
@@ -280,25 +286,10 @@ export function useTeamWorkload() {
         for (const i of items) {
           const name = i.assignee_display_name || 'Unassigned';
           if (!map[name]) map[name] = { name, active: 0, blocked: 0, closedRecent: 0 };
+          const statusLower = (i.status || '').toLowerCase();
           if (i.status_category !== 'Done') map[name].active++;
-          if ((i.status || '').toLowerCase().includes('block')) map[name].blocked++;
-          if (i.status_category === 'Done' && i.jira_updated_at && new Date(i.jira_updated_at) >= twoWeeksAgo) map[name].closedRecent++;
-        }
-        // Fetch more if needed (pagination for >999)
-        const { data: items2 } = await supabase
-          .from('ph_issues')
-          .select('assignee_display_name, status, status_category, jira_updated_at')
-          .is('jira_removed_at', null)
-          .not('assignee_display_name', 'is', null)
-          .range(999, 1998);
-        if (items2) {
-          for (const i of items2) {
-            const name = i.assignee_display_name || 'Unassigned';
-            if (!map[name]) map[name] = { name, active: 0, blocked: 0, closedRecent: 0 };
-            if (i.status_category !== 'Done') map[name].active++;
-            if ((i.status || '').toLowerCase().includes('block')) map[name].blocked++;
-            if (i.status_category === 'Done' && i.jira_updated_at && new Date(i.jira_updated_at) >= twoWeeksAgo) map[name].closedRecent++;
-          }
+          if (/block|impediment/i.test(statusLower)) map[name].blocked++;
+          if ((i.status_category === 'Done' || /done|closed|resolved|completed/.test(statusLower)) && i.jira_updated_at && new Date(i.jira_updated_at) >= twoWeeksAgo) map[name].closedRecent++;
         }
         setData(Object.values(map).sort((a, b) => b.active - a.active).slice(0, 10));
       }
@@ -338,7 +329,7 @@ export function usePersonWork(namePattern: string) {
   return { data, total, personName, loading };
 }
 
-/** Landing page stats — live counts */
+/** Landing page stats — live counts with auto-refresh */
 export interface KALandingStats {
   newStories: number;
   blocked: number;
@@ -349,31 +340,82 @@ export interface KALandingStats {
 export function useLandingStats() {
   const [stats, setStats] = useState<KALandingStats>({ newStories: 0, blocked: 0, reopened: 0, closed: 0 });
   const [loading, setLoading] = useState(true);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const fetchStats = useCallback(async () => {
+    const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+
+    const [storiesRes, blockedRes, reopenedRes, closedRes] = await Promise.all([
+      supabase.from('ph_issues').select('issue_key', { count: 'exact', head: true })
+        .is('jira_removed_at', null).ilike('issue_type', '%story%').gte('jira_created_at', twoWeeksAgo),
+      supabase.from('ph_issues').select('issue_key', { count: 'exact', head: true })
+        .is('jira_removed_at', null).or('status.ilike.%blocked%,status.ilike.%block%,status.ilike.%impediment%'),
+      supabase.from('ph_issues').select('issue_key', { count: 'exact', head: true })
+        .is('jira_removed_at', null).or('status.ilike.%re-open%,status.ilike.%reopen%,status.ilike.%re open%'),
+      supabase.from('ph_issues').select('issue_key', { count: 'exact', head: true })
+        .is('jira_removed_at', null).or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.Done')
+        .gte('jira_updated_at', twoWeeksAgo),
+    ]);
+
+    setStats({
+      newStories: storiesRes.count || 0,
+      blocked: blockedRes.count || 0,
+      reopened: reopenedRes.count || 0,
+      closed: closedRes.count || 0,
+    });
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    async function fetch() {
+    fetchStats();
+    // Auto-refresh every 60 seconds
+    intervalRef.current = setInterval(fetchStats, 60000);
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [fetchStats]);
+
+  // Refresh on window focus
+  useEffect(() => {
+    const handleFocus = () => fetchStats();
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [fetchStats]);
+
+  return { stats, loading, refetch: fetchStats };
+}
+
+/** Load earlier closures (2-6 weeks ago) */
+export function useEarlierClosures() {
+  const [data, setData] = useState<KAIssue[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  const loadEarlier = useCallback(async () => {
+    if (loading || loaded) return;
+    setLoading(true);
+    try {
       const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+      const sixWeeksAgo = new Date(Date.now() - 42 * 24 * 60 * 60 * 1000).toISOString();
 
-      const [storiesRes, blockedRes, reopenedRes, closedRes] = await Promise.all([
-        supabase.from('ph_issues').select('issue_key', { count: 'exact', head: true })
-          .is('jira_removed_at', null).eq('issue_type', 'Story').gte('jira_created_at', twoWeeksAgo),
-        supabase.from('ph_issues').select('issue_key', { count: 'exact', head: true })
-          .is('jira_removed_at', null).ilike('status', '%block%'),
-        supabase.from('ph_issues').select('issue_key', { count: 'exact', head: true })
-          .is('jira_removed_at', null).ilike('status', '%Re-Open%'),
-        supabase.from('ph_issues').select('issue_key', { count: 'exact', head: true })
-          .is('jira_removed_at', null).eq('status_category', 'Done').gte('jira_updated_at', twoWeeksAgo),
-      ]);
+      const { data: items, error } = await supabase
+        .from('ph_issues')
+        .select(FIELDS)
+        .is('jira_removed_at', null)
+        .or('status.ilike.%done%,status.ilike.%closed%,status.ilike.%resolved%,status.ilike.%completed%,status_category.eq.Done')
+        .gte('jira_updated_at', sixWeeksAgo)
+        .lt('jira_updated_at', twoWeeksAgo)
+        .order('jira_updated_at', { ascending: false })
+        .limit(28);
 
-      setStats({
-        newStories: storiesRes.count || 0,
-        blocked: blockedRes.count || 0,
-        reopened: reopenedRes.count || 0,
-        closed: closedRes.count || 0,
-      });
+      if (!error && items) {
+        setData(items as KAIssue[]);
+      }
+      setLoaded(true);
+    } catch {
+      // silent
+    } finally {
       setLoading(false);
     }
-    fetch();
-  }, []);
-  return { stats, loading };
+  }, [loading, loaded]);
+
+  return { data, loading, loaded, loadEarlier };
 }

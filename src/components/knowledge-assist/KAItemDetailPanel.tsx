@@ -237,8 +237,19 @@ export function KAItemDetailPanel({ issueKey, onClose }: KAItemDetailPanelProps)
             </div>
           </div>
         ) : !item ? (
-          <div style={{ padding: 24, textAlign: 'center', color: T.inkMuted, fontSize: 13 }}>
-            Item not found in the database.
+          <div style={{ padding: 40, textAlign: 'center' }}>
+            <div style={{ fontSize: 32, marginBottom: 12 }}>🔍</div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: T.ink, marginBottom: 6 }}>Item Not Found</div>
+            <div style={{ fontSize: 13, color: T.inkMuted, marginBottom: 20 }}>
+              No item with key <span style={{ fontFamily: F.mono, fontWeight: 600, color: T.primary }}>{issueKey}</span> was found in the database.
+            </div>
+            <button
+              onClick={onClose}
+              style={{
+                padding: '8px 20px', borderRadius: 6, border: `1px solid ${T.border}`,
+                background: T.surfaceSecondary, cursor: 'pointer', fontSize: 13, fontWeight: 500, color: T.ink,
+              }}
+            >← Back to results</button>
           </div>
         ) : (
           <div>

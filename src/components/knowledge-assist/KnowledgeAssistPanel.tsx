@@ -4,7 +4,7 @@ import {
   FilePlus, Layers, Bug, AlertOctagon, ShieldAlert, RotateCcw,
   CheckCircle, ClipboardCheck, Rocket,
   FolderOpen, BarChart3, Activity, AlertTriangle, Users, ArrowRightLeft,
-  CalendarDays,
+  CalendarDays, HelpCircle, Loader2,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useLandingStats } from './responses/useKAData';
@@ -103,16 +103,29 @@ const F = {
   mono: "'JetBrains Mono', monospace",
 };
 
+/* ── Help suggestions for unmatched queries ── */
+const HELP_SUGGESTIONS = [
+  "What's blocked?",
+  'Show closed items',
+  "What's overdue?",
+  'New stories',
+  'Re-opened items',
+  'Deployments',
+  'Team workload',
+  'What changed yesterday?',
+];
+
 /* ══════════════════════════════════════════════════════════════════ */
 
 export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { user } = useAuth();
-  const { stats: landingStats } = useLandingStats();
+  const { stats: landingStats, refetch: refetchStats } = useLandingStats();
 
   const [view, setView] = useState<ViewState>('land');
   const [input, setInput] = useState('');
   const [userQuery, setUserQuery] = useState('');
   const [activeResponseId, setActiveResponseId] = useState<string | null>(null);
+  const [showHelp, setShowHelp] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [whatsNewPresets, setWhatsNewPresets] = useState<Preset[]>([]);
   const [whatsClosingPresets, setWhatsClosingPresets] = useState<Preset[]>([]);
@@ -137,6 +150,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
       setInput('');
       setUserQuery('');
       setActiveResponseId(null);
+      setShowHelp(false);
       setSelectedItemKey(null);
       rotatePresets();
     }
@@ -144,7 +158,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [activeResponseId]);
+  }, [activeResponseId, showHelp]);
 
   const handleTextareaChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
@@ -160,16 +174,31 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     if (textareaRef.current) { textareaRef.current.style.height = 'auto'; }
     setView('chat');
     setUserQuery(q);
+    setShowHelp(false);
+
+    // Check for item key pattern (e.g. BAU-5054)
+    if (/^[A-Z]+-\d+$/i.test(q)) {
+      setActiveResponseId(null);
+      setSelectedItemKey(q.toUpperCase());
+      return;
+    }
 
     // Find matching response
     const responseId = PRESET_RESPONSE_MAP[q] || findBestMatch(q);
-    setActiveResponseId(responseId);
+    if (responseId === 'help') {
+      setActiveResponseId(null);
+      setShowHelp(true);
+    } else {
+      setActiveResponseId(responseId);
+      setShowHelp(false);
+    }
   }, [input]);
 
   const handleNewChat = useCallback(() => {
     setView('land');
     setUserQuery('');
     setActiveResponseId(null);
+    setShowHelp(false);
     setInput('');
     rotatePresets();
   }, [rotatePresets]);
@@ -209,6 +238,35 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
       default: return <ChangedYesterdayResponse onItemClick={onItemClick} />;
     }
   };
+
+  /* ── Help response for unmatched queries ── */
+  const renderHelp = () => (
+    <div style={{ animation: 'ka-msg-in 200ms ease' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+        <HelpCircle size={16} strokeWidth={2} color="#2563EB" />
+        <span style={{ fontFamily: F.sora, fontSize: 14, fontWeight: 650, color: '#0F172A' }}>Here's what I can help with</span>
+      </div>
+      <p style={{ fontSize: 13, color: '#64748B', marginBottom: 16, lineHeight: 1.6 }}>
+        I didn't find a match for that query. Try one of these:
+      </p>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        {HELP_SUGGESTIONS.map(s => (
+          <button
+            key={s}
+            onClick={() => handleSend(s)}
+            style={{
+              padding: '8px 14px', borderRadius: 8,
+              border: '1.5px solid rgba(37,99,235,0.2)', background: 'rgba(37,99,235,0.04)',
+              cursor: 'pointer', fontSize: 12, fontWeight: 500, color: '#2563EB',
+              fontFamily: F.inter, transition: 'all 100ms',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(37,99,235,0.10)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(37,99,235,0.04)'; }}
+          >{s}</button>
+        ))}
+      </div>
+    </div>
+  );
 
   /* ── Preset card renderer ── */
   const PresetCard = ({ p }: { p: Preset }) => {
@@ -334,7 +392,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
             </span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <button onClick={handleNewChat} title="New chat" aria-label="Refresh" className="ka-icon-btn"
+            <button onClick={() => { refetchStats(); handleNewChat(); }} title="Refresh data" aria-label="Refresh" className="ka-icon-btn"
               style={{ width: 32, height: 32, borderRadius: 8, border: '1.5px solid rgba(15,23,42,0.08)', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 80ms' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
@@ -397,7 +455,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '16px 0 0' }}>
                 <span style={{ width: 4, height: 4, borderRadius: '50%', background: '#16A34A' }} />
                 <span style={{ fontSize: 11, color: '#94A3B8', fontFamily: F.inter }}>
-                  Live data · Last 2 weeks
+                  Live data · Auto-refreshes every 60s
                 </span>
               </div>
             </div>
@@ -424,6 +482,9 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                   {renderResponse()}
                 </div>
               )}
+
+              {/* Help suggestions for unmatched queries */}
+              {showHelp && renderHelp()}
             </div>
           )}
         </div>
@@ -465,7 +526,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               value={input}
               onChange={handleTextareaChange}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-              placeholder="Ask anything…"
+              placeholder="Ask anything… (e.g. BAU-5054, What's blocked?)"
               aria-label="Ask a question"
               rows={1}
               style={{
@@ -526,23 +587,57 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
   );
 }
 
-/* ── Fuzzy matcher for free-text queries ── */
+/* ── Robust fuzzy matcher for free-text queries ── */
 function findBestMatch(query: string): string {
   const q = query.toLowerCase();
-  if (/changed|yesterday|recent\s+changes|what.s\s+new/i.test(q)) return 'changed-yesterday';
-  if (/new\s+stor|created.*sprint|created.*week/i.test(q)) return 'new-stories';
-  if (/defect|bug|logged/i.test(q)) return 'new-defects';
-  if (/block/i.test(q)) return 'blocked-items';
-  if (/close|done|complet|resolv/i.test(q)) return 'closed-this-week';
-  if (/re.?open/i.test(q)) return 'reopened-items';
-  if (/active\s+project|most\s+active/i.test(q)) return 'most-active-project';
-  if (/team|workload|capacity/i.test(q)) return 'team-workload';
-  if (/wahid|nada|raza|yousif|sara|imran|vikram|working\s+on|assigned/i.test(q)) return 'person-work';
+
+  // Item key lookup (e.g., BAU-5054)
+  if (/^[a-z]+-\d+$/i.test(q.trim())) return 'item-lookup';
+
+  // Changed / yesterday / recent
+  if (/changed|yesterday|recent\s+change|what.s\s+new|today|latest/i.test(q)) return 'changed-yesterday';
+
+  // New stories
+  if (/new\s+stor|created.*sprint|created.*week|new\s+item|added\s+stor/i.test(q)) return 'new-stories';
+
+  // Defects / bugs
+  if (/defect|bug|logged|incident|issue.*report/i.test(q)) return 'new-defects';
+
+  // Blocked / stuck / impediment
+  if (/block|impediment|stuck|stall/i.test(q)) return 'blocked-items';
+
+  // Closed / done / completed / resolved
+  if (/clos(ed|e|ing)|done\b|complet|resolv|finish/i.test(q)) return 'closed-this-week';
+
+  // Re-opened / bounced back
+  if (/re.?open|bounc.*back|regress/i.test(q)) return 'reopened-items';
+
+  // Active project
+  if (/active\s+project|most\s+active|busiest/i.test(q)) return 'most-active-project';
+
+  // Team / workload / capacity
+  if (/team|workload|capacity|bandwidth/i.test(q)) return 'team-workload';
+
+  // Person-specific
+  if (/wahid|nada|raza|yousif|sara|imran|vikram|working\s+on|assigned\s+to/i.test(q)) return 'person-work';
+
+  // Overdue / past due / late
+  if (/overdue|past.?due|late\b|behind/i.test(q)) return 'changed-yesterday';
+
+  // Epics
   if (/epic/i.test(q)) return 'new-stories';
-  if (/deploy|production/i.test(q)) return 'closed-this-week';
-  if (/qa|review|handoff/i.test(q)) return 'closed-this-week';
-  if (/health|simp|senaei|mdt/i.test(q)) return 'most-active-project';
-  return 'changed-yesterday';
+
+  // Deploy / release / production
+  if (/deploy|releas|ship|production|go.?live/i.test(q)) return 'closed-this-week';
+
+  // QA / review / handoff
+  if (/qa|review|handoff|testing/i.test(q)) return 'closed-this-week';
+
+  // Project health
+  if (/health|simp|senaei|mdt|summary|overview|status|how.*going/i.test(q)) return 'most-active-project';
+
+  // No match → show help suggestions
+  return 'help';
 }
 
 export default KnowledgeAssistPanel;
