@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ThumbsUp, ThumbsDown, ChevronDown, ChevronRight } from 'lucide-react';
+import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import type { KBQueryResponse } from '@/services/knowledgeBase';
 
 interface KBResponseRendererProps {
@@ -174,7 +174,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
 }) => {
   const dir = 'ltr';
   const lines = (response.answer || '').split('\n');
-  const [sourcesOpen, setSourcesOpen] = useState(false);
+  const _sourcesAvailable = response.references && response.references.length > 0; // kept for internal use
   const [feedbackState, setFeedbackState] = useState<'none' | 'up' | 'down'>('none');
   const [showThanks, setShowThanks] = useState(false);
 
@@ -392,31 +392,7 @@ export const KBResponseRenderer: React.FC<KBResponseRendererProps> = ({
         </div>
       )}
 
-      {/* Sources toggle — hidden for live data */}
-      {!isLiveData && response.references && response.references.length > 0 && (
-        <div style={{ marginTop: 8 }}>
-          <button
-            onClick={() => setSourcesOpen(!sourcesOpen)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 4,
-              background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: 11, color: '#71717A', padding: 0,
-            }}
-          >
-            {sourcesOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-            Sources ({response.references.length})
-          </button>
-          {sourcesOpen && (
-            <div style={{ marginTop: 6, paddingLeft: 16 }}>
-              {response.references.map((ref, i) => (
-                <div key={i} style={{ fontSize: 11, color: '#71717A', marginBottom: 2 }}>
-                  [{i + 1}] {ref.source_type}{ref.source_url ? ` — ${ref.source_url}` : ''} ({(ref.similarity * 100).toFixed(0)}%)
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      {/* Sources kept in background — not shown to users */}
 
       {/* Feedback */}
       {!feedbackGiven && feedbackState === 'none' && onFeedback && (
