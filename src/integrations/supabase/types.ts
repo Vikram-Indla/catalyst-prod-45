@@ -57947,7 +57947,7 @@ export type Database = {
           id: string
           level: number | null
           name: string
-          name_ar: string
+          name_ar: string | null
           parent_id: string | null
           sort_order: number | null
           updated_at: string | null
@@ -57961,7 +57961,7 @@ export type Database = {
           id?: string
           level?: number | null
           name: string
-          name_ar: string
+          name_ar?: string | null
           parent_id?: string | null
           sort_order?: number | null
           updated_at?: string | null
@@ -57975,7 +57975,7 @@ export type Database = {
           id?: string
           level?: number | null
           name?: string
-          name_ar?: string
+          name_ar?: string | null
           parent_id?: string | null
           sort_order?: number | null
           updated_at?: string | null

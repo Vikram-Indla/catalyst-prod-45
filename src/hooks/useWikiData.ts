@@ -34,28 +34,25 @@ export const useWikiStats = () => {
   return useQuery({
     queryKey: ['wiki-stats'],
     queryFn: async () => {
-      const [domainsRes, pagesRes, categoriesRes, docsRes] = await Promise.all([
-        supabase.from('wiki_domain_stats').select('article_count, document_count'),
-        supabase.from('wiki_pages').select('ai_confidence', { count: 'exact' }).eq('status', 'published'),
-        supabase.from('wiki_categories').select('id', { count: 'exact' }),
-        supabase.from('wiki_documents').select('chunks_generated'),
+      const [pagesRes, categoriesRes, domainsRes, chunksRes, docsRes] = await Promise.all([
+        supabase.from('wiki_pages').select('ai_confidence', { count: 'exact', head: false }).eq('status', 'published'),
+        supabase.from('wiki_categories').select('id', { count: 'exact', head: true }),
+        supabase.from('wiki_domains').select('id', { count: 'exact', head: true }),
+        supabase.from('kb_embeddings').select('id', { count: 'exact', head: true }),
+        supabase.from('wiki_documents').select('id', { count: 'exact', head: true }),
       ]);
 
-      const domains = domainsRes.data || [];
-      const totalArticles = domains.reduce((s, d) => s + (d.article_count ?? 0), 0);
-      const totalDocs = domains.reduce((s, d) => s + (d.document_count ?? 0), 0);
       const pages = pagesRes.data || [];
       const avgConfidence = pages.length > 0
         ? pages.reduce((s, p) => s + (p.ai_confidence ?? 0), 0) / pages.length
         : 0;
-      const totalChunks = (docsRes.data || []).reduce((s, d) => s + (d.chunks_generated ?? 0), 0);
 
       return {
-        articles: totalArticles,
-        documents: totalDocs,
-        domains: 8,
+        articles: pagesRes.count ?? 0,
+        documents: docsRes.count ?? 0,
+        domains: domainsRes.count ?? 0,
         categories: categoriesRes.count ?? 0,
-        chunks: totalChunks,
+        chunks: chunksRes.count ?? 0,
         avgConfidence: Math.round(avgConfidence * 100),
       };
     },
