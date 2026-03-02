@@ -8,7 +8,7 @@ import { HubIcon } from '@/components/caty-ai/constants';
 import { useKBQuery } from '@/hooks/useKnowledgeBase';
 import { useAuth } from '@/hooks/useAuth';
 import { KBResponseRenderer } from '@/components/kb/KBResponseRenderer';
-import { matchMockResponse } from './KAChatResponses';
+
 import type { KBQueryResponse } from '@/services/knowledgeBase';
 import type { LucideIcon } from 'lucide-react';
 
@@ -18,7 +18,7 @@ interface ChatMessage {
   role: 'user' | 'assistant';
   content?: string;
   response?: KBQueryResponse;
-  mockNode?: React.ReactNode;
+  
   logId?: string;
   feedbackGiven?: boolean;
 }
@@ -44,19 +44,19 @@ interface Preset {
 }
 
 const WORK_POOL: Preset[] = [
-  { icon: ClipboardList, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: "What are Vikram's open items?", hint: '12 active across 3 projects' },
-  { icon: AlertTriangle, iconBg: '#FEE2E2', iconColor: '#B91C1C', main: 'What items are blocked?', hint: '10 blocked — 7 accessibility' },
-  { icon: RotateCcw, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'Show re-opened items this week', hint: '5 items need attention' },
-  { icon: FileSearch, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'What did I report this sprint?', hint: 'Items reported by Vikram' },
+  { icon: ClipboardList, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: "What are Vikram's open items?", hint: 'Active items across projects' },
+  { icon: AlertTriangle, iconBg: '#FEE2E2', iconColor: '#B91C1C', main: 'What items are blocked?', hint: 'Blocked work items' },
+  { icon: RotateCcw, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'Show re-opened items this week', hint: 'Recently re-opened items' },
+  { icon: FileSearch, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'What did I report this sprint?', hint: 'Items you reported' },
   { icon: Clock, iconBg: '#FEF3C7', iconColor: '#92400E', main: 'Show deferred items', hint: 'Items pushed to next sprint' },
   { icon: CalendarDays, iconBg: '#EDE9FE', iconColor: '#6D28D9', main: 'What changed since yesterday?', hint: 'Recent updates across projects' },
 ];
 
 const TEAM_POOL: Preset[] = [
-  { icon: User, iconBg: '#FEF3C7', iconColor: '#92400E', main: 'What is Wahid working on?', hint: 'Mobile Developer · 20 items' },
-  { icon: User, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'What is Nada working on?', hint: 'QA · 15 items, 7 blocked' },
-  { icon: User, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'What is Raza working on?', hint: 'Backend · 8 items' },
-  { icon: User, iconBg: '#EDE9FE', iconColor: '#6D28D9', main: 'What is Yousif working on?', hint: 'Backend · 8 items' },
+  { icon: User, iconBg: '#FEF3C7', iconColor: '#92400E', main: 'What is Wahid working on?', hint: 'Mobile Developer' },
+  { icon: User, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'What is Nada working on?', hint: 'QA Engineer' },
+  { icon: User, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'What is Raza working on?', hint: 'Backend Developer' },
+  { icon: User, iconBg: '#EDE9FE', iconColor: '#6D28D9', main: 'What is Yousif working on?', hint: 'Backend Developer' },
   { icon: Users, iconBg: '#FEE2E2', iconColor: '#B91C1C', main: 'Team capacity & workload', hint: 'Resource balancing overview' },
   { icon: ArrowRightLeft, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'Who has bandwidth this week?', hint: 'Available team members' },
 ];
@@ -134,16 +134,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     if (textareaRef.current) { textareaRef.current.style.height = 'auto'; }
     if (view === 'land') setView('chat');
 
-    // Check for mock response first
-    const mock = matchMockResponse(q);
-    if (mock) {
-      setMessages(prev => [
-        ...prev,
-        { id: crypto.randomUUID(), role: 'user', content: q },
-        { id: crypto.randomUUID(), role: 'assistant', mockNode: mock },
-      ]);
-      return;
-    }
 
     setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'user', content: q }]);
     pendingRef.current = true;
@@ -325,25 +315,22 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 Your knowledge briefing is ready.
               </p>
 
-              {/* Stats Grid — 3 cards only */}
+              {/* Quick Action Cards */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginTop: 20 }}>
                 {[
-                  { value: '12', label: 'My items', color: '#2563EB', query: "What are my open items?" },
-                  { value: '3', label: 'Blocked', color: '#DC2626', query: "What items are blocked?" },
-                  { value: '5', label: 'Re-opened', color: '#D97706', query: "Show re-opened items this week" },
+                  { icon: '📋', label: 'My items', color: '#2563EB', query: "What are my open items?" },
+                  { icon: '🚫', label: 'Blocked', color: '#DC2626', query: "What items are blocked?" },
+                  { icon: '🔄', label: 'Re-opened', color: '#D97706', query: "Show re-opened items this week" },
                 ].map((s, i) => (
                   <button key={i} onClick={() => handleSend(s.query)} style={{
                     padding: 16, border: '1.5px solid rgba(15,23,42,0.10)', borderRadius: 8, background: '#FFFFFF',
-                    cursor: 'pointer', textAlign: 'left', transition: 'all 150ms',
+                    cursor: 'pointer', textAlign: 'center', transition: 'all 150ms',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.20)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.10)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}
                   >
-                    <div style={{
-                      fontSize: 22, fontWeight: 600, color: s.color,
-                      fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums', lineHeight: 1,
-                    }}>{s.value}</div>
-                    <div style={{ fontSize: 11, fontWeight: 500, color: '#64748B', marginTop: 4, fontFamily: "'Inter', sans-serif" }}>{s.label}</div>
+                    <div style={{ fontSize: 20, lineHeight: 1 }}>{s.icon}</div>
+                    <div style={{ fontSize: 11, fontWeight: 500, color: s.color, marginTop: 6, fontFamily: "'Inter', sans-serif" }}>{s.label}</div>
                   </button>
                 ))}
               </div>
@@ -396,10 +383,10 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                     </div>
                   );
                 }
-                // Assistant — mock or RAG
+                // Assistant — RAG response
                 return (
                   <div key={msg.id} style={{ marginBottom: 16, animation: 'ka-msg-in 200ms ease' }}>
-                    {msg.mockNode ? msg.mockNode : msg.response ? (
+                    {msg.response ? (
                       <KBResponseRenderer
                         response={msg.response}
                         language="en"
