@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
-  X, Plus, Mic, Send,
+  X, Plus, Mic, Send, RefreshCw,
   ClipboardList, AlertTriangle, Clock, User, Users,
   RotateCcw, FileSearch, CalendarDays, TrendingUp, ArrowRightLeft,
 } from 'lucide-react';
+import { HubIcon } from '@/components/caty-ai/constants';
 import { useKBQuery } from '@/hooks/useKnowledgeBase';
 import { useAuth } from '@/hooks/useAuth';
 import { KBResponseRenderer } from '@/components/kb/KBResponseRenderer';
@@ -259,40 +260,51 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
           fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
         }}
       >
-        {/* ── Header ── */}
+        {/* ── Header — CATY-style ── */}
         <div style={{
-          height: 48, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '0 20px', borderBottom: '1px solid rgba(15,23,42,0.12)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '14px 20px', borderBottom: '1px solid rgba(15,23,42,0.12)',
           flexShrink: 0,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ position: 'relative', width: 8, height: 8 }}>
-              <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#2563EB' }} />
-              <span style={{
-                position: 'absolute', inset: -3, borderRadius: '50%',
-                border: '1.5px solid rgba(37,99,235,0.4)',
-                animation: 'ka-ring-pulse 2s infinite',
-              }} />
-            </span>
-            <span style={{
-              fontSize: 15, fontWeight: 700, color: '#0F172A',
-              letterSpacing: '-0.02em', fontFamily: "'Sora', sans-serif",
-            }}>Knowledge Assist</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {/* Blue logo container */}
+            <div style={{
+              width: 40, height: 40, borderRadius: 10, background: '#2563EB',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            }}>
+              <div style={{ width: 24, height: 24 }}>
+                <HubIcon />
+              </div>
+            </div>
+            <div>
+              <div style={{
+                fontSize: 15, fontWeight: 700, color: '#0F172A',
+                letterSpacing: '-0.01em', fontFamily: "'Sora', sans-serif", lineHeight: 1.2,
+              }}>
+                Knowledge Assist<sup style={{ fontSize: 8, verticalAlign: 'super', marginLeft: 2 }}>™</sup>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#16A34A', flexShrink: 0 }} />
+                <span style={{ fontSize: 11, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>
+                  Intelligent Work Assistant
+                </span>
+              </div>
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <button onClick={handleNewChat} title="New chat" aria-label="New chat" className="ka-icon-btn"
-              style={{ width: 28, height: 28, borderRadius: 6, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 80ms' }}
+              style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid rgba(15,23,42,0.10)', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 80ms' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
             >
-              <Plus size={16} strokeWidth={2} color="#64748B" aria-hidden="true" />
+              <RefreshCw size={14} strokeWidth={2} color="#64748B" aria-hidden="true" />
             </button>
             <button onClick={onClose} aria-label="Close Knowledge Assist" className="ka-icon-btn"
-              style={{ width: 28, height: 28, borderRadius: 6, border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 80ms' }}
+              style={{ width: 32, height: 32, borderRadius: 8, border: '1px solid rgba(15,23,42,0.10)', background: '#FFFFFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 80ms' }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
             >
-              <X size={16} strokeWidth={2} color="#64748B" aria-hidden="true" />
+              <X size={14} strokeWidth={2} color="#64748B" aria-hidden="true" />
             </button>
           </div>
         </div>
