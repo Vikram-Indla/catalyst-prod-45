@@ -374,28 +374,28 @@
 .di-spotlight {
   display: flex; align-items: center; gap: 20px;
   padding: 24px; margin-bottom: 32px;
-  background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 50%, #FFFBEB 100%);
-  border: 1px solid #F5D676;
+  background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 50%, #F0FDF4 100%);
+  border: 1px solid #86EFAC;
   border-radius: 12px;
   position: relative; overflow: hidden;
 }
 .di-trophy {
   width: 52px; height: 52px; border-radius: 50%;
-  background: linear-gradient(135deg, #F59E0B, #D97706);
+  background: linear-gradient(135deg, #16A34A, #0D7331);
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+  flex-shrink: 0; box-shadow: 0 4px 12px rgba(13, 115, 49, 0.25);
 }
 .di-trophy svg { width: 24px; height: 24px; color: white; }
 .di-spot-info { flex: 1; }
-.di-spot-pre { font: 600 10px var(--di-font-mono); color: #B45309; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
+.di-spot-pre { font: 600 10px var(--di-font-mono); color: #0D7331; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
 .di-spot-name { font: 700 18px var(--di-font-heading); color: #09090B; letter-spacing: -0.02em; margin-bottom: 2px; }
 .di-spot-role { font: 500 13px var(--di-font-body); color: #3F3F46; margin-bottom: 10px; }
 .di-spot-stats { display: flex; gap: 20px; }
 .di-spot-stat-v { font: 700 16px var(--di-font-heading); color: #09090B; }
 .di-spot-stat-l { font: 500 10px var(--di-font-mono); color: #71717A; text-transform: uppercase; letter-spacing: 0.04em; }
 .di-spot-streak {
-  font: 600 11px var(--di-font-mono); color: #B45309;
-  background: white; border: 1px solid #F5D676;
+  font: 600 11px var(--di-font-mono); color: #0D7331;
+  background: white; border: 1px solid #86EFAC;
   padding: 4px 10px; border-radius: 9999px;
   align-self: flex-start; flex-shrink: 0;
 }
