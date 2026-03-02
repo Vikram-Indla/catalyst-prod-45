@@ -516,9 +516,11 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
   const parentLinkCount = currentItem.parentKey ? 1 : 0;
   const totalLinksCount = issueLinks.length + parentLinkCount;
 
+  const isSubTaskView = panelStack.length > 0;
+
   const tabs = [
     { id: 'details', label: 'Details', icon: <Layers size={13} /> },
-    { id: 'subtasks', label: 'Sub-Tasks', icon: <ListTree size={13} />, count: subTaskCount },
+    ...(!isSubTaskView ? [{ id: 'subtasks', label: 'Sub-Tasks', icon: <ListTree size={13} />, count: subTaskCount }] : []),
     { id: 'transitions', label: 'Transitions', icon: <GitPullRequest size={13} /> },
     { id: 'attachments', label: 'Attachments', icon: <Paperclip size={13} />, count: attachments.length },
     { id: 'comments', label: 'Comments', icon: <MessageSquare size={13} />, count: comments.length },
