@@ -276,7 +276,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
         />
       )}
 
-      {/* Panel — 40vw */}
+      {/* Panel — 50vw */}
       <div
         className="knowledge-assist-panel"
         data-v={view}
@@ -284,7 +284,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
         aria-label="Knowledge Assist"
         style={{
           position: 'fixed', top: 48, right: 0, bottom: 0,
-          width: '40vw', minWidth: 480, maxWidth: 720,
+          width: '50vw', minWidth: 480, maxWidth: 960,
           background: '#FFFFFF',
           borderLeft: '1px solid rgba(15,23,42,0.12)',
           boxShadow: '-4px 0 24px rgba(0,0,0,0.06)',
