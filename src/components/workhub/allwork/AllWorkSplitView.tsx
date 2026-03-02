@@ -5,11 +5,11 @@ import { useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, ChevronDown, MessageSquare, Clock, History } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
-import type { JiraIssue } from '@/hooks/workhub/useWorkItems';
+import type { AllWorkItem } from '@/types/allwork.types';
 import { formatDistanceToNow, format } from 'date-fns';
 
 interface Props {
-  items: JiraIssue[];
+  items: AllWorkItem[];
   selectedItemKey: string | null;
   onSelectItem: (key: string) => void;
 }

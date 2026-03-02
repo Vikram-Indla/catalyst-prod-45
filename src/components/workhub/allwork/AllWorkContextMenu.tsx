@@ -6,11 +6,11 @@ import {
   Eye, MessageSquare, Clock, ArrowUpToLine, ArrowDownToLine,
   Plus, Link2, Copy, Move, Tag, Paperclip, Trash2,
 } from 'lucide-react';
-import type { JiraIssue } from '@/hooks/workhub/useWorkItems';
+import type { AllWorkItem } from '@/types/allwork.types';
 import { toast } from 'sonner';
 
 interface Props {
-  item: JiraIssue;
+  item: AllWorkItem;
   x: number;
   y: number;
   onClose: () => void;

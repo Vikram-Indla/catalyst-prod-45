@@ -6,8 +6,43 @@ import { useState, useMemo, useCallback, useRef } from 'react';
 import { ChevronDown, ChevronRight, ArrowUp, ArrowDown, GripVertical, ExternalLink, Plus, MoreHorizontal } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
-import type { JiraIssue } from '@/hooks/workhub/useWorkItems';
-import { buildTree, flattenTree } from '@/hooks/workhub/useWorkItems';
+import type { AllWorkItem } from '@/types/allwork.types';
+
+interface TreeNode { item: AllWorkItem; children: TreeNode[]; depth: number; }
+
+function buildTree(items: AllWorkItem[]): TreeNode[] {
+  const byKey = new Map<string, AllWorkItem>();
+  items.forEach(i => byKey.set(i.issue_key, i));
+  const roots: TreeNode[] = [];
+  const childMap = new Map<string, TreeNode[]>();
+  items.forEach(i => {
+    const node: TreeNode = { item: i, children: [], depth: 0 };
+    if (i.parent_key && byKey.has(i.parent_key)) {
+      if (!childMap.has(i.parent_key)) childMap.set(i.parent_key, []);
+      childMap.get(i.parent_key)!.push(node);
+    } else {
+      roots.push(node);
+    }
+  });
+  function attachChildren(nodes: TreeNode[], depth: number) {
+    for (const n of nodes) {
+      n.depth = depth;
+      n.children = childMap.get(n.item.issue_key) || [];
+      attachChildren(n.children, depth + 1);
+    }
+  }
+  attachChildren(roots, 0);
+  return roots;
+}
+
+function flattenTree(nodes: TreeNode[], expanded: Set<string>): TreeNode[] {
+  const result: TreeNode[] = [];
+  for (const n of nodes) {
+    result.push(n);
+    if (expanded.has(n.item.issue_key)) result.push(...flattenTree(n.children, expanded));
+  }
+  return result;
+}
 import { AllWorkContextMenu } from './AllWorkContextMenu';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -82,7 +117,7 @@ const COLUMNS: Column[] = [
 const GRID_TEMPLATE = COLUMNS.map(c => c.width).join(' ');
 
 interface Props {
-  items: JiraIssue[];
+  items: AllWorkItem[];
   selectedIds: Set<string>;
   onToggleSelect: (key: string) => void;
   onSelectAll: () => void;
@@ -102,7 +137,7 @@ export function AllWorkTable({
     items.filter(i => i.parent_key).forEach(i => { if (i.parent_key) keys.add(i.parent_key); });
     return keys;
   });
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; item: JiraIssue } | null>(null);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; item: AllWorkItem } | null>(null);
 
   const tree = useMemo(() => buildTree(items), [items]);
   const flatNodes = useMemo(() => flattenTree(tree, expandedKeys), [tree, expandedKeys]);
