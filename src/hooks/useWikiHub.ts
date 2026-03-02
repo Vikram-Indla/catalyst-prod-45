@@ -182,3 +182,25 @@ export function useWikiAISearch(query: string) {
     },
   });
 }
+
+/* ── Related Articles ── */
+export function useWikiRelatedArticles(domainCode?: string, excludeId?: string, limit = 3) {
+  return useQuery({
+    queryKey: ['wiki-related-articles', domainCode, excludeId, limit],
+    enabled: !!domainCode,
+    staleTime: 60_000,
+    queryFn: async () => {
+      let q = supabase
+        .from('wiki_pages')
+        .select('id, slug, title, domain_code, ai_confidence, read_time_minutes, updated_at')
+        .eq('status', 'published')
+        .eq('domain_code', domainCode!)
+        .order('updated_at', { ascending: false })
+        .limit(limit + 1);
+
+      const { data, error } = await q;
+      if (error) throw error;
+      return (data ?? []).filter((a: any) => a.id !== excludeId).slice(0, limit);
+    },
+  });
+}
