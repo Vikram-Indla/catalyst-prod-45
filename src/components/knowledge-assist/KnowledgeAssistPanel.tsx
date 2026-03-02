@@ -57,8 +57,7 @@ const WHATS_NEW_POOL: Preset[] = [
 const WHATS_CLOSING_POOL: Preset[] = [
   { icon: CheckCircle, iconBg: '#D1FAE5', iconColor: '#065F46', main: 'Items closed this week', hint: 'Items moved to Done recently' },
   { icon: ClipboardCheck, iconBg: '#CCFBF1', iconColor: '#0F766E', main: 'Items ready for QA', hint: 'Items awaiting validation' },
-  { icon: TrendingUp, iconBg: '#D1FAE5', iconColor: '#065F46', main: 'Sprint velocity this week', hint: 'Story points delivered' },
-  { icon: Rocket, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'Deployments this week', hint: 'Recent releases to production' },
+  { icon: Rocket, iconBg: '#DBEAFE', iconColor: '#1D4ED8', main: 'Deployments this week', hint: 'Items moved to production' },
 ];
 
 /* ═══ PROJECT SPOTLIGHT pool ═══ */

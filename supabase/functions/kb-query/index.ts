@@ -265,32 +265,7 @@ async function tryLiveQuery(sb: any, query: string, lang: string, userName?: str
     return { found: true, answer: 'No project activity found in the last 2 weeks.', confidence: 0.85, sources: ['ph_issues'] };
   }
 
-  // ── "Sprint status" / "sprint velocity" ──
-  if (/sprint\s+(status|velocity|progress|breakdown)/i.test(qLower) || /velocity\s+this\s+week/i.test(qLower)) {
-    const { data: items } = await sb.from('ph_issues')
-      .select('issue_key, summary, status, status_category, story_points, project_name, project_key, sprint_name, assignee_display_name, jira_updated_at')
-      .not('sprint_name', 'is', null)
-      .gte('jira_updated_at', twoWeeksAgo)
-      .order('jira_updated_at', { ascending: false })
-      .limit(100);
-    if (items && items.length > 0) {
-      const done = items.filter((i: any) => i.status_category === 'Done');
-      const inProgress = items.filter((i: any) => i.status_category === 'In Progress');
-      const todo = items.filter((i: any) => i.status_category !== 'Done' && i.status_category !== 'In Progress');
-      const velocity = done.reduce((s: number, i: any) => s + (i.story_points || 0), 0);
-      const parts: string[] = [];
-      parts.push(`**Sprint Status** — ${items.length} items in active sprints\n`);
-      parts.push(`| Metric | Value |`);
-      parts.push(`| Total Items | ${items.length} |`);
-      parts.push(`| Done | ${done.length} |`);
-      parts.push(`| In Progress | ${inProgress.length} |`);
-      parts.push(`| To Do | ${todo.length} |`);
-      parts.push(`| Velocity (Points) | ${velocity} |`);
-      parts.push(`\n*Active in last 2 weeks*`);
-      return { found: true, answer: parts.join('\n'), confidence: 0.90, sources: ['ph_issues'] };
-    }
-    return { found: true, answer: 'No sprint data found for the last 2 weeks.', confidence: 0.85, sources: ['ph_issues'] };
-  }
+  // ── (Sprint velocity removed — no sprint concept in the system) ──
 
   // ── "Items ready for QA" ──
   if (/items?\s+ready\s+for\s+qa/i.test(qLower) || /ready\s+for\s+qa/i.test(qLower) || /awaiting\s+(?:qa|validation|review)/i.test(qLower)) {
@@ -458,25 +433,25 @@ async function tryLiveQuery(sb: any, query: string, lang: string, userName?: str
     return { found: true, answer: 'No sprint data found for Senaei BAU.', confidence: 0.80, sources: ['ph_issues'] };
   }
 
-  // ── "Deployments this week" ──
-  if (/deployments?\s+(this\s+week|recently|latest)/i.test(qLower)) {
-    const { data: releases } = await sb.from('releases')
-      .select('name, status, release_date, description, created_at')
-      .gte('created_at', twoWeeksAgo)
-      .order('created_at', { ascending: false })
-      .limit(20);
-    if (releases && releases.length > 0) {
+  // ── "Deployments this week" — items moved to "In Production" status ──
+  if (/deployments?\s+(this\s+week|recently|latest)/i.test(qLower) || /in\s+production\s+this\s+week/i.test(qLower)) {
+    const { data: items } = await sb.from('ph_issues')
+      .select('issue_key, summary, status, issue_type, priority, project_name, project_key, assignee_display_name, jira_updated_at')
+      .ilike('status', '%production%')
+      .gte('jira_updated_at', twoWeeksAgo)
+      .order('jira_updated_at', { ascending: false })
+      .limit(30);
+    if (items && items.length > 0) {
       const parts: string[] = [];
-      parts.push(`**Deployments This Week** — ${releases.length} releases\n`);
-      parts.push(`| RELEASE | STATUS | DATE | DESCRIPTION |`);
-      for (const r of releases) {
-        const date = r.release_date ? new Date(r.release_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : calcAge(r.created_at) + ' ago';
-        parts.push(`| ${r.name} | *${r.status || 'N/A'}* | ${date} | ${(r.description || '').substring(0, 60)} |`);
+      parts.push(`**In Production This Week** — ${items.length} items\n`);
+      parts.push(`| KEY | TITLE | TYPE | PROJECT | ASSIGNEE | SINCE |`);
+      for (const i of items) {
+        parts.push(`| \`${i.issue_key}\` | ${i.summary} | *${i.issue_type || 'N/A'}* | ${i.project_name || i.project_key || 'N/A'} | ${i.assignee_display_name || 'Unassigned'} | ${calcAge(i.jira_updated_at)} ago |`);
       }
-      parts.push(`\n*Releases in last 2 weeks*`);
-      return { found: true, answer: parts.join('\n'), confidence: 0.90, sources: ['releases'] };
+      parts.push(`\n*Items with production status in last 2 weeks*`);
+      return { found: true, answer: parts.join('\n'), confidence: 0.92, sources: ['ph_issues'] };
     }
-    return { found: true, answer: 'No deployments found in the last 2 weeks.', confidence: 0.80, sources: ['releases'] };
+    return { found: true, answer: 'No items moved to production in the last 2 weeks.', confidence: 0.80, sources: ['ph_issues'] };
   }
 
   // ── "Production incidents this week" (KA preset — faster than existing handler) ──
