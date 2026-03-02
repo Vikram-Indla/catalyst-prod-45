@@ -422,11 +422,11 @@ export function BlockedResponse() {
    ═══════════════════════════════════════════════════════════════ */
 
 const VIKRAM_ROWS = [
-  { key: 'BAU-5069', type: 'FE', title: 'Iron & cement Product License - Integration Enhancements', status: 'IN PROGRESS', project: 'Senaei BAU', age: '10h' },
-  { key: 'BAU-5076', type: 'FE', title: 'tests', status: 'BACKLOG', project: 'Senaei BAU', age: '1d' },
-  { key: 'BAU-5075', type: 'FE', title: 'test', status: 'IN REQUIREMENTS', project: 'Senaei BAU', age: '1d' },
-  { key: 'BAU-5067', type: 'FE', title: 'Know your Journey - Public Interactive Journey (FE + API)', status: 'BACKLOG', project: 'Senaei BAU', age: '2d' },
-  { key: 'BAU-5066', type: 'FE', title: 'Know your Journey - Public Interactive Journey (FE + API)', status: 'BACKLOG', project: 'Senaei BAU', age: '2d' },
+  { key: 'BAU-5054', type: 'FE', title: 'My Requests missing Search & Filter', status: 'RE-OPEN', project: 'Senaei BAU', age: '4h' },
+  { key: 'BAU-5073', type: 'FE', title: 'More Screen Issues', status: 'RE-OPEN', project: 'Senaei BAU', age: '5h' },
+  { key: 'BAU-5074', type: 'FE', title: 'Notification Screen Issues', status: 'DEFERRED', project: 'Senaei BAU', age: '15h' },
+  { key: 'SIMP-3245', type: 'FE', title: 'Landing Page — Program & Incentives', status: 'IN PROGRESS', project: 'SIMP', age: '1d' },
+  { key: 'MDT-533', type: 'BE', title: 'Request Query Optimization', status: 'IN PROGRESS', project: 'MDT', age: '1d' },
 ];
 
 export function VikramResponse() {
@@ -444,7 +444,7 @@ export function VikramResponse() {
             <span style={{ fontSize: 14, fontWeight: 650, color: '#0F172A', fontFamily: F.sora }}>Vikram Indla</span>
             <span style={{ fontSize: 12, color: '#64748B', fontFamily: F.inter }}>— Delivery Manager</span>
           </div>
-          <span style={{ fontSize: 11, color: '#64748B', fontFamily: F.mono }}>📁 Delivery · 20 items</span>
+          <span style={{ fontSize: 11, color: '#64748B', fontFamily: F.mono }}>📁 Delivery · 12 items</span>
         </div>
 
         <div style={{ overflowX: 'auto' }}>
@@ -455,7 +455,7 @@ export function VikramResponse() {
               <col style={{ width: 50 }} />
               <col />
               <col style={{ width: 110 }} />
-              <col style={{ width: 90 }} />
+              <col style={{ width: 100 }} />
               <col style={{ width: 70 }} />
             </colgroup>
             <thead>
@@ -485,7 +485,7 @@ export function VikramResponse() {
 
         <AIPredictionRow
           label="AI Prediction"
-          text="Vikram has 8 assigned and 12 reported items. BAU-5069 (Integration Enhancements) is actively in progress. Multiple Know your Journey items in Backlog — consider prioritizing sprint planning."
+          text="Vikram has 12 active items across 3 projects. BAU-5074 (Notification Screen Issues) deferred at 15h — at risk of SLA breach. SIMP-3245 blocked for 1d on card color mismatch. Consider escalating accessibility items."
         />
         <CardFooter meta="Showing 5 of 20 · Mar 1, 2026" confidence="High confidence" />
       </div>
@@ -527,7 +527,7 @@ export function SLAResponse() {
               <col />
               <col style={{ width: 110 }} />
               <col style={{ width: 70 }} />
-              <col style={{ width: 90 }} />
+              <col style={{ width: 80 }} />
             </colgroup>
             <thead>
               <tr>
@@ -605,7 +605,7 @@ export function TeamCapacityResponse() {
               <tr>
                 <th style={TH}>Member</th>
                 <th style={TH}>Role</th>
-                <th style={TH}>Active</th>
+                <th style={TH}>Items</th>
                 <th style={TH}>Blocked</th>
                 <th style={TH}>Capacity</th>
                 <th style={TH}>Status</th>

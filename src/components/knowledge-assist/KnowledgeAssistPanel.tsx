@@ -72,7 +72,7 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
   const inputRef = useRef<HTMLInputElement>(null);
   const pendingRef = useRef(false);
   const recognitionRef = useRef<any>(null);
-  const [barsVisible, setBarsVisible] = useState(false);
+  
 
   const fullName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Vikram';
   const name = firstName(fullName);
@@ -88,14 +88,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     }
   }, [isOpen]);
 
-  // Animate risk bars on mount
-  useEffect(() => {
-    if (isOpen && view === 'land') {
-      const t = setTimeout(() => setBarsVisible(true), 150);
-      return () => clearTimeout(t);
-    }
-    setBarsVisible(false);
-  }, [isOpen, view]);
 
   // Handle response
   useEffect(() => {
@@ -211,26 +203,6 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
     );
   };
 
-  /* ── Risk bar ── */
-  const RiskBar = ({ label, pct, gradient }: { label: string; pct: number; gradient: string }) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-      <span style={{
-        width: 90, fontSize: 11, fontWeight: 500, color: '#334155', textAlign: 'right',
-        fontFamily: "'Inter', sans-serif",
-      }}>{label}</span>
-      <div style={{ flex: 1, height: 16, background: '#F1F5F9', borderRadius: 2, overflow: 'hidden' }}>
-        <div style={{
-          height: '100%', borderRadius: 2, background: gradient,
-          width: barsVisible ? `${pct}%` : '0%',
-          transition: 'width 1s cubic-bezier(0.4,0,0.2,1)',
-        }} />
-      </div>
-      <span style={{
-        width: 32, fontSize: 11, color: '#64748B', textAlign: 'right',
-        fontFamily: "'JetBrains Mono', monospace",
-      }}>{pct}%</span>
-    </div>
-  );
 
   /* ── Source line ── */
   const SourceLine = () => (
@@ -356,6 +328,34 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
                 Your knowledge briefing is ready.
               </p>
 
+              {/* Stats Grid */}
+              <div style={{
+                display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
+                gap: 10, marginTop: 20,
+              }}>
+                {[
+                  { value: '12', label: 'My items', color: '#2563EB' },
+                  { value: '3', label: 'Blocked', color: '#DC2626' },
+                  { value: '5', label: 'Re-opened', color: '#D97706' },
+                  { value: '97%', label: 'Capacity', color: '#0F766E' },
+                ].map((s, i) => (
+                  <div key={i} style={{
+                    padding: '12px 14px', border: '0.75px solid rgba(15,23,42,0.12)',
+                    borderRadius: 6, background: '#FFFFFF',
+                  }}>
+                    <div style={{
+                      fontSize: 22, fontWeight: 700, color: s.color,
+                      fontFamily: "'JetBrains Mono', monospace",
+                      fontVariantNumeric: 'tabular-nums',
+                      lineHeight: 1,
+                    }}>{s.value}</div>
+                    <div style={{
+                      fontSize: 11, fontWeight: 500, color: '#64748B',
+                      marginTop: 4, fontFamily: "'Inter', sans-serif",
+                    }}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
 
               {/* YOUR WORK */}
               <div style={{ marginTop: 28 }}>
