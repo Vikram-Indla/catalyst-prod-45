@@ -316,19 +316,23 @@ export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onC
               {/* Stats Grid — 3 cards only */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginTop: 20 }}>
                 {[
-                  { value: '12', label: 'My items', color: '#2563EB' },
-                  { value: '3', label: 'Blocked', color: '#DC2626' },
-                  { value: '5', label: 'Re-opened', color: '#D97706' },
+                  { value: '12', label: 'My items', color: '#2563EB', query: "What are my open items?" },
+                  { value: '3', label: 'Blocked', color: '#DC2626', query: "What items are blocked?" },
+                  { value: '5', label: 'Re-opened', color: '#D97706', query: "Show re-opened items this week" },
                 ].map((s, i) => (
-                  <div key={i} style={{
+                  <button key={i} onClick={() => handleSend(s.query)} style={{
                     padding: 16, border: '1.5px solid rgba(15,23,42,0.10)', borderRadius: 8, background: '#FFFFFF',
-                  }}>
+                    cursor: 'pointer', textAlign: 'left', transition: 'all 150ms',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.20)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(15,23,42,0.10)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                  >
                     <div style={{
                       fontSize: 22, fontWeight: 600, color: s.color,
                       fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums', lineHeight: 1,
                     }}>{s.value}</div>
                     <div style={{ fontSize: 11, fontWeight: 500, color: '#64748B', marginTop: 4, fontFamily: "'Inter', sans-serif" }}>{s.label}</div>
-                  </div>
+                  </button>
                 ))}
               </div>
 
