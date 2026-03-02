@@ -1,11 +1,11 @@
 /**
  * ForYouDetailPanel — Enterprise right-drawer detail panel
- * V3 FINAL · fy- ring-fenced · 5 tabs · DB-backed Comments/History/Links
- * No Sprint/Story Points · Parent banner · Linkify
+ * V3 FINAL · fy- ring-fenced · 6 tabs (incl Sub-Tasks) · DB-backed Comments/History/Links
+ * Navigation stack for nested drill-down with breadcrumb
  */
 
-import React, { useState, useEffect } from 'react';
-import { X, ArrowLeft, ExternalLink, Copy, Layers, MessageSquare, Clock, Link2, Zap, Target, Tag, Calendar, GitBranch, User, CornerDownLeft, Paperclip, FileText, Image, Download, File } from 'lucide-react';
+import React, { useState, useEffect, Fragment } from 'react';
+import { X, ArrowLeft, ExternalLink, Copy, Layers, MessageSquare, Clock, Link2, Zap, Target, Tag, Calendar, GitBranch, User, CornerDownLeft, Paperclip, FileText, Image, Download, File, ListTree, Loader2 } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
@@ -178,6 +178,219 @@ function formatTimeAgo(dateStr: string): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
+// ── Sub-task helpers ──
+interface SubTaskItem {
+  key: string;
+  summary: string;
+  status: string;
+  issueType: string;
+  priority: string;
+  priorityLevel: number;
+  assigneeName: string | null;
+  updatedAt: string;
+  jiraUrl?: string;
+  parentKey?: string;
+  parentSummary?: string;
+  project?: string;
+  projectKey?: string;
+  hubLabel?: string;
+  description?: string;
+  reporter?: string;
+  createdAt?: string;
+  labels?: string[];
+  fixVersion?: string;
+  component?: string;
+  lastSyncedAt?: string;
+}
+
+const PRI_MAP: Record<string, number> = { Highest: 5, High: 4, Medium: 3, Low: 2, Lowest: 1 };
+
+function useSubTasksForPanel(parentKey: string | null) {
+  const [subTasks, setSubTasks] = useState<SubTaskItem[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!parentKey) { setSubTasks([]); return; }
+    let cancelled = false;
+    setLoading(true);
+
+    supabase
+      .from('ph_issues')
+      .select('issue_key, summary, status, issue_type, priority, assignee_display_name, reporter_display_name, parent_key, parent_summary, jira_created_at, jira_updated_at, description_text, labels, project_key, type_icon_url')
+      .eq('parent_key', parentKey)
+      .is('jira_removed_at', null)
+      .order('jira_updated_at', { ascending: false })
+      .limit(100)
+      .then(({ data: rows }) => {
+        if (!cancelled && rows) {
+          setSubTasks(rows.map(r => ({
+            key: r.issue_key,
+            summary: r.summary || '',
+            status: r.status || 'To Do',
+            issueType: r.issue_type || 'Sub-task',
+            priority: r.priority || 'Medium',
+            priorityLevel: PRI_MAP[r.priority || 'Medium'] || 3,
+            assigneeName: r.assignee_display_name,
+            updatedAt: r.jira_updated_at || r.jira_created_at || '',
+            parentKey: r.parent_key,
+            parentSummary: r.parent_summary,
+            project: r.project_key || '',
+            projectKey: r.project_key || '',
+            description: r.description_text,
+            reporter: r.reporter_display_name,
+            createdAt: r.jira_created_at ? formatTimeAgo(r.jira_created_at) : '',
+            labels: r.labels as string[] | undefined,
+          })));
+          setLoading(false);
+        }
+      });
+
+    return () => { cancelled = true; };
+  }, [parentKey]);
+
+  return { subTasks, isLoading: loading };
+}
+
+function getStatusCategory(status: string): 'todo' | 'inprogress' | 'done' {
+  const n = status.toLowerCase().replace(/[\s_-]+/g, '').trim();
+  const doneP = ['done', 'closed', 'resolved', 'complete', 'completed', 'inproduction', 'inprod', 'released', 'shipped', 'deployed', 'verified', 'accepted', 'approved'];
+  if (doneP.some(p => n.includes(p))) return 'done';
+  const progP = ['inprogress', 'indevelopment', 'indev', 'inreview', 'testing', 'readyfordevelopment', 'readyfordev', 'readyforqa', 'development', 'review', 'active', 'started', 'reopened', 'open', 'ready', 'triage', 'onhold'];
+  if (progP.some(p => n.includes(p))) return 'inprogress';
+  return 'todo';
+}
+
+function SubTaskCard({ item, onClick }: { item: SubTaskItem; onClick: () => void }) {
+  const bars = PRI_MAP[item.priority] || 2;
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: 'flex', flexDirection: 'column', gap: 8,
+        padding: '12px 14px', width: '100%', textAlign: 'left',
+        border: `1px solid ${T.border}`, borderRadius: 8,
+        cursor: 'pointer', backgroundColor: T.surface,
+        transition: 'all 0.12s ease',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.backgroundColor = T.surfaceSecondary; e.currentTarget.style.borderColor = T.borderStrong; }}
+      onMouseLeave={e => { e.currentTarget.style.backgroundColor = T.surface; e.currentTarget.style.borderColor = T.border; }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <JiraIssueTypeIcon issueType={item.issueType} size={16} />
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 650, color: T.primary, flexShrink: 0 }}>{item.key}</span>
+        <span style={{ fontSize: 13, fontWeight: 500, color: T.ink, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, fontFamily: "'Inter', system-ui" }}>{item.summary}</span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, paddingLeft: 26 }}>
+        <StatusLozenge status={item.status} />
+        {item.assigneeName && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <Avatar name={item.assigneeName} size={20} />
+            <span style={{ fontSize: 12, fontWeight: 500, color: T.inkTertiary, fontFamily: "'Inter', system-ui" }}>{item.assigneeName}</span>
+          </div>
+        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', gap: 1, height: 12 }}>
+            {[1,2,3,4].map(i => (
+              <div key={i} style={{ width: 3, height: 3 + i * 2.5, borderRadius: 1, backgroundColor: i <= bars ? T.inkMuted : T.border }} />
+            ))}
+          </div>
+          <span style={{ fontSize: 12, fontWeight: 500, color: T.inkMuted }}>{item.priority}</span>
+        </div>
+        <span style={{ fontSize: 11, fontWeight: 500, color: T.inkMuted, marginLeft: 'auto', fontFamily: "'JetBrains Mono', monospace" }}>{formatTimeAgo(item.updatedAt)}</span>
+      </div>
+    </button>
+  );
+}
+
+function SubTasksTabContent({ parentKey, onSubTaskClick }: { parentKey: string; onSubTaskClick: (st: SubTaskItem) => void }) {
+  const { subTasks, isLoading } = useSubTasksForPanel(parentKey);
+
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 0', gap: 8 }}>
+        <Loader2 size={16} color={T.inkMuted} style={{ animation: 'fy-spin 1s linear infinite' }} />
+        <span style={{ fontSize: 13, color: T.inkMuted }}>Loading sub-tasks…</span>
+      </div>
+    );
+  }
+
+  if (subTasks.length === 0) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 24px', textAlign: 'center', gap: 8 }}>
+        <ListTree size={28} color="#A1A1AA" strokeWidth={1.5} />
+        <span style={{ fontSize: 13, fontWeight: 500, color: T.inkMuted }}>No sub-tasks found for this item.</span>
+      </div>
+    );
+  }
+
+  const todoTasks = subTasks.filter(t => getStatusCategory(t.status) === 'todo');
+  const progressTasks = subTasks.filter(t => getStatusCategory(t.status) === 'inprogress');
+  const doneTasks = subTasks.filter(t => getStatusCategory(t.status) === 'done');
+  const total = subTasks.length;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      {/* Summary bar */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', backgroundColor: T.surfaceSecondary, borderRadius: 8, border: `1px solid ${T.border}` }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: T.ink }}>{total} sub-task{total !== 1 ? 's' : ''}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {[
+              { count: todoTasks.length, label: 'To Do', bg: '#DFE1E6', color: '#44546F' },
+              { count: progressTasks.length, label: 'In Progress', bg: '#DEEBFF', color: '#0747A6' },
+              { count: doneTasks.length, label: 'Done', bg: '#E3FCEF', color: '#006644' },
+            ].map(s => (
+              <span key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ display: 'inline-block', padding: '1px 6px', borderRadius: 3, backgroundColor: s.bg, color: s.color, fontSize: 11, fontWeight: 700 }}>{s.count}</span>
+                <span style={{ fontSize: 11, color: T.inkMuted }}>{s.label}</span>
+              </span>
+            ))}
+          </div>
+        </div>
+        <div style={{ display: 'flex', width: 100, height: 5, borderRadius: 3, overflow: 'hidden', backgroundColor: '#DFE1E6' }}>
+          {doneTasks.length > 0 && <div style={{ width: `${(doneTasks.length / total) * 100}%`, backgroundColor: '#00875A', transition: 'width 0.3s ease' }} />}
+          {progressTasks.length > 0 && <div style={{ width: `${(progressTasks.length / total) * 100}%`, backgroundColor: '#0065FF', transition: 'width 0.3s ease' }} />}
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {subTasks.map(st => <SubTaskCard key={st.key} item={st} onClick={() => onSubTaskClick(st)} />)}
+      </div>
+    </div>
+  );
+}
+
+// Convert SubTaskItem to a WorkItem-like shape for the panel to render
+function subTaskToWorkItem(st: SubTaskItem): WorkItem {
+  return {
+    id: st.key,
+    key: st.key,
+    summary: st.summary,
+    mode: 'DEL',
+    level: 'Sub-task',
+    project: st.project || '',
+    projectKey: st.projectKey || '',
+    hub: 'ProjectHub',
+    hubLabel: st.hubLabel || 'Project',
+    updatedAt: st.updatedAt ? formatTimeAgo(st.updatedAt) : '',
+    createdAt: st.createdAt || '',
+    assignee: { id: '', name: st.assigneeName || 'Unassigned', initials: (st.assigneeName || 'U').charAt(0), avatarColor: T.primary },
+    reporter: st.reporter,
+    issueType: st.issueType,
+    group: 'THIS_WEEK',
+    status: st.status,
+    priority: st.priority,
+    priorityLevel: st.priorityLevel,
+    labels: st.labels,
+    fixVersion: st.fixVersion,
+    component: st.component,
+    description: st.description,
+    parentKey: st.parentKey,
+    parentSummary: st.parentSummary,
+    lastSyncedAt: st.lastSyncedAt,
+  };
+}
+
 interface ForYouDetailPanelProps {
   item: WorkItem;
   onClose: () => void;
@@ -194,61 +407,79 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
   const [issueLinks, setIssueLinks] = useState<JiraIssueLink[]>([]);
   const [linksLoading, setLinksLoading] = useState(false);
 
+  // Navigation stack for sub-task drill-down
+  const [panelStack, setPanelStack] = useState<WorkItem[]>([]);
+  const currentItem = panelStack.length > 0 ? panelStack[panelStack.length - 1] : item;
+  const canGoBack = panelStack.length > 0;
+
+  // Sub-task count for tab badge
+  const { subTasks: currentSubTasks, isLoading: subTasksLoading } = useSubTasksForPanel(currentItem.key);
+  const subTaskCount = currentSubTasks.length;
+
+  // Reset stack when root item changes
+  useEffect(() => {
+    setPanelStack([]);
+    setTab('details');
+  }, [item.key]);
+
+  // Reset tab-specific data when current item changes
+  const currentKey = currentItem.key;
+
   // Fetch attachments
   useEffect(() => {
     async function fetchAttachments() {
-      if (!item.key) return;
+      if (!currentKey) return;
       setAttachmentsLoading(true);
       try {
-        const { data } = await supabase.from('ph_issue_attachments').select('*').eq('issue_key', item.key).order('jira_created_at', { ascending: false });
+        const { data } = await supabase.from('ph_issue_attachments').select('*').eq('issue_key', currentKey).order('jira_created_at', { ascending: false });
         if (data) setAttachments(data);
       } catch (e) { console.error('Error fetching attachments:', e); }
       finally { setAttachmentsLoading(false); }
     }
     fetchAttachments();
-  }, [item.key]);
+  }, [currentKey]);
 
   // Fetch comments from DB
   useEffect(() => {
     async function fetchComments() {
-      if (!item.key) return;
+      if (!currentKey) return;
       setCommentsLoading(true);
       try {
-        const { data } = await supabase.from('jira_sync_comments').select('id, author_display_name, body, jira_created_at').eq('issue_key', item.key).order('jira_created_at', { ascending: false });
+        const { data } = await supabase.from('jira_sync_comments').select('id, author_display_name, body, jira_created_at').eq('issue_key', currentKey).order('jira_created_at', { ascending: false });
         if (data) setComments(data);
       } catch (e) { console.error('Error fetching comments:', e); }
       finally { setCommentsLoading(false); }
     }
     fetchComments();
-  }, [item.key]);
+  }, [currentKey]);
 
   // Fetch changelog from DB
   useEffect(() => {
     async function fetchChangelog() {
-      if (!item.key) return;
+      if (!currentKey) return;
       setChangelogLoading(true);
       try {
-        const { data } = await supabase.from('jira_sync_changelog').select('id, author_display_name, field_name, from_string, to_string, jira_created_at').eq('issue_key', item.key).order('jira_created_at', { ascending: false });
+        const { data } = await supabase.from('jira_sync_changelog').select('id, author_display_name, field_name, from_string, to_string, jira_created_at').eq('issue_key', currentKey).order('jira_created_at', { ascending: false });
         if (data) setChangelog(data);
       } catch (e) { console.error('Error fetching changelog:', e); }
       finally { setChangelogLoading(false); }
     }
     fetchChangelog();
-  }, [item.key]);
+  }, [currentKey]);
 
   // Fetch issue links from DB
   useEffect(() => {
     async function fetchLinks() {
-      if (!item.key) return;
+      if (!currentKey) return;
       setLinksLoading(true);
       try {
-        const { data } = await supabase.from('jira_sync_issue_links').select('id, link_type, direction, source_key, target_key, target_summary, target_type, target_status').or(`source_key.eq.${item.key},target_key.eq.${item.key}`);
+        const { data } = await supabase.from('jira_sync_issue_links').select('id, link_type, direction, source_key, target_key, target_summary, target_type, target_status').or(`source_key.eq.${currentKey},target_key.eq.${currentKey}`);
         if (data) setIssueLinks(data);
       } catch (e) { console.error('Error fetching links:', e); }
       finally { setLinksLoading(false); }
     }
     fetchLinks();
-  }, [item.key]);
+  }, [currentKey]);
 
   // Close on Escape
   useEffect(() => {
@@ -257,12 +488,36 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
     return () => document.removeEventListener('keydown', handleKey);
   }, [onClose]);
 
+  // Navigation handlers
+  const handleSubTaskClick = (st: SubTaskItem) => {
+    const workItem = subTaskToWorkItem(st);
+    setPanelStack(prev => {
+      if (prev.length === 0) return [item, workItem];
+      return [...prev, workItem];
+    });
+    setTab('details');
+  };
+
+  const handleBack = () => {
+    setPanelStack(prev => {
+      if (prev.length <= 1) return [];
+      return prev.slice(0, -1);
+    });
+    setTab('details');
+  };
+
+  const handleBreadcrumbNav = (index: number) => {
+    setPanelStack(prev => prev.slice(0, index + 1));
+    setTab('details');
+  };
+
   // Combine parent link with DB links for count
-  const parentLinkCount = item.parentKey ? 1 : 0;
+  const parentLinkCount = currentItem.parentKey ? 1 : 0;
   const totalLinksCount = issueLinks.length + parentLinkCount;
 
   const tabs = [
     { id: 'details', label: 'Details', icon: <Layers size={13} /> },
+    { id: 'subtasks', label: 'Sub-Tasks', icon: <ListTree size={13} />, count: subTaskCount },
     { id: 'attachments', label: 'Attachments', icon: <Paperclip size={13} />, count: attachments.length },
     { id: 'comments', label: 'Comments', icon: <MessageSquare size={13} />, count: comments.length },
     { id: 'history', label: 'History', icon: <Clock size={13} />, count: changelog.length },
@@ -270,7 +525,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
   ];
 
   const openInJira = () => {
-    if (item.jiraUrl) window.open(item.jiraUrl, '_blank', 'noopener');
+    if (currentItem.jiraUrl) window.open(currentItem.jiraUrl, '_blank', 'noopener');
   };
 
   // Build activity entries from changelog for the "Recent Activity" section in Details tab
@@ -284,8 +539,8 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
         time: formatTimeAgo(c.jira_created_at),
       }))
     : [
-        { user: item.assignee.name, action: 'changed status to', value: item.status, isStatus: true, from: null, time: item.updatedAt },
-        { user: item.reporter || item.assignee.name, action: 'created this issue', value: '', isStatus: false, from: null, time: item.createdAt },
+        { user: currentItem.assignee.name, action: 'changed status to', value: currentItem.status, isStatus: true, from: null, time: currentItem.updatedAt },
+        { user: currentItem.reporter || currentItem.assignee.name, action: 'created this issue', value: '', isStatus: false, from: null, time: currentItem.createdAt },
       ];
 
   return (
@@ -298,10 +553,13 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', borderBottom: `1px solid ${T.border}`, background: T.surfaceSecondary, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.inkTertiary, display: 'flex', padding: 4, borderRadius: 4 }}><ArrowLeft size={18} /></button>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: T.primary, background: T.primaryBg, padding: '4px 12px', borderRadius: 4 }}>{item.key}</span>
+            <button onClick={canGoBack ? handleBack : onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.inkTertiary, display: 'flex', alignItems: 'center', gap: 4, padding: 4, borderRadius: 4 }}>
+              <ArrowLeft size={18} />
+              {canGoBack && <span style={{ fontSize: 13, fontWeight: 500 }}>Back</span>}
+            </button>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: T.primary, background: T.primaryBg, padding: '4px 12px', borderRadius: 4 }}>{currentItem.key}</span>
             <button onClick={openInJira} style={{ fontSize: 12, fontWeight: 600, color: T.primary, display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer' }}><ExternalLink size={13} /> Open in Jira</button>
-            <button onClick={() => navigator.clipboard?.writeText(item.key)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.inkMuted, display: 'flex', padding: 2 }}><Copy size={13} /></button>
+            <button onClick={() => navigator.clipboard?.writeText(currentItem.key)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.inkMuted, display: 'flex', padding: 2 }}><Copy size={13} /></button>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 10, fontWeight: 700, color: T.primary, background: T.primaryBg, padding: '3px 8px', borderRadius: 4, fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.06em' }}>JIRA SYNC</span>
@@ -309,17 +567,35 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
           </div>
         </div>
 
+        {/* Breadcrumb when navigated into sub-task */}
+        {panelStack.length > 1 && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 24px', fontSize: 12, color: T.inkMuted, borderBottom: `1px solid ${T.border}`, backgroundColor: T.surfaceSecondary }}>
+            {panelStack.slice(0, -1).map((stackItem, i) => (
+              <Fragment key={stackItem.key}>
+                <button
+                  onClick={() => handleBreadcrumbNav(i)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.primary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 650, padding: 0 }}
+                >
+                  {stackItem.key}
+                </button>
+                <span style={{ color: T.borderStrong }}>/</span>
+              </Fragment>
+            ))}
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 650, color: T.ink }}>{currentItem.key}</span>
+          </div>
+        )}
+
         {/* Title Section */}
         <div style={{ padding: '20px 24px 0', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-            <div style={{ marginTop: 3 }}><JiraIssueTypeIcon issueType={item.issueType} size={22} /></div>
+            <div style={{ marginTop: 3 }}><JiraIssueTypeIcon issueType={currentItem.issueType} size={22} /></div>
             <div style={{ flex: 1 }}>
-              <h2 style={{ fontFamily: "'Sora', system-ui", fontSize: 18, fontWeight: 700, color: T.ink, letterSpacing: '-0.025em', lineHeight: 1.35 }}>{item.summary}</h2>
+              <h2 style={{ fontFamily: "'Sora', system-ui", fontSize: 18, fontWeight: 700, color: T.ink, letterSpacing: '-0.025em', lineHeight: 1.35 }}>{currentItem.summary}</h2>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, flexWrap: 'wrap' }}>
-                <StatusPill status={item.status} />
-                <span style={{ fontSize: 12, fontWeight: 500, color: T.inkTertiary }}>{item.project}</span>
+                <StatusPill status={currentItem.status} />
+                <span style={{ fontSize: 12, fontWeight: 500, color: T.inkTertiary }}>{currentItem.project}</span>
                 <span style={{ color: T.borderStrong }}>·</span>
-                <span style={{ fontSize: 12, fontWeight: 500, color: T.inkTertiary }}>Updated {item.updatedAt}</span>
+                <span style={{ fontSize: 12, fontWeight: 500, color: T.inkTertiary }}>Updated {currentItem.updatedAt}</span>
               </div>
             </div>
           </div>
@@ -351,53 +627,53 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
           {tab === 'details' && (
             <>
               {/* Parent Info Banner */}
-              {item.parentKey && (
+              {currentItem.parentKey && (
                 <div className="fy-parent-banner" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', marginBottom: 16, background: T.surfaceTertiary, borderRadius: 8, border: `1px solid ${T.border}` }}>
                   <CornerDownLeft size={14} style={{ color: T.inkMuted, flexShrink: 0 }} />
                   <span style={{ fontSize: 11, fontWeight: 600, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>PARENT</span>
                   <JiraIssueTypeIcon issueType="epic" size={14} />
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: T.primary }}>{item.parentKey}</span>
-                  {item.parentSummary && <span style={{ fontSize: 13, fontWeight: 500, color: T.inkSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parentSummary}</span>}
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: T.primary }}>{currentItem.parentKey}</span>
+                  {currentItem.parentSummary && <span style={{ fontSize: 13, fontWeight: 500, color: T.inkSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{currentItem.parentSummary}</span>}
                 </div>
               )}
 
               {/* Field Grid — NO Sprint, NO Story Points */}
               <div style={{ border: `1px solid ${T.border}`, borderRadius: 8, overflow: 'hidden' }}>
-                <FieldRow icon={<Zap size={13} />} label="Status"><StatusPill status={item.status} /></FieldRow>
-                <FieldRow icon={<Target size={13} />} label="Priority"><PriorityBars level={item.priorityLevel} showLabel /></FieldRow>
-                <FieldRow icon={<Layers size={13} />} label="Project"><span style={{ fontWeight: 600 }}>{item.project}</span></FieldRow>
-                <FieldRow icon={<Tag size={13} />} label="Hub"><HubBadge hub={item.hubLabel} /></FieldRow>
+                <FieldRow icon={<Zap size={13} />} label="Status"><StatusPill status={currentItem.status} /></FieldRow>
+                <FieldRow icon={<Target size={13} />} label="Priority"><PriorityBars level={currentItem.priorityLevel} showLabel /></FieldRow>
+                <FieldRow icon={<Layers size={13} />} label="Project"><span style={{ fontWeight: 600 }}>{currentItem.project}</span></FieldRow>
+                <FieldRow icon={<Tag size={13} />} label="Hub"><HubBadge hub={currentItem.hubLabel} /></FieldRow>
                 <FieldRow icon={<Tag size={13} />} label="Labels">
-                  {item.labels && item.labels.length > 0 ? (
+                  {currentItem.labels && currentItem.labels.length > 0 ? (
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                      {item.labels.map(l => <span key={l} style={{ fontSize: 11, fontWeight: 600, color: T.inkSecondary, background: T.surfaceTertiary, padding: '2px 8px', borderRadius: 4 }}>{l}</span>)}
+                      {currentItem.labels.map(l => <span key={l} style={{ fontSize: 11, fontWeight: 600, color: T.inkSecondary, background: T.surfaceTertiary, padding: '2px 8px', borderRadius: 4 }}>{l}</span>)}
                     </div>
                   ) : <span style={{ color: T.inkMuted }}>—</span>}
                 </FieldRow>
-                <FieldRow icon={<GitBranch size={13} />} label="Fix Version"><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}>{item.fixVersion || '—'}</span></FieldRow>
-                <FieldRow icon={<Layers size={13} />} label="Component"><span>{item.component || '—'}</span></FieldRow>
+                <FieldRow icon={<GitBranch size={13} />} label="Fix Version"><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}>{currentItem.fixVersion || '—'}</span></FieldRow>
+                <FieldRow icon={<Layers size={13} />} label="Component"><span>{currentItem.component || '—'}</span></FieldRow>
                 <div style={{ height: 2, background: T.surfaceTertiary }} />
                 <FieldRow icon={<User size={13} />} label="Reporter">
-                  {item.reporter ? (<><Avatar name={item.reporter} size={22} /><span style={{ fontWeight: 500 }}>{item.reporter}</span></>) : <span style={{ color: T.inkMuted }}>—</span>}
+                  {currentItem.reporter ? (<><Avatar name={currentItem.reporter} size={22} /><span style={{ fontWeight: 500 }}>{currentItem.reporter}</span></>) : <span style={{ color: T.inkMuted }}>—</span>}
                 </FieldRow>
-                <FieldRow icon={<User size={13} />} label="Assignee"><Avatar name={item.assignee.name} size={22} /><span style={{ fontWeight: 500 }}>{item.assignee.name}</span></FieldRow>
+                <FieldRow icon={<User size={13} />} label="Assignee"><Avatar name={currentItem.assignee.name} size={22} /><span style={{ fontWeight: 500 }}>{currentItem.assignee.name}</span></FieldRow>
                 <div style={{ height: 2, background: T.surfaceTertiary }} />
-                <FieldRow icon={<Calendar size={13} />} label="Created"><span style={{ fontWeight: 500 }}>{item.createdAt}</span></FieldRow>
-                <FieldRow icon={<Clock size={13} />} label="Updated" last><span style={{ fontWeight: 500 }}>{item.updatedAt}</span></FieldRow>
+                <FieldRow icon={<Calendar size={13} />} label="Created"><span style={{ fontWeight: 500 }}>{currentItem.createdAt}</span></FieldRow>
+                <FieldRow icon={<Clock size={13} />} label="Updated" last><span style={{ fontWeight: 500 }}>{currentItem.updatedAt}</span></FieldRow>
               </div>
 
               {/* Jira Sync bar */}
               <div className="fy-jira-sync" style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 16, padding: '10px 14px', background: T.primaryBg, borderRadius: 8, border: `1px solid ${T.border}` }}>
                 <ExternalLink size={13} style={{ color: T.primary }} />
                 <span style={{ fontSize: 12, fontWeight: 700, color: T.primary, fontFamily: "'JetBrains Mono', monospace" }}>JIRA SYNC</span>
-                <span style={{ fontSize: 12, color: T.inkTertiary }}>· Last synced {item.lastSyncedAt ? new Date(item.lastSyncedAt).toLocaleDateString() : item.updatedAt} · Source of truth: Jira</span>
+                <span style={{ fontSize: 12, color: T.inkTertiary }}>· Last synced {currentItem.lastSyncedAt ? new Date(currentItem.lastSyncedAt).toLocaleDateString() : currentItem.updatedAt} · Source of truth: Jira</span>
               </div>
 
               {/* Description — with Linkify */}
               <div style={{ marginTop: 24 }}>
                 <h3 style={{ fontFamily: "'Sora', system-ui", fontSize: 14, fontWeight: 600, color: T.ink, paddingBottom: 8, borderBottom: `1px solid ${T.border}`, marginBottom: 12 }}>Description</h3>
                 <div style={{ fontSize: 13, color: T.inkSecondary, lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
-                  <Linkify text={item.description || (item.issueType?.toLowerCase().includes('bug')
+                  <Linkify text={currentItem.description || (currentItem.issueType?.toLowerCase().includes('bug')
                     ? `Steps to reproduce: Navigate to the relevant screen → perform the action described → observe the inconsistency. Expected: Match the approved Figma design specifications.`
                     : `Implement the feature as described. Ensure alignment with approved Figma designs and UX specifications. All acceptance criteria must be verified before moving to Done.`)} />
                 </div>
@@ -422,6 +698,11 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
                 ))}
               </div>
             </>
+          )}
+
+          {/* ═══ SUB-TASKS TAB ═══ */}
+          {tab === 'subtasks' && (
+            <SubTasksTabContent parentKey={currentItem.key} onSubTaskClick={handleSubTaskClick} />
           )}
 
           {/* ═══ ATTACHMENTS TAB ═══ */}
@@ -552,15 +833,15 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
               ) : (
                 <>
                   {/* Parent link (always from item data) */}
-                  {item.parentKey && (
+                  {currentItem.parentKey && (
                     <div className="fy-link-card" style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 14px', border: `1px solid ${T.border}`, borderRadius: 8, marginBottom: 8 }}>
                       <Link2 size={13} style={{ color: T.inkMuted, marginTop: 2 }} />
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 11, fontWeight: 600, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>IS CHILD OF</div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
                           <JiraIssueTypeIcon issueType="epic" size={14} />
-                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: T.primary }}>{item.parentKey}</span>
-                          <span style={{ fontSize: 13, color: T.inkSecondary }}>{item.parentSummary || ''}</span>
+                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: T.primary }}>{currentItem.parentKey}</span>
+                          <span style={{ fontSize: 13, color: T.inkSecondary }}>{currentItem.parentSummary || ''}</span>
                         </div>
                       </div>
                     </div>
@@ -568,7 +849,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
 
                   {/* DB issue links */}
                   {issueLinks.map(link => {
-                    const isSource = link.source_key === item.key;
+                    const isSource = link.source_key === currentItem.key;
                     const linkedKey = isSource ? link.target_key : link.source_key;
                     const relLabel = isSource ? link.link_type.toUpperCase() : `${link.link_type} (inward)`.toUpperCase();
 
@@ -588,7 +869,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
                     );
                   })}
 
-                  {!item.parentKey && issueLinks.length === 0 && (
+                  {!currentItem.parentKey && issueLinks.length === 0 && (
                     <div style={{ textAlign: 'center', padding: 24, color: T.inkMuted, fontSize: 13 }}>No linked items.</div>
                   )}
                 </>
@@ -602,6 +883,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
       <style>{`
         @keyframes fy-slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
         @keyframes fy-fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fy-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
     </>
   );
