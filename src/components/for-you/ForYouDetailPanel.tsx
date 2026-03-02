@@ -642,16 +642,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
                 <FieldRow icon={<Zap size={13} />} label="Status"><StatusPill status={currentItem.status} /></FieldRow>
                 <FieldRow icon={<Target size={13} />} label="Priority"><PriorityBars level={currentItem.priorityLevel} showLabel /></FieldRow>
                 <FieldRow icon={<Layers size={13} />} label="Project"><span style={{ fontWeight: 600 }}>{currentItem.project}</span></FieldRow>
-                <FieldRow icon={<Tag size={13} />} label="Hub"><HubBadge hub={currentItem.hubLabel} /></FieldRow>
-                <FieldRow icon={<Tag size={13} />} label="Labels">
-                  {currentItem.labels && currentItem.labels.length > 0 ? (
-                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                      {currentItem.labels.map(l => <span key={l} style={{ fontSize: 11, fontWeight: 600, color: T.inkSecondary, background: T.surfaceTertiary, padding: '2px 8px', borderRadius: 4 }}>{l}</span>)}
-                    </div>
-                  ) : <span style={{ color: T.inkMuted }}>—</span>}
-                </FieldRow>
                 <FieldRow icon={<GitBranch size={13} />} label="Fix Version"><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}>{currentItem.fixVersion || '—'}</span></FieldRow>
-                <FieldRow icon={<Layers size={13} />} label="Component"><span>{currentItem.component || '—'}</span></FieldRow>
                 <div style={{ height: 2, background: T.surfaceTertiary }} />
                 <FieldRow icon={<User size={13} />} label="Reporter">
                   {currentItem.reporter ? (<><Avatar name={currentItem.reporter} size={22} /><span style={{ fontWeight: 500 }}>{currentItem.reporter}</span></>) : <span style={{ color: T.inkMuted }}>—</span>}
