@@ -1,102 +1,108 @@
-import React, { useEffect, memo } from 'react';
+import React, { useEffect, useState, useCallback, memo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useWikiPage, useIsBookmarked, useToggleWikiBookmark, useLogWikiRead, useSubmitFeedback } from '@/hooks/useWikiData';
-import { Star, ThumbsUp, ThumbsDown, Flag, ChevronRight } from 'lucide-react';
-import { sectionHeaderStyle, StatusLozenge, JiraPill, AiBadge, DomainBadge, ConfidenceBadge, LiveDataBadge, EmDash, SkeletonBlock, SkeletonRow, truncateStyle } from '@/components/wiki/WikiTokens';
+import { useWikiPage, useLogWikiRead } from '@/hooks/useWikiData';
+import { useWikiRelatedArticles, useSubmitArticleFeedback } from '@/hooks/useWikiHub';
+import {
+  Star, ThumbsUp, ThumbsDown, ChevronRight, Clock, GitBranch, Sparkles,
+  FileText, FileDown, Video, ShieldCheck, BookOpen, ArrowRight,
+} from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
-// Memoized section component for performance
-const ArticleSection = memo(({ section, index, refs }: { section: any; index: number; refs: any[] }) => (
-  <div id={`section-${index + 1}`}>
-    <div style={{ ...sectionHeaderStyle, display: 'flex', alignItems: 'center', gap: 8 }}>
-      <span>{index + 1}. {section.title}</span>
-      {section.is_live_data && <LiveDataBadge />}
-    </div>
+/* ── Time helpers ── */
+function timeAgo(d: string) {
+  const ms = Date.now() - new Date(d).getTime();
+  const m = Math.floor(ms / 60000);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
 
-    {section.section_type === 'references' ? (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {refs.map((r: any) => (
-          <div key={r.ref_number} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
-            <span dir="ltr" style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: 'var(--cp-text-muted)', minWidth: 20 }}>[{r.ref_number}]</span>
-            {r.source_type === 'jira' ? <JiraPill label={r.source_key} /> :
-              r.source_type === 'document' ? <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 6px', borderRadius: 3, background: 'var(--cp-purple-5)', color: 'var(--cp-purple-60)' }}>{r.source_key}</span> :
-                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--cp-text-secondary)' }}>{r.source_key}</span>}
-            <span style={{ fontSize: 12, color: 'var(--cp-text-secondary)' }}>{r.description || '—'}</span>
-          </div>
-        ))}
-        {refs.length === 0 && (
-          <div style={{ fontSize: 12, color: 'var(--cp-text-muted)', padding: 8 }}>No references available.</div>
-        )}
-      </div>
-    ) : (
-      <p style={{ fontSize: 13.5, lineHeight: 1.7, color: 'var(--cp-text-secondary)', margin: 0 }}>{section.content}</p>
-    )}
-  </div>
-));
-ArticleSection.displayName = 'ArticleSection';
+/* ── StatusLozenge (V12 3-color guardrail) ── */
+function StatusLozenge({ status }: { status: string }) {
+  const s = (status || '').toLowerCase();
+  const map: Record<string, { bg: string; color: string; label: string }> = {
+    published: { bg: '#E3FCEF', color: '#006644', label: 'PUBLISHED' },
+    done: { bg: '#E3FCEF', color: '#006644', label: 'DONE' },
+    verified: { bg: '#E3FCEF', color: '#006644', label: 'VERIFIED' },
+    'in progress': { bg: '#DEEBFF', color: '#0747A6', label: 'IN PROGRESS' },
+    review: { bg: '#DEEBFF', color: '#0747A6', label: 'IN REVIEW' },
+    needs_review: { bg: '#DEEBFF', color: '#0747A6', label: 'NEEDS REVIEW' },
+    draft: { bg: '#DFE1E6', color: '#44546F', label: 'DRAFT' },
+    archived: { bg: '#DFE1E6', color: '#44546F', label: 'ARCHIVED' },
+  };
+  const v = map[s] || { bg: '#DFE1E6', color: '#44546F', label: (status || '—').toUpperCase() };
+  return (
+    <span style={{
+      fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 3,
+      background: v.bg, color: v.color, textTransform: 'uppercase',
+    }}>{v.label}</span>
+  );
+}
 
-// Skeleton loader for article page
-const ArticleSkeleton = () => (
-  <div style={{ fontFamily: 'var(--cp-font-body)', background: 'var(--cp-bg-page)', minHeight: '100%' }}>
-    <div style={{ padding: '16px 28px 48px' }}>
-      <SkeletonBlock width={200} height={12} style={{ marginBottom: 20 }} />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: 24 }}>
-        <div>
-          <SkeletonBlock width="60%" height={24} style={{ marginBottom: 12 }} />
-          <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-            <SkeletonBlock width={100} height={14} />
-            <SkeletonBlock width={80} height={14} />
-            <SkeletonBlock width={60} height={14} />
-          </div>
-          <SkeletonRow lines={4} />
-          <div style={{ marginTop: 24 }}><SkeletonRow lines={6} /></div>
-        </div>
-        <div style={{ borderRadius: 6, border: '1px solid var(--cp-border-default)', overflow: 'hidden' }}>
-          <SkeletonBlock height={32} radius={0} />
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} style={{ padding: '8px 12px', borderBottom: '0.75px solid var(--cp-border-subtle)', display: 'flex', justifyContent: 'space-between' }}>
-              <SkeletonBlock width={60} height={12} />
-              <SkeletonBlock width={80} height={12} />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
+/* ── Skeleton ── */
+const Sk = ({ w, h, style }: { w: string | number; h: number; style?: React.CSSProperties }) => (
+  <div style={{
+    width: w, height: h, borderRadius: 4, background: '#E2E8F0',
+    animation: 'pulse 1.5s ease-in-out infinite', ...style,
+  }} />
 );
 
+/* ═══ ARTICLE PAGE ═══ */
 export default function WikiArticlePage() {
   const { pageSlug } = useParams<{ pageSlug: string }>();
   const navigate = useNavigate();
   const { data: page, isLoading, error } = useWikiPage(pageSlug);
-  const { data: isBookmarked } = useIsBookmarked(page?.id);
-  const toggleBookmark = useToggleWikiBookmark();
   const logRead = useLogWikiRead();
-  const submitFeedback = useSubmitFeedback();
+  const submitFeedback = useSubmitArticleFeedback();
+  const [scrollPct, setScrollPct] = useState(0);
+  const [bookmarked, setBookmarked] = useState(false);
 
+  // Related articles
+  const { data: related } = useWikiRelatedArticles(page?.domain_code, page?.id, 3);
+
+  // Log read on mount
   useEffect(() => {
-    if (page?.id) {
-      logRead.mutate({ pageId: page.id });
-    }
+    if (page?.id) logRead.mutate({ pageId: page.id });
   }, [page?.id]);
 
-  const handleTogglePin = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user || !page?.id) return;
-    toggleBookmark.mutate({ pageId: page.id, userId: user.id });
-  };
+  // Scroll progress
+  useEffect(() => {
+    const onScroll = () => {
+      const el = document.documentElement;
+      const pct = Math.min(100, (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100);
+      setScrollPct(pct);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
-  const handleFeedback = (rating: 'positive' | 'negative') => {
+  const handleFeedback = useCallback((helpful: boolean) => {
     if (!page?.id) return;
-    submitFeedback.mutate({ entityId: page.id, entityType: 'wiki_page', rating });
-  };
+    submitFeedback.mutate({ pageId: page.id, helpful });
+    toast.success(helpful ? 'Thanks for the feedback!' : 'We\'ll work to improve this article.');
+  }, [page?.id, submitFeedback]);
 
+  const handleBookmark = useCallback(async () => {
+    setBookmarked(b => !b);
+    toast.info(bookmarked ? 'Removed from reading list' : 'Added to reading list');
+  }, [bookmarked]);
+
+  /* ── Loading ── */
   if (isLoading) return <ArticleSkeleton />;
 
+  /* ── Not found ── */
   if (error || !page) {
     return (
-      <div style={{ fontFamily: 'var(--cp-font-body)', padding: 48, textAlign: 'center', color: 'var(--cp-text-muted)' }}>
-        Article not found. <span onClick={() => navigate('/wiki')} style={{ color: 'var(--cp-text-link)', cursor: 'pointer' }}>Return to Wiki</span>
+      <div style={{ fontFamily: 'Inter, sans-serif', padding: 80, textAlign: 'center' }}>
+        <div style={{ fontSize: 48, marginBottom: 12 }}>📄</div>
+        <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: '#0F172A', marginBottom: 8 }}>Article not found</div>
+        <div style={{ fontSize: 13, color: '#64748B', marginBottom: 16 }}>The article you're looking for doesn't exist or has been removed.</div>
+        <button onClick={() => navigate('/wiki')} style={{
+          fontSize: 12, fontWeight: 650, padding: '8px 20px', borderRadius: 6,
+          background: '#2563EB', color: '#FFFFFF', border: 'none', cursor: 'pointer',
+        }}>Return to Wiki</button>
       </div>
     );
   }
@@ -104,165 +110,405 @@ export default function WikiArticlePage() {
   const info = (page.infobox as any) || {};
   const sections = page.sections || [];
   const refs = page.references || [];
-  const title = page.title || pageSlug?.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) || 'Wiki Article';
+  const title = page.title || pageSlug?.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()) || 'Article';
+  const conf = Math.round((page.ai_confidence ?? 0) * 100);
+  const confColor = conf >= 90 ? '#16A34A' : conf >= 70 ? '#2563EB' : '#D97706';
+  const verStatus = (page as any).verification_status || 'unverified';
+  const verBadge = verStatus === 'verified'
+    ? { bg: '#E3FCEF', color: '#006644', label: 'Verified', icon: <ShieldCheck size={10} /> }
+    : verStatus === 'needs_review'
+    ? { bg: '#DEEBFF', color: '#0747A6', label: 'Needs Review', icon: null }
+    : { bg: '#DFE1E6', color: '#44546F', label: 'Unverified', icon: null };
+  const tags = ((page as any).tags ?? []) as string[];
+  const tldr = (page as any).tldr as string | null;
+  const authorName = (page as any).author_name as string | null;
+  const readTime = (page as any).read_time_minutes as number | null;
+  const helpScore = (page as any).helpfulness_score ?? 0;
+  const helpVotes = (page as any).helpfulness_votes ?? 0;
+  const formatIcon = (page as any).format === 'pdf'
+    ? <FileDown size={14} style={{ color: '#DC2626' }} />
+    : (page as any).format === 'video'
+    ? <Video size={14} style={{ color: '#7C3AED' }} />
+    : <FileText size={14} style={{ color: '#94A3B8' }} />;
 
-  const breadcrumbs = [
-    { label: 'Wiki', path: '/wiki' },
-    { label: `${page.domain_code || ''}`, path: `/wiki/category/${page.domain_code?.toLowerCase()}` },
-    { label: title },
-  ];
+  const domainName = page.domain_code || 'Wiki';
 
-  // Helper for infobox null values
-  const infoVal = (val: any) => (val != null && val !== '' ? val : <EmDash />);
+  /* ── Infobox rows (hide null) ── */
+  const infoRows = [
+    { label: 'Domain', value: domainName, show: true },
+    { label: 'Status', value: <StatusLozenge status={info.status || page.status || ''} />, show: true },
+    { label: 'Hub', value: info.hub, show: !!info.hub },
+    { label: 'Project', value: info.project, show: !!info.project },
+    { label: 'Epic', value: info.epicKey ? (
+      <span style={{ fontSize: 11, fontWeight: 650, color: '#2563EB', fontFamily: 'JetBrains Mono, monospace' }}>{info.epicKey}</span>
+    ) : null, show: !!info.epicKey },
+    { label: 'Stories', value: info.totalStories ? (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{info.doneStories ?? 0}/{info.totalStories} done</span>
+        <div style={{ width: 40, height: 3, borderRadius: 2, background: '#E2E8F0' }}>
+          <div style={{ height: '100%', borderRadius: 2, background: '#2563EB', width: `${info.donePercent ?? 0}%` }} />
+        </div>
+      </div>
+    ) : null, show: !!info.totalStories },
+    { label: 'Done %', value: info.donePercent != null ? (
+      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: info.donePercent >= 80 ? '#006644' : '#0747A6' }}>{info.donePercent}%</span>
+    ) : null, show: info.donePercent != null },
+    { label: 'Open Defects', value: info.openDefects != null ? (
+      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: info.openDefects > 0 ? '#DC2626' : '#64748B' }}>{info.openDefects}</span>
+    ) : null, show: info.openDefects != null },
+    { label: 'Sprint', value: info.currentSprint, show: !!info.currentSprint },
+    { label: 'Owner', value: info.owner ? <span style={{ fontWeight: 600 }}>{info.owner}</span> : null, show: !!info.owner },
+    { label: 'BRD', value: info.brdVersion, show: !!info.brdVersion },
+    { label: 'Documents', value: info.documentsCount ? (
+      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{info.documentsCount}</span>
+    ) : null, show: !!info.documentsCount },
+    { label: 'Last Sync', value: info.lastSync ? timeAgo(info.lastSync) : null, show: !!info.lastSync },
+    { label: 'AI Confidence', value: (
+      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: confColor }}>{conf}%</span>
+    ), show: true },
+  ].filter(r => r.show);
 
   return (
-    <div style={{ fontFamily: 'var(--cp-font-body)', color: 'var(--cp-text-primary)', background: 'var(--cp-bg-page)', minHeight: '100%' }}>
-      <div style={{ padding: '16px 28px 48px' }}>
-        {/* Breadcrumb */}
-        <nav role="navigation" aria-label="Breadcrumb" style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20, flexWrap: 'wrap' }}>
-          {breadcrumbs.map((b, i) => (
-            <React.Fragment key={i}>
-              {i > 0 && <ChevronRight size={12} style={{ color: 'var(--cp-text-muted)' }} />}
-              {b.path ? (
-                <span onClick={() => navigate(b.path!)} tabIndex={0} onKeyDown={e => { if (e.key === 'Enter') navigate(b.path!); }} style={{ fontSize: 12, color: 'var(--cp-text-link)', cursor: 'pointer' }}>{b.label}</span>
-              ) : (
-                <span style={{ fontSize: 12, color: 'var(--cp-text-secondary)', fontWeight: 600 }}>{b.label}</span>
-              )}
-            </React.Fragment>
-          ))}
+    <div style={{ fontFamily: 'Inter, sans-serif', color: '#0F172A', background: '#F8FAFC', minHeight: '100%' }}>
+      {/* Scroll progress bar */}
+      <div style={{
+        position: 'fixed', top: 0, left: 0, right: 0, height: 3, zIndex: 100,
+        background: 'rgba(15,23,42,0.04)',
+      }}>
+        <div style={{
+          height: '100%', background: '#2563EB', width: `${scrollPct}%`,
+          transition: 'width 60ms linear',
+        }} />
+      </div>
+
+      <div style={{ padding: '20px 40px 48px' }}>
+        {/* ── Breadcrumb ── */}
+        <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
+          <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
+          <ChevronRight size={12} style={{ color: '#94A3B8' }} />
+          <span onClick={() => navigate(`/wiki/category/${DOMAIN_SLUGS[page.domain_code || ''] || ''}`)} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>{domainName}</span>
+          <ChevronRight size={12} style={{ color: '#94A3B8' }} />
+          <span style={{ fontSize: 13, color: '#64748B', fontWeight: 600 }}>{title}</span>
         </nav>
 
-        {/* 2-col layout */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: 24, alignItems: 'start' }}>
+        {/* ── 2-column ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 32, alignItems: 'start' }}>
           {/* Main content */}
           <article style={{ minWidth: 0 }}>
-            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 24, fontWeight: 700, margin: '0 0 8px', color: 'var(--cp-text-primary)' }}>{title}</h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 20 }}>
-              <span style={{ fontSize: 11, color: 'var(--cp-text-muted)' }}>Last updated: {page.updated_at ? new Date(page.updated_at).toLocaleDateString() : '—'}</span>
-              <AiBadge small />
-              <span dir="ltr" style={{ fontSize: 11, color: 'var(--cp-text-muted)', fontFamily: 'var(--cp-font-mono)' }}>v{page.version || 1}</span>
-              <span style={{ fontSize: 11, color: 'var(--cp-text-muted)' }}>{refs.length} references</span>
-              <button onClick={handleTogglePin} style={{
+            {/* Title */}
+            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 28, fontWeight: 700, color: '#0F172A', margin: '0 0 12px' }}>{title}</h1>
+
+            {/* Metadata row */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
+              <span style={{ fontSize: 12, color: '#64748B' }}>{page.updated_at ? timeAgo(page.updated_at) : '—'}</span>
+              {conf > 0 && (
+                <span style={{
+                  fontSize: 10, fontWeight: 650, padding: '2px 8px', borderRadius: 9999,
+                  background: '#F5F3FF', color: '#7C3AED', display: 'inline-flex', alignItems: 'center', gap: 3,
+                }}><Sparkles size={9} /> AI {conf}%</span>
+              )}
+              {formatIcon}
+              <span style={{ fontSize: 11, color: '#64748B', display: 'inline-flex', alignItems: 'center', gap: 3, fontFamily: 'JetBrains Mono, monospace' }}>
+                <GitBranch size={11} /> v{page.version ?? 1}
+              </span>
+              {readTime && (
+                <span style={{ fontSize: 11, color: '#64748B', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                  <Clock size={11} /> {readTime} min
+                </span>
+              )}
+              <button onClick={handleBookmark} style={{
                 fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
-                border: '1px solid var(--cp-border-default)', background: 'transparent',
-                color: isBookmarked ? 'var(--cp-warning-60)' : 'var(--cp-text-secondary)',
-                display: 'flex', alignItems: 'center', gap: 4,
+                border: '1px solid rgba(15,23,42,0.12)', background: bookmarked ? '#FEF3C7' : 'transparent',
+                color: bookmarked ? '#D97706' : '#64748B', display: 'flex', alignItems: 'center', gap: 4,
               }}>
-                <Star size={12} fill={isBookmarked ? 'currentColor' : 'none'} /> {isBookmarked ? 'Pinned' : 'Pin'}
+                <Star size={12} fill={bookmarked ? 'currentColor' : 'none'} /> {bookmarked ? 'Saved' : 'Save'}
               </button>
             </div>
 
-            {/* Lead */}
+            {/* Author + verification */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              {authorName ? (
+                <>
+                  <div style={{
+                    width: 24, height: 24, borderRadius: '50%', background: '#E2E8F0',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 10, fontWeight: 700, color: '#64748B',
+                  }}>{authorName.charAt(0).toUpperCase()}</div>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: '#334155' }}>{authorName}</span>
+                </>
+              ) : (
+                <span style={{ fontSize: 12, color: '#94A3B8' }}>No author</span>
+              )}
+              <span style={{
+                fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 3,
+                background: verBadge.bg, color: verBadge.color, display: 'inline-flex', alignItems: 'center', gap: 3,
+              }}>{verBadge.icon} {verBadge.label}</span>
+            </div>
+
+            {/* Tags */}
+            {tags.length > 0 && (
+              <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 20 }}>
+                {tags.map(t => (
+                  <span key={t} style={{
+                    fontSize: 10, padding: '2px 8px', borderRadius: 4,
+                    background: '#F1F5F9', color: '#64748B', fontWeight: 500,
+                  }}>{t}</span>
+                ))}
+              </div>
+            )}
+
+            {/* ── TL;DR ── */}
+            <div style={{
+              borderLeft: '3px solid #7C3AED', padding: '12px 16px', marginBottom: 24,
+              background: '#FAFAFE', borderRadius: '0 6px 6px 0',
+            }}>
+              <span style={{
+                fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
+                background: '#F5F3FF', color: '#7C3AED', display: 'inline-flex', alignItems: 'center', gap: 3,
+                marginBottom: 8,
+              }}><Sparkles size={10} /> TL;DR</span>
+              {tldr ? (
+                <div style={{ fontSize: 13, color: '#334155', lineHeight: 1.7, marginTop: 8 }}>{tldr}</div>
+              ) : (
+                <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 8, fontStyle: 'italic' }}>AI summary not yet generated</div>
+              )}
+            </div>
+
+            {/* ── Lead paragraph ── */}
             {page.lead_content && (
               <div style={{
                 fontFamily: 'Georgia, serif', fontSize: 15, lineHeight: 1.85,
-                color: 'var(--cp-text-secondary)', marginBottom: 24,
-                paddingBottom: 20, borderBottom: '1px solid var(--cp-border-subtle)',
+                color: '#334155', marginBottom: 24, paddingBottom: 20,
+                borderBottom: '1px solid rgba(15,23,42,0.08)',
               }}>
                 {page.lead_content}
               </div>
             )}
 
-            {/* TOC */}
+            {/* ── Table of Contents ── */}
             {sections.length > 0 && (
-              <nav aria-label="Table of contents" style={{
-                background: 'var(--cp-bg-sunken)', border: '1px solid var(--cp-border-default)',
-                borderRadius: 6, padding: 16, marginBottom: 24,
+              <nav style={{
+                background: '#F8FAFC', border: '1px solid rgba(15,23,42,0.12)',
+                borderRadius: 6, padding: 16, marginBottom: 28,
               }}>
-                <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--cp-text-secondary)', marginBottom: 8, letterSpacing: '0.04em' }}>Contents</div>
+                <div style={{
+                  fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
+                  color: '#64748B', marginBottom: 8, letterSpacing: '0.04em',
+                }}>Contents</div>
                 {sections.map((s: any, i: number) => (
-                  <div key={s.id} style={{
-                    fontSize: 12, color: 'var(--cp-text-link)', cursor: 'pointer',
-                    padding: '3px 0', display: 'flex', alignItems: 'center', gap: 6,
+                  <a key={s.id} href={`#section-${i}`} style={{
+                    display: 'block', fontSize: 12, color: '#2563EB', padding: '3px 0',
+                    textDecoration: 'none',
                   }}>
-                    <span dir="ltr" style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: 'var(--cp-text-muted)', minWidth: 16 }}>{i + 1}.</span>
+                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#94A3B8', marginRight: 8 }}>{i + 1}.</span>
                     {s.title}
-                    {s.is_live_data && <LiveDataBadge />}
-                  </div>
+                  </a>
                 ))}
               </nav>
             )}
 
-            {/* Sections */}
+            {/* ── Article body sections ── */}
             {sections.map((s: any, i: number) => (
-              <ArticleSection key={s.id} section={s} index={i} refs={refs} />
+              <div key={s.id} id={`section-${i}`} style={{ marginBottom: 32 }}>
+                <h2 style={{
+                  fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 650, color: '#0F172A',
+                  margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8,
+                }}>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 14, color: '#94A3B8' }}>{i + 1}.</span>
+                  {s.title}
+                  {s.is_live_data && (
+                    <span style={{
+                      fontSize: 9, fontWeight: 650, padding: '2px 6px', borderRadius: 3,
+                      background: '#EFF6FF', color: '#2563EB',
+                    }}>LIVE DATA</span>
+                  )}
+                </h2>
+
+                {s.section_type === 'delivery_status' ? (
+                  <DeliveryStatusSection content={s.content} />
+                ) : s.section_type === 'references' ? (
+                  <ReferencesSection refs={refs} />
+                ) : (
+                  <div style={{
+                    fontSize: 15, lineHeight: 1.7, color: '#334155',
+                    ...(i === 0 && !page.lead_content ? { fontFamily: 'Georgia, serif' } : {}),
+                  }}>{s.content}</div>
+                )}
+              </div>
             ))}
 
             {sections.length === 0 && (
-              <div style={{ padding: 40, textAlign: 'center', color: 'var(--cp-text-muted)', fontSize: 12 }}>
+              <div style={{ padding: 48, textAlign: 'center', color: '#94A3B8', fontSize: 13 }}>
                 This article has no content sections yet.
               </div>
             )}
 
-            {/* Feedback */}
+            {/* ── Feedback footer ── */}
             <div style={{
-              marginTop: 40, padding: 16, borderRadius: 6,
-              border: '1px solid var(--cp-border-default)',
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12,
+              marginTop: 32, padding: 20, borderRadius: 6,
+              border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16,
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <AiBadge /> <ConfidenceBadge value={page.ai_confidence || 0} />
-                <span dir="ltr" style={{ fontSize: 11, color: 'var(--cp-text-muted)', fontFamily: 'var(--cp-font-mono)' }}>
-                  {Math.round((page.source_coverage || 0) * 100)}% coverage
-                </span>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 650, color: '#0F172A', marginBottom: 4 }}>Was this helpful?</div>
+                <div style={{ fontSize: 11, color: '#64748B' }}>
+                  {helpVotes > 0 ? `${helpScore}% found this helpful (${helpVotes} votes)` : 'Be the first to rate this article'}
+                </div>
               </div>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <button onClick={() => handleFeedback('positive')} style={{
-                  fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 4,
-                  border: '1px solid var(--cp-border-default)', background: 'transparent',
-                  color: 'var(--cp-text-secondary)', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 4,
-                }}><ThumbsUp size={12} /> Helpful</button>
-                <button onClick={() => handleFeedback('negative')} style={{
-                  fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 4,
-                  border: '1px solid var(--cp-border-default)', background: 'transparent',
-                  color: 'var(--cp-text-secondary)', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 4,
-                }}><ThumbsDown size={12} /> Not helpful</button>
-                <button style={{
-                  fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 4,
-                  border: '1px solid var(--cp-border-default)', background: 'transparent',
-                  color: 'var(--cp-text-secondary)', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 4,
-                }}><Flag size={12} /> Report issue</button>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <button onClick={() => handleFeedback(true)} style={{
+                  fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 6,
+                  border: '1px solid rgba(22,163,74,0.3)', background: '#F0FDF4', color: '#16A34A',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+                }}><ThumbsUp size={13} /> Yes</button>
+                <button onClick={() => handleFeedback(false)} style={{
+                  fontSize: 12, fontWeight: 650, padding: '6px 14px', borderRadius: 6,
+                  border: '1px solid rgba(220,38,38,0.3)', background: '#FEF2F2', color: '#DC2626',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+                }}><ThumbsDown size={13} /> No</button>
+                <div style={{ marginLeft: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{
+                    fontSize: 10, fontWeight: 650, padding: '2px 8px', borderRadius: 9999,
+                    background: '#F5F3FF', color: '#7C3AED', display: 'inline-flex', alignItems: 'center', gap: 3,
+                  }}><Sparkles size={9} /> AI {conf}%</span>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#64748B' }}>
+                    {Math.round((page.source_coverage ?? 0) * 100)}% coverage
+                  </span>
+                </div>
               </div>
             </div>
+
+            {/* ── Related Articles ── */}
+            {(related ?? []).length > 0 && (
+              <div style={{ marginTop: 40 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                  <div style={{ width: 3, height: 16, borderRadius: 2, background: '#2563EB' }} />
+                  <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 16, fontWeight: 650, color: '#0F172A' }}>Related Articles</span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
+                  {(related ?? []).map((r: any) => (
+                    <div key={r.id} onClick={() => navigate(`/wiki/${r.slug}`)} style={{
+                      padding: 16, borderRadius: 6, background: '#FFFFFF',
+                      border: '1px solid rgba(15,23,42,0.12)', cursor: 'pointer',
+                      transition: 'border-color 120ms',
+                    }}
+                      onMouseEnter={e => e.currentTarget.style.borderColor = '#2563EB'}
+                      onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(15,23,42,0.12)'}
+                    >
+                      <div style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>{r.title}</div>
+                      <div style={{ fontSize: 11, color: '#64748B' }}>
+                        {r.domain_code}
+                        {r.read_time_minutes ? ` · ${r.read_time_minutes} min` : ''}
+                        {r.ai_confidence ? ` · ${Math.round(r.ai_confidence * 100)}%` : ''}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </article>
 
-          {/* Infobox */}
-          <aside aria-label="Article metadata" style={{ position: 'sticky', top: 16, borderRadius: 6, border: '1px solid var(--cp-border-default)', overflow: 'hidden', fontSize: 12 }}>
-            <div style={{ background: 'var(--cp-primary-60)', color: 'var(--cp-on-primary)', padding: '8px 12px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Article Info
-            </div>
-            {[
-              { label: 'Domain', value: <DomainBadge code={info.domainCode || page.domain_code || ''} /> },
-              { label: 'Status', value: <StatusLozenge status={info.status || page.status || ''} /> },
-              { label: 'Hub', value: infoVal(info.hub), show: !!info.hub },
-              { label: 'Project', value: infoVal(info.project), show: !!info.project },
-              { label: 'Epic', value: info.epicKey ? <JiraPill label={info.epicKey} /> : <EmDash />, show: !!info.epicKey },
-              { label: 'Stories', value: <span dir="ltr" style={{ fontFamily: 'var(--cp-font-mono)' }}>{infoVal(info.totalStories)}</span>, show: !!info.totalStories },
-              { label: 'Done', value: info.doneStories != null ? <span dir="ltr" style={{ fontFamily: 'var(--cp-font-mono)', color: 'var(--cp-success-60)' }}>{info.doneStories} ({info.donePercent ?? 0}%)</span> : <EmDash />, show: info.doneStories != null },
-              { label: 'Open Defects', value: info.openDefects != null ? <span dir="ltr" style={{ fontFamily: 'var(--cp-font-mono)', color: 'var(--cp-warning-60)' }}>{info.openDefects}</span> : <EmDash />, show: info.openDefects != null },
-              { label: 'Sprint', value: infoVal(info.currentSprint), show: !!info.currentSprint },
-              { label: 'Owner', value: info.owner ? <span style={{ fontWeight: 600, color: 'var(--cp-primary-60)' }}>{info.owner}</span> : <EmDash />, show: !!info.owner },
-              { label: 'BRD', value: infoVal(info.brdVersion), show: !!info.brdVersion },
-              { label: 'Documents', value: info.documentsCount ? <span dir="ltr" style={{ color: 'var(--cp-purple-60)', fontWeight: 600, fontFamily: 'var(--cp-font-mono)' }}>{info.documentsCount}</span> : <EmDash />, show: !!info.documentsCount },
-              { label: 'Last Sync', value: infoVal(info.lastSync), show: !!info.lastSync },
-              { label: 'AI Confidence', value: <ConfidenceBadge value={page.ai_confidence || info.aiConfidence || 0} /> },
-            ]
-              .filter(row => row.show !== false)
-              .map(row => (
-                <div key={row.label} style={{
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  padding: '6px 12px', borderBottom: '0.75px solid var(--cp-border-subtle)',
-                }}>
-                  <span style={{ color: 'var(--cp-text-muted)', fontSize: 11 }}>{row.label}</span>
-                  <span>{row.value}</span>
-                </div>
-              ))}
+          {/* ── Infobox sidebar ── */}
+          <aside style={{
+            position: 'sticky', top: 80, borderRadius: 6,
+            border: '1px solid rgba(15,23,42,0.12)', background: '#FFFFFF',
+            overflow: 'hidden', fontSize: 12,
+          }}>
+            <div style={{
+              background: '#2563EB', color: '#FFFFFF', padding: '10px 14px',
+              fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.04em',
+            }}>Article Info</div>
+
+            {infoRows.map(row => (
+              <div key={row.label} style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                padding: '7px 14px', borderBottom: '0.75px solid rgba(15,23,42,0.06)',
+              }}>
+                <span style={{ color: '#64748B', fontSize: 11 }}>{row.label}</span>
+                <span style={{ fontSize: 11, color: '#0F172A', fontWeight: 500 }}>{row.value}</span>
+              </div>
+            ))}
           </aside>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.5 } }
+      `}</style>
+    </div>
+  );
+}
+
+/* ── Delivery Status sub-component ── */
+function DeliveryStatusSection({ content }: { content: string | null }) {
+  if (!content) return <div style={{ fontSize: 13, color: '#94A3B8' }}>No delivery data available.</div>;
+  return (
+    <div style={{
+      borderRadius: 6, border: '1px solid rgba(15,23,42,0.12)', overflow: 'hidden',
+    }}>
+      <div style={{ fontSize: 13, color: '#334155', padding: 16, lineHeight: 1.7 }}>{content}</div>
+    </div>
+  );
+}
+
+/* ── References sub-component ── */
+function ReferencesSection({ refs }: { refs: any[] }) {
+  if (refs.length === 0) return <div style={{ fontSize: 12, color: '#94A3B8', padding: 8 }}>No references.</div>;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      {refs.map((r: any) => (
+        <div key={r.ref_number ?? r.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
+          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#94A3B8', minWidth: 24 }}>[{r.ref_number}]</span>
+          {r.source_type === 'jira' ? (
+            <span style={{ fontSize: 11, fontWeight: 650, color: '#2563EB', fontFamily: 'JetBrains Mono, monospace' }}>{r.source_key}</span>
+          ) : r.source_type === 'document' ? (
+            <span style={{ fontSize: 11, fontWeight: 650, padding: '2px 6px', borderRadius: 3, background: '#F5F3FF', color: '#7C3AED' }}>{r.source_key}</span>
+          ) : (
+            <span style={{ fontSize: 11, fontWeight: 600, color: '#334155' }}>{r.source_key}</span>
+          )}
+          <span style={{ fontSize: 12, color: '#64748B' }}>{r.description || '—'}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ── Skeleton ── */
+function ArticleSkeleton() {
+  return (
+    <div style={{ fontFamily: 'Inter, sans-serif', background: '#F8FAFC', minHeight: '100%', padding: '20px 40px 48px' }}>
+      <Sk w={200} h={14} style={{ marginBottom: 24 }} />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 32 }}>
+        <div>
+          <Sk w="60%" h={28} style={{ marginBottom: 12 }} />
+          <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+            <Sk w={80} h={14} /><Sk w={60} h={14} /><Sk w={40} h={14} />
+          </div>
+          <Sk w="100%" h={60} style={{ marginBottom: 24 }} />
+          <Sk w="100%" h={16} style={{ marginBottom: 8 }} />
+          <Sk w="90%" h={16} style={{ marginBottom: 8 }} />
+          <Sk w="95%" h={16} style={{ marginBottom: 8 }} />
+          <Sk w="80%" h={16} style={{ marginBottom: 24 }} />
+          <Sk w="100%" h={16} style={{ marginBottom: 8 }} />
+          <Sk w="85%" h={16} />
+        </div>
+        <div style={{ borderRadius: 6, border: '1px solid rgba(15,23,42,0.12)', overflow: 'hidden' }}>
+          <Sk w="100%" h={36} style={{ borderRadius: 0 }} />
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} style={{ padding: '8px 14px', display: 'flex', justifyContent: 'space-between', borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
+              <Sk w={60} h={12} /><Sk w={80} h={12} />
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
 }
+
+/* ── Domain slug map ── */
+const DOMAIN_SLUGS: Record<string, string> = {
+  D1: 'industrial-licensing', D2: 'customs-trade', D3: 'chemical-permits',
+  D4: 'environmental-compliance', D5: 'industrial-incentives',
+  D6: 'fourth-industrial-revolution', D7: 'workforce-support',
+  D8: 'senaei-platform', D9: 'mining-minerals',
+};
